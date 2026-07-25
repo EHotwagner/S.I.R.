@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: 0.1
+version: 0.9
 last-updated: 2026-07-25
 ---
 
@@ -37,11 +37,39 @@ Positioning is the decisive tactical language. Scouting, concealment, stealth,
 flanking, ambushes, communication denial, attacks from behind, and executions
 can produce strong advantages. Server-side automated control makes precise
 coordination and micro-level reactions possible without requiring impossible
-manual input from a human player.
+manual input from a human player. This permits tactical rules with sharper,
+more consequential outcomes than a conventional RTS can support through direct
+human control alone.
 
 ## Design identity
 
-### Established vision
+### Primary differentiation from conventional RTS games
+
+**Established vision.** S.I.R. focuses on tactical depth and consequences that
+are not practical when a human must directly control every moment-to-moment
+action. Its automated,
+server-side unit control is what makes this deeper tactical design space
+playable. Automation does not compensate for shallow tactical rules; it enables
+rules whose timing, coordination, reactions, and consequences would otherwise
+exceed human control bandwidth.
+
+The player should therefore make tactically meaningful decisions at the level
+appropriate to a commander, while control modules faithfully execute detailed
+behavior. The resulting game should test tactical judgment and preparation
+rather than the player's ability to perform enough rapid interface actions.
+
+**Derived implications:**
+
+- The tactical model should not be simplified merely to keep manual
+  micro-control manageable.
+- Automation should expose and execute player intent, not replace tactical
+  decision-making with an opaque general-purpose AI.
+- Consequences may be stronger and more context-sensitive than in a conventional
+  RTS because units can reliably handle precise reactions and coordination.
+- The value of a control module should come from doctrine and decision quality,
+  within a fair execution budget, rather than mechanical action speed.
+
+### Established principles
 
 - The game is tactical, fast-paced, and deliberately less simulation-heavy.
 - Positioning is extremely important.
@@ -55,7 +83,7 @@ manual input from a human player.
   game.
 - Examples of decisive effects include attacks from behind and executions.
 
-### Derived implications
+### General derived implications
 
 - The game should favor clear, discrete tactical consequences over detailed
   physical simulation.
@@ -177,7 +205,10 @@ axis displacement is the same.
 Control modules are part of the player's command capability. They allow units
 to carry out doctrine, react to local conditions, coordinate detailed actions,
 and exploit short-lived tactical opportunities without waiting for a
-round-trip command from a remote client.
+round-trip command from a remote client. This capability is also a design
+prerequisite for the intended tactical depth: rules can demand reactions,
+precision, and coordination beyond ordinary human micro-control because their
+detailed execution is delegated to player-chosen code.
 
 They should support the intended distinction between:
 
@@ -230,11 +261,22 @@ information about a location or unit. A squad outside communication range can
 continue to encounter and respond to the world without immediately updating the
 player.
 
+Information is not currently divided into system-defined certainty categories
+for presentation. The server provides the information available through the
+game's observation and communication rules; the human player or client decides
+how certain, uncertain, or significant that information is. Future research or
+data-gathering capabilities may provide additional evidence without requiring a
+universal certainty classification.
+
+When a previously observed hostile unit is no longer observable through the
+player's currently available information, the canonical client removes it
+entirely. It does not retain a last-known marker or ghost representation.
+
 ### Derived implications
 
 - Fog of war is a knowledge system rather than a simple visibility mask.
-- Reports should carry an observation time so that the client can distinguish
-  current knowledge from historical knowledge.
+- Reports may need observation times and provenance as factual metadata, without
+  the server converting them into certainty labels.
 - Reconnection may transmit accumulated reports, subject to the intended
   communication rules.
 - Control modules must make decisions from their permitted local knowledge, not
@@ -340,6 +382,45 @@ allocation, and responses to disruption.
 - Licensing of dependencies and linked or distributed components must remain
   compatible with the intended AGPL release.
 
+## Visual direction
+
+### Established vision
+
+The graphical direction is represented by the current
+[unit-footprints and information-faces concept](assets/concept-art/unit-footprints-and-information-faces.png).
+It presents an isometric, three-dimensional battlefield in which units have
+clearly readable authoritative footprints and act as information-bearing game
+pieces. Their top faces communicate identity and state, while separate base and
+ground overlays communicate spatial properties such as footprint, facing, and
+attention.
+
+The depicted box-shaped unit bodies are the intended final visual abstraction,
+not placeholders for conventional character or vehicle models.
+
+At normal gameplay zoom, a unit's identification glyph and hit points must
+remain readable. Which additional details should remain visible at that distance
+will be decided through prototyping and playtesting.
+
+Tactical overlays must be customizable by the player and client. Distinct
+information layers—such as line of sight, sensor coverage, communication range,
+and electronic-warfare effects—can be shown or hidden as needed to avoid
+overwhelming the battlefield. Hotkey toggles are a possible canonical-client
+interaction, but the exact controls and any automatic context-sensitive display
+remain open for testing.
+
+Color may be used as a standalone information category; color-coded distinctions
+do not require redundant glyphs, patterns, or labels. Accessibility should be
+supported through customizable color schemes, with the canonical client's exact
+palette controls determined through testing.
+
+The concept supports the game's emphasis on readable positioning and command at
+scale. Modern military units, vehicles, logistics objects, monsters, and magic
+share a consistent visual language.
+
+Individual labels, glyphs, colors, proportions, roles, and status examples in
+the concept remain provisional unless established separately. The detailed
+interpretation is maintained in [the visual-direction document](visual-direction.md).
+
 ## Core experience
 
 The intended battle is not a contest of raw click speed. A player prepares
@@ -374,6 +455,8 @@ guide subsequent design:
    contracts.
 10. Spatial rules must consistently account for multi-cell square footprints
     and Chebyshev distance.
+11. Automation must be used to expand tactical depth and consequence, not to
+    remove meaningful tactical agency from the player.
 
 ## Open questions
 
@@ -425,4 +508,6 @@ replaced by—the following architecture documents:
 - combat and awareness model;
 - logistics model;
 - electronic-warfare model; and
-- canonical client responsibilities.
+- canonical client responsibilities;
+- canonical client information design; and
+- final visual language and tactical-overlay specification.
