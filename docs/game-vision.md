@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: 0.9
+version: "0.27"
 last-updated: 2026-07-25
 ---
 
@@ -115,27 +115,141 @@ with the tactical system rather than forming a disconnected alternate ruleset.
 ### Established vision
 
 - A side should field approximately 50–100 units.
+- Every unit is a persistent individual rather than an anonymous,
+  replaceable rank-and-file element.
+- Personnel are recruited individually. Complete squads are not the atomic
+  recruitment unit.
+- Recruit candidates are procedurally generated rather than drawn primarily
+  from a roster of authored named mercenaries.
+- Once generated, a recruit is a stable individual whose identity and history
+  persist for the remainder of that campaign.
 - Units can be organized into squads.
 - A squad has a squad leader.
 - Squad members communicate with their squad leader only while within an
   applicable communication distance.
 - Squad leaders communicate with headquarters—the player—only while within an
   applicable communication distance.
+- Communication with headquarters is enabled by a physical communications
+  device normally carried by the squad leader, not by the leader role alone.
+- Player-provided WASM control logic determines how a squad responds to leader
+  loss and selects or recognizes a successor.
+- A second-in-command may carry an additional headquarters communications
+  device. Without such redundancy, a successor must recover or loot the fallen
+  leader's device to restore headquarters communication.
 - Squads may be sent on missions outside communication range.
+- Personnel inspection, development, and other large-roster handling can be
+  supported by scripts and AI. The amount of individual information does not
+  need to be reduced solely to accommodate unaided human management.
 
 ### Derived implications
 
 - Direct manual control of every individual cannot be the normal interaction
   model at this scale.
+- Individual identity, attributes, skills, history, injuries, and progression
+  require authoritative per-person records even when managed in batches.
+- Procedural generation creates candidates; it does not make recruited
+  personnel interchangeable or permit their identities to be regenerated.
+- Each generated candidate requires a stable authoritative identifier and
+  reproducible provenance sufficient for validation, auditing, and replay.
+- Squad composition references individually recruited personnel; it does not
+  replace their individual ownership or history with a single squad record.
 - Squad hierarchy is both an organizational structure and part of the game's
   information and command topology.
 - Losing, isolating, jamming, or repositioning a squad leader can have
   significant tactical effects.
+- Local command succession and headquarters connectivity are independent state:
+  a squad can establish a new local leader while remaining disconnected from
+  the player.
+- Communications devices are authoritative equipment with location, ownership,
+  operational state, range, and transfer rules.
+- Carrying a redundant device trades logistics or equipment capacity for command
+  resilience.
+- Recovering a fallen leader's device creates a physical tactical objective and
+  exposes the recovery unit to positional risk.
 - Units outside contact may continue operating according to previously supplied
   orders and control doctrine, but cannot necessarily receive new information
   or direction.
 - Communication equipment, range, relays, terrain effects, jamming, and magical
   interference are potential sources of tactical differentiation.
+- Personnel-management APIs need deterministic policies, batch operations,
+  exception handling, and explanations so automation remains inspectable and
+  overridable by the player.
+
+## Personnel progression
+
+### Established vision
+
+- Every individual can develop persistent attributes, skills, history, and
+  consequences during a campaign.
+- Personnel development can be managed or assisted through scripts and AI.
+- Every individual has a fixed class that establishes their core role. The
+  assigned class is permanent for the campaign.
+- A recruit's class is predetermined before recruitment and visible to the
+  player when evaluating that recruit. Recruiting the individual does not
+  trigger a class-selection decision.
+- Progression includes semi-random opportunities. Fully predetermined
+  advancement would become a solved optimization problem too quickly.
+- Randomness determines which eligible opportunities are offered; the human
+  player or authorized automation chooses among them.
+- Numerical attribute growth is primarily automatic rather than manually
+  allocated point by point.
+
+### Provisional direction
+
+Recruitment should provide an XCOM- or Jagged Alliance-style personnel dossier.
+Before committing, the player can inspect the candidate's class, current
+attributes, proficiencies, learned abilities, traits, relevant history, known
+injuries or conditions, and recruitment terms. The exact presentation and
+number of fields remain to be designed.
+
+This disclosure applies to the recruit's current known state, not their complete
+future development. Later semi-random progression offers remain unrevealed
+until generated. Recruitment should be an informed force-building decision
+without turning each candidate into a perfectly forecastable final build.
+
+Major active abilities should be unlockable through personal progression.
+Progression should therefore change what an individual can do, not merely
+increase numerical effectiveness or improve use of equipment.
+
+Equipment, magic, implants, and software may still grant, enable, constrain, or
+modify active capabilities. The exact division between learned abilities and
+equipment-dependent actions remains to be designed.
+
+Automatic attribute development may be influenced by experience, training,
+assignment, and other in-world causes. Direct manual allocation can remain
+available for exceptional systems if later testing demonstrates a need, but it
+is not the default personnel-development interaction.
+
+Specialized advanced classes may be introduced later as an evolution of a
+unit's permanent base class. This is a provisional extension, not permission for
+general class changes or unrestricted multiclassing.
+
+### Derived implications
+
+- Active abilities require stable machine-readable definitions available to
+  canonical clients and WASM control modules.
+- Progression automation must be able to reason about newly unlocked actions,
+  prerequisites, conflicts, and the behaviors that can use them.
+- Automatic growth rules must be authoritative, machine-readable, and protected
+  against farming through repeatable WASM-controlled actions.
+- Offer generation should account for relevant facts such as role, history,
+  existing development, and campaign events so that randomness produces
+  coherent individuals rather than arbitrary builds.
+- A class must have a stable public identifier and a machine-readable
+  capability and progression contract.
+- Recruitment interfaces and APIs must expose a candidate's class before the
+  player commits to recruiting them.
+- The canonical client and public API should expose the same authoritative
+  recruitment-dossier data; a third-party client must not gain access to hidden
+  future progression rolls.
+- Advanced-class definitions, if introduced, must declare their required base
+  class and preserve an inspectable class lineage.
+- Semi-random opportunities should create distinct builds within a class
+  without making its core tactical role unreadable.
+- The server must generate offers authoritatively and expose enough information
+  to audit eligibility and selection without allowing reroll manipulation.
+- A unit's available action set is derived from both persistent personnel state
+  and current mission loadout.
 
 ## Time and simulation
 
@@ -240,6 +354,10 @@ They should support the intended distinction between:
 
 - The player is not omniscient.
 - Units may exist without the player having current knowledge of them.
+- In PvP, a player receives no privileged pre-match inspection of opposing
+  personnel, progression, perks, abilities, doctrine, or loadouts.
+- Information about an opposing build is available only when it can be observed
+  or inferred from the battlefield information available to the player.
 - A unit or squad can operate beyond communication range.
 - Information must travel through the command structure: squad members connect
   to their squad leader, and squad leaders connect to headquarters/the player,
@@ -281,6 +399,11 @@ entirely. It does not retain a last-known marker or ghost representation.
   communication rules.
 - Control modules must make decisions from their permitted local knowledge, not
   from server-wide state.
+- Opponent build data must not be exposed through the public API unless the
+  active player's battlefield knowledge currently reveals that data.
+- Using an active ability, carrying visible equipment, or producing an
+  observable effect may reveal information without exposing the unit's complete
+  build.
 - Electronic warfare can attack the flow, quality, reliability, or timeliness
   of information and command.
 - Intelligence provenance may matter: the game may need to remember which unit
@@ -293,6 +416,8 @@ entirely. It does not retain a last-known marker or ghost representation.
 - Communication range constrains contact between squad members and their leader.
 - Communication range constrains contact between squad leaders and the player or
   headquarters.
+- Headquarters connectivity depends on an operational communications device
+  carried by the acting leader or another appropriate unit.
 - Electronic warfare is an important part of play.
 
 ### Derived implications
@@ -308,6 +433,12 @@ Communications form a dynamic tactical network. Its state influences:
 
 Electronic warfare should consequently affect gameplay at the command and
 information layers, not exist only as a numeric combat modifier.
+
+If a leader is lost, player-provided WASM logic determines local succession.
+Succession does not create a communications device. A prepared second-in-command
+may already carry a redundant device; otherwise, a unit must physically recover
+or loot the original device before the squad can re-establish its equipment path
+to headquarters.
 
 ## Tactical combat
 
@@ -367,6 +498,43 @@ allocation, and responses to disruption.
 - The project provides a canonical client.
 - Anyone may develop an alternative client.
 - The game is licensed under the GNU Affero General Public License (AGPL).
+- The game supports multiple modes involving player-versus-environment,
+  player-versus-player, and cooperative play.
+- The main mode has persistent personnel whose progression carries across
+  matches.
+- Persistent personnel belong to the player account.
+- Main-mode campaigns run for a fixed duration. At the end of a campaign, its
+  personnel, progression, and other campaign state are wiped.
+
+### Campaign lifecycle
+
+Persistence is seasonal rather than permanent. A player develops account-owned
+personnel across the matches of one active campaign, accepting losses and
+building progression during that campaign. The campaign has a defined end, after
+which its accumulated state is reset and a new progression cycle can begin.
+
+### Provisional canonical cadence
+
+The current candidate is a two-week campaign duration with a new campaign
+starting every week. This would normally keep two overlapping campaign cohorts
+active. The cadence is not yet accepted and requires testing; whether one player
+account may participate in both overlapping campaigns is also unresolved.
+
+Separate single-player campaigns may maintain their own campaign state and
+lifecycle. Because the project is open source, third-party servers and
+derivatives may define additional modes, campaign structures, persistence
+policies, and reset schedules beyond the canonical offering.
+
+### Additional competitive modes
+
+Dedicated PvP duels and skirmishes are an intended direction. These modes should
+use point-based force construction from a standardized unit catalog. Persistent
+main-mode personnel are not used to construct these forces. The catalog provides
+defined unit, progression, equipment, magic, and doctrine options with public
+point costs, allowing bounded and reproducible competitive forces. Match results
+are completely isolated from the persistent main campaign: they do not
+grant campaign rewards or progression and do not write injuries, losses,
+equipment changes, or other consequences back to campaign personnel or state.
 
 ### Derived implications
 
@@ -381,6 +549,23 @@ allocation, and responses to disruption.
   identities and permissions distinct from those of an active player.
 - Licensing of dependencies and linked or distributed components must remain
   compatible with the intended AGPL release.
+- Persistence, roster eligibility, progression write-back, and balance policy
+  must be explicit properties of each game mode.
+- The public API must expose the active mode and ruleset so canonical and custom
+  clients can construct and validate eligible forces.
+- Persistent main-mode play and bounded point-based competition can share unit,
+  equipment, and capability definitions while applying different roster and
+  progression policies.
+- Duel and skirmish catalog content, eligibility rules, and point calculations
+  must be versioned, public, and machine-readable.
+- Public catalog definitions do not imply disclosure of which catalog entries an
+  opponent selected; match knowledge remains constrained by battlefield
+  observation.
+- Persistent records must be scoped by player account and campaign identifier so
+  that one campaign's state cannot leak into another.
+- Campaign duration and reset timing must be public ruleset data.
+- The architecture must support canonical modes without hard-coding them as the
+  only possible modes or persistence policies.
 
 ## Visual direction
 
@@ -487,10 +672,10 @@ vision:
 14. What resources constitute logistics: ammunition, energy, fuel, medical
     supplies, food, magical resources, replacements, or others?
 15. What is the expected match length and physical battlefield scale?
-16. Is multiplayer exclusively competitive, or does it also include cooperative
-    and player-versus-environment modes?
-17. Is server implementation part of the AGPL-distributed project, and are
+16. Is server implementation part of the AGPL-distributed project, and are
     third-party servers intended to be supported?
+17. Can a player reroll or replace a semi-random progression offer, and if so,
+    what time, training, or resource constraint limits that correction?
 
 ## Future derived documents
 
