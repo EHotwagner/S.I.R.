@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.81"
+version: "0.82"
 last-updated: 2026-07-25
 ---
 
@@ -40,6 +40,13 @@ coordination and micro-level reactions possible without requiring impossible
 manual input from a human player. This permits tactical rules with sharper,
 more consequential outcomes than a conventional RTS can support through direct
 human control alone.
+
+The game translates turn-based tactical micro-decisions into continuous
+real-time doctrine and execution. The human commander chooses purpose,
+priority, acceptable risk, commitment, and doctrine. HQ, leader, and unit
+modules execute precise reactions, timing, formation behavior, fire discipline,
+and routine contingencies. The authoritative server owns information
+boundaries, legality, simultaneous resolution, and consequences.
 
 ## Design identity
 
@@ -1233,6 +1240,23 @@ to headquarters.
 
 ### Established vision
 
+- Continuous reaction and interruption depend on attention, acquisition,
+  readiness, posture, declared policy, and action timing rather than a binary
+  universal overwatch mode.
+- Awareness progresses through stimulus, detection, classification,
+  identification, acquisition, and reporting rather than granting immediate
+  target ownership.
+- Conditional doctrine and standing operating procedures let modules handle
+  hold-fire rules, engagement priorities, reserves, withdrawal conditions, and
+  communication-loss behavior.
+- The action system supports synchronized suppression and movement, breaching,
+  crossfires, withdrawal, casualty recovery, and other multi-unit tactics.
+- Facing, attention, stance, exposure, weapon posture, preparation, commitment,
+  resolution, and recovery can all create exploitable tactical states.
+- Fire lanes, penetration, friendly-fire risk, suppression, local knowledge,
+  delayed reports, and casualty recovery are central sources of consequence.
+- Automation performs sub-second execution; it does not choose the player's
+  strategic purpose, acceptable risk, or operational priorities.
 - Combat should be fast-paced and tactically focused rather than highly
   simulation-heavy.
 - Positioning should have very high importance.
@@ -1279,6 +1303,10 @@ for the maintained comparison and adaptation notes.
 See [Combat Resolution Architecture](combat-resolution.md) for the canonical
 attack, cover, armor, HP, wound, suppression, friendly-fire, and execution
 pipeline.
+See
+[Turn-Based Tactical Depth in Real-Time S.I.R.](research/realtime-turnbased-tactical-features.md)
+for the accepted responsibility split, tactical identity package, extended
+feature catalog, and design risks.
 
 ### Provisional direction
 
