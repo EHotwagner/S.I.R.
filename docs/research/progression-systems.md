@@ -2,7 +2,7 @@
 title: Attribute, Skill, and Progression Systems
 status: proposed
 document-type: research
-version: "0.20"
+version: "0.24"
 last-updated: 2026-07-25
 related:
   - docs/game-vision.md
@@ -66,6 +66,18 @@ The current leading direction is that personal progression can directly unlock
 major active abilities. Equipment and magic remain additional capability
 sources, prerequisites, or modifiers rather than the exclusive source of active
 actions.
+
+Classes, attributes, abilities, progression offers, and selections are diegetic
+facts exposed by the literal in-world System. Their machine-readable server
+contracts are therefore not merely implementation metadata: they are also the
+authoritative representation of facts that characters and organizations may
+perceive within the setting, subject to knowledge and communications rules.
+
+Direct access to these System facts requires recognized-participant status.
+Recognition is earned through authoritative monster kills. The progression
+architecture must therefore distinguish pre-recognition personnel state from
+System-visible class and progression state, even though the exact kill threshold
+and whether unrecognized personnel can enter the canonical roster remain open.
 
 This progression model should operate under mode-specific policies. S.I.R.'s
 main mode retains account-owned personnel and their progression across matches
@@ -421,16 +433,43 @@ should likely have tens of nodes, not thousands.
 ### MENACE: progression concentrated at squad scale
 
 MENACE is especially relevant because it is a contemporary tactical game with
-larger formations. Infantry squads contain multiple soldiers, but named squad
-leaders carry individual promotion trees, attributes, personality, and
-consequences. Equipment is chosen for the squad and constrained by a
-mission-level supply budget
-([official description](https://store.steampowered.com/app/2432860/MENACE/)).
-Its promotion design deliberately awards a shared resource for mission
-performance and lets the commander decide whom to promote, avoiding kill
-funneling while making repeated investment in one leader progressively more
-expensive
-([promotion-system developer diary](https://steamcommunity.com/games/2432860/announcements/detail/512950040394727468)).
+larger formations. Its infantry formation is one tactical unit composed of one
+Squad Leader and up to eight Squaddies.
+
+The model is deliberately asymmetric:
+
+- Squad Leaders are unique authored characters with statistics, personality,
+  relationships, ranks, and individual perk trees.
+- Squaddies are generic manpower. They can have names, backgrounds, and a
+  recorded mission count, but they do not receive the leader's full character
+  and progression model.
+- Squaddies add both survivability and firepower. Each is an element of the
+  squad's HP and contributes another squad weapon.
+- Casualties remove Squaddies one at a time, reducing attacks and morale.
+- The Squad Leader is damaged last. Once all Squaddies are gone, further damage
+  incapacitates the leader. Another Squad Leader can stabilize them; otherwise
+  they bleed out and die permanently.
+- Lost Squaddies can be replaced between missions from the limited Manpower
+  pool. The player may change how many Squaddies are assigned to each leader.
+- Squad size, the leader, equipment, and promotions all contribute to the
+  mission supply cost.
+
+Consequently, the persistent build and identity are centered primarily on the
+leader rather than a permanent squad roster. The ordinary members can die and
+their loss matters tactically and logistically, but they are replenishable. A
+dead leader removes the unique character, perk tree, relationships, and build
+unless rescued before bleeding out
+([official Squaddies rules](https://wiki.hoodedhorse.com/MENACE/Squaddies),
+[official character rules](https://wiki.hoodedhorse.com/MENACE/Characters),
+[official beginner's guide](https://wiki.hoodedhorse.com/MENACE/Beginner%27s_Guide)).
+
+Promotions apply to Squad Leaders and Pilots rather than Squaddies. The player
+spends a shared pool of promotion points earned from mission performance, so
+advancement does not depend on feeding kills to a particular squad
+([official promotion rules](https://wiki.hoodedhorse.com/MENACE/Promotions_and_Demotions)).
+Equipment is selected for the squad and constrained together with personnel by
+a mission-level supply budget
+([official supply-cost rules](https://wiki.hoodedhorse.com/MENACE/Supply_Cost)).
 
 As of July 2026 it remains in Early Access, so its details are not a settled
 standard. Nevertheless, it demonstrates a current direction:
@@ -440,6 +479,44 @@ standard. Nevertheless, it demonstrates a current direction:
 - make stronger gear consume more deployment capacity;
 - let losses and morale create character consequences; and
 - give a leader's perks effects across their squad.
+
+#### Why the leader model is interesting for S.I.R.
+
+The model does more than reduce management complexity. It gives a squad a
+distinctive tactical grammar through its leader: the same generic manpower and
+equipment can behave differently under leaders with different perks,
+statistics, special weapons, and relationships.
+
+It also avoids one common roster-optimization problem by construction. There
+are no individually levelled Squaddies to sort into a mathematically strongest
+combination. The meaningful allocation questions instead concern:
+
+- which leader fits the mission;
+- how much scarce manpower to assign to that leader;
+- which squad-wide weapon, armor, accessories, and special weapon fit the
+  leader's strengths; and
+- whether the resulting package justifies its supply cost.
+
+S.I.R. cannot copy this directly because every S.I.R. unit is an individually
+persistent person. It can nevertheless adapt the stronger idea: a leader should
+give the assembled squad conditional doctrine, reaction, coordination,
+communication, formation, or logistics characteristics that are not reducible
+to selecting the members with the highest independent statistics.
+
+This suggests a prototype in which:
+
+- member abilities remain personal;
+- leader abilities change how the squad combines those abilities;
+- leader effects are conditional and behavioral rather than broad flat stat
+  bonuses;
+- different leaders make different member mixes and equipment packages useful;
+- established squad history or cohesion can contribute identity independently
+  of the current leader; and
+- succession preserves basic function but changes or temporarily degrades the
+  leader-dependent characteristics.
+
+The command-role and succession proposal is developed further in
+[Squad Command, Identity, and Succession](squad-command-and-succession.md).
 
 This has been received well enough to merit attention: the Steam page reports
 strongly positive current user reviews, and contemporary criticism specifically
