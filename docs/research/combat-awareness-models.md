@@ -2,7 +2,7 @@
 title: Combat, Reaction, and Awareness Reference Models
 status: proposed
 document-type: research
-version: "0.1"
+version: "0.2"
 last-updated: 2026-07-25
 related:
   - docs/game-vision.md
@@ -72,6 +72,18 @@ S.I.R. should prototype:
 7. **Strong but explainable consequences.** Reaction and awareness advantages
    can be decisive, but the API and client must expose the facts needed to
    understand why one unit acted first.
+
+### Adopted architectural direction
+
+The living game vision now canonically separates perception into geometry,
+stimulus generation, accumulated acquisition, and timed reaction. Body facing
+and attention direction are distinct eight-direction states. The server emits
+factual observation fields rather than universal certainty labels.
+
+Exact sector shapes, acquisition rates, decay, visibility samples, sensor
+disclosure, and any replay-stable contact variation remain prototype
+parameters. See the perception and awareness section of
+[the game vision](../game-vision.md).
 
 ### Boundaries: what S.I.R. does not inherit
 
