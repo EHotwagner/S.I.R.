@@ -2,11 +2,12 @@
 title: S.I.R. Deterministic Simulation Core
 status: proposed
 document-type: living-design
-version: "0.1"
+version: "0.3"
 last-updated: 2026-07-25
 related:
   - docs/game-vision.md
   - docs/skirmish-development-plan.md
+  - docs/technology-stack.md
   - docs/wasm-control-architecture.md
   - docs/combat-resolution.md
 ---
@@ -15,9 +16,10 @@ related:
 
 ## Purpose
 
-This document defines the technology-independent boundary of the authoritative
-simulation. Programming language, networking transport, database, deployment,
-and client choices must serve this contract rather than redefine it.
+This document defines the technology-independent behavior of the authoritative
+simulation. Its implementation is F# on .NET 10 using selected FS.GG
+components, but networking transport, database, deployment, and client choices
+must still serve this contract rather than redefine it.
 
 ## Core transition
 
@@ -373,9 +375,10 @@ Development and test builds continuously verify invariants such as:
 - cached and uncached queries agree; and
 - identical inputs reproduce identical hashes.
 
-## Technology-selection criteria
+## Selected platform and integration constraints
 
-The eventual implementation stack must support:
+The selected implementation platform is F# on .NET 10 with the FS.GG framework
+family. The stack must preserve:
 
 - predictable integer and fixed-point behavior;
 - explicit memory and allocation control;
@@ -387,12 +390,31 @@ The eventual implementation stack must support:
 - safe concurrency with deterministic merge stages; and
 - practical AGPL-compatible distribution.
 
-No programming language, transport, database, or client framework is selected by
-this document.
+FS.GG.Game.Core primitives are consumed only where their exact semantics match
+the authoritative rules. In particular:
+
+- S.I.R. retains its own integer tick and fixed-point authoritative state even
+  if an outer FS.GG loop uses floating point for wall-clock accumulation or
+  render interpolation;
+- canonical eight-direction movement uses equal orthogonal and diagonal
+  Chebyshev steps, so generic weighted eight-way A* behavior requires an
+  S.I.R. pathfinding adapter;
+- counter-addressed authoritative randomness requires an S.I.R. adapter rather
+  than a single sequential random stream; and
+- floating-point-heavy geometry, visibility, ballistics, or physics modules
+  require explicit deterministic acceptance before authoritative use.
+
+FS.GG.Net provides transport infrastructure without owning the S.I.R. protocol
+or knowledge policy. FS.GG.Rendering provides the canonical client foundation
+without entering the authoritative kernel. Local sibling clones enable
+co-development, but reproducible builds use an explicit coherent dependency
+set.
+
+See [Technology Stack and FS.GG Integration](technology-stack.md) for component
+boundaries, dependency policy, and validation gates.
 
 ## Open implementation parameters
 
-- Authoritative implementation language.
 - Fixed-point representations by subsystem.
 - Snapshot and journal encodings.
 - Snapshot frequency and retention.
@@ -401,3 +423,6 @@ this document.
 - Component storage implementation.
 - Parallel job system.
 - Server process and match-isolation topology.
+- Validated version of the
+  [canonical Wasmtime runtime](research/wasm-runtime-selection.md).
+- Initial coherent FS.GG dependency set.

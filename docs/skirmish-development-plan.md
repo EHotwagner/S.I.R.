@@ -2,12 +2,13 @@
 title: S.I.R. Robust Skirmish Development Plan
 status: proposed
 document-type: development-plan
-version: "0.2"
+version: "0.5"
 last-updated: 2026-07-25
 related:
   - docs/game-vision.md
   - docs/mission-lifecycle.md
   - docs/simulation-core-architecture.md
+  - docs/technology-stack.md
   - docs/wasm-control-architecture.md
   - docs/combat-resolution.md
   - docs/logistics-architecture.md
@@ -37,6 +38,29 @@ simulation path.
 Persistent accounts, portal bidding, hidden co-allocation, scheduled major
 missions, and campaign write-back are outside the first implementation
 milestone.
+
+## Implementation foundation
+
+The implementation uses F# on .NET 10 and the FS.GG framework family:
+
+- selected FS.GG.Game.Core primitives support the headless deterministic
+  simulation behind S.I.R.-owned semantic adapters;
+- FS.GG.Net supplies transport and serialization infrastructure for the public
+  protocol, whose first canonical profile is native gRPC with contract-first
+  Protobuf schemas;
+- FS.GG.Rendering supplies the canonical client's F#/MVU rendering foundation;
+  and
+- FS.GG.Audio is available for later client audio integration, whose exact use
+  is not yet canonical.
+
+The sibling FS.GG repositories support local inspection and coordinated
+development. CI and releases use an explicit coherent dependency set; a
+neighboring checkout is never consumed implicitly.
+
+The Chebyshev path-cost, cooperative footprint movement, counter-addressed
+randomness, knowledge filtering, combat phase order, and WASM host ABI remain
+S.I.R. contracts. See
+[Technology Stack and FS.GG Integration](technology-stack.md).
 
 ## Versioned mode manifest
 
@@ -289,9 +313,12 @@ requiring their implementation during skirmish development.
 
 ## Open implementation parameters
 
-- Primary implementation language and runtime libraries.
 - Authoritative server deployment topology.
-- Binary schema and network transport.
+- Exact Protobuf schema layout and compatibility window for the canonical gRPC
+  profile.
+- Validated version of the
+  [canonical Wasmtime runtime](research/wasm-runtime-selection.md).
+- Initial coherent FS.GG dependency set.
 - Initial benchmark hardware and performance headroom.
 - First maps and point-catalog contents.
 - Exact surrender, timeout, and abandonment policies.

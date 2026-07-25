@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.76"
+version: "0.81"
 last-updated: 2026-07-25
 ---
 
@@ -1529,6 +1529,51 @@ equipment changes, or other consequences back to campaign personnel or state.
   campaign state under explicit mode policies.
 - The architecture must support canonical modes without hard-coding them as the
   only possible modes or persistence policies.
+
+## Technology foundation
+
+### Established vision
+
+- S.I.R. is implemented in F# on .NET 10.
+- It uses the FS.GG framework family, whose repositories are also available as
+  sibling clones during local development.
+- FS.GG.Game supplies selected render-independent game primitives,
+  FS.GG.Net supplies network and serialization infrastructure, and
+  FS.GG.Rendering supplies the canonical client foundation.
+- S.I.R. owns its authoritative domain rules, public game protocol, knowledge
+  filtering, and the adapters required where generic framework behavior differs
+  from the canonical design.
+- Player control modules run through direct Wasmtime .NET embedding behind an
+  S.I.R.-owned adapter and restricted, versioned execution profile.
+- The first public client transport is native gRPC over HTTP/2, defined by
+  contract-first `.proto` schemas. Live play uses a bidirectional session
+  stream; browser support may be added later through a gateway or separate
+  profile.
+- The public protocol separates discovery, account, catalog, artifact, match,
+  live-session, and replay services. Live sessions have explicit sequencing,
+  acknowledgement, reconnect, snapshot, delta, and backpressure semantics.
+- The F# solution separates domain vocabulary, deterministic simulation,
+  Wasmtime hosting, match orchestration, generated protocol types, validated
+  protocol mapping, server composition, canonical client, and developer tools
+  through an acyclic project graph.
+- Local sibling checkouts do not silently determine a build. CI, releases,
+  replays, and ordinary development use an explicit coherent dependency set.
+
+### Derived implications
+
+- The generic framework's weighted diagonal path cost cannot directly define
+  S.I.R.'s equal-cost Chebyshev movement.
+- Generic sequential or splittable randomness cannot replace S.I.R.'s
+  counter-addressed authoritative samples.
+- Rendering, audio, wall-clock accumulation, sockets, and persistence remain
+  outside the deterministic match kernel.
+- A reusable capability missing from FS.GG should be proposed through its
+  owning repository and cross-repository compatibility process rather than
+  added through an untracked sibling dependency.
+
+See [Technology Stack and FS.GG Integration](technology-stack.md) for the
+canonical component boundaries, dependency policy, adapter inventory, and
+validation gates.
 
 ## Visual direction
 
