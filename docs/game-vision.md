@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.27"
+version: "0.47"
 last-updated: 2026-07-25
 ---
 
@@ -224,6 +224,12 @@ Specialized advanced classes may be introduced later as an evolution of a
 unit's permanent base class. This is a provisional extension, not permission for
 general class changes or unrestricted multiclassing.
 
+The leading direction is that a semi-random offer set is final once generated:
+the player or authorized automation must choose from that set without rerolling
+it. This has not yet been accepted as an established rule. A later retraining or
+respec system, if introduced, would modify an already selected outcome rather
+than regenerate the historical offer.
+
 ### Derived implications
 
 - Active abilities require stable machine-readable definitions available to
@@ -256,16 +262,29 @@ general class changes or unrestricted multiclassing.
 ### Established vision
 
 - The game uses a fixed time step.
+- The authoritative simulation runs at 20 ticks per second, making each fixed
+  simulation step 50 milliseconds.
 - Play is real-time.
+- Once a live match begins, the authoritative simulation advances continuously
+  at real-time speed. Players cannot pause, slow, accelerate, or otherwise
+  change simulation speed.
+- A normal match should last approximately 20 minutes from deployment to
+  resolution.
 - The game should prioritize tactical pace over heavy simulation.
 
 ### Derived implications
 
 - Gameplay results should be produced by the authoritative fixed-step
   simulation rather than rendering frame rate.
+- Client rendering may run at a different frame rate and interpolate between
+  authoritative simulation states without changing gameplay outcomes.
 - Unit-control modules should observe and act at defined simulation boundaries.
 - The fixed-step model provides a shared temporal basis for server authority,
   control-module execution, replays, debugging, and multiplayer synchronization.
+- At the target duration and tick rate, a normal match spans approximately
+  24,000 authoritative simulation ticks. Replay, storage, module metering, and
+  server-capacity designs should use that order of magnitude while supporting
+  shorter and longer scenarios.
 - Simulation detail should be included only where it creates meaningful tactical
   choices or supports comprehensible outcomes.
 
@@ -274,11 +293,16 @@ general class changes or unrestricted multiclassing.
 ### Established vision
 
 - The world is grid-based.
+- One grid cell represents 0.5 metres in each horizontal dimension.
 - Units have square footprints.
-- A typical human unit occupies a four-square base.
-- A thickness of one grid unit can represent narrow structures such as walls
-  and handrails.
+- A typical human unit occupies a contiguous 2×2-cell footprint.
+- A unit can face any of the eight compass directions: north, northeast, east,
+  southeast, south, southwest, west, or northwest.
+- A structure with thickness `1`, including a wall or handrail, occupies a full
+  grid cell rather than an edge between cells.
 - Distance uses the Chebyshev metric.
+- A typical battlefield should be approximately 512×512 cells, representing
+  256×256 metres. Individual scenarios may use smaller or larger maps.
 
 For two grid positions, Chebyshev distance is:
 
@@ -294,6 +318,12 @@ axis displacement is the same.
 - Footprint-aware placement, movement, pathfinding, line of sight, cover, and
   adjacency are foundational systems.
 - Tactical rules cannot assume that an entity occupies only one cell.
+- A typical human's 2×2-cell footprint represents 1×1 metre of occupied tactical
+  space, including body, equipment, stance, and clearance rather than literal
+  body dimensions.
+- A one-cell terrain footprint reserves a 0.5-metre spatial band for collision
+  and tactical interaction; it does not imply that every depicted wall or
+  handrail is literally 0.5 metres thick.
 - A common spatial-query model should be used across movement, targeting,
   sensing, communications, and AI to prevent inconsistent interpretations of
   range.
@@ -307,8 +337,31 @@ axis displacement is the same.
 - The authoritative server controls unit simulation.
 - Unit behavior on the server is controlled by WebAssembly modules supplied by
   players.
+- Each individual unit is controlled by its own WebAssembly module instance.
+  There is no squad-wide or force-wide module instance with direct control over
+  multiple units.
+- The player's client communicates with the WebAssembly instance at
+  headquarters. Commands propagate outward from headquarters through the
+  simulated communications hierarchy, and reports propagate back through that
+  hierarchy to headquarters and the client.
+- The game does not prescribe the semantic command-and-report protocol used
+  between a player's client and modules. Message formats, meanings, and
+  higher-level behavior are chosen by the player and client.
 - A standard control module is provided so that writing a custom module is not
   required to play.
+- The project provides an official example client/module communication protocol,
+  but custom clients and modules are not required to use it.
+- Each player account has an account-scoped library of uploaded WebAssembly
+  modules. Players may upload modules between matches, not during a live match.
+- Before a match begins, the player selects uploaded modules for the units they
+  will control.
+- The module binary and version assigned to a unit are locked when the live
+  match begins and cannot be replaced or updated during that match.
+- WebAssembly modules are specialized for a declared host class. Headquarters,
+  vehicles, and different unit classes may use different module types,
+  capability interfaces, and resource profiles.
+- Execution, memory, storage, and API usage are strictly limited. Every module
+  instance in the same host class receives the same limits.
 - Player code can handle micro-control and reactions that would be impractical
   for direct human control.
 - Moving this control close to the authoritative simulation makes network
@@ -331,8 +384,37 @@ They should support the intended distinction between:
 - autonomous execution performed by player-selected code; and
 - authoritative validation and resolution performed by the game server.
 
+### Provisional direction
+
+The effect of communication loss on previously received orders is not yet
+determined. A leading option is for the server to preserve still-valid order
+state and let the disconnected unit's WebAssembly module decide whether to
+continue, suspend, reinterpret, or abandon that order according to
+player-authored doctrine. The server would continue to enforce action validity
+and world rules.
+
 ### Derived implications
 
+- Runtime state is isolated per unit even when many units use the same module
+  binary and configuration.
+- A module can directly issue actions only for its own unit.
+- Multi-unit coordination must use player orders, common doctrine, or
+  communication paths permitted by the simulation; it cannot rely on shared
+  process memory or a privileged squad-level controller.
+- The HQ instance is a communications endpoint and participant, not a
+  privileged force-wide controller that can bypass the simulated network.
+- Module-to-module messages may use player-defined payloads, but the server
+  controls their routing, delivery eligibility, timing, and resource limits.
+- The public API must provide a stable transport envelope even though the game
+  does not define the application-level semantics of player messages.
+- Each accepted upload should become an immutable, content-addressed module
+  artifact so match configuration, validation, replays, and audits identify the
+  exact code that ran.
+- Upload validation and deployment selection are separate operations: a
+  validated artifact can be reused across units and later matches without
+  sharing runtime state between its instances.
+- Locking deployed code does not freeze runtime state: modules may continue to
+  process permitted messages and change their internal state during the match.
 - The server must treat every player-provided module as untrusted.
 - Modules require deterministic or otherwise tightly specified execution
   semantics, resource limits, capability restrictions, versioning, and a stable
@@ -342,7 +424,13 @@ They should support the intended distinction between:
 - The server, not a control module, must validate actions and determine their
   results.
 - Compute budgets are part of competitive fairness. A module cannot gain an
-  advantage merely by consuming more server resources.
+  advantage merely by consuming more server resources, and two instances in the
+  same host class cannot receive different budgets.
+- Host-class resource profiles must be authoritative, versioned ruleset data.
+  Distinct profiles must correspond to actual game roles or capabilities rather
+  than account privileges or server purchasing power.
+- Module validation must reject binaries that target an incompatible host-class
+  interface.
 - The standard module is a major part of the game experience and balance
   baseline, not placeholder sample code.
 - Custom control logic creates a player-authored doctrine layer that may become
@@ -390,6 +478,20 @@ When a previously observed hostile unit is no longer observable through the
 player's currently available information, the canonical client removes it
 entirely. It does not retain a last-known marker or ghost representation.
 
+### Provisional report model
+
+Observation reporting should follow fixed, authoritative game rules rather than
+letting a unit's WebAssembly module decide which authoritative observations
+exist. These rules determine which local observations generate reports and
+whether those reports are immediate, summarized, delayed, lost, or retained for
+later delivery.
+
+Fixed observation reports are distinct from the player-defined command and
+message protocol. Modules may use custom messages for doctrine and coordination,
+but they cannot suppress, invent, or modify authoritative report facts. The
+client remains responsible for presenting and interpreting delivered reports;
+fixed report rules do not imply fixed certainty categories in the interface.
+
 ### Derived implications
 
 - Fog of war is a knowledge system rather than a simple visibility mask.
@@ -416,9 +518,18 @@ entirely. It does not retain a last-known marker or ghost representation.
 - Communication range constrains contact between squad members and their leader.
 - Communication range constrains contact between squad leaders and the player or
   headquarters.
+- Control modules cannot communicate through a privileged out-of-world
+  backchannel. Their messages follow the simulated communications topology:
+  client to HQ, HQ to squad leaders, squad leaders to members, and the reverse
+  path for reports.
+- The payload protocol used across those links is player-defined rather than a
+  fixed gameplay protocol.
 - Headquarters connectivity depends on an operational communications device
   carried by the acting leader or another appropriate unit.
 - Electronic warfare is an important part of play.
+- The communications architecture must support electronic-warfare effects that
+  cause disconnection, degrade range, delay messages or reports, intercept
+  traffic, and inject false information.
 
 ### Derived implications
 
@@ -434,6 +545,13 @@ Communications form a dynamic tactical network. Its state influences:
 Electronic warfare should consequently affect gameplay at the command and
 information layers, not exist only as a numeric combat modifier.
 
+Not every electronic-warfare capability must produce every effect. Individual
+equipment, abilities, environmental conditions, or magical effects may use
+subsets of the supported disruption model. Interception and false-information
+effects require explicit attribution, authorization, and knowledge-state rules
+so they cannot expose authoritative world truth or become indistinguishable from
+server corruption.
+
 If a leader is lost, player-provided WASM logic determines local succession.
 Succession does not create a communications device. A prepared second-in-command
 may already carry a redundant device; otherwise, a unit must physically recover
@@ -448,13 +566,46 @@ to headquarters.
   simulation-heavy.
 - Positioning should have very high importance.
 - Stealth, flanking, and ambushes should provide meaningful advantages.
+- Awareness is strongly directional. A unit perceives most effectively in its
+  forward direction, with reduced awareness toward its sides and rear.
 - Player-controlled automation permits strong, decisive contextual effects.
 - Attacks from behind and executions are examples of such effects.
+- Door Kickers 2 is a primary qualitative reference for the combat, reaction,
+  facing, and awareness model.
+
+### Reference boundary
+
+The intended reference is Door Kickers 2's emphasis on readable sightlines,
+deliberate facing and aim direction, autonomous reactions, reaction timing,
+coordinated movement, surprise, and rapidly lethal close engagements. These
+features make preparation and the direction from which contact occurs matter as
+much as raw weapon power.
+
+S.I.R. does not inherit every surrounding Door Kickers 2 rule. In particular,
+S.I.R. remains grid-based, runs continuously without pause, operates at a much
+larger force scale, and delegates detailed execution to per-unit WebAssembly
+modules. The reference describes the desired tactical relationships and combat
+feel, not the control interface or spatial simulation.
+
+See [Combat, Reaction, and Awareness Reference Models](research/combat-awareness-models.md)
+for the maintained comparison and adaptation notes.
+
+### Provisional direction
+
+Relative position and awareness should be distinct, cumulative tactical factors.
+Attacking through a target's rear arc can grant an increased effect, and
+attacking while the target is unaware can grant an additional increased effect.
+Combining rear position with lack of awareness should produce the strongest
+outcome and may create an execution opportunity. Exact effects, eligibility,
+counterplay, and lethality require prototyping.
 
 ### Derived implications
 
-- Facing, awareness, exposure, and relative position may be as important as raw
+- Facing, awareness, exposure, and relative position can be as important as raw
   weapon statistics.
+- The exact forward cone, peripheral zones, rear coverage, and effects of
+  sensors, stance, movement, suppression, and unit class require tactical
+  prototyping.
 - An unaware or poorly positioned force can be defeated quickly.
 - Scouting and communication failures can directly create lethal openings.
 - Tactical effects must be discoverable by control modules through the official
@@ -468,6 +619,8 @@ to headquarters.
 
 - Logistics plays an important role.
 - Logistics disruption should create interesting gameplay.
+- The core logistics model includes ammunition, fuel, energy, medical supplies,
+  food, magical resources, replacement personnel, and spare parts.
 - Routine logistical control should be handled substantially by AI or code so
   that it does not become drudgery for the player.
 
@@ -484,6 +637,11 @@ allocation, and responses to disruption.
   excessive manual inventory handling.
 - Supply availability can shape operational capability and make reconnaissance,
   interdiction, escort, raiding, and area control meaningful.
+- These logistics categories do not all need identical storage, transport, or
+  consumption rules. Replacement personnel in particular remain persistent
+  individuals rather than a fungible numeric commodity.
+- The exact subtypes, unit scales, containers, transfer rates, consumption
+  rules, and abstraction level require a dedicated logistics model.
 - Control modules may need logistics-related observations and intentions, while
   the authoritative server retains ownership of resources and transfers.
 - Logistics and communications together can create battles about networks and
@@ -498,6 +656,11 @@ allocation, and responses to disruption.
 - The project provides a canonical client.
 - Anyone may develop an alternative client.
 - The game is licensed under the GNU Affero General Public License (AGPL).
+- The authoritative server implementation is part of the AGPL-licensed project,
+  not a closed-source service separate from the released game.
+- Independent third-party servers are encouraged, but they are not a supported
+  compatibility target that obligates the canonical project to spend
+  development or operational resources on them.
 - The game supports multiple modes involving player-versus-environment,
   player-versus-player, and cooperative play.
 - The main mode has persistent personnel whose progression carries across
@@ -525,6 +688,12 @@ lifecycle. Because the project is open source, third-party servers and
 derivatives may define additional modes, campaign structures, persistence
 policies, and reset schedules beyond the canonical offering.
 
+Third-party operators may reuse, modify, and deploy the released server under
+the project's license. They are responsible for their own deployment,
+operations, modifications, compatibility, and migration work. Public
+documentation should make independent use practical, but no compatibility,
+support, uptime, federation, or migration guarantee is implied.
+
 ### Additional competitive modes
 
 Dedicated PvP duels and skirmishes are an intended direction. These modes should
@@ -549,6 +718,11 @@ equipment changes, or other consequences back to campaign personnel or state.
   identities and permissions distinct from those of an active player.
 - Licensing of dependencies and linked or distributed components must remain
   compatible with the intended AGPL release.
+- Server build, configuration, deployment, migration, and API documentation must
+  be sufficient to make the released server source usable and auditable.
+- Canonical APIs and rulesets should be clearly versioned for the canonical
+  service's own evolution; this does not require preserving compatibility with
+  independently modified servers.
 - Persistence, roster eligibility, progression write-back, and balance policy
   must be explicit properties of each game mode.
 - The public API must expose the active mode and ruleset so canonical and custom
@@ -648,34 +822,17 @@ guide subsequent design:
 These questions are recorded for later development and do not block the current
 vision:
 
-1. Does “a typical human has a four-square base” mean a 2×2-cell footprint?
-2. Does “one thickness” mean exactly one grid cell, and are walls and handrails
-   represented as occupied cells or as edges between cells?
-3. What is the simulation tick duration?
-4. Is real-time play continuous, or can the player pause, slow time, or plan
-   while the simulation advances?
-5. At what scope does a WebAssembly module operate: individual unit, squad,
-   player force, or a combination?
-6. How are modules submitted, selected, updated, and versioned for a match?
-7. What execution time, memory, storage, and API limits apply to modules?
-8. Can modules communicate directly with one another, or only through simulated
-   in-world communications?
-9. What happens to existing orders when communication is lost?
-10. Which observations are transmitted immediately, summarized, delayed, lost,
-    or stored for later delivery?
-11. Can communications be relayed through units, vehicles, infrastructure,
+1. What precise authority does a unit's WebAssembly policy have over existing
+   orders after communication is lost?
+2. What are the exact fixed rules determining which observations become
+   reports and whether they are immediate, summarized, delayed, lost, or stored
+   for later delivery?
+3. Can communications be relayed through units, vehicles, infrastructure,
     drones, magic, or deployable equipment?
-12. Does electronic warfare cause binary disconnection, degraded range, delay,
-    false information, interception, or several of these effects?
-13. How are unit facing, awareness, surprise, attacks from behind, and
-    executions defined?
-14. What resources constitute logistics: ammunition, energy, fuel, medical
-    supplies, food, magical resources, replacements, or others?
-15. What is the expected match length and physical battlefield scale?
-16. Is server implementation part of the AGPL-distributed project, and are
-    third-party servers intended to be supported?
-17. Can a player reroll or replace a semi-random progression offer, and if so,
-    what time, training, or resource constraint limits that correction?
+4. What exact directional-awareness zones, rear-attack effects, and unawareness
+   thresholds produce surprise and execution opportunities?
+5. Should the provisional rule that semi-random offer sets cannot be rerolled
+   become final?
 
 ## Future derived documents
 
