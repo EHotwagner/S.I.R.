@@ -2,7 +2,7 @@
 title: Attribute, Skill, and Progression Systems
 status: proposed
 document-type: research
-version: "0.19"
+version: "0.20"
 last-updated: 2026-07-25
 related:
   - docs/game-vision.md
@@ -909,7 +909,18 @@ When a leader reaches a draft milestone, offer three options:
    pool.
 
 The player chooses one. A costly retraining process can later replace a perk, but
-cannot reroll repeatedly until the perfect result appears.
+does not regenerate the historical offer set.
+
+### Provisional reroll policy
+
+The current leading direction is no rerolls. Once the server generates a
+semi-random offer set, the player or authorized automation chooses from that
+set. This preserves adaptation and prevents resources or repeated requests from
+converting bounded randomness into deterministic optimization.
+
+The policy is not yet established. If later testing demonstrates a need for
+error recovery, retraining or respec should alter a previously selected outcome
+rather than reroll the original offer until a preferred option appears.
 
 ## Multiplayer requirements
 
@@ -1043,8 +1054,8 @@ Before accepting a progression architecture, determine:
 3. Whether one account may participate in both overlapping campaign cohorts.
 4. The exact boundary between progression-unlocked active abilities and actions
    granted or enabled by equipment, doctrine, magic, and control software.
-5. Whether semi-random progression offers are final or can be replaced through a
-   limited reroll, training, or resource mechanism.
+5. Whether to accept the provisional no-reroll rule for semi-random offer sets,
+   independently of any later retraining or respec policy.
 
 ## Sources
 
