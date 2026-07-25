@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.63"
+version: "0.76"
 last-updated: 2026-07-25
 ---
 
@@ -418,6 +418,10 @@ than regenerate the historical offer.
 - Client rendering may run at a different frame rate and interpolate between
   authoritative simulation states without changing gameplay outcomes.
 - Unit-control modules should observe and act at defined simulation boundaries.
+- The 20 Hz simulation rate does not require every unit-control instance to run
+  substantial decision logic on every tick. Scheduled wake-ups and
+  authoritative event delivery allow inactive instances to remain dormant while
+  movement and combat resolution continue.
 - The fixed-step model provides a shared temporal basis for server authority,
   control-module execution, replays, debugging, and multiplayer synchronization.
 - At the target duration and tick rate, a normal match spans approximately
@@ -426,6 +430,126 @@ than regenerate the historical offer.
   shorter and longer scenarios.
 - Simulation detail should be included only where it creates meaningful tactical
   choices or supports comprehensible outcomes.
+- Performance tests must distinguish unique artifact compilation, per-unit
+  instance execution, observation transfer, instruction use, and host-service
+  cost rather than assigning one assumed duration to a generic “WASM call.”
+- The authoritative simulation kernel is isolated from networking, databases,
+  rendering, wall-clock queries, operating-system randomness, and other
+  operational state.
+- Authoritative gameplay uses integer ticks and grid coordinates, fixed-point
+  values where fractions are required, explicit rounding, and deterministic
+  counter-addressed randomness.
+- Caches, spatial indexes, client projections, rendering state, and compilation
+  caches are derived state. They can be rebuilt and cannot alter authoritative
+  outcomes.
+- External inputs receive authoritative target ticks and stable ordering before
+  entering the match journal; clients cannot assign processing priority or
+  insert inputs into committed ticks.
+- Tick phases calculate keyed candidates or deltas from stable state and commit
+  resolved batches. Hash-map order, thread completion, and storage index cannot
+  determine gameplay.
+
+## Action timing and tick resolution
+
+### Established action lifecycle
+
+Every time-consuming action uses an explicit integer-tick lifecycle:
+
+```text
+start
+  → preparation
+  → commitment
+  → resolution
+  → recovery
+```
+
+Movement transitions, attacks, spellcasting, reloads, stance changes,
+interactions, medical actions, and other activities use this common lifecycle
+while defining their own durations, commitment points, costs, interruption
+rules, and recovery periods.
+
+Actions that complete on different ticks resolve chronologically. Actions that
+complete on the same tick use simultaneous completion:
+
+- outcomes are evaluated from a stable common pre-resolution state;
+- results are applied as a batch after those outcomes have been calculated;
+- unit iteration order, player identity, module scheduling, and server thread
+  order cannot decide which same-tick action happened first;
+- mutual hits, mutual incapacitations, mutual kills, and other reciprocal
+  outcomes are valid; and
+- an effect applied on a tick cannot retroactively cancel an opposing action
+  that also completed on that tick.
+
+To interrupt an action before it resolves, the interrupting effect must resolve
+on an earlier tick. If both the action and the would-be interruption resolve on
+the same tick, the original action still produces its calculated outcome before
+the batched consequences are applied.
+
+### Canonical tick pipeline
+
+The authoritative simulation processes each tick through the following logical
+stages:
+
+1. Deliver events, messages, reports, and observations available at the tick
+   boundary.
+2. Wake scheduled or event-triggered WASM instances.
+3. Accept and validate new action requests.
+4. Advance active actions and deterministic movement credit.
+5. Collect movement transitions and other actions completing on this tick.
+6. Resolve spatial conflicts and action outcomes from stable snapshots.
+7. Apply damage, suppression, healing, resource expenditure, and other
+   simultaneous results.
+8. Resolve resulting incapacitation, death, cancellation of future actions,
+   leadership succession, magical breaches, and other consequence chains.
+9. Generate perception, communication, and report events made available by the
+   resulting state.
+10. Commit the completed tick for replay, audit, persistence, and transmission.
+
+These are authoritative logical phases, not permission to expose hidden
+intermediate state to clients or modules. Implementations may parallelize work
+inside a phase only when doing so produces exactly the same deterministic
+result.
+
+Movement and attacks that complete on the same tick both resolve. The server
+uses the movement source, destination, and swept transition envelope when
+evaluating the interaction. The exact weapon-specific targeting rule remains to
+be defined, but damage is applied only after the movement and attack outcomes
+have been calculated. A mover incapacitated by that batch normally falls at its
+committed destination because its movement transition also completed.
+
+### Reactions
+
+A reaction is an ordinary timed action created in response to an authoritative
+trigger:
+
+```text
+trigger becomes locally observable
+  → reaction opportunity
+  → local WASM instance wakes
+  → reaction request
+  → reaction delay
+  → reaction resolves
+```
+
+No reaction resolves in zero simulation time. Prepared states such as covering a
+sector, guarding a doorway, or overwatch can reduce reaction delay, but cannot
+eliminate the action lifecycle or retroactively affect an earlier tick.
+
+This permits:
+
+- a fast reaction to interrupt an action that would resolve on a later tick;
+- equally timed combatants to affect one another simultaneously;
+- awareness, surprise, suppression, stance, facing, preparation, injuries, and
+  leadership to modify reaction timing;
+- an ambusher to exploit readiness and information advantage without receiving
+  arbitrary processing priority; and
+- precise player-authored reaction policies without requiring continuous human
+  micro-control.
+
+If a spell and incoming damage complete on the same tick, the spell can produce
+its calculated result before damage consequences are applied. That damage can
+then lower current HP below accumulated strain and trigger an immediate breach
+during the consequence stage.
 
 ## Space, geometry, and distance
 
@@ -434,6 +558,8 @@ than regenerate the historical offer.
 - The world is grid-based.
 - One grid cell represents 0.5 metres in each horizontal dimension.
 - Units have square footprints.
+- Every unit footprint is an axis-aligned `N×N` square in grid cells. Units do
+  not use elongated or rectangular authoritative bases.
 - A typical human unit occupies a contiguous 2×2-cell footprint.
 - A unit can face any of the eight compass directions: north, northeast, east,
   southeast, south, southwest, west, or northwest.
@@ -457,6 +583,9 @@ axis displacement is the same.
 - Footprint-aware placement, movement, pathfinding, line of sight, cover, and
   adjacency are foundational systems.
 - Tactical rules cannot assume that an entity occupies only one cell.
+- A unit's occupied cells are invariant under its eight possible facing
+  directions. Turning changes orientation-dependent rules but does not rotate,
+  expand, shrink, or otherwise replace the authoritative square footprint.
 - A typical human's 2×2-cell footprint represents 1×1 metre of occupied tactical
   space, including body, equipment, stance, and clearance rather than literal
   body dimensions.
@@ -468,6 +597,196 @@ axis displacement is the same.
   range.
 - Thin terrain features need explicit rules for traversal, collision, sight,
   projectiles, cover, and destruction.
+- The discrete spatial model makes many line-of-sight, visibility, reachability,
+  and pathfinding inputs enumerable and therefore suitable for caching,
+  precomputation, or incremental reuse.
+- Square, facing-invariant bases avoid the ambiguous or oversized diagonal
+  occupancy produced by rotating elongated units on a square grid. Pathfinding
+  clearance and collision therefore depend on base size without requiring a
+  separate rotated footprint for each facing.
+
+Facing may still affect firing arcs, observation, directional armor, access
+points, animations, and action timing. Those systems reference orientation
+without changing which cells the unit occupies. A visual model that appears
+elongated must still fit within or be an abstraction of its authoritative square
+base.
+
+### Discrete movement representation
+
+Authoritative unit positions remain cell-aligned. At every simulation tick, a
+unit occupies one complete `N×N` footprint anchored to a grid cell. A unit never
+has an arbitrary sub-cell authoritative position.
+
+Movement is a transition between adjacent anchor cells:
+
+```text
+tick t:     footprint anchored at (x, y)
+tick t + 1: footprint anchored at (x + dx, y + dy)
+
+where dx and dy are each -1, 0, or 1
+```
+
+Orthogonal and diagonal transitions consume the same movement distance under
+the Chebyshev metric. Speed is represented through deterministic fixed-point
+movement credit. A unit crosses a cell boundary only when it has sufficient
+credit; speeds that do not divide evenly into 20 simulation ticks distribute
+their transitions deterministically over time rather than introducing
+floating-point positions.
+
+Before committing a transition, the server validates the full area swept by the
+square base between its source and destination. This transition envelope:
+
+- prevents diagonal corner cutting;
+- respects terrain and unit collision;
+- supplies the space-time claim used by movement reservations; and
+- remains distinct from the `N×N` footprint occupied at either tick state.
+
+Client rendering interpolates between committed tick positions for visual
+smoothness. Interpolation does not affect collision, line of sight, cover,
+range, targeting, or any other authoritative result.
+
+Unit combat and perception use committed tick states. The exact within-tick
+ordering of movement, perception changes, reactions, and action resolution must
+be fixed and public. Fast projectiles and other effects that can cross several
+cells in one tick use swept authoritative tests; this does not introduce
+continuous unit positions.
+
+### Spatial-query caching direction
+
+The grid is not only a presentation or movement constraint; it is a performance
+architecture advantage. Cells, square footprints, eight possible facings,
+discrete terrain states, and a finite set of movement and sensor profiles
+produce stable query keys.
+
+Candidate cached structures include:
+
+- static line traces and visibility relationships between cells;
+- facing-dependent visibility or firing sectors;
+- clearance and traversability by square footprint size and movement profile;
+- connected regions, choke points, gateways, and hierarchical navigation data;
+- reusable local paths or path segments;
+- distance and influence fields;
+- cover relationships and exposure directions; and
+- sensor, communication, and effect-area masks where their rules use the same
+  discrete geometry.
+
+Complete all-pairs path or visibility tables are not automatically appropriate:
+a 512×512-cell battlefield has too many cell pairs for naive universal caching.
+The implementation should combine static precomputation, bounded or
+on-demand caches, hierarchical representations, and incremental recomputation
+according to the query type.
+
+Static and dynamic state must be separated. Permanent map geometry can use
+long-lived data keyed by map and ruleset version. Doors, destruction, smoke,
+temporary magical effects, deployable cover, and moving units require explicit
+spatial revision identifiers and localized invalidation. A cached result is
+valid only for the geometry, occupancy, stance, height, facing, movement
+profile, sensor profile, and ruleset inputs declared by that query.
+
+Caching is an implementation optimization rather than a change to authoritative
+rules. Cached and uncached evaluation must return the same deterministic result.
+Servers, canonical clients, alternative clients, and WASM-facing services may
+use different internal cache strategies, but they may not derive different
+visibility or movement truth from them.
+
+Authoritative caches may contain complete world geometry, but query responses
+to clients and unit-control modules remain constrained by the requester's
+knowledge. A pathfinding or visibility service must not reveal an unseen door,
+unit, destroyed wall, magical obstruction, or other hidden state through its
+result, failure reason, timing, invalidation event, or cache metadata.
+
+### Cooperative friendly movement
+
+Friendly units use hard authoritative collision with cooperative planning.
+Their occupied footprints cannot overlap at a committed simulation state, but
+the movement system treats friendly units as moving reservations rather than
+permanent obstacles.
+
+The canonical rules are:
+
+- a moving unit reserves its complete footprint over a bounded future movement
+  horizon;
+- movement and collision validation run on authoritative simulation ticks;
+- friendly reservation chains may allow a following unit to enter space that a
+  leading unit is guaranteed to vacate, provided the time-ordered swept
+  envelopes do not conflict;
+- a unit can route around, slow, wait, replan, or move into a legal holding
+  position to resolve friendly traffic;
+- player orders and WASM policies can express movement priority and willingness
+  to yield, while the server remains the final arbiter;
+- equal-priority conflicts use a deterministic, replay-stable tie-breaker that
+  does not permanently privilege one unit;
+- movement across or through another unit is prohibited when the units' swept
+  footprints intersect, including an otherwise instantaneous same-tick
+  position swap;
+- a corridor only wide enough for one unit's authoritative footprint does not
+  permit two such units to pass; one must wait or retreat to a legal wider
+  position;
+- the server detects persistent waits and reservation cycles, then selects a
+  legal unit to yield, move to a holding position, or replan;
+- if no legal resolution exists, affected units stop and report the blockage;
+  and
+- an explicit coordinated displacement can ask a friendly unit to step aside or
+  exchange positions, but it consumes movement time, requires valid space, and
+  never permits overlap.
+
+Friendly units do not ghost through one another, involuntarily push one another,
+or temporarily shrink their authoritative footprints to pass. These shortcuts
+would undermine formations, doorways, corridors, congestion, cover, and
+positioning.
+
+Cooperative resolution is a server movement service, not an implicit
+communication channel between control modules. It may arbitrate already
+submitted movement intents and return locally legitimate results, but it cannot
+share observations, orders, destinations, or hidden state that the units could
+not exchange through the simulated information network.
+
+Friendly transitions are resolved as a reservation dependency set rather than
+by iterating units in identifier order. Valid convoy movement can therefore
+advance coherently, while cycles, swaps, and intersecting swept envelopes remain
+blocked or are broken through deterministic yielding.
+
+Full multi-agent pathfinding does not run for every unit on every 20 Hz tick.
+Units consume short-horizon reservations at simulation frequency, while route
+generation, local avoidance, reservation extension, and replanning are bounded,
+staggered, or event-driven. The implementation should combine cached
+hierarchical routes with local space-time reservations so traffic handling does
+not scale as a new whole-map cooperative search every 50 milliseconds.
+
+### Hostile collision and simultaneous contact
+
+Enemy units never participate in cooperative reservations with one another.
+Known hostile footprints can inform locally legitimate planning, but hostile
+future movement intentions are neither shared nor reserved across sides. Hidden
+hostiles remain absent from an opponent's planning state until revealed through
+authoritative observation or physical contact.
+
+The server collects movement transitions due on a tick and resolves their
+footprints and swept envelopes together. Hostile conflicts use symmetric hard
+resolution:
+
+- a moving unit cannot enter a footprint occupied by a stationary hostile;
+- direct hostile position swaps are prohibited;
+- if two hostile transitions attempt to claim overlapping destination
+  footprints or intersecting swept envelopes, neither transition receives
+  arbitrary unit-identifier priority; both remain at their last legal anchors;
+- a unit cannot follow into a hostile's source footprint on the same tick that
+  the hostile vacates it; it can attempt the transition on a later tick; and
+- hostile units cannot push, displace, ghost through, or negotiate an automatic
+  yield with one another.
+
+A movement failure caused by an unknown hostile generates only the contact or
+obstruction information authorized by the observation rules. It must not reveal
+the hostile through an advance path query, reservation response, timing
+difference, cache event, or detailed failure reason before contact legitimately
+occurs.
+
+Physical hostile contact can trigger perception, reaction, close-combat, or
+engagement events according to the combat rules, but collision alone does not
+silently resolve an attack. If opposing units block one another in terrain too
+narrow to pass, they must stop, withdraw, attack, suppress, displace, or use
+another legal route. This is intended tactical congestion rather than a
+pathfinding error.
 
 ## Command model and programmable control
 
@@ -479,6 +798,16 @@ axis displacement is the same.
 - Each individual unit is controlled by its own WebAssembly module instance.
   There is no squad-wide or force-wide module instance with direct control over
   multiple units.
+- A single uploaded module artifact can be assigned to any number of eligible
+  units. The server compiles that immutable artifact once for a compatible
+  runtime and host-class interface, then reuses the compiled code across all of
+  its per-unit instances.
+- Every unit retains isolated runtime state, memory, observations, inputs, and
+  outputs even when many units execute the same compiled module artifact.
+- Internal scheduling may group evaluations of units using the same artifact
+  for locality and throughput, but this batching is not visible to player code.
+  A module invocation receives only one unit's permitted context and cannot use
+  batching to inspect or coordinate other instances.
 - The player's client communicates with the WebAssembly instance at
   headquarters. Commands propagate outward from headquarters through the
   simulated communications hierarchy, and reports propagate back through that
@@ -501,6 +830,19 @@ axis displacement is the same.
   capability interfaces, and resource profiles.
 - Execution, memory, storage, and API usage are strictly limited. Every module
   instance in the same host class receives the same limits.
+- Instruction execution and host-service use are metered separately so an
+  inexpensive decision cannot conceal unbounded pathfinding, visibility,
+  allocation, messaging, or other server work behind host calls.
+- WASM instruction execution uses a deterministic fuel allowance per
+  invocation. Instances of the same host class receive the same public
+  allowance, unused fuel does not accumulate, and shared compiled code does not
+  create a shared fuel pool.
+- Fuel exhaustion, trapping, or malformed output makes an invocation fail
+  atomically without applying partial requests. Previously accepted
+  authoritative actions are not retroactively removed.
+- A module does not need to perform substantial work on every simulation tick.
+  It can request a future wake-up tick, while authoritative events can wake it
+  earlier when its local situation requires a decision.
 - Player code can handle micro-control and reactions that would be impractical
   for direct human control.
 - Moving this control close to the authoritative simulation makes network
@@ -534,6 +876,9 @@ and world rules.
 
 ### Derived implications
 
+- “Module” must be disambiguated in APIs and documentation: an uploaded
+  **artifact** is immutable shared code, while an **instance** is one unit's
+  isolated execution state.
 - Runtime state is isolated per unit even when many units use the same module
   binary and configuration.
 - A module can directly issue actions only for its own unit.
@@ -552,6 +897,9 @@ and world rules.
 - Upload validation and deployment selection are separate operations: a
   validated artifact can be reused across units and later matches without
   sharing runtime state between its instances.
+- Validation, compilation, compatible-code caching, and instance preparation
+  occur before live match execution. The authoritative simulation does not
+  repeatedly compile the same artifact for each assigned unit or tick.
 - Locking deployed code does not freeze runtime state: modules may continue to
   process permitted messages and change their internal state during the match.
 - The server must treat every player-provided module as untrusted.
@@ -565,6 +913,19 @@ and world rules.
 - Compute budgets are part of competitive fairness. A module cannot gain an
   advantage merely by consuming more server resources, and two instances in the
   same host class cannot receive different budgets.
+- Observation and command exchange should use stable, bounded buffers and avoid
+  per-tick serialization and allocation where the selected ABI permits.
+- Expensive shared spatial work, including authoritative pathfinding and
+  visibility evaluation, belongs in deterministic cached server services rather
+  than being independently recomputed by every module instance. Access remains
+  knowledge-filtered, capability-limited, and separately metered.
+- The scheduler should process instances that share compiled code in locality-
+  friendly groups while preserving per-unit knowledge, state, budget, and
+  output isolation.
+- Scheduled sleeping is an optimization, not immunity from the simulation.
+  Damage, observations, messages, order arrival, obstruction, action completion,
+  communication changes, and other subscribed authoritative events can make an
+  instance runnable before its requested wake-up tick.
 - Host-class resource profiles must be authoritative, versioned ruleset data.
   Distinct profiles must correspond to actual game roles or capabilities rather
   than account privileges or server purchasing power.
@@ -574,6 +935,177 @@ and world rules.
   baseline, not placeholder sample code.
 - Custom control logic creates a player-authored doctrine layer that may become
   one of the game's defining forms of mastery.
+
+See [WebAssembly Control Architecture](wasm-control-architecture.md) for the
+canonical invocation, ABI, capability, sandbox, fuel, host-service, messaging,
+and development-tooling contracts.
+
+## Perception, acquisition, and awareness
+
+### Canonical perception pipeline
+
+Perception is resolved as four distinct processes:
+
+```text
+geometry
+  → stimulus
+  → acquisition
+  → reaction
+```
+
+These are authoritative simulation processes, not mandatory player-facing
+certainty categories.
+
+#### Geometry
+
+The geometry layer deterministically determines whether and how a sensing path
+exists. Relevant inputs include:
+
+- observer and target footprints;
+- observation origins and target exposure points;
+- range and directional sensor arcs;
+- facing and attention direction;
+- terrain, doors, cover, smoke, and other occluders;
+- unit stance and height;
+- intervening units and effects; and
+- the sensor modality being evaluated.
+
+For multi-cell units, line of sight operates between defined observation origins
+and target exposure points rather than treating each unit as a dimensionless
+point. Seeing an exposed part of a footprint can begin acquisition; the amount
+and direction of exposure can subsequently affect acquisition, targeting, and
+cover.
+
+Geometry establishes physical opportunity. It does not by itself mean that the
+observer noticed, localized, identified, or reacted to the target.
+
+#### Stimulus
+
+Sensors produce factual stimuli appropriate to their modality. Stimuli can
+include:
+
+- optical shape or movement;
+- muzzle flash;
+- sound and approximate direction;
+- thermal signature;
+- radar return;
+- electronic emission;
+- magical signature; and
+- physical contact.
+
+A stimulus reveals only the facts supported by its source and the applicable
+rules. Hearing a weapon does not automatically identify its user or reveal exact
+coordinates.
+
+#### Acquisition
+
+Acquisition represents the time required to turn available stimuli into
+actionable local observations. It accumulates over simulation ticks according
+to authoritative inputs such as:
+
+```text
+sensor effectiveness
+× target signature
+× exposed amount
+× attention and facing
+× environmental and status modifiers
+```
+
+The actual function need not be a literal multiplication, but its inputs and
+result must be deterministic, versioned, and inspectable. Acquisition progress
+belongs to a specific observer, target or stimulus, sensor, and contact episode.
+
+When exposure or stimulus ends, progress decays according to explicit rules
+rather than resetting instantly. This prevents one-tick boundary crossing from
+erasing all accumulated awareness and supports coherent reacquisition.
+
+Crossing an acquisition threshold emits the factual observation fields earned
+by that interaction. It does not automatically reveal the target's complete
+authoritative state.
+
+#### Reaction
+
+An actionable local observation creates a reaction opportunity under the
+canonical timed-action model:
+
+```text
+acquisition completes
+  → local observation is delivered
+  → unit WASM instance wakes
+  → reaction is requested
+  → reaction delay elapses
+  → reaction resolves
+```
+
+Acquisition time and reaction time are separate. A unit can notice a threat
+before it has turned, aimed, changed stance, or otherwise become ready to act.
+
+### Facing and attention
+
+The simulation distinguishes:
+
+- **body facing**, the unit's physical orientation; and
+- **attention direction**, where the unit is actively looking, aiming, sensing,
+  or concentrating.
+
+Both use the eight canonical compass directions. They can coincide or differ,
+allowing behavior such as strafing while watching an opening or withdrawing
+while maintaining rearward attention.
+
+An attended forward sector provides the strongest ordinary acquisition and
+reaction performance. Side and rear relationships impose progressively
+different limitations unless equipment, sensors, anatomy, magic, or another
+explicit capability changes them. Exact sector shapes and modifiers remain
+prototype parameters.
+
+### Observation facts
+
+The server exposes factual observations rather than requiring universal labels
+such as “suspected,” “confirmed,” or “uncertain.” Depending on what was actually
+observed, a local observation or delivered report can contain:
+
+- observation time;
+- observer, sensor, and provenance;
+- exact or bounded location;
+- visible footprint or silhouette;
+- facing and current action when perceptible;
+- identification glyph and HP when the applicable rules reveal them;
+- observable equipment, effects, and status; and
+- sound, emission, or stimulus direction.
+
+The human player, client, and player-provided code decide how to store,
+interpret, prioritize, and present those facts. A module can maintain its own
+memory, but cannot obtain later world truth merely because it remembers an
+earlier observation.
+
+### Derived tactical relationships
+
+- Geometric line of sight does not guarantee immediate awareness.
+- Watching the correct direction reduces acquisition and reaction delay.
+- Stealth can alter time to acquisition rather than relying only on binary
+  invisibility.
+- Flanking and rear approaches reduce the target's opportunity to acquire and
+  react.
+- Loud, bright, electronic, thermal, or magical actions can reveal bounded
+  information without visual contact.
+- Different sensor modalities can reveal different factual properties without
+  granting omniscience.
+- Local control code can respond to local observations without waiting for a
+  round trip through headquarters.
+- Strong awareness and reaction advantages may be decisive, but the causal
+  observations and timings must remain explainable through the API and replay.
+
+### Prototype parameters
+
+The following are intentionally not yet canonical:
+
+- exact forward, side, and rear sector shapes;
+- acquisition rates and thresholds;
+- the decay and reacquisition curve;
+- the visibility sample points used by each footprint and stance;
+- whether a contact episode receives a small replay-stable hidden variation in
+  its acquisition threshold; and
+- the exact facts revealed by each sensor and identification capability.
 
 ## Player knowledge and fog of war
 
@@ -711,6 +1243,21 @@ to headquarters.
 - Attacks from behind and executions are examples of such effects.
 - Door Kickers 2 is a primary qualitative reference for the combat, reaction,
   facing, and awareness model.
+- Ranged weapons use authoritative physical shot traces rather than resolving
+  only as an abstract hit roll against a selected target.
+- Cover is external grid geometry that can block, mitigate, be penetrated by, or
+  be damaged by an attack.
+- Armor resolves after physical contact and before HP damage. It can depend on
+  impact direction, coverage, damage type, penetration, and integrity.
+- HP represents immediate ability to remain functional, while discrete wounds
+  represent meaningful lasting consequences.
+- Reaching zero HP normally causes incapacitation rather than unconditional
+  immediate death.
+- Suppression is an accumulating tactical state distinct from HP damage.
+- Friendly units, civilians, and protected entities receive no immunity from
+  otherwise valid traces or areas of effect.
+- Executions are deliberate, timed, interruptible actions with strict
+  eligibility rather than automatic rear-attack damage multipliers.
 
 ### Reference boundary
 
@@ -728,6 +1275,10 @@ feel, not the control interface or spatial simulation.
 
 See [Combat, Reaction, and Awareness Reference Models](research/combat-awareness-models.md)
 for the maintained comparison and adaptation notes.
+
+See [Combat Resolution Architecture](combat-resolution.md) for the canonical
+attack, cover, armor, HP, wound, suppression, friendly-fire, and execution
+pipeline.
 
 ### Provisional direction
 
@@ -762,6 +1313,20 @@ counterplay, and lethality require prototyping.
   food, magical resources, replacement personnel, and spare parts.
 - Routine logistical control should be handled substantially by AI or code so
   that it does not become drudgery for the player.
+- Logistics uses three layers: aggregated campaign stockpiles, a committed
+  mission manifest, and physical battlefield inventories and transfers.
+- Once deployed, tactically relevant resources exist at authoritative holders
+  or locations and cannot move through abstract resupply auras or teleport
+  between inventories without an explicit capability.
+- Battlefield transfers are timed, interruptible, server-validated actions using
+  authoritative reservation and ownership state.
+- Combat resources are consumed at the granularity required by their rules but
+  transferred and managed in meaningful packages rather than unnecessary
+  individual components.
+- Logistics information obeys observation, reporting, and communications
+  constraints; headquarters can hold stale beliefs about battlefield stock.
+- Mission-end resources have explicit consumed, extracted, secured, abandoned,
+  destroyed, captured, or recovered outcomes before campaign write-back.
 
 ### Intended role
 
@@ -785,6 +1350,10 @@ allocation, and responses to disruption.
   the authoritative server retains ownership of resources and transfers.
 - Logistics and communications together can create battles about networks and
   access, not only elimination of enemy units.
+
+See [Logistics Architecture](logistics-architecture.md) for the canonical
+stockpile, manifest, battlefield supply, transfer, automation, disruption, and
+campaign write-back model.
 
 ## Multiplayer and platform openness
 
@@ -851,6 +1420,41 @@ At the normal 20-minute match target, a half-hour major-mission cadence leaves
 approximately ten minutes for consequences, force preparation, module and
 loadout selection, and entry into the next scheduled opportunity. Queue,
 lock-in, late-entry, and missed-window rules require dedicated design.
+
+### Development sequence
+
+Persistent campaign infrastructure is not the first implementation milestone.
+Development begins with a robust skirmish and mission foundation that supports
+both single-player and multiplayer play without campaign write-back.
+
+The intended sequence is:
+
+1. establish the complete authoritative skirmish lifecycle with standardized or
+   scenario-provided forces;
+2. support single-player missions against server-controlled opposition;
+3. support direct multiplayer missions using the same simulation, networking,
+   API, WASM, deployment, objective, resolution, and replay contracts;
+4. make skirmish mode a robust test and competitive environment rather than a
+   disposable prototype;
+5. generalize missions for PvE, PvP, and cooperative objective structures; and
+6. only then implement persistent campaign reservation, bidding, hidden
+   co-allocation, extraction write-back, scheduled major missions, and campaign
+   transaction recovery.
+
+Skirmish results remain isolated from campaign state. The early implementation
+should nevertheless use stable match identifiers, immutable force snapshots,
+objective results, outcome records, deterministic replay, and mode manifests so
+the later campaign layer can consume proven match results instead of replacing
+the match architecture.
+
+See [Mission Lifecycle and Delivery Sequence](mission-lifecycle.md) for the
+canonical target lifecycle and the skirmish-first implementation boundary.
+See [Robust Skirmish Development Plan](skirmish-development-plan.md) for the
+first playable milestones, deterministic scenario suite, scale gates, and
+implementation order.
+See [Deterministic Simulation Core](simulation-core-architecture.md) for the
+authoritative state transition, data, input, parallelism, snapshot, replay, and
+headless-execution contracts.
 
 ### Provisional canonical cadence
 
