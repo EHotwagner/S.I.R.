@@ -2,11 +2,13 @@
 title: S.I.R. WebAssembly Control Architecture
 status: proposed
 document-type: living-design
-version: "0.1"
+version: "0.3"
 last-updated: 2026-07-25
 related:
   - docs/game-vision.md
   - docs/combat-resolution.md
+  - docs/technology-stack.md
+  - docs/research/wasm-runtime-selection.md
 ---
 
 # S.I.R. WebAssembly Control Architecture
@@ -320,6 +322,8 @@ secret across an ongoing campaign.
 
 The architecture does not yet fix:
 
+- exact validated version of the
+  [canonical Wasmtime runtime](research/wasm-runtime-selection.md);
 - binary encoding and schema-evolution mechanism;
 - concrete fuel and memory values;
 - exact synchronous and asynchronous service boundaries;
