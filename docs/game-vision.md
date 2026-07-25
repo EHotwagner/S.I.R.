@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.47"
+version: "0.63"
 last-updated: 2026-07-25
 ---
 
@@ -99,9 +99,79 @@ rather than the player's ability to perform enough rapid interface actions.
 
 ### Established vision
 
-The setting is the modern world a few years in the future. Portals have opened,
-monsters are spilling through them, and magic exists. The setting integrates
-these supernatural elements into an otherwise recognizable contemporary world.
+The setting is the modern world a few years in the future undergoing a
+system-integration event in the broad portal-fantasy tradition represented by
+works such as Solo Leveling. Portals have opened on Earth, monsters are spilling
+through them, and magic has entered the world. The reference concerns the
+collision between recognizable modern society and portal-connected supernatural
+realms; S.I.R. does not inherit Solo Leveling's exact lore, awakened-human model,
+or power structure.
+
+The first portals and the System appeared ten years before the game's present.
+Earth has had time to create specialized forces, procedures, industries, and
+experienced personnel, but integration remains a recent and ongoing
+transformation.
+
+Human factions initially have no access to magic. They operate from
+recognizably realistic military, technological, medical, logistical, sensor,
+communications, and organizational foundations.
+
+The player controls a mercenary company rather than a conventional national
+military force. Conventional militaries provide Earth-side security around
+portals and respond to large-scale incursions. Mercenary companies bid for
+portal access and conduct contracted operations, resource extraction, and other
+missions.
+
+At initial release, players command human mercenary companies. Portal-origin
+factions are server-controlled PvE forces rather than playable campaign
+factions. Making them playable is a later direction, so their authoritative
+rules should not depend on inaccessible server-only shortcuts.
+
+The anchor portal-origin PvE faction for the initial release is an organized
+arcane civilization. It is an intelligent society with its own military
+organization, command structure, logistics, objectives, and coherent magic
+system rather than an undifferentiated monster force.
+
+Its magic system is risk-based. Casting can fail and cost the caster HP. A
+caster may deliberately spend HP to empower selected aspects of a spell. Casting
+also accumulates strain. Whenever strain exceeds the caster's current HP, the
+caster must make a breach check; the check result and the excess of strain over
+HP determine consequences ranging from harmful backlash to catastrophic
+shattering events. Any loss of HP immediately reevaluates the threshold, so
+damage can force an already strained caster to breach even when the caster is
+not performing a spell. Resolving a breach discharges some accumulated strain
+but does not necessarily reset the caster to zero or restore a safe state.
+
+The arcane civilization also fields nonmagical personnel and creatures,
+including goblins, orcs, and trolls. These units provide conventional,
+biological, armored, or regenerative force options rather than every faction
+capability depending on spellcasters. Substantial healing and armor for some of
+these unit families is a provisional direction.
+
+Other factions can possess distinct magic systems and include monsters, undead,
+and other portal-origin forces. Their supernatural capabilities are intended to
+enable fundamentally different tactical and logistical play rather than
+reskinned versions of human units.
+
+In the initial setting, organized portal-origin factions are encountered
+primarily inside portals or their connected mission spaces. They do not yet
+maintain permanent territorial holdings or settlements on Earth. Temporary
+spillover and incursions can reach Earth, and later campaign eras may change
+this boundary.
+
+The System is a literal phenomenon inside the setting. Game mechanics such as
+classes, attributes, skills, progression, abilities, missions, objectives,
+status effects, and applicable rules are diegetic System facts rather than
+concepts that exist only in the user interface.
+
+Direct System access is limited to recognized participants. Recognition is
+earned by killing a required number or category of monsters; merely living in
+the integrated world does not make a person a participant. The exact threshold
+and kill-credit rules remain to be designed.
+
+Several portal types exist. Most player missions concern temporary incursions
+that appear for a limited opportunity window. Players bid for access because
+successful completion can yield valuable resources.
 
 ### Design direction to preserve
 
@@ -109,6 +179,29 @@ The supernatural conflict does not replace modern tactical concerns. It exists
 alongside communications, sensors, electronic warfare, logistics, squad
 organization, and modern weapons. Magic and monsters must therefore interact
 with the tactical system rather than forming a disconnected alternate ruleset.
+
+Human limitations are part of their faction identity. Human factions should not
+receive spell-equivalent abilities merely to make faction capability lists
+symmetrical. Advanced nanomachinery or similarly bounded near-future technology
+is a provisional option, particularly for making stabilization, healing, and
+campaign recovery practical. Such technology should still consume resources,
+obey logistics, and preserve injury and casualty consequences.
+
+Every supernatural system requires explicit costs, constraints, information
+rules, and counterplay. “Magic” is not permission to bypass authoritative
+knowledge, grid occupancy, communications, logistics, or the public capability
+contract without a defined rule.
+
+See [Risk-Based Magic System](magic-system.md) for the casting, empowerment,
+strain, breach, and shattering architecture.
+
+The System's existence does not make participants omniscient. A person, control
+module, or client receives only System facts and battlefield information that
+the authoritative rules make available to that actor. Alternative clients can
+present those facts differently but cannot obtain additional System knowledge.
+
+See [Setting and Faction Architecture](setting-and-factions.md) for the faction
+design framework and campaign implications.
 
 ## Scale and force organization
 
@@ -125,14 +218,24 @@ with the tactical system rather than forming a disconnected alternate ruleset.
   persist for the remainder of that campaign.
 - Units can be organized into squads.
 - A squad has a squad leader.
+- A squad has an explicit, player-configured command succession order. The
+  intended standard infantry structure includes a squad leader, a
+  second-in-command, and a third-in-command; the latter two may simultaneously
+  serve as subordinate team leaders.
+- A standard squad cannot deploy unless the squad leader,
+  second-in-command, and third-in-command assignments are all filled by eligible
+  personnel.
 - Squad members communicate with their squad leader only while within an
   applicable communication distance.
 - Squad leaders communicate with headquarters—the player—only while within an
   applicable communication distance.
 - Communication with headquarters is enabled by a physical communications
   device normally carried by the squad leader, not by the leader role alone.
-- Player-provided WASM control logic determines how a squad responds to leader
-  loss and selects or recognizes a successor.
+- Player-provided WASM control logic executes and responds to succession using
+  the squad's declared command order and the currently eligible personnel. It
+  does not need to improvise an opaque succession order after a loss.
+- Succession selects the first eligible person in the declared order. A
+  WebAssembly policy cannot skip an eligible successor.
 - A second-in-command may carry an additional headquarters communications
   device. Without such redundancy, a successor must recover or loot the fallen
   leader's device to restore headquarters communication.
@@ -153,6 +256,10 @@ with the tactical system rather than forming a disconnected alternate ruleset.
   reproducible provenance sufficient for validation, auditing, and replay.
 - Squad composition references individually recruited personnel; it does not
   replace their individual ownership or history with a single squad record.
+- “NCO” is a personnel qualification or status, not the name of a single squad
+  role. Squad leader, second-in-command, third-in-command, and team leader are
+  explicit functional assignments that may require appropriate leadership
+  qualification.
 - Squad hierarchy is both an organizational structure and part of the game's
   information and command topology.
 - Losing, isolating, jamming, or repositioning a squad leader can have
@@ -160,6 +267,35 @@ with the tactical system rather than forming a disconnected alternate ruleset.
 - Local command succession and headquarters connectivity are independent state:
   a squad can establish a new local leader while remaining disconnected from
   the player.
+- The succession order, current acting leader, eligibility state, and reason for
+  any skipped successor must be authoritative and visible through the API.
+- A leadership handover causes only limited coordination disruption. Succession
+  should preserve squad function rather than impose a severe capability
+  collapse; the exact short-lived handover effect remains subject to testing.
+- Member abilities remain personal, while the acting leader can give the squad
+  distinctive doctrine, reaction, formation, coordination, communications, and
+  logistics characteristics. These should be conditional behavioral effects
+  rather than broad, stackable stat auras.
+- Command-qualified individuals can define primary and secondary leadership
+  effects. The acting Squad Leader contributes their primary effect; the 2IC and
+  3IC contribute narrower or weaker secondary effects while remaining
+  subordinate.
+- On succession, the new acting leader's primary effect becomes active and the
+  command team's secondary effects are recalculated from the surviving role
+  assignments. Effects cannot remain active merely because their former source
+  was killed, incapacitated, disconnected, or reassigned.
+- Leader succession can change or temporarily degrade leader-dependent
+  characteristics.
+- A squad has an identity record from creation, but its cohesion, traditions,
+  and distinctive squad-level traits should provisionally emerge through shared
+  training, missions, and history rather than arrive fully formed.
+- A usable doctrine can still be assigned immediately so a new squad is
+  functional. Emergent identity modifies or specializes that foundation; it
+  must not be required for baseline competence.
+- Emergent squad identity is a bounded prototype hypothesis because it carries
+  substantial readability, balance, content, and implementation risk. The core
+  command and combat architecture must remain viable if this layer is reduced
+  or removed after testing.
 - Communications devices are authoritative equipment with location, ownership,
   operational state, range, and transfer rules.
 - Carrying a redundant device trades logistics or equipment capacity for command
@@ -174,6 +310,9 @@ with the tactical system rather than forming a disconnected alternate ruleset.
 - Personnel-management APIs need deterministic policies, batch operations,
   exception handling, and explanations so automation remains inspectable and
   overridable by the player.
+
+See [Squad Command, Identity, and Succession](research/squad-command-and-succession.md)
+for the reference structures and proposed S.I.R. model.
 
 ## Personnel progression
 
@@ -666,6 +805,8 @@ allocation, and responses to disruption.
 - The main mode has persistent personnel whose progression carries across
   matches.
 - Persistent personnel belong to the player account.
+- In the setting, the player account's persistent force represents its
+  mercenary company.
 - Main-mode campaigns run for a fixed duration. At the end of a campaign, its
   personnel, progression, and other campaign state are wiped.
 
@@ -675,6 +816,41 @@ Persistence is seasonal rather than permanent. A player develops account-owned
 personnel across the matches of one active campaign, accepting losses and
 building progression during that campaign. The campaign has a defined end, after
 which its accumulated state is reset and a new progression cycle can begin.
+
+### Campaign mission rhythm
+
+The main multiplayer campaign has two mission tiers:
+
+1. **Resource missions** are simpler single-player missions used to gather
+   resources and prepare the persistent force.
+2. **Major missions** become available on a scheduled half-hour cadence and can
+   place more than one player into the same mission.
+
+Portal-mission access is allocated through bidding. A player can learn the
+mission information and outcome of their own bid that the rules disclose, but
+the bidding interface must not reveal how many other players bid, who they are,
+or whether any were allocated to the same incursion.
+
+The scheduled gameplay term **major mission** describes a consequential company
+operation. It does not necessarily mean a civilization-scale **major
+incursion**, which conventional militaries primarily contain.
+
+A player entering a major mission is not told whether any other player has been
+placed in that mission. The server, public API, and canonical client must not
+reveal participant count, identity, faction, roster, or spawn information
+through pre-match lobby or session metadata. Another player's presence becomes
+known only after their forces meet through information legitimately acquired on
+the battlefield.
+
+Major missions therefore create uncertain PvPvE encounters. A player must be
+prepared for a purely PvE operation, an encounter with another player, or
+several possible relationships after contact. The exact rules for cooperation,
+hostility, negotiation, identification, and rewards are not yet determined.
+
+At the normal 20-minute match target, a half-hour major-mission cadence leaves
+approximately ten minutes for consequences, force preparation, module and
+loadout selection, and entry into the next scheduled opportunity. Queue,
+lock-in, late-entry, and missed-window rules require dedicated design.
 
 ### Provisional canonical cadence
 
@@ -738,6 +914,15 @@ equipment changes, or other consequences back to campaign personnel or state.
 - Persistent records must be scoped by player account and campaign identifier so
   that one campaign's state cannot leak into another.
 - Campaign duration and reset timing must be public ruleset data.
+- Major-mission schedule and entry eligibility are public ruleset data, but
+  actual participant allocation is hidden match information.
+- Bid rules and a player's own bid state must be available through the public
+  API. Competing bids, bidder counts, clearing information that reveals
+  participation, and co-allocation remain hidden.
+- Custom clients must not infer hidden participants from matchmaking, session,
+  connection, API, timing, or resource-allocation metadata.
+- Resource missions and major missions write consequences into the same
+  campaign state under explicit mode policies.
 - The architecture must support canonical modes without hard-coding them as the
   only possible modes or persistence policies.
 
@@ -833,6 +1018,20 @@ vision:
    thresholds produce surprise and execution opportunities?
 5. Should the provisional rule that semi-random offer sets cannot be rerolled
    become final?
+6. What monster kills qualify for System recognition, how many are required,
+   and how is credit assigned among cooperating units?
+7. What are the exact spell aspects, casting checks, strain recovery rules,
+   breach table, and shattering outcomes of the initial arcane civilization?
+8. What limits, costs, and recovery times apply to provisional human
+   nanomedical technology?
+9. After players discover one another in a major mission, what determines
+   hostility, cooperation, identification, communication, victory, and
+   write-back consequences?
+10. What does a portal-access bid commit—currency, resources, reputation,
+    forces, risk, reward share, or another scarce value—and how are winning bids
+    selected?
+11. Who licenses mercenary companies, controls portal access, and administers
+    mission bidding?
 
 ## Future derived documents
 
