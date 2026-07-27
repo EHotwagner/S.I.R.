@@ -2,7 +2,7 @@
 title: S.I.R. Communications Network Architecture
 status: proposed
 document-type: living-design
-version: "0.2"
+version: "0.3"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -118,6 +118,35 @@ Player-defined message payloads and authoritative report traffic share the same
 capacity. A module that chatters heavily is spending the same resource its
 reports need, which makes protocol design a real consideration rather than a
 free-form channel.
+
+### Bandwidth is carried as traffic, and traffic emits
+
+Command bandwidth is not an abstract allowance. It is networked support
+delivered over links, so an allocation is *carried* — as traffic, on the path
+between headquarters and the unit, by devices that transmit.
+
+**A heavily supported unit is therefore a conspicuous one.** Both ends of a
+busy link emit in proportion to what is flowing over it, and every relay in a
+chain emits as it forwards. Extending reach with relays extends the electronic
+footprint at every hop.
+
+Three consequences follow, and the implementation needs all three:
+
+- **attention has a signature.** The units a commander is watching most closely
+  are the easiest to find, and a squad that has been cut loose goes quiet and
+  blind together;
+- **emission control costs allocation, not just reports.** A unit ordered to
+  silence gives up the support flowing to it, so going dark is expensive in a
+  way that is felt immediately rather than only when something is missed; and
+- **a change in allocation is observable.** A sudden rise in a squad's traffic
+  means a commander just began paying attention to it, which under traffic
+  analysis is a leading indicator of intent — visible before the action it
+  precedes.
+
+This is self-balancing in a way worth stating. Attention is cheap to spend on a
+unit already in contact and already located by other means, and expensive to
+spend on a concealed one. Supporting a hidden reconnaissance element is exactly
+the case where the cost bites hardest, which is correct.
 
 ## Delivery and latency
 

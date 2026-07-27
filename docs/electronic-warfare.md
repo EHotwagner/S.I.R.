@@ -2,7 +2,7 @@
 title: S.I.R. Electronic Warfare Architecture
 status: proposed
 document-type: living-design
-version: "0.3"
+version: "0.4"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -201,6 +201,60 @@ The distinction matters and is worth stating plainly: **a jammed force does not
 think less often, it thinks with worse information.** Its modules keep running,
 its reactions keep their timing, and its units keep fighting. What degrades is
 the quality of the picture they and their commander are working from.
+
+### The reverse direction
+
+Bandwidth also flows the other way as a source of intelligence. Because an
+allocation is carried as traffic over links, **a supported unit emits in
+proportion to the support it receives** — see
+[Communications Network](communications-network.md).
+
+An opponent watching the spectrum therefore learns not only where a force is,
+but **where its commander is looking**. A squad whose traffic rises has just
+been given attention, and that is a leading indicator of intent rather than a
+report of something already done.
+
+This closes the loop between the two systems. Electronic warfare degrades an
+opponent's command bandwidth, and an opponent's command bandwidth tells you
+where to point your electronic warfare.
+
+## Tactics this produces
+
+Three consequences emerge from rules written separately, none of which
+anticipated them. They are recorded because they are the evidence that the model
+is load-bearing rather than decorative.
+
+### The scout's dilemma
+
+Electronic and visual concealment are independent. A reconnaissance element can
+be perfectly hidden and electronically loud, so **finding something and telling
+anyone are separate acts with separate costs.** A scout that reports is located;
+a scout that stays silent is useless.
+
+This is the sharpest available expression of the information-versus-exposure
+tension the design is built around, and it required no mechanic of its own.
+
+### Jamming to force a transmission
+
+Store-and-forward guarantees that a squad which has lost contact will burst-
+transmit the moment it regains it. So an attacker can jam, wait for the queue to
+fill, then **deliberately lift the jamming** and direction-find the burst.
+
+Jamming becomes a tool for *creating* an emission rather than suppressing one.
+Staggering reconnections is the counter, which is why it appears in the
+counterplay table.
+
+### Attention as a targeting cue
+
+Traffic analysis identifies the node a network converges on, which is a command
+element. Command elements carry the sets that reach the command net, which are
+the most powerful and therefore the most detectable sets on the field. A
+commander who supports that element heavily makes it louder still.
+
+Locating and killing it forces succession under the established rules, and
+succession does not create a communications device. The chain from traffic
+analysis to a decapitated and disconnected squad runs entirely through
+mechanisms that already existed.
 
 ## Counterplay
 
