@@ -2,7 +2,7 @@
 title: S.I.R. WebAssembly Control Architecture
 status: proposed
 document-type: living-design
-version: "0.7"
+version: "0.8"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -176,6 +176,9 @@ Doctrine is expressed over two versioned ruleset vocabularies:
 
 Both are machine-readable ruleset data under the same contract as capability
 descriptors. New content extends the vocabularies; it does not change the ABI.
+
+Their contents are maintained in [Doctrine Vocabulary](doctrine-vocabulary.md),
+which currently records the readiness audit that must precede naming them.
 
 ### Rule lists
 
