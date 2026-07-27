@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.93"
+version: "0.94"
 last-updated: 2026-07-27
 ---
 
@@ -232,6 +232,10 @@ design framework and campaign implications.
 - A standard squad cannot deploy unless the squad leader,
   second-in-command, and third-in-command assignments are all filled by eligible
   personnel.
+- Communication uses nets rather than a bare hierarchy. A net is a set of
+  participants sharing a channel; command topology describes who reports to
+  whom. A squad shares a squad net, and leaders share the command net with
+  headquarters, so a squad leader participates in both.
 - Squad members communicate with their squad leader only while within an
   applicable communication distance.
 - Squad leaders communicate with headquarters—the player—only while within an
@@ -1489,6 +1493,11 @@ fixed report rules do not imply fixed certainty categories in the interface.
   fixed gameplay protocol.
 - Headquarters connectivity depends on an operational communications device
   carried by the acting leader or another appropriate unit.
+- A signal path is evaluated with the same cells, edges, and levels as line of
+  sight, so terrain and elevation affect communications as they affect
+  everything else.
+- A device's power determines its range and its detectability together. Reach
+  and signature are one property, not two that can be balanced apart.
 - Electronic warfare is an important part of play.
 - The communications architecture must support electronic-warfare effects that
   cause disconnection, degrade range, delay messages or reports, intercept
@@ -1519,6 +1528,8 @@ Communications form a dynamic tactical network. Its state influences:
 Electronic warfare should consequently affect gameplay at the command and
 information layers, not exist only as a numeric combat modifier.
 
+See [Communications Network Architecture](communications-network.md) for nets,
+signal paths, capacity, latency, store-and-forward, devices, and relays.
 See [Electronic Warfare Architecture](electronic-warfare.md) for the emission,
 link, content, and bandwidth layers, the separable protections, and the
 counterplay each attack requires.
