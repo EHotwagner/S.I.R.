@@ -1,8 +1,9 @@
 ---
 title: S.I.R. Human Forces
-status: proposed
+status: accepted
+decision-status: canonical
 document-type: living-content
-version: "0.3"
+version: "1.0"
 last-updated: 2026-07-27
 related:
   - docs/setting-and-factions.md
@@ -34,6 +35,26 @@ parameter until something is running.
 What is *not* provisional is the shape: which roles exist, what distinguishes
 them, and what stops each from dominating. Those are design decisions and they
 are the point of the document.
+
+### What canonical status covers
+
+Settled: that classes are people and loadout is capability, so there are fewer
+classes than roles; the six classes and the system each answers for; command
+qualification as an attribute rather than a seventh class; weapons
+differentiating by the shape of their engagement-time curve and by point versus
+area rather than by damage; armour being directional, so that it makes
+positioning matter more rather than less; and human capability being information
+capability, which emits and drains.
+
+Not settled: every number, and the open parameters at the end.
+
+**What would force a revision of the shape**, as opposed to the values: weapons
+collapsing into one good option and several worse ones despite distinct curves;
+directional armour making frontal assault unviable rather than making flanking
+valuable; or loadout failing to be a decision because carrying capacity,
+battery, and signature do not bite. Each is a measurable outcome rather than a
+matter of taste, and each would mean the shape was wrong rather than the
+numbers.
 
 ## The squad
 
