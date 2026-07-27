@@ -1,8 +1,9 @@
 ---
 title: S.I.R. Communications Network Architecture
-status: proposed
+status: accepted
+decision-status: canonical
 document-type: living-design
-version: "0.6"
+version: "1.0"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
