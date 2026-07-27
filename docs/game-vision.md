@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "1.8"
+version: "1.13"
 last-updated: 2026-07-27
 ---
 
@@ -149,6 +149,23 @@ damage can force an already strained caster to breach even when the caster is
 not performing a spell. Resolving a breach discharges some accumulated strain
 but does not necessarily reset the caster to zero or restore a safe state.
 
+Arcane rituals are distinct from individual spells. They are site-bound,
+observable actions requiring multiple casters to maintain a quorum. They commit
+their target location or prepared trigger before completion and may produce
+delayed geographical effects, finite ritual traps, or portals. Transit portals
+move precommitted arcane personnel and supply and retain their ownership. Goblin
+portals deliberately release unaffiliated goblins that are hostile to every side
+and count toward no arcane supply, command, stake, or anchor capacity. Daemon
+portals are uncontrolled catastrophic anchor failures. A ritual cannot track an
+unknown target or use privileged server knowledge.
+
+Harmless ambient critters are neutral ordinary actors with natural movement and
+species-appropriate perception. Arcane casters can attune one and receive only
+the observations it actually earns, without controlling it or improving its
+senses. Those facts may establish knowledge needed to place a ritual or portal.
+Active attunement leaves evidence, so humans can detect, exclude, capture,
+drive off, kill, or mislead suspected critters.
+
 The arcane civilization also fields nonmagical personnel and creatures,
 including goblins, orcs, and trolls. These units provide conventional,
 biological, armored, or regenerative force options rather than every faction
@@ -248,6 +265,18 @@ design framework and campaign implications.
   relays — so it can be bought, at the direct expense of fighting power. And
   load can be shed, which makes withdrawing units a tactical action rather than
   a concession.
+- Arcane command capacity is structural for the same reason but is carried by
+  anchors rather than communications nets. Every anchored force imposes load;
+  supporting more units requires additional or stronger anchors, at the expense
+  of components, casters, defended ground, and magical concealment.
+- An overloaded anchor becomes supernaturally unstable rather than merely
+  serving its marginal units less well. Instability is observable before
+  catastrophe, disrupts the coordination of the force relying on the anchor,
+  and can resolve as indiscriminate lightning discharge or, at its severe
+  extreme, an uncontrolled daemon portal hostile to every side.
+- Arcane anchoring load can be shed by detaching or withdrawing units. Its
+  failure is centred on the overloaded anchor and must endanger its own force
+  strongly enough that deliberate overload is not reliable magical artillery.
 - Signature is aggregate. A force that transmits everywhere can be mapped, and
   what an opponent recovers is the shape of the network rather than a list of
   positions.
@@ -353,18 +382,49 @@ squads arrange themselves and how doctrine refers to places by role.
 
 - Every individual can develop persistent attributes, skills, history, and
   consequences during a campaign.
-- Personnel development can be managed or assisted through scripts and AI.
+- Development policies, inspection, and reporting can be managed or assisted
+  through scripts and AI; milestone outcomes themselves resolve automatically.
 - Every individual has a fixed class that establishes their core role. The
   assigned class is permanent for the campaign.
 - A recruit's class is predetermined before recruitment and visible to the
   player when evaluating that recruit. Recruiting the individual does not
   trigger a class-selection decision.
-- Progression includes semi-random opportunities. Fully predetermined
-  advancement would become a solved optimization problem too quickly.
-- Randomness determines which eligible opportunities are offered; the human
-  player or authorized automation chooses among them.
-- Numerical attribute growth is primarily automatic rather than manually
-  allocated point by point.
+- Individual personnel target approximately XCOM-like character complexity, but
+  advancement management must remain practical across 50–100 units.
+- Numerical attribute growth and qualitative milestone upgrades resolve
+  automatically. Routine advancement does not present a per-person promotion
+  choice to the player or require automation to impersonate one.
+- Automatic qualitative outcomes use bounded, server-authoritative randomness
+  drawn from class-compatible, history-aware eligibility pools. Randomness may
+  differentiate how a person develops but cannot withhold baseline class
+  competence, required communications, essential counterplay, or standard
+  control-module compatibility.
+- Players influence future development through persistent training,
+  assignment, squad, mentoring, and company policies applied individually or in
+  bulk. Policies change eligibility or weighting; they do not guarantee a
+  selected perk.
+- Every automatic outcome records the eligibility, weighting inputs, random
+  purpose, and resulting change so that development is inspectable and
+  auditable.
+- Advancement is permanent once resolved and cannot be rerolled. Any later
+  retraining or respec changes an existing result through its own explicit cost
+  and rule rather than regenerating history until a preferred result appears.
+- Advancement credit comes from authoritative participation, training, and
+  significant events rather than repeatable low-value actions that a control
+  module could farm.
+- Qualitative perks primarily change tactical options, conditions, responses,
+  preparation, and cooperation rather than stacking universal percentage
+  bonuses.
+- Initial perk families follow the six permanent human classes, with an
+  additional leadership pool available to command-qualified personnel of any
+  class. Leadership outcomes compete with other milestones rather than adding a
+  second complete progression tree.
+- Equipment supplies physical capabilities and remains assignable outside its
+  associated specialist class. Class proficiency and perks determine how well
+  and flexibly the person uses it.
+- Human equipment progression is horizontal: items trade engagement shape,
+  coverage, signature, power, weight, preparation, supply, and dependency
+  rather than forming successively stronger tiers.
 
 ### Provisional direction
 
@@ -375,57 +435,57 @@ injuries or conditions, and recruitment terms. The exact presentation and
 number of fields remain to be designed.
 
 This disclosure applies to the recruit's current known state, not their complete
-future development. Later semi-random progression offers remain unrevealed
-until generated. Recruitment should be an informed force-building decision
-without turning each candidate into a perfectly forecastable final build.
+future development. Hidden future random outcomes remain unrevealed until
+resolved. Recruitment should be an informed force-building decision without
+turning each candidate into a perfectly forecastable final build.
 
-Major active abilities should be unlockable through personal progression.
-Progression should therefore change what an individual can do, not merely
-increase numerical effectiveness or improve use of equipment.
+Major active abilities should be unlockable through automatic personal
+progression. Progression should therefore change what an individual can do, not
+merely increase numerical effectiveness or improve use of equipment.
 
 Equipment, magic, implants, and software may still grant, enable, constrain, or
-modify active capabilities. The exact division between learned abilities and
-equipment-dependent actions remains to be designed.
+modify active capabilities. As a baseline, equipment grants the physical action
+while learned abilities alter its conditions, responses, preparation, or
+coordination. Exceptions and compound prerequisites remain to be designed.
 
-Automatic attribute development may be influenced by experience, training,
-assignment, and other in-world causes. Direct manual allocation can remain
-available for exceptional systems if later testing demonstrates a need, but it
-is not the default personnel-development interaction.
+Automatic attribute and qualitative development may be influenced by
+experience, training, assignment, mentoring, squad role, injuries, and other
+in-world causes. Persistent policies let a player express direction at useful
+organizational scales without turning that influence into a guaranteed build.
+Direct manual point allocation or routine perk selection is not a personnel
+development interaction.
 
 Specialized advanced classes may be introduced later as an evolution of a
 unit's permanent base class. This is a provisional extension, not permission for
 general class changes or unrestricted multiclassing.
 
-The leading direction is that a semi-random offer set is final once generated:
-the player or authorized automation must choose from that set without rerolling
-it. This has not yet been accepted as an established rule. A later retraining or
-respec system, if introduced, would modify an already selected outcome rather
-than regenerate the historical offer.
-
 ### Derived implications
 
 - Active abilities require stable machine-readable definitions available to
   canonical clients and WASM control modules.
-- Progression automation must be able to reason about newly unlocked actions,
-  prerequisites, conflicts, and the behaviors that can use them.
+- Personnel automation must be able to reason about newly unlocked actions,
+  prerequisites, conflicts, training policies, and the behaviors that can use
+  them, but it does not make routine promotion selections.
 - Automatic growth rules must be authoritative, machine-readable, and protected
   against farming through repeatable WASM-controlled actions.
-- Offer generation should account for relevant facts such as role, history,
-  existing development, and campaign events so that randomness produces
-  coherent individuals rather than arbitrary builds.
+- Outcome generation should account for relevant facts such as class, role,
+  history, existing development, training policy, assignment, and campaign
+  events so that randomness produces coherent individuals rather than arbitrary
+  builds.
 - A class must have a stable public identifier and a machine-readable
   capability and progression contract.
 - Recruitment interfaces and APIs must expose a candidate's class before the
   player commits to recruiting them.
 - The canonical client and public API should expose the same authoritative
-  recruitment-dossier data; a third-party client must not gain access to hidden
-  future progression rolls.
+  recruitment-dossier and advancement-audit data; a third-party client must not
+  gain access to hidden future progression rolls.
 - Advanced-class definitions, if introduced, must declare their required base
   class and preserve an inspectable class lineage.
-- Semi-random opportunities should create distinct builds within a class
+- Automatic random outcomes should create distinct builds within a class
   without making its core tactical role unreadable.
-- The server must generate offers authoritatively and expose enough information
-  to audit eligibility and selection without allowing reroll manipulation.
+- The server must resolve progression authoritatively and expose enough
+  information to audit eligibility, weighting, policy influence, and the
+  resolved outcome without revealing future rolls.
 - A unit's available action set is derived from both persistent personnel state
   and current mission loadout.
 
@@ -1274,6 +1334,12 @@ include:
 A stimulus reveals only the facts supported by its source and the applicable
 rules. Hearing a weapon does not automatically identify its user or reveal exact
 coordinates.
+
+Ambient critters use this same pipeline. Attunement transports their earned
+observation facts into arcane knowledge; it does not turn the critter into a
+privileged sensor, reveal facts it failed to acquire, or let an AI use hidden
+server state. An observation borrowed from a critter ages and becomes stale
+like any other.
 
 #### Acquisition
 
@@ -2149,8 +2215,9 @@ vision:
    object with a position that can be found, jammed, and destroyed.
 5. What exact directional-awareness zones, rear-attack effects, and unawareness
    thresholds produce surprise and execution opportunities?
-6. Should the provisional rule that semi-random offer sets cannot be rerolled
-   become final?
+6. Which training, assignment, mentoring, and company-policy inputs influence
+   automatic progression, and how strongly may they change eligibility or
+   weighting without making outcomes deterministic?
 7. What monster kills qualify for System recognition, how many are required,
    and how is credit assigned among cooperating units?
 8. What are the exact spell aspects, casting checks, strain recovery rules,

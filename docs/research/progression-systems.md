@@ -2,7 +2,7 @@
 title: Attribute, Skill, and Progression Systems
 status: proposed
 document-type: research
-version: "0.25"
+version: "0.27"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -28,8 +28,10 @@ same conceptual complexity as XCOM while supporting:
 - decisive positioning, stealth, logistics, and electronic warfare; and
 - multiplayer through a public API and alternative clients?
 
-This is comparative research, not an accepted design. It identifies viable
-models and recommends a direction to prototype.
+This is comparative research rather than the canonical contract. The accepted
+automatic-progression decision is recorded in
+[Game Vision](../game-vision.md); the recommendation below supplies its
+research context and provisional scale.
 
 ## Executive conclusion
 
@@ -50,9 +52,11 @@ system**:
    permanent for the campaign. The class is predetermined and visible before
    the player recruits the individual.
 5. Every unit can receive XCOM-scale qualitative progression, provisionally
-   four to six meaningful choices over a campaign.
-6. Scripts, AI, templates, and batch policies can propose or apply routine
-   development while the human reviews exceptions and important individuals.
+   four to six meaningful milestones over a campaign.
+6. Numerical growth and qualitative outcomes resolve automatically. Persistent
+   training, assignment, mentoring, squad, and company policies influence
+   eligibility or weighting in bulk without producing routine promotion
+   choices.
 7. Squad leaders use the same personnel foundation but have access to
    leadership, communications, coordination, and logistics specializations.
 8. Squads have a configurable doctrine layer that affects control behavior and
@@ -67,11 +71,12 @@ major active abilities. Equipment and magic remain additional capability
 sources, prerequisites, or modifiers rather than the exclusive source of active
 actions.
 
-Classes, attributes, abilities, progression offers, and selections are diegetic
-facts exposed by the literal in-world System. Their machine-readable server
-contracts are therefore not merely implementation metadata: they are also the
-authoritative representation of facts that characters and organizations may
-perceive within the setting, subject to knowledge and communications rules.
+Classes, attributes, abilities, progression eligibility, weighting inputs,
+development policies, and resolved outcomes are diegetic facts exposed by the
+literal in-world System. Their machine-readable server contracts are therefore
+not merely implementation metadata: they are also the authoritative
+representation of facts that characters and organizations may perceive within
+the setting, subject to knowledge and communications rules.
 
 Direct access to these System facts requires recognized-participant status.
 Recognition is earned through authoritative monster kills. The progression
@@ -88,9 +93,9 @@ rosters without forcing competitive skirmishes to inherit persistent power
 differences.
 
 This retains XCOM-like depth for persistent individuals while moving the
-repetitive interaction cost into inspectable automation. The player can define
-force-wide policies, specialize selected personnel manually, and understand why
-an automated decision was made.
+repetitive interaction cost into automatic resolution. The player can define
+inspectable development policies at individual, squad, class, or force scale
+and understand why every automatic outcome occurred.
 
 The 2026 game *MENACE* offers a useful contrasting pattern: it organizes
 infantry into squads of 3–9 and concentrates promotion trees on squad leaders.
@@ -341,18 +346,19 @@ applicable, an upgrade to something the hero already knows
 
 #### S.I.R. lesson
 
-Semi-random choices are viable if randomness selects the **opportunity set**, not
-the result of the player's choice. Every offer should include:
+Bounded-random progression is viable if eligibility and weighting protect role
+coherence before the server resolves an automatic outcome. Every outcome pool
+should include:
 
 - at least one role-consistent option;
 - at least one option that builds on an existing capability;
 - protection against duplicates or nonfunctional combinations;
 - deterministic server seeding;
-- a documented offer pool and weighting policy; and
-- limited replacement, training, or reroll mechanisms.
+- a documented eligibility pool and weighting policy; and
+- inspectable influence from training and assignment policies.
 
-For competitive modes, offers should be symmetric, pre-match, or tied to a
-campaign ruleset accepted by all participants.
+There are no routine offers or rerolls. Competitive modes use standardized
+catalog personnel or a campaign ruleset accepted by all participants.
 
 ### Midnight Suns: loadouts and controlled tactical randomness
 
@@ -535,11 +541,12 @@ a small, curated random offer.” Guarantees, tags, rerolls, and upgrade slots
 protect build coherence. Randomness creates adaptation and replayability while
 the player retains ownership of the decision.
 
-S.I.R. adopts this principle as an established direction. Personnel progression
-must include semi-random opportunities so that development does not collapse
-into a solved deterministic build order. The player or authorized automation
-chooses from the generated offer; randomness does not automatically impose the
-result.
+S.I.R. adopts the bounded pools and coherence guarantees but not the repeated
+choice interaction. At 50–100 units, personnel progression must resolve
+automatically. Server-owned randomness selects an eligible class-compatible
+outcome, while persistent player policies influence eligibility or weighting.
+Baseline role competence remains deterministic and every resolved result is
+inspectable.
 
 ### 2. Unlock pool separated from equipped loadout
 
@@ -604,10 +611,11 @@ A player should understand “scout,” “squad leader,” “medic,” or “e
 warfare specialist” before inspecting individual nodes. Role labels reduce the
 cost of managing a roster.
 
-### Few high-impact promotion decisions
+### Few high-impact progression outcomes
 
-Four to seven qualitative decisions usually create enough combinations for
-identity. Beyond that, the burden shifts from tactics to build administration.
+Four to seven qualitative outcomes usually create enough combinations for
+identity. Beyond that, complexity shifts from useful tactical differentiation
+to unreadable character state even when resolution is automatic.
 
 ### Separate permanent identity from mission adaptation
 
@@ -732,9 +740,9 @@ role-, history-, and behavior-tagged pools.
 - Requires careful offer-generation rules.
 - Still produces many decisions at 100 units.
 
-**Fit:** Good as a bounded source of variation for any persistent individual,
-provided policies can evaluate offers and core role competence is guaranteed;
-weak as the only progression system.
+**Fit:** Rejected as the routine interaction because it still produces too many
+decisions at force scale. Its tagged pools and coherence guarantees remain
+useful for automatic outcome generation.
 
 ### Choice C: Classless compact web
 
@@ -811,8 +819,8 @@ Combine:
 
 - a fixed class establishing each unit's core role;
 - bounded individual attributes and proficiencies for every unit;
-- four to six qualitative progression choices for every unit;
-- automation policies for routine development;
+- four to six automatic qualitative progression milestones for every unit;
+- persistent bulk policies influencing development eligibility and weighting;
 - leader-specific command specializations;
 - squad doctrine loadouts;
 - equipment-provided active capabilities; and
@@ -834,9 +842,9 @@ Combine:
 - UI must show why a unit has a capability.
 - Balance must account for interactions across several layers.
 
-**Fit:** Best overall, provided the total number of simultaneous decisions is
-budgeted and every progression operation is exposed through an automation-ready
-API.
+**Fit:** Best overall, provided routine individual advancement is automatic,
+policy influence and resolved outcomes are inspectable, and every progression
+operation is exposed through an automation-ready API.
 
 ## Recommended prototype
 
@@ -855,10 +863,10 @@ preserves that individual's identity, development, and history throughout the
 campaign.
 
 The dossier describes the candidate as they currently exist. It does not reveal
-future semi-random progression offers or a deterministic final build. All
-clients receive the same authoritative dossier fields through the public API;
-hidden future rolls are not available to either the canonical client or a
-third-party client.
+future automatic random outcomes or a deterministic final build. All clients
+receive the same authoritative dossier fields through the public API; hidden
+future rolls are not available to either the canonical client or a third-party
+client.
 
 ### Individual unit
 
@@ -870,10 +878,10 @@ third-party client.
 - 3–6 relevant proficiencies selected from a broader catalog.
 - One origin or aptitude trait at creation.
 - 4–6 qualitative progression milestones over a campaign.
-- One meaningful selection at each milestone, usually from two fixed options or
-  two fixed options plus one eligible semi-random opportunity.
-- Semi-random offers are class-compatible but allow meaningful variation within
-  the class.
+- One automatic qualitative outcome at each milestone, selected from a bounded,
+  class-compatible and history-aware eligibility pool.
+- Training, assignment, mentoring, squad, and company policies may alter
+  eligibility or weighting without guaranteeing the result.
 - No unrestricted class switching or multiclassing.
 - A later advanced-class specialization may evolve from the permanent base
   class while preserving its class lineage.
@@ -897,9 +905,9 @@ and magic rules rather than precede them.
 ### Squad leader
 
 - Uses the same individual progression depth and rules as other personnel.
-- Gains access to leader-specific choices emphasizing command, information,
-  coordination, logistics, and reactions.
-- Leadership choices compete with or replace some general choices rather than
+- Gains access to leader-specific outcome pools emphasizing command,
+  information, coordination, logistics, and reactions.
+- Leadership outcomes compete with or replace some general outcomes rather than
   automatically doubling the number of perks.
 - The server promotes the first eligible successor after leader loss, and
   player-provided WASM logic adapts the squad's behavior to the change.
@@ -913,15 +921,17 @@ and magic rules rather than precede them.
 
 - Every progression operation is available through a stable, versioned API.
 - Policies can filter units by role, attributes, existing perks, squad,
-  doctrine, equipment, history, and eligible offer tags.
-- Scripts can preview a change, validate it, and apply it in batches.
-- The standard client provides official templates and AI recommendations.
-- The server returns reasons for eligibility, recommendation, rejection, and
-  application.
-- Players can lock individuals against automation and override any uncommitted
-  recommendation.
-- Applied decisions produce an audit history identifying the policy, script, or
-  human action responsible.
+  doctrine, equipment, history, and eligible outcome tags.
+- Scripts can preview policy influence and validate or apply policy changes in
+  batches; they do not select routine milestone results.
+- The standard client provides official policy templates and reports material
+  automatic changes in batches.
+- The server returns reasons for eligibility, weighting, policy influence,
+  rejection, and resolution.
+- Players can lock individuals against policy changes without pausing automatic
+  advancement itself.
+- Resolved outcomes produce an audit history identifying the authoritative
+  inputs, policy, random purpose, and resulting change.
 - Hidden information is never exposed to personnel-management automation.
 
 ### Squad doctrine
@@ -939,8 +949,20 @@ and magic rules rather than precede them.
 - Personal progression can directly unlock major active abilities.
 - Equipment, magic implements, implants, consumables, software, and support
   assets can grant additional actions or enable and modify learned abilities.
+- For human personnel, the default boundary is that equipment grants the
+  physical capability while perks change its tactical conditions, responses,
+  preparation, coordination, or flexibility.
+- Human perk families follow Rifleman, Gunner, Marksman, Engineer, Medic, and
+  Signaller identities, plus a leadership pool shared by command-qualified
+  personnel. The initial named catalog is maintained in
+  [Human Forces](../human-forces.md#perks-change-decisions).
+- Perks should create behaviorally meaningful distinctions and avoid universal
+  percentage stacking.
 - Slots and supply cost limit simultaneous capability.
 - More powerful equipment is not automatically optimal for every mission.
+- Equipment progression should remain horizontal, with tradeoffs in engagement
+  shape, coverage, signature, power, weight, preparation, supply, or
+  dependency rather than simple item tiers.
 - Capabilities are exposed through stable API tags and action contracts.
 
 ### Organization
@@ -952,11 +974,12 @@ and magic rules rather than precede them.
   tradeoffs.
 - Avoid universal percentage stacking wherever an option unlock is possible.
 
-## Semi-random choice recommendation
+## Automatic bounded-randomness recommendation
 
-Semi-random progression opportunities are part of the intended system. Use them
-where they create adaptation and individual identity, while keeping baseline
-role competence deterministic.
+Automatic qualitative progression is part of the intended system. Use bounded
+randomness where it creates adaptation and individual identity, while keeping
+baseline role competence deterministic and eliminating routine per-person
+promotion decisions.
 
 ### Good uses
 
@@ -977,28 +1000,31 @@ role competence deterministic.
 - essential counterplay in competitive matches; and
 - fundamental attributes needed for a chosen squad role.
 
-### Suggested offer rule
+### Suggested automatic resolution
 
-When a leader reaches a draft milestone, offer three options:
+When a person reaches a milestone:
 
-1. one guaranteed option from the leader's current role;
-2. one option that extends an existing perk, doctrine, or recent experience;
-3. one wildcard from an eligible cross-role, history, magic, or technology
-   pool.
+1. include guaranteed eligibility for outcomes compatible with the permanent
+   class and current role;
+2. add eligible extensions from existing development, training, assignment,
+   mentoring, and recent significant history;
+3. optionally add bounded wildcard outcomes from compatible cross-role,
+   leadership, portal-exposure, or technology pools;
+4. apply persistent player policies to eligibility or weighting;
+5. resolve one outcome using a server-owned deterministic random purpose; and
+6. publish an audit record explaining the inputs and result.
 
-The player chooses one. A costly retraining process can later replace a perk, but
-does not regenerate the historical offer set.
+The player makes no routine selection. A costly retraining process may later
+replace an existing outcome, but it cannot regenerate historical advancement
+until a preferred result appears.
 
-### Provisional reroll policy
+### No rerolls
 
-The current leading direction is no rerolls. Once the server generates a
-semi-random offer set, the player or authorized automation chooses from that
-set. This preserves adaptation and prevents resources or repeated requests from
-converting bounded randomness into deterministic optimization.
-
-The policy is not yet established. If later testing demonstrates a need for
-error recovery, retraining or respec should alter a previously selected outcome
-rather than reroll the original offer until a preferred option appears.
+Once the server resolves an automatic milestone, the result is permanent. This
+preserves adaptation and prevents resources, reconnection, or repeated requests
+from converting bounded randomness into deterministic optimization. If later
+testing demonstrates a need for correction, retraining or respec changes an
+existing result through a separate explicit rule rather than rerolling history.
 
 ## Multiplayer requirements
 
@@ -1077,7 +1103,7 @@ Every mode should provide an authoritative ruleset manifest containing at least:
 - permitted content and progression range;
 - persistence and write-back policy;
 - campaign start, end, and reset policy;
-- random-offer policy and seed ownership; and
+- automatic-outcome policy and random-purpose ownership; and
 - victory, reward, and consequence rules.
 
 Custom clients and WASM modules create additional requirements:
@@ -1087,7 +1113,8 @@ Custom clients and WASM modules create additional requirements:
 - The server remains authoritative over eligibility and outcomes.
 - Modules receive only capabilities and information their unit or squad is
   entitled to use.
-- Random offers use server-owned seeds and auditable generation rules.
+- Automatic outcomes use server-owned deterministic random purposes and
+  auditable eligibility and weighting rules.
 - Execution budgets cannot vary with progression in a way that rewards more
   compute.
 - A perk must never grant hidden API access to world truth.
@@ -1107,10 +1134,11 @@ Custom clients and WASM modules create additional requirements:
 
 Each candidate prototype should be evaluated by measuring:
 
-- promotion decisions per hour and per campaign;
+- routine promotion decisions per hour and per campaign, which should remain
+  zero;
 - time spent managing progression versus planning missions;
 - number of visibly distinct viable builds;
-- percentage of choices dominated by one option;
+- concentration of outcomes into one dominant development pattern;
 - ability to identify a unit or squad's role at a glance;
 - replacement-unit viability;
 - power gap between a new and veteran force;
@@ -1118,13 +1146,13 @@ Each candidate prototype should be evaluated by measuring:
 - WASM API complexity;
 - ease of explaining why an action is available;
 - exploitability of progression triggers;
-- competitive variance introduced by random offers; and
+- competitive variance introduced by automatic random outcomes; and
 - whether progression strengthens positioning, communications, intelligence,
   and logistics rather than bypassing them.
 
-## Recommended next decisions
+## Remaining decisions
 
-Before accepting a progression architecture, determine:
+With the automatic, policy-influenced progression shape accepted, determine:
 
 1. How opponents and force disparities are handled in persistent main-mode PvP.
 2. Whether the proposed two-week duration and weekly launch cadence produce the
@@ -1132,8 +1160,8 @@ Before accepting a progression architecture, determine:
 3. Whether one account may participate in both overlapping campaign cohorts.
 4. The exact boundary between progression-unlocked active abilities and actions
    granted or enabled by equipment, doctrine, magic, and control software.
-5. Whether to accept the provisional no-reroll rule for semi-random offer sets,
-   independently of any later retraining or respec policy.
+5. The cost and limits of any later retraining or respec policy, without
+   permitting historical automatic outcomes to be rerolled.
 
 ## Sources
 

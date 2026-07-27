@@ -3,7 +3,7 @@ title: S.I.R. Arcane Spells
 status: accepted
 decision-status: canonical
 document-type: living-content
-version: "1.0"
+version: "1.2"
 last-updated: 2026-07-27
 related:
   - docs/magic-system.md
@@ -22,6 +22,12 @@ a single spell.
 
 This is the content: what casters actually do, and why each thing is worth its
 cost.
+
+Rituals are a separate cooperative surface rather than entries in this spell
+list. A spell is performed by one caster; a ritual requires a caster quorum at
+a prepared site, commits to geography, and competes for anchor capacity. The
+canonical ritual shapes are defined in
+[Arcane Civilization Forces](arcane-forces.md).
 
 ## Utility first, and why
 
@@ -221,10 +227,11 @@ spells are decisions about the whole match rather than the current moment.
   not have.
 - **Resurrection and reanimation.** That is an undead faction's identity, not
   this one's.
-- **Summoning.** A candidate rather than a rejection. It is interesting
-  specifically because summoned units would consume command capacity, which is
-  a cost the faction otherwise pays differently — but it needs its own design
-  rather than a line here.
+- **Summoning.** Creating new personnel remains a candidate rather than an
+  initial spell. Neither canonical portal ritual is summoning: a transit portal
+  moves precommitted owned assets, while a goblin portal opens a route for
+  unaffiliated goblins who remain hostile to every side. Neither creates
+  personnel under arcane control.
 - **Counter-magic.** Deferred until there is a second magical faction for it to
   matter against.
 
@@ -239,8 +246,9 @@ per-modality permeability; rupture aimed at terrain rather than people; the
 dampening field attacking electronics only and announcing its own importance;
 translocation requiring an observed destination; scrying as a snapshot returning
 presence rather than identification; and the exclusions, mind control as
-incoherent with the control architecture and summoning as a candidate rather
-than a rejection.
+incoherent with the control architecture and true summoning as a candidate
+rather than a rejection. Rituals are a distinct cooperative surface governed by
+the arcane faction contract rather than additions to this individual spell list.
 
 Not settled: every number, which aspects each spell permits empowering, and the
 open parameters at the end.

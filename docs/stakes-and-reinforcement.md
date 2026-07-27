@@ -3,11 +3,13 @@ title: S.I.R. Stakes and Reinforcement
 status: accepted
 decision-status: canonical
 document-type: living-design
-version: "1.0"
+version: "1.3"
 related:
   - docs/mission-lifecycle.md
   - docs/game-vision.md
   - docs/setting-and-factions.md
+  - docs/communications-network.md
+  - docs/arcane-forces.md
 last-updated: 2026-07-27
 ---
 
@@ -154,9 +156,18 @@ that matters, and commit everything. If the only in-match penalty is attention
 divided a little further, they should.
 
 So the in-match cost has to be **nonlinear**. Past the capacity of a force's
-command structure, its net saturates and collapses, which does not cost the
-marginal units their effectiveness — it costs the **entire force its
-coordination**. See [Communications Network](communications-network.md).
+command structure, the structure fails according to the faction that built it.
+This does not cost only the marginal units their effectiveness — it threatens
+the **entire force relying on that structure**.
+
+For humans, the command net saturates and collapses. See
+[Communications Network](communications-network.md).
+
+For the arcane civilization, the finite anchoring structure becomes
+supernaturally unstable. It becomes conspicuous, disrupts the coordination of
+the force depending on it, and risks indiscriminate lightning discharge or, at
+the severe extreme, an uncontrolled daemon portal hostile to every side. See
+[Arcane Civilization Forces](arcane-forces.md).
 
 That converts the reinforcement decision from arithmetic into a threshold
 question. More force is better right up until it is catastrophically worse, and
@@ -164,12 +175,14 @@ the commander has to know where their own ceiling is.
 
 Three properties make this work rather than merely punish:
 
-- **the cause is deterministic and learnable**, even though which message is
-  lost in a saturated net is not, so a collapse is explicable afterwards rather
-  than arbitrary;
-- **capacity can be bought** by investing in leaders, sets, and relays, which
-  competes with fighting power for the same carrying capacity and roster slots,
-  so the ceiling is a construction decision rather than a rule; and
+- **the cause is deterministic and learnable**, even though the exact message
+  lost from a saturated net or hazard released by an unstable anchor is not, so
+  a collapse is explicable afterwards rather than arbitrary;
+- **capacity can be bought** by investing in the faction's command structure:
+  leaders, sets, and relays for humans; additional or stronger anchors,
+  components, casters, and defended ground for the arcane. Either competes with
+  fighting power and exposure, so the ceiling is a construction decision rather
+  than a rule; and
 - **load can be shed**. A commander who has overcommitted can send elements home
   and recover the rest, which makes withdrawal a tactical action rather than a
   concession.
@@ -250,7 +263,14 @@ The **mechanism** is settled and later work should build against it:
 reinforcement is paid for, payment enters a common pool, a share is taken by the
 access administrator, the winner takes the remainder, the committed force is the
 primary stake because personnel losses are permanent, and overcommitment
-collapses command rather than diluting it.
+breaks faction-specific command capacity rather than diluting marginal units.
+Human nets saturate; arcane anchors become observably unstable and can discharge
+indiscriminate lightning or open an uncontrolled daemon portal hostile to every
+side. Arcane reinforcements physically arrive through an exposed transit ritual
+maintained by a caster quorum. This controlled transit portal transports
+precommitted personnel and does not create replacements. Uncontrolled goblin
+portals are not reinforcement: their arrivals belong to neither side and consume
+no arcane roster, supply, stake, command capacity, or anchor capacity.
 
 The **decisions below are not settled**, and several are genuine forks rather
 than values to tune. Canonical status covers the shape, not the numbers, and not
@@ -284,10 +304,13 @@ open question 11 and keeps the campaign economy to one scarce resource. Keeping
 them separate allows independent tuning. Unification is the stronger option and
 the harder one to reverse.
 
-**How do reinforcements physically arrive?** They enter an authoritative
-simulation with deployment rules, so arrival needs a place, a delay, and
-exposure. A reinforcement that materialises is not consistent with anything else
-in the design. This is the piece with the most implementation weight.
+**How do reinforcements physically arrive?** The arcane answer is settled:
+multiple casters prepare and maintain a transit portal at an exposed site, and
+precommitted personnel cross in one or more waves. The portal transports rostered
+units rather than creating them, and arrivals immediately consume local anchor
+capacity. Human arrival still needs a place, delay, and exposure; a
+reinforcement that materialises is not consistent with anything else in the
+design.
 
 ## Open parameters
 
@@ -297,6 +320,13 @@ in the design. This is the piece with the most implementation weight.
   everything else.
 - Whether reinforcement is limited by roster availability, by insertion
   capacity, or only by currency.
+- Arcane transit-portal preparation time, caster quorum, wave cadence, gate
+  duration, insertion capacity, exit constraints, and interruption outcomes.
+- How faction-specific command load and capacity are exposed to the commander
+  before reinforcement is committed.
+- The timing and severity of arcane anchor-instability warnings, lightning
+  discharge, and uncontrolled daemon breach; their existence and indiscriminate
+  character are canonical, while their values and outcome tables are not.
 - Timing windows: whether reinforcement is available throughout or only during
   declared phases.
 - Whether resource missions use the mechanic at all, given they have no
