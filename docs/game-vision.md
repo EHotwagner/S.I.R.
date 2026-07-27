@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.99"
+version: "1.0"
 last-updated: 2026-07-27
 ---
 
@@ -236,6 +236,17 @@ design framework and campaign implications.
   participants sharing a channel; command topology describes who reports to
   whom. A squad shares a squad net, and leaders share the command net with
   headquarters, so a squad leader participates in both.
+- A net's throughput is shared among everyone on it, so putting more of a force
+  onto one net degrades it for all of them. This is what keeps the command
+  topology from being decorative.
+- Signature is aggregate. A force that transmits everywhere can be mapped, and
+  what an opponent recovers is the shape of the network rather than a list of
+  positions.
+- No network shape is unconditionally optimal. A hierarchy is efficient and
+  quiet but presents a hub worth killing; a flat force has no decapitation
+  target but a contended net and a footprint that can be read.
+- Topology is not configured. It follows from who carries which device, which is
+  an ordinary loadout decision under logistics.
 - Squad members communicate with their squad leader only while within an
   applicable communication distance.
 - Squad leaders communicate with headquarters—the player—only while within an
