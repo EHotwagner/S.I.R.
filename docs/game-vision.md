@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.90"
+version: "0.91"
 last-updated: 2026-07-27
 ---
 
@@ -320,6 +320,8 @@ design framework and campaign implications.
 
 See [Squad Command, Identity, and Succession](research/squad-command-and-succession.md)
 for the reference structures and proposed S.I.R. model.
+See [Formations and Positional Referents](formations-and-referents.md) for how
+squads arrange themselves and how doctrine refers to places by role.
 
 ## Personnel progression
 
