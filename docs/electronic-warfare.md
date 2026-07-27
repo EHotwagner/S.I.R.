@@ -2,10 +2,11 @@
 title: S.I.R. Electronic Warfare Architecture
 status: proposed
 document-type: living-design
-version: "0.1"
+version: "0.2"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
+  - docs/communications-network.md
   - docs/wasm-control-architecture.md
   - docs/control-abi.md
   - docs/setting-and-factions.md
@@ -20,7 +21,8 @@ that must "affect gameplay at the command and information layers, not exist only
 as a numeric combat modifier." Until now it had no model.
 
 This document defines what emits, what can be attacked, what protects against
-what, and what the counterplay is.
+what, and what the counterplay is. The links it attacks are defined in
+[Communications Network Architecture](communications-network.md).
 
 ## Design position
 
