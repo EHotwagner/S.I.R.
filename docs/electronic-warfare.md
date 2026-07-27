@@ -2,7 +2,7 @@
 title: S.I.R. Electronic Warfare Architecture
 status: proposed
 document-type: living-design
-version: "0.4"
+version: "0.5"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -255,6 +255,13 @@ Locating and killing it forces succession under the established rules, and
 succession does not create a communications device. The chain from traffic
 analysis to a decapitated and disconnected squad runs entirely through
 mechanisms that already existed.
+
+This chain is also what stops hierarchy from being unconditionally correct. A
+force spread flat across one net presents no convergence node and therefore no
+decapitation target, at the cost of a contended net and a force-wide emission
+footprint that can be mapped. Neither shape dominates, which is what makes the
+decision a decision — see
+[Communications Network](communications-network.md).
 
 ## Counterplay
 

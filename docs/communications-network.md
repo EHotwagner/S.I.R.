@@ -2,7 +2,7 @@
 title: S.I.R. Communications Network Architecture
 status: proposed
 document-type: living-design
-version: "0.4"
+version: "0.5"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -155,6 +155,67 @@ unit already in contact and already located by other means, and expensive to
 spend on a concealed one. Supporting a hidden reconnaissance element is exactly
 the case where the cost bites hardest, which is correct.
 
+## A net's capacity is shared
+
+A link has finite throughput. **A net has finite throughput shared among
+everyone on it.**
+
+This is the mechanism that stops the command topology from being decorative.
+Without it, nothing prevents a player from equipping every unit with a
+command-net set, putting the whole force on one channel, and dissolving the
+hierarchy the design assumes. With it, doing so degrades the net for everyone on
+it, including the commander.
+
+It is also how radio actually works, and it is why real militaries use nets
+hierarchically rather than putting a battalion on one channel. The structure
+exists because the medium is contended, not because someone preferred an
+organisation chart.
+
+## Signature is aggregate
+
+A force is not only a set of individually locatable transmitters. **A force that
+transmits everywhere can be mapped**, and what an opponent recovers is not a
+list of positions but the shape of the network: how many participants, how
+traffic is distributed, and where it concentrates.
+
+Adding emitters therefore costs twice — each is individually findable, and
+together they describe the force.
+
+## Why neither network shape dominates
+
+The two previous sections would, alone, make hierarchy unconditionally correct.
+It is not, and the reason matters.
+
+Traffic analysis finds the node a network converges on. In a hierarchical net
+that node is a command element, and killing it forces succession and severs a
+squad from headquarters — the chain recorded in
+[Electronic Warfare](electronic-warfare.md). **A flat network has no convergence
+node**, and therefore presents no decapitation target.
+
+So the shapes trade genuinely:
+
+| | Hierarchical | Flat |
+|---|---|---|
+| Net capacity | efficient, few participants per net | contended, degrades for everyone |
+| Emissions | fewer, concentrated | many, force-wide |
+| Legibility | topology is readable, hubs identifiable | structure visible, no obvious hub |
+| Decapitation | one death isolates a squad | no single target worth the effort |
+
+Neither is correct in general. Which is better depends on the mission, the map,
+the size of the force, and whether the opponent is equipped to exploit
+concentration or volume. That is the condition a real choice has to meet.
+
+### Topology is not configured, it is equipped
+
+A player does not set a network shape. They decide **who carries what**, and the
+shape follows. A device that reaches the command net is heavier, louder, and
+competes for carrying capacity under the ordinary logistics model, so the number
+of units on that net is limited by things a commander already has to weigh.
+
+This keeps the decision inside a system that exists rather than adding a
+separate configuration surface, and it means the answer can differ per squad
+within one force.
+
 ## Delivery and latency
 
 Delivery is never instantaneous. A message sent on one tick arrives no earlier
@@ -275,6 +336,9 @@ the human answer is to one it cannot, remains open and is recorded in
   buy reach without accepting detectability.
 - A network so reliable that the disconnection rules never fire, which would
   make the entire knowledge architecture decorative.
+- Any network shape that is unconditionally optimal. A player will find it and
+  every player will then use it, at which point the topology is a tax rather
+  than a decision.
 
 ## Open parameters
 
@@ -286,6 +350,9 @@ the human answer is to one it cannot, remains open and is recorded in
 - Queue depth and message expiry by device class.
 - Throughput accounting: whether payload bytes, message count, or both.
 - Relay chaining limits and deployment time.
+- Net capacity by class, and how sharply it degrades with participant count.
+- What an opponent recovers from aggregate signature, and how much observation
+  it takes.
 - Whether lateral leader-to-leader traffic uses the command net or a third net.
 - Whether a unit can join a net it is not organisationally part of, and what
   capturing an enemy device permits.
