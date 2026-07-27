@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "1.6"
+version: "1.7"
 last-updated: 2026-07-27
 ---
 
@@ -2156,7 +2156,10 @@ vision:
     selected? A candidate answer unifying the bid with a mission stake is
     proposed in [Stakes and Reinforcement](stakes-and-reinforcement.md).
 12. Who licenses mercenary companies, controls portal access, and administers
-    mission bidding?
+    mission bidding? A candidate motive is proposed in
+    [Stakes and Reinforcement](stakes-and-reinforcement.md): the administrator
+    takes a share of every contested pot, which is both why the institution
+    tolerates the fighting and what stops escalation being free.
 
 ## Future derived documents
 

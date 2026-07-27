@@ -2,7 +2,7 @@
 title: S.I.R. Stakes and Reinforcement
 status: proposed
 document-type: living-design
-version: "0.2"
+version: "0.3"
 related:
   - docs/mission-lifecycle.md
   - docs/game-vision.md
@@ -96,16 +96,64 @@ answer even when nobody can know one.
 - **Can anything else see the area?** This is the real answer, and it costs what
   information always costs here — time, a redirected element, and exposure.
 
-### The failure mode is overcommitment, not waste
+### Overcommitment is not free, and saying so was the error
 
-Reinforcing a squad that turns out to be alive does not burn the capital for
-nothing. **The reinforcements arrive and fight.** The commander has
-overcommitted, not wasted, and overcommitment carries its own costs — attention
-divided across more units, a larger emission footprint, and more to extract —
-which are the right costs rather than a punishment.
+An earlier version of this document argued that reinforcing a squad which turns
+out to be alive costs nothing much, because the reinforcements arrive and fight.
+That reasoning is wrong, and it is wrong in the direction that breaks the
+mechanic.
 
-That distinction matters for whether the mechanic feels fair. A wrong read
-produces a worse position, not a void.
+If more units improve the chance of winning, and winning returns the stake, then
+**reinforcing is positive expected value nearly always.** The escalation
+decision collapses into "commit the maximum," and the match resolves on who
+brought more currency. That is invariant 13 failing outright.
+
+Two costs have to bite for the decision to survive, and neither is optional.
+
+### The pot is not fully returned
+
+A share of every pot is taken by whoever administers portal access — the
+authority that licenses mercenary companies, publishes opportunities, and
+resolves bids.
+
+That gives committing a cost that survives victory. Raising a stake buys a
+better chance at a larger pot and pays a fee for the privilege, so escalating
+into a fight you were winning anyway is a small, real loss.
+
+It also answers the vision's twelfth open question in passing, or at least
+supplies a reason for the answer to exist: the administrator's cut is what the
+administrator is *for*, and it explains why such an institution tolerates
+mercenary companies fighting over its portals.
+
+### The force is the real stake, and it does not come back
+
+The stronger constraint, and the one that makes declining genuinely correct
+sometimes.
+
+Reinforcement commits **persistent people**. They are recruited individually,
+they carry progression and history across a campaign, and losing them is
+permanent. No pot compensates that, because the pot is currency and the loss is
+personnel.
+
+The campaign cadence sharpens it. Major missions arrive every half hour against
+twenty-minute matches, so a force wrecked in one contract is not ready for the
+next one. **Winning the pot does not restore people or readiness**, and a
+commander who spends both to win a match they were going to win anyway has paid
+for it out of the following mission.
+
+So the decision is not "is more force better here" — it always is — but "is this
+fight worth the force it will cost me, given what is coming." That is a real
+question, and it is one a player can get wrong in both directions.
+
+### An honest consequence
+
+Both fixes point the same way: **the currency is the secondary stake and the
+force is the primary one.** That is worth stating plainly, because it means the
+pot is a framing device for a commitment that would be consequential without it,
+rather than the mechanism doing the work.
+
+If playtesting shows the pot adds nothing beyond that framing, the mechanic can
+be reduced to committing force with no currency at all, and very little is lost.
 
 ### The exploit is a feature
 
@@ -135,14 +183,13 @@ That keeps the stake meaningful in two currencies at once: capital and lives.
 
 ### It must not make reinforcing unconditional
 
-Invariant 13 applies directly. If committing more is always correct, the pot is
-a tax on attention rather than a decision.
+Invariant 13 applies directly, and the naive version of this mechanic fails it —
+see above. Forfeiting the stake on a loss is not sufficient, because committing
+also raises the chance of not losing.
 
-It survives only if declining is sometimes right, which requires that
-reinforcing into a losing position genuinely compounds the loss. The mechanism
-does that by construction — the stake is forfeited with the match — but the
-numbers have to be set so that a player who reads the situation correctly and
-folds is rewarded for it.
+It survives only through the administrator's cut and the permanence of personnel
+losses, and the numbers have to be set so that a commander who reads a situation
+correctly and folds is rewarded for it.
 
 ### It must not snowball across a campaign
 
@@ -158,9 +205,14 @@ it is the one most likely to need a second mechanism.
 
 None of these should be settled by inference.
 
-**Winner takes all, or a split?** Taking all is cleaner and more dramatic. A
-split — winner takes most, survivors recover something — is gentler and reduces
-variance. This is a feel decision.
+**How large is the administrator's cut?** It has to be big enough that
+escalating into a won fight is a real loss and small enough that committing
+against a genuine threat is still correct. This is the number the mechanic lives
+or dies on.
+
+**Winner takes the remainder, or a split among survivors?** Taking the remainder
+is cleaner and more dramatic. A split is gentler and reduces variance. This is a
+feel decision.
 
 **How does a major mission resolve it?** Major missions may secretly co-allocate
 several players, and a player may never meet another. A pool with several
