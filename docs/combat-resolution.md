@@ -2,7 +2,7 @@
 title: S.I.R. Combat Resolution Architecture
 status: proposed
 document-type: living-design
-version: "0.5"
+version: "0.6"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -398,6 +398,10 @@ Battlefield treatment primarily restores limited function, arrests
 deterioration, or creates an opportunity for evacuation. Full recovery from
 lasting injuries primarily occurs between missions and consumes the applicable
 campaign resources and time.
+
+See [Casualty and Medical Architecture](casualty-and-medical-architecture.md)
+for the medical capability set, carrying and evacuation, and the rule that
+battlefield treatment does not return a unit to the fight.
 
 ## Suppression
 

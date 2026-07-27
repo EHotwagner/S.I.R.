@@ -40,6 +40,7 @@ description of the intended game. Everything else derives from it.
 | [wasm-control-architecture](docs/wasm-control-architecture.md) | Module ABI, fuel, command bandwidth, standing doctrine |
 | [doctrine-vocabulary](docs/doctrine-vocabulary.md) | Doctrine conditions and actions; currently a readiness audit |
 | [formations-and-referents](docs/formations-and-referents.md) | Named positional referents, formations, objective knowledge |
+| [casualty-and-medical-architecture](docs/casualty-and-medical-architecture.md) | Casualty states, medical actions, evacuation |
 | [public-protocol-architecture](docs/public-protocol-architecture.md) | Canonical gRPC service split, sessions, projections |
 | [codebase-architecture](docs/codebase-architecture.md) | F# solution layout and dependency graph |
 | [technology-stack](docs/technology-stack.md) | .NET 10, FS.GG integration boundaries, adapters |
