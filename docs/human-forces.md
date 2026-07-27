@@ -2,7 +2,7 @@
 title: S.I.R. Human Forces
 status: proposed
 document-type: living-content
-version: "0.1"
+version: "0.2"
 last-updated: 2026-07-27
 related:
   - docs/setting-and-factions.md
@@ -63,7 +63,7 @@ The class does not forbid the loadout; it prices it in effectiveness.
 | **Marksman** | Precision at range. Proficiency with slow-building, range-indifferent weapons and with observation. |
 | **Engineer** | Breaching, demolition, deployables, and prepared positions. |
 | **Medic** | Casualty work. Faster and more reliable aid and stabilisation, and procedures others cannot perform. |
-| **Signaller** | Communications and electronic warfare. Relays, direction finding, jamming, and the command-net set. |
+| **Signaller** | Communications, electronic warfare, and drones. Relays, direction finding, jamming, the command-net set, and the aerial platforms that carry all of it. |
 
 Six classes, deliberately. Each maps to a system that would otherwise have no
 one who is good at it, and none is a variation on another.
@@ -134,6 +134,7 @@ The equipment list is longer than the weapon list, and most of it is not lethal:
 | **Communications** | Personal set; command-net set; deployable relay |
 | **Sensors** | Optics; thermal; acoustic direction finder |
 | **Electronic warfare** | Jammer; direction finder; decoy emitter |
+| **Drones** | Observation drone; relay drone |
 | **Medical** | Aid kit; stabilisation kit; nanomedical stock |
 | **Engineering** | Breaching charges; cutting tools; deployable cover |
 | **Sustainment** | Ammunition by class; batteries; spare parts |
@@ -142,6 +143,34 @@ Notice what that list mostly is. **Human capability is information capability**,
 and the setting document's claim that humans are "disciplined, information-rich,
 logistics-dependent combined arms" is not an assertion to be honoured elsewhere
 — it is this table.
+
+### Drones are elevation you can move
+
+Drones belong to the signaller because they are information capability with
+rotors. Both of their uses — carrying a sensor and carrying a relay — are the
+signaller's existing job performed from somewhere a person cannot stand.
+
+A drone is a **unit, not a piece of equipment.** It has a footprint, a position,
+its own perception, and its own control module instance, because the
+architecture admits no other way for something to act. Several consequences
+follow without needing rules of their own:
+
+- it **counts against force size**, so fielding drones divides the same command
+  bandwidth pool across more units and dilutes attention exactly as any other
+  addition does;
+- it **occupies height**, which the spatial model already makes valuable twice
+  over — clear observation and clear signal paths. A drone is the one asset that
+  can put both wherever they are needed;
+- it is **the most network-dependent thing a human force fields**, since a relay
+  drone transmits continuously and is therefore a beacon, while an observation
+  drone is only useful if what it sees reaches somebody; and
+- when jammed it does not fall out of the sky. Its module runs every tick like
+  any other unit's, so it **becomes autonomous and unsupported** — still flying,
+  still seeing, and no longer telling anyone.
+
+That last property is the sharpest expression of the faction's central tension.
+The drone is the clearest thing humans own, and it is the thing an opponent has
+most reason to cut off rather than shoot down.
 
 ### Strength and vulnerability are the same property
 
@@ -156,7 +185,8 @@ electronic capability emits, and consumes power
 ```
 
 Every advantage humans have — the fused picture, direction finding, relayed
-command, thermal observation, coordinated fire — is carried by a device that
+command, thermal observation, drones, coordinated fire — is carried by a device
+that
 **announces its position** and **runs out of battery**. The faction's strength
 and its vulnerability are not two lists that must be balanced against each
 other. They are one property seen from two sides.
@@ -213,5 +243,8 @@ deliberately chosen to exercise claims that are currently only asserted:
 - Ammunition package sizes and compatibility across weapon classes.
 - Battery as a single resource or per-device-class stocks.
 - Which sensors reveal which observation facts.
-- Vehicle and drone content, deliberately excluded here.
+- Vehicle content, deliberately excluded here.
+- Drone endurance, altitude bands, control range, and whether an observation
+  drone can operate usefully while silent.
+- Whether a drone occupies a declared altitude band or the topmost level.
 - Nanomedical limits, which remain provisional in the setting document.
