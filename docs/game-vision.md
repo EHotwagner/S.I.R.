@@ -2,8 +2,8 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.82"
-last-updated: 2026-07-25
+version: "0.89"
+last-updated: 2026-07-27
 ---
 
 # S.I.R. Game Vision
@@ -542,6 +542,65 @@ No reaction resolves in zero simulation time. Prepared states such as covering a
 sector, guarding a doorway, or overwatch can reduce reaction delay, but cannot
 eliminate the action lifecycle or retroactively affect an earlier tick.
 
+An engagement also requires its targeting solution to be maintained until it
+resolves. Losing observation, range, or acquisition partway through can defeat
+it. See [Combat Resolution Architecture](combat-resolution.md).
+
+#### Competing advantages resolve by precedence
+
+When two units engage one another, their relative advantage is decided by an
+ordered ladder of engagement states rather than by summing modifiers. The
+highest applicable state on each side is compared; lower states do not
+accumulate into the result.
+
+The candidate ordering, strongest first, is:
+
+```text
+attending the sector the contact appears in
+  > holding a prepared covered position
+    > stationary and ready
+      > aiming while moving
+        > moving without readiness
+```
+
+This is a canonical direction, not a final table. The exact states, their
+ordering, and the timing each confers remain prototype parameters.
+
+#### Movement and readiness
+
+Readiness and movement trade against one another continuously rather than
+through a binary moving/stationary flag.
+
+- Reaction and engagement timing degrade with a unit's **recent movement rate**,
+  not merely with whether it is currently moving. A unit that has been sprinting
+  is less ready than one that has been walking.
+- Readiness returns **progressively as a unit approaches its destination**. A
+  unit arriving and settling is readier than one still crossing open ground, so
+  arrival is a meaningful moment and bounding movement behaves correctly: the
+  element that has reached its position covers the element still moving.
+- A unit may **maintain readiness while moving at the cost of movement speed**.
+  Holding a weapon up and an attention direction fixed while advancing is
+  slower than moving without that readiness.
+
+Together these make speed and readiness a continuous doctrinal choice. Moving
+fast without readiness, moving slowly while ready, and holding a prepared
+position are three points on one curve rather than separate modes, and a control
+module can choose among them according to the risk its commander has accepted.
+
+Recent movement rate and distance remaining to a declared destination are both
+derivable from the existing deterministic fixed-point movement credit, so
+neither requires new authoritative state.
+
+Precedence is preferred over a modifier stack because:
+
+- a decisive outcome stays explainable. "She was watching that doorway and you
+  were still moving" is a complete account of why one unit acted first;
+- a comparison is cheaper than a modifier chain at 100 units per side;
+- a control module can test which state it currently occupies and whether it is
+  dominated, which an opaque accumulated total does not permit; and
+- it directly serves the established requirement that strong causal states
+  matter more than large stacks of small opaque bonuses.
+
 This permits:
 
 - a fast reaction to interrupt an action that would resolve on a later tick;
@@ -570,11 +629,30 @@ during the consequence stage.
 - A typical human unit occupies a contiguous 2×2-cell footprint.
 - A unit can face any of the eight compass directions: north, northeast, east,
   southeast, south, southwest, west, or northwest.
-- A structure with thickness `1`, including a wall or handrail, occupies a full
-  grid cell rather than an edge between cells.
+- The grid addresses cell boundaries as well as cells. The boundary between two
+  orthogonally adjacent cells is an addressable **edge**, and the lattice point
+  where cells meet is an addressable **vertex**.
+- Thin obstructions are semantic edge features rather than cell-filling terrain.
+  Interior walls, windows, doors, fences, handrails, low walls, embrasures, and
+  comparable structures occupy the boundary between two cells.
+- Thick terrain remains cell-occupying. Masonry mass, rubble, machinery, and
+  similar volumes fill cells. The two representations coexist; edges complement
+  the cell terrain layer rather than replacing it.
 - Distance uses the Chebyshev metric.
 - A typical battlefield should be approximately 512×512 cells, representing
   256×256 metres. Individual scenarios may use smaller or larger maps.
+- Terrain is multi-level. Elevation uses a small, bounded number of discrete
+  levels rather than continuous height, and each level carries its own cell grid
+  and edge layer.
+- The boundary between vertically adjacent cells is a horizontal edge using the
+  same semantic permeability contract as a vertical one. A floor, grating,
+  hatch, or hole in a floor is an edge feature.
+- Movement between levels uses declared connection features such as stairs,
+  ladders, ramps, and drops, each with its own timing, cost, and interruption
+  rules. Vertical adjacency alone does not permit movement.
+- Battlefields are assembled from hand-authored parcels placed onto authored
+  plots. Assembly is deterministic, occurs before the match, and resolves to an
+  immutable content-hashed map instance.
 
 For two grid positions, Chebyshev distance is:
 
@@ -596,14 +674,25 @@ axis displacement is the same.
 - A typical human's 2×2-cell footprint represents 1×1 metre of occupied tactical
   space, including body, equipment, stance, and clearance rather than literal
   body dimensions.
-- A one-cell terrain footprint reserves a 0.5-metre spatial band for collision
-  and tactical interaction; it does not imply that every depicted wall or
-  handrail is literally 0.5 metres thick.
+- The world model has two spatial layers: cell terrain for volumes and edge
+  features for thin structures. Every spatial rule must state which layer it
+  reads.
+- Multi-level terrain extends line of sight, pathfinding, reservation, and
+  visibility caching into a third dimension at exactly the scale where their
+  cost is already unmeasured. The supported level count must stay bounded and
+  declared until that cost is measured.
+- Deterministic map assembly means a replay reconstructs the exact map instance
+  rather than re-running assembly against a parcel library that may have
+  changed.
+
+See [Tactical Environment Architecture](tactical-environment-architecture.md)
+for parcel assembly, cover composition at S.I.R. cell scale, verticality,
+destructibility bounds, and the map validation gate.
 - A common spatial-query model should be used across movement, targeting,
   sensing, communications, and AI to prevent inconsistent interpretations of
-  range.
+  range and of what a boundary blocks.
 - Thin terrain features need explicit rules for traversal, collision, sight,
-  projectiles, cover, and destruction.
+  projectiles, cover, and destruction. The semantic edge model supplies them.
 - The discrete spatial model makes many line-of-sight, visibility, reachability,
   and pathfinding inputs enumerable and therefore suitable for caching,
   precomputation, or incremental reuse.
@@ -617,6 +706,97 @@ points, animations, and action timing. Those systems reference orientation
 without changing which cells the unit occupies. A visual model that appears
 elongated must still fit within or be an abstraction of its authoritative square
 base.
+
+### Semantic cell edges
+
+Representing a thin structure as a fully occupied cell is rejected. At 0.5
+metres per cell it consumes tactical floor space the structure does not
+physically occupy, shrinks every room by a cell for each wall, turns a doorway
+into lost floor area, and prevents a unit from standing against a wall. More
+importantly, a cell is a single occupancy fact and cannot express a feature that
+blocks one interaction while permitting another. A window is a property of a
+wall face, not a place a unit can stand; a handrail stops movement but not
+sight; a closed door and an open door are the same masonry.
+
+Cell edges are therefore authoritative spatial state.
+
+#### Addressing
+
+An edge is the boundary between two orthogonally adjacent cells and has one
+canonical representative regardless of which side names it. A feature stored on
+that edge applies symmetrically to both directions of crossing. Vertices—the
+lattice points where up to four cells and four edges meet—are addressable
+because diagonal movement and corner geometry depend on them.
+
+#### Semantic permeability
+
+An edge feature is not one boolean blocker. It declares its behavior separately
+for each interaction that crosses it:
+
+- movement, by footprint size and movement profile;
+- line of sight and observation, which may depend on stance and height;
+- projectile traces, including penetration and deflection;
+- area, blast, and other effects;
+- sound and other stimuli;
+- cover value and the direction from which it applies; and
+- interactions declared by a specific capability, such as sensor or magical
+  effects.
+
+This makes the necessary distinctions expressible:
+
+- a **full wall** blocks movement, sight, and fire, and can be penetrated,
+  damaged, or breached under its declared rules;
+- a **low wall or handrail** blocks or slows movement while permitting sight and
+  fire over it, and provides directional cover;
+- a **window** blocks movement, permits sight and fire, and gives partial cover
+  to a unit engaging through it;
+- a **door** behaves according to its current state; and
+- a **fence, railing, or hedge** may permit sight and fire while imposing a
+  movement cost or requiring a climb or vault action.
+
+#### Edge state
+
+Doors, windows, shutters, hatches, and destructible structures carry
+authoritative state such as open, closed, locked, barricaded, damaged,
+breached, or destroyed. A state change advances the spatial revision and
+invalidates only the cached queries that depend on that edge. Breaching is
+therefore an explicit transition of an edge from blocking to passable, which
+creates a new route and a new firing line.
+
+#### Footprints and transitions
+
+An `N×N` footprint crossing a boundary crosses `N` edges, not one. The movement
+transition envelope enumerates every cell entered and every edge crossed. A
+transition is legal only when every crossed edge permits it for that unit's
+movement profile.
+
+A diagonal transition passes the vertex shared by four cells and interacts with
+the flanking edges on both sides of it. The existing prohibition on diagonal
+corner cutting extends to edge features: a unit cannot pass diagonally through a
+corner closed by wall edges even though both diagonal cells are unoccupied.
+Whether a single flanking wall edge also blocks the diagonal, or only both
+together, is a prototype parameter.
+
+#### Derived implications
+
+- Edge state belongs to the authoritative spatial revision. Visibility,
+  pathfinding, cover, and trace caches must key on it and invalidate locally
+  when it changes.
+- Knowledge rules apply to edges exactly as they apply to units. An unobserved
+  door state, broken window, or breached wall must not be revealed through a
+  path query, reservation response, failure reason, timing difference, or cache
+  event.
+- Content authoring needs an edge layer distinct from the cell terrain layer,
+  with stable identifiers for edge feature types and their permeability
+  contracts.
+- Cover evaluation reads both layers. A unit can be covered by a cell-occupying
+  volume, by an edge feature, or by both from different directions.
+- Control modules require machine-readable access to the locally known
+  permeability of nearby edges so doctrine can reason about doors, windows,
+  firing lines, and breach opportunities.
+- The canonical client must render edge features and their state legibly at
+  normal gameplay zoom, because a closed door and an open door are a tactically
+  decisive difference occupying no floor area.
 
 ### Discrete movement representation
 
@@ -644,7 +824,7 @@ Before committing a transition, the server validates the full area swept by the
 square base between its source and destination. This transition envelope:
 
 - prevents diagonal corner cutting;
-- respects terrain and unit collision;
+- respects terrain, edge features, and unit collision;
 - supplies the space-time claim used by movement reservations; and
 - remains distinct from the `N×N` footprint occupied at either tick state.
 
@@ -661,15 +841,17 @@ continuous unit positions.
 ### Spatial-query caching direction
 
 The grid is not only a presentation or movement constraint; it is a performance
-architecture advantage. Cells, square footprints, eight possible facings,
-discrete terrain states, and a finite set of movement and sensor profiles
-produce stable query keys.
+architecture advantage. Cells, canonical edges and vertices, square footprints,
+eight possible facings, discrete terrain and edge states, and a finite set of
+movement and sensor profiles produce stable query keys.
 
 Candidate cached structures include:
 
-- static line traces and visibility relationships between cells;
+- static line traces and visibility relationships between cells, including the
+  ordered set of edges each trace crosses;
 - facing-dependent visibility or firing sectors;
-- clearance and traversability by square footprint size and movement profile;
+- clearance and traversability by square footprint size and movement profile,
+  including edge permeability for that profile;
 - connected regions, choke points, gateways, and hierarchical navigation data;
 - reusable local paths or path segments;
 - distance and influence fields;
@@ -684,11 +866,12 @@ on-demand caches, hierarchical representations, and incremental recomputation
 according to the query type.
 
 Static and dynamic state must be separated. Permanent map geometry can use
-long-lived data keyed by map and ruleset version. Doors, destruction, smoke,
-temporary magical effects, deployable cover, and moving units require explicit
-spatial revision identifiers and localized invalidation. A cached result is
-valid only for the geometry, occupancy, stance, height, facing, movement
-profile, sensor profile, and ruleset inputs declared by that query.
+long-lived data keyed by map and ruleset version. Door and window state, edge
+destruction and breaching, cell destruction, smoke, temporary magical effects,
+deployable cover, and moving units require explicit spatial revision identifiers
+and localized invalidation. A cached result is valid only for the geometry, edge
+state, occupancy, stance, height, facing, movement profile, sensor profile, and
+ruleset inputs declared by that query.
 
 Caching is an implementation optimization rather than a change to authoritative
 rules. Cached and uncached evaluation must return the same deterministic result.
@@ -698,9 +881,10 @@ visibility or movement truth from them.
 
 Authoritative caches may contain complete world geometry, but query responses
 to clients and unit-control modules remain constrained by the requester's
-knowledge. A pathfinding or visibility service must not reveal an unseen door,
-unit, destroyed wall, magical obstruction, or other hidden state through its
-result, failure reason, timing, invalidation event, or cache metadata.
+knowledge. A pathfinding or visibility service must not reveal an unseen door
+state, unit, breached wall, broken window, magical obstruction, or other hidden
+state through its result, failure reason, timing, invalidation event, or cache
+metadata.
 
 ### Cooperative friendly movement
 
@@ -836,7 +1020,14 @@ pathfinding error.
   vehicles, and different unit classes may use different module types,
   capability interfaces, and resource profiles.
 - Execution, memory, storage, and API usage are strictly limited. Every module
-  instance in the same host class receives the same limits.
+  instance in the same host class receives the same per-invocation limits and
+  the same guaranteed local floor.
+- How often an instance is invoked, and how richly it is informed when invoked,
+  are purchased from a finite command-bandwidth pool the player allocates. Every
+  player receives the same total; they decide where it goes.
+- Command bandwidth is pooled at squad level and drawn through the
+  communications topology. A commander cannot spend attention on a squad they
+  cannot reach.
 - Instruction execution and host-service use are metered separately so an
   inexpensive decision cannot conceal unbounded pathfinding, visibility,
   allocation, messaging, or other server work behind host calls.
@@ -850,6 +1041,20 @@ pathfinding error.
 - A module does not need to perform substantial work on every simulation tick.
   It can request a future wake-up tick, while authoritative events can wake it
   earlier when its local situation requires a decision.
+- Units run on standing doctrine that the authoritative server executes
+  continuously without invoking their modules. Doctrine is an ordered list of
+  condition-to-action rules drawn from versioned public vocabularies.
+- Doctrine conditions evaluate against the unit's local knowledge, never
+  authoritative world truth.
+- A module declares which conditions should wake it. Waking spends command
+  bandwidth; a bandwidth-starved unit continues on doctrine rather than
+  stopping.
+- Doctrine has two authors. A module sets it directly, and the player sets it
+  through commands travelling the ordinary communications topology, so a player
+  who writes no module still authors doctrine through the canonical client and
+  the standard module.
+- Each module declares how much doctrine authority it delegates to
+  headquarters. Commands inside that envelope apply without invoking it.
 - Player code can handle micro-control and reactions that would be impractical
   for direct human control.
 - Moving this control close to the authoritative simulation makes network
@@ -918,8 +1123,18 @@ and world rules.
 - The server, not a control module, must validate actions and determine their
   results.
 - Compute budgets are part of competitive fairness. A module cannot gain an
-  advantage merely by consuming more server resources, and two instances in the
-  same host class cannot receive different budgets.
+  advantage merely by consuming more server resources, and every player receives
+  the same total command bandwidth under the same mode and force conditions.
+- Two instances in the same host class cannot receive different computation per
+  invocation. They can legitimately be invoked at different frequencies, because
+  the player has chosen to spend attention on one and not the other.
+- Anything free will be maximised by player-authored code. A capability that is
+  merely rate-limited becomes a limit every competent player pins permanently,
+  which produces worst-case load continuously and no decision at all. Pricing
+  attention is what makes declarative standing behavior a choice rather than a
+  fallback for the unsophisticated.
+- Fielding more units divides the same pool further, so mass carries a real
+  coordination cost that is not expressed in point value.
 - Observation and command exchange should use stable, bounded buffers and avoid
   per-tick serialization and allocation where the selected ABI permits.
 - Expensive shared spatial work, including authoritative pathfinding and
@@ -939,7 +1154,19 @@ and world rules.
 - Module validation must reject binaries that target an incompatible host-class
   interface.
 - The standard module is a major part of the game experience and balance
-  baseline, not placeholder sample code.
+  baseline, not placeholder sample code. It is also the vehicle through which a
+  non-programming player authors doctrine, so its interpretation of player
+  commands is a first-class design surface.
+- The expressiveness of the doctrine vocabularies sets the quality ceiling for
+  unattended play, which is most of the force most of the time. A thin
+  vocabulary is a balance problem, not merely a content gap.
+- Doctrine evaluation is a bounded static cost paid continuously by the server,
+  while wakes are a variable cost paid from allocated bandwidth. A module cannot
+  convert unspent bandwidth into more doctrine, nor evade a wake budget by
+  encoding elaborate behavior into doctrine.
+- Choosing which conditions are worth waking for is a genuine competitive
+  discipline. A sophisticated module should win by thinking at better moments
+  rather than by thinking more often.
 - Custom control logic creates a player-authored doctrine layer that may become
   one of the game's defining forms of mastery.
 
@@ -972,7 +1199,8 @@ exists. Relevant inputs include:
 - observation origins and target exposure points;
 - range and directional sensor arcs;
 - facing and attention direction;
-- terrain, doors, cover, smoke, and other occluders;
+- terrain volumes, edge features such as walls, windows, and doors, cover,
+  smoke, and other occluders;
 - unit stance and height;
 - intervening units and effects; and
 - the sensor modality being evaluated.
@@ -1065,6 +1293,49 @@ different limitations unless equipment, sensors, anatomy, magic, or another
 explicit capability changes them. Exact sector shapes and modifiers remain
 prototype parameters.
 
+The leading candidate is that the attended sector has a **hard boundary with a
+step change** rather than a smooth falloff. A contact appearing inside the
+attended sector receives the full attention advantage; a contact appearing just
+outside it receives none, falling back to ordinary unattended performance.
+
+A hard edge is preferred because it is readable to the player after the fact,
+cheaply testable by a control module deciding where to point attention, and
+makes the choice of what to watch a real commitment with a real cost. A smooth
+gradient makes every attention direction partially correct and therefore makes
+the decision weak.
+
+Stance and attention transitions are not free. Changing stance, turning to a new
+attention direction, or shouldering a lowered weapon consumes ticks under the
+ordinary action lifecycle, and a unit caught mid-transition is at a
+disadvantage. A cover posture that can be entered and left at no cost would make
+exposure meaningless and crouching universally dominant. The exact transition
+durations remain prototype parameters.
+
+### Deliberate observation
+
+Acquisition accumulates passively whenever geometry and stimulus permit, but a
+unit can also **deliberately observe**: halt and commit time to building
+awareness of a specified sector before proceeding.
+
+Deliberate observation is an ordinary timed action under the canonical
+lifecycle. It is not a separate perception mode and grants no information the
+ordinary rules would withhold. It commits the unit to stillness and a fixed
+attention direction for its duration, accelerating acquisition within that
+sector at the cost of tempo and of awareness elsewhere.
+
+Much of this is emergent — a stationary, attending unit already acquires faster
+than a moving one. Making it an explicit action matters because it lets doctrine
+express a deliberate intent that emergent behavior cannot: *clear this corner
+before advancing through it*. Without it, cautious movement is only the absence
+of hurry rather than a positive decision a module can commit to and a commander
+can order.
+
+The cost is real. A unit that stops to check is not advancing, is not covering
+another sector, and is a stationary target for anything already watching it.
+
+Exact acceleration rates, minimum useful durations, and whether checking a
+sector degrades awareness of others remain prototype parameters.
+
 ### Observation facts
 
 The server exposes factual observations rather than requiring universal labels
@@ -1093,6 +1364,13 @@ earlier observation.
   invisibility.
 - Flanking and rear approaches reduce the target's opportunity to acquire and
   react.
+- Breaking observation defeats an engagement that has not yet resolved, so
+  exposing briefly and withdrawing is a real defensive technique.
+- A unit holds one engagement at a time, but that engagement targets either a
+  single unit or a declared area. Precision fire answers one attacker; support
+  weapons deny a zone.
+- Local numerical advantage is a legitimate answer to a prepared position held
+  by precision fire, and a poor answer to one covered by a support weapon.
 - Loud, bright, electronic, thermal, or magical actions can reveal bounded
   information without visual contact.
 - Different sensor modalities can reveal different factual properties without
@@ -1106,9 +1384,17 @@ earlier observation.
 
 The following are intentionally not yet canonical:
 
-- exact forward, side, and rear sector shapes;
+- exact forward, side, and rear sector shapes, and whether the attended sector's
+  boundary is as hard as the leading candidate assumes;
+- the engagement-state precedence ladder's exact membership and ordering;
 - acquisition rates and thresholds;
 - the decay and reacquisition curve;
+- stance, turn, and weapon-posture transition durations in ticks;
+- the movement-rate-to-readiness curve and how quickly readiness returns on
+  approach to a destination;
+- the speed penalty for maintaining readiness while moving;
+- deliberate-observation acceleration rates and minimum useful durations;
+- per-capability sensitivity to a lost targeting solution;
 - the visibility sample points used by each footprint and stance;
 - whether a contact episode receives a small replay-stable hidden variation in
   its acquisition threshold; and
@@ -1208,6 +1494,10 @@ fixed report rules do not imply fixed certainty categories in the interface.
 - The communications architecture must support electronic-warfare effects that
   cause disconnection, degrade range, delay messages or reports, intercept
   traffic, and inject false information.
+- Because command bandwidth is drawn through the communications topology,
+  electronic warfare can also degrade how often a unit's control logic runs and
+  how richly it is informed. This attacks the quality of an opponent's control
+  rather than only the delivery of their orders.
 
 ### Derived implications
 
@@ -1217,7 +1507,9 @@ Communications form a dynamic tactical network. Its state influences:
 - which new orders reach squads;
 - whether squads can coordinate with one another;
 - how quickly information becomes stale;
-- whether local control modules must operate independently; and
+- whether local control modules must operate independently;
+- how well those modules think while operating independently, since a
+  disconnected squad falls back to its local floors and its last allocation; and
 - how reconnaissance becomes actionable intelligence.
 
 Electronic warfare should consequently affect gameplay at the command and
@@ -1265,12 +1557,20 @@ to headquarters.
   forward direction, with reduced awareness toward its sides and rear.
 - Player-controlled automation permits strong, decisive contextual effects.
 - Attacks from behind and executions are examples of such effects.
-- Door Kickers 2 is a primary qualitative reference for the combat, reaction,
-  facing, and awareness model.
+- The tactical environment and spatial grammar follow XCOM 2: cover-dense,
+  destructible, multi-level battlefields assembled from hand-authored parcels,
+  in which position is the scarce resource.
+- Combat resolution follows Xenonauts 2 rather than XCOM 2: physical projectile
+  delivery, destructible cover, and suppression as a distinct mechanic.
+- Door Kickers 2 is a narrow reference for breaching, room clearing, and
+  close-quarters entry. It is no longer the primary combat reference.
+- The reaction, facing, and awareness architecture is S.I.R.-owned canonical
+  design and does not depend on any single external reference.
 - Ranged weapons use authoritative physical shot traces rather than resolving
   only as an abstract hit roll against a selected target.
-- Cover is external grid geometry that can block, mitigate, be penetrated by, or
-  be damaged by an attack.
+- Cover is external grid geometry—cell-occupying volumes and semantic edge
+  features—that can block, mitigate, be penetrated by, or be damaged by an
+  attack.
 - Armor resolves after physical contact and before HP damage. It can depend on
   impact direction, coverage, damage type, penetration, and integrity.
 - HP represents immediate ability to remain functional, while discrete wounds
@@ -1278,6 +1578,11 @@ to headquarters.
 - Reaching zero HP normally causes incapacitation rather than unconditional
   immediate death.
 - Suppression is an accumulating tactical state distinct from HP damage.
+- A unit holds one engagement at a time. Its target is either a single unit or a
+  declared area, which is what distinguishes precision fire from support weapons
+  rather than rate of fire alone.
+- Covering a sector, guarding a doorway, holding a lane, and suppressing a
+  beaten zone are the same authoritative construct: an area engagement.
 - Friendly units, civilians, and protected entities receive no immunity from
   otherwise valid traces or areas of effect.
 - Executions are deliberate, timed, interruptible actions with strict
@@ -1285,20 +1590,38 @@ to headquarters.
 
 ### Reference boundary
 
-The intended reference is Door Kickers 2's emphasis on readable sightlines,
-deliberate facing and aim direction, autonomous reactions, reaction timing,
-coordinated movement, surprise, and rapidly lethal close engagements. These
-features make preparation and the direction from which contact occurs matter as
-much as raw weapon power.
+S.I.R. has no single primary reference. Its combination of continuous real time,
+50–100 persistent units per side, server-hosted player-authored control, and
+simulated command topology does not exist in one prior game, so different
+subsystems take direction from different sources.
 
-S.I.R. does not inherit every surrounding Door Kickers 2 rule. In particular,
-S.I.R. remains grid-based, runs continuously without pause, operates at a much
-larger force scale, and delegates detailed execution to per-unit WebAssembly
-modules. The reference describes the desired tactical relationships and combat
-feel, not the control interface or spatial simulation.
+The environment and spatial grammar follow XCOM 2: battlefields assembled from
+hand-authored parcels, dense in destructible cover, multi-level, and composed so
+that lines of fire are the contested asset. XCOM 2's combat resolution is
+explicitly not adopted. Its cover is a defence modifier on the target resolved
+through a single to-hit roll, its units have no facing, and its concealment is a
+squad-wide binary. Each of those contradicts an established S.I.R. rule.
 
-See [Combat, Reaction, and Awareness Reference Models](research/combat-awareness-models.md)
-for the maintained comparison and adaptation notes.
+Combat resolution follows Xenonauts 2, whose projectiles are physically
+delivered and can strike intervening objects, whose cover is destructible
+geometry, and whose suppression degrades effectiveness without dealing damage.
+
+Door Kickers 2 remains the reference for breaching, room clearing, and
+close-quarters entry. The awareness and reaction architecture it originally
+motivated is now S.I.R.-owned canonical design and stands independently of it.
+
+Delegated execution and local knowledge take direction from Combat Mission and
+Full Spectrum Warrior, where a commander issues intent and autonomous
+subordinates execute it under their own perception and morale.
+
+In every case the reference describes desired tactical relationships, not the
+control interface, resolution mathematics, spatial model, or force scale.
+
+See [Combat, Environment, and Command Reference Models](research/combat-awareness-models.md)
+for the maintained per-system reference position and adopt/reject boundaries.
+See [Tactical Environment Architecture](tactical-environment-architecture.md)
+for map construction, cover composition, verticality, destructibility, and map
+validation.
 
 See [Combat Resolution Architecture](combat-resolution.md) for the canonical
 attack, cover, armor, HP, wound, suppression, friendly-fire, and execution
@@ -1674,8 +1997,9 @@ guide subsequent design:
 8. Simulation detail must justify itself through tactical consequence.
 9. The public API and canonical client operate against the same documented game
    contracts.
-10. Spatial rules must consistently account for multi-cell square footprints
-    and Chebyshev distance.
+10. Spatial rules must consistently account for multi-cell square footprints,
+    Chebyshev distance, and the semantic permeability of the cell edges a
+    movement, trace, or sensing path crosses.
 11. Automation must be used to expand tactical depth and consequence, not to
     remove meaningful tactical agency from the player.
 
@@ -1686,28 +2010,30 @@ vision:
 
 1. What precise authority does a unit's WebAssembly policy have over existing
    orders after communication is lost?
-2. What are the exact fixed rules determining which observations become
+2. What is the command-bandwidth unit, how large is the pool, how is it derived,
+   and what exchange rate governs wake frequency against observation richness?
+3. What are the exact fixed rules determining which observations become
    reports and whether they are immediate, summarized, delayed, lost, or stored
    for later delivery?
-3. Can communications be relayed through units, vehicles, infrastructure,
-    drones, magic, or deployable equipment?
-4. What exact directional-awareness zones, rear-attack effects, and unawareness
+4. Can communications be relayed through units, vehicles, infrastructure,
+   drones, magic, or deployable equipment?
+5. What exact directional-awareness zones, rear-attack effects, and unawareness
    thresholds produce surprise and execution opportunities?
-5. Should the provisional rule that semi-random offer sets cannot be rerolled
+6. Should the provisional rule that semi-random offer sets cannot be rerolled
    become final?
-6. What monster kills qualify for System recognition, how many are required,
+7. What monster kills qualify for System recognition, how many are required,
    and how is credit assigned among cooperating units?
-7. What are the exact spell aspects, casting checks, strain recovery rules,
+8. What are the exact spell aspects, casting checks, strain recovery rules,
    breach table, and shattering outcomes of the initial arcane civilization?
-8. What limits, costs, and recovery times apply to provisional human
+9. What limits, costs, and recovery times apply to provisional human
    nanomedical technology?
-9. After players discover one another in a major mission, what determines
-   hostility, cooperation, identification, communication, victory, and
-   write-back consequences?
-10. What does a portal-access bid commit—currency, resources, reputation,
+10. After players discover one another in a major mission, what determines
+    hostility, cooperation, identification, communication, victory, and
+    write-back consequences?
+11. What does a portal-access bid commit—currency, resources, reputation,
     forces, risk, reward share, or another scarce value—and how are winning bids
     selected?
-11. Who licenses mercenary companies, controls portal access, and administers
+12. Who licenses mercenary companies, controls portal access, and administers
     mission bidding?
 
 ## Future derived documents

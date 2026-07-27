@@ -2,8 +2,8 @@
 title: S.I.R. Technology Stack and FS.GG Integration
 status: proposed
 document-type: living-architecture
-version: "0.9"
-last-updated: 2026-07-25
+version: "0.11"
+last-updated: 2026-07-27
 related:
   - docs/game-vision.md
   - docs/simulation-core-architecture.md
@@ -98,10 +98,14 @@ against the game's deterministic contract.
 | Concern | Integration rule |
 |---|---|
 | Grid cells and bounded grids | Reuse compatible integer primitives and storage where their semantics match S.I.R. |
+| Cell edges and vertices | Reuse `FS.GG.Game.Core.Edges` canonical `Edge`/`Vertex` addressing, dedupe, and cell/edge/vertex relationships. S.I.R. owns semantic edge features and their per-modality permeability; the module's boolean `Set<Edge>` wall model is an input to that, not a substitute. Its `bfs`/`astar` are four-way with a Manhattan heuristic and are not canonical for S.I.R.'s eight-way equal-cost movement. Diagonal-through-corner rules are S.I.R.-owned because `Edges` addresses only orthogonal boundaries. |
 | Fixed-step host loop | May translate wall-clock time into due simulation ticks. Floating-point accumulator time and render interpolation stay outside authoritative state. |
 | Tick state | S.I.R. owns the integer 20 Hz tick index, phase pipeline, journal, snapshots, and hashes. |
-| LOS and FOV | Reuse compatible discrete algorithms behind S.I.R. interfaces and golden tests. S.I.R. owns stance, full-cell blockers, square footprints, perception, and knowledge semantics. |
+| LOS and FOV | Reuse compatible discrete algorithms behind S.I.R. interfaces and golden tests. S.I.R. owns stance, cell blockers, edge-feature occlusion, square footprints, perception, and knowledge semantics. A reused trace must report the edges it crosses, not only the cells it enters. |
 | Spatial indexes and caches | Reuse where useful, but treat all caches as derived and require cached and uncached results to agree. |
+| Map generation | `MapGen`'s BSP, cellular-automata, and room-graph families are procedural generators. S.I.R.'s canonical map model is deterministic assembly of hand-authored parcels, so they apply to terrain fill, natural and portal space, and clutter rather than to authored tactical composition. `Grid<'T>`, `Rect`, and `Region` are reusable regardless. |
+| Map validation | Reuse the `MapAnalysis` structure directly, including `coverMap`, `exposureMap`, `killzones`, `fairness`, `spacing`, `articulationPoints`, `isConnected`, and `validate`/`Rule`/`Report`. S.I.R. supplies its own cover and line-of-sight definitions because both depend on the semantic edge layer and square footprints. Validation is an offline content gate, not a runtime cost. |
+| Elevation | Not provided. `Cell` is two-dimensional, so multi-level terrain, horizontal edges, and inter-level movement are S.I.R.-owned. Reused 2D algorithms apply per level and must not be assumed to compose across levels. |
 | Pathfinding | Use an S.I.R. adapter or implementation that gives orthogonal and diagonal moves equal Chebyshev step cost. The generic weighted eight-way A* uses a longer diagonal cost and is not canonical as-is. |
 | Cooperative movement | S.I.R. owns footprint reservations, friendly passage, dependency resolution, hostile collision, and deterministic batch commit. Generic paths may only provide candidates. |
 | Randomness | S.I.R. owns counter-addressed samples keyed by match, tick, event, purpose, and ordinal. A sequential or splittable framework generator may support isolated generation, but must not become one global authoritative combat stream. |
@@ -211,10 +215,15 @@ a generally reusable capability or a change to a versioned FS.GG contract, the
 work starts as an issue in the owning FS.GG repository and follows the FS.GG
 coordination, compatibility-registry, and ADR process.
 
-No upstream change is currently required for the Chebyshev path-cost or
-counter-addressed-randomness boundaries; both can be implemented cleanly in
-S.I.R. If experience shows that a generic FS.GG primitive should own either
-capability, that becomes an explicit cross-repository proposal rather than an
+No upstream change is currently required for the Chebyshev path-cost, semantic
+edge, or counter-addressed-randomness boundaries; all can be implemented cleanly
+in S.I.R. `FS.GG.Game.Core.Edges` already supplies the canonical edge and vertex
+addressing S.I.R.'s edge model needs, and it explicitly complements rather than
+replaces the tile model. If eight-way edge-aware traversal proves generally
+reusable, proposing it upstream is preferable to duplicating the addressing.
+
+If experience shows that a generic FS.GG primitive should own any of these
+capabilities, that becomes an explicit cross-repository proposal rather than an
 uncoordinated sibling edit.
 
 ## Validation gates

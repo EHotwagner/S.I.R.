@@ -2,8 +2,8 @@
 title: S.I.R. Robust Skirmish Development Plan
 status: proposed
 document-type: development-plan
-version: "0.5"
-last-updated: 2026-07-25
+version: "0.11"
+last-updated: 2026-07-27
 related:
   - docs/game-vision.md
   - docs/mission-lifecycle.md
@@ -156,20 +156,55 @@ maps.
 - Two hostile units attempt the same destination.
 - A large square unit moves diagonally near an obstacle.
 - Hidden hostile contact blocks movement without advance disclosure.
+- A wall edge blocks movement between two otherwise open cells.
+- A unit cannot pass diagonally through a corner closed by two wall edges.
+- A 2×2 unit is blocked by a wall edge covering only part of its crossing width.
+- A door opens and the previously blocked route becomes legal.
+- A unit vaults or is blocked by a low wall or handrail edge by movement
+  profile.
+- A unit moves between levels by stairs and cannot move through an intact floor.
+- A destroyed floor becomes a passable horizontal edge and a new firing line.
+- An assembled map reproduces byte-identically from the same plot, parcel set,
+  and seed.
 
 ### Perception scenarios
 
 - Two units meet while rounding a corner.
 - A watched doorway produces rapid acquisition.
+- A unit deliberately observing a sector acquires faster than one merely
+  stationary, and is slower to notice a contact behind it.
 - A rear approach remains unnoticed long enough to attack.
 - Sound creates a directional stimulus without identification.
 - Smoke changes geometry state and invalidates affected visibility caches.
+- A window edge permits sight where the adjacent wall edge does not.
+- Closing a door removes an established sightline and invalidates only the
+  affected cached visibility.
 - A valid local report fails to reach disconnected headquarters.
+- An unobserved door state is not disclosed through a path or visibility query.
 
 ### Combat scenarios
 
 - Two attacks complete on the same tick.
+- A target breaks line of sight before an engagement resolves and the engagement
+  does not land.
+- A burst continues after its first round destroys the cover in its path, and
+  the later rounds see the new geometry rather than a stale snapshot.
+- A unit engaging one target does not simultaneously engage a second.
+- A precision and a close-range weapon reverse their advantage across the range
+  band.
+- A partially covered target takes longer to engage, and separately survives a
+  trace its cover stops.
+- A unit arriving at its position engages before one still crossing open ground.
+- A support weapon holds an area engagement and suppresses successive units
+  crossing it without re-preparing against each.
+- A friendly unit crossing an engaged area receives no immunity from its traces.
+- Shifting an engaged area costs time and briefly leaves the original zone
+  uncovered.
 - Cover intercepts and is penetrated.
+- A shot passes through a window edge while the adjacent wall edge stops an
+  identical shot.
+- Fire crosses a low wall edge that blocks movement.
+- A wall edge is breached and becomes both a route and a firing line.
 - A missed trace contacts a unit behind the intended target.
 - A dangerous firing line produces friendly fire.
 - Suppression affects a unit without HP damage.
@@ -184,6 +219,20 @@ maps.
 - An expensive host-service request returns asynchronously.
 - A sleeping module wakes for damage or contact.
 - A disconnected squad continues its permitted doctrine.
+- A doctrine rule list adopts its first satisfied rule, and its unconditional
+  final rule governs when none of the others hold.
+- Validation reports a rule made unreachable by an earlier unconditional rule.
+- A doctrine condition counts only hostiles the unit actually knows about.
+- A wake subscription fires and spends bandwidth; the same subscription does not
+  fire when the squad is starved, and the unit continues on doctrine.
+- A player doctrine command inside the module's delegation policy applies
+  without invoking the module; one outside it does not.
+- A squad losing communications keeps its local floors and last allocation, and
+  cannot receive additional command bandwidth until contact is restored.
+- Reallocating bandwidth between squads changes wake frequency without changing
+  per-invocation fuel.
+- A jammed squad's control logic runs less often while remaining functional.
+- Identical allocation inputs reproduce an identical wake schedule in replay.
 - Identical inputs reproduce identical module outputs and final simulation
   state.
 
@@ -268,8 +317,8 @@ are reproducible under this contract.
 ## Implementation order
 
 1. Headless fixed-step simulation, snapshots, events, and state hashing.
-2. Grid occupancy, discrete movement, square-footprint collision, and spatial
-   scenarios.
+2. Grid occupancy, the semantic edge layer, discrete movement, square-footprint
+   collision, and spatial scenarios.
 3. Action lifecycle and simultaneous resolution.
 4. Perception, stimuli, acquisition, and reactions.
 5. Physical traces, cover, armor, HP, wounds, and suppression.
@@ -324,3 +373,6 @@ requiring their implementation during skirmish development.
 - Exact surrender, timeout, and abandonment policies.
 - Replay visibility and retention.
 - The smallest arcane PvE content slice.
+- Plot and parcel dimensions, and the first authored parcel set.
+- Supported level count for the first playable maps.
+- Blocking versus advisory map validation thresholds.

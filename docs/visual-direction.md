@@ -2,8 +2,8 @@
 title: S.I.R. Visual Direction
 status: proposed
 document-type: living-vision
-version: 0.8
-last-updated: 2026-07-25
+version: 0.10
+last-updated: 2026-07-27
 related:
   - docs/game-vision.md
 reference-assets:
@@ -55,6 +55,12 @@ zoom will be determined through visual prototypes and playtesting.
 Facing and attention are separate concepts. Facing is shown with a small
 directional indicator close to the base, while attention or observation is
 visualized as a cone or sector projected onto the ground.
+
+Thin structures are authoritative edge features occupying cell boundaries rather
+than whole cells. Walls, windows, doors, fences, handrails, and low walls are
+therefore drawn on the grid lines between cells, and their state must be
+readable: an open door and a closed door look different because they are
+tactically different while occupying no floor area.
 
 ## Battlefield presentation
 
@@ -129,6 +135,17 @@ Overlay visibility must be customizable by the human player and client. Players
 should be able to show or hide distinct tactical information according to their
 current task rather than having line of sight, sensors, communications,
 electronic warfare, and other fields permanently displayed together.
+
+Line-of-sight overlays for **selected** units should show exact visible
+geometry rather than an approximate glow or radius. Because positioning is the
+decisive tactical language, and edges, corners, doors, and levels determine
+what a unit can see, an imprecise overlay would misrepresent the single most
+important fact on the battlefield. A commander deciding where to place a
+support weapon needs to know precisely what that position covers.
+
+Exactness applies to selection, not to the whole force. Rendering exact geometry
+for 100 units at once would be unreadable, so the unselected force uses compact
+indicators and the exact projection is a property of attention.
 
 Hotkeys for quickly toggling individual overlays are a candidate interaction,
 but the exact controls, defaults, combinations, and persistence of overlay
