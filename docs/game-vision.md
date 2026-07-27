@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "1.1"
+version: "1.2"
 last-updated: 2026-07-27
 ---
 
@@ -2053,8 +2053,9 @@ advantages.
 
 ## Foundational design invariants
 
-The following invariants are implied strongly enough by the current vision to
-guide subsequent design:
+The following invariants guide subsequent design. The first eleven are implied
+by the vision. The remainder are design laws learned from applying it, each of
+which has caught a concrete failure in a system that had already been written.
 
 1. The server is authoritative over world state and action resolution.
 2. Clients and player-provided control modules are not trusted with hidden
@@ -2074,6 +2075,29 @@ guide subsequent design:
     movement, trace, or sensing path crosses.
 11. Automation must be used to expand tactical depth and consequence, not to
     remove meaningful tactical agency from the player.
+12. **Anything free will be maximised.** Player-authored code takes every
+    capability that costs nothing, every time. A capability that should be a
+    decision must therefore be priced, and a merely rate-limited one becomes a
+    limit every competent player pins permanently.
+13. **A single dominant configuration is a tax, not a decision.** Every
+    configurable structure must present a trade with no general winner. If one
+    answer is unconditionally correct, players will find it, all of them will
+    then use it, and the structure will have cost effort without producing a
+    choice.
+14. **Restrictions on the meaning of player-defined data are unenforceable.**
+    Any permitted vocabulary is a channel, since N options carry log2(N) bits
+    and players will encode whatever they need into it. Price measurable volume
+    instead of interpreting intent.
+15. **Prefer bounds that cannot be purchased around.** A limit a player can buy
+    off once before a match stops being a limit. Bounds rooted in physics or
+    topology — that transmitting is observable, that a round trip is longer than
+    a local decision, that a shared medium is contended — hold regardless of
+    preparation.
+
+Invariants 12 to 15 were each established by a failure they exposed: free
+invocation frequency, a costless flat network, restricted message vocabularies,
+and remote direction routed through a hierarchy. They should be applied to any
+new configurable surface before it is written rather than after.
 
 ## Open questions
 
