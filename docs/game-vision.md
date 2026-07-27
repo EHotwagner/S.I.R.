@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.98"
+version: "0.99"
 last-updated: 2026-07-27
 ---
 
@@ -1004,6 +1004,10 @@ pathfinding error.
   units. The server compiles that immutable artifact once for a compatible
   runtime and host-class interface, then reuses the compiled code across all of
   its per-unit instances.
+- Each assignment carries its own instance configuration: per-unit data supplied
+  with the assignment, opaque to the server, and locked when the match begins.
+  This is what lets one shared artifact serve many differently-directed units,
+  and it is what the mission lifecycle calls initial policies.
 - Every unit retains isolated runtime state, memory, observations, inputs, and
   outputs even when many units execute the same compiled module artifact.
 - Internal scheduling may group evaluations of units using the same artifact

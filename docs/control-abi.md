@@ -2,7 +2,7 @@
 title: S.I.R. Control ABI Surface
 status: proposed
 document-type: living-design
-version: "0.2"
+version: "0.3"
 last-updated: 2026-07-27
 related:
   - docs/wasm-control-architecture.md
@@ -30,8 +30,16 @@ evaluates conditions, so no condition vocabulary is published.
 ## Shape of the contract
 
 ```text
+instance configuration (fixed at lock, opaque to the server)
+        │
+        ▼
 events in   →   module decides   →   action requests out   →   server validates
 ```
+
+An instance reads its own configuration, which is per-unit data supplied with
+the artifact assignment and is what lets one shared artifact serve many
+differently-directed units. See
+[WebAssembly Control Architecture](wasm-control-architecture.md).
 
 The ABI itself is small and stable. Content lives in versioned ruleset data:
 
