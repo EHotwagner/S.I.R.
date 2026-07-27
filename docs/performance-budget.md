@@ -2,7 +2,7 @@
 title: S.I.R. Performance Budget
 status: proposed
 document-type: living-design
-version: "0.4"
+version: "0.5"
 last-updated: 2026-07-27
 related:
   - docs/simulation-core-architecture.md
@@ -30,7 +30,7 @@ Most numbers here are starting hypotheses to be replaced by evidence. Their
 purpose is to force the argument about which subsystem deserves which share, not
 to predict an outcome.
 
-**Two centres are now measured, and both were badly overestimated.**
+**Three centres are now measured, and all three were badly overestimated.**
 
 WASM invocation and observation marshalling came in at **~2%** against a
 provisional 15% — see
@@ -42,9 +42,15 @@ in this document and the one most feared, on the reasoning that it is quadratic
 in unit count and had just gained a third dimension. It is quadratic, and it is
 still about one percent of the tick at the supported force target.
 
-Together the two centres the design most feared account for roughly **3% of the
-tick**. Both measurements removed assumptions this document was built on, which
-is exactly what the gates exist to do.
+Movement came in at effectively **zero** for conflict resolution against a
+provisional 30% — see [Movement Spike](research/movement-spike.md). The
+allocation was aimed at the wrong thing: reservation and dependency resolution
+are free, and **path search is the entire cost of movement**, expressed as a
+replan cadence rather than a per-tick share.
+
+Together the three centres this document allocated 60% of the tick to account
+for roughly **3% of it**. Every measurement so far has removed an assumption
+this document was built on, which is exactly what the gates exist to do.
 
 ## The tick budget
 
@@ -90,18 +96,23 @@ Of the ~20 ms working target, a starting hypothesis:
 
 ```text
 perception and acquisition       5%  (measured: ~1%)
-movement and reservation        30%
+movement: conflict resolution    1%  (measured: <0.05%)
+movement: path search           10%  (a replan budget, see below)
 WASM invocation and marshalling  5%  (measured: ~2%)
 combat resolution               10%
 projection and serialization     10%
 journal and hashing              5%
 ```
 
-Movement now leads by default rather than by evidence. It is the largest centre
-that has not been measured, and its cooperative reservation, dependency
-resolution, and deadlock handling are algorithmically the most involved work in
-the tick. That is a hypothesis, and the last two hypotheses in this document
-were wrong by more than an order of magnitude each.
+Path search now leads, and unlike the others it is not a fixed cost. It is a
+**replan budget**: a number of searches the tick can afford. At roughly 0.35 ms
+for a typical medium-range search, a 10% share buys about 14 searches per tick.
+
+The remaining unmeasured centres — combat resolution, projection and
+serialization, journal and hashing — hold the rest. Given that the three
+measured centres came in between fifteen and thirty times under their
+allocations, these shares should be treated as placeholders rather than
+predictions.
 
 ## What this session made more expensive
 
@@ -130,6 +141,27 @@ never been considered together, which is what this document exists to fix.
 
 Three properties protect the budget and should be treated as design
 constraints rather than optimisations.
+
+### Replanning must be staggered, and the cadence is about one second
+
+Measured: replanning every unit every tick costs **150 ms**, four times the
+entire tick budget. Every four ticks still does not fit at 36 ms. A cadence of
+one replan per unit per second fits at 7 ms, and one per five seconds at 1.4 ms.
+
+The design already required route generation to be "bounded, staggered, or
+event-driven". The sustainable figure is **on the order of one replan per unit
+per second**, with event-driven replans layered on top for units that need one.
+
+### Path search must be expansion-capped
+
+A search for an unreachable goal exhausts the reachable region before failing:
+measured at **3.85 ms and 66,830 nodes**, roughly 8% of a tick to discover that
+no route exists. Destruction closing a route, an overrun referent, or a cut-off
+squad all produce this case in live play.
+
+A node-expansion cap is a requirement rather than an optimisation, and failure
+must surface as an event so control logic can respond instead of silently
+retrying.
 
 ### Cache only what stays warm
 

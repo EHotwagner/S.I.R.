@@ -14,6 +14,7 @@ code stays here as provenance.
 |---|---|---|
 | [wasm-invocation](wasm-invocation/) | Can the server invoke one WASM instance per unit, every tick, at 100 units per side, inside 50 ms? | [Yes, with wide margin](../docs/research/wasm-invocation-spike.md) |
 | [perception](perception/) | What does edge-aware, multi-level perception cost at 100 units per side? | [About 1% of the tick](../docs/research/perception-spike.md) |
+| [movement](movement/) | What do footprint reservation, conflict resolution and path search cost? | [Resolution is free; replan cadence is the constraint](../docs/research/movement-spike.md) |
 
 ## Running
 
