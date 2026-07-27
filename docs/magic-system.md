@@ -3,11 +3,12 @@ title: S.I.R. Risk-Based Magic System
 status: accepted
 decision-status: canonical
 document-type: living-design
-version: "1.0"
+version: "1.3"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
   - docs/setting-and-factions.md
+  - docs/arcane-forces.md
 references:
   - Frostgrave
   - Warcrow
@@ -143,10 +144,12 @@ Shedding strain is not a quiet act. It produces a **magical signature**, which
 is already a stimulus modality in the perception model, so a caster releasing
 strain announces themselves to anything equipped to perceive it.
 
-This is what gives a human magical-signature detector a purpose worth the
-research: it is not a general magic-finder, it is an instrument that locates
-casters at **precisely the moment they are stationary, inattentive, and
-irreplaceable**.
+This gives a human magical-signature detector one of its narrow purposes:
+it is not a general magic-finder, but it can locate casters at **precisely the
+moment they are stationary, inattentive, and irreplaceable**. Its other
+canonical purposes include detecting an overloaded anchor before indiscriminate
+discharge or daemon breach, growing ritual preparation, and active critter
+attunement as defined in [Arcane Civilization Forces](arcane-forces.md).
 
 It also makes the recovery decision genuinely risky rather than a safe pause. A
 caster who withdraws to meditate has traded one exposure for another: they are
@@ -251,6 +254,24 @@ Spending HP is especially consequential because it can simultaneously:
 - move the caster closer to incapacitation;
 - increase `strain - current_hp`; and
 - trigger or worsen a breach check.
+
+## Individual spells and cooperative rituals
+
+The health-and-strain rules govern an individual caster's spells. The arcane
+civilization also uses **rituals**, which are not long spells: they require
+multiple casters to maintain a quorum at a prepared site and cannot be completed
+by one caster given more time.
+
+Rituals are paid primarily through caster commitment, preparation time,
+components, exposure, and temporary anchor capacity. Whether participating also
+causes health expenditure or strain is deliberately open; those costs must not
+erase the distinction by turning a ritual into several ordinary casts executed
+together.
+
+Rituals lock a geographical target or trigger from information available when
+they are prepared. Their cooperative progress, interruption, delayed
+culmination, trap, and portal contracts are canonical in
+[Arcane Civilization Forces](arcane-forces.md).
 
 ## Resolution architecture
 
@@ -370,7 +391,12 @@ severity depending on both the check and the excess; breaches discharging some
 strain rather than resetting; strain splitting into a settling component
 recovered by meditation and a residual one that does not recover; meditation
 costing stillness, inattention, and interruptibility; and releasing strain
-emitting a signature that terrain does not attenuate.
+emitting a signature that terrain does not attenuate. Rituals are distinct from
+individual spells: they require a caster quorum at a prepared site, commit to a
+geographical target or trigger, and use the culmination, prepared-trap, and
+portal shapes defined by the arcane faction contract. Controlled transit,
+deliberate goblin incursion, and catastrophic daemon breach are distinct portal
+contracts.
 
 Not settled: every numeric value, the resolution ordering noted above, and the
 prototype questions below.
@@ -387,15 +413,24 @@ Avoid:
 - hidden severity rules unavailable to player modules;
 - effects that bypass fog of war or grid rules without explicit contracts;
 - AI casters receiving better risk information than future playable versions;
-  and
+- rituals using privileged server knowledge to track targets after preparation;
+- ritual interruption erasing so much work that incidental damage makes the
+  system unusable;
+- unlimited acceleration from adding every available caster to one ritual; and
 - nonmagical faction units existing only as disposable HP screens.
 
-## The spell set
+## The spell and ritual set
 
 The spells themselves are content rather than architecture and live in
 [Arcane Spells](arcane-spells.md). The set is deliberately utility-dominant,
 because a caster who is artillery is a worse gun than a gun, with a small number
 of expensive decisive options so that an unattended caster remains a mistake.
+
+The ritual catalog is separate and initially contains the three shapes defined
+by the faction contract: delayed culmination, prepared trap, and portal ritual.
+Portal rituals distinguish controlled transit from uncontrolled goblin
+incursion; daemon breaches are catastrophic anchor failures rather than chosen
+rituals. Their exact effects and values remain prototype questions.
 
 ## Prototype questions
 
@@ -406,8 +441,6 @@ of expensive decisive options so that an unattended caster remains a mistake.
 4. What are the settling and residual proportions, how fast does meditation
    shed settling strain, and does the residual fraction rise as total strain
    does? *The recovery mechanism itself is settled: meditation, above.*
-15. How far does a strain signature carry, does its strength scale with the
-    amount being shed, and can a caster meditate slowly to stay quiet?
 5. After a breach partially discharges strain, when is another breach check
    required if the caster remains above the threshold?
 6. What inputs determine breach severity?
@@ -420,6 +453,17 @@ of expensive decisive options so that an unattended caster remains a mistake.
     threshold?
 13. Which spell aspects are universal, and which are spell-specific?
 14. How is the amount of strain discharged by a breach determined?
+15. How far does a strain signature carry, does its strength scale with the
+    amount being shed, and can a caster meditate slowly to stay quiet?
+16. What caster quorum, preparation time, positioning, interruption, and
+    contribution rules make rituals cooperative without making one casualty
+    erase excessive progress?
+17. Do ritual participants gain strain or spend health, or are caster
+    commitment, components, exposure, and anchor capacity sufficient costs?
+18. Which culmination effects and trap triggers reward prediction without
+    becoming unavoidable delayed attacks or permanent area denial?
+19. What bounds goblin-portal output and prevents farming, safe deployment, or
+    reliable use as artillery while preserving its value as predicted chaos?
 
 ## Sources
 

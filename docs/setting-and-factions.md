@@ -2,7 +2,7 @@
 title: S.I.R. Setting and Faction Architecture
 status: proposed
 document-type: living-design
-version: "1.4"
+version: "1.8"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -110,7 +110,8 @@ mechanical concept, including:
 - classes and advanced-class lineage;
 - attributes and proficiencies;
 - abilities, actions, reactions, and prerequisites;
-- progression offers and selections;
+- automatic progression outcomes, eligibility, weighting, and development
+  policies;
 - injuries, conditions, effects, and durations;
 - items, resources, magic, technology, and equipment;
 - missions, objectives, rewards, and consequences;
@@ -457,7 +458,17 @@ need:
 See [Arcane Civilization Forces](arcane-forces.md) for the concrete faction. Its
 governing idea is that arcane coordination is anchored rather than transmitted,
 so where a human network is attacked electronically an arcane geography must be
-attacked physically.
+attacked physically. Anchoring has finite structural capacity: an overcommitted
+anchor becomes visibly and magically unstable, disrupts its dependent force,
+and can discharge indiscriminate lightning or open an uncontrolled daemon
+portal hostile to every side. Its rituals are cooperative prepared actions
+requiring multiple casters to maintain a quorum. They commit to geography and
+support delayed culminations, finite traps, and portal rituals. Controlled
+transit portals transport owned assets; goblin portals release unaffiliated
+hostiles that consume no arcane supply; daemon portals are uncontrolled overload
+failures. Arcane casters may also borrow ordinary observations from ambient
+critters without controlling them, creating a biological reconnaissance surface
+that humans can detect, deny, destroy, or deceive.
 
 #### Risk-based magic
 
@@ -708,6 +719,15 @@ The architecture still needs:
 
 - Human progression should emphasize training, doctrine, leadership,
   technology, equipment, and adaptation without granting unexplained magic.
+- Individual humans carry approximately XCOM-like character complexity, but
+  advancement resolves automatically so a 50–100-person force does not produce
+  routine promotion administration.
+- Bounded randomness selects class-compatible, history-aware qualitative
+  outcomes. Persistent training, assignment, mentoring, squad, and company
+  policies influence eligibility or weighting without guaranteeing builds.
+- Baseline class competence and essential counterplay are deterministic, and
+  every automatic result is server-authoritative, permanent, farming-resistant,
+  and inspectable after resolution.
 - Supernatural progression may follow different systems, but must remain
   inspectable and bounded.
 - Faction progression should unlock options and transformations more often than

@@ -3,7 +3,7 @@ title: S.I.R. Arcane Civilization Forces
 status: accepted
 decision-status: canonical
 document-type: living-content
-version: "1.0"
+version: "1.3"
 last-updated: 2026-07-27
 related:
   - docs/setting-and-factions.md
@@ -11,6 +11,7 @@ related:
   - docs/magic-system.md
   - docs/electronic-warfare.md
   - docs/communications-network.md
+  - docs/research/arcane-horde-progression-and-equipment.md
 ---
 
 # S.I.R. Arcane Civilization Forces
@@ -61,11 +62,11 @@ The properties this produces are the exact inverse of the human network:
 | | Human network | Arcane anchoring |
 |---|---|---|
 | Medium | transmission | influence |
-| Signature | emits continuously | none, to human sensors |
+| Signature | emits continuously | none while stable; magical when overloaded |
 | Attacked by | jamming, direction finding, traffic analysis | reaching the anchor and destroying it |
 | Shape | topology | **geography** |
 | Extended by | relays and drones | placing and holding ground |
-| Failure | isolation, still fights | isolation, still fights |
+| Failure | isolation, still fights | isolation; overloaded anchors become hazardous |
 
 The last row matters: neither faction collapses when cut off. Both continue on
 local judgement, which is the same rule applied to two different mechanisms.
@@ -74,6 +75,51 @@ local judgement, which is the same rule applied to two different mechanisms.
 approached, destroyed, and in some cases captured. Extending arcane coordination
 means physically occupying more ground, which is why this faction contests
 terrain that a human force would bypass.
+
+### Anchoring has finite capacity
+
+Anchored influence is not an unlimited benefit conferred on everything inside
+an area. Every coordinated formation imposes load on the anchor supporting it.
+Committing more force therefore requires additional or stronger anchors, paid
+for in components, scarce casters, defended ground, and a larger magical
+footprint.
+
+When load exceeds capacity, the anchor becomes **unstable**. This is the arcane
+counterpart to a human command net saturating, but it fails according to the
+faction's own rules:
+
+```text
+more anchored force
+        ↓
+anchor overload
+        ↓
+visible and detectable instability
+        ↓
+coordination disruption
+        ↓
+indiscriminate discharge or uncontrolled breach
+```
+
+Instability must be telegraphed early enough for its controller to respond.
+Which failure will occur is uncertain during play, but the rising risk is not
+hidden: the anchor becomes magically conspicuous and its coordination becomes
+unreliable before a catastrophic outcome.
+
+An unstable anchor can discharge damaging lightning into nearby units,
+equipment, or terrain without respecting allegiance. At the severe extreme it
+can open an **uncontrolled daemon portal**. Anything entering through that
+failure is outside the arcane force's command and hostile to every side.
+
+These failures are centred on the anchor and endanger the force depending on it
+at least as directly as its opponent. Overload may be accepted as a desperate
+risk, but it must not become reliable magical artillery deployed beside an
+enemy. Detaching or withdrawing units sheds load and permits recovery, making
+retreat from an overcommitted anchor a tactical action rather than a concession.
+
+Anchor capacity is structural, not another replenishing resource and not caster
+strain under a second name. Strain prices spell use; anchor capacity prices the
+amount of force held in supernatural coordination. Their exact interaction, if
+any, is a prototype question rather than an assumed rule.
 
 ## Two economies, and neither is ammunition
 
@@ -104,6 +150,88 @@ opposite directions is a better basis for a match than two health bars.
 The faction's logistical economy — components, catalysts, prepared sites — is
 real but serves preparation rather than sustainment. It is spent to *establish*
 rather than to *continue*.
+
+## Rituals are cooperative magic
+
+A spell is an individual caster action. A **ritual** is a site-bound magical
+action that requires multiple casters to maintain a quorum. One caster cannot
+perform the same ritual merely by taking longer; cooperation is the defining
+requirement rather than a speed bonus.
+
+Rituals commit scarce casters for a substantial and observable preparation
+period. Participants cannot use their ordinary spell capability while
+contributing. The ritual also consumes prepared components and temporarily
+occupies anchor capacity, so conducting one reduces the force that can be kept
+stably coordinated around it.
+
+```text
+prepare a site
+        ↓
+assemble the caster quorum
+        ↓
+lock a place or trigger from current knowledge
+        ↓
+maintain cooperative progress
+        ↓
+resolve the ritual
+```
+
+The target is geographical. A ritual locks a location or prepared trigger early
+and cannot secretly follow a unit until completion. Its prediction must use
+information the arcane force legitimately possesses — direct observation,
+reports, scrying, objectives, or inferred movement — rather than privileged
+server knowledge.
+
+Preparation produces a growing magical signature and a physical concentration
+of valuable casters. Breaking the quorum by killing, suppressing, or displacing
+participants interrupts progress. Interruption does not automatically erase all
+work; whether progress stalls, decays, or can be resumed is an open parameter.
+Additional casters beyond the quorum cannot accelerate completion without
+bound, though they may eventually provide resilience or empowerment.
+
+### Initial ritual shapes
+
+The initial system supports three shapes without yet defining a full ritual
+catalog:
+
+- A **culmination** resolves a delayed effect against a location chosen during
+  preparation. Its value depends on predicting where the enemy will be when it
+  completes. Moving, deceiving the observers, or interrupting the quorum are
+  ordinary counterplay.
+- A **prepared trap** binds a finite magical trigger to a place. It leaves
+  evidence, can be found through appropriate reconnaissance, and must be
+  removable, consumable, or avoidable rather than permanently denying terrain.
+- A **portal ritual** establishes a connection at an exposed, prepared
+  destination. Different portal contracts determine what may cross and who, if
+  anyone, controls it.
+
+### Portals are different contracts
+
+A portal is not one mechanic with cosmetic destinations.
+
+| Portal | Purpose | Ownership after crossing |
+|---|---|---|
+| **Transit portal** | Moves precommitted arcane personnel, equipment, or supply, potentially in successive waves | Remains arcane; counts normally against supply, command, and anchor load |
+| **Goblin portal** | Opens an incursion from an unaffiliated goblin territory at a predicted location | Neutral in ownership and hostile to every side, including the arcane force |
+| **Daemon breach** | Catastrophic anchor-overload failure rather than a chosen ritual | Uncontrolled and hostile to every side |
+
+A transit portal is the arcane civilization's physical reinforcement method.
+It transports owned assets and creates no people. A human force can attack the
+ritual, prepare the exit, withdraw from the predicted area, or allow an early
+wave through and break quorum before the rest arrives.
+
+A goblin portal deliberately introduces an independent battlefield problem.
+The goblins receive no arcane orders, reports, targeting priorities, alliance,
+or privileged reason to prefer human targets. They do not belong to the arcane
+roster and consume no arcane supply, command capacity, stake, or anchor capacity
+after emergence. The ritual itself still consumes casters, components, time,
+exposure, and temporary anchor capacity, and its output must be bounded.
+
+The organized arcane civilization includes goblin citizens and soldiers, but
+that does not make every goblin politically aligned with it. Goblin-portal
+arrivals are explicitly unaffiliated communities or warbands. Their hostility
+is a relationship and behavior contract, not an assertion that goblins are
+inherently feral.
 
 ## Force shape: scarce decisive casters, durable mass
 
@@ -148,11 +276,46 @@ Neither is dominant, and the correct approach differs by terrain. In open ground
 the human picture is enormously better. Inside a structure it is the arcane who
 know where everyone is.
 
-Arcane sensing does not emit in any way a human sensor detects, which means a
-human force cannot initially tell it is being observed. That is a legitimate
-advantage under the guardrail requiring evidence, provided the *effects* are
-observable — a force that reacts to something it should not have seen has
-revealed a capability, and human research is the eventual answer.
+Ordinary arcane perception does not emit in any way a human sensor detects,
+which means a human force cannot initially tell it is being observed.
+Attunement is the declared exception: borrowing a remote critter's senses leaves
+magical evidence while the link is active. Undetectable local perception remains
+a legitimate advantage under the guardrail requiring evidence, provided its
+*effects* are observable — a force that reacts to something it should not have
+seen has revealed a capability, and human research is the eventual answer.
+
+### Ambient critters are potential observers
+
+Maps can contain harmless ambient creatures such as rats, birds, insects, or
+setting-appropriate equivalents. A critter is an ordinary neutral actor with a
+physical position, species-appropriate senses, natural autonomous movement, and
+no combat role. It perceives only what its own geometry, attention, and
+acquisition permit.
+
+An arcane caster can **attune** a critter and receive the observations it
+actually earns. Attunement does not steer the animal, improve its senses, make
+it an arcane unit, or expose authoritative state the critter did not perceive.
+Its facts enter the ordinary knowledge and reporting model and may satisfy a
+ritual's observation or known-location requirement. The ritual still locks its
+geographical target when preparation commits; later critter movement does not
+make the target track.
+
+```text
+critter observes through ordinary perception
+        ↓
+attunement carries the earned facts
+        ↓
+arcane knowledge gains an unreliable remote observation
+        ↓
+ritual or portal may use that knowledge lawfully
+```
+
+Attunement is not perfectly deniable. An actively used critter produces magical
+evidence or anomalous behavior that appropriate human reconnaissance can
+acquire. Humans may kill suspected critters, but can also trap, capture, drive
+off, exclude, detect, or deliberately mislead them. Eradication is therefore a
+possible tactical response with costs in time, attention, ammunition, and
+signature rather than a mandatory map-cleaning step.
 
 ## Meeting the human sensory and electronic apparatus
 
@@ -208,12 +371,14 @@ Until humans build one they observe *effects* and not *sensing*: they see a ward
 take a shot and a caster gesture, and they cannot tell they are being perceived
 through a wall.
 
-What such an instrument is *for* is finding casters shedding strain. Releasing
-strain emits a signature that terrain does not attenuate, so a meditating caster
-can be located at exactly the moment they are stationary, inattentive, and
-irreplaceable. That is a narrow instrument with an enormous payoff, and it is
-the concrete objective a human reconnaissance apparatus has against this
-faction besides locating anchors.
+Such an instrument has several narrow, high-value purposes. Releasing strain emits
+a signature that terrain does not attenuate, so a meditating caster can be
+located at exactly the moment they are stationary, inattentive, and
+irreplaceable. An overloaded anchor likewise becomes magically conspicuous
+before it discharges or breaches, giving reconnaissance evidence of both the
+anchor's position and the force's unstable commitment. Ritual preparation and
+active critter attunement provide further evidence without turning the detector
+into a general-purpose magic finder.
 
 Fielding such a detector is therefore a natural research objective, and the
 eventual answer to the guardrail requiring every capability to leave evidence.
@@ -224,16 +389,16 @@ The setting document requires every faction to answer ten questions.
 
 | | Answer |
 |---|---|
-| Acquires information | Magical perception through obstruction, vague and short-ranged; scouts and screening mass otherwise |
-| Issues commands | Anchored influence, not transmission; outside it, prior intent |
+| Acquires information | Magical perception through obstruction, vague and short-ranged; scouts, screening mass, scrying, and observations borrowed from attuned ambient critters |
+| Issues commands | Finite anchored influence, not transmission; outside it or after anchor failure, prior intent |
 | Consumes | Health and strain personally; components, catalysts, and prepared sites logistically |
-| Moves forces and supply | On foot, with mass carrying infrastructure; constrained translocation as a candidate specialist capability |
-| Replaces casualties | Not within a match. Reinforcement is a campaign matter |
+| Moves forces and supply | On foot, with mass carrying infrastructure; constrained translocation for tactical movement; transit portals for prepared reinforcement insertion |
+| Replaces casualties | Not within a match. A transit ritual may insert precommitted reinforcements but creates no personnel; goblin portals introduce independent hostiles |
 | Recovers from injury | Regeneration in the heavier nonmagical peoples; magical healing at cost to the healer |
-| Control failure | Anchor destruction, caster loss, and breach consequences that damage their own side |
+| Control failure | Anchor destruction or overload, caster loss, and breach consequences that damage their own side |
 | Does better | Fighting where geometry favours the obscured, absorbing ranged fire, operating without a network |
 | Vulnerable to | Reaching and destroying anchors, focusing casters, forcing strain, and open ground |
-| Reveals itself by | Anchors as physical objects, visible magical effects, breach events, and reactions to things it should not have seen |
+| Reveals itself by | Anchors as physical objects, anchor-instability and ritual signatures, evidence from active critter attunement, visible magical effects, breach events, and reactions to things it should not have seen |
 
 ## The matchup
 
@@ -260,7 +425,17 @@ by accumulation; a force shape of scarce decisive casters and durable mass, in
 which the nonmagical peoples are not failed casters; information that differs
 rather than ranks, seeing through obstruction and vaguely where humans see far
 and exactly; and the sensory split, in which human sensors work completely
-against this faction and human electronic warfare does nothing at all.
+against this faction and human electronic warfare does nothing at all. Anchoring
+has finite structural capacity; overload becomes observably unstable, disrupts
+the whole force relying on the anchor, and can produce indiscriminate lightning
+or a severe uncontrolled daemon portal hostile to every side. Rituals are
+cooperative, site-bound magic requiring a caster quorum, observable preparation,
+and a geographical commitment; their initial shapes are delayed culminations,
+prepared traps, and portal rituals. Transit portals move owned assets, goblin
+portals release unaffiliated hostiles that count toward no arcane resource, and
+daemon portals are uncontrolled overload failures. Arcane casters may borrow
+only the ordinary observations of attuned ambient critters without controlling
+them.
 
 Not settled: every number, and the open parameters at the end.
 
@@ -279,12 +454,15 @@ Casters versus mass trades decisiveness against durability, and the correct
 ratio depends on terrain and on how long the engagement will last. Empowerment
 trades immediate effect against strain, which is a decision every cast rather
 than a build chosen once. Anchoring trades coordination against the obligation
-to hold ground.
+to hold ground, and committing more mass against the capacity and supernatural
+stability required to coordinate it.
 
 The risk sits with **anchors**. If placing one is always correct, they become a
 setup step rather than a decision. They need to cost enough — in time, in
 components, and in the units required to hold them — that operating unanchored
-is sometimes right.
+is sometimes right. Stronger or additional anchors must likewise create enough
+expense and observable battlefield exposure that capacity is a force-design
+choice rather than an automatic upgrade.
 
 ## What this tests in the architecture
 
@@ -295,7 +473,14 @@ is sometimes right.
 - whether **regeneration** stays distinguishable from simply having more health;
 - whether **anchored coordination** is expressible through the ordinary
   knowledge and command rules rather than requiring privileged server behaviour;
-  and
+- whether anchor overload is legible soon enough to permit load shedding,
+  dangerous enough to deter unconditional reinforcement, and too self-destructive
+  to serve as reliable artillery;
+- whether rituals reward prediction and create interruptible objectives rather
+  than resolving as unavoidable delayed attacks or static area denial;
+- whether critter attunement creates useful but unreliable reconnaissance
+  without making exterminating every ambient creature the automatic human
+  opening; and
 - whether the asymmetry survives contact, or collapses into one side being
   correct.
 
@@ -304,6 +489,25 @@ is sometimes right.
 - Every numeric value, as with human forces.
 - Anchor influence shape, radius, placement cost, and whether it is blocked by
   terrain as signal paths are.
+- How anchor capacity is derived, how formation load is measured, and whether
+  stronger anchors or multiple anchors are the more efficient response.
+- Instability thresholds, warning progression, recovery after load shedding,
+  and the exact coordination failures produced before catastrophe.
+- The lightning-discharge and daemon-breach outcome tables, including area,
+  severity, timing, portal duration, and uncontrolled daemon behaviour.
+- Ritual quorum sizes, preparation times, participant positioning, contribution
+  limits, signature progression, and how interruption changes stored progress.
+- The first culmination effects and trap triggers, including their evidence,
+  lifetime, discovery, removal, and consumption rules.
+- Transit-portal preparation, wave cadence, gate duration, insertion capacity,
+  exit constraints, and the disposition of committed assets that have not yet
+  crossed when the ritual ends.
+- Goblin-portal duration and output bounds, goblin objectives and behavior,
+  neutral reward treatment, and safeguards against farming or reliably using
+  the incursion as artillery.
+- Ambient-critter species, populations, movement, perception, attunement range
+  and duration, report delay and detail, magical evidence, countermeasures, and
+  treatment of critters that leave or re-enter the playable area.
 - Whether anchors can be captured and used, or only destroyed.
 - Which aspects each spell permits empowering, and at what rates. The spell set
   itself is in [Arcane Spells](arcane-spells.md).
@@ -314,3 +518,8 @@ is sometimes right.
 - Whether constrained translocation exists at all, and what bounds it.
 - What a human magical-signature detector reveals, its range, and where it sits
   on the research path.
+
+The non-canonical
+[Arcane Horde Progression and Equipment Proposal](research/arcane-horde-progression-and-equipment.md)
+explores caster-led force structure, species roles, progression depth, perks,
+and equipment without settling these parameters.
