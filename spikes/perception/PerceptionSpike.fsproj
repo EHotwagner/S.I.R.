@@ -12,6 +12,7 @@
   <ItemGroup>
     <Compile Include="World.fs" />
     <Compile Include="Los.fs" />
+    <Compile Include="Cache.fs" />
     <Compile Include="Perception.fs" />
     <Compile Include="Scenarios.fs" />
     <Compile Include="Program.fs" />

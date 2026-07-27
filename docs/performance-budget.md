@@ -131,6 +131,18 @@ never been considered together, which is what this document exists to fix.
 Three properties protect the budget and should be treated as design
 constraints rather than optimisations.
 
+### Cache only what stays warm
+
+Line-of-sight memoisation was measured and **does not pay while units move**: a
+cell-pair key achieves 4.2% hit rate in motion against 98.6% at rest, and the
+per-direction variant is a net 15% loss during movement because a cache that
+misses still costs. Symmetric pair evaluation removes 22% of rays
+unconditionally and is not a cache.
+
+This generalises the existing caution about all-pairs tables. Before adding a
+cache to any centre, establish its hit rate *under motion and contact*, not at
+rest, and confirm that a miss is cheap enough to lose on.
+
 ### Observation marshalling must be bulk
 
 Measurement showed that building an observation with one interop call per field
@@ -169,7 +181,7 @@ pressure. Several are already recorded elsewhere and are collected here.
 
 | Centre | Fallback if the budget is exceeded |
 |---|---|
-| Perception | measured at ~1% of budget; no fallback currently required. If one is ever needed: fewer exposure sample points per footprint, then coarser acquisition update rate |
+| Perception | measured at ~1% of budget; no fallback currently required. If one is ever needed: symmetric pair evaluation first (22% fewer rays, free), then fewer exposure sample points, then coarser acquisition rate. Line-of-sight memoisation is *not* a useful fallback: it does not pay while units are moving |
 | Line of sight | reduce sight range, which dominates ray cost; larger cached region granularity. Reducing level count would not help and might hurt |
 | Combat tracing | probabilistic cover interception in place of full geometric tracing, at the cost of weakening the semantic edge model |
 | WASM | measured at ~0.5-2% of budget; no fallback currently required |
