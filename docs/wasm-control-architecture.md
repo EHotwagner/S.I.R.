@@ -2,7 +2,7 @@
 title: S.I.R. WebAssembly Control Architecture
 status: proposed
 document-type: living-design
-version: "0.9"
+version: "0.10"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -376,6 +376,11 @@ depends on connectivity.
 A unit that loses its allocation is not disabled. It becomes autonomous and
 unsupported — it still runs every tick, still fights, still reacts, but it sees
 less and cannot commission expensive analysis.
+
+Allocation is not free of consequence in the other direction either. It is
+carried as traffic over the communications network, so a heavily supported unit
+emits more and is easier to locate. Attention has a physical signature, and
+spending it on a concealed unit is correspondingly expensive.
 
 ### Scope and the communications tie
 

@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.95"
+version: "0.96"
 last-updated: 2026-07-27
 ---
 
@@ -1498,6 +1498,9 @@ fixed report rules do not imply fixed certainty categories in the interface.
   everything else.
 - A device's power determines its range and its detectability together. Reach
   and signature are one property, not two that can be balanced apart.
+- Command bandwidth is carried as traffic over the communications network, so a
+  heavily supported unit emits more and is easier to locate. Attention has a
+  physical signature.
 - Electronic warfare is an important part of play.
 - The communications architecture must support electronic-warfare effects that
   cause disconnection, degrade range, delay messages or reports, locate
@@ -1515,6 +1518,12 @@ fixed report rules do not imply fixed certainty categories in the interface.
   electronic warfare can also degrade how richly a unit is informed and what
   analysis it can commission. This attacks the quality of an opponent's control
   rather than only the delivery of their orders.
+- The coupling runs both ways. Because an allocation is carried as traffic, a
+  rise in a unit's traffic reveals that its commander has begun attending to it,
+  which is a leading indicator of intent rather than a report of something
+  already done.
+- Attention is therefore cheap to spend on a unit already in contact and
+  located, and expensive to spend on a concealed one.
 
 ### Derived implications
 
