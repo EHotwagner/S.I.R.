@@ -2,7 +2,7 @@
 title: S.I.R. Arcane Civilization Forces
 status: proposed
 document-type: living-content
-version: "0.1"
+version: "0.2"
 last-updated: 2026-07-27
 related:
   - docs/setting-and-factions.md
@@ -148,6 +148,62 @@ advantage under the guardrail requiring evidence, provided the *effects* are
 observable — a force that reacts to something it should not have seen has
 revealed a capability, and human research is the eventual answer.
 
+## Meeting the human sensory and electronic apparatus
+
+Humans field a great deal of machinery. It divides cleanly, and the division is
+the point.
+
+**Human sensors work completely.** Arcane units are physical, warm, audible
+bodies. Optics see them, thermal sees them, acoustics hear them. They are not
+invisible and nothing here makes them so.
+
+**Human electronic warfare does nothing at all.** There is no emission to
+direction-find, no link to jam, and no traffic to analyse. An entire branch of
+human capability has no purchase on this enemy.
+
+That split is deliberate: humans keep their observation advantage in full and
+lose their disruption advantage entirely.
+
+### The human network becomes more reliable, not less
+
+The consequence is easy to state backwards. Against another human force,
+communications are contested continuously — jammed, located, degraded. Against
+the arcane, **nothing contests them electronically**, so a human commander
+enjoys their full information apparatus uninterrupted.
+
+That is the human edge in this matchup and it is why they are the side capable
+of finding anchors. It also means a human player must fight differently in PvE
+than in PvP, with a toolkit that is decisive in one and inert in the other.
+
+This is a setting statement rather than an imbalance. Humans built their
+apparatus to fight humans, and *difficulty understanding new supernatural rules*
+is already a listed human vulnerability.
+
+### The arcane answer is physical
+
+The arcane cannot attack a human network electronically, so they attack it the
+way they attack everything else: by reaching it.
+
+- kill the **signaller**, and a squad loses its command-net set and its drones;
+- destroy the **relay**, and everything behind it is isolated;
+- reach the **drone**, or fight where a drone cannot see;
+- **obscure**, and fight at ranges where seeing-through beats seeing-far.
+
+So both factions attack each other's coordination physically — anchors on one
+side, carriers on the other. Humans simply also carry an electronic toolkit that
+does not apply.
+
+### What humans can eventually detect
+
+**Magical signature is already a stimulus modality** in the perception model, so
+detecting magic requires an instrument rather than new machinery.
+
+Until humans build one they observe *effects* and not *sensing*: they see a ward
+take a shot and a caster gesture, and they cannot tell they are being perceived
+through a wall. Fielding a magical-signature detector is therefore a natural
+research objective and the eventual answer to the guardrail requiring every
+capability to leave evidence.
+
 ## The faction capability contract
 
 The setting document requires every faction to answer ten questions.
@@ -222,4 +278,5 @@ is sometimes right.
 - The distribution of roles across goblins, orcs, and trolls, which the setting
   document leaves open.
 - Whether constrained translocation exists at all, and what bounds it.
-- What human research eventually detects, and when.
+- What a human magical-signature detector reveals, its range, and where it sits
+  on the research path.

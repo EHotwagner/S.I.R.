@@ -2,7 +2,7 @@
 title: S.I.R. Mission Lifecycle and Delivery Sequence
 status: proposed
 document-type: living-design
-version: "0.3"
+version: "0.4"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -406,7 +406,10 @@ Time pressure should create strategic choice rather than interface drudgery.
 
 The architecture does not yet fix:
 
-- bid currency or selection algorithm;
+- bid currency or selection algorithm, and whether it is the same currency as
+  the mission stake proposed in
+  [Stakes and Reinforcement](stakes-and-reinforcement.md);
+- whether mid-mission reinforcement exists, and how it arrives;
 - relationship and hostility rules after player contact;
 - precise objective and reward attribution;
 - extraction and securing rules by mission type;
