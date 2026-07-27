@@ -2,13 +2,13 @@
 title: S.I.R. Casualty and Medical Architecture
 status: proposed
 document-type: living-design
-version: "0.1"
+version: "0.2"
 last-updated: 2026-07-27
 related:
   - docs/combat-resolution.md
   - docs/logistics-architecture.md
   - docs/mission-lifecycle.md
-  - docs/doctrine-vocabulary.md
+  - docs/control-abi.md
   - docs/formations-and-referents.md
 ---
 
@@ -21,8 +21,9 @@ and recovery as **outcomes and states**. Mission lifecycle defines their
 end-of-mission dispositions. Logistics defines the supply classes they consume.
 
 None of them defines the **actions**. This document specifies the medical
-capability set under the ordinary action lifecycle, which is the last gap
-recorded in [Doctrine Vocabulary](doctrine-vocabulary.md).
+capability set under the ordinary action lifecycle, so that it can be expressed
+as capability descriptors and events in the
+[Control ABI Surface](control-abi.md).
 
 ## The governing decision
 
@@ -198,14 +199,9 @@ Skirmish modes resolve dispositions without campaign write-back.
 
 ## What this unblocks
 
-The final doctrine vocabulary entries become writable:
-
-- conditions on a known casualty's presence, state, and deterioration;
-- conditions on own medical supplies and on whether the unit is carrying;
-- actions for aid, stabilization, taking up, setting down, and evacuating to a
-  referent.
-
-With this, all four gaps recorded in the vocabulary audit are closed.
+Medicine becomes expressible in the control ABI: aid, stabilization, taking up,
+setting down, and evacuating to a referent become capability descriptors, and
+casualty state changes become events a module is told about.
 
 ## Open parameters
 

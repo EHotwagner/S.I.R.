@@ -2,7 +2,7 @@
 title: S.I.R. Performance Budget
 status: proposed
 document-type: living-design
-version: "0.2"
+version: "0.3"
 last-updated: 2026-07-27
 related:
   - docs/simulation-core-architecture.md
@@ -67,10 +67,8 @@ not only an engineering one.
 | Movement and reservation | units currently moving | per tick |
 | Perception and acquisition | observer × contact episodes | per tick |
 | Line of sight and visibility | new candidates, invalidations | on change |
-| Doctrine evaluation | units × rules × conditions | see below |
-| Wake subscription evaluation | units × subscriptions | see below |
-| WASM invocation | wakes purchased from bandwidth | bounded |
-| Observation construction | wakes × what the unit can see | bounded |
+| WASM invocation | units, every tick | **measured** |
+| Observation construction | units × what each is entitled to see | **measured** |
 | Engagement maintenance | active engagements | per tick |
 | Combat resolution | traces on resolution ticks | bursty |
 | Objective and logistics state | events | on change |
@@ -84,9 +82,8 @@ Of the ~20 ms working target, a starting hypothesis:
 
 ```text
 perception and acquisition      30%
-doctrine and subscriptions      15%
-movement and reservation        15%
-WASM invocation and marshalling 15%
+movement and reservation        20%
+WASM invocation and marshalling  5%  (measured: ~2%)
 combat resolution               10%
 projection and serialization     10%
 journal and hashing              5%
@@ -110,9 +107,6 @@ accounting:
   proportional to how much fighting is happening.
 - **Per-shot physical tracing** with burst weapons is more per-shot work than
   either reference game performs.
-- **Doctrine evaluation** is a new *continuous* server-side cost for every unit,
-  introduced specifically to reduce a different cost — one that measurement has
-  since shown was not a problem.
 - **Area engagements** evaluate occupancy of a zone rather than a target.
 
 The pattern is worth noting: several of these were adopted because they made the
@@ -124,20 +118,14 @@ never been considered together, which is what this document exists to fix.
 Three properties protect the budget and should be treated as design
 constraints rather than optimisations.
 
-### Doctrine evaluation must be change-driven
+### Observation marshalling must be bulk
 
-Doctrine exists to avoid waking a module every tick. If the server instead
-evaluates every unit's full rule list every tick, it has replaced one polling
-cost with a cheaper polling cost rather than removing polling.
+Measurement showed that building an observation with one interop call per field
+costs seven to sixteen times more than assembling it host-side and copying it
+once. At the target force this is the difference between marshalling being 87%
+of a cheap total and being nearly free.
 
-At 200 units with ten rules of three conditions, naive evaluation is roughly
-6,000 condition evaluations per tick, or 120,000 per second, purely to discover
-that almost nothing changed.
-
-Doctrine must therefore re-evaluate only when an input a rule depends on
-actually changes. The same applies to wake subscriptions. This is the single
-most important implementation constraint arising from the control model, and
-getting it wrong would silently undermine the reason doctrine exists.
+This is the single most important implementation constraint on the control path.
 
 ### Perception must cull before it evaluates
 
@@ -167,8 +155,8 @@ pressure. Several are already recorded elsewhere and are collected here.
 | Perception | coarser acquisition update rate; fewer visibility sample points per footprint; reduced contact-episode count per observer |
 | Line of sight | reduce supported level count; coarser vertical LOS; larger cached region granularity |
 | Combat tracing | probabilistic cover interception in place of full geometric tracing, at the cost of weakening the semantic edge model |
-| Doctrine | reduce rule-count and condition-count bounds per host class |
 | WASM | measured at ~0.5-2% of budget; no fallback currently required |
+| Observation richness | reduce disclosed detail per unit, which is already the bandwidth mechanic |
 | Engagement maintenance | evaluate maintenance every *n* ticks rather than every tick, accepting coarser interruption granularity |
 | Projection | coalesce deltas more aggressively; lower projection cadence below tick rate |
 | Hashing | checkpoint hashing with event-stream hashing between checkpoints |

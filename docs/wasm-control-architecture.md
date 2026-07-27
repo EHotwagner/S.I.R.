@@ -2,7 +2,7 @@
 title: S.I.R. WebAssembly Control Architecture
 status: proposed
 document-type: living-design
-version: "0.8"
+version: "0.9"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -27,8 +27,8 @@ S.I.R. separates:
 1. the **server-to-WASM ABI**, which is fixed, public, and versioned;
 2. **client-to-HQ and module-to-module payload semantics**, which are defined by
    the player; and
-3. **gameplay capability definitions and the doctrine vocabularies**, which are
-   fixed, machine-readable, versioned ruleset data.
+3. **gameplay capability definitions and the event catalog**, which are fixed,
+   machine-readable, versioned ruleset data.
 
 Players can invent their own command vocabulary, reports, compression,
 acknowledgements, doctrine, and higher-level protocol. They cannot redefine how
@@ -76,11 +76,8 @@ A control output can request:
 - starting an action;
 - cancelling a cancellable action;
 - setting a movement objective, route preference, or movement priority;
-- setting body facing or attention direction;
-- replacing or amending the unit's standing doctrine, which the server then
-  executes without further invocation;
-- declaring wake subscriptions and the delegation policy for player doctrine
-  commands;
+- setting body facing, attention direction, or stance;
+- setting a formation station or requesting a formation change;
 - invoking an allowed host service;
 - sending an opaque communication payload; and
 - scheduling the instance's next requested wake-up tick.
@@ -106,10 +103,10 @@ Information generated later in that tick cannot influence the invocation
 retroactively. It becomes available at the next applicable boundary. This
 preserves deterministic causality.
 
-This describes what happens when an invocation occurs. It is not the path by
-which a unit reacts. Standing doctrine executes on every tick without an
-invocation, so reaction timing is governed by the declared reaction delay rather
-than by when the module next runs.
+Because an instance is invoked every tick, an event observable at a tick
+boundary is delivered to its module on that boundary. Reaction timing is then
+governed by the declared reaction delay of the action the module requests, not
+by when the module happens to run.
 
 ## Artifact reuse and instance isolation
 
@@ -153,176 +150,70 @@ a new privileged ABI function for every content item.
 A unit instance can inspect only capabilities currently available to that unit.
 Capability presence does not bypass server validation.
 
-## Standing doctrine
+## Invocation cadence
 
-Doctrine is the declarative half of the control interface. It is authoritative
-per-unit state that the **server executes continuously without invoking the
-module**, and it is what a unit runs on during the overwhelming majority of
-ticks.
+Every unit's instance is invoked **on every simulation tick** by default.
 
-Without it, a module must be present for every decision, which forces frequent
-wakes and makes command bandwidth unspendable on anything else. Doctrine is
-therefore not a convenience layer over the imperative ABI; it is the mechanism
-that makes bounded control possible at all.
+This was measured rather than assumed. At the intended upper force target the
+full cost of marshalling, invoking, and reading results for 200 instances is
+under 2% of a 50 ms tick — see
+[WASM Invocation Spike](research/wasm-invocation-spike.md). Per-tick invocation
+is affordable, so the architecture does not need a server-executed declarative
+layer to stand in for the module between invocations.
 
-### Two published vocabularies
+An instance may request to sleep until a future tick when it has nothing to do.
+Sleeping is a courtesy that saves work for idle units; it is not load-bearing,
+and authoritative events wake a sleeping instance regardless.
 
-Doctrine is expressed over two versioned ruleset vocabularies:
+Because the module is present every tick, it holds its own state, computes its
+own predicates, and decides for itself. The server does not evaluate conditions
+on a unit's behalf and there is no published condition vocabulary.
 
-- a **condition vocabulary** — predicates over the unit's own state and local
-  knowledge; and
-- an **action vocabulary** — the standing behaviors and capability invocations a
-  unit may adopt.
+### What this replaces
 
-Both are machine-readable ruleset data under the same contract as capability
-descriptors. New content extends the vocabularies; it does not change the ABI.
+An earlier revision specified standing doctrine as ordered condition-to-action
+rule lists evaluated server-side, with wake subscriptions and a delegation
+policy for player-issued doctrine commands. That design existed to avoid a
+per-tick invocation cost that measurement showed does not exist.
 
-Their contents are maintained in [Doctrine Vocabulary](doctrine-vocabulary.md),
-which currently records the readiness audit that must precede naming them.
+It is removed. Rule lists, the condition vocabulary, ordering guards,
+unreachability validation, wake subscriptions, and delegation policy are all
+gone. What remains is a plain request-response ABI, which is both simpler and
+strictly more expressive.
 
-### Rule lists
+The requirement it was serving — that a player who writes no module can still
+author tactical behaviour — is met by the **standard module** being
+configurable, not by the engine. That configuration is standard-module content
+carried over the ordinary message channel, so it evolves without versioning the
+ABI.
 
-A doctrine is an **ordered list of rules**. Each rule pairs one or more
-conditions with an action:
+## The control surface
 
-```text
-rule 1:  hostile in assigned sector AND ammunition above reserve  → engage sector
-rule 2:  ammunition at or below reserve                           → request resupply
-rule 3:  squad casualties above threshold                         → withdraw to rally
-rule 4:  (unconditional)                                          → hold position
-```
+Two vocabularies cross the boundary, and only two: the **events** a unit is told
+about, and the **actions** it may request. Both are versioned ruleset data.
 
-The server evaluates the list in author order and adopts the first rule whose
-conditions currently hold. Author order is preserved deliberately: automatic
-reordering by inferred specificity would be less predictable than the order the
-author wrote, and predictability is worth more than convenience in a system
-whose failures are only visible after a match.
+Their contents are maintained in [Control ABI Surface](control-abi.md).
 
-### Guarding the ordering failure
+### Actions are capability invocations
 
-An ordered rule list has a well-documented failure mode: a high-priority rule
-whose conditions are always satisfied starves every rule beneath it, and the
-author sees a doctrine that silently ignores most of what they wrote.
+The ABI does not grow a function per content item. It carries a small set of
+request kinds, and the ruleset supplies versioned capability descriptors that
+give them meaning, as described under capability-driven actions above.
 
-Two structural guards apply:
+Weapons, medical actions, breaching, resource transfers, magic, formation
+changes, and later faction mechanics are therefore descriptors rather than ABI
+surface. Adding content extends the descriptor set; it does not change the
+contract.
 
-1. **The final rule must be unconditional.** Every doctrine has a guaranteed
-   default, so a unit is never without a governing rule.
-2. **Unreachable rules are reported at validation time.** Because the condition
-   vocabulary is fixed and finite, the obvious cases are statically
-   detectable — a rule preceded by an unconditional rule, or by one whose
-   conditions are a superset of its own. Validation reports these before a match
-   rather than leaving the author to infer them from a replay.
+### Events are authoritative facts
 
-Full unreachability analysis is not decidable in general. Validation detects
-what it can and reports the remainder as unverified rather than claiming a
-doctrine is sound.
+An event tells a unit something happened that it is entitled to know. Events are
+generated by the simulation under the ordinary observation and communication
+rules — a module cannot subscribe to, suppress, or invent them.
 
-### Knowledge filtering
-
-**Conditions evaluate against the unit's local knowledge, never world truth.**
-
-A condition counting hostiles in a sector counts *known* hostiles. A condition
-testing a route counts *known* obstructions. If conditions could read
-authoritative state, doctrine would become an oracle that grants exactly the
-omniscience the entire knowledge architecture exists to prevent — and it would
-do so continuously, server-side, at no cost to the player.
-
-This is the single most important constraint in this section.
-
-### Cost model
-
-Doctrine evaluation is a **static cost**, bounded when doctrine is assigned and
-paid continuously by the server. Command bandwidth is a **dynamic cost**, spent
-on wakes. They are separate budgets:
-
-```text
-unit server cost = doctrine evaluation   (bounded, continuous, always running)
-                 + wakes                 (allocated, variable, player-directed)
-```
-
-Rule count, condition count per rule, and total doctrine size are bounded per
-host class, because evaluation cost scales with them. A module cannot buy more
-doctrine with unspent bandwidth, and it cannot evade a wake budget by encoding
-arbitrarily elaborate behavior into doctrine.
-
-### Determinism
-
-Rule evaluation uses fixed order, fixed condition semantics, integer and
-fixed-point comparison only, and no dependence on storage or iteration order.
-Identical doctrine over identical knowledge produces identical adoption.
-
-## Wake triggers
-
-A module declares **parameterized subscriptions** describing when it wants to be
-invoked. Subscriptions use the same condition vocabulary as doctrine rules, so
-there is one vocabulary with two uses.
-
-```text
-OnContact(sector: assigned, minCount: 2)
-OnAmmunitionBelow(reserve)
-OnCommandRoleChanged
-OnActionBlocked
-```
-
-When a subscription's conditions become true the instance is woken, and the wake
-spends command bandwidth.
-
-### Why this is bounded
-
-Subscription count and complexity are bounded per host class and metered like
-host services. Without a hard bound, server-evaluated subscriptions become a
-computation-offload channel: a module could declare a large set and infer world
-state from which one fired, performing inference outside its fuel budget.
-
-Telling a woken module *which* subscription fired is nonetheless safe, because
-subscription conditions are knowledge-filtered like everything else. The module
-learns only what its own knowledge could already establish. The exploit is
-volume, not disclosure, and volume is what the bound addresses.
-
-### Starvation
-
-When a squad's command bandwidth is exhausted, subscriptions do not wake their
-modules. The affected units continue on doctrine.
-
-This is the intended degradation and it is what makes scarcity bite: a
-bandwidth-starved force does not stop fighting, it stops *adapting*. A bounded
-indication that wakes were missed should be available on the next funded
-invocation, so doctrine can respond to having been starved rather than silently
-losing information.
-
-## Doctrine authorship
-
-Doctrine has two authors.
-
-1. **The unit's module**, which sets doctrine as invocation output.
-2. **The player**, whose doctrine commands travel from the client to HQ and
-   outward through the simulated communications topology exactly as any other
-   command does.
-
-A player who never writes a module still authors doctrine, through the canonical
-client and the standard module. This preserves the established rule that writing
-a custom module is not required to play, and makes the client's doctrine editor
-a first-class feature rather than a wrapper around presets.
-
-### Delegation policy
-
-Requiring an invocation to adopt every player doctrine command would make
-reconfiguring a force cost bandwidth per unit, which is prohibitive at scale.
-
-A module therefore declares a **delegation policy**: which categories of
-doctrine change headquarters may apply directly, without waking the module.
-Commands inside that envelope are applied by the server. Commands outside it
-require a wake, or are refused according to the policy.
-
-This puts the module author in control of how much autonomy they cede to the
-human commander, which is the correct place for that decision and a genuine
-expression of doctrine design. A module written for a tightly directed force
-delegates broadly; one written to operate independently delegates narrowly.
-
-Delegation does not bypass the simulation. A doctrine command still travels the
-communications path, still obeys range, jamming, interception, and equipment
-rules, and still cannot reach a squad that is out of contact.
+The event catalog is the half of the contract that determines whether a module
+can react competently, and it is specified in
+[Control ABI Surface](control-abi.md).
 
 ## Host services
 
@@ -398,9 +289,8 @@ Canonical rules:
 - assigning one compiled artifact to many units does not combine their budgets;
 - artifact validation, compilation, and compatible-code caching occur before
   live play and are not charged repeatedly to instances;
-- wake frequency is not merely constrained but purchased from an allocated
-  command-bandwidth budget, so a module cannot evade the per-invocation limit
-  through wake spam and cannot treat frequent thinking as free; and
+- every instance is invoked at the same rate, so no module gains advantage by
+  running more often than another; and
 - module instructions cannot hide unbounded server work behind cheap host
   calls.
 
@@ -437,31 +327,28 @@ competitive budgets to particular accounts.
 
 ## Command bandwidth
 
-### Why attention must cost something
+### Why information must cost something
 
-Control modules are player-authored. Any capability that is free will be
-maximised, so a design that merely rate-limits invocation produces a rate limit
-that every competent player pins permanently. The limit becomes a floor rather
-than a ceiling, worst-case server load becomes the continuous case rather than
-the firefight case, and no interesting decision exists because every player
-behaves identically.
+Control modules are player-authored, and any capability that is free will be
+maximised. If a module can request every known contact at full fidelity at no
+cost, every competent module will do so on every tick, and the server pays for
+detail nobody needed.
 
-Declarative standing behavior is only attractive when *not* using it costs
-something. Attention is therefore a priced, allocated resource.
+Invocation *frequency* is no longer priced, because measurement showed it is
+affordable for every unit on every tick. Invocation *richness* still is.
 
 ### What it meters
 
-Command bandwidth prices the two things previously free:
+Command bandwidth prices:
 
-- **wakes** — how often an instance is invoked, which is the dominant real cost
-  because it is mostly knowledge-filtered observation construction and
-  marshalling rather than WASM instruction execution; and
-- **observation richness** — how much detail an instance receives when it does
-  wake.
+- **observation richness** — how much detail an instance receives, how many
+  contacts, at what fidelity, and how far its picture extends; and
+- **expensive host services** — pathfinding, influence queries, firing-line
+  evaluation, formation planning, and sensor-coverage analysis.
 
-Per-invocation fuel and host-service quotas remain separate and unchanged. Fuel
-governs how much a module may compute *within* one invocation. Command bandwidth
-governs how often it is invoked and how well informed it is when it is.
+Per-invocation fuel remains separate and unchanged: it governs how much a module
+may compute *within* one invocation. Command bandwidth governs how well informed
+it is and how much server work it may commission.
 
 ### Two layers
 
@@ -476,10 +363,10 @@ pooled command         allocated by the player, drawn through the
 bandwidth              communications topology
 ```
 
-The floor represents a unit's own onboard autonomy. It is enough to observe,
-run standing doctrine, react under declared policy, and act. It is never taken
-away, and it is identical for every instance of the same host class, which
-preserves the baseline fairness the execution profile already guarantees.
+The floor represents a unit's own onboard sensing and processing. It is enough
+to perceive its immediate surroundings, act, and fight. It is never taken away,
+and it is identical for every instance of the same host class, which preserves
+the baseline fairness the execution profile already guarantees.
 
 The pooled layer represents networked command and processing support:
 reachback analysis, richer sensor resolution, and more frequent deliberation
@@ -487,8 +374,8 @@ supplied through the squad and company network. It is finite, allocated, and
 depends on connectivity.
 
 A unit that loses its allocation is not disabled. It becomes autonomous and
-unsupported — it still fights, still reacts, still follows doctrine, but it
-thinks less often and sees in less detail.
+unsupported — it still runs every tick, still fights, still reacts, but it sees
+less and cannot commission expensive analysis.
 
 ### Scope and the communications tie
 
@@ -505,17 +392,20 @@ held when contact was lost. It does not gain more, and the player cannot
 redirect capacity toward it however urgent its situation becomes. Restoring
 communications restores the ability to allocate.
 
+Its modules keep running at full rate throughout. What degrades is what they can
+see and what analysis they can commission, not whether they think.
+
 This binds three systems that were previously only loosely related. Command
 topology now governs control quality and not only orders and reports; losing a
-squad leader's communications device degrades how well that squad thinks, not
-merely what it is told; and electronic warfare gains a direct, legitimate attack
-on the control layer.
+squad leader's communications device degrades the quality of that squad's
+picture, not merely what it is told; and electronic warfare gains a direct,
+legitimate attack on the control layer.
 
 ### Bucket semantics
 
 Allocation behaves as a bucket with both a capacity and a maximum flow rate.
 
-Capacity permits deliberate reserve — holding attention back for an anticipated
+Capacity permits deliberate reserve — holding capacity back for an anticipated
 decisive moment is a legitimate and interesting choice. The flow rate prevents
 that reserve from becoming instantaneous omniscience, so a saved pool cannot be
 discharged into a single tick to inspect the whole battlefield at maximum
@@ -543,8 +433,8 @@ what matters; the system distributes accordingly and explains what it did.
 - A server may not sell, grant, or otherwise allocate greater competitive
   bandwidth to particular accounts.
 - The per-invocation fuel allowance remains uniform across instances of a host
-  class. Two units may be invoked at different frequencies; they may not be
-  given different amounts of computation per invocation.
+  class, and every unit is invoked at the same rate. Units may be differently
+  informed; they may not be given different amounts of computation.
 
 ### Force size
 
@@ -564,12 +454,12 @@ Allocation is authoritative state, not an operational convenience.
 Allocation changes are external inputs. They receive assigned target ticks and
 stable ordering through the ordinary input journal, they appear in snapshots and
 replays, and they cannot be applied retroactively into a committed tick. A
-replay reproduces the same allocations and therefore the same wake schedule.
+replay reproduces the same allocations and therefore the same observations.
 
 ### Open parameters
 
-- The bandwidth unit, and the exchange rate between wakes and observation
-  richness.
+- The bandwidth unit, and the exchange rate between observation richness and
+  host-service quota.
 - Local floor values by host class.
 - Total pool size, and whether it derives from force composition, mode, company
   progression, or equipment.
@@ -633,7 +523,7 @@ Because custom control is a core game feature, the project provides:
 - a versioned ABI specification;
 - generated bindings for supported languages;
 - a deterministic offline test harness;
-- adversarial doctrine rehearsal against scripted opposition;
+- adversarial rehearsal against scripted opposition;
 - the standard control implementation as readable reference code;
 - scenario fixtures with known inputs and expected requests;
 - fuel, memory, message, and host-service profiling;
@@ -645,13 +535,13 @@ Debugging and replay data remain knowledge-scoped during competitive play.
 Post-match disclosure policy must not undermine information that should remain
 secret across an ongoing campaign.
 
-### Doctrine rehearsal
+### Adversarial rehearsal
 
-The offline harness is not only a correctness tool. Because doctrine is intended
-to be a primary form of mastery, a player must be able to **rehearse doctrine
-adversarially** before committing it to a match: run a module against scripted
-opposition, vary that opposition's behavior, and observe where the doctrine
-fails.
+The offline harness is not only a correctness tool. Because player-authored
+control is intended to be a primary form of mastery, a player must be able to
+**rehearse a module adversarially** before committing it to a match: run it
+against scripted opposition, vary that opposition's behavior, and observe where
+the module fails.
 
 Rehearsal runs the same deterministic kernel, ABI, execution profile, and
 knowledge filtering as a live match. It is not a simplified simulator, because

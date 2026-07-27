@@ -38,7 +38,7 @@ description of the intended game. Everything else derives from it.
 | [combat-resolution](docs/combat-resolution.md) | Traces, cover, armor, wounds, suppression, engagement |
 | [tactical-environment-architecture](docs/tactical-environment-architecture.md) | Map construction, cover composition, verticality, destructibility |
 | [wasm-control-architecture](docs/wasm-control-architecture.md) | Module ABI, fuel, command bandwidth, standing doctrine |
-| [doctrine-vocabulary](docs/doctrine-vocabulary.md) | Doctrine conditions and actions; currently a readiness audit |
+| [control-abi](docs/control-abi.md) | Event catalog and action request kinds crossing the WASM boundary |
 | [formations-and-referents](docs/formations-and-referents.md) | Named positional referents, formations, objective knowledge |
 | [casualty-and-medical-architecture](docs/casualty-and-medical-architecture.md) | Casualty states, medical actions, evacuation |
 | [public-protocol-architecture](docs/public-protocol-architecture.md) | Canonical gRPC service split, sessions, projections |

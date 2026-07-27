@@ -2,7 +2,7 @@
 title: S.I.R. Robust Skirmish Development Plan
 status: proposed
 document-type: development-plan
-version: "0.14"
+version: "0.15"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -222,25 +222,20 @@ maps.
 - Sixty units share one compiled artifact while retaining isolated state.
 - A module exhausts fuel and produces no partial output.
 - An expensive host-service request returns asynchronously.
-- A sleeping module wakes for damage or contact when it subscribed to that
-  condition, and is not woken when it did not.
-- A unit reacts to contact from standing doctrine without its module being
-  invoked at all.
-- A disconnected squad continues its permitted doctrine.
-- A doctrine rule list adopts its first satisfied rule, and its unconditional
-  final rule governs when none of the others hold.
-- Validation reports a rule made unreachable by an earlier unconditional rule.
-- A doctrine condition counts only hostiles the unit actually knows about.
-- A wake subscription fires and spends bandwidth; the same subscription does not
-  fire when the squad is starved, and the unit continues on doctrine.
-- A player doctrine command inside the module's delegation policy applies
-  without invoking the module; one outside it does not.
+- A module that requested sleep is woken early by an authoritative event.
+- A disconnected squad continues under its own control logic.
+- Every unit's module is invoked on every tick, and the tick budget holds at the
+  full force target.
+- A module receives only events its unit is entitled to, and an action formed
+  from knowledge the unit lacks is rejected with a stable reason code.
+- A bandwidth-starved squad's modules keep running while receiving a reduced
+  observation.
 - A squad losing communications keeps its local floors and last allocation, and
   cannot receive additional command bandwidth until contact is restored.
-- Reallocating bandwidth between squads changes wake frequency without changing
-  per-invocation fuel.
-- A jammed squad's control logic runs less often while remaining functional.
-- Identical allocation inputs reproduce an identical wake schedule in replay.
+- Reallocating bandwidth between squads changes observation richness without
+  changing invocation rate or per-invocation fuel.
+- A jammed squad sees less while remaining fully functional.
+- Identical allocation inputs reproduce identical observations in replay.
 - Identical inputs reproduce identical module outputs and final simulation
   state.
 
