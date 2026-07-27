@@ -2,7 +2,7 @@
 title: S.I.R. Deterministic Simulation Core
 status: proposed
 document-type: living-design
-version: "0.6"
+version: "0.7"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -102,7 +102,7 @@ includes:
 - WASM artifact identity, instance memory, pending services, wake schedule, and
   rule-relevant fault state; and
 - command-bandwidth pools, current allocations, and allocation policy state,
-  since they determine the wake schedule and therefore the outcome.
+  since they determine what each unit is told and therefore what it decides.
 
 ### Derived state
 

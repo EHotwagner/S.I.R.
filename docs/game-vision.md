@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.91"
+version: "0.92"
 last-updated: 2026-07-27
 ---
 
@@ -534,26 +534,16 @@ trigger:
 ```text
 trigger becomes locally observable
   → reaction opportunity
-  → standing doctrine selects the reaction
-      (or the module is woken, if it asked to be)
+  → the unit's module selects the reaction on this tick boundary
   → reaction delay
   → reaction resolves
 ```
 
-The ordinary path does **not** invoke the control module. A unit reacts from the
-doctrine it already declared, so the reaction begins on the trigger tick without
-waiting for a module round trip. The module made its decision earlier, when it
-declared the policy.
-
-This matters for three reasons. Module wake latency stays out of the reaction
-loop, so reaction speed is determined by declared game state rather than by
-scheduler behavior. No wake is required at first contact, which is precisely
-when many units would otherwise wake at once. And a unit whose squad has
-exhausted its command bandwidth still reacts normally — a starved force stops
-adapting, not fighting.
-
-A module is invoked only when one of its declared wake subscriptions matches,
-and that invocation runs alongside the reaction rather than gating it.
+Because every instance is invoked on every tick, a trigger observable at a tick
+boundary reaches its module on that boundary. Reaction speed is therefore
+determined by the declared reaction delay of the action requested, not by when
+the module next happens to run, and there is no scheduling phase that makes two
+otherwise identical units react differently.
 
 No reaction resolves in zero simulation time. Prepared states such as covering a
 sector, guarding a doorway, or overwatch can reduce reaction delay, but cannot
@@ -1039,9 +1029,9 @@ pathfinding error.
 - Execution, memory, storage, and API usage are strictly limited. Every module
   instance in the same host class receives the same per-invocation limits and
   the same guaranteed local floor.
-- How often an instance is invoked, and how richly it is informed when invoked,
-  are purchased from a finite command-bandwidth pool the player allocates. Every
-  player receives the same total; they decide where it goes.
+- How richly an instance is informed, and how much expensive server analysis it
+  may commission, are purchased from a finite command-bandwidth pool the player
+  allocates. Every player receives the same total; they decide where it goes.
 - Command bandwidth is pooled at squad level and drawn through the
   communications topology. A commander cannot spend attention on a squad they
   cannot reach.
@@ -1058,20 +1048,15 @@ pathfinding error.
 - A module does not need to perform substantial work on every simulation tick.
   It can request a future wake-up tick, while authoritative events can wake it
   earlier when its local situation requires a decision.
-- Units run on standing doctrine that the authoritative server executes
-  continuously without invoking their modules. Doctrine is an ordered list of
-  condition-to-action rules drawn from versioned public vocabularies.
-- Doctrine conditions evaluate against the unit's local knowledge, never
-  authoritative world truth.
-- A module declares which conditions should wake it. Waking spends command
-  bandwidth; a bandwidth-starved unit continues on doctrine rather than
-  stopping.
-- Doctrine has two authors. A module sets it directly, and the player sets it
-  through commands travelling the ordinary communications topology, so a player
-  who writes no module still authors doctrine through the canonical client and
-  the standard module.
-- Each module declares how much doctrine authority it delegates to
-  headquarters. Commands inside that envelope apply without invoking it.
+- Every unit's module is invoked on every simulation tick. Measurement showed
+  this costs under 2% of the tick budget at the intended force target, so the
+  server does not execute behavior on a module's behalf.
+- Exactly two vocabularies cross the control boundary: the events a unit is told
+  about and the actions it may request. Both are versioned ruleset data.
+- A module computes its own conditions from its own knowledge. The server
+  publishes no condition vocabulary and evaluates no rules for a unit.
+- A player who writes no module authors behavior by configuring the standard
+  module, which is standard-module content rather than engine contract.
 - Player code can handle micro-control and reactions that would be impractical
   for direct human control.
 - Moving this control close to the authoritative simulation makes network
@@ -1142,14 +1127,14 @@ and world rules.
 - Compute budgets are part of competitive fairness. A module cannot gain an
   advantage merely by consuming more server resources, and every player receives
   the same total command bandwidth under the same mode and force conditions.
-- Two instances in the same host class cannot receive different computation per
-  invocation. They can legitimately be invoked at different frequencies, because
-  the player has chosen to spend attention on one and not the other.
-- Anything free will be maximised by player-authored code. A capability that is
-  merely rate-limited becomes a limit every competent player pins permanently,
-  which produces worst-case load continuously and no decision at all. Pricing
-  attention is what makes declarative standing behavior a choice rather than a
-  fallback for the unsophisticated.
+- Two instances in the same host class receive the same computation per
+  invocation and are invoked at the same rate. They can legitimately be
+  differently informed, because the player has chosen to spend attention on one
+  and not the other.
+- Anything free will be maximised by player-authored code. If observation detail
+  costs nothing, every competent module requests maximum fidelity on every tick.
+  Pricing information is what makes what a unit knows a commander's decision
+  rather than a default.
 - Fielding more units divides the same pool further, so mass carries a real
   coordination cost that is not expressed in point value.
 - Observation and command exchange should use stable, bounded buffers and avoid
@@ -1172,18 +1157,12 @@ and world rules.
   interface.
 - The standard module is a major part of the game experience and balance
   baseline, not placeholder sample code. It is also the vehicle through which a
-  non-programming player authors doctrine, so its interpretation of player
-  commands is a first-class design surface.
-- The expressiveness of the doctrine vocabularies sets the quality ceiling for
-  unattended play, which is most of the force most of the time. A thin
-  vocabulary is a balance problem, not merely a content gap.
-- Doctrine evaluation is a bounded static cost paid continuously by the server,
-  while wakes are a variable cost paid from allocated bandwidth. A module cannot
-  convert unspent bandwidth into more doctrine, nor evade a wake budget by
-  encoding elaborate behavior into doctrine.
-- Choosing which conditions are worth waking for is a genuine competitive
-  discipline. A sophisticated module should win by thinking at better moments
-  rather than by thinking more often.
+  non-programming player authors behavior, so its configuration surface and its
+  interpretation of player commands are first-class design concerns.
+- Because the standard module's configuration is content rather than engine
+  contract, it can evolve without versioning the ABI.
+- The event catalog determines whether a module can react competently. A missing
+  event is a capability a player cannot write, however good their code.
 - Custom control logic creates a player-authored doctrine layer that may become
   one of the game's defining forms of mastery.
 
@@ -1283,7 +1262,7 @@ canonical timed-action model:
 ```text
 acquisition completes
   → local observation is delivered
-  → standing doctrine selects the reaction
+  → the unit's module requests a reaction
   → reaction delay elapses
   → reaction resolves
 ```
@@ -1291,8 +1270,8 @@ acquisition completes
 Acquisition time and reaction time are separate. A unit can notice a threat
 before it has turned, aimed, changed stance, or otherwise become ready to act.
 
-The unit's control module is not in this path unless a declared wake
-subscription matches the observation. See the reaction lifecycle under
+The module is invoked on the same tick boundary the observation is delivered.
+See the reaction lifecycle under
 [Action timing and tick resolution](#reactions).
 
 ### Facing and attention
@@ -1515,8 +1494,8 @@ fixed report rules do not imply fixed certainty categories in the interface.
   cause disconnection, degrade range, delay messages or reports, intercept
   traffic, and inject false information.
 - Because command bandwidth is drawn through the communications topology,
-  electronic warfare can also degrade how often a unit's control logic runs and
-  how richly it is informed. This attacks the quality of an opponent's control
+  electronic warfare can also degrade how richly a unit is informed and what
+  analysis it can commission. This attacks the quality of an opponent's control
   rather than only the delivery of their orders.
 
 ### Derived implications
@@ -1528,7 +1507,7 @@ Communications form a dynamic tactical network. Its state influences:
 - whether squads can coordinate with one another;
 - how quickly information becomes stale;
 - whether local control modules must operate independently;
-- how well those modules think while operating independently, since a
+- how well informed those modules are while operating independently, since a
   disconnected squad falls back to its local floors and its last allocation; and
 - how reconnaissance becomes actionable intelligence.
 
@@ -2032,7 +2011,8 @@ vision:
 1. What precise authority does a unit's WebAssembly policy have over existing
    orders after communication is lost?
 2. What is the command-bandwidth unit, how large is the pool, how is it derived,
-   and what exchange rate governs wake frequency against observation richness?
+   and what exchange rate governs observation richness against host-service
+   quota?
 3. What are the exact fixed rules determining which observations become
    reports and whether they are immediate, summarized, delayed, lost, or stored
    for later delivery?

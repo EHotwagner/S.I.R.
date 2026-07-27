@@ -2,11 +2,11 @@
 title: S.I.R. Formations and Positional Referents
 status: proposed
 document-type: living-design
-version: "0.1"
+version: "0.2"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
-  - docs/doctrine-vocabulary.md
+  - docs/control-abi.md
   - docs/wasm-control-architecture.md
   - docs/research/squad-command-and-succession.md
 ---
@@ -26,8 +26,8 @@ which describe how a squad arranges itself relative to something. It also
 resolves what a unit may know about mission objectives, because an objective is
 a referent and its disclosure follows the same rules.
 
-These are three of the four gaps recorded in
-[Doctrine Vocabulary](doctrine-vocabulary.md).
+Both become capability descriptors and events in the
+[Control ABI Surface](control-abi.md).
 
 ## Positional referents
 
@@ -228,17 +228,10 @@ the knowledge model and requires no special case.
 
 ## What this unblocks
 
-The following doctrine vocabulary entries become writable:
-
-- conditions on distance to, arrival at, and reported validity of a referent;
-- conditions on formation integrity and a unit's own station occupancy;
-- conditions on known objective state and progress;
-- actions withdrawing, rallying, or assembling at a referent;
-- actions adopting or changing a formation template; and
-- coordinated movement actions expressed as formation intent, including
-  bounding advance and overwatch handoff.
-
-Medical actions remain the fourth gap and are not addressed here.
+Movement intent and engagement can target a referent rather than a coordinate,
+which is what keeps control logic portable across maps. Formation intent becomes
+a request kind, and referent designation, referent invalidation, objective state
+changes, and station changes become events a module is told about.
 
 ## Open parameters
 
