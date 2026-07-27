@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "1.0"
+version: "1.1"
 last-updated: 2026-07-27
 ---
 
@@ -1512,6 +1512,14 @@ fixed report rules do not imply fixed certainty categories in the interface.
 - Communication range constrains contact between squad members and their leader.
 - Communication range constrains contact between squad leaders and the player or
   headquarters.
+- Remote direction is bounded by cost rather than prohibited. Orders pay for net
+  capacity, emission, and command bandwidth, and above all they pay latency: a
+  round trip through the network is strictly longer than a local reaction, and
+  no protocol compression shortens it. Global coordination is therefore possible
+  but slow, and local reaction fast.
+- Restricting which messages may be sent is not attempted. Any preset vocabulary
+  is a channel a player will encode arbitrary instructions into, so volume is
+  charged instead of meaning.
 - Control modules cannot communicate through a privileged out-of-world
   backchannel. Their messages follow the simulated communications topology:
   client to HQ, HQ to squad leaders, squad leaders to members, and the reverse
