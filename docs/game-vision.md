@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "1.5"
+version: "1.6"
 last-updated: 2026-07-27
 ---
 
@@ -2153,7 +2153,8 @@ vision:
     write-back consequences?
 11. What does a portal-access bid commit—currency, resources, reputation,
     forces, risk, reward share, or another scarce value—and how are winning bids
-    selected?
+    selected? A candidate answer unifying the bid with a mission stake is
+    proposed in [Stakes and Reinforcement](stakes-and-reinforcement.md).
 12. Who licenses mercenary companies, controls portal access, and administers
     mission bidding?
 

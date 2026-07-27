@@ -52,6 +52,7 @@ description of the intended game. Everything else derives from it.
 | [magic-system](docs/magic-system.md) | Risk-based casting, strain, breach, shattering |
 | [setting-and-factions](docs/setting-and-factions.md) | Setting, the diegetic System, faction contracts |
 | [mission-lifecycle](docs/mission-lifecycle.md) | Missions, bidding, extraction, campaign write-back |
+| [stakes-and-reinforcement](docs/stakes-and-reinforcement.md) | Proposed: mid-mission reinforcement paid into a common pool |
 | [skirmish-development-plan](docs/skirmish-development-plan.md) | Milestones, scenarios, scale gates |
 | [performance-budget](docs/performance-budget.md) | Tick cost centres, allocation, fallbacks, gates |
 | [wasm-invocation-spike](docs/research/wasm-invocation-spike.md) | Measured: invocation cost, scaling, stress, guarantees |
