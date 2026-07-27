@@ -2,7 +2,7 @@
 title: S.I.R. WebAssembly Control Architecture
 status: proposed
 document-type: living-design
-version: "0.10"
+version: "0.11"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -339,16 +339,35 @@ affordable for every unit on every tick. Invocation *richness* still is.
 
 ### What it meters
 
-Command bandwidth prices:
+Command bandwidth prices **networked** information only:
 
-- **observation richness** — how much detail an instance receives, how many
-  contacts, at what fidelity, and how far its picture extends; and
+- **shared picture** — contacts and facts other units observed, fused and
+  delivered to this one, at a fidelity and extent that scale with allocation;
+  and
 - **expensive host services** — pathfinding, influence queries, firing-line
-  evaluation, formation planning, and sensor-coverage analysis.
+  evaluation, formation planning, and sensor-coverage analysis, together with
+  the results returned.
+
+### What it does not price
+
+**A unit's own perception is never gated.** What it sees, hears, and detects for
+itself arrives through the local floor, is unaffected by allocation, and
+survives total communications denial. A unit alone in the dark still has its own
+eyes.
+
+**Module execution is never priced and never emits.** The instance runs on the
+authoritative server every tick regardless of connectivity, allocation, or
+jamming. Deliberation is free and silent; it is only the *arrival of information
+from elsewhere* that costs bandwidth and produces a transmission.
+
+This is the distinction that makes the coupling in
+[Communications Network](communications-network.md) coherent. Nothing emits
+because a unit is thinking. Emissions occur because a shared picture, a service
+request, or a service result crossed a link to reach it.
 
 Per-invocation fuel remains separate and unchanged: it governs how much a module
 may compute *within* one invocation. Command bandwidth governs how well informed
-it is and how much server work it may commission.
+it is by others and how much server work it may commission.
 
 ### Two layers
 
@@ -368,10 +387,10 @@ to perceive its immediate surroundings, act, and fight. It is never taken away,
 and it is identical for every instance of the same host class, which preserves
 the baseline fairness the execution profile already guarantees.
 
-The pooled layer represents networked command and processing support:
-reachback analysis, richer sensor resolution, and more frequent deliberation
-supplied through the squad and company network. It is finite, allocated, and
-depends on connectivity.
+The pooled layer represents networked command and processing support: reachback
+analysis and the fused picture supplied through the squad and company network.
+It is finite, allocated, and depends on connectivity. It does not affect how
+often a module runs, which is every tick for every unit.
 
 A unit that loses its allocation is not disabled. It becomes autonomous and
 unsupported — it still runs every tick, still fights, still reacts, but it sees
