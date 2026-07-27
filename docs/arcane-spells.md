@@ -2,7 +2,7 @@
 title: S.I.R. Arcane Spells
 status: proposed
 document-type: living-content
-version: "0.1"
+version: "0.2"
 last-updated: 2026-07-27
 related:
   - docs/magic-system.md
@@ -40,9 +40,12 @@ expensive, decisive options that make an unattended caster a mistake.
 
 ## The strain career
 
-Strain accumulates across a match and does not resupply. A caster therefore has
-a **career** rather than a rotation: a finite number of casts before they become
-volatile, and every cast spends a little of the match's remaining safety.
+Strain accumulates as a caster works, and meditation sheds only part of it. What
+remains is residual, and it rises with every cast.
+
+So a caster has a **career** rather than a rotation. They can recover enough to
+work again, repeatedly, but never back to where they started, and every cast
+spends a little of the match's remaining safety permanently.
 
 That shapes the whole set. The interesting decision is rarely *which* spell —
 the situation usually decides that — but **when to spend, and how hard**.
@@ -248,5 +251,6 @@ situational rather than decisive, which is the intended shape.
 - Whether a ward is one-directional, which is powerful and may be too much.
 - Translocation range, and whether a squad can be moved or only a caster.
 - Scrying range, and whether it requires an anchor at the destination.
-- Whether mending works on casters, given that healing restores breach margin
-  and could otherwise become a strain-laundering loop.
+- Whether mending works on casters. Meditation is now the intended route back
+  to safety, which makes healing-as-margin-restoration less necessary and the
+  laundering loop easier to close.

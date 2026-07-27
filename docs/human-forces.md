@@ -2,7 +2,7 @@
 title: S.I.R. Human Forces
 status: proposed
 document-type: living-content
-version: "0.2"
+version: "0.3"
 last-updated: 2026-07-27
 related:
   - docs/setting-and-factions.md
@@ -132,7 +132,7 @@ The equipment list is longer than the weapon list, and most of it is not lethal:
 | Category | Items |
 |---|---|
 | **Communications** | Personal set; command-net set; deployable relay |
-| **Sensors** | Optics; thermal; acoustic direction finder |
+| **Sensors** | Optics; thermal; acoustic direction finder; magical-signature detector |
 | **Electronic warfare** | Jammer; direction finder; decoy emitter |
 | **Drones** | Observation drone; relay drone |
 | **Medical** | Aid kit; stabilisation kit; nanomedical stock |
