@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.94"
+version: "0.95"
 last-updated: 2026-07-27
 ---
 
@@ -1500,13 +1500,17 @@ fixed report rules do not imply fixed certainty categories in the interface.
   and signature are one property, not two that can be balanced apart.
 - Electronic warfare is an important part of play.
 - The communications architecture must support electronic-warfare effects that
-  cause disconnection, degrade range, delay messages or reports, intercept
-  traffic, and inject false information.
+  cause disconnection, degrade range, delay messages or reports, locate
+  transmitters, and support deception through false emissions.
+- Reading or forging an opponent's message content is deliberately not modelled.
+  Payloads are player-defined opaque bytes, so neither is achievable in a match;
+  and a capability whose counter is cheap and universal would collapse into a
+  purchase everyone makes and nothing ever fires against.
 - Transmitting is an observable act. Emissions are stimuli in the ordinary
   perception pipeline, so listening is free and transmitting is not.
-- Emission control, encryption, and authentication protect three separable
-  things: that you transmitted, what you said, and who you are. No one of them
-  substitutes for another.
+- Emission control is the only defence against being located, and it cannot be
+  purchased. Not transmitting is the sole way to avoid being found, and it costs
+  contact.
 - Because command bandwidth is drawn through the communications topology,
   electronic warfare can also degrade how richly a unit is informed and what
   analysis it can commission. This attacks the quality of an opponent's control
@@ -1536,10 +1540,9 @@ counterplay each attack requires.
 
 Not every electronic-warfare capability must produce every effect. Individual
 equipment, abilities, environmental conditions, or magical effects may use
-subsets of the supported disruption model. Interception and false-information
-effects require explicit attribution, authorization, and knowledge-state rules
-so they cannot expose authoritative world truth or become indistinguishable from
-server corruption.
+subsets of the supported disruption model. Deception effects require explicit
+attribution and knowledge-state rules so they cannot expose authoritative world
+truth or become indistinguishable from server corruption.
 
 If a leader is lost, the server promotes the first eligible person in the
 squad's declared succession order, and player-provided WASM logic adapts the

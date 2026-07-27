@@ -2,7 +2,7 @@
 title: S.I.R. Electronic Warfare Architecture
 status: proposed
 document-type: living-design
-version: "0.2"
+version: "0.3"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -38,7 +38,7 @@ That is the whole appeal, and it is also why EW must never be expressed as a
 percentage penalty. A modifier on accuracy is not electronic warfare; it is a
 debuff wearing its clothes.
 
-## Four layers
+## Three layers
 
 Conflating these is the usual design failure. They are attacked differently,
 defended differently, and detected differently.
@@ -46,14 +46,40 @@ defended differently, and detected differently.
 ```text
 emission   what a transmitter radiates, whether or not anyone reads it
 link       whether a message arrives, when, and intact
-content    what the message says
 bandwidth  how much command capacity reaches a unit
 ```
 
-The fourth is specific to S.I.R. Because command bandwidth is drawn through the
+There is deliberately no content layer.
+
+The third is specific to S.I.R. Because command bandwidth is drawn through the
 communications topology, degrading a link degrades what a unit is told and what
 analysis it can commission — see
 [WebAssembly Control Architecture](wasm-control-architecture.md).
+
+## Why there is no content layer
+
+Reading and forging enemy traffic are not modelled. Both were considered and
+both are rejected, for two independent reasons.
+
+**They are structurally impossible.** Module-to-module payloads are
+player-defined opaque bytes. An intercepted message is bytes in a protocol the
+opponent does not know, encrypted or not, and forging one means writing valid
+traffic in that same unknown protocol. Neither is a puzzle a player can solve
+inside a twenty-minute match, and neither should be.
+
+**They would collapse into drudgery even if they worked.** A capability whose
+counter is cheap and universally available is not a decision. If interception
+threatened and encryption were purchasable, every competent player would encrypt
+every time, the mechanic would never fire, and the only lasting effect would be
+a box everyone remembers to tick. The same argument applies to authentication
+against forgery.
+
+In the setting, traffic is encrypted and authenticated as a matter of course.
+This is a near-future military; protecting a radio link is not a tactical
+decision anyone makes. It is assumed, and therefore not modelled.
+
+What this leaves is the interesting half. Everything electronic warfare can
+still do operates on emission and link, and none of it can be bought off.
 
 ## Emission is a stimulus
 
@@ -82,20 +108,18 @@ Consequences that follow without further rules:
 That last point is the natural counterplay to jamming and requires no special
 case.
 
-## Three separable protections
+## There is one protection, and it is tactical
 
-The cleanest organising principle here, and the one that keeps the system
-legible:
+**Emission control is the only defence, and it cannot be purchased.**
 
-| You cannot hide | You can hide | You can prove |
-|---|---|---|
-| **that** you transmitted | **what** you said | **who** you are |
-| countered by emission control | countered by encryption | countered by authentication |
+The one thing an opponent can always learn is that you transmitted, from where,
+and how much. No equipment prevents it. The only way not to be found by these
+means is not to transmit, and that costs contact.
 
-Encryption does not reduce detectability. Emission control does not protect
-content. Authentication does neither, and prevents something else entirely.
-Players who conflate them will be punished in a way they can understand
-afterwards, which is the standard the design holds every decisive mechanic to.
+This is what makes electronic warfare a live tactical question rather than an
+equipment checklist. A player cannot spend their way out of it before the match.
+They decide, continuously and under pressure, whether this report is worth being
+located for.
 
 ## Attacks
 
@@ -125,61 +149,46 @@ contact is reported, ages, and goes stale like any other.
 This is the mechanism that makes emission control a real decision rather than
 flavour.
 
-### Interception
-
-Passive. Yields the **envelope** whenever the transmission is detected, and the
-**payload** only under declared conditions — unencrypted traffic, broken
-protection, or a captured key.
-
-The envelope alone is valuable: sender, recipient or route, timing, volume, and
-position. That is traffic analysis, and it works on encrypted traffic.
-
 ### Traffic analysis
 
-Because module-to-module payloads are **opaque player-defined bytes**, content
-interception hands an opponent bytes they cannot necessarily interpret. This is
-not a gap in the design; it is the interesting case.
+The primary intelligence capability, and the one that always works.
 
-What survives encryption and opacity is the *pattern*: who transmits, to whom,
-how often, how much, and when it changes. A squad that goes from silence to
-heavy traffic has made contact. A network whose traffic converges on one node
-has revealed its command topology. A sudden force-wide transmission is an order
-going out.
+An observer learns the **envelope** of every transmission it detects: origin,
+approximate strength, duration, and timing. From a pattern of envelopes it
+learns considerably more:
 
-Traffic analysis should therefore be a first-class capability rather than a
-consolation prize, and it is the one form of interception that always works.
+- a squad going from silence to heavy traffic **has made contact**;
+- traffic converging on one node **reveals command topology**, and therefore
+  which unit is worth killing;
+- a sudden force-wide transmission **is an order going out**, a warning that
+  something is about to change;
+- a burst far larger than a unit's ordinary traffic **is a reconnection**, and
+  announces a squad that has just regained contact; and
+- silence where there was traffic **is a casualty, a displacement, or a
+  deliberate choice**, and telling which is the analyst's problem.
 
-### Injection
+None of this requires reading a single byte, and none of it can be encrypted
+away. Traffic analysis is a first-class capability rather than a consolation
+prize for failing to break a cipher.
 
-Inserting a message that appears legitimate. It must satisfy the established
-constraint that "false information must enter through the same observation and
-report model as true information," and that the server never falsifies a
-player's picture outside that model.
+### Deception at the emission layer
 
-So an injected message is a real message with false content and forged
-provenance, travelling the ordinary path. It can be:
+Deception survives, but it operates on emissions rather than on content. It
+needs no knowledge of an opponent's protocol and cannot be defeated by
+protecting one.
 
-- refused by authentication where that exists;
-- detected by a module or a human noticing inconsistency; and
-- attributed afterwards in replay, so a decisive deception is explainable.
+- a **decoy emitter** is a deployable object that transmits, producing a false
+  electronic contact where nothing important is;
+- a **displaced transmission** is made from a position the unit is leaving, so
+  the opponent's fix is real and already worthless; and
+- a **replayed emission** retransmits bytes captured earlier. The opponent's
+  units will discard it, but to anyone watching the spectrum it is
+  indistinguishable from genuine traffic.
 
-Forging requires knowing enough to forge — the sender identity, the route, the
-protocol. That is itself an intelligence requirement, which keeps injection at
-the end of a chain of work rather than being a first-contact ability.
-
-## Intercepted intelligence inherits belief, not truth
-
-**What you intercept is what the opponent said, which is not necessarily true.**
-
-An intercepted contact report carries the observation time, provenance, and
-error of the original. Intercepting a stale report gives stale information.
-Intercepting a mistaken report gives a mistake. Intercepting a deception aimed
-at someone else gives the deception.
-
-This falls directly out of the three-tier knowledge model and needs no
-additional rule, but it deserves stating because it is what stops interception
-from becoming an oracle. Electronic warfare moves *beliefs* between actors. It
-never reads world truth.
+All three attack the opponent's *analysis* rather than their message handling.
+A decoy is an authoritative object with a position, so the counterplay is the
+ordinary one: find it, observe that nothing else is there, and learn that this
+opponent uses decoys.
 
 ## Command bandwidth degradation
 
@@ -202,9 +211,8 @@ response. For each attack:
 |---|---|
 | Jamming | Locate and destroy the emitter; route around it; relay past it; accept isolation and operate on intent |
 | Direction finding | Emission control; brief transmissions; directional equipment; transmit from positions you are leaving |
-| Interception | Encryption; brevity; pre-arranged codes that carry meaning in few bytes |
-| Traffic analysis | Constant-rate traffic that hides real volume, at a bandwidth cost; decoy emitters |
-| Injection | Authentication; corroboration before acting; doctrine that treats unexpected orders with suspicion |
+| Traffic analysis | Constant-rate traffic that hides real volume, at a bandwidth cost; decoy emitters; staggering reconnections |
+| Deception | Corroborate an electronic contact before acting on it; a decoy emits and does nothing else |
 
 Two responses deserve emphasis because they are structural rather than
 equipment.
@@ -258,13 +266,14 @@ contest it, or human communications become an unassailable advantage.
 
 - Electronic warfare expressed as an accuracy or damage modifier.
 - Jamming that cannot be located, which removes the counterplay entirely.
-- Interception that reveals authoritative world state rather than what an
-  opponent believed.
-- Injected information the receiving player has no possible way to doubt.
+- Reintroducing content interception or forgery. Both are structurally
+  impossible against opaque player-defined payloads, and both would collapse
+  into a universally purchased counter that never fires.
+- Any protection that can be bought once before a match and then forgotten.
+  Emission control is the only defence precisely because it must be exercised
+  continuously.
 - Server-side falsification outside the observation and report model, which is
   indistinguishable from a bug.
-- Encryption that also prevents direction finding, collapsing three separable
-  protections into one purchase.
 - Total denial with no fallback, which produces a helpless force rather than an
   isolated one.
 
@@ -274,9 +283,8 @@ contest it, or human communications become an unassailable advantage.
 - Detection, bearing accuracy, and triangulation rules for emissions.
 - Jamming footprint shapes, and whether jamming is omnidirectional or sectored.
 - Whether jamming affects its own side, and how strongly.
-- Encryption strength as a discrete tier or a time-to-break.
-- Whether keys can be captured from equipment or casualties.
-- Authentication cost and whether it is per-message or per-link.
+- Decoy emitter cost, duration, and how convincingly it mimics a real set.
+- Whether a captured device lets its holder emit on an opponent's net.
 - Relay capacity, chaining limits, and setup time.
 - How much command bandwidth a given degradation removes.
 - Whether traffic analysis is a passive capability, an active analysis
