@@ -2,7 +2,7 @@
 title: S.I.R. Arcane Civilization Forces
 status: proposed
 document-type: living-content
-version: "0.2"
+version: "0.3"
 last-updated: 2026-07-27
 related:
   - docs/setting-and-factions.md
@@ -272,7 +272,8 @@ is sometimes right.
 - Anchor influence shape, radius, placement cost, and whether it is blocked by
   terrain as signal paths are.
 - Whether anchors can be captured and used, or only destroyed.
-- The spell set, and which aspects each permits empowering.
+- Which aspects each spell permits empowering, and at what rates. The spell set
+  itself is in [Arcane Spells](arcane-spells.md).
 - Strain recovery rate, and whether anything recovers it within a match.
 - Regeneration rates, and what suppresses them.
 - The distribution of roles across goblins, orcs, and trolls, which the setting

@@ -2,8 +2,8 @@
 title: S.I.R. Risk-Based Magic System
 status: proposed
 document-type: living-design
-version: "0.3"
-last-updated: 2026-07-25
+version: "0.4"
+last-updated: 2026-07-27
 related:
   - docs/game-vision.md
   - docs/setting-and-factions.md
@@ -281,6 +281,13 @@ Avoid:
 - AI casters receiving better risk information than future playable versions;
   and
 - nonmagical faction units existing only as disposable HP screens.
+
+## The spell set
+
+The spells themselves are content rather than architecture and live in
+[Arcane Spells](arcane-spells.md). The set is deliberately utility-dominant,
+because a caster who is artillery is a worse gun than a gun, with a small number
+of expensive decisive options so that an unattended caster remains a mistake.
 
 ## Prototype questions
 
