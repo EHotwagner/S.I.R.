@@ -47,6 +47,7 @@ description of the intended game. Everything else derives from it.
 | [technology-stack](docs/technology-stack.md) | .NET 10, FS.GG integration boundaries, adapters |
 | [logistics-architecture](docs/logistics-architecture.md) | Stockpiles, manifests, battlefield supply, write-back |
 | [communications-network](docs/communications-network.md) | Nets, signal paths, capacity, latency, devices, relays |
+| [reporting-model](docs/reporting-model.md) | What becomes a report, significance, aggregation, cost |
 | [electronic-warfare](docs/electronic-warfare.md) | Emission, jamming, interception, injection, counterplay |
 | [magic-system](docs/magic-system.md) | Risk-based casting, strain, breach, shattering |
 | [setting-and-factions](docs/setting-and-factions.md) | Setting, the diegetic System, faction contracts |

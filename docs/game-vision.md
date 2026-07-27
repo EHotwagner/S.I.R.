@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "1.2"
+version: "1.3"
 last-updated: 2026-07-27
 ---
 
@@ -1472,13 +1472,28 @@ When a previously observed hostile unit is no longer observable through the
 player's currently available information, the canonical client removes it
 entirely. It does not retain a last-known marker or ghost representation.
 
-### Provisional report model
+### Report model
 
-Observation reporting should follow fixed, authoritative game rules rather than
+Observation reporting follows fixed, authoritative game rules rather than
 letting a unit's WebAssembly module decide which authoritative observations
-exist. These rules determine which local observations generate reports and
-whether those reports are immediate, summarized, delayed, lost, or retained for
-later delivery.
+exist. Reports are the guaranteed information floor for a player who has written
+no protocol; player-defined messaging is the optimisation on top of it.
+
+A report describes a **change, not a condition**, so traffic is bounded by the
+rate of change rather than the rate of observation, and a static situation is a
+quiet one. Each event class carries an authoritative significance, and a
+reporting threshold set by posture decides what clears the bar.
+
+Reports are **aggregated at every hop**. A squad leader forwards a squad-level
+picture rather than a dozen individual contacts, which is the information work
+the command hierarchy exists to do, and which means losing a leader removes the
+thing that made a squad's information legible rather than merely severing a
+link.
+
+Reports cost capacity, bandwidth, and emission like any other traffic, so report
+volume trades information against signature.
+
+See [Observation Reporting Model](reporting-model.md).
 
 Fixed observation reports are distinct from the player-defined command and
 message protocol. Modules may use custom messages for doctrine and coordination,
@@ -2109,9 +2124,9 @@ vision:
 2. What is the command-bandwidth unit, how large is the pool, how is it derived,
    and what exchange rate governs observation richness against host-service
    quota?
-3. What are the exact fixed rules determining which observations become
-   reports and whether they are immediate, summarized, delayed, lost, or stored
-   for later delivery?
+3. What significance does each event class carry, what aggregation windows
+   apply, and is aggregation performed by the unit, the leader, or both? The
+   reporting model itself is settled; these are its values.
 4. What relay capacity, chaining limits, and setup times make a relay chain
    worth placing? Relaying itself is established: a relay is an authoritative
    object with a position that can be found, jammed, and destroyed.
