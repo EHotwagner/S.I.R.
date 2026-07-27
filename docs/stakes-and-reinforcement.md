@@ -2,7 +2,7 @@
 title: S.I.R. Stakes and Reinforcement
 status: proposed
 document-type: living-design
-version: "0.1"
+version: "0.2"
 related:
   - docs/mission-lifecycle.md
   - docs/game-vision.md
@@ -63,6 +63,63 @@ reputation, forces, risk, or reward share — and does not answer it. If the bid
 and the stake are the **same currency**, then bidding for access and committing
 during a mission become one economy with one scarce resource, and open question
 11 is answered rather than joined by a second unanswered one.
+
+## Silence is not death, and the commander cannot tell
+
+The sharpest objection to the mechanic: a player may reinforce because a squad
+has gone quiet, when that squad is merely cut off and still fighting.
+
+The ambiguity is real. Casualties are high-significance events and a connected
+squad losing people reports it — but a *disconnected* squad's report queues
+undelivered, so destruction and isolation both arrive at headquarters as
+silence.
+
+**That ambiguity should stay.** It is fog applied to a commander's own force,
+which is the most uncomfortable and most interesting fog available, and removing
+it would mean telling a player something no one has told them.
+
+What it must not become is a coin flip. The decision has to be **inferential
+rather than blind**, which requires that a good commander can reason toward an
+answer even when nobody can know one.
+
+### What a commander can reason from
+
+- **Was the squad in contact when it went quiet?** Silence following a contact
+  report means something different from silence with no contact reported at all.
+- **Is the silence where it was expected?** Signal paths use the same geometry
+  as line of sight, so a squad entering a structure or dead ground goes quiet
+  predictably, and the map says so in advance.
+- **Is headquarters detecting interference in that direction?** Jamming that is
+  distinguishable from absence is the most direct evidence available.
+- **Was there redundancy?** A second-in-command carrying a spare set changes
+  what silence implies.
+- **Can anything else see the area?** This is the real answer, and it costs what
+  information always costs here — time, a redirected element, and exposure.
+
+### The failure mode is overcommitment, not waste
+
+Reinforcing a squad that turns out to be alive does not burn the capital for
+nothing. **The reinforcements arrive and fight.** The commander has
+overcommitted, not wasted, and overcommitment carries its own costs — attention
+divided across more units, a larger emission footprint, and more to extract —
+which are the right costs rather than a punishment.
+
+That distinction matters for whether the mechanic feels fair. A wrong read
+produces a worse position, not a void.
+
+### The exploit is a feature
+
+An opponent who jams a squad *specifically* to make its commander believe it
+destroyed, so that they commit capital and stake they did not need to, is
+performing **electronic warfare against the campaign economy**.
+
+Nothing else in the design attacks that. Jamming already degrades information
+and control; this gives it a third target, and it is available to the human side
+in exactly the matchup where their electronic toolkit otherwise applies —
+against other humans.
+
+The counterplay is the ordinary one: do not panic, look before committing, and
+find the jammer, which is the loudest object on the battlefield.
 
 ## What it must not do
 
@@ -137,3 +194,6 @@ in the design. This is the piece with the most implementation weight.
   declared phases.
 - Whether resource missions use the mechanic at all, given they have no
   opponent to take the pot.
+- How reliably interference is distinguishable from absence. This was an open
+  parameter of the electronic-warfare model and is now load-bearing, because it
+  decides whether the reinforcement decision is inference or a coin flip.

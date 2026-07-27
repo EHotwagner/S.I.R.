@@ -3,7 +3,7 @@ title: S.I.R. Electronic Warfare Architecture
 status: accepted
 decision-status: canonical
 document-type: living-design
-version: "1.0"
+version: "1.1"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -245,6 +245,22 @@ Jamming becomes a tool for *creating* an emission rather than suppressing one.
 Staggering reconnections is the counter, which is why it appears in the
 counterplay table.
 
+### Jamming as an attack on the opponent's economy
+
+If mid-mission reinforcement is paid for, as
+[Stakes and Reinforcement](stakes-and-reinforcement.md) proposes, then jamming
+acquires a third target beyond information and control.
+
+A squad that has been cut off and a squad that has been destroyed both reach
+their commander as silence. An attacker who jams an intact element, and waits,
+may induce that commander to spend capital and stake replacing a force that is
+still fighting.
+
+This is worth recording because nothing else in the design attacks an opponent's
+economy directly, and because it raises the stakes on an open parameter: **how
+reliably interference can be distinguished from absence** decides whether the
+victim is making an inference or guessing.
+
 ### Attention as a targeting cue
 
 Traffic analysis identifies the node a network converges on, which is a command
@@ -352,4 +368,6 @@ contest it, or human communications become an unassailable advantage.
 - Whether traffic analysis is a passive capability, an active analysis
   commissioned through host services, or both.
 - The threshold at which a module can detect that it is being jammed rather than
-  merely receiving nothing.
+  merely receiving nothing. This is load-bearing rather than incidental: it
+  determines whether a commander can distinguish an isolated squad from a
+  destroyed one.
