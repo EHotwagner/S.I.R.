@@ -2,7 +2,7 @@
 title: S.I.R. Arcane Civilization Forces
 status: proposed
 document-type: living-content
-version: "0.3"
+version: "0.5"
 last-updated: 2026-07-27
 related:
   - docs/setting-and-factions.md
@@ -79,16 +79,21 @@ terrain that a human force would bypass.
 Humans are limited by **supply**: ammunition, batteries, spare parts, all of it
 replenishable mid-mission through a physical supply network.
 
-The arcane are limited by **accumulation**. A caster spends health to empower,
-gathers strain that persists, and becomes progressively more dangerous to
-themselves — see [Risk-Based Magic System](magic-system.md). Strain does not
-resupply.
+The arcane are limited by **accumulation**. A caster spends health to empower
+and gathers strain, becoming progressively more dangerous to themselves — see
+[Risk-Based Magic System](magic-system.md).
+
+Meditation sheds the settling portion of that strain, so casters recover
+*within* a match. What does not recover is the residual, which every cast
+leaves behind and which raises a caster's floor permanently. The faction
+therefore has a rhythm rather than a countdown: casters cycle back to recover
+and forward to work, while the floor beneath them rises all match.
 
 The consequence is a completely different tempo:
 
 - **humans sustain and degrade slowly**, provided the supply line holds;
-- **the arcane front-load and degrade steadily**, and cannot resupply their way
-  out of it.
+- **the arcane surge, recover, and surge again**, on a floor that rises with
+  every cast until recovering no longer restores enough margin to matter.
 
 An arcane force is therefore most dangerous early and becomes volatile as a
 match progresses, while a human force is most dangerous while its network and
@@ -200,9 +205,17 @@ detecting magic requires an instrument rather than new machinery.
 
 Until humans build one they observe *effects* and not *sensing*: they see a ward
 take a shot and a caster gesture, and they cannot tell they are being perceived
-through a wall. Fielding a magical-signature detector is therefore a natural
-research objective and the eventual answer to the guardrail requiring every
-capability to leave evidence.
+through a wall.
+
+What such an instrument is *for* is finding casters shedding strain. Releasing
+strain emits a signature that terrain does not attenuate, so a meditating caster
+can be located at exactly the moment they are stationary, inattentive, and
+irreplaceable. That is a narrow instrument with an enormous payoff, and it is
+the concrete objective a human reconnaissance apparatus has against this
+faction besides locating anchors.
+
+Fielding such a detector is therefore a natural research objective, and the
+eventual answer to the guardrail requiring every capability to leave evidence.
 
 ## The faction capability contract
 
