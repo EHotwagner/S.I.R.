@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "1.7"
+version: "1.8"
 last-updated: 2026-07-27
 ---
 
@@ -239,6 +239,15 @@ design framework and campaign implications.
 - A net's throughput is shared among everyone on it, so putting more of a force
   onto one net degrades it for all of them. This is what keeps the command
   topology from being decorative.
+- Saturation collapses rather than sagging. Past the capacity of a force's
+  command structure, contention causes throughput to fall off a cliff, which
+  costs the whole force its coordination rather than costing the marginal units
+  their effectiveness. The cause is deterministic and learnable even though the
+  specifics are not, so a collapse is explicable rather than arbitrary.
+- Command capacity is structural — qualified leaders, command-net sets, and
+  relays — so it can be bought, at the direct expense of fighting power. And
+  load can be shed, which makes withdrawing units a tactical action rather than
+  a concession.
 - Signature is aggregate. A force that transmits everywhere can be mapped, and
   what an opponent recovers is the shape of the network rather than a list of
   positions.
