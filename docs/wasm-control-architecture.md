@@ -2,7 +2,7 @@
 title: S.I.R. WebAssembly Control Architecture
 status: proposed
 document-type: living-design
-version: "0.13"
+version: "0.14"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -345,7 +345,6 @@ Host-class profiles independently limit:
 - input and output size;
 - host-service type and frequency;
 - communication payloads;
-- wake frequency;
 - logging and diagnostics; and
 - other capability-specific resources.
 
