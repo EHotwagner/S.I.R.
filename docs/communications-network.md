@@ -2,7 +2,7 @@
 title: S.I.R. Communications Network Architecture
 status: proposed
 document-type: living-design
-version: "0.1"
+version: "0.2"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -169,7 +169,10 @@ differ along declared axes:
 | Capacity | Throughput available to bandwidth and traffic |
 | Nets | Which nets the device can participate in |
 | Queue | Store-and-forward depth and expiry |
-| Protection | Encryption and authentication available |
+
+Traffic is encrypted and authenticated as a matter of course and this is not a
+device option, for the reasons recorded in
+[Electronic Warfare](electronic-warfare.md).
 
 A personal set reaches within a squad. A leader's set reaches the command net. A
 relay is a device optimised for capacity and reach rather than portability. A
