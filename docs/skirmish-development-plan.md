@@ -2,7 +2,7 @@
 title: S.I.R. Robust Skirmish Development Plan
 status: proposed
 document-type: development-plan
-version: "0.13"
+version: "0.14"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -302,6 +302,10 @@ sustains the authoritative 20 Hz target with:
 The benchmark environment and required headroom remain to be selected.
 Measurements report simulation, WASM execution, host services, networking,
 serialization, and replay costs separately.
+
+See [Performance Budget](performance-budget.md) for the cost centres each gate
+must attribute against, the fallback position for each, and the requirement that
+worst-tick figures be measured under contact rather than at rest.
 
 ## Determinism gate
 

@@ -2,7 +2,7 @@
 title: S.I.R. Deterministic Simulation Core
 status: proposed
 document-type: living-design
-version: "0.5"
+version: "0.6"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -308,7 +308,8 @@ A match retains:
 - ordered external input journal;
 - periodic recovery snapshots;
 - authoritative event records or event hashes;
-- per-tick state hashes; and
+- per-tick state hashes, whose implementation must be incremental or
+  event-stream based rather than hashing full state at tick rate; and
 - final outcome record.
 
 Replay reconstructs from an initial or periodic snapshot and the ordered journal.
