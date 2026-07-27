@@ -15,8 +15,8 @@ so the game tests judgment and preparation rather than actions per minute.
 
 ## Status
 
-**Design phase. There is no implementation yet.** This repository currently
-contains the design set only. Nothing here has been built, measured, or
+**Design phase.** This repository contains the design set, plus disposable
+measurement spikes under [`spikes/`](spikes/). No product code exists yet. Nothing here has been built, measured, or
 validated in code, and numeric values throughout are explicitly marked as
 prototype parameters.
 
@@ -50,6 +50,7 @@ description of the intended game. Everything else derives from it.
 | [mission-lifecycle](docs/mission-lifecycle.md) | Missions, bidding, extraction, campaign write-back |
 | [skirmish-development-plan](docs/skirmish-development-plan.md) | Milestones, scenarios, scale gates |
 | [performance-budget](docs/performance-budget.md) | Tick cost centres, allocation, fallbacks, gates |
+| [wasm-invocation-spike](docs/research/wasm-invocation-spike.md) | Measured: invocation cost, scaling, stress, guarantees |
 | [visual-direction](docs/visual-direction.md) | Graphical language and tactical overlays |
 
 ### Research
@@ -69,6 +70,13 @@ and the WASM runtime and public transport selections.
 - **Native gRPC** as the first public transport, contract-first from `.proto`.
 - **Server-authoritative knowledge filtering.** The canonical client holds no
   gameplay privilege unavailable to a third-party client.
+
+## Spikes
+
+[`spikes/`](spikes/) holds disposable, information-gathering programs that
+answer a specific architectural question with measurement. They sit outside the
+canonical solution layout and are kept as evidence for the decisions they
+informed.
 
 ## Contributing
 

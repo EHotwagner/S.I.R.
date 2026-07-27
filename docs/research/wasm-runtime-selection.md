@@ -3,8 +3,8 @@ title: S.I.R. .NET WebAssembly Runtime Selection
 status: accepted
 decision-status: canonical
 document-type: research-and-options
-version: "0.2"
-last-updated: 2026-07-25
+version: "0.3"
+last-updated: 2026-07-27
 related:
   - docs/wasm-control-architecture.md
   - docs/technology-stack.md
@@ -275,6 +275,13 @@ spike that proves:
 The spike reports compilation, instantiation, invocation, fuel, memory,
 checkpoint, and parallel throughput separately. It does not assume the earlier
 illustrative `0.1 ms` invocation figure.
+
+**Status: substantially executed.** Items 1-5, 7 and 9-12 are verified in
+[WASM Invocation Spike](wasm-invocation-spike.md), which also settles the
+throughput question: 200 instances invoked every tick cost roughly 1.6% of a
+50 ms budget. Items 6 and 8, host-side memory limiting and confirming no ambient
+WASI capability, and item 11's live-instance checkpointing remain outstanding
+and are the substantive gaps before pinning the version.
 
 ## Canonical decision
 

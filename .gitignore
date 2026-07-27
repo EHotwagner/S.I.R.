@@ -1,0 +1,8 @@
+# build output
+bin/
+obj/
+
+# local tooling
+.vs/
+.idea/
+*.user

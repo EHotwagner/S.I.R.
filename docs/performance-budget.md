@@ -2,7 +2,7 @@
 title: S.I.R. Performance Budget
 status: proposed
 document-type: living-design
-version: "0.1"
+version: "0.2"
 last-updated: 2026-07-27
 related:
   - docs/simulation-core-architecture.md
@@ -26,9 +26,17 @@ what must be measured before which gate, and — most importantly — records th
 **fallback position** for each centre, so that discovering a budget overrun does
 not become an open-ended redesign.
 
-Nothing here is measured. Every number is a starting hypothesis to be replaced
-by evidence, and its purpose is to force the argument about which subsystem
-deserves which share, not to predict an outcome.
+Most numbers here are starting hypotheses to be replaced by evidence. Their
+purpose is to force the argument about which subsystem deserves which share, not
+to predict an outcome.
+
+**One centre is now measured.** WASM invocation and observation marshalling were
+measured directly and came in roughly two orders of magnitude below the
+provisional allocation — see
+[WASM Invocation Spike](research/wasm-invocation-spike.md). The 15% share
+reserved for them below is replaced by a measured **~0.5–2%** at the intended
+force target. That measurement removed an assumption this document was partly
+built on, which is exactly what the gates exist to do.
 
 ## The tick budget
 
@@ -103,7 +111,8 @@ accounting:
 - **Per-shot physical tracing** with burst weapons is more per-shot work than
   either reference game performs.
 - **Doctrine evaluation** is a new *continuous* server-side cost for every unit,
-  introduced specifically to reduce a different cost.
+  introduced specifically to reduce a different cost — one that measurement has
+  since shown was not a problem.
 - **Area engagements** evaluate occupancy of a zone rather than a target.
 
 The pattern is worth noting: several of these were adopted because they made the
@@ -159,7 +168,7 @@ pressure. Several are already recorded elsewhere and are collected here.
 | Line of sight | reduce supported level count; coarser vertical LOS; larger cached region granularity |
 | Combat tracing | probabilistic cover interception in place of full geometric tracing, at the cost of weakening the semantic edge model |
 | Doctrine | reduce rule-count and condition-count bounds per host class |
-| WASM | reduce total command bandwidth, raising the value of doctrine quality |
+| WASM | measured at ~0.5-2% of budget; no fallback currently required |
 | Engagement maintenance | evaluate maintenance every *n* ticks rather than every tick, accepting coarser interruption granularity |
 | Projection | coalesce deltas more aggressively; lower projection cadence below tick rate |
 | Hashing | checkpoint hashing with event-stream hashing between checkpoints |
