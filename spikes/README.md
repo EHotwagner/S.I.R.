@@ -13,13 +13,14 @@ code stays here as provenance.
 | Spike | Question | Result |
 |---|---|---|
 | [wasm-invocation](wasm-invocation/) | Can the server invoke one WASM instance per unit, every tick, at 100 units per side, inside 50 ms? | [Yes, with wide margin](../docs/research/wasm-invocation-spike.md) |
+| [perception](perception/) | What does edge-aware, multi-level perception cost at 100 units per side? | [About 1% of the tick](../docs/research/perception-spike.md) |
 
 ## Running
 
 ```sh
-cd wasm-invocation
-dotnet run -c Release            # full suite, includes sustained and stress
-dotnet run -c Release -- --quick # shorter sampling, skips sustained and stress
+cd <spike>
+dotnet run -c Release            # full suite
+dotnet run -c Release -- --quick # shorter sampling, skips the long scenarios
 ```
 
 Requires the .NET 10 SDK. The WebAssembly test modules are WAT source compiled
