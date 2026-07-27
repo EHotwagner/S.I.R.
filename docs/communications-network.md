@@ -2,7 +2,7 @@
 title: S.I.R. Communications Network Architecture
 status: proposed
 document-type: living-design
-version: "0.3"
+version: "0.4"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -129,6 +129,13 @@ between headquarters and the unit, by devices that transmit.
 busy link emit in proportion to what is flowing over it, and every relay in a
 chain emits as it forwards. Extending reach with relays extends the electronic
 footprint at every hop.
+
+What emits is the **transfer**, not the thinking. A unit's control logic runs on
+the authoritative server every tick whether or not anything reaches it, and that
+costs nothing and radiates nothing. A unit's own perception is likewise free and
+silent. Only information arriving from elsewhere — a fused picture, a
+commissioned analysis, an order, a report going out — crosses a link, and only
+that produces an emission.
 
 Three consequences follow, and the implementation needs all three:
 

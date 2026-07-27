@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.96"
+version: "0.97"
 last-updated: 2026-07-27
 ---
 
@@ -1498,9 +1498,14 @@ fixed report rules do not imply fixed certainty categories in the interface.
   everything else.
 - A device's power determines its range and its detectability together. Reach
   and signature are one property, not two that can be balanced apart.
-- Command bandwidth is carried as traffic over the communications network, so a
-  heavily supported unit emits more and is easier to locate. Attention has a
-  physical signature.
+- Command bandwidth prices networked information only. A unit's own perception
+  is never gated by it and survives total communications denial.
+- Module execution is never priced and never emits. A unit's control logic runs
+  every tick regardless of connectivity; deliberation is free and silent.
+- What is carried over the network, and therefore what emits, is information
+  arriving from elsewhere: a fused picture, a commissioned analysis, an order,
+  or a report going out. A heavily supported unit emits more and is easier to
+  locate, so attention has a physical signature.
 - Electronic warfare is an important part of play.
 - The communications architecture must support electronic-warfare effects that
   cause disconnection, degrade range, delay messages or reports, locate
