@@ -3,7 +3,7 @@ title: WASM Invocation Spike — Measured Results
 status: accepted
 decision-status: evidence
 document-type: research
-version: "1.0"
+version: "1.1"
 last-updated: 2026-07-27
 related:
   - docs/performance-budget.md
@@ -25,7 +25,7 @@ wrong.**
 
 ## Answer
 
-**Yes, by roughly two orders of magnitude.**
+**Yes, with roughly sixty times the room needed.**
 
 At the intended upper force target — 200 units, 30 known contacts each,
 representative decision logic — a full tick of marshal, invoke, and read costs:
@@ -35,6 +35,10 @@ mean   0.79 ms      1.6% of the 50 ms tick
 p99    1.15 ms      2.3%
 max    1.64 ms      3.3%
 ```
+
+A mean tick uses 1.6% of the 50 ms ceiling, so the budget is about sixty times
+what the work requires. Against the 15% share this centre was allocated, it came
+in about seven times under.
 
 Over 1,200 consecutive ticks, a full 60 seconds of match time: **zero ticks
 exceeded the 50 ms ceiling, and zero exceeded the 20 ms working target.**
