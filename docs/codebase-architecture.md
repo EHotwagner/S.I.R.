@@ -3,8 +3,8 @@ title: S.I.R. F# Codebase Architecture
 status: accepted
 decision-status: canonical
 document-type: living-architecture
-version: "0.2"
-last-updated: 2026-07-25
+version: "0.3"
+last-updated: 2026-07-27
 related:
   - docs/game-vision.md
   - docs/technology-stack.md
@@ -81,7 +81,9 @@ the display name `S.I.R.`.
 Owns stable game vocabulary and rules-facing values:
 
 - typed identifiers;
-- grid coordinates, square footprints, facing, and fixed-point value types;
+- grid coordinates, canonical cell edges and vertices, square footprints,
+  facing, and fixed-point value types;
+- edge feature types and their per-modality permeability contracts;
 - ruleset and content identifiers;
 - observations, reports, orders, intentions, and authoritative events;
 - action and effect descriptions;
@@ -103,8 +105,9 @@ Owns the authoritative deterministic state transition:
 
 - 20 Hz integer tick state and phase pipeline;
 - component and entity storage;
-- occupancy, reservations, and cooperative square-footprint movement;
-- Chebyshev path-cost adapters;
+- cell occupancy, edge feature state, reservations, and cooperative
+  square-footprint movement;
+- Chebyshev path-cost adapters and edge-aware eight-way traversal;
 - LOS, FOV, perception, acquisition, and actor knowledge;
 - actions, reactions, combat resolution, and consequence batching;
 - communications and report delivery;
@@ -323,6 +326,9 @@ set rather than copying whatever versions happen to be checked out.
 
 - Domain constructor and invariant tests.
 - Chebyshev, footprint, facing, and fixed-point properties.
+- Edge canonicality: one representative per boundary, symmetric permeability,
+  and consistent cell/edge/vertex relationships.
+- Edge-crossing agreement between movement, line of sight, and shot traces.
 - Deterministic random-address stability.
 - Phase-local resolution and permutation invariance.
 - Cache equivalence and invalidation.
@@ -372,8 +378,9 @@ rendering costs separately.
 The first slice should be small in content but cross every foundational
 boundary:
 
-1. Load a versioned scenario containing a bounded grid, full-cell walls, and
-   two opposing 2×2 units.
+1. Load a versioned scenario containing a bounded grid, a cell-occupying
+   blocker, a wall edge, a window edge, a door edge, and two opposing 2×2
+   units.
 2. Run a headless authoritative match at 20 ticks per second with eight-way
    facing and equal-cost Chebyshev movement.
 3. Instantiate one isolated WASM instance per unit from reusable compiled
@@ -381,7 +388,8 @@ boundary:
 4. Deliver a local observation, accept a movement or attention intention, and
    apply fuel and memory limits.
 5. Resolve footprint movement, LOS, acquisition, and one minimal attack through
-   deterministic phases.
+   deterministic phases, with the movement blocked by the wall edge and the
+   attack resolved through the window edge.
 6. Emit knowledge-filtered projections through one public transport.
 7. Render the square units, footprint, facing, identification glyph, and HP in
    the canonical client.
@@ -403,8 +411,8 @@ untested assumption.
 1. Pin SDK, central packages, FS.GG compatibility set, formatting, analyzers,
    and deterministic build metadata.
 2. Create `Domain`, `Simulation`, and their invariant/property test projects.
-3. Implement the minimal grid, footprint, tick, phase, hash, and scenario
-   loader.
+3. Implement the minimal grid, edge layer, footprint, tick, phase, hash, and
+   scenario loader.
 4. Select the WASM runtime and implement the smallest metered ABI through
    `SIR.Wasm`.
 5. Add `SIR.Match`, input journal, module scheduling, replay, and the first

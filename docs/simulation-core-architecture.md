@@ -2,8 +2,8 @@
 title: S.I.R. Deterministic Simulation Core
 status: proposed
 document-type: living-design
-version: "0.3"
-last-updated: 2026-07-25
+version: "0.5"
+last-updated: 2026-07-27
 related:
   - docs/game-vision.md
   - docs/skirmish-development-plan.md
@@ -90,7 +90,7 @@ Authoritative state is included in deterministic snapshots and hashes. It
 includes:
 
 - entity identities and components;
-- grid occupancy and spatial revisions;
+- grid occupancy, edge feature state, and spatial revisions;
 - movement credit and reservations;
 - action state and timing;
 - HP, wounds, armor, suppression, and other conditions;
@@ -100,7 +100,9 @@ includes:
 - objective and mission state;
 - deterministic random contexts; and
 - WASM artifact identity, instance memory, pending services, wake schedule, and
-  rule-relevant fault state.
+  rule-relevant fault state; and
+- command-bandwidth pools, current allocations, and allocation policy state,
+  since they determine the wake schedule and therefore the outcome.
 
 ### Derived state
 
@@ -257,8 +259,10 @@ Knowledge[observer]
 Inventory[holder]
 ```
 
-Dense grid occupancy, revisions, and other spatial structures use specialized
-data layouts rather than depending exclusively on generic component queries.
+Dense grid occupancy, the edge feature layer, revisions, and other spatial
+structures use specialized data layouts rather than depending exclusively on
+generic component queries. Edges are stored once per canonical boundary so a
+feature cannot disagree with itself depending on which side reads it.
 
 At the intended scale, clarity, determinism, and direct profiling take priority
 over adopting infrastructure designed primarily for millions of entities.
@@ -364,11 +368,17 @@ Headless execution supports:
 Development and test builds continuously verify invariants such as:
 
 - committed unit footprints do not overlap;
+- no committed transition crosses an edge that forbids it for that movement
+  profile;
+- movement, line of sight, and shot traces agree on which edges a path crosses;
 - resources are conserved except through declared creation and destruction;
 - actions follow valid lifecycles;
 - observations have legitimate provenance;
 - modules receive only permitted knowledge;
 - communications use allowed routes;
+- command bandwidth is conserved, never exceeds its pool, and is never allocated
+  to a squad across an unavailable communications path;
+- every instance retains its local floor regardless of allocation;
 - entities do not act after disqualifying consequences unless simultaneous
   completion permits it;
 - nonpersistent skirmish does not access campaign state;
@@ -399,6 +409,9 @@ the authoritative rules. In particular:
 - canonical eight-direction movement uses equal orthogonal and diagonal
   Chebyshev steps, so generic weighted eight-way A* behavior requires an
   S.I.R. pathfinding adapter;
+- `FS.GG.Game.Core.Edges` supplies canonical edge and vertex addressing, but its
+  traversal helpers are four-way with a Manhattan heuristic, so S.I.R. owns
+  eight-way edge-aware traversal and the diagonal-through-corner rule;
 - counter-addressed authoritative randomness requires an S.I.R. adapter rather
   than a single sequential random stream; and
 - floating-point-heavy geometry, visibility, ballistics, or physics modules
