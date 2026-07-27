@@ -66,6 +66,7 @@ description of the intended game. Everything else derives from it.
 |---|---|
 | [human-forces](docs/human-forces.md) | Squad, classes, weapons, armour, equipment |
 | [arcane-forces](docs/arcane-forces.md) | Anchored coordination, strain economy, casters and mass |
+| [arcane-spells](docs/arcane-spells.md) | The spell set, cost gradient, and what each denies |
 
 ### Research
 
