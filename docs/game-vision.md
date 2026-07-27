@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.89"
+version: "0.90"
 last-updated: 2026-07-27
 ---
 
@@ -532,11 +532,26 @@ trigger:
 ```text
 trigger becomes locally observable
   → reaction opportunity
-  → local WASM instance wakes
-  → reaction request
+  → standing doctrine selects the reaction
+      (or the module is woken, if it asked to be)
   → reaction delay
   → reaction resolves
 ```
+
+The ordinary path does **not** invoke the control module. A unit reacts from the
+doctrine it already declared, so the reaction begins on the trigger tick without
+waiting for a module round trip. The module made its decision earlier, when it
+declared the policy.
+
+This matters for three reasons. Module wake latency stays out of the reaction
+loop, so reaction speed is determined by declared game state rather than by
+scheduler behavior. No wake is required at first contact, which is precisely
+when many units would otherwise wake at once. And a unit whose squad has
+exhausted its command bandwidth still reacts normally — a starved force stops
+adapting, not fighting.
+
+A module is invoked only when one of its declared wake subscriptions matches,
+and that invocation runs alongside the reaction rather than gating it.
 
 No reaction resolves in zero simulation time. Prepared states such as covering a
 sector, guarding a doorway, or overwatch can reduce reaction delay, but cannot
@@ -1266,14 +1281,17 @@ canonical timed-action model:
 ```text
 acquisition completes
   → local observation is delivered
-  → unit WASM instance wakes
-  → reaction is requested
+  → standing doctrine selects the reaction
   → reaction delay elapses
   → reaction resolves
 ```
 
 Acquisition time and reaction time are separate. A unit can notice a threat
 before it has turned, aimed, changed stance, or otherwise become ready to act.
+
+The unit's control module is not in this path unless a declared wake
+subscription matches the observation. See the reaction lifecycle under
+[Action timing and tick resolution](#reactions).
 
 ### Facing and attention
 
@@ -1522,11 +1540,12 @@ effects require explicit attribution, authorization, and knowledge-state rules
 so they cannot expose authoritative world truth or become indistinguishable from
 server corruption.
 
-If a leader is lost, player-provided WASM logic determines local succession.
-Succession does not create a communications device. A prepared second-in-command
-may already carry a redundant device; otherwise, a unit must physically recover
-or loot the original device before the squad can re-establish its equipment path
-to headquarters.
+If a leader is lost, the server promotes the first eligible person in the
+squad's declared succession order, and player-provided WASM logic adapts the
+squad's behavior to that change. Succession does not create a communications
+device. A prepared second-in-command may already carry a redundant device;
+otherwise, a unit must physically recover or loot the original device before the
+squad can re-establish its equipment path to headquarters.
 
 ## Tactical combat
 

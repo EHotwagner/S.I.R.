@@ -2,8 +2,8 @@
 title: Attribute, Skill, and Progression Systems
 status: proposed
 document-type: research
-version: "0.24"
-last-updated: 2026-07-25
+version: "0.25"
+last-updated: 2026-07-27
 related:
   - docs/game-vision.md
 research-scope:
@@ -901,7 +901,8 @@ and magic rules rather than precede them.
   coordination, logistics, and reactions.
 - Leadership choices compete with or replace some general choices rather than
   automatically doubling the number of perks.
-- Player-provided WASM logic determines local succession after leader loss.
+- The server promotes the first eligible successor after leader loss, and
+  player-provided WASM logic adapts the squad's behavior to the change.
 - Headquarters communication remains tied to physical communications equipment:
   a successor must already carry a redundant device or recover the fallen
   leader's device.
