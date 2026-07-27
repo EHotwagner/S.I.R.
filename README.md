@@ -39,6 +39,7 @@ description of the intended game. Everything else derives from it.
 | [tactical-environment-architecture](docs/tactical-environment-architecture.md) | Map construction, cover composition, verticality, destructibility |
 | [wasm-control-architecture](docs/wasm-control-architecture.md) | Module ABI, fuel, command bandwidth, standing doctrine |
 | [control-abi](docs/control-abi.md) | Event catalog and action request kinds crossing the WASM boundary |
+| [standard-module](docs/standard-module.md) | Commanding without code: postures, overrides, balance baseline |
 | [formations-and-referents](docs/formations-and-referents.md) | Named positional referents, formations, objective knowledge |
 | [casualty-and-medical-architecture](docs/casualty-and-medical-architecture.md) | Casualty states, medical actions, evacuation |
 | [public-protocol-architecture](docs/public-protocol-architecture.md) | Canonical gRPC service split, sessions, projections |
