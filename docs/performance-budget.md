@@ -2,7 +2,7 @@
 title: S.I.R. Performance Budget
 status: proposed
 document-type: living-design
-version: "0.5"
+version: "0.6"
 last-updated: 2026-07-27
 related:
   - docs/simulation-core-architecture.md
@@ -48,9 +48,10 @@ allocation was aimed at the wrong thing: reservation and dependency resolution
 are free, and **path search is the entire cost of movement**, expressed as a
 replan cadence rather than a per-tick share.
 
-Together the three centres this document allocated 60% of the tick to account
-for roughly **3% of it**. Every measurement so far has removed an assumption
-this document was built on, which is exactly what the gates exist to do.
+Together these three held **75%** of the tick between them at the moment each
+was measured — perception 30%, movement 30%, WASM 15% — and they account for
+roughly **3% of it**. Every measurement so far has removed an assumption this
+document was built on, which is exactly what the gates exist to do.
 
 ## The tick budget
 
@@ -109,10 +110,11 @@ Path search now leads, and unlike the others it is not a fixed cost. It is a
 for a typical medium-range search, a 10% share buys about 14 searches per tick.
 
 The remaining unmeasured centres — combat resolution, projection and
-serialization, journal and hashing — hold the rest. Given that the three
-measured centres came in between fifteen and thirty times under their
-allocations, these shares should be treated as placeholders rather than
-predictions.
+serialization, journal and hashing — hold the rest. Every measured centre came
+in at least seven times under its allocation, perception by thirty times, and
+movement's conflict resolution by far more than either because its allocation
+was aimed at the wrong half of the problem. These shares should be treated as
+placeholders rather than predictions.
 
 ## What this session made more expensive
 
