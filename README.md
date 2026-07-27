@@ -59,6 +59,12 @@ description of the intended game. Everything else derives from it.
 | [movement-spike](docs/research/movement-spike.md) | Measured: reservation, conflict resolution, path search cadence |
 | [visual-direction](docs/visual-direction.md) | Graphical language and tactical overlays |
 
+### Content
+
+| Document | Covers |
+|---|---|
+| [human-forces](docs/human-forces.md) | Squad, classes, weapons, armour, equipment |
+
 ### Research
 
 Comparative research backing the above lives in [`docs/research/`](docs/research/),

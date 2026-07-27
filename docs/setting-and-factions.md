@@ -2,8 +2,8 @@
 title: S.I.R. Setting and Faction Architecture
 status: proposed
 document-type: living-design
-version: "1.2"
-last-updated: 2026-07-25
+version: "1.3"
+last-updated: 2026-07-27
 related:
   - docs/game-vision.md
   - docs/research/squad-command-and-succession.md
@@ -420,6 +420,12 @@ Potential strengths:
 - vehicles, drones, engineering, and prepared defenses;
 - industrially interchangeable equipment; and
 - precise logistics and medical evacuation.
+
+See [Human Forces](human-forces.md) for the concrete classes, weapons, armour,
+and equipment. The identity above is not asserted there but produced: human
+capability is information capability, information capability is electronic, and
+electronic capability emits and consumes power, so the faction's strength and
+its vulnerability are one property seen from two sides.
 
 Potential vulnerabilities:
 
