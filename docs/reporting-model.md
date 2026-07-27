@@ -2,7 +2,7 @@
 title: S.I.R. Observation Reporting Model
 status: proposed
 document-type: living-design
-version: "0.1"
+version: "0.2"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -121,9 +121,13 @@ is worse than no summary.
 
 ## Reports cost what everything else costs
 
-Reports share link capacity with player payloads, draw on the same command
-bandwidth, and emit exactly as any other traffic does. A unit that reports
-heavily is a unit that is easy to find.
+Reports share link capacity with player payloads and emit exactly as any other
+traffic does. A unit that reports heavily is a unit that is easy to find.
+
+They are **not** drawn from allocated command bandwidth. Allocation prices what
+a commander gives a unit, not what a unit tells its commander — see
+[Communications Network](communications-network.md). Upstream is bounded by
+capacity, by aggregation, and above all by emission.
 
 This is the trade that makes reporting policy a decision rather than a setting:
 **report volume trades information against signature.** It is emission control
@@ -174,8 +178,8 @@ The boundary is that a module controls **how talkative** its unit is, not
 
 No reporting policy is unconditionally correct.
 
-Reporting everything costs capacity, bandwidth, and signature, and produces a
-force that can be mapped from its traffic alone. Reporting nothing blinds the
+Reporting everything costs capacity and signature, and produces a force that can
+be mapped from its traffic alone. Reporting nothing blinds the
 commander and starves the aggregation the hierarchy depends on. Summarising
 trades latency for volume, and immediate reporting trades volume for speed.
 
