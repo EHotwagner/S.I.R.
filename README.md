@@ -45,6 +45,7 @@ description of the intended game. Everything else derives from it.
 | [codebase-architecture](docs/codebase-architecture.md) | F# solution layout and dependency graph |
 | [technology-stack](docs/technology-stack.md) | .NET 10, FS.GG integration boundaries, adapters |
 | [logistics-architecture](docs/logistics-architecture.md) | Stockpiles, manifests, battlefield supply, write-back |
+| [electronic-warfare](docs/electronic-warfare.md) | Emission, jamming, interception, injection, counterplay |
 | [magic-system](docs/magic-system.md) | Risk-based casting, strain, breach, shattering |
 | [setting-and-factions](docs/setting-and-factions.md) | Setting, the diegetic System, faction contracts |
 | [mission-lifecycle](docs/mission-lifecycle.md) | Missions, bidding, extraction, campaign write-back |

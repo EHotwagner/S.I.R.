@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.92"
+version: "0.93"
 last-updated: 2026-07-27
 ---
 
@@ -1493,6 +1493,11 @@ fixed report rules do not imply fixed certainty categories in the interface.
 - The communications architecture must support electronic-warfare effects that
   cause disconnection, degrade range, delay messages or reports, intercept
   traffic, and inject false information.
+- Transmitting is an observable act. Emissions are stimuli in the ordinary
+  perception pipeline, so listening is free and transmitting is not.
+- Emission control, encryption, and authentication protect three separable
+  things: that you transmitted, what you said, and who you are. No one of them
+  substitutes for another.
 - Because command bandwidth is drawn through the communications topology,
   electronic warfare can also degrade how richly a unit is informed and what
   analysis it can commission. This attacks the quality of an opponent's control
@@ -1513,6 +1518,10 @@ Communications form a dynamic tactical network. Its state influences:
 
 Electronic warfare should consequently affect gameplay at the command and
 information layers, not exist only as a numeric combat modifier.
+
+See [Electronic Warfare Architecture](electronic-warfare.md) for the emission,
+link, content, and bandwidth layers, the separable protections, and the
+counterplay each attack requires.
 
 Not every electronic-warfare capability must produce every effect. Individual
 equipment, abilities, environmental conditions, or magical effects may use
@@ -2016,8 +2025,9 @@ vision:
 3. What are the exact fixed rules determining which observations become
    reports and whether they are immediate, summarized, delayed, lost, or stored
    for later delivery?
-4. Can communications be relayed through units, vehicles, infrastructure,
-   drones, magic, or deployable equipment?
+4. What relay capacity, chaining limits, and setup times make a relay chain
+   worth placing? Relaying itself is established: a relay is an authoritative
+   object with a position that can be found, jammed, and destroyed.
 5. What exact directional-awareness zones, rear-attack effects, and unawareness
    thresholds produce surprise and execution opportunities?
 6. Should the provisional rule that semi-random offer sets cannot be rerolled
