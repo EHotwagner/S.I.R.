@@ -1,8 +1,9 @@
 ---
 title: S.I.R. Arcane Civilization Forces
-status: proposed
+status: accepted
+decision-status: canonical
 document-type: living-content
-version: "0.5"
+version: "1.0"
 last-updated: 2026-07-27
 related:
   - docs/setting-and-factions.md
@@ -249,6 +250,25 @@ is elevation you can move and the clearest asset humans own. The arcane cannot
 jam it, cannot direction-find it, and have no counter to it at all except
 reaching it or making it pointless — which means an arcane force that fights
 where drones cannot see is fighting on its own terms.
+
+## What canonical status covers
+
+Settled: coordination that is anchored rather than transmitted, so an arcane
+geography is attacked physically where a human network is attacked
+electronically; the two economies, with humans limited by supply and the arcane
+by accumulation; a force shape of scarce decisive casters and durable mass, in
+which the nonmagical peoples are not failed casters; information that differs
+rather than ranks, seeing through obstruction and vaguely where humans see far
+and exactly; and the sensory split, in which human sensors work completely
+against this faction and human electronic warfare does nothing at all.
+
+Not settled: every number, and the open parameters at the end.
+
+**What would force a revision of the shape:** anchored coordination proving
+inexpressible through the ordinary knowledge and command rules and requiring
+privileged server behaviour; regeneration proving indistinguishable from simply
+having more health; or the asymmetry collapsing so that one side is correct
+regardless of terrain and mission.
 
 ## Checking against invariant 13
 

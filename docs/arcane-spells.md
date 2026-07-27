@@ -1,8 +1,9 @@
 ---
 title: S.I.R. Arcane Spells
-status: proposed
+status: accepted
+decision-status: canonical
 document-type: living-content
-version: "0.2"
+version: "1.0"
 last-updated: 2026-07-27
 related:
   - docs/magic-system.md
@@ -226,6 +227,28 @@ spells are decisions about the whole match rather than the current moment.
   rather than a line here.
 - **Counter-magic.** Deferred until there is a second magical faction for it to
   matter against.
+
+## What canonical status covers
+
+Settled: a utility-dominant set with a small number of expensive decisive
+options, and the reasoning that a caster who is artillery is a worse gun than a
+gun while a purely supportive caster is not worth focusing; the strain career as
+the axis the set is built on, so that the cost gradient's shape matters more
+than its values; barrier as a created semantic edge expressed through
+per-modality permeability; rupture aimed at terrain rather than people; the
+dampening field attacking electronics only and announcing its own importance;
+translocation requiring an observed destination; scrying as a snapshot returning
+presence rather than identification; and the exclusions, mind control as
+incoherent with the control architecture and summoning as a candidate rather
+than a rejection.
+
+Not settled: every number, which aspects each spell permits empowering, and the
+open parameters at the end.
+
+**What would force a revision of the shape:** the decisive spells proving
+correct as opening moves rather than as commitments, which would mean the cost
+gradient is not steep enough to make a career meaningful; or the dampening field
+proving an unconditional answer to the human faction despite announcing itself.
 
 ## Checking against invariant 13
 
