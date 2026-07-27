@@ -2,7 +2,7 @@
 title: S.I.R. Robust Skirmish Development Plan
 status: proposed
 document-type: development-plan
-version: "0.12"
+version: "0.13"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -208,7 +208,12 @@ maps.
 - A missed trace contacts a unit behind the intended target.
 - A dangerous firing line produces friendly fire.
 - Suppression affects a unit without HP damage.
-- An incapacitated unit is stabilized.
+- An incapacitated unit deteriorates and dies untreated.
+- An incapacitated unit is stabilized, and remains out of the fight.
+- A stabilized casualty is carried, slowing its carrier, and evacuated to a
+  referent.
+- Treatment is interrupted by fire before it completes.
+- A suppressed casualty position denies recovery without inflicting damage.
 - An execution is interrupted on an earlier tick.
 - A strained caster is wounded and breaches.
 

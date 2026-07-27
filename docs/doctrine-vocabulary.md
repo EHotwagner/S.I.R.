@@ -2,7 +2,7 @@
 title: S.I.R. Doctrine Vocabulary
 status: proposed
 document-type: living-design
-version: "0.2"
+version: "0.3"
 last-updated: 2026-07-27
 related:
   - docs/wasm-control-architecture.md
@@ -62,7 +62,7 @@ exactly the failure this audit exists to catch.
 | Movement to a referent | withdraw to, rally at, assemble at | **Ready** |
 | Coordinated movement | bounding advance, overwatch handoff, formation change | **Ready** |
 | Logistics | request resupply, transfer, pick up, drop, redistribute | **Ready** |
-| Medical | stabilize, carry, evacuate | **Blocked** — see below |
+| Medical | aid, stabilize, take up, set down, evacuate | **Ready** — [casualty-and-medical](casualty-and-medical-architecture.md) |
 | Communication | report, relay, send player-defined payload | **Ready**, subject to the provisional report model |
 | Magic | cast with declared aspect spend and strain ceiling | **Ready** |
 
@@ -80,19 +80,24 @@ delivered through the communications topology rather than as universally known
 truth, so a disconnected squad can act on a stale rally point or a stale
 objective picture.
 
-## Remaining gap: medical actions
+## Gaps closed
 
-Combat resolution specifies incapacitation, bleeding, stabilization, evacuation,
-and recovery as *outcomes and states*. No document specifies them as *actions*
-with timing, eligibility, resource cost, interruption rules, and observable
-effects, which is what a capability descriptor requires.
+All four gaps identified by this audit are now addressed.
 
-Casualty recovery under fire is named as one of the nine features in the
-accepted tactical identity package, so this is not a peripheral omission.
+Named positional referents, formation, and unit-level objective knowledge are
+defined in [Formations and Positional Referents](formations-and-referents.md).
+All three were one problem — how doctrine refers to things beyond the unit's own
+state — and each resolves as a per-unit belief delivered through the
+communications topology rather than as universally known truth.
 
-Required: the medical capability set under the ordinary action lifecycle, its
-draw on the medical supply classes logistics already defines, and its
-eligibility against wound and incapacitation state.
+Medical actions are defined in
+[Casualty and Medical Architecture](casualty-and-medical-architecture.md), which
+specifies aid, stabilization, carrying, and evacuation as timed capabilities and
+establishes that battlefield treatment does not return a unit to the fight.
+
+**The vocabulary is no longer blocked by missing models.** What remains is
+naming its entries, which is a specification task rather than a design one, and
+resolving the open questions below.
 
 ## Open questions
 
