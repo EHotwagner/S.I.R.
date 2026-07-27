@@ -3,7 +3,7 @@ title: S.I.R. Communications Network Architecture
 status: accepted
 decision-status: canonical
 document-type: living-design
-version: "1.0"
+version: "1.1"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -216,6 +216,51 @@ of units on that net is limited by things a commander already has to weigh.
 This keeps the decision inside a system that exists rather than adding a
 separate configuration surface, and it means the answer can differ per squad
 within one force.
+
+## Upstream and downstream are not symmetric
+
+Traffic in the two directions is bounded differently, and the difference is a
+design position rather than an accident.
+
+**Downstream** — the fused picture and commissioned analysis flowing to a unit —
+is drawn from allocated command bandwidth. It is discretionary support a
+commander chooses to spend, and spending it somewhere means not spending it
+elsewhere.
+
+**Upstream** — reports flowing to a commander — is not allocated. It is bounded
+by link capacity, by aggregation at each hop, and by emission.
+
+The principle is that **a commander allocates what they give, not what they are
+told.** Rationing how much a subordinate element may report would be strange in
+the fiction and hostile in play, and it would replace an interesting constraint
+with an administrative one.
+
+### Why the asymmetry is correct rather than merely kind
+
+A unit that receives less still fights. Its own perception is its floor, it
+runs its control logic every tick, and its reactions are unaffected. Degrading
+downstream support degrades its *judgement*, not its existence.
+
+A commander who receives less has nothing at all. They have no perception of
+their own; their entire faculty is derived from what reaches them. Fog of war is
+supposed to make information contested, uncertain, and late — **not to remove
+the player's ability to decide anything.** A player with no information has no
+decisions, and that is idleness rather than tension.
+
+The volume argument points the same way. Aggregation compresses upstream traffic
+at every hop, so a squad's reporting arrives as one summary rather than a dozen
+feeds. A fused downstream picture has no equivalent compression, and is the
+larger of the two.
+
+### The constraint that remains
+
+Upstream is not free. **Reporting emits**, so a talkative element is a findable
+one, and that bound cannot be purchased around. Invariant 13 therefore still
+holds: reporting everything is not dominant, because it maps your force for the
+opponent.
+
+The asymmetry moves the upstream constraint from an allowance to a signature,
+which is a better place for it.
 
 ## Delivery and latency
 

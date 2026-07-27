@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "1.3"
+version: "1.4"
 last-updated: 2026-07-27
 ---
 
@@ -1057,6 +1057,13 @@ pathfinding error.
 - How richly an instance is informed, and how much expensive server analysis it
   may commission, are purchased from a finite command-bandwidth pool the player
   allocates. Every player receives the same total; they decide where it goes.
+- Command bandwidth is downstream only. A commander allocates what they give a
+  unit, not what a unit tells them. Reporting upward is bounded by link
+  capacity, by aggregation at each hop, and by emission, not by allocation.
+- Fog of war exists to make information contested, uncertain, and late. It does
+  not exist to remove the player's ability to decide anything. A unit that
+  receives less still fights; a commander who receives nothing has no faculty at
+  all, because they have no perception of their own.
 - Command bandwidth is pooled at squad level and drawn through the
   communications topology. A commander cannot spend attention on a squad they
   cannot reach.

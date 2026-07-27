@@ -2,7 +2,7 @@
 title: S.I.R. WebAssembly Control Architecture
 status: proposed
 document-type: living-design
-version: "0.12"
+version: "0.13"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -389,6 +389,22 @@ Command bandwidth prices **networked** information only:
 - **expensive host services** — pathfinding, influence queries, firing-line
   evaluation, formation planning, and sensor-coverage analysis, together with
   the results returned.
+
+### Bandwidth is downstream
+
+Both priced items flow **toward** a unit. That is deliberate and it is the
+governing asymmetry: **a commander allocates what they give, not what they are
+told.**
+
+Reporting upward is not drawn from the allocated pool. A commander does not
+ration how much a subordinate element may tell them, and doing so would be
+strange in the fiction and hostile in play. What bounds upstream reporting is
+link capacity, aggregation at each hop, and emission — see
+[Observation Reporting Model](reporting-model.md).
+
+This is also the better constraint. Emission is a bound that cannot be purchased
+around, and it is tactically interesting because reporting reveals the reporter.
+An administrative allowance on how much a unit may say would be neither.
 
 ### What it does not price
 
