@@ -2,7 +2,7 @@
 title: S.I.R. Control ABI Surface
 status: proposed
 document-type: living-design
-version: "0.1"
+version: "0.2"
 last-updated: 2026-07-27
 related:
   - docs/wasm-control-architecture.md
@@ -57,6 +57,7 @@ The complete set a module may emit. Everything content-specific funnels through
 | `SetFacing` | Body facing, one of the eight canonical directions. |
 | `SetAttention` | Attention direction, independent of body facing. |
 | `SetStance` | Stance transition; costs ticks under the action lifecycle. |
+| `SetEmissionPolicy` | How freely the unit may transmit: free, restricted, or silent. The only defence against being located, and therefore something a module must be able to exercise continuously. |
 | `SetFormationIntent` | Adopt a station, request a template change, or release from formation. |
 | `SetEngagement` | Declare a point target or an engaged area, or disengage. |
 | `SendMessage` | Opaque player-defined payload to a permitted recipient. |
@@ -109,6 +110,7 @@ communication rules. A module cannot subscribe to, suppress, or fabricate them.
 | `OrderReceived` | An authoritative order that reached this unit. |
 | `CommandRoleChanged` | Succession, promotion, or reassignment. |
 | `ConnectivityChanged` | Link to leader or headquarters gained, lost, or degraded. |
+| `InterferenceDetected` | The unit's receiver is being jammed, as distinct from nothing being sent. Whether and how reliably this is distinguishable is an open parameter of the electronic-warfare model. |
 | `ReportDelivered` | A fixed authoritative report arrived. |
 
 ### World
@@ -159,5 +161,6 @@ same contract.
 - The stable reason-code set for failed and rejected requests.
 - Whether `SetEngagement` is distinct from `StartCapability` or a special case
   of it.
+- Whether emission policy is a unit setting, a per-message decision, or both.
 - Per-faction variation, given that capability contracts are already
   per-faction.

@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "0.97"
+version: "0.98"
 last-updated: 2026-07-27
 ---
 
@@ -1019,6 +1019,12 @@ pathfinding error.
   higher-level behavior are chosen by the player and client.
 - A standard control module is provided so that writing a custom module is not
   required to play.
+- A player who writes no code commands by assigning each squad a **posture**: a
+  named, coherent bundle of behaviour that reads as an order rather than a
+  configuration. Postures are standard-module content, not engine contract.
+- A posture declares what its squad does when contact with headquarters is lost.
+  That choice is exposed to the player, because it cannot be communicated at the
+  moment it becomes relevant.
 - The project provides an official example client/module communication protocol,
   but custom clients and modules are not required to use it.
 - Each player account has an account-scoped library of uploaded WebAssembly
@@ -1160,9 +1166,15 @@ and world rules.
 - Module validation must reject binaries that target an incompatible host-class
   interface.
 - The standard module is a major part of the game experience and balance
-  baseline, not placeholder sample code. It is also the vehicle through which a
-  non-programming player authors behavior, so its configuration surface and its
-  interpretation of player commands are first-class design concerns.
+  baseline, not placeholder sample code. Because most units run it most of the
+  time, its behaviour is the game's balance for most players, and a change to a
+  posture is a balance change.
+- The standard module is also the vehicle through which a non-programming player
+  authors behavior, so its configuration surface and its interpretation of
+  player commands are first-class design concerns.
+- Configuration set before deployment is free. Changing it during a match is an
+  order: it travels the communications topology, can be delayed or prevented,
+  and produces traffic that can be seen. Preparation is therefore resilience.
 - Because the standard module's configuration is content rather than engine
   contract, it can evolve without versioning the ABI.
 - The event catalog determines whether a module can react competently. A missing
