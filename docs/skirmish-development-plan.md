@@ -2,7 +2,7 @@
 title: S.I.R. Robust Skirmish Development Plan
 status: proposed
 document-type: development-plan
-version: "0.11"
+version: "0.12"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -217,7 +217,10 @@ maps.
 - Sixty units share one compiled artifact while retaining isolated state.
 - A module exhausts fuel and produces no partial output.
 - An expensive host-service request returns asynchronously.
-- A sleeping module wakes for damage or contact.
+- A sleeping module wakes for damage or contact when it subscribed to that
+  condition, and is not woken when it did not.
+- A unit reacts to contact from standing doctrine without its module being
+  invoked at all.
 - A disconnected squad continues its permitted doctrine.
 - A doctrine rule list adopts its first satisfied rule, and its unconditional
   final rule governs when none of the others hold.

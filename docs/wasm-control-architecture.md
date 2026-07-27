@@ -2,7 +2,7 @@
 title: S.I.R. WebAssembly Control Architecture
 status: proposed
 document-type: living-design
-version: "0.6"
+version: "0.7"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -104,7 +104,12 @@ previous tick commits
 
 Information generated later in that tick cannot influence the invocation
 retroactively. It becomes available at the next applicable boundary. This
-preserves deterministic causality and the canonical nonzero reaction time.
+preserves deterministic causality.
+
+This describes what happens when an invocation occurs. It is not the path by
+which a unit reacts. Standing doctrine executes on every tick without an
+invocation, so reaction timing is governed by the declared reaction delay rather
+than by when the module next runs.
 
 ## Artifact reuse and instance isolation
 
