@@ -39,6 +39,7 @@ description of the intended game. Everything else derives from it.
 | [tactical-environment-architecture](docs/tactical-environment-architecture.md) | Map construction, cover composition, verticality, destructibility |
 | [wasm-control-architecture](docs/wasm-control-architecture.md) | Module ABI, fuel, command bandwidth, standing doctrine |
 | [doctrine-vocabulary](docs/doctrine-vocabulary.md) | Doctrine conditions and actions; currently a readiness audit |
+| [formations-and-referents](docs/formations-and-referents.md) | Named positional referents, formations, objective knowledge |
 | [public-protocol-architecture](docs/public-protocol-architecture.md) | Canonical gRPC service split, sessions, projections |
 | [codebase-architecture](docs/codebase-architecture.md) | F# solution layout and dependency graph |
 | [technology-stack](docs/technology-stack.md) | .NET 10, FS.GG integration boundaries, adapters |
