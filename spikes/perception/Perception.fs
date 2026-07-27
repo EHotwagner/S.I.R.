@@ -125,6 +125,8 @@ let step
     (sightRange: int)
     (samplePoints: int)
     (useSector: bool)
+    (memo: Cache.Memo option)
+    (symmetric: bool)
     (c: Counters)
     =
     let bucketRadius = (sightRange + ix.CellSize - 1) / ix.CellSize
@@ -164,20 +166,31 @@ let step
                                     not useSector || inSector ofacing (tx - ox) (ty - oy)
                                 if inArc then
                                     c.SectorPassed <- c.SectorPassed + 1
-                                    // trace to the target's exposure points
+                                    // trace to the target's exposure points,
+                                    // consulting the memo when one is supplied
+                                    let tl = f.Level.[t]
+                                    let cached =
+                                        match memo with
+                                        | Some m -> Cache.tryGet m symmetric ox oy ol tx ty tl
+                                        | None -> -1
                                     let mutable visible = false
-                                    let mutable sp = 0
-                                    while not visible && sp < samplePoints do
-                                        let ax = tx + (sp &&& 1)
-                                        let ay = ty + (sp >>> 1)
-                                        c.Rays <- c.Rays + 1
-                                        c.RaySteps <- c.RaySteps + dist
-                                        if f.Level.[t] = ol then
-                                            if hasLos g ol ox oy ax ay then visible <- true
-                                        else
-                                            if hasLosAcrossLevels g ol ox oy f.Level.[t] ax ay then
-                                                visible <- true
-                                        sp <- sp + 1
+                                    if cached >= 0 then visible <- cached = 1
+                                    else
+                                        let mutable sp = 0
+                                        while not visible && sp < samplePoints do
+                                            let ax = tx + (sp &&& 1)
+                                            let ay = ty + (sp >>> 1)
+                                            c.Rays <- c.Rays + 1
+                                            c.RaySteps <- c.RaySteps + dist
+                                            if tl = ol then
+                                                if hasLos g ol ox oy ax ay then visible <- true
+                                            else
+                                                if hasLosAcrossLevels g ol ox oy tl ax ay then
+                                                    visible <- true
+                                            sp <- sp + 1
+                                        match memo with
+                                        | Some m -> Cache.store m symmetric ox oy ol tx ty tl visible
+                                        | None -> ()
 
                                     if visible then
                                         // find or open an episode slot

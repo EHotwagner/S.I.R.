@@ -3,7 +3,7 @@ title: Perception Spike — Measured Results
 status: accepted
 decision-status: evidence
 document-type: research
-version: "1.0"
+version: "1.1"
 last-updated: 2026-07-27
 related:
   - docs/performance-budget.md
@@ -154,6 +154,83 @@ short-circuits the rest. Occlusion buys shorter rays and pays in more of them.
 Both are cheap. The point is that neither open ground nor dense interior is the
 worst case in the way one might assume.
 
+## Does caching help?
+
+The measurements above are uncached, so the obvious question is how much of that
+work a cache would remove. The answer depends entirely on whether the force is
+moving, and it is not the answer one would assume.
+
+A line-of-sight memo keyed on both endpoints' cells and levels, with a validity
+stamp:
+
+| | mean | rays/tick | hit rate |
+|---|---|---|---|
+| **Force in motion** | | | |
+| uncached | 0.431 ms | 10,060 | — |
+| memo, per-direction key | **0.496 ms** | 9,642 | 4.2% |
+| memo, symmetric key | 0.425 ms | 7,865 | 22.3% |
+| **Force stationary** | | | |
+| uncached | 0.392 ms | 10,790 | — |
+| memo, per-direction key | **0.137 ms** | 152 | 98.6% |
+| memo, symmetric key | 0.150 ms | 95 | 99.1% |
+
+Both blocks start from the same diffused configuration, so they are directly
+comparable.
+
+### Caching helps when it is least needed
+
+A stationary force gets a **2.9× speedup** at a 98.6% hit rate. A moving force
+gets **nothing**, at 4.2%.
+
+The reason is the one the spatial model already warns about: the memo is keyed
+on cell pairs, and a 512×512 grid has far too many cell pairs for that key space
+to stay warm while units keep moving into new ones. Every step a unit takes
+changes its key against every contact it holds. The existing caution that
+"complete all-pairs path or visibility tables are not automatically appropriate"
+is confirmed empirically rather than by argument.
+
+### Per-direction caching is a net loss in motion
+
+At 0.496 ms against an uncached 0.431 ms, the memo costs more than the 4.2% of
+rays it saves. **A cache that misses is not free**, and this one loses by 15%
+during exactly the conditions perception is being asked to handle.
+
+### Symmetry is the lever that always works
+
+Geometric line of sight is symmetric, so an unordered pair need only be traced
+once even though acquisition is evaluated separately in each direction. Keying
+the memo canonically cuts rays from 10,060 to 7,865 — **22% fewer** — while
+moving, and does so unconditionally rather than depending on hit rate.
+
+Interestingly it is *slightly slower* than the per-direction key when the force
+is stationary, because canonicalising the key costs a little and both are
+hitting above 98% anyway. Symmetry is worth having for its ray reduction, not
+for its cache behaviour.
+
+### Precomputed field of view is the wrong optimisation
+
+The instinctive answer to "cache the visibility work" is to shadowcast a field
+of view per observer and reduce every target test to a lookup. At these ratios
+that is roughly five times worse.
+
+An observer tests **50.3 targets per tick**. A radius-60 shadowcast must visit
+about **11,310 cells**. Field of view only becomes cheaper once a single
+observer is testing more than roughly **273 targets per tick**, which is more
+than the entire opposing force.
+
+Ray casting wins because the ratio of targets to visible area is low. It would
+stop winning at much higher unit densities or much shorter sight ranges.
+
+### Recommendation
+
+**Do not cache line of sight yet.** The uncached path already fits in about 1%
+of the tick, a cell-pair memo does not pay during movement and can lose, and
+field of view is the wrong shape entirely.
+
+Adopt symmetric pair evaluation, because it removes a fifth of the rays for free
+and is not a cache. Revisit memoisation only if unit counts rise far beyond the
+supported target, and measure it against motion rather than at rest.
+
 ## What this changes in the budget
 
 Perception drops from a provisional 30% to a measured **~1%** at the supported
@@ -177,6 +254,9 @@ sight ranges, sample points, or level counts.
   emission propagation are separate work.
 - No report generation, knowledge-state projection, or event emission. Those are
   downstream of perception and belong to other centres.
+- The caching measurements use a single open-addressed memo. A hierarchical or
+  region-based cache, which the spatial model also contemplates, is untested and
+  would have different characteristics.
 - Occluder density is generated, not authored. A real map may differ, though the
   sweeps bound the effect in both directions.
 - The conservative cross-level rule caveat above.

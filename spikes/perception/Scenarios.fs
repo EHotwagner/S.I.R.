@@ -35,8 +35,9 @@ let private jitter (f: Force) (rng: Rng) (g: Grid) =
         if ny > 1 && ny < g.Height - 3 && not (cellBlocked g f.Level.[i] f.X.[i] ny) then f.Y.[i] <- ny
         if rng.Chance 5 then f.Facing.[i] <- rng.Range(0, 8)
 
-let private run (g: Grid) (units: int) (levels: int) (sight: int) (samples: int)
-                (sector: bool) (bucket: int) (ticks: int) (separation: int) =
+let private runFull (g: Grid) (units: int) (levels: int) (sight: int) (samples: int)
+                    (sector: bool) (bucket: int) (ticks: int) (separation: int)
+                    (memo: Cache.Memo option) (symmetric: bool) (moving: bool) =
     let f = createForce units
     placeInContact g f 4242UL separation
     let ix = createIndex g bucket units
@@ -46,9 +47,12 @@ let private run (g: Grid) (units: int) (levels: int) (sight: int) (samples: int)
 
     // warm up until tiered JIT has promoted the hot paths; the first scenario
     // otherwise measures tier-0 code and reads high
+    // jitter during warm-up in every case, so a stationary measurement starts
+    // from the same diffused configuration a moving one reaches
     for _ in 1 .. 120 do
+        jitter f rng g
         rebuildIndex ix f
-        step g f ix acq sight samples sector c
+        step g f ix acq sight samples sector memo symmetric c
 
     let idxMs = Array.zeroCreate ticks
     let perMs = Array.zeroCreate ticks
@@ -56,12 +60,16 @@ let private run (g: Grid) (units: int) (levels: int) (sight: int) (samples: int)
     let gc0 = GC.CollectionCount(0)
     let alloc0 = GC.GetTotalAllocatedBytes(false)
 
+    match memo with Some m -> Cache.resetCounters m | None -> ()
+
     for t in 0 .. ticks - 1 do
-        jitter f rng g
+        if moving then jitter f rng g
         let t0 = Stopwatch.GetTimestamp()
         rebuildIndex ix f
+        // a moving unit changes the pair key, so temporal validity is driven by
+        // motion rather than by an explicit invalidation here
         let t1 = Stopwatch.GetTimestamp()
-        step g f ix acq sight samples sector c
+        step g f ix acq sight samples sector memo symmetric c
         let t2 = Stopwatch.GetTimestamp()
         idxMs.[t] <- ms (t1 - t0)
         perMs.[t] <- ms (t2 - t1)
@@ -72,6 +80,9 @@ let private run (g: Grid) (units: int) (levels: int) (sight: int) (samples: int)
             GC.CollectionCount(0) - gc0, allocKb)
 
 // ---------------------------------------------------------------------------
+
+let private run g units levels sight samples sector bucket ticks separation =
+    runFull g units levels sight samples sector bucket ticks separation None false true
 
 let mapProfile (g: Grid) =
     header "0. Map profile"
@@ -161,3 +172,51 @@ let sustained (g: Grid) (units: int) (sight: int) (seconds: int) =
     printfn "  ticks over 20 ms target  measured across %d ticks" n
     printfn "  GC gen0 %d, allocated %.1f KB total (%.2f KB/tick)" gc kb (kb / float n)
     printfn "  rays/tick %d" (c.Rays / n)
+
+// ---------------------------------------------------------------------------
+// 9. Does caching help? Symmetry is free and unconditional; temporal validity
+//    depends entirely on how much the force is moving.
+// ---------------------------------------------------------------------------
+let cachingValue (g: Grid) (units: int) (sight: int) =
+    header "9. What caching is worth"
+    printfn "  %-38s %9s %9s %10s" "strategy" "mean ms" "rays/tk" "hit rate"
+
+    let report label memo symmetric moving =
+        let struct (_, p, _, c, n, _, _) =
+            runFull g units g.Levels sight 4 true 16 300 30 memo symmetric moving
+        let hr =
+            match memo with
+            | Some (m: Cache.Memo) ->
+                let tot = m.Hits + m.Misses
+                if tot = 0 then 0.0 else float m.Hits / float tot * 100.0
+            | None -> 0.0
+        printfn "  %-38s %9.3f %9d %9.1f%%" label p.Mean (c.Rays / n) hr
+
+    printfn "  -- force in motion (units drift and turn every tick) --"
+    report "uncached" None false true
+    report "memo, per-direction key" (Some(Cache.create 18)) false true
+    report "memo, symmetric key" (Some(Cache.create 18)) true true
+
+    printfn "  -- force stationary (holding positions) --"
+    report "uncached" None false false
+    report "memo, per-direction key" (Some(Cache.create 18)) false false
+    report "memo, symmetric key" (Some(Cache.create 18)) true false
+
+// ---------------------------------------------------------------------------
+// 10. Would precomputed field of view beat ray casting? Only when a single
+//     observer has many targets to test.
+// ---------------------------------------------------------------------------
+let fovCrossover (g: Grid) (units: int) (sight: int) =
+    header "10. Ray casting versus precomputed field of view"
+    let struct (_, _, _, c, n, _, _) =
+        runFull g units g.Levels sight 4 true 16 300 30 None false true
+    let raysPerObserver = float (c.Rays / n) / float units
+    let stepsPerObserver = float (c.RaySteps / n) / float units
+    let fovCells = 3.14159 * float sight * float sight
+    printfn "  measured rays per observer per tick      %8.1f" raysPerObserver
+    printfn "  measured ray steps per observer per tick %8.1f" stepsPerObserver
+    printfn "  cells a radius-%d shadowcast must visit  %8.0f" sight fovCells
+    printfn ""
+    printfn "  Field of view becomes cheaper only once an observer tests more"
+    printfn "  than roughly %.0f targets per tick. It currently tests %.1f."
+        (fovCells / (stepsPerObserver / raysPerObserver)) raysPerObserver

@@ -30,6 +30,8 @@ let main argv =
         Scenarios.levelSweep units sight
         Scenarios.openTerrain units sight
         Scenarios.sustained g units sight 60
+        Scenarios.cachingValue g units sight
+        Scenarios.fovCrossover g units sight
 
     printfn ""
     printfn "%s" (String.replicate 78 "-")
