@@ -2,7 +2,7 @@
 title: S.I.R. Communications Network Architecture
 status: proposed
 document-type: living-design
-version: "0.5"
+version: "0.6"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -231,6 +231,73 @@ relayed by a longer path can arrive after a later message that took a shorter
 one — which is a legitimate source of confusion and must be representable rather
 than smoothed away.
 
+## The network is not a puppet string
+
+A client is unregulated compute. Nothing prevents a player from running an
+external optimiser and issuing per-unit orders down the communications chain,
+which would route around command bandwidth, the execution budget, and the
+premise that units act on local judgement.
+
+**Restricting what may be sent does not work.** A preset of message types is a
+channel: N types carry log2(N) bits, and a player will encode arbitrary
+instructions in whatever vocabulary exists. Even an acknowledgement is one bit.
+Restricting *meaning* is unenforceable when meaning is player-defined, and
+attempting it produces a rule that looks like a limit and is not one.
+
+What does work is charging for **volume rather than vocabulary**. Bytes and
+messages are counted regardless of what they encode, so a cleverly compressed
+order still pays for its bytes and a stream of them still pays per message.
+Compact protocol design is rewarded, which is legitimate skill, and no amount of
+it buys unlimited direction.
+
+Four independent costs bound remote control:
+
+- **capacity** — orders share the net's finite shared throughput with the
+  reports the commander needs;
+- **emission** — heavy traffic is loud, and a force under continuous direction
+  is a force that can be mapped;
+- **bandwidth** — an order is drawn from the same allocation as everything else
+  reaching that squad; and
+- **latency** — and this one cannot be encoded away.
+
+### Latency is the durable bound
+
+Directing a unit remotely requires a round trip: it observes, the report travels
+up the chain, the commander decides, the order travels back down. A local
+reaction requires none of that — the module is present on the tick the trigger
+becomes observable and the only delay is the declared reaction delay.
+
+**The remote loop is strictly longer than the local one, and no protocol
+compression shortens it.** Bandwidth can be bought, traffic can be compressed,
+emissions can be timed. Distance cannot be argued with.
+
+That produces the correct relationship rather than a prohibition: **global
+coordination is possible but slow, local reaction is fast.** Which is what
+command actually looks like, and why real orders describe intent rather than
+keystrokes.
+
+### The point is that it is priced, not that it is banned
+
+Micromanagement is not the failure. *Unlimited* micromanagement is. A commander
+who spends attention directing the decisive element and leaves the rest on their
+own judgement is playing well, and the costs above bound that to a few elements
+at a time, which is the right number.
+
+A player who tries to direct everything pays all four costs at once: a saturated
+net, a mapped force, exhausted allocation, and units reacting a round trip late.
+They will lose to a player whose force does not need telling.
+
+### Relays trade reach against tightness of control
+
+Every hop adds latency. A squad at the end of a relay chain is one a commander
+can **direct but not micro**, because the round trip is too long for anything
+closed-loop.
+
+Extending a network therefore buys contact with distant elements at the price of
+their responsiveness to instruction. The further out a force reaches, the more
+it must act on intent — which is a cost worth paying and worth understanding
+before paying it.
+
 ## Store and forward
 
 When a link is unavailable, traffic queues at the sender rather than vanishing.
@@ -336,6 +403,8 @@ the human answer is to one it cannot, remains open and is recorded in
   buy reach without accepting detectability.
 - A network so reliable that the disconnection rules never fire, which would
   make the entire knowledge architecture decorative.
+- Restricting which messages may be sent, which is unenforceable against
+  player-defined meaning and produces a rule that looks like a limit and is not.
 - Any network shape that is unconditionally optimal. A player will find it and
   every player will then use it, at which point the topology is a tax rather
   than a decision.
