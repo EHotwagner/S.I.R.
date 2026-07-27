@@ -2,7 +2,7 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "1.4"
+version: "1.5"
 last-updated: 2026-07-27
 ---
 
@@ -1497,8 +1497,9 @@ the command hierarchy exists to do, and which means losing a leader removes the
 thing that made a squad's information legible rather than merely severing a
 link.
 
-Reports cost capacity, bandwidth, and emission like any other traffic, so report
-volume trades information against signature.
+Reports cost link capacity and emit like any other traffic, so report volume
+trades information against signature. They are not drawn from allocated command
+bandwidth, which prices only what a commander gives a unit.
 
 See [Observation Reporting Model](reporting-model.md).
 
