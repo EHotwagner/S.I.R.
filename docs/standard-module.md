@@ -2,7 +2,7 @@
 title: S.I.R. Standard Module and Commanding Without Code
 status: proposed
 document-type: living-design
-version: "0.1"
+version: "0.2"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -146,6 +146,24 @@ it has already been located by other means and the marginal cost is low.
 
 This is the clearest case of a posture encoding tactical judgement a
 non-programming player should not have to reconstruct.
+
+## How a posture reaches the module
+
+Postures are not compiled into the standard module's artifact. They cannot be:
+the artifact is immutable and shared by every unit assigned to it, so a posture
+baked into it would be the same posture for every player and every squad.
+
+A posture is **instance configuration** — per-unit data supplied with the
+artifact assignment, opaque to the server, locked when the match begins, and
+carried in the force snapshot and the replay. The mission lifecycle already
+required this under the name *initial policies*; it now has a definition.
+
+The consequence for the client is worth stating. Because the server does not
+interpret configuration, **the client knows what it ordered rather than what a
+squad currently holds.** A player whose re-tasking order was jammed believes
+something false about their own force, which is the same fog applied everywhere
+else and must not be smoothed over by displaying an intended posture as a
+confirmed one.
 
 ## Pre-match preparation is free; in-match change is not
 

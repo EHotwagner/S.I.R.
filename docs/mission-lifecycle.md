@@ -2,8 +2,8 @@
 title: S.I.R. Mission Lifecycle and Delivery Sequence
 status: proposed
 document-type: living-design
-version: "0.2"
-last-updated: 2026-07-25
+version: "0.3"
+last-updated: 2026-07-27
 related:
   - docs/game-vision.md
   - docs/logistics-architecture.md
@@ -219,7 +219,8 @@ Persistent mission entry creates an immutable commitment snapshot containing:
 - equipment and logistics manifest;
 - vehicles;
 - module artifacts and assignments;
-- initial policies;
+- instance configuration, the per-unit data an artifact is assigned with,
+  previously referred to only as initial policies;
 - mode and ruleset versions; and
 - the campaign-state version being reserved.
 
@@ -239,7 +240,7 @@ Deployment is an authoritative phase with a deadline. It validates:
 - squads and required command roles;
 - equipment and supplies;
 - module compatibility;
-- initial orders and policies; and
+- instance configuration size and structural validity; and
 - mode-specific restrictions.
 
 Once live simulation begins, client disconnection does not pause the match.

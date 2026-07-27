@@ -2,7 +2,7 @@
 title: S.I.R. WebAssembly Control Architecture
 status: proposed
 document-type: living-design
-version: "0.11"
+version: "0.12"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -128,6 +128,47 @@ The server may evaluate instances using the same compiled artifact together for
 cache locality. Player code never receives the batch or another instance's
 context. Shared code is not shared state, shared knowledge, or a communication
 channel.
+
+## Instance configuration
+
+An artifact is immutable and shared by every unit assigned to it. Configuration
+therefore cannot live inside it: if it did, every player running the standard
+module would have identical behaviour and no player could give two squads
+different intent.
+
+**Instance configuration** is per-unit data supplied alongside the artifact
+assignment. It is what makes one artifact serve many differently-directed units.
+
+- it is **opaque to the server**, exactly as message payloads are. The server
+  validates size and structural bounds and does not interpret meaning;
+- it is **part of the force snapshot**, so it enters the commitment record, the
+  input journal, and the replay;
+- it is **locked when the match begins**, as the artifact and its version are;
+  and
+- it is bounded by the host-class profile like any other instance resource.
+
+This is what the mission lifecycle already calls *initial policies*, validated
+at deployment and captured in the commitment snapshot. Until now the term had no
+definition.
+
+For the standard module, instance configuration is the squad's posture and its
+overrides. For a player-written module it is whatever that author wants, and the
+server's ignorance of its meaning is the same ignorance it has about every other
+player-defined byte.
+
+### Changing configuration during a match
+
+Instance configuration is fixed at lock. Changing behaviour afterwards is not a
+configuration edit; it is an **order**, delivered as an ordinary message through
+the simulated communications topology, subject to range, jamming, delay, and
+loss.
+
+One consequence deserves stating: **the client knows what it sent, not what the
+module currently holds.** A player who orders a squad to screen and whose order
+does not arrive believes something false about their own force. That is the
+intended behaviour, it is the same fog the design applies everywhere else, and
+the canonical client must not paper over it by displaying an intended posture as
+though it were a confirmed one.
 
 ## Capability-driven actions
 
@@ -299,6 +340,7 @@ Canonical rules:
 Host-class profiles independently limit:
 
 - linear memory;
+- instance configuration size;
 - match-local state;
 - input and output size;
 - host-service type and frequency;
