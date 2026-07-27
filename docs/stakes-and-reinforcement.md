@@ -1,8 +1,9 @@
 ---
 title: S.I.R. Stakes and Reinforcement
-status: proposed
+status: accepted
+decision-status: canonical
 document-type: living-design
-version: "0.4"
+version: "1.0"
 related:
   - docs/mission-lifecycle.md
   - docs/game-vision.md
@@ -178,15 +179,24 @@ rather than the player's — was considered and rejected. Uncontrolled units sti
 fight for you, so it is not a cost, and it would special-case an architecture in
 which every unit has its own control instance.
 
-### An honest consequence
+### An honest consequence, and a declared fallback
 
 Both fixes point the same way: **the currency is the secondary stake and the
 force is the primary one.** That is worth stating plainly, because it means the
 pot is a framing device for a commitment that would be consequential without it,
 rather than the mechanism doing the work.
 
-If playtesting shows the pot adds nothing beyond that framing, the mechanic can
-be reduced to committing force with no currency at all, and very little is lost.
+The fallback follows, and is declared here rather than discovered under
+pressure. **If the pot is measured to add nothing beyond framing — if players
+commit and decline at the same rates with and without it — the currency is
+removed and reinforcement becomes a pure force commitment.** The rest of this
+document survives that change intact, because the administrator's cut is the
+only part that depends on there being a pot at all.
+
+Recording the fallback is not a hedge against the mechanic. It is the discipline
+the performance budget already applies: know in advance what you would do if the
+evidence goes the other way, so that a measurement becomes a decision rather
+than an argument.
 
 ### The exploit is a feature
 
@@ -233,6 +243,18 @@ one.
 The existing structure bounds it: campaigns are fixed-duration and their state
 is wiped at the end. Whether that bound is sufficient is a tuning question, and
 it is the one most likely to need a second mechanism.
+
+## What canonical status covers
+
+The **mechanism** is settled and later work should build against it:
+reinforcement is paid for, payment enters a common pool, a share is taken by the
+access administrator, the winner takes the remainder, the committed force is the
+primary stake because personnel losses are permanent, and overcommitment
+collapses command rather than diluting it.
+
+The **decisions below are not settled**, and several are genuine forks rather
+than values to tune. Canonical status covers the shape, not the numbers, and not
+the questions that follow.
 
 ## Decisions this needs
 
