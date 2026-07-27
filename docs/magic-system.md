@@ -1,8 +1,9 @@
 ---
 title: S.I.R. Risk-Based Magic System
-status: proposed
+status: accepted
+decision-status: canonical
 document-type: living-design
-version: "0.6"
+version: "1.0"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -279,6 +280,12 @@ gain, ordinary incapacitation, and breach resolution must be specified before
 implementation. Different orderings can produce materially different outcomes
 near zero HP and the breach threshold.
 
+**This is the one open decision rather than an open value**, and it is the
+single thing canonical status below does not cover. It has the same shape as the
+consequence-ordering contract combat resolution still owes, and the two should
+probably be settled together, since a spell resolving on the same tick as
+incoming damage is exactly where they meet.
+
 ## Information and control-module contract
 
 A spellcaster's WASM instance requires machine-readable access to:
@@ -352,6 +359,21 @@ Substantial armor and healing for some of these units is a provisional
 direction. Their recovery must have clear rates, limits, damage interactions,
 and counters so regeneration does not become indistinguishable from excessive
 HP.
+
+## What canonical status covers
+
+Settled, and later work should build against it: health as survivability,
+empowerment currency, and breach threshold simultaneously; casting that can fail
+and cost health; strain that accumulates from casting and persists; the breach
+check whenever strain exceeds current health, re-evaluated on any health change;
+severity depending on both the check and the excess; breaches discharging some
+strain rather than resetting; strain splitting into a settling component
+recovered by meditation and a residual one that does not recover; meditation
+costing stillness, inattention, and interruptibility; and releasing strain
+emitting a signature that terrain does not attenuate.
+
+Not settled: every numeric value, the resolution ordering noted above, and the
+prototype questions below.
 
 ## Balance and failure modes
 
