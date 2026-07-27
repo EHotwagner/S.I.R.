@@ -51,6 +51,7 @@ description of the intended game. Everything else derives from it.
 | [skirmish-development-plan](docs/skirmish-development-plan.md) | Milestones, scenarios, scale gates |
 | [performance-budget](docs/performance-budget.md) | Tick cost centres, allocation, fallbacks, gates |
 | [wasm-invocation-spike](docs/research/wasm-invocation-spike.md) | Measured: invocation cost, scaling, stress, guarantees |
+| [perception-spike](docs/research/perception-spike.md) | Measured: LOS, acquisition, culling, verticality cost |
 | [visual-direction](docs/visual-direction.md) | Graphical language and tactical overlays |
 
 ### Research

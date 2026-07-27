@@ -2,7 +2,7 @@
 title: S.I.R. Performance Budget
 status: proposed
 document-type: living-design
-version: "0.3"
+version: "0.4"
 last-updated: 2026-07-27
 related:
   - docs/simulation-core-architecture.md
@@ -30,13 +30,21 @@ Most numbers here are starting hypotheses to be replaced by evidence. Their
 purpose is to force the argument about which subsystem deserves which share, not
 to predict an outcome.
 
-**One centre is now measured.** WASM invocation and observation marshalling were
-measured directly and came in roughly two orders of magnitude below the
-provisional allocation — see
-[WASM Invocation Spike](research/wasm-invocation-spike.md). The 15% share
-reserved for them below is replaced by a measured **~0.5–2%** at the intended
-force target. That measurement removed an assumption this document was partly
-built on, which is exactly what the gates exist to do.
+**Two centres are now measured, and both were badly overestimated.**
+
+WASM invocation and observation marshalling came in at **~2%** against a
+provisional 15% — see
+[WASM Invocation Spike](research/wasm-invocation-spike.md).
+
+Perception came in at **~1%** against a provisional 30% — see
+[Perception Spike](research/perception-spike.md). It was the largest allocation
+in this document and the one most feared, on the reasoning that it is quadratic
+in unit count and had just gained a third dimension. It is quadratic, and it is
+still about one percent of the tick at the supported force target.
+
+Together the two centres the design most feared account for roughly **3% of the
+tick**. Both measurements removed assumptions this document was built on, which
+is exactly what the gates exist to do.
 
 ## The tick budget
 
@@ -81,25 +89,30 @@ not only an engineering one.
 Of the ~20 ms working target, a starting hypothesis:
 
 ```text
-perception and acquisition      30%
-movement and reservation        20%
+perception and acquisition       5%  (measured: ~1%)
+movement and reservation        30%
 WASM invocation and marshalling  5%  (measured: ~2%)
 combat resolution               10%
 projection and serialization     10%
 journal and hashing              5%
 ```
 
-Perception leads because it scales worst — it is the only centre whose cost is
-quadratic in unit count before culling, and verticality has just made its
-geometry three-dimensional.
+Movement now leads by default rather than by evidence. It is the largest centre
+that has not been measured, and its cooperative reservation, dependency
+resolution, and deadlock handling are algorithmically the most involved work in
+the tick. That is a hypothesis, and the last two hypotheses in this document
+were wrong by more than an order of magnitude each.
 
 ## What this session made more expensive
 
 Recorded honestly, because these were chosen for tactical merit without cost
 accounting:
 
-- **Verticality** turns line of sight into a three-dimensional query and adds a
-  dimension to pathfinding, at exactly the scale where neither was measured.
+- **Verticality** adds a dimension to line of sight and pathfinding. Measurement
+  has since shown it makes *perception* cheaper rather than dearer, because
+  levels disperse units and cross-level pairs reject early — though that result
+  depends on a conservative cross-level visibility rule. Its effect on
+  pathfinding remains unmeasured.
 - **Semantic edges** add an ordered edge test to every trace and every LOS ray,
   and make cached results depend on edge state as well as geometry.
 - **Sustained targeting** adds a per-engagement maintenance check every tick for
@@ -129,10 +142,14 @@ This is the single most important implementation constraint on the control path.
 
 ### Perception must cull before it evaluates
 
-Observer-to-target evaluation is quadratic before culling. Range, sector,
-level, and spatial partitioning must reduce the candidate set before any
-geometric work, and acquisition state must be maintained per contact episode
-rather than recomputed per pair per tick.
+Observer-to-target evaluation is quadratic before culling, and measurement
+confirms the shape: each doubling of force costs 3.3-3.9×.
+
+What measurement also showed is *which* cull earns its place. The **attention
+sector** test is worth 1.7×. The broad-phase spatial index is worth almost
+nothing at the supported force target — 0.482 ms without it against 0.464 ms
+with — because the range check alone is already cheap. Keep it for headroom at
+larger forces, but do not treat it as load-bearing.
 
 ### Full-state hashing cannot be per tick
 
@@ -152,8 +169,8 @@ pressure. Several are already recorded elsewhere and are collected here.
 
 | Centre | Fallback if the budget is exceeded |
 |---|---|
-| Perception | coarser acquisition update rate; fewer visibility sample points per footprint; reduced contact-episode count per observer |
-| Line of sight | reduce supported level count; coarser vertical LOS; larger cached region granularity |
+| Perception | measured at ~1% of budget; no fallback currently required. If one is ever needed: fewer exposure sample points per footprint, then coarser acquisition update rate |
+| Line of sight | reduce sight range, which dominates ray cost; larger cached region granularity. Reducing level count would not help and might hurt |
 | Combat tracing | probabilistic cover interception in place of full geometric tracing, at the cost of weakening the semantic edge model |
 | WASM | measured at ~0.5-2% of budget; no fallback currently required |
 | Observation richness | reduce disclosed detail per unit, which is already the bandwidth mechanic |
