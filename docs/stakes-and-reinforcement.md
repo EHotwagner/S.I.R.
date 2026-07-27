@@ -2,7 +2,7 @@
 title: S.I.R. Stakes and Reinforcement
 status: proposed
 document-type: living-design
-version: "0.3"
+version: "0.4"
 related:
   - docs/mission-lifecycle.md
   - docs/game-vision.md
@@ -144,6 +144,39 @@ for it out of the following mission.
 So the decision is not "is more force better here" — it always is — but "is this
 fight worth the force it will cost me, given what is coming." That is a real
 question, and it is one a player can get wrong in both directions.
+
+### Overcommitment must break something, not merely dilute
+
+Even with a fee and permanent personnel losses, a commander weighing *this
+fight* against *the next one* can reasonably decide that this fight is the one
+that matters, and commit everything. If the only in-match penalty is attention
+divided a little further, they should.
+
+So the in-match cost has to be **nonlinear**. Past the capacity of a force's
+command structure, its net saturates and collapses, which does not cost the
+marginal units their effectiveness — it costs the **entire force its
+coordination**. See [Communications Network](communications-network.md).
+
+That converts the reinforcement decision from arithmetic into a threshold
+question. More force is better right up until it is catastrophically worse, and
+the commander has to know where their own ceiling is.
+
+Three properties make this work rather than merely punish:
+
+- **the cause is deterministic and learnable**, even though which message is
+  lost in a saturated net is not, so a collapse is explicable afterwards rather
+  than arbitrary;
+- **capacity can be bought** by investing in leaders, sets, and relays, which
+  competes with fighting power for the same carrying capacity and roster slots,
+  so the ceiling is a construction decision rather than a rule; and
+- **load can be shed**. A commander who has overcommitted can send elements home
+  and recover the rest, which makes withdrawal a tactical action rather than a
+  concession.
+
+An earlier alternative — letting units beyond a cap fall under faction control
+rather than the player's — was considered and rejected. Uncontrolled units still
+fight for you, so it is not a cost, and it would special-case an architecture in
+which every unit has its own control instance.
 
 ### An honest consequence
 

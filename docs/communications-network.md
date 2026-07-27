@@ -3,7 +3,7 @@ title: S.I.R. Communications Network Architecture
 status: accepted
 decision-status: canonical
 document-type: living-design
-version: "1.1"
+version: "1.2"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -171,6 +171,66 @@ It is also how radio actually works, and it is why real militaries use nets
 hierarchically rather than putting a battalion on one channel. The structure
 exists because the medium is contended, not because someone preferred an
 organisation chart.
+
+### Saturation collapses, it does not sag
+
+Shared capacity that degrades **linearly** is not a real constraint. If adding a
+unit makes everyone slightly worse and adds a whole unit's fighting power, the
+arithmetic still says add the unit, and a commander should field as many as they
+own.
+
+Networks do not behave that way, and neither should this one. Past a threshold,
+contention produces retries, retries produce more contention, and throughput
+falls off a cliff. **A saturated net does not get gradually worse; it stops
+working.**
+
+The consequence is what makes command capacity matter:
+
+> Overloading a net does not cost the marginal units their effectiveness. It
+> costs the **whole force** its coordination.
+
+A commander who fields more than their command structure can carry does not get
+a slightly clumsier army. They get orders that do not arrive, reports that do
+not return, and allocation that cannot be delivered — across every element on
+that net, including the ones they were relying on.
+
+### Massive, but not arbitrary
+
+The design rejects outcomes that feel arbitrary, and "your units randomly
+malfunction" would be exactly that.
+
+Congestion collapse is not arbitrary. Its **cause is deterministic** — a
+threshold a player can learn, anticipate, and stay under — while its
+**specifics are unpredictable**, since which particular message is lost in a
+saturated net is not something anyone can plan around. That is the correct
+split, and it is how real congestion behaves.
+
+It also produces the diagnosis a player needs afterwards. "My net collapsed
+because I put fourteen squads on it" is an explanation. "My units malfunctioned"
+is not.
+
+### Capacity is structural, and can be bought
+
+What a force can command is not an abstract number. It is **qualified leaders,
+command-net sets, relays, and the throughput those sets carry** — all of them
+things a player equips, and all of them visible on the map as objects that can
+be killed.
+
+This makes command capacity a construction decision rather than a cap. A
+commander may field more by investing in command structure, and that investment
+competes directly with fighting power for the same carrying capacity, currency,
+and roster slots. Buying the ability to command twenty squads means twenty
+squads carrying more sets and fewer weapons.
+
+### Shedding load is a legitimate move
+
+Because collapse is a load problem, the remedy is to reduce load. Sending
+elements home, breaking them onto a separate net, or simply ordering silence
+restores the rest of the force.
+
+That makes **withdrawing units an in-match tactical action** rather than an
+admission of defeat, which is unusual and worth having. A commander who has
+overcommitted can recover by giving something up.
 
 ## Signature is aggregate
 
