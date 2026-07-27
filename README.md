@@ -64,6 +64,7 @@ description of the intended game. Everything else derives from it.
 | Document | Covers |
 |---|---|
 | [human-forces](docs/human-forces.md) | Squad, classes, weapons, armour, equipment |
+| [arcane-forces](docs/arcane-forces.md) | Anchored coordination, strain economy, casters and mass |
 
 ### Research
 

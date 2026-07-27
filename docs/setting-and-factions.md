@@ -2,7 +2,7 @@
 title: S.I.R. Setting and Faction Architecture
 status: proposed
 document-type: living-design
-version: "1.3"
+version: "1.4"
 last-updated: 2026-07-27
 related:
   - docs/game-vision.md
@@ -453,6 +453,11 @@ need:
 - reasons to defend, exploit, close, or expand portal access;
 - objectives beyond killing every human unit; and
 - consistent behavior that supports eventual playability.
+
+See [Arcane Civilization Forces](arcane-forces.md) for the concrete faction. Its
+governing idea is that arcane coordination is anchored rather than transmitted,
+so where a human network is attacked electronically an arcane geography must be
+attacked physically.
 
 #### Risk-based magic
 
