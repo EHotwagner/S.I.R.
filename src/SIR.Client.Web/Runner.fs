@@ -1,117 +1,63 @@
 namespace SIR.Client.Web
 
+open System
+open Browser.Types
+open Fable.Core
+open Fable.Core.JsInterop
 open SIR.Client
-open SIR.Domain
-open SIR.Simulation
 
 [<RequireQualifiedAccess>]
 module Runner =
-    let supportedEngine =
-        [| for value in 1 .. 32 -> byte value |]
+    [<Emit("new Worker(new URL('./Worker.js', import.meta.url), { type: 'module', name: 'sir-replay-v1' })")>]
+    let private createWorker () : obj = jsNative
 
-    let private shortIdentity (bytes: byte array) =
-        bytes
-        |> Array.take 6
-        |> Array.map (fun value -> value.ToString("x2"))
-        |> String.concat ""
+    let mutable private worker: obj option = None
 
-    let private replayError error =
-        match error with
-        | UnsupportedFormat(actual, supported) ->
-            RunnerUnsupported(
-                "format "
-                + string actual
-                + " is not supported; expected "
-                + string supported
-            )
-        | EngineMismatch _ ->
-            RunnerUnsupported "the required retained engine bundle is unavailable"
-        | ReplayDivergence(tick, field) ->
-            RunnerDiverged(tick, "kernel", field)
-        | PackageTooLarge(actual, maximum) ->
-            RunnerFailed(
-                "package size "
-                + string actual
-                + " exceeds "
-                + string maximum
-            )
-        | MalformedPackage detail -> RunnerFailed detail
-        | UnauthorizedFullReplay ->
-            RunnerFailed "the full replay is not authorized"
-        | InvalidHashLength(field, _) ->
-            RunnerFailed("invalid hash length for " + field)
-        | ResourceLimitExceeded(field, _, _) ->
-            RunnerFailed("resource limit exceeded for " + field)
-        | InvalidOrdering field ->
-            RunnerFailed("invalid canonical ordering for " + field)
-        | InvalidCheckpoint(tick, detail) ->
-            RunnerFailed(
-                "invalid checkpoint at tick "
-                + string tick
-                + ": "
-                + detail
-            )
-        | PerspectiveHasNoKernel ->
-            RunnerFailed "perspective playback has no reconstructable kernel"
-        | WasmExecutionNotVerified ->
-            RunnerFailed "browser verification does not include WASM execution"
+    let private current () =
+        match worker with
+        | Some active -> active
+        | None ->
+            let active = createWorker ()
+            worker <- Some active
+            active
 
-    let private metadata sourceName package =
-        let kind, finalTick =
-            match package.Content with
-            | AuthorizedFullReplay full -> FullReplay, full.FinalResult.Tick
-            | PerspectivePlayback frames ->
-                PerspectiveReplay,
-                (frames
-                 |> List.tryLast
-                 |> Option.map (fun frame -> frame.Tick)
-                 |> Option.defaultValue 0)
+    let post operation request =
+        let envelope: WorkerRequestEnvelope =
+            { ProtocolVersion = int32 WorkerProtocol.CurrentVersion
+              Operation = operation
+              Request = request }
 
-        { SourceName = sourceName
-          SourceIdentity =
-            package
-            |> Replay.encode
-            |> CanonicalHash.sha256
-            |> shortIdentity
-          EngineIdentity = shortIdentity package.EngineHash
-          FinalTick = finalTick
-          Kind = kind }
+        (current ())?postMessage (envelope)
 
-    let execute request =
-        async {
-            match request with
-            | LoadPackage(sourceName, bytes) ->
-                match Replay.decode Replay.defaultLimits bytes with
-                | Error error -> return replayError error
-                | Ok package ->
-                    match
-                        Replay.runKernelReplay
-                            Replay.defaultLimits
-                            supportedEngine
-                            package
-                    with
-                    | Ok(BrowserKernelVerified _) ->
-                        return
-                            LoadedPackage(
-                                metadata sourceName package,
-                                KernelVerified
-                            )
-                    | Ok(PerspectiveReady _) ->
-                        return
-                            LoadedPackage(
-                                metadata sourceName package,
-                                ProjectionOnly
-                            )
-                    | Ok(AuthoritativeVerified _) ->
-                        return
-                            RunnerFailed(
-                                "browser runner made an authoritative verification claim"
-                            )
-                    | Error error -> return replayError error
-            | Advance(currentTick, tickCount, finalTick) ->
-                return Progressed(min finalTick (currentTick + tickCount))
-            | Seek(targetTick, finalTick) ->
-                return Progressed(max 0 (min finalTick targetTick))
-            | Fork(identity, _) -> return Forked identity
-            | Cancel -> return RunnerFailed "cancelled"
-        }
+    let subscribe (dispatch: SIR.Client.Msg -> unit) =
+        let active = current ()
+
+        active?onmessage <-
+            fun event ->
+                let message = unbox<MessageEvent> event
+                let envelope = unbox<WorkerResponseEnvelope> message.data
+
+                if envelope.ProtocolVersion = int32 WorkerProtocol.CurrentVersion then
+                    dispatch (RunnerResponded(envelope.Operation, envelope.Response))
+                else
+                    dispatch (
+                        WorkerTerminated(
+                            "protocol "
+                            + string envelope.ProtocolVersion
+                            + " is incompatible with protocol "
+                            + string WorkerProtocol.CurrentVersion
+                        )
+                    )
+
+        active?onerror <-
+            fun event ->
+                let error = unbox<ErrorEvent> event
+                dispatch (WorkerTerminated error.message)
+                true
+
+        dispatch WorkerStarted
+
+        { new IDisposable with
+            member _.Dispose() =
+                active?terminate ()
+                worker <- None }

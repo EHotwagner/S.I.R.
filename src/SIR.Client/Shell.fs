@@ -60,6 +60,42 @@ type SelectionState =
       Event: int32 option
       Formula: string option }
 
+type UnitProjection =
+    { Id: int32
+      Side: string
+      Column: int32
+      Row: int32
+      Health: int32 }
+
+type EventProjection =
+    { Id: int32
+      Tick: int32
+      Source: string
+      Summary: string }
+
+type CheckpointProjection =
+    { Tick: int32
+      StateHash: string
+      EventHash: string }
+
+/// Bounded presentation data; the complete replay and world remain in the worker.
+type InspectionProjection =
+    { Tick: int32
+      BoardMinimumColumn: int32
+      BoardMinimumRow: int32
+      BoardMaximumColumn: int32
+      BoardMaximumRow: int32
+      Units: UnitProjection list
+      Events: EventProjection list
+      Checkpoints: CheckpointProjection list
+      PerspectiveHash: string option }
+
+type WorkerState =
+    | WorkerStarting
+    | WorkerReady
+    | WorkerBusy of completedBatches: int32
+    | WorkerStopped of reason: string
+
 type ParameterPatch = Map<string, int32>
 
 type Model =
@@ -68,7 +104,9 @@ type Model =
       Verification: Verification
       Playback: PlaybackState
       Selection: SelectionState
+      Inspection: InspectionProjection option
       Patch: ParameterPatch
+      Worker: WorkerState
       ActiveOperation: OperationId option
       NextOperation: int32
       Announcement: string }
@@ -86,8 +124,9 @@ type RunnerClaim =
     | ScenarioReady
 
 type RunnerResponse =
-    | LoadedPackage of ReplayMetadata * RunnerClaim
-    | Progressed of tick: int32
+    | LoadedPackage of ReplayMetadata * RunnerClaim * InspectionProjection
+    | RunnerProgress of tick: int32 * completedBatches: int32 * InspectionProjection
+    | Progressed of tick: int32 * InspectionProjection
     | Forked of derivedIdentity: string
     | RunnerUnsupported of reason: string
     | RunnerDiverged of tick: int32 * phase: string * detail: string
@@ -108,6 +147,33 @@ type Msg =
     | FormulaSelected of string option
     | ParameterEdited of name: string * value: int32
     | CancelRequested
+    | WorkerStarted
+    | WorkerTerminated of reason: string
+
+type WorkerRequestEnvelope =
+    { ProtocolVersion: int32
+      Operation: OperationId
+      Request: RunnerRequest }
+
+type WorkerResponseEnvelope =
+    { ProtocolVersion: int32
+      Operation: OperationId
+      Response: RunnerResponse }
+
+[<RequireQualifiedAccess>]
+module WorkerProtocol =
+    [<Literal>]
+    let CurrentVersion = 1
+
+    [<Literal>]
+    let BatchSize = 256
+
+    let batchEnds startTick targetTick =
+        [ let mutable tick = startTick
+
+          while tick < targetTick do
+              tick <- min targetTick (tick + int32 BatchSize)
+              yield tick ]
 
 [<RequireQualifiedAccess>]
 module Shell =
@@ -124,7 +190,9 @@ module Shell =
             { Unit = None
               Event = None
               Formula = None }
+          Inspection = None
           Patch = Map.empty
+          Worker = WorkerStarting
           ActiveOperation = None
           NextOperation = 1
           Announcement = "Choose a replay package to begin." }
@@ -159,7 +227,7 @@ module Shell =
         | Half
         | Normal -> 1
         | Double -> 2
-        | Maximum -> 100
+        | Maximum -> 2_048
 
     let private sourceIdentity model =
         match model.Source with
@@ -177,7 +245,7 @@ module Shell =
 
     let private applyRunnerResponse response model =
         match response with
-        | LoadedPackage(metadata, claim) ->
+        | LoadedPackage(metadata, claim, inspection) ->
             let mode, verification, announcement =
                 match claim with
                 | KernelVerified ->
@@ -202,9 +270,24 @@ module Shell =
                         CurrentTick = 0
                         FinalTick = metadata.FinalTick
                         IsPlaying = false }
+                Inspection = Some inspection
+                Worker = WorkerReady
                 Announcement = announcement }
             |> stopOperation
-        | Progressed tick ->
+        | RunnerProgress(tick, completedBatches, inspection) ->
+            let tick = clampTick model.Playback.FinalTick tick
+
+            { model with
+                Playback = { model.Playback with CurrentTick = tick }
+                Inspection = Some inspection
+                Worker = WorkerBusy completedBatches
+                Announcement =
+                    "Worker completed batch "
+                    + string completedBatches
+                    + " at tick "
+                    + string tick
+                    + "." }
+        | Progressed(tick, inspection) ->
             let tick = clampTick model.Playback.FinalTick tick
 
             { model with
@@ -214,12 +297,15 @@ module Shell =
                         IsPlaying =
                             model.Playback.IsPlaying
                             && tick < model.Playback.FinalTick }
+                Inspection = Some inspection
+                Worker = WorkerReady
                 Announcement = "Playback moved to tick " + string tick + "." }
             |> stopOperation
         | Forked identity ->
             { model with
                 Mode = SandboxFork identity
                 Verification = SandboxDerived identity
+                Worker = WorkerReady
                 Announcement = "Sandbox fork created. Verification no longer applies." }
             |> stopOperation
         | RunnerUnsupported reason ->
@@ -227,6 +313,7 @@ module Shell =
                 Source = rejectSource reason model.Source
                 Verification = Unsupported reason
                 Playback = { model.Playback with IsPlaying = false }
+                Worker = WorkerReady
                 Announcement = "Unsupported replay: " + reason }
             |> stopOperation
         | RunnerDiverged(tick, phase, detail) ->
@@ -240,6 +327,7 @@ module Shell =
                     { model.Playback with
                         CurrentTick = clampTick model.Playback.FinalTick tick
                         IsPlaying = false }
+                Worker = WorkerReady
                 Announcement =
                     "Replay diverged at tick "
                     + string tick
@@ -252,6 +340,7 @@ module Shell =
                 Source = rejectSource reason model.Source
                 Verification = Failed reason
                 Playback = { model.Playback with IsPlaying = false }
+                Worker = WorkerReady
                 Announcement = "Replay failed: " + reason }
             |> stopOperation
 
@@ -263,7 +352,9 @@ module Shell =
                     Source = Reading sourceName
                     Mode = NoRun
                     Verification = Loading
+                    Inspection = None
                     Patch = Map.empty
+                    Worker = WorkerBusy 0
                     Playback =
                         { model.Playback with
                             CurrentTick = 0
@@ -347,8 +438,23 @@ module Shell =
             { model with
                 ActiveOperation = None
                 Playback = { model.Playback with IsPlaying = false }
+                Worker = WorkerReady
                 Announcement = "Operation cancelled." },
             effects
+        | WorkerStarted ->
+            { model with
+                Worker = WorkerReady
+                Announcement = "Replay worker ready." },
+            []
+        | WorkerTerminated reason ->
+            { model with
+                Verification = Failed("worker stopped: " + reason)
+                Playback = { model.Playback with IsPlaying = false }
+                Worker = WorkerStopped reason
+                ActiveOperation = None
+                Announcement =
+                    "Replay worker stopped. Verification has been revoked." },
+            []
         | TogglePlayback
         | StepForward
         | SeekRequested _

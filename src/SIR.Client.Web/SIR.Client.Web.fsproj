@@ -4,6 +4,7 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Worker.fs" />
     <Compile Include="Runner.fs" />
     <Compile Include="App.fs" />
   </ItemGroup>

@@ -5,6 +5,7 @@
   "scripts": {
     "build:client": "./scripts/build-client.sh",
     "dev:client": "vite --config src/SIR.Client.Web/vite.config.js",
+    "measure:worker": "node scripts/measure-worker.mjs",
     "test": "./scripts/test-conformance.sh"
   },
   "dependencies": {
