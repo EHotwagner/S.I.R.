@@ -177,6 +177,10 @@ let private statusView model =
                 prop.className "status-detail"
                 prop.text " Browser verification replays accepted kernel inputs; it does not re-run player WASM."
             ]
+            Html.span [
+                prop.className "status-detail"
+                prop.text " Authoritative verification is available only from .NET exact-artifact WASM re-execution."
+            ]
         ]
     ]
 

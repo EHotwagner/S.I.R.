@@ -99,6 +99,7 @@ for (const required of [
   "deterministic-simulation.html",
   "interactive-rules-lab.html",
   "reference/index.html",
+  "reference/sir-match-matchreplay.html",
   "content/fsdocs-search.js",
   "content/sir-client/v1/app.js",
   "content/sir-client/v1/styles.css",
@@ -119,6 +120,10 @@ const example = await readFile(
 );
 const api = await readFile(
   resolve(site, "reference/sir-domain-boundedint32module.html"),
+  "utf8",
+);
+const matchApi = await readFile(
+  resolve(site, "reference/sir-match-matchreplay.html"),
   "utf8",
 );
 const searchIndex = JSON.parse(await readFile(resolve(site, "index.json"), "utf8"));
@@ -156,6 +161,9 @@ if (
 if (
   !api.includes(
     "https://github.com/EHotwagner/S.I.R./blob/main/src/SIR.Domain/BoundedInt32.fs",
+  ) ||
+  !matchApi.includes(
+    "https://github.com/EHotwagner/S.I.R./blob/main/src/SIR.Match/MatchReplay.fs",
   )
 ) {
   throw new Error("Generated API source links do not resolve to the main branch.");

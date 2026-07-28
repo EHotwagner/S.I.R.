@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Wasmtime" Version="44.0.0" />
+    <PackageReference Include="Wasmtime" />
   </ItemGroup>
 
 </Project>

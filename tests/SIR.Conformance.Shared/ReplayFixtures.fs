@@ -125,19 +125,48 @@ module ReplayFixtures =
             (Replay.verifyAuthoritative
                 Replay.defaultLimits
                 engineHash
-                false
+                None
                 decoded)
             "Browser replay incorrectly claimed authoritative WASM verification."
+
+        let acceptedOutputs =
+            match decoded.Content with
+            | AuthorizedFullReplay full -> full.AcceptedWasmOutputs
+            | PerspectivePlayback _ -> failwith "Expected a full replay."
 
         match
             Replay.verifyAuthoritative
                 Replay.defaultLimits
                 engineHash
-                true
+                (Some acceptedOutputs)
                 decoded
         with
         | Ok(AuthoritativeVerified _) -> ()
         | result -> failwithf "Authoritative replay verification failed: %A" result
+
+        let changedOutputs =
+            acceptedOutputs
+            |> List.map (fun output ->
+                if output.Sequence = 3 then
+                    { output with
+                        Input =
+                            Move(
+                                Simulation.unitId 10,
+                                { Col = 0; Row = 1 }
+                            ) }
+                else
+                    output)
+
+        expectError
+            (function
+            | WasmOutputDivergence(1, 3) -> true
+            | _ -> false)
+            (Replay.verifyAuthoritative
+                Replay.defaultLimits
+                engineHash
+                (Some changedOutputs)
+                decoded)
+            "Changed WASM re-execution output received an authoritative claim."
 
         let truncated = encoded[0 .. encoded.Length - 2]
 

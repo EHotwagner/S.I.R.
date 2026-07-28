@@ -50,6 +50,10 @@ if (!status?.textContent.includes("No replay loaded")) {
   throw new Error("The initial verification status is missing.");
 }
 
+if (!status?.textContent.includes("Authoritative verification is available only from .NET exact-artifact WASM re-execution.")) {
+  throw new Error("The authoritative verification boundary is missing.");
+}
+
 if (fileInput?.getAttribute("aria-label") !== "Choose replay package") {
   throw new Error("The replay file control has no accessible name.");
 }

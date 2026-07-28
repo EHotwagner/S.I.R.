@@ -11,7 +11,9 @@ description: Run the Fable replay inspector and exploratory rules laboratory ins
 <div class="sir-status sir-status-browser">
   <strong>Runtime: Fable/JavaScript in your browser.</strong>
   Replay verification re-executes accepted kernel inputs; it does not re-run
-  player WASM and cannot establish authoritative match verification.
+  player WASM and cannot establish authoritative match verification. That
+  stronger claim is produced only by the .NET verifier after exact-artifact
+  Wasmtime re-execution reproduces the accepted-output journal.
 </div>
 
 The application below executes replay and laboratory work in a Web Worker.

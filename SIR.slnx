@@ -3,11 +3,13 @@
     <Project Path="src/SIR.Client/SIR.Client.fsproj" />
     <Project Path="src/SIR.Client.Web/SIR.Client.Web.fsproj" />
     <Project Path="src/SIR.Domain/SIR.Domain.fsproj" />
+    <Project Path="src/SIR.Match/SIR.Match.fsproj" />
     <Project Path="src/SIR.Simulation/SIR.Simulation.fsproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/SIR.Client.Tests/SIR.Client.Tests.fsproj" />
     <Project Path="tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj" />
     <Project Path="tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj" />
+    <Project Path="tests/SIR.Match.Tests/SIR.Match.Tests.fsproj" />
   </Folder>
 </Solution>
