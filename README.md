@@ -15,10 +15,11 @@ so the game tests judgment and preparation rather than actions per minute.
 
 ## Status
 
-**Design phase.** This repository contains the design set, plus disposable
-measurement spikes under [`spikes/`](spikes/). No product code exists yet. Nothing here has been built, measured, or
-validated in code, and numeric values throughout are explicitly marked as
-prototype parameters.
+**Design phase.** This repository contains the design set, a self-contained
+gameplay reference corpus, and disposable measurement and balance spikes under
+[`spikes/`](spikes/). No product code exists yet. Spike results are measured
+evidence; numerical gameplay values remain explicitly marked as prototype
+parameters unless a document says otherwise.
 
 Documents carry a `status` of `proposed` or `accepted` in their front matter.
 `accepted` with `decision-status: canonical` marks a decision that later work
@@ -28,6 +29,14 @@ should treat as settled.
 
 [`docs/game-vision.md`](docs/game-vision.md) is the authoritative living
 description of the intended game. Everything else derives from it.
+
+### Gameplay reference
+
+[`docs/gameplay-reference.md`](docs/gameplay-reference.md) is the indexed,
+self-contained gameplay corpus. It links the current units, classes, perks,
+weapons, equipment, formulas, magic, command and information rules, and complete
+testing evidence while color-labeling canonical rules, prototype values,
+proposals, and known risks.
 
 ### Architecture
 
@@ -58,6 +67,7 @@ description of the intended game. Everything else derives from it.
 | [wasm-invocation-spike](docs/research/wasm-invocation-spike.md) | Measured: invocation cost, scaling, stress, guarantees |
 | [perception-spike](docs/research/perception-spike.md) | Measured: LOS, acquisition, culling, verticality cost |
 | [movement-spike](docs/research/movement-spike.md) | Measured: reservation, conflict resolution, path search cadence |
+| [rules-lab](docs/research/rules-lab-prototype.md) | Executable fixed-state combat formulas, parameter sweeps, and balance invariants |
 | [visual-direction](docs/visual-direction.md) | Graphical language and tactical overlays |
 
 ### Content
