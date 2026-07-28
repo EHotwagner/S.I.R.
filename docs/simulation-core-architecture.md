@@ -8,7 +8,7 @@ related:
   - docs/game-vision.md
   - docs/skirmish-development-plan.md
   - docs/technology-stack.md
-  - docs/cross-runtime-replay.md
+  - docs/fable-client-and-documentation.md
   - docs/wasm-control-architecture.md
   - docs/combat-resolution.md
 ---
@@ -331,7 +331,7 @@ by restoring the nearest checkpoint and simulating forward.
 A full authorized replay can re-simulate the complete world. A
 player-perspective replay instead plays back recorded knowledge-filtered
 projections; it cannot reconstruct hidden world state. The canonical
-[Cross-Runtime Determinism and Browser Replay](cross-runtime-replay.md)
+[Fable Client and Interactive Documentation](fable-client-and-documentation.md)
 decision defines the package, version binding, disclosure modes, WASM boundary,
 and conformance gate.
 

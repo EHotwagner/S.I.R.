@@ -1,5 +1,5 @@
 ---
-title: S.I.R. Cross-Runtime Rules Lab and Browser Replay Architecture
+title: S.I.R. Fable Client and Interactive Documentation Architecture
 status: accepted
 decision-status: canonical
 document-type: living-architecture
@@ -17,7 +17,7 @@ related:
   - docs/game-vision.md
 ---
 
-# S.I.R. Cross-Runtime Rules Lab and Browser Replay Architecture
+# S.I.R. Fable Client and Interactive Documentation Architecture
 
 ## Executive summary
 
