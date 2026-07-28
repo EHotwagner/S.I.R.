@@ -8,7 +8,7 @@ intelligence, communications, and logistics.
 
 ## Documentation
 
-The [published S.I.R. documentation](https://ehotwagner.github.io/S.I.R/) is
+The [published S.I.R. documentation](https://ehotwagner.github.io/S.I.R./) is
 the authoritative source for the game design, gameplay rules, architecture,
 implementation status, research, API reference, and development roadmap. The
 README is intentionally limited to repository orientation and build commands;
