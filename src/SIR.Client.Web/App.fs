@@ -673,7 +673,8 @@ let view model dispatch =
         ]
     ]
 
-Program.mkProgram init update view
-|> Program.withSubscription subscriptions
-|> Program.withReactSynchronous "sir-replay-app"
-|> Program.run
+if not (isNull (document.getElementById "sir-replay-app")) then
+    Program.mkProgram init update view
+    |> Program.withSubscription subscriptions
+    |> Program.withReactSynchronous "sir-replay-app"
+    |> Program.run

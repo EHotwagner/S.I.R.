@@ -1,20 +1,12 @@
 import { performance } from "node:perf_hooks";
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const protocolVersion = 1;
 const batchSize = 256;
 const normalMatchTicks = 24_000;
-const output = resolve("artifacts/client/assets");
-const workerAsset = (await readdir(output)).find((name) =>
-  /^Worker-.*\.js$/.test(name),
-);
-
-if (!workerAsset) {
-  throw new Error("The production bundle does not contain a Web Worker asset.");
-}
-
-const workerSource = await readFile(resolve(output, workerAsset), "utf8");
+const workerAsset = "content/sir-client/v1/worker.js";
+const workerSource = await readFile(resolve("artifacts/client", workerAsset), "utf8");
 
 if (!workerSource.includes("globalThis") || !workerSource.includes("postMessage")) {
   throw new Error("The emitted worker does not expose the expected message boundary.");

@@ -9,6 +9,25 @@
     <IsPackable>false</IsPackable>
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
     <_FSharpCoreLibraryPacksFolder>$(MSBuildThisFileDirectory).packages/fsharp-core</_FSharpCoreLibraryPacksFolder>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RepositoryUrl>https://github.com/EHotwagner/S.I.R.</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryBranch>main</RepositoryBranch>
+    <Authors>S.I.R. contributors</Authors>
+    <PackageProjectUrl>https://ehotwagner.github.io/S.I.R./</PackageProjectUrl>
+    <PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
+    <FsDocsCollectionName>S.I.R.</FsDocsCollectionName>
+    <FsDocsCollectionNameLink>https://ehotwagner.github.io/S.I.R./</FsDocsCollectionNameLink>
+    <FsDocsSourceFolder>$(MSBuildThisFileDirectory)</FsDocsSourceFolder>
+    <FsDocsSourceRepository>https://github.com/EHotwagner/S.I.R./blob/main/</FsDocsSourceRepository>
+    <FsDocsLicenseLink>https://github.com/EHotwagner/S.I.R./blob/main/LICENSE</FsDocsLicenseLink>
+    <FsDocsReleaseNotesLink>https://github.com/EHotwagner/S.I.R./blob/main/docs/fable-client-and-documentation.md#roadmap</FsDocsReleaseNotesLink>
+    <FsDocsLogoSource>img/sir-mark.svg</FsDocsLogoSource>
+    <FsDocsFaviconSource>img/sir-mark.svg</FsDocsFaviconSource>
+    <FsDocsLogoAlt>S.I.R. documentation</FsDocsLogoAlt>
+    <FsDocsTheme>default</FsDocsTheme>
+    <FsDocsWarnOnMissingDocs>false</FsDocsWarnOnMissingDocs>
+    <UsesMarkdownComments>true</UsesMarkdownComments>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.Core" />

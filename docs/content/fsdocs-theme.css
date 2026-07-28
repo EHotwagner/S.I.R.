@@ -1,0 +1,22 @@
+:root {
+  --primary-color: light-dark(#245f49, #8ee3ae);
+  --secondary-color: light-dark(#765516, #ffd166);
+  --link-color: light-dark(#155f78, #8ecae6);
+}
+
+.sir-status {
+  border: 2px solid currentColor;
+  border-radius: .5rem;
+  margin: 1.25rem 0;
+  padding: 1rem 1.2rem;
+}
+
+.sir-status-browser {
+  color: light-dark(#155f78, #8ecae6);
+  background: light-dark(#e9f7fb, #10242d);
+}
+
+.sir-status-warning {
+  color: light-dark(#765516, #ffd166);
+  background: light-dark(#fff8df, #302510);
+}

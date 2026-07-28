@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">S.I.R.</title>
+  <rect width="64" height="64" rx="8" fill="#101715"/>
+  <path d="M12 18h40v8H20v8h28v20H12v-8h28v-8H12z" fill="#8ee3ae"/>
+  <circle cx="50" cy="50" r="4" fill="#ffd166"/>
+</svg>
