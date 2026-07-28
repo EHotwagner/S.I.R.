@@ -2,6 +2,7 @@
   <ItemGroup>
     <Compile Include="Substrate.fs" />
     <Compile Include="Simulation.fs" />
+    <Compile Include="Replay.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../SIR.Domain/SIR.Domain.fsproj" />

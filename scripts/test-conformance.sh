@@ -126,3 +126,4 @@ printf 'Divergence guard passed: %s failed first at byte 0 in both runtimes.\n' 
   "$divergence_fixture"
 printf 'Simulation divergence guard passed: tick 1 phase %s failed first at byte 0 in both runtimes.\n' \
   "$simulation_phase"
+printf 'Replay gate passed: format v1, SHA-256, checkpoint seeks, safety limits, disclosure boundaries, and verification levels agree.\n'

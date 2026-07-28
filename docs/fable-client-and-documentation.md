@@ -6,7 +6,7 @@ document-type: living-architecture
 category: Design
 categoryindex: 4
 index: 13
-version: "2.3"
+version: "2.4"
 last-updated: 2026-07-28
 description: Shared .NET/Fable simulation, upstream FS.GG.Game compatibility, deterministic numerics, Elmish MVU browser tooling, replay verification, and delivery roadmap.
 related:
@@ -36,9 +36,10 @@ ends any claim that the run reproduces the authoritative match.
 
 Exact cross-runtime behavior applies only to authoritative state, inputs,
 events, and hashes. Rendering, interpolation, browser timing, charts, and
-floating-point presentation remain outside that contract. The implementation
-cannot begin until the upstream compatibility profile and the canonical
-numeric rules have executable conformance tests.
+floating-point presentation remain outside that contract. Implementation began
+only after the upstream compatibility profile and canonical numeric rules had
+executable conformance tests; the versioned replay format and shared runner now
+extend that evidence through deterministic checkpoint seeking.
 
 ## Decision
 
@@ -1281,12 +1282,12 @@ The input list is deduplicated and canonically ordered before execution;
 reversing the complete M6 journal must reproduce the same state, events,
 checkpoints, and digest.
 
-The M6 encoding is explicitly provisional until M7 selects the replay schema
-and cryptographic hashes. It produces 561 canonical simulation bytes across
-four phase checkpoints, including 55 final-state bytes, 93 event bytes, and
-the four digest bytes `9baa05cc`. Combined with the M5 numeric vector, the
-shared .NET and Fable/Node hosts now agree on a 621-byte conformance oracle
-with SHA-256
+The M6 phase-oracle encoding remains a local conformance diagnostic; M7
+supersedes it for replay snapshots and cryptographic identities. It produces
+561 canonical simulation bytes across four phase checkpoints, including 55
+final-state bytes, 93 event bytes, and the four diagnostic digest bytes
+`9baa05cc`. Combined with the M5 numeric vector, the shared .NET and Fable/Node
+hosts agree on a 621-byte pre-replay conformance oracle with SHA-256
 `6e822e333a46ce1f3e6716841a5a47a69780a428407d426b26ddf98984210d99`.
 
 **Evidence:**
@@ -1305,7 +1306,7 @@ with SHA-256
 - deliberate mutation of the movement checkpoint is rejected at tick 1,
   phase `movement`, byte zero by both runtime hosts.
 
-### [ ] 🟦 M7 — Replay format and runner
+### [x] 🟩 M7 — Replay format and runner
 
 **Unblocked by:** completed M6 minimal shared simulation slice.
 
@@ -1326,9 +1327,56 @@ with SHA-256
 - browser-level verification does not claim Wasmtime verification; and
 - perspective packages cannot reconstruct hidden state.
 
-### [ ] 🟨 M8 — Elmish replay shell
+**Outcome:** replay format version 1 is a bounded canonical binary envelope
+with `SIRR` magic, explicit format and disclosure discriminators, 32-byte
+engine and ruleset identities, and a full-replay authorization gate. Authorized
+full payloads contain a complete board and unit snapshot, separately ordered
+external inputs and accepted player-WASM outputs, retained state checkpoints,
+per-tick state and event SHA-256 hashes, and a terminal result. Perspective
+payloads contain only tick-indexed projection hashes; their union case has no
+kernel snapshot, input journal, checkpoint, or final authoritative result to
+expose.
 
-**Blocked by:** M7.
+`SIR.Domain.CanonicalHash` implements the selected SHA-256 identity in source
+shared by .NET and Fable and passes the published `abc` vector. The replay
+decoder applies byte, count, snapshot, ordering, and hash-length bounds before
+execution. It rejects malformed, truncated, oversized, incompatible,
+wrong-engine, unordered, unauthorized, and divergent packages with typed
+errors.
+
+`Replay.runKernelReplay` re-simulates from the initial snapshot and every
+retained checkpoint and returns only `BrowserKernelVerified`.
+`Replay.verifyAuthoritative` can return `AuthoritativeVerified` only when its
+host supplies successful exact player-WASM re-execution. A perspective package
+returns `PerspectiveReady`, and an attempt to require its kernel fails with
+`PerspectiveHasNoKernel`.
+
+**Evidence:**
+
+- `src/SIR.Simulation/Replay.fs` owns the versioned schema, canonical
+  encoding/decoding, resource limits, disclosure boundary, checkpoint runner,
+  and the distinct browser and authoritative verification claims;
+- `src/SIR.Domain/CanonicalHash.fs` provides one portable SHA-256
+  implementation for both runtimes;
+- `tests/SIR.Conformance.Shared/ReplayFixtures.fs` round-trips the canonical
+  package, seeks from retained ticks 0 and 1 to final tick 2, exercises both
+  verification levels and perspective playback, and rejects every required
+  safety case;
+- the canonical full package is 639 bytes with SHA-256
+  `7a883614ae2ef19457fa13f32939dbe6e28504e9339b2373cf726010d6516baf`;
+  its final state hash is
+  `843663a69c87b4e8792b1cd2800df83b70bf9a03eb4cfa766b66d3b995cd0c05`;
+  and its perspective-package counterpart is
+  `6526545ed82530de5065847beb9c8ca3cf50e0fc80bb68d33146bf5d6ddbf075`;
+  and
+- `scripts/test-conformance.sh` restores from the published package, builds
+  both hosts, runs the same replay fixture in .NET and Fable/Node, and compares
+  a combined 717-byte canonical oracle while preserving the earlier numeric
+  and phase-divergence gates.
+
+### [ ] 🟦 M8 — Elmish replay shell
+
+**Unblocked by:** completed M7 replay format and runner.
 
 **Deliverables:**
 
