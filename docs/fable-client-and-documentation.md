@@ -1575,7 +1575,9 @@ unit/perk/weapon/armor/equipment catalog, exact engine and ruleset identities,
 typed parameter definitions, bounded validation, deterministic integer
 evaluation through `Simulation.runTickWithRules`, immediate baseline/fork
 comparison, an attack-by-attack visual result, and sweep results. The laboratory
-varies bounded rule inputs but
+uses explicit array-based transport records at the worker boundary so F#
+map comparers never enter browser structured cloning. The laboratory varies
+bounded rule inputs but
 does not reimplement attack resolution. The baseline is always recomputed from
 catalog defaults and is never mutated by a patch.
 Every result carries its complete effective parameter map plus scenario,

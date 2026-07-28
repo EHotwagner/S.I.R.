@@ -121,9 +121,9 @@ type RunnerRequest =
     | LoadPackage of sourceName: string * bytes: byte array
     | Advance of currentTick: int32 * tickCount: int32 * finalTick: int32
     | Seek of targetTick: int32 * finalTick: int32
-    | Fork of derivedIdentity: string * patch: ParameterPatch
+    | Fork of derivedIdentity: string * patch: Int32Entry array
     | LoadScenario of scenarioIdentity: string
-    | RunExperiment of scenarioIdentity: string * patch: ParameterPatch * sweepParameter: string option
+    | RunExperiment of scenarioIdentity: string * patch: Int32Entry array * sweepParameter: string option
     | Cancel
 
 type RunnerClaim =
@@ -136,8 +136,8 @@ type RunnerResponse =
     | RunnerProgress of tick: int32 * completedBatches: int32 * InspectionProjection
     | Progressed of tick: int32 * InspectionProjection
     | Forked of derivedIdentity: string
-    | LoadedScenario of ReplayMetadata * DesignScenario * LabReport * InspectionProjection
-    | ExperimentCompleted of derivedIdentity: string * LabReport
+    | LoadedScenario of ReplayMetadata * DesignScenarioTransport * LabReportTransport * InspectionProjection
+    | ExperimentCompleted of derivedIdentity: string * LabReportTransport
     | RunnerUnsupported of reason: string
     | RunnerDiverged of tick: int32 * phase: string * detail: string
     | RunnerFailed of reason: string
@@ -325,6 +325,9 @@ module Shell =
                 Announcement = "Sandbox fork created. Verification no longer applies." }
             |> stopOperation
         | LoadedScenario(metadata, scenario, report, inspection) ->
+            let scenario = Lab.scenarioFromTransport scenario
+            let report = Lab.reportFromTransport report
+
             { model with
                 Source = Loaded metadata
                 Mode = ScenarioSandbox metadata.SourceIdentity
@@ -344,6 +347,8 @@ module Shell =
                 Announcement = "Design scenario loaded as an editable sandbox." }
             |> stopOperation
         | ExperimentCompleted(identity, report) ->
+            let report = Lab.reportFromTransport report
+
             { model with
                 Mode = SandboxFork identity
                 Verification = SandboxDerived identity
@@ -511,7 +516,11 @@ module Shell =
                                 "Parameter edited. This run is now a sandbox fork." }
 
                     beginOperation
-                        (RunExperiment(scenario.Identity, patch, None))
+                        (RunExperiment(
+                            scenario.Identity,
+                            Lab.parametersToTransport patch,
+                            None
+                        ))
                         forked
             | None ->
                 let forked =
@@ -523,12 +532,18 @@ module Shell =
                         Announcement =
                             "Parameter edited. This run is now a sandbox fork." }
 
-                beginOperation (Fork(identity, patch)) forked
+                beginOperation
+                    (Fork(identity, Lab.parametersToTransport patch))
+                    forked
         | SweepRequested parameter ->
             match model.Lab.Scenario, model.Lab.ValidationError with
             | Some scenario, None ->
                 beginOperation
-                    (RunExperiment(scenario.Identity, model.Patch, Some parameter))
+                    (RunExperiment(
+                        scenario.Identity,
+                        Lab.parametersToTransport model.Patch,
+                        Some parameter
+                    ))
                     { model with
                         Worker = WorkerBusy 0
                         Announcement = "Running deterministic parameter sweep." }

@@ -137,6 +137,7 @@ fi
 npm ci
 ./scripts/build-client.sh
 node scripts/smoke-client.mjs
+node scripts/smoke-worker-roundtrip.mjs
 worker_measurement=$(node scripts/measure-worker.mjs)
 
 printf 'Conformance passed: %d bytes agree across .NET and Fable/Node.\n' \
@@ -149,4 +150,4 @@ printf 'Replay gate passed: format v1, SHA-256, checkpoint seeks, safety limits,
 printf '%s\n' "$match_output"
 printf '%s\n' "$browser_wasm_output"
 printf 'Elmish and rules-lab gate passed: modes, immutable baseline/fork comparison, typed validation, deterministic sweep, reproducible fixture export, stale operations, cancellation, Fable compilation, production bundle, and browser mount agree.\n'
-printf 'Worker gate passed: %s\n' "$worker_measurement"
+printf 'Worker gate passed: clone-safe scenario/experiment round trips; %s\n' "$worker_measurement"

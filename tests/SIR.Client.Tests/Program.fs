@@ -276,6 +276,13 @@ let main _ =
         (Lab.attackFrames baselineReport = [ 0, 100; 1, 75; 2, 50; 3, 25; 4, 0 ])
         "The visible attack-sequence simulation does not match the canonical result."
 
+    require
+        (baselineReport
+         |> Lab.reportToTransport
+         |> Lab.reportFromTransport
+         |> (=) baselineReport)
+        "The structured-clone-safe report transport does not round-trip."
+
     let forkReport =
         Lab.run scenario (Map.ofList [ ("attack-power", 30) ]) (Some "attack-power")
         |> Result.defaultWith failwith
@@ -347,8 +354,8 @@ let main _ =
                         SourceName = "adjacent-duel.sir-scenario"
                         SourceIdentity = baselineReport.Comparison.Baseline.ResultIdentity
                         FinalTick = 1 },
-                    scenario,
-                    baselineReport,
+                    Lab.scenarioToTransport scenario,
+                    Lab.reportToTransport baselineReport,
                     projection 0
                 )
             ))
@@ -370,7 +377,7 @@ let main _ =
                 experimentOperation,
                 ExperimentCompleted(
                     forkReport.Comparison.Fork.ResultIdentity,
-                    forkReport
+                    Lab.reportToTransport forkReport
                 )
             ))
             editedScenario
