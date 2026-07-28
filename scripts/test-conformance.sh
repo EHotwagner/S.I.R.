@@ -128,6 +128,7 @@ fi
 npm ci
 ./scripts/build-client.sh
 node scripts/smoke-client.mjs
+worker_measurement=$(node scripts/measure-worker.mjs)
 
 printf 'Conformance passed: %d bytes agree across .NET and Fable/Node.\n' \
   "$(( ${#dotnet_output} / 2 ))"
@@ -137,3 +138,4 @@ printf 'Simulation divergence guard passed: tick 1 phase %s failed first at byte
   "$simulation_phase"
 printf 'Replay gate passed: format v1, SHA-256, checkpoint seeks, safety limits, disclosure boundaries, and verification levels agree.\n'
 printf 'Elmish shell gate passed: modes, sandbox transition, stale operations, cancellation, Fable compilation, production bundle, and browser mount agree.\n'
+printf 'Worker gate passed: %s\n' "$worker_measurement"

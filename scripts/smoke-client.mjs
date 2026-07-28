@@ -14,6 +14,11 @@ if (!scriptMatch) {
 const window = new Window({ url: "https://sir.invalid/replay/" });
 window.document.body.innerHTML = '<div id="sir-replay-app"></div>';
 
+class SmokeWorker {
+  postMessage() {}
+  terminate() {}
+}
+
 Object.assign(globalThis, {
   window,
   document: window.document,
@@ -23,6 +28,7 @@ Object.assign(globalThis, {
   Event: window.Event,
   KeyboardEvent: window.KeyboardEvent,
   MouseEvent: window.MouseEvent,
+  Worker: SmokeWorker,
 });
 
 const bundle = resolve(output, scriptMatch[1].replace(/^\.\//, ""));
@@ -48,12 +54,23 @@ if (fileInput?.getAttribute("aria-label") !== "Choose replay package") {
   throw new Error("The replay file control has no accessible name.");
 }
 
-if (labelledButtons.length < 6) {
+if (labelledButtons.length < 4) {
   throw new Error("Primary replay controls are missing accessible names.");
 }
 
+const inspector = window.document.querySelector('[aria-label="Replay inspector"]');
+const workerStatus = window.document.querySelector(".worker-status");
+
+if (!inspector?.textContent.includes("Timeline and events")) {
+  throw new Error("The responsive replay inspectors did not mount.");
+}
+
+if (!workerStatus?.textContent.includes("protocol 1")) {
+  throw new Error("The worker protocol disclosure is missing.");
+}
+
 console.log(
-  `Browser smoke passed: React mounted with ${labelledButtons.length} labelled controls and a live verification status.`,
+  `Browser smoke passed: React mounted with ${labelledButtons.length} labelled controls, responsive inspectors, protocol status, and a live verification status.`,
 );
 
 window.happyDOM.close();

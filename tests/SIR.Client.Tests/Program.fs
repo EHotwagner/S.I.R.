@@ -19,6 +19,17 @@ let private metadata kind =
       FinalTick = 20
       Kind = kind }
 
+let private projection tick =
+    { Tick = tick
+      BoardMinimumColumn = 0
+      BoardMinimumRow = 0
+      BoardMaximumColumn = 2
+      BoardMaximumRow = 1
+      Units = []
+      Events = []
+      Checkpoints = []
+      PerspectiveHash = None }
+
 [<EntryPoint>]
 let main _ =
     let initial = Shell.init ()
@@ -54,7 +65,7 @@ let main _ =
         Shell.update
             (RunnerResponded(
                 replacementOperation,
-                LoadedPackage(metadata FullReplay, KernelVerified)
+                LoadedPackage(metadata FullReplay, KernelVerified, projection 0)
             ))
             superseded
         |> fst
@@ -72,7 +83,7 @@ let main _ =
         Shell.update
             (RunnerResponded(
                 operation,
-                LoadedPackage(metadata PerspectiveReplay, ProjectionOnly)
+                LoadedPackage(metadata PerspectiveReplay, ProjectionOnly, projection 0)
             ))
             pending
         |> fst
@@ -154,5 +165,48 @@ let main _ =
         (requestLeft = requestRight)
         "Equal runner requests produced different operation identities or effects."
 
-    printfn "Elmish shell tests passed: deterministic update, modes, sandbox, stale responses, and cancellation."
+    let longReplay =
+        { verified with
+            Playback =
+                { verified.Playback with
+                    CurrentTick = 0
+                    FinalTick = 24_000
+                    IsPlaying = true } }
+
+    let advancing, advanceEffects = Shell.playbackTick longReplay
+    let advanceOperation = operationFrom advanceEffects
+    let progressProjection = projection 256
+
+    let progressing =
+        Shell.update
+            (RunnerResponded(
+                advanceOperation,
+                RunnerProgress(256, 1, progressProjection)
+            ))
+            advancing
+        |> fst
+
+    require
+        (progressing.ActiveOperation = Some advanceOperation
+         && progressing.Playback.CurrentTick = 256
+         && progressing.Inspection = Some progressProjection
+         && progressing.Worker = WorkerBusy 1)
+        "Streaming progress completed the operation or copied the wrong projection."
+
+    let batchEnds = WorkerProtocol.batchEnds 0 24_000
+    require
+        (List.length batchEnds = 94 && List.last batchEnds = 24_000)
+        "A normal-length replay was not divided into the expected bounded batches."
+    require
+        (List.length batchEnds < 24_000)
+        "A normal-length replay still requires one render per tick."
+
+    let workerStopped = Shell.update (WorkerTerminated "test crash") verified |> fst
+    require
+        (workerStopped.Verification = Failed "worker stopped: test crash"
+         && workerStopped.Worker = WorkerStopped "test crash"
+         && not workerStopped.Playback.IsPlaying)
+        "Worker termination left the shell in a verified or playing state."
+
+    printfn "Elmish shell tests passed: deterministic update, modes, bounded worker batches, compact progress, failure revocation, sandbox, stale responses, and cancellation."
     0

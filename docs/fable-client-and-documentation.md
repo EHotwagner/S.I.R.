@@ -6,7 +6,7 @@ document-type: living-architecture
 category: Design
 categoryindex: 4
 index: 13
-version: "2.5"
+version: "2.6"
 last-updated: 2026-07-28
 description: Shared .NET/Fable simulation, upstream FS.GG.Game compatibility, deterministic numerics, Elmish MVU browser tooling, replay verification, and delivery roadmap.
 related:
@@ -42,7 +42,10 @@ executable conformance tests; the versioned replay format and shared runner now
 extend that evidence through deterministic checkpoint seeking. A standalone
 Elmish/React shell now exposes the replay state machine, typed runner boundary,
 mode disclosures, accessible controls, and irreversible sandbox transition
-without moving authority into the browser.
+without moving authority into the browser. Replay execution now runs in a
+dedicated versioned Web Worker, yields between bounded batches, and returns
+compact inspection projections rather than copying the complete world into
+Elmish state.
 
 ## Decision
 
@@ -1452,7 +1455,7 @@ motion is respected.
   retains the 717-byte .NET/Fable replay oracle and adds the shell tests,
   production bundle, and browser-mount gates.
 
-### [ ] 🟦 M9 — Worker execution and responsive inspection
+### [x] 🟩 M9 — Worker execution and responsive inspection
 
 **Unblocked by:** completed M8 Elmish replay shell.
 
@@ -1472,9 +1475,51 @@ motion is respected.
 - full world state is not copied into Elmish on every tick; and
 - performance observations never enter canonical hashes.
 
-### [ ] 🟨 M10 — Interactive rules laboratory
+**Outcome:** the in-process M8 adapter has been replaced by a production Web
+Worker emitted as its own Vite asset. Requests and responses use protocol
+version 1 envelopes with operation identities. Advance work is planned in
+256-tick batches and yields between batches so cancellation and newer
+operations can be received. Progress responses keep the operation active;
+completion, cancellation, failure, or supersession closes it. The Elmish
+update continues to reject every response whose operation is no longer active.
 
-**Blocked by:** M9.
+The worker retains the decoded replay and reconstructable simulation state.
+Elmish receives only the currently requested presentation projection: board
+bounds, compact unit summaries, bounded accepted-input/event summaries,
+checkpoint digest prefixes, or a perspective-frame digest. At normal
+24,000-tick match length the accepted batch plan has 94 projection boundaries,
+not 24,000 per-tick renders. Cooperative yielding is measured with a queued
+heartbeat, and measured durations are reported only by the tooling; they do
+not enter replay packages, kernel inputs, state, events, or canonical hashes.
+
+Board, timeline/event, formula, checkpoint, perspective, and existing
+first-divergence inspection are exposed with accessible labels and textual
+status. A worker error or protocol mismatch transitions the shell to `Failed`,
+stops playback, clears the active operation, and explicitly revokes any
+browser-verification display.
+
+**Evidence:**
+
+- `src/SIR.Client.Web/Worker.fs` owns replay decoding, verification, retained
+  worker state, cooperative batch execution, cancellation, seeking, and compact
+  projections;
+- `src/SIR.Client/Shell.fs` defines protocol version 1, the 256-tick batch
+  planner, projection types, streaming progress, worker lifecycle, and
+  verification-revocation transitions;
+- `src/SIR.Client.Web/App.fs` and `styles.css` provide worker supervision plus
+  board, timeline/event, formula, checkpoint, perspective, and worker-status
+  views without placing canonical state in React;
+- `tests/SIR.Client.Tests/Program.fs` proves the 94-boundary normal-match plan,
+  streaming operation retention, compact projection replacement, stale
+  response rejection, cancellation, and worker-failure revocation; and
+- `scripts/measure-worker.mjs` requires a separately emitted production worker
+  asset, runs the 24,000-tick cooperative schedule, proves queued input can run,
+  and reports non-canonical timing observations. The browser smoke gate checks
+  the inspector and protocol disclosures in the production bundle.
+
+### [ ] 🟦 M10 — Interactive rules laboratory
+
+**Unblocked by:** completed M9 worker execution and responsive inspection.
 
 **Deliverables:**
 

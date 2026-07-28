@@ -26,13 +26,10 @@ let private fileBytes (file: File) =
 let private runEffect effect =
     match effect with
     | Run(operation, request) ->
-        Cmd.OfAsync.perform
-            Runner.execute
-            request
-            (fun response -> ShellMsg(RunnerResponded(operation, response)))
+        Runner.post operation request
 
 let private effectsToCmd effects =
-    effects |> List.map runEffect |> Cmd.batch
+    Cmd.ofEffect (fun _ -> effects |> List.iter runEffect)
 
 let init () =
     Shell.init (), Cmd.none
@@ -61,6 +58,9 @@ let rec update msg model =
         | _ -> model, Cmd.none
 
 let subscriptions model =
+    let runner dispatch =
+        Runner.subscribe (fun message -> dispatch (ShellMsg message))
+
     let keyboard dispatch =
         let handler =
             fun (event: Event) ->
@@ -89,7 +89,8 @@ let subscriptions model =
         { new IDisposable with
             member _.Dispose() = window.clearInterval identifier }
 
-    [ [ "keyboard" ], keyboard
+    [ [ "replay-worker-v1" ], runner
+      [ "keyboard" ], keyboard
       if model.Playback.IsPlaying then
           let speedKey =
               match model.Playback.Speed with
@@ -265,44 +266,173 @@ let private controls model dispatch =
     ]
 
 let private inspector model dispatch =
+    let inspection =
+        model.Inspection
+        |> Option.defaultValue
+            { Tick = 0
+              BoardMinimumColumn = 0
+              BoardMinimumRow = 0
+              BoardMaximumColumn = 0
+              BoardMaximumRow = 0
+              Units = []
+              Events = []
+              Checkpoints = []
+              PerspectiveHash = None }
+
+    let selectedUnit =
+        model.Selection.Unit
+        |> Option.bind (fun selected ->
+            inspection.Units
+            |> List.tryFind (fun unit -> unit.Id = selected))
+
+    let selectedEvent =
+        model.Selection.Event
+        |> Option.bind (fun selected ->
+            inspection.Events
+            |> List.tryFind (fun event -> event.Id = selected))
+
     Html.section [
         prop.className "panel inspector-panel"
         prop.ariaLabel "Replay inspector"
         prop.children [
             Html.h2 "Inspector"
-            Html.p "Selection state is independent from the authoritative kernel."
+            Html.p (
+                "Compact projection at tick "
+                + string inspection.Tick
+                + "; complete world state remains in the worker."
+            )
+            Html.h3 "Board"
             Html.div [
-                prop.className "control-row"
+                prop.className "board"
+                prop.role.img
+                prop.ariaLabel (
+                    "Board from column "
+                    + string inspection.BoardMinimumColumn
+                    + " row "
+                    + string inspection.BoardMinimumRow
+                    + " to column "
+                    + string inspection.BoardMaximumColumn
+                    + " row "
+                    + string inspection.BoardMaximumRow
+                )
+                prop.children (
+                    inspection.Units
+                    |> List.map (fun unit ->
+                        Html.button [
+                            prop.type'.button
+                            prop.className ("unit-token unit-" + unit.Side.ToLowerInvariant())
+                            prop.ariaLabel (
+                                "Inspect "
+                                + unit.Side
+                                + " unit "
+                                + string unit.Id
+                            )
+                            prop.text (unit.Side.Substring(0, 1) + string unit.Id)
+                            prop.onClick (fun _ ->
+                                dispatch (ShellMsg(UnitSelected(Some unit.Id))))
+                        ])
+                )
+            ]
+            Html.h3 "Timeline and events"
+            Html.ol [
+                prop.className "event-list"
+                prop.children (
+                    inspection.Events
+                    |> List.map (fun event ->
+                        Html.li [
+                            Html.button [
+                                prop.type'.button
+                                prop.ariaLabel ("Inspect event " + string event.Id)
+                                prop.text (
+                                    "T"
+                                    + string event.Tick
+                                    + " · "
+                                    + event.Source
+                                    + " · "
+                                    + event.Summary
+                                )
+                                prop.onClick (fun _ ->
+                                    dispatch (ShellMsg(EventSelected(Some event.Id))))
+                            ]
+                        ])
+                )
+            ]
+            Html.h3 "Formula"
+            button
+                "Attack formula"
+                "Inspect attack formula"
+                false
+                (fun _ ->
+                    dispatch (
+                        ShellMsg(FormulaSelected(Some "damage = max(0, attack power)"))
+                    ))
+            Html.h3 "Checkpoints"
+            Html.table [
                 prop.children [
-                    button
-                        "Unit 10"
-                        "Inspect unit 10"
-                        false
-                        (fun _ -> dispatch (ShellMsg(UnitSelected(Some 10))))
-                    button
-                        "Event 1"
-                        "Inspect event 1"
-                        false
-                        (fun _ -> dispatch (ShellMsg(EventSelected(Some 1))))
-                    button
-                        "Attack formula"
-                        "Inspect attack formula"
-                        false
-                        (fun _ ->
-                            dispatch (
-                                ShellMsg(FormulaSelected(Some "attack"))
-                            ))
+                    Html.thead [
+                        Html.tr [
+                            Html.th "Tick"
+                            Html.th "State hash"
+                            Html.th "Event hash"
+                        ]
+                    ]
+                    Html.tbody [
+                        for checkpoint in inspection.Checkpoints do
+                            Html.tr [
+                                Html.td (string checkpoint.Tick)
+                                Html.td checkpoint.StateHash
+                                Html.td checkpoint.EventHash
+                            ]
+                    ]
                 ]
             ]
             Html.dl [
                 Html.dt "Unit"
-                Html.dd (model.Selection.Unit |> Option.map string |> Option.defaultValue "None")
+                Html.dd (
+                    selectedUnit
+                    |> Option.map (fun unit ->
+                        unit.Side
+                        + " "
+                        + string unit.Id
+                        + " at "
+                        + string unit.Column
+                        + ","
+                        + string unit.Row
+                        + "; health "
+                        + string unit.Health)
+                    |> Option.defaultValue "None"
+                )
                 Html.dt "Event"
-                Html.dd (model.Selection.Event |> Option.map string |> Option.defaultValue "None")
+                Html.dd (
+                    selectedEvent
+                    |> Option.map (fun event -> event.Summary)
+                    |> Option.defaultValue "None"
+                )
                 Html.dt "Formula"
                 Html.dd (model.Selection.Formula |> Option.defaultValue "None")
+                Html.dt "Perspective hash"
+                Html.dd (inspection.PerspectiveHash |> Option.defaultValue "Not applicable")
             ]
         ]
+    ]
+
+let private workerStatus model =
+    let text =
+        match model.Worker with
+        | WorkerStarting -> "Worker starting"
+        | WorkerReady -> "Worker ready"
+        | WorkerBusy batches -> "Worker running · " + string batches + " batches complete"
+        | WorkerStopped reason -> "Worker stopped · " + reason
+
+    Html.p [
+        prop.className "worker-status"
+        prop.text (
+            text
+            + " · protocol "
+            + string WorkerProtocol.CurrentVersion
+            + " · batch size "
+            + string WorkerProtocol.BatchSize
+        )
     ]
 
 let private sandbox model dispatch =
@@ -351,6 +481,7 @@ let view model dispatch =
                 Html.p "Inspect deterministic replay state without granting this browser authority."
             ]
             statusView model
+            workerStatus model
             Html.div [
                 prop.className "dashboard"
                 prop.children [
