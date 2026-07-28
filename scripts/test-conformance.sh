@@ -28,6 +28,11 @@ dotnet_output=$(dotnet run \
   --no-build \
   --no-restore)
 
+dotnet run \
+  --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj \
+  --no-build \
+  --no-restore
+
 dotnet fable tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj \
   --outDir "$task_tmp/fable" \
   --noCache
@@ -120,6 +125,10 @@ if [[ -n "$floating_source" ]]; then
   exit 1
 fi
 
+npm ci
+./scripts/build-client.sh
+node scripts/smoke-client.mjs
+
 printf 'Conformance passed: %d bytes agree across .NET and Fable/Node.\n' \
   "$(( ${#dotnet_output} / 2 ))"
 printf 'Divergence guard passed: %s failed first at byte 0 in both runtimes.\n' \
@@ -127,3 +136,4 @@ printf 'Divergence guard passed: %s failed first at byte 0 in both runtimes.\n' 
 printf 'Simulation divergence guard passed: tick 1 phase %s failed first at byte 0 in both runtimes.\n' \
   "$simulation_phase"
 printf 'Replay gate passed: format v1, SHA-256, checkpoint seeks, safety limits, disclosure boundaries, and verification levels agree.\n'
+printf 'Elmish shell gate passed: modes, sandbox transition, stale operations, cancellation, Fable compilation, production bundle, and browser mount agree.\n'

@@ -1,12 +1,20 @@
 {
-  "name": "sir-conformance",
+  "name": "sir",
   "private": true,
   "type": "module",
   "scripts": {
+    "build:client": "./scripts/build-client.sh",
+    "dev:client": "vite --config src/SIR.Client.Web/vite.config.js",
     "test": "./scripts/test-conformance.sh"
   },
   "dependencies": {
-    "@fable-org/fable-library-js": "2.5.1"
+    "@fable-org/fable-library-js": "2.5.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "happy-dom": "20.11.1",
+    "vite": "8.1.5"
   },
   "engines": {
     "node": "26.5.0"

@@ -6,7 +6,7 @@ document-type: living-architecture
 category: Design
 categoryindex: 4
 index: 13
-version: "2.4"
+version: "2.5"
 last-updated: 2026-07-28
 description: Shared .NET/Fable simulation, upstream FS.GG.Game compatibility, deterministic numerics, Elmish MVU browser tooling, replay verification, and delivery roadmap.
 related:
@@ -39,7 +39,10 @@ events, and hashes. Rendering, interpolation, browser timing, charts, and
 floating-point presentation remain outside that contract. Implementation began
 only after the upstream compatibility profile and canonical numeric rules had
 executable conformance tests; the versioned replay format and shared runner now
-extend that evidence through deterministic checkpoint seeking.
+extend that evidence through deterministic checkpoint seeking. A standalone
+Elmish/React shell now exposes the replay state machine, typed runner boundary,
+mode disclosures, accessible controls, and irreversible sandbox transition
+without moving authority into the browser.
 
 ## Decision
 
@@ -1377,7 +1380,7 @@ returns `PerspectiveReady`, and an attempt to require its kernel fails with
   a combined 717-byte canonical oracle while preserving the earlier numeric
   and phase-divergence gates.
 
-### [ ] 🟦 M8 — Elmish replay shell
+### [x] 🟩 M8 — Elmish replay shell
 
 **Unblocked by:** completed M7 replay format and runner.
 
@@ -1399,9 +1402,59 @@ returns `PerspectiveReady`, and an attempt to require its kernel fails with
 - parameter editing transitions to a derived sandbox identity; and
 - keyboard and screen-reader operation cover primary controls.
 
-### [ ] 🟨 M9 — Worker execution and responsive inspection
+**Outcome:** `SIR.Client` now owns a platform-neutral replay-shell model,
+messages, deterministic update function, typed runner requests and responses,
+operation identities, and value-shaped effects. `SIR.Client.Web` maps those
+effects into Elmish commands, uses subscriptions for keyboard input and
+presentation-only playback cadence, and mounts the React view into the
+standalone development page. Browser APIs, React, replay decoding, and the
+in-process M8 runner adapter remain outside the pure shell.
 
-**Blocked by:** M8.
+Loading a package supersedes and cancels any active operation. Every runner
+response carries its operation identity, and the update function ignores stale
+responses without changing model or effects. Play, pause, one-tick step,
+bounded seek, speed, unit/event/formula selection, and cancellation are
+represented as messages rather than view callbacks into the kernel. The M8
+runner validates the bounded replay envelope and the retained M7 fixture engine
+through the shared replay runner. A package requiring another engine becomes
+explicitly unsupported; versioned engine-manifest selection remains M12 work.
+
+Verified browser-kernel replay, perspective-only playback, sandbox fork,
+unsupported engine, divergence, and failure each have distinct text and
+redundant color treatment. The first permitted parameter edit creates a stable
+derived identity and removes the verification claim; reloading the source is
+the only route back to verified mode. Primary controls have accessible names,
+the current mode and operation announcement use live regions, keyboard
+operation covers play/pause, step, and cancel, focus is visible, and reduced
+motion is respected.
+
+**Evidence:**
+
+- [S.I.R.#56](https://github.com/EHotwagner/S.I.R./pull/56) introduced the
+  shared shell, standalone browser host, locked build, accessibility smoke gate,
+  and this roadmap transition;
+- `src/SIR.Client/Shell.fs` contains the platform-neutral model, transition
+  function, operation protocol, mode state, selection state, sandbox identity,
+  and effect values;
+- `src/SIR.Client.Web/App.fs` supplies Elmish commands and subscriptions, the
+  standalone React mount, file loading, controls, mode disclosures, live
+  announcements, and keyboard interaction;
+- `src/SIR.Client.Web/Runner.fs` adapts the M7 decoder and browser-kernel runner
+  to the typed M8 boundary without making an authoritative-WASM claim;
+- `tests/SIR.Client.Tests/Program.fs` proves deterministic state and effects,
+  distinct verified/perspective/unsupported/divergent states, irreversible
+  sandbox transition, supersession, stale-response rejection, and cancellation;
+- `scripts/build-client.sh` compiles the web host with Fable 5.13.0 and creates
+  a production Vite 8.1.5 bundle from locked NuGet and npm dependencies; and
+- `scripts/smoke-client.mjs` executes the production React bundle in a browser
+  DOM, verifies the mount, initial live verification status, accessible file
+  input, and six labelled primary controls. The complete conformance script
+  retains the 717-byte .NET/Fable replay oracle and adds the shell tests,
+  production bundle, and browser-mount gates.
+
+### [ ] 🟦 M9 — Worker execution and responsive inspection
+
+**Unblocked by:** completed M8 Elmish replay shell.
 
 **Deliverables:**
 
@@ -1441,9 +1494,10 @@ returns `PerspectiveReady`, and an attempt to require its kernel fails with
 - charts remain derived from canonical integer results; and
 - balance evidence is labeled separately from accepted balance.
 
-### [ ] 🟨 M11 — Literate corpus integration
+### [ ] 🟦 M11 — Literate corpus integration
 
-**Blocked by:** M8; full lab pages also depend on M10.
+**Unblocked by:** completed M8 for the mount and explanatory corpus; full
+rules-lab pages still depend on M10.
 
 **Deliverables:**
 
