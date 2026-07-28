@@ -1906,6 +1906,9 @@ identity and migration evidence.
 
 **Evidence:**
 
+- [S.I.R.#63](https://github.com/EHotwagner/S.I.R./pull/63) introduced the
+  compatibility inventory, executable drift gate, future-profile handoff, and
+  this final roadmap transition;
 - `config/fable-client-baseline.json` is the machine-readable inventory of
   frozen v1 contracts and explicitly deferred production profiles;
 - `scripts/verify-fable-client-baseline.mjs` checks replay and numeric
