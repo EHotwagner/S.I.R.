@@ -1500,6 +1500,9 @@ browser-verification display.
 
 **Evidence:**
 
+- [S.I.R.#57](https://github.com/EHotwagner/S.I.R./pull/57) introduced the
+  versioned worker, bounded progress protocol, compact inspectors,
+  responsiveness measurement, and this roadmap transition;
 - `src/SIR.Client.Web/Worker.fs` owns replay decoding, verification, retained
   worker state, cooperative batch execution, cancellation, seeking, and compact
   projections;
