@@ -5,7 +5,15 @@ import { resolve } from "node:path";
 const protocolVersion = 1;
 const batchSize = 256;
 const normalMatchTicks = 24_000;
-const workerAsset = "content/sir-client/v1/worker.js";
+const publication = JSON.parse(
+  await readFile(resolve("config/engine-publication.json"), "utf8"),
+);
+const workerAsset = publication.engines[0]?.workerPath;
+
+if (!workerAsset) {
+  throw new Error("The publication catalog has no retained worker.");
+}
+
 const workerSource = await readFile(resolve("artifacts/client", workerAsset), "utf8");
 
 if (!workerSource.includes("globalThis") || !workerSource.includes("postMessage")) {

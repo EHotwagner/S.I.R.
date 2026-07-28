@@ -10,7 +10,7 @@ open SIR.Simulation
 let private scope: obj = emitJsExpr () "globalThis"
 
 let private supportedEngine =
-    [| for value in 1 .. 32 -> byte value |]
+    EngineCatalog.Current.EngineHash
 
 let private shortIdentity (bytes: byte array) =
     bytes
@@ -29,7 +29,7 @@ let private emptyProjection tick =
       Checkpoints = []
       PerspectiveHash = None }
 
-let private scenarioMetadata scenario report =
+let private scenarioMetadata (scenario: DesignScenario) (report: LabReport) =
     { SourceName = scenario.Identity + ".sir-scenario"
       SourceIdentity = report.Comparison.Baseline.ResultIdentity
       EngineIdentity = scenario.EngineIdentity

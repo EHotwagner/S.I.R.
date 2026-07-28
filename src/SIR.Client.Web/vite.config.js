@@ -21,8 +21,10 @@ export default defineConfig({
   worker: {
     rollupOptions: {
       output: {
-        entryFileNames: "content/sir-client/v1/worker.js",
-        chunkFileNames: "content/sir-client/v1/[name]-[hash].js",
+        entryFileNames:
+          "engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/worker.js",
+        chunkFileNames:
+          "engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/[name]-[hash].js",
       },
     },
   },

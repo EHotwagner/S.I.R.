@@ -6,8 +6,8 @@ document-type: living-architecture
 category: Design
 categoryindex: 4
 index: 13
-version: "2.8"
-last-updated: 2026-07-28
+version: "2.9"
+last-updated: 2026-07-29
 description: Shared .NET/Fable simulation, upstream FS.GG.Game compatibility, deterministic numerics, Elmish MVU browser tooling, replay verification, and delivery roadmap.
 related:
   - docs/simulation-core-architecture.md
@@ -54,6 +54,10 @@ Fable application now build together through a pinned, strict
 FSharp.Formatting pipeline. The default fsdocs template supplies navigation
 and search while supported extension points mount the versioned browser bundle
 with an integrity manifest and an explicit no-JavaScript fallback.
+The combined static artifact now publishes retained replay workers beneath
+immutable engine-identity paths, verifies retention and SHA-384 integrity
+through a publication manifest, rejects sensitive runtime material, and
+deploys from the locked build through GitHub Pages.
 
 ## Decision
 
@@ -1672,7 +1676,7 @@ ignored build outputs.
 - the pull-request workflow runs this complete documentation gate separately
   from the retained cross-runtime conformance gate.
 
-### [ ] 🟦 M12 — Versioned engine publication and GitHub Pages
+### [x] 🟩 M12 — Versioned engine publication and GitHub Pages
 
 **Unblocked by:** completed M7 replay format and completed M11 literate corpus
 integration.
@@ -1694,6 +1698,52 @@ integration.
 - ordinary replay browsing requires no privileged server;
 - no source map or package exposes live-match secrets; and
 - retained replay policy cannot outlive required engine artifacts.
+
+**Outcome:** Replay loading now decodes the bounded package header before
+worker activation and selects only an exact engine identity and replay-format
+pair from the retained catalog. The current format-v1 worker is emitted below
+its complete 32-byte engine identity instead of the mutable application path;
+an unlisted engine produces an explicit unsupported-replay result without
+silently invoking the current worker.
+
+The combined fsdocs/Vite build copies the retained engine tree into the static
+site and creates `sir-pages-publication-v1`. That manifest records the static
+hosting contract, application assets, supported replay formats, retention
+policy, immutable worker paths, byte lengths, and SHA-384 integrity. The build
+fails when the source catalog, compiled selector, Vite path, manifest, or
+artifact differs; when a supported replay format has no retained engine; or
+when the public output contains source maps, replay packages, WASM modules,
+symbols, package lockfiles, or environment files.
+
+The dedicated Pages workflow performs the same pinned .NET, Node, Fable, Vite,
+and FSharp.Formatting build, uploads only `artifacts/site`, and deploys it
+through the `github-pages` environment. Browser smoke and accessibility gates
+prove the generated application mount, live verification announcement,
+control labels, named regions, fallback, and static operation without a
+privileged service.
+
+**Evidence:**
+
+- [S.I.R.#60](https://github.com/EHotwagner/S.I.R./pull/60) introduced exact
+  retained-engine selection, immutable publication paths, the combined
+  publication manifest, security/retention/accessibility gates, the Pages
+  deployment workflow, and this roadmap transition;
+- `src/SIR.Client/EngineCatalog.fs`, `src/SIR.Client.Web/Runner.fs`, and
+  `src/SIR.Client.Web/Worker.fs` select the engine before worker activation,
+  preserve the format-v1 worker contract, and explicitly reject unavailable
+  identities;
+- `config/engine-publication.json`,
+  `scripts/generate-publication-manifest.mjs`, and
+  `scripts/verify-docs.mjs` keep the runtime catalog, output paths, replay
+  policy, artifact existence, integrity, and public-artifact exclusions under
+  one failing build gate;
+- `tests/SIR.Client.Tests/Program.fs` round-trips the retained format-v1
+  package fixture, proves its exact bundle selection, and proves a missing
+  engine cannot fall forward;
+- `scripts/smoke-docs.mjs` and `scripts/test-docs-accessibility.mjs` exercise
+  the generated Pages document and mounted production application; and
+- `.github/workflows/pages.yml` builds the locked combined artifact and
+  deploys it through GitHub's static Pages artifact contract.
 
 ### [ ] 🟨 M13 — Full match replay qualification
 
