@@ -39,8 +39,11 @@ let main arguments =
 
                 failwith "Simulation conformance failed."
             | None ->
+                let replay = ReplayFixtures.evaluate ()
+
                 [ NumericFixtures.canonicalBytes numeric
-                  SimulationFixtures.canonicalBytes simulation ]
+                  SimulationFixtures.canonicalBytes simulation
+                  replay ]
                 |> SIR.Domain.CanonicalEncoding.concatenate
                 |> NumericFixtures.hex
                 |> printfn "%s"
@@ -76,8 +79,17 @@ let main arguments =
                 (NumericFixtures.hex actual))
 
         0
+    | [ "--print-replay-evidence" ] ->
+        let packageBytes = ReplayFixtures.canonicalPackageBytes ()
+        let replayVector = ReplayFixtures.evaluate ()
+
+        printfn "package-bytes=%d" packageBytes.Length
+        printfn "package-sha256=%s" (NumericFixtures.hex replayVector[0..31])
+        printfn "final-state-sha256=%s" (NumericFixtures.hex replayVector[32..63])
+        printfn "perspective-package-sha256=%s" (NumericFixtures.hex replayVector[64..95])
+        0
     | _ ->
         eprintfn
-            "Usage: conformance [--inject-divergence FIXTURE | --inject-simulation-divergence PHASE | --print-simulation-oracle]"
+            "Usage: conformance [--inject-divergence FIXTURE | --inject-simulation-divergence PHASE | --print-simulation-oracle | --print-replay-evidence]"
 
         2
