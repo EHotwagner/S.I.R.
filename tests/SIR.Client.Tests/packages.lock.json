@@ -12,13 +12,31 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[10.1.302, 10.1.302]",
-          "SIR.Domain": "[1.0.0, )"
+          "SIR.Domain": "[1.0.0, )",
+          "SIR.Simulation": "[1.0.0, )"
         }
       },
       "sir.domain": {
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[10.1.302, 10.1.302]"
+        }
+      },
+      "sir.simulation": {
+        "type": "Project",
+        "dependencies": {
+          "FS.GG.Game.Core": "[0.13.0, 0.13.0]",
+          "FSharp.Core": "[10.1.302, 10.1.302]",
+          "SIR.Domain": "[1.0.0, )"
+        }
+      },
+      "FS.GG.Game.Core": {
+        "type": "CentralTransitive",
+        "requested": "[0.13.0, 0.13.0]",
+        "resolved": "0.13.0",
+        "contentHash": "h4IVQKlYkhOOLO9bPgrR6JsoPKBH3cozfO+qgk/gr67Tel02dvHPBe4buIs3L4Hq+fDwwDXA/qDFmis8qQiJKA==",
+        "dependencies": {
+          "FSharp.Core": "10.1.302"
         }
       }
     }

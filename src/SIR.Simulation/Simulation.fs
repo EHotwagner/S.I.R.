@@ -73,6 +73,10 @@ type TickResult =
       StateDigest: byte array
       Checkpoints: PhaseCheckpoint list }
 
+/// Bounded authoritative rules that may be varied by a derived design scenario.
+type SimulationRules =
+    { AttackPower: BoundedInt32 }
+
 /// Deterministic construction and execution of the minimal shared slice.
 [<RequireQualifiedAccess>]
 module Simulation =
@@ -85,6 +89,9 @@ module Simulation =
         | Error error -> failwithf "Invalid minimal-slice state: %A" error
 
     let private health value = BoundedInt32.create 0 100 value |> required
+
+    let defaultRules =
+        { AttackPower = health 25 }
 
     let private cell col row: Cell = { Col = col; Row = row }
 
@@ -258,7 +265,7 @@ module Simulation =
             | _ -> current, events)
         |> fun (next, events) -> next, List.rev events
 
-    let private attackPhase state inputs =
+    let private attackPhase rules state inputs =
         let attacks =
             inputs
             |> List.choose (function
@@ -272,7 +279,7 @@ module Simulation =
                 Set.contains (attackerId, targetId) current.Observations
                 && chebyshevDistance attacker.Cell target.Cell <= 1L
                 ->
-                let damage = health 25
+                let damage = rules.AttackPower
 
                 let remaining =
                     BoundedInt32.subtractSaturating target.Health damage
@@ -281,7 +288,13 @@ module Simulation =
                 let damaged = { target with Health = remaining }
 
                 replaceUnit damaged current,
-                AttackResolved(attackerId, targetId, 25, BoundedInt32.value remaining) :: events
+                AttackResolved(
+                    attackerId,
+                    targetId,
+                    BoundedInt32.value damage,
+                    BoundedInt32.value remaining
+                )
+                :: events
             | _ -> current, events)
         |> fun (next, events) -> next, List.rev events
 
@@ -376,7 +389,7 @@ module Simulation =
               eventsBytes checkpoint.Events ]
 
     /// Executes one tick from stable phase inputs and commits each phase as a deterministic batch.
-    let runTick (state: SimulationState) (journal: KernelInput list) =
+    let runTickWithRules rules (state: SimulationState) (journal: KernelInput list) =
         let canonicalInputs = journal |> List.distinct |> List.sortWith inputCompare
         let nextTick = state.Tick + 1
 
@@ -397,7 +410,8 @@ module Simulation =
               State = observationState
               Events = throughObservation }
 
-        let attackState, attackEvents = attackPhase observationState canonicalInputs
+        let attackState, attackEvents =
+            attackPhase rules observationState canonicalInputs
         let allEvents = throughObservation @ attackEvents
 
         let attackCheckpoint =
@@ -426,3 +440,7 @@ module Simulation =
               observationCheckpoint
               attackCheckpoint
               commitCheckpoint ] }
+
+    /// Executes the canonical rules used by replay and authoritative hosts.
+    let runTick state journal =
+        runTickWithRules defaultRules state journal

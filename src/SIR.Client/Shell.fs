@@ -98,6 +98,11 @@ type WorkerState =
 
 type ParameterPatch = Map<string, int32>
 
+type LabState =
+    { Scenario: DesignScenario option
+      Report: LabReport option
+      ValidationError: string option }
+
 type Model =
     { Source: SourceState
       Mode: RunMode
@@ -106,6 +111,7 @@ type Model =
       Selection: SelectionState
       Inspection: InspectionProjection option
       Patch: ParameterPatch
+      Lab: LabState
       Worker: WorkerState
       ActiveOperation: OperationId option
       NextOperation: int32
@@ -116,6 +122,8 @@ type RunnerRequest =
     | Advance of currentTick: int32 * tickCount: int32 * finalTick: int32
     | Seek of targetTick: int32 * finalTick: int32
     | Fork of derivedIdentity: string * patch: ParameterPatch
+    | LoadScenario of scenarioIdentity: string
+    | RunExperiment of scenarioIdentity: string * patch: ParameterPatch * sweepParameter: string option
     | Cancel
 
 type RunnerClaim =
@@ -128,6 +136,8 @@ type RunnerResponse =
     | RunnerProgress of tick: int32 * completedBatches: int32 * InspectionProjection
     | Progressed of tick: int32 * InspectionProjection
     | Forked of derivedIdentity: string
+    | LoadedScenario of ReplayMetadata * DesignScenario * LabReport * InspectionProjection
+    | ExperimentCompleted of derivedIdentity: string * LabReport
     | RunnerUnsupported of reason: string
     | RunnerDiverged of tick: int32 * phase: string * detail: string
     | RunnerFailed of reason: string
@@ -146,6 +156,8 @@ type Msg =
     | EventSelected of int32 option
     | FormulaSelected of string option
     | ParameterEdited of name: string * value: int32
+    | ScenarioSelected of scenarioIdentity: string
+    | SweepRequested of parameter: string
     | CancelRequested
     | WorkerStarted
     | WorkerTerminated of reason: string
@@ -192,6 +204,10 @@ module Shell =
               Formula = None }
           Inspection = None
           Patch = Map.empty
+          Lab =
+            { Scenario = None
+              Report = None
+              ValidationError = None }
           Worker = WorkerStarting
           ActiveOperation = None
           NextOperation = 1
@@ -308,6 +324,36 @@ module Shell =
                 Worker = WorkerReady
                 Announcement = "Sandbox fork created. Verification no longer applies." }
             |> stopOperation
+        | LoadedScenario(metadata, scenario, report, inspection) ->
+            { model with
+                Source = Loaded metadata
+                Mode = ScenarioSandbox metadata.SourceIdentity
+                Verification = SandboxDerived metadata.SourceIdentity
+                Playback =
+                    { model.Playback with
+                        CurrentTick = 0
+                        FinalTick = metadata.FinalTick
+                        IsPlaying = false }
+                Inspection = Some inspection
+                Patch = Map.empty
+                Lab =
+                    { Scenario = Some scenario
+                      Report = Some report
+                      ValidationError = None }
+                Worker = WorkerReady
+                Announcement = "Design scenario loaded as an editable sandbox." }
+            |> stopOperation
+        | ExperimentCompleted(identity, report) ->
+            { model with
+                Mode = SandboxFork identity
+                Verification = SandboxDerived identity
+                Lab =
+                    { model.Lab with
+                        Report = Some report
+                        ValidationError = None }
+                Worker = WorkerReady
+                Announcement = "Sandbox comparison completed. Results are exploratory evidence." }
+            |> stopOperation
         | RunnerUnsupported reason ->
             { model with
                 Source = rejectSource reason model.Source
@@ -354,6 +400,10 @@ module Shell =
                     Verification = Loading
                     Inspection = None
                     Patch = Map.empty
+                    Lab =
+                        { Scenario = None
+                          Report = None
+                          ValidationError = None }
                     Worker = WorkerBusy 0
                     Playback =
                         { model.Playback with
@@ -407,6 +457,27 @@ module Shell =
             { model with
                 Selection = { model.Selection with Formula = formula } },
             []
+        | ScenarioSelected scenarioIdentity ->
+            let loading =
+                { model with
+                    Source = Reading(scenarioIdentity + ".sir-scenario")
+                    Mode = NoRun
+                    Verification = Loading
+                    Inspection = None
+                    Patch = Map.empty
+                    Lab =
+                        { Scenario = None
+                          Report = None
+                          ValidationError = None }
+                    Worker = WorkerBusy 0
+                    Playback =
+                        { model.Playback with
+                            CurrentTick = 0
+                            FinalTick = 0
+                            IsPlaying = false }
+                    Announcement = "Loading design scenario " + scenarioIdentity + "." }
+
+            beginOperation (LoadScenario scenarioIdentity) loading
         | ParameterEdited(name, value)
             when
                 match model.Mode with
@@ -419,16 +490,49 @@ module Shell =
             let patch = model.Patch |> Map.add name value
             let identity = derivedIdentity model patch
 
-            let forked =
-                { model with
-                    Patch = patch
-                    Mode = SandboxFork identity
-                    Verification = SandboxDerived identity
-                    Playback = { model.Playback with IsPlaying = false }
-                    Announcement =
-                        "Parameter edited. This run is now a sandbox fork." }
+            match model.Lab.Scenario with
+            | Some scenario ->
+                match Lab.validate scenario patch with
+                | Error error ->
+                    { model with
+                        Patch = patch
+                        Lab = { model.Lab with ValidationError = Some error }
+                        Announcement = "Parameter validation failed: " + error },
+                    []
+                | Ok _ ->
+                    let forked =
+                        { model with
+                            Patch = patch
+                            Mode = SandboxFork identity
+                            Verification = SandboxDerived identity
+                            Playback = { model.Playback with IsPlaying = false }
+                            Lab = { model.Lab with ValidationError = None }
+                            Announcement =
+                                "Parameter edited. This run is now a sandbox fork." }
 
-            beginOperation (Fork(identity, patch)) forked
+                    beginOperation
+                        (RunExperiment(scenario.Identity, patch, None))
+                        forked
+            | None ->
+                let forked =
+                    { model with
+                        Patch = patch
+                        Mode = SandboxFork identity
+                        Verification = SandboxDerived identity
+                        Playback = { model.Playback with IsPlaying = false }
+                        Announcement =
+                            "Parameter edited. This run is now a sandbox fork." }
+
+                beginOperation (Fork(identity, patch)) forked
+        | SweepRequested parameter ->
+            match model.Lab.Scenario, model.Lab.ValidationError with
+            | Some scenario, None ->
+                beginOperation
+                    (RunExperiment(scenario.Identity, model.Patch, Some parameter))
+                    { model with
+                        Worker = WorkerBusy 0
+                        Announcement = "Running deterministic parameter sweep." }
+            | _ -> model, []
         | CancelRequested ->
             let effects =
                 model.ActiveOperation
@@ -458,7 +562,8 @@ module Shell =
         | TogglePlayback
         | StepForward
         | SeekRequested _
-        | ParameterEdited _ ->
+        | ParameterEdited _
+        | SweepRequested _ ->
             model, []
 
     let playbackTick model =

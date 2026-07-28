@@ -29,6 +29,13 @@ let private emptyProjection tick =
       Checkpoints = []
       PerspectiveHash = None }
 
+let private scenarioMetadata scenario report =
+    { SourceName = scenario.Identity + ".sir-scenario"
+      SourceIdentity = report.Comparison.Baseline.ResultIdentity
+      EngineIdentity = scenario.EngineIdentity
+      FinalTick = 1
+      Kind = DesignScenario }
+
 let private inputSummary input =
     match input with
     | Move(unitId, destination) ->
@@ -303,6 +310,30 @@ let private execute operation request =
                 post operation (Progressed(tick, projectionAt tick package))
             | None -> post operation (RunnerFailed "no replay is loaded in the worker")
         | Fork(identity, _) -> post operation (Forked identity)
+        | LoadScenario scenarioIdentity ->
+            match Lab.tryScenario scenarioIdentity with
+            | None -> post operation (RunnerFailed("unknown design scenario: " + scenarioIdentity))
+            | Some scenario ->
+                match Lab.run scenario Map.empty None with
+                | Error error -> post operation (RunnerFailed error)
+                | Ok report ->
+                    let metadata = scenarioMetadata scenario report
+                    post operation (
+                        LoadedScenario(metadata, scenario, report, emptyProjection 0)
+                    )
+        | RunExperiment(scenarioIdentity, patch, sweepParameter) ->
+            match Lab.tryScenario scenarioIdentity with
+            | None -> post operation (RunnerFailed("unknown design scenario: " + scenarioIdentity))
+            | Some scenario ->
+                match Lab.run scenario patch sweepParameter with
+                | Error error -> post operation (RunnerFailed error)
+                | Ok report ->
+                    post operation (
+                        ExperimentCompleted(
+                            report.Comparison.Fork.ResultIdentity,
+                            report
+                        )
+                    )
         | Cancel -> cancelled <- cancelled |> Set.add (OperationId.value operation)
     }
 
