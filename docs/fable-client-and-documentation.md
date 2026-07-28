@@ -1044,29 +1044,43 @@ rollout order are canonical.
 - the upstream producer and downstream consumer criteria are separate; and
 - unresolved implementation parameters remain visible.
 
-### [ ] 🟦 M2 — Upstream compatibility proposal
+### [x] 🟩 M2 — Upstream compatibility proposal
 
 **Owner:** `FS.GG.Game`
 
-**Deliverables:**
+**Outcome:** `FS.GG.Game` accepted a bounded, falsifiable compatibility
+proposal. The existing `FS.GG.Game.Core` package remains the single producer
+artifact and gains a supported Fable source view through `Fable.Package.SDK`.
+Compatibility is graded per stable function as `LockstepExact`, `Portable`, or
+`DotNetOnly`; exact claims require shared canonical-byte fixtures under pinned
+.NET and Fable/Node toolchains.
 
-- receiving issue with `Owner`, `Consumer`, `Paths`, dependencies, old/new
-  semantics, acceptance criteria, version policy, and rollout order;
-- function-level compatibility-profile proposal;
-- package-layout options;
-- CI fixture format proposal; and
-- Coordination-board and ADR decision where required.
+The selected spike covers `Cell`, `Edges.edgeBetween`, one integer LOS
+operation, one bounded pathfinding operation, and a clean consumer that
+restores only the packed artifact. Permanent sibling references, copied
+algorithms, and a second public package without a new decision are rejected.
 
-**Acceptance:**
+**Evidence:**
 
-- upstream maintainers accept or amend the scope;
-- one package/source strategy is selected for a bounded spike;
-- no permanent source-project dependency is proposed; and
-- producer publication is sequenced before S.I.R. adoption.
+- receiving request
+  [FS.GG.Game#526](https://github.com/FS-GG/FS.GG.Game/issues/526) records
+  owner, consumer, paths, dependencies, old/new semantics, producer and
+  consumer acceptance, version policy, and rollout;
+- the accepted
+  [upstream proposal](https://github.com/FS-GG/FS.GG.Game/blob/main/docs/reports/2026-07-28-fable-lockstep-compatibility-proposal.md)
+  records the function profile, package alternatives, canonical fixture format,
+  clean-consumer test, and CI stages;
+- org
+  [ADR-0069](https://github.com/FS-GG/.github/blob/main/docs/adr/0069-fable-lockstep-is-a-profiled-game-core-package-contract.md)
+  makes the cross-repository package/profile decision durable; and
+- the request is scheduled on the FS-GG Coordination board as
+  `fs-gg-game-fable-lockstep`, phase `P6 Game`, status `Ready`.
 
-### [ ] 🟨 M3 — Upstream Fable packaging and compilation spike
+Producer publication remains sequenced before registry activation and S.I.R.
+adoption. The receiving issue stays open for M3/M4 implementation; completing
+this proposal milestone does not claim that a function is already qualified.
 
-**Blocked by:** M2.
+### [ ] 🟦 M3 — Upstream Fable packaging and compilation spike
 
 **Purpose:** retire packaging and compiler uncertainty before broad conversion.
 
