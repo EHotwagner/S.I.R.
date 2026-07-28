@@ -1570,6 +1570,9 @@ can be promoted directly into a permanent regression fixture.
 
 **Evidence:**
 
+- [S.I.R.#58](https://github.com/EHotwagner/S.I.R./pull/58) introduced the
+  shared-kernel laboratory, worker operations, comparison UI, promoted
+  fixture, conformance gates, and this roadmap transition;
 - `src/SIR.Client/Lab.fs` owns the fixed catalog, typed validation,
   shared-kernel experiment runner, comparison and sweep model, result
   identities, and reproducible export format;
