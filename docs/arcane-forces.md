@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Arcane Civilization Forces
+category: Reference
+categoryindex: 5
+index: 19
 status: accepted
 decision-status: canonical
 document-type: living-content

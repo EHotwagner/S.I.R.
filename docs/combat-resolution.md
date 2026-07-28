@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Combat Resolution Architecture
+category: Design
+categoryindex: 4
+index: 15
 status: proposed
 document-type: living-design
 version: "0.6"

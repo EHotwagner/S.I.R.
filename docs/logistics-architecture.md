@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Logistics Architecture
+category: Design
+categoryindex: 4
+index: 27
 status: proposed
 document-type: living-design
 version: "0.1"

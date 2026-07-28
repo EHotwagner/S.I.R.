@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Public gRPC Protocol Architecture
+category: Design
+categoryindex: 4
+index: 11
 status: accepted
 decision-status: canonical
 document-type: living-architecture

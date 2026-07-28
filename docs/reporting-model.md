@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Observation Reporting Model
+category: Design
+categoryindex: 4
+index: 31
 status: proposed
 document-type: living-design
 version: "0.3"

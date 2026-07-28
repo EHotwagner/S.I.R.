@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Technology Stack and FS.GG Integration
+category: Design
+categoryindex: 4
+index: 7
 status: proposed
 document-type: living-architecture
 version: "0.13"

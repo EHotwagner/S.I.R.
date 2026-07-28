@@ -98,6 +98,7 @@ for (const required of [
   "index.html",
   "deterministic-simulation.html",
   "interactive-rules-lab.html",
+  "research/rules-lab-prototype.html",
   "reference/index.html",
   "reference/sir-match-matchreplay.html",
   "content/fsdocs-search.js",
@@ -128,6 +129,23 @@ const matchApi = await readFile(
 );
 const searchIndex = JSON.parse(await readFile(resolve(site, "index.json"), "utf8"));
 
+if (/(?:>\s*Other\s*<)/.test(interactive)) {
+  throw new Error("The generated sidebar still exposes the uncurated Other section.");
+}
+
+for (const curatedPage of [
+  "game-vision.html",
+  "simulation-core-architecture.html",
+  "codebase-architecture.html",
+  "technology-stack.html",
+  "wasm-control-architecture.html",
+  "public-protocol-architecture.html",
+]) {
+  if (!interactive.includes(`/${curatedPage}`)) {
+    throw new Error(`The curated sidebar omitted ${curatedPage}.`);
+  }
+}
+
 if (!home.includes("https://ehotwagner.github.io/S.I.R./content/fsdocs-default.css")) {
   throw new Error("Generated links do not use the GitHub Pages project root.");
 }
@@ -153,9 +171,14 @@ if (!home.includes("fsdocs-search")) {
 
 if (
   !searchIndex.some((entry) => entry.uri.endsWith("/deterministic-simulation.html")) ||
-  !searchIndex.some((entry) => entry.uri.endsWith("/interactive-rules-lab.html"))
+  !searchIndex.some((entry) => entry.uri.endsWith("/interactive-rules-lab.html")) ||
+  !searchIndex.some((entry) =>
+    entry.uri.endsWith("/research/rules-lab-prototype.html"),
+  )
 ) {
-  throw new Error("The literate and interactive pages are missing from site search.");
+  throw new Error(
+    "The primary documentation or retained research archive is missing from site search.",
+  );
 }
 
 if (

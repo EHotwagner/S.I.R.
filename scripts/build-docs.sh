@@ -30,6 +30,8 @@ dotnet fsdocs build \
   --output "$site_output" \
   --properties Configuration=Release
 
+node scripts/prune-docs-navigation.mjs "$site_output"
+
 mkdir -p "$site_output/content/sir-client/v1"
 cp -R "$client_output/content/sir-client/v1/." \
   "$site_output/content/sir-client/v1/"

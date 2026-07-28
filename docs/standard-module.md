@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Standard Module and Commanding Without Code
+category: Design
+categoryindex: 4
+index: 21
 status: proposed
 document-type: living-design
 version: "0.2"

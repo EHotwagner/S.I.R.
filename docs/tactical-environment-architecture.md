@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Tactical Environment Architecture
+category: Design
+categoryindex: 4
+index: 17
 status: proposed
 document-type: living-design
 version: "0.1"

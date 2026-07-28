@@ -130,7 +130,7 @@ let private speedText speed =
 
 let private status model =
     match model.Verification with
-    | NotLoaded -> "No replay loaded", "status-neutral"
+    | NotLoaded -> "Ready — choose a scenario or load a replay", "status-neutral"
     | Loading -> "Loading replay", "status-loading"
     | BrowserKernelVerified ->
         "Verified browser-kernel replay", "status-verified"
@@ -506,37 +506,66 @@ let private sandbox model dispatch =
         ]
     ]
 
-let private scenarioCatalog dispatch =
+let private scenarioCatalog model dispatch =
     Html.section [
-        prop.className "panel catalog-panel"
+        prop.className "panel catalog-panel quick-start-panel"
         prop.ariaLabel "Design scenario catalog"
         prop.children [
-            Html.h2 "Design scenarios"
-            Html.p "Fixed, versioned inputs for reproducible rules experiments."
-            for scenario in Lab.catalog do
-                Html.article [
-                    prop.className "scenario-card"
-                    prop.children [
-                        Html.h3 scenario.Title
-                        Html.p scenario.Description
-                        Html.p [
-                            prop.className "identity"
-                            prop.text (
-                                scenario.Identity
-                                + " r"
-                                + string scenario.Revision
-                                + " · engine "
-                                + scenario.EngineIdentity.Substring(0, 12)
+            Html.p [ prop.className "eyebrow"; prop.text "No replay file required" ]
+            Html.h2 "Try an interactive scenario"
+            Html.p "Run a fixed example, edit its typed values, compare the fork with the immutable baseline, sweep either parameter, and export the result."
+            Html.div [
+                prop.className "scenario-grid"
+                prop.children [
+                    for scenario in Lab.catalog do
+                        let selected =
+                            model.Lab.Scenario
+                            |> Option.exists (fun current ->
+                                current.Identity = scenario.Identity)
+
+                        let defaults =
+                            scenario.Parameters
+                            |> List.map (fun parameter ->
+                                parameter.Label
+                                + " "
+                                + string parameter.DefaultValue)
+                            |> String.concat " · "
+
+                        Html.article [
+                            prop.className (
+                                if selected then
+                                    "scenario-card scenario-card-selected"
+                                else
+                                    "scenario-card"
                             )
+                            prop.children [
+                                Html.h3 scenario.Title
+                                Html.p scenario.Description
+                                Html.p [
+                                    prop.className "scenario-defaults"
+                                    prop.text defaults
+                                ]
+                                Html.p [
+                                    prop.className "identity"
+                                    prop.text (
+                                        scenario.Identity
+                                        + " r"
+                                        + string scenario.Revision
+                                    )
+                                ]
+                                button
+                                    (if selected then
+                                         "Run again"
+                                     else
+                                         "Run scenario")
+                                    ("Run design scenario " + scenario.Title)
+                                    false
+                                    (fun _ ->
+                                        dispatch (ShellMsg(ScenarioSelected scenario.Identity)))
+                            ]
                         ]
-                        button
-                            ("Load " + scenario.Title)
-                            ("Load design scenario " + scenario.Title)
-                            false
-                            (fun _ ->
-                                dispatch (ShellMsg(ScenarioSelected scenario.Identity)))
-                    ]
                 ]
+            ]
         ]
     ]
 
@@ -656,13 +685,13 @@ let view model dispatch =
                 Html.h1 "Replay and rules laboratory"
                 Html.p "Inspect deterministic replay state and compare reproducible sandbox experiments without granting this browser authority."
             ]
+            scenarioCatalog model dispatch
             statusView model
             workerStatus model
             Html.div [
                 prop.className "dashboard"
                 prop.children [
                     sourcePanel dispatch
-                    scenarioCatalog dispatch
                     controls model dispatch
                     inspector model dispatch
                     sandbox model dispatch

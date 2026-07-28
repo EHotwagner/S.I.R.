@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Risk-Based Magic System
+category: Design
+categoryindex: 4
+index: 35
 status: accepted
 decision-status: canonical
 document-type: living-design

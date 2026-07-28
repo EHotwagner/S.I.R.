@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Formations and Positional Referents
+category: Design
+categoryindex: 4
+index: 23
 status: proposed
 document-type: living-design
 version: "0.2"

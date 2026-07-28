@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Setting and Faction Architecture
+category: Reference
+categoryindex: 5
+index: 15
 status: proposed
 document-type: living-design
 version: "1.8"

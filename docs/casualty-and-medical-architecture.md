@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Casualty and Medical Architecture
+category: Design
+categoryindex: 4
+index: 25
 status: proposed
 document-type: living-design
 version: "0.2"

@@ -21,6 +21,12 @@ Changing a parameter creates a derived sandbox identity and permanently ends
 any verification claim for that run. Laboratory charts are projections of
 canonical integer results and are labeled as exploratory evidence.
 
+No replay file is required for the laboratory. Choose one of the scenario cards
+at the top of the application, run its fixed baseline, edit attack power or
+attack count, then sweep either parameter or export the reproducible result.
+The scenarios include short and sustained exchanges, one heavy strike, rapid
+chip damage, and both sides of the exact lethality threshold.
+
 <noscript>
   <div class="sir-status sir-status-warning">
     <strong>JavaScript is disabled.</strong>

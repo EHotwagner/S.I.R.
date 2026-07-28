@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Stakes and Reinforcement
+category: Design
+categoryindex: 4
+index: 39
 status: accepted
 decision-status: canonical
 document-type: living-design
