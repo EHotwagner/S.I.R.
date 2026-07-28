@@ -1,0 +1,60 @@
+{
+  "schema": "sir-fable-client-baseline-v1",
+  "replay": {
+    "formatVersion": 1,
+    "encoding": "canonical-binary-little-endian",
+    "compression": "none",
+    "stateHash": "sha-256",
+    "eventHash": "sha-256",
+    "hashTree": "none",
+    "limits": {
+      "maxPackageBytes": 1048576,
+      "maxInputs": 16384,
+      "maxWasmOutputs": 16384,
+      "maxCheckpoints": 4096,
+      "maxPerspectiveFrames": 65536,
+      "maxUnits": 4096,
+      "maxEdges": 16384,
+      "maxObservations": 65536
+    }
+  },
+  "numerics": {
+    "fixedPointScale": 10000,
+    "rounding": "nearest-ties-away-from-zero",
+    "overflow": "saturating-int32"
+  },
+  "browser": {
+    "workerProtocolVersion": 1,
+    "workerBatchTicks": 256,
+    "workerTopology": "one-dedicated-versioned-worker-for-the-active-engine",
+    "projectionCadence": "one-compact-projection-per-completed-batch",
+    "experimentExportSchema": "sir-lab-experiment-v1",
+    "smokeAndAccessibilityHarness": "happy-dom"
+  },
+  "publication": {
+    "assetIntegrity": "sha-384",
+    "retentionPolicy": "retain-engine-while-format-is-supported"
+  },
+  "upstream": {
+    "package": "FS.GG.Game.Core",
+    "version": "0.13.0",
+    "profile": "fs-gg-game-core-fable-lockstep-v1"
+  },
+  "toolchain": {
+    "dotnetSdk": "10.0.302",
+    "fable": "5.13.0",
+    "fsharpCore": "10.1.302",
+    "fsGgGameCore": "0.13.0",
+    "elmish": "5.0.2",
+    "elmishReact": "5.6.0",
+    "react": "19.2.8",
+    "vite": "8.1.5",
+    "node": "26.5.0",
+    "fsdocs": "22.1.0"
+  },
+  "futureProfiles": [
+    "production-checkpoint-cadence",
+    "public-replay-and-engine-retention-duration",
+    "subsystem-specific-fixed-point-scales-and-bounded-ranges"
+  ]
+}

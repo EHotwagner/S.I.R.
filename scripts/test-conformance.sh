@@ -8,6 +8,8 @@ export NUGET_PACKAGES="$task_tmp/nuget-packages"
 
 cd "$repo_root"
 
+node scripts/verify-fable-client-baseline.mjs
+
 search_fixed() {
   local pattern=$1
   local file=$2
