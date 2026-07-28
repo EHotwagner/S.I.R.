@@ -168,6 +168,7 @@ let private statusView model =
 
     Html.section [
         prop.className ("verification-banner " + className)
+        prop.ariaLabel "Replay verification status"
         prop.role.status
         prop.ariaLive.polite
         prop.children [

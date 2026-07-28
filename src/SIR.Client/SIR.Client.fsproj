@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <Compile Include="Lab.fs" />
+    <Compile Include="EngineCatalog.fs" />
     <Compile Include="Shell.fs" />
   </ItemGroup>
   <ItemGroup>

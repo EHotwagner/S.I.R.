@@ -3,6 +3,7 @@ module SIR.Client.Tests
 open System
 open System.IO
 open SIR.Client
+open SIR.Domain
 
 let private require condition message =
     if not condition then failwith message
@@ -34,6 +35,32 @@ let private projection tick =
 
 [<EntryPoint>]
 let main _ =
+    let retainedPackage: SIR.Simulation.ReplayPackage =
+        { FormatVersion = int32 SIR.Simulation.Replay.CurrentFormatVersion
+          EngineHash = EngineCatalog.Current.EngineHash
+          RulesetHash = CanonicalHash.sha256 [| 1uy |]
+          FullReplayAuthorized = false
+          Content = SIR.Simulation.PerspectivePlayback [] }
+
+    let decodedRetainedFixture =
+        retainedPackage
+        |> SIR.Simulation.Replay.encode
+        |> SIR.Simulation.Replay.decode SIR.Simulation.Replay.defaultLimits
+        |> Result.defaultWith (fun error ->
+            failwithf "The retained v1 fixture did not decode: %A" error)
+
+    require
+        (EngineCatalog.tryFind decodedRetainedFixture = Some EngineCatalog.Current)
+        "A retained replay did not select its exact engine bundle."
+
+    let missingPackage =
+        { retainedPackage with
+            EngineHash = CanonicalHash.sha256 [| 2uy |] }
+
+    require
+        (EngineCatalog.tryFind missingPackage = None)
+        "An unavailable engine silently selected a retained bundle."
+
     let initial = Shell.init ()
     let loading, effects =
         Shell.update (ReplayBytesSelected("fixture.sirr", [| 1uy |])) initial

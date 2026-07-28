@@ -1,11 +1,14 @@
 import { createHash } from "node:crypto";
-import { access, readFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { access, readFile, readdir } from "node:fs/promises";
+import { relative, resolve, sep } from "node:path";
 
 const site = resolve(process.argv[2] ?? "artifacts/site");
 const bundle = resolve(site, "content/sir-client/v1");
 const manifestPath = resolve(bundle, "asset-manifest.json");
 const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+const publication = JSON.parse(
+  await readFile(resolve(site, "publication-manifest.json"), "utf8"),
+);
 
 if (
   manifest.schema !== "sir-docs-assets-v1" ||
@@ -24,6 +27,73 @@ for (const asset of manifest.assets) {
   }
 }
 
+if (
+  publication.schema !== "sir-pages-publication-v1" ||
+  publication.hosting !== "static-github-pages"
+) {
+  throw new Error("The Pages publication manifest identity is invalid.");
+}
+
+for (const engine of publication.engines) {
+  if (!engine.workerPath.includes(engine.identity)) {
+    throw new Error(`Engine ${engine.version} does not have an immutable path.`);
+  }
+
+  const bytes = await readFile(resolve(site, engine.workerPath));
+  const integrity = `sha384-${createHash("sha384").update(bytes).digest("base64")}`;
+
+  if (bytes.byteLength !== engine.bytes || integrity !== engine.integrity) {
+    throw new Error(`Published engine integrity mismatch for ${engine.identity}.`);
+  }
+
+  const applicationBytes = await readFile(
+    resolve(site, publication.application.script),
+    "utf8",
+  );
+  if (
+    !applicationBytes.includes(engine.identity) ||
+    !applicationBytes.includes(engine.workerPath)
+  ) {
+    throw new Error(`The browser application cannot select engine ${engine.identity}.`);
+  }
+}
+
+for (const formatVersion of publication.replayRetentionPolicy.supportedFormatVersions) {
+  if (
+    !publication.engines.some((engine) =>
+      engine.replayFormatVersions.includes(formatVersion),
+    )
+  ) {
+    throw new Error(`Retained replay format ${formatVersion} has no engine artifact.`);
+  }
+}
+
+async function filesUnder(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const nested = await Promise.all(
+    entries.map(async (entry) => {
+      const path = resolve(directory, entry.name);
+      return entry.isDirectory() ? filesUnder(path) : [path];
+    }),
+  );
+  return nested.flat();
+}
+
+const publishedFiles = await filesUnder(site);
+const forbidden = publishedFiles.filter((path) =>
+  /(?:\.map|\.sirr|\.wasm|\.pdb|packages?\.lock\.json|package-lock\.json|\.env)$/i.test(
+    path,
+  ),
+);
+
+if (forbidden.length > 0) {
+  throw new Error(
+    `The Pages artifact exposes forbidden runtime/package material: ${forbidden
+      .map((path) => relative(site, path).split(sep).join("/"))
+      .join(", ")}`,
+  );
+}
+
 for (const required of [
   "index.html",
   "deterministic-simulation.html",
@@ -32,6 +102,8 @@ for (const required of [
   "content/fsdocs-search.js",
   "content/sir-client/v1/app.js",
   "content/sir-client/v1/styles.css",
+  "publication-manifest.json",
+  ".nojekyll",
 ]) {
   await access(resolve(site, required));
 }
@@ -90,5 +162,5 @@ if (
 }
 
 console.log(
-  `Documentation verification passed: ${manifest.assets.length} versioned assets, SHA-384 integrity, project-root links, evaluated .NET output, Fable mount, API reference, search, and no-JavaScript fallback.`,
+  `Documentation verification passed: ${manifest.assets.length} application assets, ${publication.engines.length} retained engine, SHA-384 integrity, retention coverage, safe static publication, project-root links, evaluated .NET output, Fable mount, API reference, search, and no-JavaScript fallback.`,
 );

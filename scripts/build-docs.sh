@@ -30,8 +30,12 @@ dotnet fsdocs build \
 mkdir -p "$site_output/content/sir-client/v1"
 cp -R "$client_output/content/sir-client/v1/." \
   "$site_output/content/sir-client/v1/"
+mkdir -p "$site_output/engines"
+cp -R "$client_output/engines/." "$site_output/engines/"
 
 node scripts/generate-docs-manifest.mjs \
   "$site_output/content/sir-client/v1"
+node scripts/generate-publication-manifest.mjs "$site_output"
 node scripts/verify-docs.mjs "$site_output"
 node scripts/smoke-docs.mjs "$site_output"
+node scripts/test-docs-accessibility.mjs "$site_output"
