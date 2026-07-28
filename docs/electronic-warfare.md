@@ -3,8 +3,8 @@ title: S.I.R. Electronic Warfare Architecture
 status: accepted
 decision-status: canonical
 document-type: living-design
-version: "1.1"
-last-updated: 2026-07-27
+version: "1.2"
+last-updated: 2026-07-28
 related:
   - docs/game-vision.md
   - docs/communications-network.md
@@ -334,8 +334,16 @@ every major capability needs evidence and a response.
 A magical command network still needs declared range, capacity, latency, an
 observable signature, a disruption mechanism, and an anchor or dependency that
 can be attacked. It does not need to be attacked by *the same* equipment.
-Whether human EW can degrade magical links at all, and what the human answer to
-an unjammable network is, remain open.
+The canonical arcane anchor network cannot be degraded by human EW. Whether
+other magical factions expose an electronic or magical disruption surface
+remains open.
+
+For the canonical arcane anchor network, legitimate unit observations and
+status reach the controlling caster on the next tick and caster commands reach
+anchored subordinates after a flat 20 ticks. It has no relay-hop latency and
+emits no radio traffic. Humans contest that advantage by finding and destroying
+anchors and casters, exploiting overload and breach signatures, and using the
+greater precision of electronic and optical sensing.
 
 The reverse also holds: an arcane force facing a human network needs some way to
 contest it, or human communications become an unassailable advantage.

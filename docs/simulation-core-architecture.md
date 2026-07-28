@@ -2,12 +2,13 @@
 title: S.I.R. Deterministic Simulation Core
 status: proposed
 document-type: living-design
-version: "0.7"
-last-updated: 2026-07-27
+version: "0.8"
+last-updated: 2026-07-28
 related:
   - docs/game-vision.md
   - docs/skirmish-development-plan.md
   - docs/technology-stack.md
+  - docs/cross-runtime-replay.md
   - docs/wasm-control-architecture.md
   - docs/combat-resolution.md
 ---
@@ -315,9 +316,24 @@ A match retains:
 Replay reconstructs from an initial or periodic snapshot and the ordered journal.
 Generated events and hashes verify reconstruction.
 
-Accepted WASM outputs can be stored for diagnosis, but authoritative
-verification must be able to re-execute the exact artifacts and compare the
-outputs under the pinned profile.
+Accepted, validated, and ordered WASM outputs are stored as replay-driving
+inputs. A non-Wasmtime replay host, including the Fable browser host, injects
+those outputs into the shared kernel rather than claiming to reproduce module
+execution. Authoritative verification re-executes the exact artifacts under the
+pinned profile and compares their outputs before reconstructing the kernel
+state.
+
+The authoritative F# kernel compiles from shared source for .NET and Fable.
+Both builds must produce exactly equal state and event digests from the same
+decoded snapshot and ordered kernel inputs. Periodic checkpoints permit seeking
+by restoring the nearest checkpoint and simulating forward.
+
+A full authorized replay can re-simulate the complete world. A
+player-perspective replay instead plays back recorded knowledge-filtered
+projections; it cannot reconstruct hidden world state. The canonical
+[Cross-Runtime Determinism and Browser Replay](cross-runtime-replay.md)
+decision defines the package, version binding, disclosure modes, WASM boundary,
+and conformance gate.
 
 A divergence report identifies at least:
 

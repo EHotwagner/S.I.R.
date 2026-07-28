@@ -5,7 +5,7 @@ document-type: reference
 category: Reference
 categoryindex: 5
 index: 9
-version: "0.1"
+version: "0.2"
 last-updated: 2026-07-28
 related:
   - docs/gameplay-reference.md
@@ -189,6 +189,17 @@ recovery.
 A **Ritual** is not a long individual spell. It is a site-bound cooperative
 action requiring a hard caster quorum.
 
+Every senior caster normally brings two or three persistent magical assistants.
+Assistants possess lesser spells and ritual abilities. They can prepare
+components and circles and contribute to maintenance, stability, interruption
+tolerance, or controlled shutdown.
+
+Minor workings may use one senior caster with assistants, and a standard ritual
+may use a complete caster cell. Major rituals and portals still require
+multiple senior casters. Assistants cannot replace required senior casters,
+remove the hard quorum, accelerate progress without bound, or erase HP, Strain,
+component, anchor-load, and breach costs.
+
 ```text
 prepare a site
         ↓
@@ -312,6 +323,10 @@ arcane knowledge receives an unreliable remote observation
         ↓
 ritual or portal may use that location lawfully
 ```
+
+The acquired observation reaches the attuned caster on the next authoritative
+tick. It pays no distance or relay delay while the attunement and supporting
+anchor relationship remain valid.
 
 Attunement does not steer the critter, improve its senses, make it arcane-owned,
 or expose hidden state. Facts age normally. Active attunement leaves evidence,

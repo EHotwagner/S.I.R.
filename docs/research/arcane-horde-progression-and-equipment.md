@@ -3,8 +3,8 @@ title: Arcane Horde Progression and Equipment Proposal
 status: proposed
 decision-status: non-canonical
 document-type: research
-version: "0.1"
-last-updated: 2026-07-27
+version: "0.2"
+last-updated: 2026-07-28
 related:
   - docs/arcane-forces.md
   - docs/arcane-spells.md
@@ -28,34 +28,44 @@ the canonical arcane rules. It is a proposal, not accepted content. Counts,
 named outcomes, species roles, equipment, and progression depth remain open
 until separately accepted.
 
+The later canonical decision establishes that every senior caster normally
+leads two or three persistent magical assistants. The proposal below therefore
+uses **caster** to mean senior caster unless stated otherwise. Assistant spell
+content and progression remain proposed, but their existence, normal cell size,
+lesser magical capability, and ritual-support role are settled in
+[Arcane Civilization Forces](../arcane-forces.md).
+
 ## Force hierarchy
 
-A representative arcane force might contain only three to six casters among
-scores of non-casters:
+A representative arcane force might contain only three to six senior casters
+among scores of non-casters:
 
 ```text
-caster circle
+senior caster circle
         ↓ intent, magic, rituals, and anchors
+caster cells with 2–3 magical assistants
+        ↓ lesser magic and ritual support
 orc captains and goblin bosses
         ↓ local interpretation and execution
 goblin screens, orc formations, and trolls
 ```
 
-One caster is the senior commander and the others lead major warbands, maintain
-anchors, perform individual magic, and contribute to rituals. One caster should
-not be required for every small formation. Orc captains, goblin bosses, troll
-handlers, and standard bearers execute prior intent and make bounded local
-decisions.
+One senior caster is the commander and the others lead major warbands, maintain
+anchors, perform individual magic, and contribute to rituals. Each normally has
+two or three persistent magical assistants. A senior caster should not be
+required for every small formation. Orc captains, goblin bosses, troll handlers,
+and standard bearers execute prior intent and make bounded local decisions.
 
 This is organization rather than mind control. Losing a caster removes magical
 capability, strategic replanning, and access to some anchored coordination; it
 does not make every subordinate passive. Conversely, mundane officers cannot
 cast, modify rituals, or fully replace a caster's authority.
 
-Rituals create a specific command risk. Assembling a quorum means gathering
-several of the army's scarce leaders at one exposed site and temporarily
-removing their ordinary spells and battlefield attention. A major ritual is
-therefore also a concentration and interruption of command.
+Rituals create a specific command risk. A minor working may use one complete
+caster cell, but assembling a major quorum means gathering several of the
+army's scarce senior leaders and their assistants at one exposed site and
+temporarily removing their ordinary spells and battlefield attention. A major
+ritual is therefore also a concentration and interruption of command.
 
 ## Caster identity
 

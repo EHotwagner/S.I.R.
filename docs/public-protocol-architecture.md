@@ -3,8 +3,8 @@ title: S.I.R. Public gRPC Protocol Architecture
 status: accepted
 decision-status: canonical
 document-type: living-architecture
-version: "0.2"
-last-updated: 2026-07-25
+version: "0.3"
+last-updated: 2026-07-28
 related:
   - docs/game-vision.md
   - docs/technology-stack.md
@@ -12,6 +12,7 @@ related:
   - docs/research/public-transport-selection.md
   - docs/wasm-control-architecture.md
   - docs/mission-lifecycle.md
+  - docs/cross-runtime-replay.md
 ---
 
 # S.I.R. Public gRPC Protocol Architecture
@@ -198,6 +199,14 @@ Replay and diagnostic operations allowed by disclosure policy:
 
 Replay access is authorization- and knowledge-scoped. A completed match does not
 automatically expose opponent code or observations that remain campaign-secret.
+
+An authorized full replay package can contain complete snapshots, ordered
+kernel inputs, accepted WASM outputs, checkpoints, and hashes for deterministic
+browser re-simulation. A player-perspective package contains only the
+knowledge-filtered projections and messages the player may receive and is
+projection playback rather than complete re-simulation. The protocol labels
+the disclosure scope and verification level explicitly. See
+[Cross-Runtime Determinism and Browser Replay](cross-runtime-replay.md).
 
 ## Live-session envelopes
 

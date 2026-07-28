@@ -5,7 +5,7 @@ document-type: reference
 category: Reference
 categoryindex: 5
 index: 11
-version: "0.1"
+version: "0.3"
 last-updated: 2026-07-28
 related:
   - docs/gameplay-reference.md
@@ -158,7 +158,9 @@ status, sound, emission, and direction.
 
 Reports preserve observation time and provenance. They can arrive late, become
 stale, be aggregated, and be contradicted by newer evidence. Remembering an old
-observation does not grant current truth.
+observation does not grant current truth. Older observations arriving over a
+slower route cannot overwrite newer knowledge of the same event or contact;
+independent observations may still conflict.
 
 ## 🟦 Human communications
 
@@ -232,7 +234,19 @@ formations can restore service.
 
 ### Latency
 
-Delivery takes at least one tick. Every relay hop adds latency.
+🟩 Local squad-net delivery takes at least one tick. Every physical command-net
+leg takes 20 ticks, or one second at the authoritative simulation rate:
+
+```text
+command latency =
+    20 ticks × command-net legs
+  + queue, contention, and degradation delay
+```
+
+Leader-to-HQ and leader-to-leader are each one leg. Leader-to-relay-to-HQ is two
+legs. The rule applies equally to orders, reports, observations,
+acknowledgements, friendly status, and player-defined messages. Reports do not
+receive an instantaneous upstream exception.
 
 Remote closed-loop direction is strictly slower than local reaction:
 
@@ -245,6 +259,10 @@ unit observes
 ```
 
 Compression can reduce volume but cannot eliminate round-trip distance.
+Headquarters therefore holds a delayed command picture. Reports carry
+observation and arrival ticks, source, provenance, identity, and route age. The
+interface may show that an order was sent immediately, but receipt or execution
+is known only after a delayed acknowledgement returns.
 
 ### Store and forward
 
@@ -282,6 +300,20 @@ terrain.
 
 Arcane local perception is proposed to detect vague presence and vitality
 through obstruction without producing human-quality exact identification.
+
+🟩 Arcane information timing is asymmetric:
+
+```text
+anchored observation or status → controlling caster = next tick
+controlling caster → anchored subordinate command   = 20 ticks
+```
+
+Upward observations accumulate no command-hop delay, including legitimate
+observations borrowed from an attuned critter. They retain the quality and
+limits of the original observer. Downward commands take one second flat within
+valid anchor influence, independent of distance. Arcane units and assistants do
+not form relay chains. Outside anchor influence, a unit receives no new command
+and operates on local judgement and prior intent.
 
 Arcane forces also use:
 
@@ -374,7 +406,7 @@ whole coordinated force rather than only the marginal arrivals.
 🟥 Still unresolved:
 
 - acquisition rates, decay, thresholds, sector angles, and transition times;
-- device range, power, attenuation, capacity, queue, and latency;
+- device range, power, attenuation, capacity, and queue;
 - bandwidth pool, flow rate, allocation exchange rates, and saturation curve;
 - jamming footprints and degradation;
 - report aggregation and traffic volume;

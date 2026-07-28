@@ -44,6 +44,7 @@ proposals, and known risks.
 |---|---|
 | [game-vision](docs/game-vision.md) | The authoritative vision. Start here. |
 | [simulation-core-architecture](docs/simulation-core-architecture.md) | Deterministic 20 Hz kernel, state, replay, parallelism |
+| [cross-runtime-replay](docs/cross-runtime-replay.md) | Upstream FS.GG.Game/Fable parity, deterministic numerics, Elmish rules lab, and versioned browser replay roadmap |
 | [combat-resolution](docs/combat-resolution.md) | Traces, cover, armor, wounds, suppression, engagement |
 | [tactical-environment-architecture](docs/tactical-environment-architecture.md) | Map construction, cover composition, verticality, destructibility |
 | [wasm-control-architecture](docs/wasm-control-architecture.md) | Module ABI, fuel, command bandwidth, standing doctrine |

@@ -2,8 +2,8 @@
 title: S.I.R. Observation Reporting Model
 status: proposed
 document-type: living-design
-version: "0.2"
-last-updated: 2026-07-27
+version: "0.3"
+last-updated: 2026-07-28
 related:
   - docs/game-vision.md
   - docs/communications-network.md
@@ -118,6 +118,38 @@ observation itself supports. The client and the player decide what it means.
 Provenance survives aggregation. A summary states what it was derived from and
 when its oldest constituent was observed, because a summary whose age is unknown
 is worse than no summary.
+
+## Transport delay and report ordering
+
+The command network applies the same canonical one-second-per-leg delay to
+reports, observations, orders, acknowledgements, status updates, and
+player-defined traffic. Reports receive no faster upstream path. A member's
+local report can reach its leader after the one-tick squad-net minimum, but
+every subsequent command-net leg costs 20 ticks.
+
+Headquarters and the player therefore receive a delayed command picture rather
+than privileged live state. Each delivered report carries at least:
+
+- its observation tick;
+- its arrival tick;
+- the original observer and sensor;
+- its report or event identity;
+- its provenance through aggregation; and
+- the command route or hop count needed to explain its age.
+
+Messages preserve order on one unchanged link, but different routes, queues, or
+reconnections can cause a newer observation to arrive before an older one. An
+older observation that arrives later is retained as history and cannot
+overwrite knowledge from a newer observation of the same event or contact.
+Reports from independent observers may conflict and remain separate evidence;
+the server does not manufacture a single reconciled truth.
+
+The interface must expose information age and provenance rather than presenting
+delayed data as current. Sending an order can be shown immediately, but receipt,
+execution, or completion becomes known only through an acknowledgement that
+travels back through the delayed network. Units evaluate an order against their
+current local situation when it arrives; delivery never rewinds simulation
+state.
 
 ## Reports cost what everything else costs
 

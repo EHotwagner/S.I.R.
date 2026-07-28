@@ -3,8 +3,8 @@ title: S.I.R. F# Codebase Architecture
 status: accepted
 decision-status: canonical
 document-type: living-architecture
-version: "0.3"
-last-updated: 2026-07-27
+version: "0.5"
+last-updated: 2026-07-28
 related:
   - docs/game-vision.md
   - docs/technology-stack.md
@@ -12,6 +12,7 @@ related:
   - docs/skirmish-development-plan.md
   - docs/wasm-control-architecture.md
   - docs/public-protocol-architecture.md
+  - docs/cross-runtime-replay.md
 ---
 
 # S.I.R. F# Codebase Architecture
@@ -43,6 +44,7 @@ src/
 ├── SIR.Protocol/
 ├── SIR.Server/
 ├── SIR.Client/
+├── SIR.Replay.Web/
 └── SIR.Tools/
 
 tests/
@@ -213,6 +215,30 @@ The client has no authoritative simulation dependency. It may reference
 `SIR.Protocol` and presentation-safe value types, but not use server-only state
 to reconstruct hidden information.
 
+### `SIR.Replay.Web`
+
+Owns the static Fable browser replay and interactive simulation surface:
+
+- compiles the shared deterministic `SIR.Domain` and `SIR.Simulation` source;
+- uses Elmish MVU from the first browser slice, with React rendering and a
+  typed F# view DSL;
+- decodes and validates version-matched replay packages;
+- injects recorded accepted WASM control outputs without claiming to reproduce
+  Wasmtime execution;
+- restores checkpoints, seeks, and reports first-divergence diagnostics;
+- plays knowledge-filtered projection packages when complete state is not
+  authorized; and
+- provides presentation and parameter controls that cannot alter the canonical
+  replay record.
+
+This project is an explicit replay host, not the live canonical client and not
+an authority. It does not reference `SIR.Wasm`, server internals, native
+transports, or hidden live-match state. Wire decoding maps untrusted replay data
+to validated shared-domain values before the kernel consumes it. Large replay
+and sweep execution crosses a typed browser-worker boundary; the Elmish model
+keeps bounded presentation projections rather than copying the full world into
+React state on every tick.
+
 ### `SIR.Tools`
 
 Owns developer and operator commands:
@@ -249,6 +275,8 @@ SIR.Protocol ───────────► SIR.Client ◄── FS.GG.Net
                                ▲
                                └──────── FS.GG.Rendering
 
+SIR.Domain + SIR.Simulation ───► SIR.Replay.Web ───► Fable + Elmish/browser
+
 Domain + Simulation + Wasm + Match + Protocol ───► SIR.Tools
 ```
 
@@ -259,7 +287,10 @@ The graph must remain acyclic. In particular:
 - `Protocol` does not reference `Server` or `Client`;
 - `Match` does not reference `Protocol` or a transport;
 - `Server` does not become a gameplay-rules assembly; and
-- `Client` does not reference `Simulation`, `Wasm`, or server internals.
+- the live `Client` does not reference `Simulation`, `Wasm`, or server
+  internals; and
+- `Replay.Web` may reference the shared simulation but not `Wasm`, `Match`,
+  `Server`, or privileged live services.
 
 ## Internal F# organization
 
@@ -359,6 +390,12 @@ conformance suites. They can test:
 Conformance does not promise support for modified servers. It makes the
 canonical contracts executable and auditable.
 
+The cross-runtime suite also compiles the shared kernel for .NET and Fable,
+runs identical canonical fixtures through both, and requires exact checkpoint,
+event, and final-state digests. It validates the browser-published bundle as
+well as the development JavaScript build. A mismatch reports the first
+divergent tick and phase.
+
 ### Performance tests
 
 Performance evidence is separate from correctness tests and cannot weaken
@@ -419,7 +456,8 @@ untested assumption.
    canonical scenario.
 6. Define `SIR.Protocol` and implement one FS.GG.Net transport end to end.
 7. Add the minimal FS.GG.Rendering client.
-8. Add determinism, protocol, and WASM conformance gates.
+8. Add determinism, protocol, WASM, and .NET/Fable parity conformance gates,
+   then publish the first version-bound browser replay bundle.
 9. Pass the 10-unit and then 50-unit-per-side performance gates before
    expanding combat content.
 10. Grow the slice system by system according to the skirmish development plan.

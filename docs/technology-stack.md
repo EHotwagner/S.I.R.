@@ -2,8 +2,8 @@
 title: S.I.R. Technology Stack and FS.GG Integration
 status: proposed
 document-type: living-architecture
-version: "0.11"
-last-updated: 2026-07-27
+version: "0.13"
+last-updated: 2026-07-28
 related:
   - docs/game-vision.md
   - docs/simulation-core-architecture.md
@@ -13,6 +13,7 @@ related:
   - docs/research/wasm-runtime-selection.md
   - docs/research/public-transport-selection.md
   - docs/public-protocol-architecture.md
+  - docs/cross-runtime-replay.md
 ---
 
 # S.I.R. Technology Stack and FS.GG Integration
@@ -42,6 +43,19 @@ development, and temporary project-reference testing practical. It does not
 make the current contents of a sibling checkout an implicit build dependency.
 Reproducible S.I.R. builds must select an explicit, coherent set of package
 versions or immutable commits.
+
+The deterministic domain and simulation kernel also target JavaScript through
+Fable. FSharp.Formatting supplies the literate documentation and generated
+site, and GitHub Pages hosts the static documentation, interactive experiments,
+and versioned browser replay bundles. This web surface is a design, testing,
+and replay host; it does not replace the authoritative .NET match host or
+select a live-client framework.
+
+The browser replay and rules-lab application uses Elmish MVU from its first
+implementation, with React rendering and a typed F# view DSL. Fable
+compatibility needed from `FS.GG.Game` is developed and released by the
+upstream repository as a versioned package contract. S.I.R. does not copy the
+framework algorithms or retain a permanent sibling source reference.
 
 ## Architectural composition
 
@@ -77,7 +91,10 @@ The intended project boundaries are:
 - persistence and operational adapters outside the match kernel;
 - a canonical client consuming the same public projections available to custom
   clients; and
-- test, scenario, replay, and benchmark projects exercising the headless core.
+- test, scenario, replay, and benchmark projects exercising the headless core;
+  and
+- a Fable browser replay host compiling the same authoritative domain and
+  simulation source without the native Wasmtime adapter.
 
 The domain and match kernel must not depend on rendering, audio, sockets,
 databases, process clocks, or client UI types. Network and client projects
@@ -147,6 +164,13 @@ The canonical
 [Public gRPC Protocol Architecture](public-protocol-architecture.md) defines
 the service split, session envelopes, sequencing, resume, projections,
 backpressure, and compatibility policy.
+
+Fable browser replay does not change the live transport decision. It downloads
+authorized, completed replay packages over ordinary static or replay-service
+delivery and runs the shared kernel locally. Exact behavior, historical engine
+bundle retention, and the distinction between kernel replay and authoritative
+WASM verification are defined by
+[Cross-Runtime Determinism and Browser Replay](cross-runtime-replay.md).
 
 ## FS.GG.Rendering and FS.GG.Audio integration
 
@@ -231,6 +255,9 @@ uncoordinated sibling edit.
 A technology integration is acceptable when:
 
 - authoritative tests produce identical hashes across repeated runs;
+- identical replay fixtures produce exact checkpoint, event, and final-state
+  digests in the .NET kernel, the Fable JavaScript test host, and the published
+  browser engine bundle;
 - adapters have focused golden and property tests;
 - cached and uncached spatial results agree;
 - network serialization round-trips every public contract and rejects unknown

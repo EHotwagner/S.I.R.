@@ -3,8 +3,8 @@ title: S.I.R. Arcane Spells
 status: accepted
 decision-status: canonical
 document-type: living-content
-version: "1.2"
-last-updated: 2026-07-27
+version: "1.3"
+last-updated: 2026-07-28
 related:
   - docs/magic-system.md
   - docs/arcane-forces.md
@@ -28,6 +28,13 @@ list. A spell is performed by one caster; a ritual requires a caster quorum at
 a prepared site, commits to geography, and competes for anchor capacity. The
 canonical ritual shapes are defined in
 [Arcane Civilization Forces](arcane-forces.md).
+
+This catalog describes senior-caster capability. Every senior caster normally
+has two or three persistent magical assistants with a bounded lesser repertoire
+and ritual-support abilities. Assistants do not automatically inherit this
+complete catalog, decisive senior spells, major ritual authority, or
+unrestricted anchor control. The exact assistant-eligible spell list remains
+content data.
 
 ## Utility first, and why
 

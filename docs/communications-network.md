@@ -3,8 +3,8 @@ title: S.I.R. Communications Network Architecture
 status: accepted
 decision-status: canonical
 document-type: living-design
-version: "1.2"
-last-updated: 2026-07-27
+version: "1.4"
+last-updated: 2026-07-28
 related:
   - docs/game-vision.md
   - docs/electronic-warfare.md
@@ -324,9 +324,43 @@ which is a better place for it.
 
 ## Delivery and latency
 
-Delivery is never instantaneous. A message sent on one tick arrives no earlier
-than the next tick boundary, consistent with the rule that nothing in the
-simulation resolves in zero time.
+Delivery is never instantaneous. The local squad net and the command net have
+different canonical timing:
+
+```text
+local squad-net delivery = at least 1 simulation tick
+
+command-net delivery =
+    20 ticks × traversed command-net legs
+  + queue, contention, and degradation delay
+```
+
+At the authoritative 20 Hz simulation rate, every command-net leg therefore
+costs one second. A leg is one physical transmission from one command-net node
+to the next. The sender and final recipient do not create additional processing
+charges, but an intermediate leader, vehicle, infrastructure node, or dedicated
+relay creates another leg when it retransmits.
+
+This rule follows the route rather than rank or message vocabulary:
+
+| Route | Command-net legs | Minimum command-net delay |
+|---|---:|---:|
+| Leader → HQ | 1 | 1 second |
+| Leader A → Leader B | 1 | 1 second |
+| Leader → relay → HQ | 2 | 2 seconds |
+| Leader A → Leader B → HQ | 2 | 2 seconds |
+| Leader → relay A → relay B → HQ | 3 | 3 seconds |
+
+A squad member and leader communicating directly over their local squad net pay
+only the one-tick local minimum. Crossing from that squad net onto the command
+net adds the command leg normally. Consequently, a direct member-report and
+HQ-order loop through a connected leader takes slightly more than two seconds
+before aggregation, decision, congestion, or reaction time.
+
+The command delay applies symmetrically to all traffic: orders, authoritative
+reports and observations, acknowledgements, friendly status updates, and
+player-defined payloads. Exempting reports would create an instantaneous
+surveillance backchannel even while orders remained delayed.
 
 Degradation adds ticks rather than probability wherever possible, because a
 delayed message is more interesting than a lost one and far easier to explain
@@ -335,7 +369,15 @@ afterwards. Loss remains available to capabilities that declare it.
 Ordering within a link is preserved. Ordering across links is not, so a message
 relayed by a longer path can arrive after a later message that took a shorter
 one — which is a legitimate source of confusion and must be representable rather
-than smoothed away.
+than smoothed away. Every authoritative report therefore preserves its
+observation tick, source, provenance, and arrival tick. An older observation
+that arrives later enters history but cannot overwrite knowledge derived from a
+newer observation of the same event or contact. Independent observers may still
+disagree; their evidence is not silently fused into invented truth.
+
+The sender knows immediately that it submitted traffic. It knows that a
+recipient received, accepted, executed, or completed an order only when the
+corresponding acknowledgement returns through the same delayed network.
 
 ## The network is not a puppet string
 
@@ -395,9 +437,9 @@ They will lose to a player whose force does not need telling.
 
 ### Relays trade reach against tightness of control
 
-Every hop adds latency. A squad at the end of a relay chain is one a commander
-can **direct but not micro**, because the round trip is too long for anything
-closed-loop.
+Every command-network leg adds one second. A squad at the end of a relay chain
+is one a commander can **direct but not micro**, because the round trip is too
+long for anything closed-loop.
 
 Extending a network therefore buys contact with distant elements at the price of
 their responsiveness to instruction. The further out a force reaches, the more
@@ -439,14 +481,18 @@ differ along declared axes:
 | Capacity | Throughput available to bandwidth and traffic |
 | Nets | Which nets the device can participate in |
 | Queue | Store-and-forward depth and expiry |
+| Transit | Whether the device can forward traffic between command links |
 
 Traffic is encrypted and authenticated as a matter of course and this is not a
 device option, for the reasons recorded in
 [Electronic Warfare](electronic-warfare.md).
 
 A personal set reaches within a squad. A leader's set reaches the command net. A
-relay is a device optimised for capacity and reach rather than portability. A
-vehicle can carry a larger set than a person.
+relay is a device optimized for materially greater range and capacity than a
+portable command set, rather than portability. This distinction is necessary:
+otherwise players could reproduce the relay role by daisy-chaining leaders
+without making a meaningful equipment choice. A vehicle can carry a larger set
+than a person.
 
 The established rules stand: succession does not create a device, a
 second-in-command may carry a redundant one, and a successor without one must
@@ -458,10 +504,10 @@ A relay extends or restores a path. It is an authoritative object with a
 position, and therefore something that can be found, jammed, captured, or
 destroyed.
 
-Relays chain, subject to declared limits, and each hop costs latency and is
-bounded by the weakest link in the chain. A relay network is a supply line for
-information, with the same properties: it must be established, it must be
-protected, and cutting it isolates everything behind it.
+Relays chain, subject to declared limits, and each command leg costs one second
+and is bounded by the weakest link in the chain. A relay network is a supply
+line for information, with the same properties: it must be established, it must
+be protected, and cutting it isolates everything behind it.
 
 Relays may be carried and deployed, mounted on vehicles, or found as
 infrastructure on the map. The last of these makes existing structures worth
@@ -491,16 +537,25 @@ declares range, capacity, latency, an observable signature, a disruption
 mechanism, and a dependency that can be attacked — the same contract, not the
 same equipment.
 
-Whether human electronic warfare can touch a magical network at all, and what
-the human answer is to one it cannot, remains open and is recorded in
+The canonical arcane case is not governed by human command-net timing.
+Legitimate anchored observations and status reach the controlling caster on the
+next tick, while a caster's command reaches an anchored subordinate after a
+flat 20 ticks. It has no relay chain; geography and anchor validity determine
+whether the relationship exists.
+
+Human electronic warfare cannot touch the canonical arcane anchor network.
+Humans answer it by locating and physically destroying anchors and casters,
+forcing overload or breach, leaving anchor influence, and exploiting their more
+precise conventional sensors. Whether other magical factions expose an
+electronic or magical disruption surface remains open and is recorded in
 [Electronic Warfare](electronic-warfare.md).
 
 ## Failure modes to avoid
 
 - Range as a bare radius, which makes terrain irrelevant to communications and
   wastes the spatial model already built.
-- Instantaneous delivery, which removes the delay that makes stale information
-  interesting.
+- Instantaneous human command-net delivery, which removes the delay that makes
+  stale information interesting.
 - Unbounded queues, which turn a reconnection into a free information dump with
   no cost.
 - Silent loss, where a message vanishes with no observable consequence and no
@@ -517,11 +572,11 @@ the human answer is to one it cannot, remains open and is recorded in
 
 ## Open parameters
 
-- Device ranges, powers, and capacities by class.
+- Device ranges, powers, capacities, and exact command-set-to-relay ratios by
+  class.
 - Attenuation per material and per edge type, and whether anything blocks
   outright.
 - How elevation modifies path attenuation.
-- Base delivery latency and the added latency per relay hop.
 - Queue depth and message expiry by device class.
 - Throughput accounting: whether payload bytes, message count, or both.
 - Relay chaining limits and deployment time.

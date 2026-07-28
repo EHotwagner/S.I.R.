@@ -3,8 +3,8 @@ title: S.I.R. Risk-Based Magic System
 status: accepted
 decision-status: canonical
 document-type: living-design
-version: "1.3"
-last-updated: 2026-07-27
+version: "1.4"
+last-updated: 2026-07-28
 related:
   - docs/game-vision.md
   - docs/setting-and-factions.md
@@ -262,6 +262,19 @@ civilization also uses **rituals**, which are not long spells: they require
 multiple casters to maintain a quorum at a prepared site and cannot be completed
 by one caster given more time.
 
+Every senior caster normally operates with two or three persistent magical
+assistants. Assistants can cast only a bounded lesser repertoire and contribute
+ritual preparation, maintenance, stability, interruption tolerance, or
+controlled shutdown. Exact lesser spells and contribution values are content
+data, but their supporting role is canonical.
+
+A minor working may use one senior caster and assistants, and a standard ritual
+may use a complete caster cell. A major ritual or portal still requires
+multiple senior casters as well as any assistant contribution it declares.
+Assistants never count as unrestricted replacements for required senior
+casters, cannot provide unlimited acceleration, and are not batteries that
+remove HP, Strain, breach, component, or anchor-capacity costs.
+
 Rituals are paid primarily through caster commitment, preparation time,
 components, exposure, and temporary anchor capacity. Whether participating also
 causes health expenditure or strain is deliberately open; those costs must not
@@ -396,7 +409,10 @@ individual spells: they require a caster quorum at a prepared site, commit to a
 geographical target or trigger, and use the culmination, prepared-trap, and
 portal shapes defined by the arcane faction contract. Controlled transit,
 deliberate goblin incursion, and catastrophic daemon breach are distinct portal
-contracts.
+contracts. Every senior caster normally has two or three persistent magical
+assistants with lesser spells and ritual-support abilities. Minor workings may
+use one caster cell, but major rituals and portals still require multiple senior
+casters; assistants cannot erase the system's ordinary costs or risks.
 
 Not settled: every numeric value, the resolution ordering noted above, and the
 prototype questions below.
