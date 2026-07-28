@@ -1,5 +1,41 @@
 # S.I.R.
 
+S.I.R. is a fast-paced, grid-based, real-time tactical skirmish game for large
+forces in a near-future world undergoing an incursion by monsters and magic.
+Players command rather than puppeteer: units execute player-supplied WebAssembly
+control logic on the authoritative server while humans direct squads, doctrine,
+intelligence, communications, and logistics.
+
+## Documentation
+
+The [published S.I.R. documentation](https://ehotwagner.github.io/S.I.R/) is
+the authoritative source for the game design, gameplay rules, architecture,
+implementation status, research, API reference, and development roadmap. The
+README is intentionally limited to repository orientation and build commands;
+project information belongs in the published documentation.
+
+Start with:
+
+- [Game vision](https://ehotwagner.github.io/S.I.R./game-vision.html) — the
+  authoritative living description of the intended game.
+- [Gameplay reference](https://ehotwagner.github.io/S.I.R./gameplay-reference.html)
+  — the indexed rules and content corpus.
+- [Codebase architecture](https://ehotwagner.github.io/S.I.R./codebase-architecture.html)
+  — solution structure, boundaries, and dependencies.
+- [Fable client and documentation architecture](https://ehotwagner.github.io/S.I.R./fable-client-and-documentation.html)
+  — shared .NET/Fable simulation, browser tooling, replay, and roadmap.
+- [Interactive replay and rules laboratory](https://ehotwagner.github.io/S.I.R./interactive-rules-lab.html)
+  — the browser-hosted replay inspector and balance laboratory.
+- [API reference](https://ehotwagner.github.io/S.I.R./reference/) — generated
+  documentation for the implemented F# libraries.
+
+Repository Markdown under `docs/` is the source used to generate that site.
+Use the published pages when reading or linking documentation so navigation,
+cross-references, evaluated examples, API pages, and interactive content remain
+available together.
+
+## Build and test
+
 The deterministic gameplay foundation is built from the root solution:
 
 ```bash
@@ -7,131 +43,32 @@ npm ci
 ./scripts/test-conformance.sh
 ```
 
-The conformance gate restores only pinned published packages, compiles the
-shared numeric fixtures for .NET and Fable/Node, compares their canonical byte
-vectors, qualifies exact-artifact Wasmtime replay, proves first-divergence
-reporting, and rejects floating-point source from authoritative projects.
+Build the complete documentation site locally with:
 
-A fast-paced, grid-based, **real-time tactical skirmish game** for large forces
-in a near-future world undergoing an incursion by monsters and magic.
+```bash
+npm ci
+./scripts/build-docs.sh
+```
 
-Each side fields roughly 50–100 units. The player commands rather than
-puppeteers: units execute player-supplied WebAssembly control logic on the
-authoritative server, while the human directs the wider battle through squads,
-doctrine, intelligence, communications, and logistics.
+Generated documentation is written beneath `artifacts/site/`. The conformance
+gate verifies the shared .NET/Fable kernel, authoritative replay qualification,
+browser application, worker protocol, and compatibility baseline.
 
-That division is the point. Delegating precise execution to code makes tactical
-rules practical that a human could not micro-manage in real time — directional
-awareness, reaction timing, fire discipline, flanking, ambush, and execution —
-so the game tests judgment and preparation rather than actions per minute.
+## Repository layout
 
-## Status
-
-**Foundation implementation.** This repository contains the design set, a
-self-contained gameplay reference corpus, the shared .NET/Fable deterministic
-kernel, browser replay and rules laboratory, a bounded authoritative Wasmtime
-match qualification host, and disposable measurement and balance spikes under
-[`spikes/`](spikes/). Numerical gameplay values remain explicitly marked as
-prototype parameters unless a document says otherwise.
-
-Documents carry a `status` of `proposed` or `accepted` in their front matter.
-`accepted` with `decision-status: canonical` marks a decision that later work
-should treat as settled.
-
-## The design set
-
-[`docs/game-vision.md`](docs/game-vision.md) is the authoritative living
-description of the intended game. Everything else derives from it.
-
-### Gameplay reference
-
-[`docs/gameplay-reference.md`](docs/gameplay-reference.md) is the indexed,
-self-contained gameplay corpus. It links the current units, classes, perks,
-weapons, equipment, formulas, magic, command and information rules, and complete
-testing evidence while color-labeling canonical rules, prototype values,
-proposals, and known risks.
-
-### Architecture
-
-| Document | Covers |
-|---|---|
-| [game-vision](docs/game-vision.md) | The authoritative vision. Start here. |
-| [simulation-core-architecture](docs/simulation-core-architecture.md) | Deterministic 20 Hz kernel, state, replay, parallelism |
-| [fable-client-and-documentation](docs/fable-client-and-documentation.md) | Shared F#/.NET/Fable kernel, interactive documentation, Elmish rules lab, and versioned browser replay roadmap |
-| [combat-resolution](docs/combat-resolution.md) | Traces, cover, armor, wounds, suppression, engagement |
-| [tactical-environment-architecture](docs/tactical-environment-architecture.md) | Map construction, cover composition, verticality, destructibility |
-| [wasm-control-architecture](docs/wasm-control-architecture.md) | Module ABI, fuel, command bandwidth, standing doctrine |
-| [control-abi](docs/control-abi.md) | Event catalog and action request kinds crossing the WASM boundary |
-| [standard-module](docs/standard-module.md) | Commanding without code: postures, overrides, balance baseline |
-| [formations-and-referents](docs/formations-and-referents.md) | Named positional referents, formations, objective knowledge |
-| [casualty-and-medical-architecture](docs/casualty-and-medical-architecture.md) | Casualty states, medical actions, evacuation |
-| [public-protocol-architecture](docs/public-protocol-architecture.md) | Canonical gRPC service split, sessions, projections |
-| [codebase-architecture](docs/codebase-architecture.md) | F# solution layout and dependency graph |
-| [technology-stack](docs/technology-stack.md) | .NET 10, FS.GG integration boundaries, adapters |
-| [logistics-architecture](docs/logistics-architecture.md) | Stockpiles, manifests, battlefield supply, write-back |
-| [communications-network](docs/communications-network.md) | Nets, signal paths, capacity, latency, devices, relays |
-| [reporting-model](docs/reporting-model.md) | What becomes a report, significance, aggregation, cost |
-| [electronic-warfare](docs/electronic-warfare.md) | Emission, jamming, interception, injection, counterplay |
-| [magic-system](docs/magic-system.md) | Risk-based casting, strain, breach, shattering |
-| [setting-and-factions](docs/setting-and-factions.md) | Setting, the diegetic System, faction contracts |
-| [mission-lifecycle](docs/mission-lifecycle.md) | Missions, bidding, extraction, campaign write-back |
-| [stakes-and-reinforcement](docs/stakes-and-reinforcement.md) | Mid-mission reinforcement, the stake pool, command capacity |
-| [skirmish-development-plan](docs/skirmish-development-plan.md) | Milestones, scenarios, scale gates |
-| [performance-budget](docs/performance-budget.md) | Tick cost centres, allocation, fallbacks, gates |
-| [wasm-invocation-spike](docs/research/wasm-invocation-spike.md) | Measured: invocation cost, scaling, stress, guarantees |
-| [perception-spike](docs/research/perception-spike.md) | Measured: LOS, acquisition, culling, verticality cost |
-| [movement-spike](docs/research/movement-spike.md) | Measured: reservation, conflict resolution, path search cadence |
-| [rules-lab](docs/research/rules-lab-prototype.md) | Executable fixed-state combat formulas, parameter sweeps, and balance invariants |
-| [visual-direction](docs/visual-direction.md) | Graphical language and tactical overlays |
-
-### Content
-
-| Document | Covers |
-|---|---|
-| [human-forces](docs/human-forces.md) | Squad, classes, weapons, armour, equipment |
-| [arcane-forces](docs/arcane-forces.md) | Anchored coordination, strain economy, casters and mass |
-| [arcane-spells](docs/arcane-spells.md) | The spell set, cost gradient, and what each denies |
-
-### Research
-
-Comparative research backing the above lives in [`docs/research/`](docs/research/),
-covering reference models, progression systems, squad command and succession,
-and the WASM runtime and public transport selections.
-
-## Foundational decisions
-
-- **F# on .NET 10**, using the [FS.GG](https://github.com/FS-GG) framework family.
-- **20 Hz fixed-step** authoritative simulation; matches target ~20 minutes.
-- **Grid-based**, 0.5 m cells, square `N×N` footprints, Chebyshev distance, with
-  thin structures modelled as semantic cell edges and multi-level terrain.
-- **Per-unit WebAssembly** control through direct Wasmtime embedding, with
-  metered fuel and a player-allocated command-bandwidth budget.
-- **Native gRPC** as the first public transport, contract-first from `.proto`.
-- **Server-authoritative knowledge filtering.** The canonical client holds no
-  gameplay privilege unavailable to a third-party client.
-
-## Spikes
-
-[`spikes/`](spikes/) holds disposable, information-gathering programs that
-answer a specific architectural question with measurement. They sit outside the
-canonical solution layout and are kept as evidence for the decisions they
-informed.
+- `src/` — shared domain, simulation, match, client, and browser projects.
+- `tests/` — .NET, Fable, match, and client conformance tests.
+- `docs/` — source content for the authoritative published documentation.
+- `scripts/` — locked build, conformance, publication, and verification gates.
+- `spikes/` — bounded research programs retained as supporting evidence.
 
 ## Contributing
 
-The design set is intended to drive implementation, not be replaced by it. A
-change that alters a canonical rule should say so explicitly and update every
-document that depends on it — the value of this repository is that its documents
-agree with one another.
+Changes to behavior, architecture, or status must update the relevant
+documentation source and pass both the conformance and documentation builds.
+The published documentation should remain complete and internally consistent;
+the README should link to it instead of duplicating canonical project details.
 
 ## License
 
-Licensed under the **GNU Affero General Public License v3.0**. See
-[LICENSE](LICENSE).
-
-The authoritative server is part of the AGPL-licensed project rather than a
-closed service alongside it. Independent third-party servers are encouraged but
-are not a supported compatibility target.
-
-FS.GG dependencies are MIT licensed, which is compatible with AGPL
-redistribution.
+Licensed under the [GNU Affero General Public License v3.0](LICENSE).
