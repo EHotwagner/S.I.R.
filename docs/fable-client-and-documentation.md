@@ -1430,6 +1430,9 @@ motion is respected.
 
 **Evidence:**
 
+- [S.I.R.#56](https://github.com/EHotwagner/S.I.R./pull/56) introduced the
+  shared shell, standalone browser host, locked build, accessibility smoke gate,
+  and this roadmap transition;
 - `src/SIR.Client/Shell.fs` contains the platform-neutral model, transition
   function, operation protocol, mode state, selection state, sandbox identity,
   and effect values;
