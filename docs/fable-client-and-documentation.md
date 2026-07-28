@@ -1291,6 +1291,8 @@ with SHA-256
 
 **Evidence:**
 
+- [S.I.R.#54](https://github.com/EHotwagner/S.I.R./pull/54) introduced the
+  shared slice, phase oracles, divergence gate, and roadmap transition;
 - `src/SIR.Simulation/Simulation.fs` contains the shared state, inputs, phase
   transitions, semantic-edge adapter, Chebyshev rule, LOS observation, attack,
   event encoding, and state encoding without rendering or network references;
