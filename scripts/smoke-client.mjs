@@ -20,11 +20,10 @@ const styles = await readFile(
 if (
   !styles.includes("#sir-replay-app{") ||
   !styles.includes("isolation:isolate") ||
-  !styles.includes(".app-shell>header") ||
-  !styles.includes("position:static")
+  styles.includes(".app-shell>header")
 ) {
   throw new Error(
-    "The production styles do not contain the documentation-layout containment fix.",
+    "The production styles do not contain the documentation-layout isolation or still contain the removed masthead overlay.",
   );
 }
 
@@ -56,14 +55,16 @@ const bundle = resolve(output, scriptMatch[1].replace(/^\.\//, ""));
 await import(pathToFileURL(bundle));
 await window.happyDOM.waitUntilComplete();
 
-const heading = window.document.querySelector("h1");
+const application = window.document.querySelector(
+  'main[aria-label="Replay and rules laboratory application"]',
+);
 const status = window.document.querySelector('[role="status"]');
 const fileInput = window.document.querySelector('input[type="file"]');
 const labelledButtons = [...window.document.querySelectorAll("button")].filter(
   (button) => button.getAttribute("aria-label"),
 );
 
-if (heading?.textContent !== "Replay and rules laboratory") {
+if (!application || application.querySelector("header, h1")) {
   throw new Error("The React replay shell did not mount.");
 }
 
@@ -105,7 +106,7 @@ if (
 }
 
 const scenarioButtons = [
-  ...catalog.querySelectorAll('button[aria-label^="Run design scenario"]'),
+  ...catalog.querySelectorAll('button[aria-label^="Simulate design scenario"]'),
 ];
 if (scenarioButtons.length !== 6) {
   throw new Error(`Expected 6 runnable scenarios, found ${scenarioButtons.length}.`);
@@ -114,7 +115,7 @@ if (scenarioButtons.length !== 6) {
 const heavyStrike = scenarioButtons.find(
   (button) =>
     button.getAttribute("aria-label") ===
-    "Run design scenario Single heavy strike",
+    "Simulate design scenario Single heavy strike",
 );
 heavyStrike?.click();
 await window.happyDOM.waitUntilComplete();
@@ -127,12 +128,31 @@ if (
   throw new Error("Selecting a scenario did not send a worker request.");
 }
 
-if (!labResults?.textContent.includes("Baseline and fork")) {
+if (
+  !labResults?.textContent.includes("Simulation result") ||
+  !labResults?.textContent.includes(
+    "Click “Simulate now” on any scenario above.",
+  )
+) {
   throw new Error("The laboratory comparison surface did not mount.");
 }
 
+const rulesData = window.document.querySelector(
+  '[aria-label="Rules data tables"]',
+);
+const rulesTables = rulesData?.querySelectorAll("table") ?? [];
+
+if (
+  rulesTables.length !== 7 ||
+  !rulesData?.textContent.includes("Point Man") ||
+  !rulesData?.textContent.includes("Anti-armor launcher") ||
+  !rulesData?.textContent.includes("Armored troll")
+) {
+  throw new Error("The unit, perk, weapon, armor, and equipment catalog is incomplete.");
+}
+
 console.log(
-  `Browser smoke passed: React mounted with ${scenarioButtons.length} runnable scenarios, ${labelledButtons.length} labelled controls, a worker-backed scenario action, laboratory comparison, layout containment, responsive inspectors, protocol status, and a live verification status.`,
+  `Browser smoke passed: React mounted without the duplicate masthead, exposed ${scenarioButtons.length} explicit simulation actions and an immediate-result panel, rendered ${rulesTables.length} rules-data tables, and sent the selected scenario to the worker.`,
 );
 
 window.happyDOM.close();

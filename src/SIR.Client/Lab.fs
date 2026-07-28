@@ -274,6 +274,15 @@ module Lab =
                   Sweep = sweep
                   EvidenceLabel = EvidenceLabel }
 
+    let attackFrames (report: LabReport) =
+        let parameters = report.Comparison.Fork.Input.Parameters
+        let attackPower = required "attack-power" parameters
+        let attackCount = required "attack-count" parameters
+
+        [ 0 .. attackCount ]
+        |> List.map (fun attack ->
+            attack, max 0 (100 - (attack * attackPower)))
+
     let export (report: LabReport) =
         let resultLines prefix (result: ExperimentResult) =
             [ prefix + ".result=" + result.ResultIdentity

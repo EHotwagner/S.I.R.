@@ -555,10 +555,10 @@ let private scenarioCatalog model dispatch =
                                 ]
                                 button
                                     (if selected then
-                                         "Run again"
+                                         "Simulate again"
                                      else
-                                         "Run scenario")
-                                    ("Run design scenario " + scenario.Title)
+                                         "Simulate now")
+                                    ("Simulate design scenario " + scenario.Title)
                                     false
                                     (fun _ ->
                                         dispatch (ShellMsg(ScenarioSelected scenario.Identity)))
@@ -594,20 +594,218 @@ let private resultTable (title: string) (result: ExperimentResult) =
         ]
     ]
 
+let private catalogTable
+    (label: string)
+    (headers: string list)
+    (rows: string list list)
+    =
+    Html.div [
+        prop.className "catalog-table-scroll"
+        prop.children [
+            Html.table [
+                prop.ariaLabel label
+                prop.children [
+                    Html.caption label
+                    Html.thead [
+                        Html.tr [
+                            for header in headers do
+                                Html.th header
+                        ]
+                    ]
+                    Html.tbody [
+                        for row in rows do
+                            Html.tr [
+                                for value in row do
+                                    Html.td value
+                            ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+
+let private rulesDataCatalog =
+    Html.section [
+        prop.id "rules-data-tables"
+        prop.className "panel rules-data-panel"
+        prop.ariaLabel "Rules data tables"
+        prop.children [
+            Html.p [ prop.className "eyebrow"; prop.text "Inspectable rules catalog" ]
+            Html.h2 "Units, perks, weapons, and equipment"
+            Html.p "Expand a table below. Canonical roles, proposed content, and prototype balance values are labeled separately; prototype numbers are laboratory inputs, not accepted balance."
+            Html.details [
+                prop.isOpen true
+                prop.children [
+                    Html.summary "Units and body profiles"
+                    catalogTable
+                        "Unit roles"
+                        [ "Unit"; "Faction"; "Status"; "Role" ]
+                        [ for unit in RulesCatalog.unitRoles do
+                              [ unit.Name; unit.Faction; unit.Status; unit.Role ] ]
+                    catalogTable
+                        "Prototype body profiles"
+                        [ "Body"
+                          "Status"
+                          "HP"
+                          "Front armor"
+                          "Flank armor"
+                          "Rear armor"
+                          "Suppression resistance"
+                          "Regeneration/s" ]
+                        [ for body in RulesCatalog.bodyProfiles do
+                              [ body.Name
+                                body.Status
+                                body.Health
+                                body.FrontArmor
+                                body.FlankArmor
+                                body.RearArmor
+                                body.SuppressionResistance
+                                body.RegenerationPerSecond ] ]
+                ]
+            ]
+            Html.details [
+                Html.summary ("Perks · " + string RulesCatalog.perkProfiles.Length)
+                catalogTable
+                    "Perk families"
+                    [ "Family"; "Perk"; "Tactical change" ]
+                    [ for perk in RulesCatalog.perkProfiles do
+                          [ perk.Family; perk.Name; perk.TacticalChange ] ]
+            ]
+            Html.details [
+                Html.summary "Weapons and prototype profiles"
+                catalogTable
+                    "Canonical weapon roles"
+                    [ "Weapon"; "Engagement shape"; "Target"; "Tactical role" ]
+                    [ for weapon in RulesCatalog.weaponRoles do
+                          [ weapon.Name
+                            weapon.EngagementShape
+                            weapon.Target
+                            weapon.TacticalRole ] ]
+                catalogTable
+                    "Prototype weapon profiles"
+                    [ "Weapon"
+                      "Kind"
+                      "Base engage (s)"
+                      "Range slope"
+                      "Exponent"
+                      "Accuracy"
+                      "Dispersion/m"
+                      "Damage"
+                      "Penetration"
+                      "Shots/s"
+                      "Effect density"
+                      "Suppression/s" ]
+                    [ for weapon in RulesCatalog.weaponProfiles do
+                          [ weapon.Name
+                            weapon.Kind
+                            weapon.BaseEngageSeconds
+                            weapon.RangeSlope
+                            weapon.Exponent
+                            weapon.Accuracy
+                            weapon.DispersionPerMeter
+                            weapon.Damage
+                            weapon.Penetration
+                            weapon.ShotsPerSecond
+                            weapon.EffectDensity
+                            weapon.SuppressionPerSecond ] ]
+            ]
+            Html.details [
+                Html.summary "Armor and equipment"
+                catalogTable
+                    "Human armor packages"
+                    [ "Package"; "Coverage"; "Cost" ]
+                    [ for armor in RulesCatalog.armorProfiles do
+                          [ armor.Name; armor.Coverage; armor.Cost ] ]
+                catalogTable
+                    "Equipment catalog"
+                    [ "Faction"; "Status"; "Category"; "Items" ]
+                    [ for equipment in RulesCatalog.equipmentGroups do
+                          [ equipment.Faction
+                            equipment.Status
+                            equipment.Category
+                            equipment.Items ] ]
+            ]
+            Html.p [
+                Html.a [
+                    prop.href "gameplay-reference.html"
+                    prop.text "Read definitions, formulas, and design rationale in the Gameplay Reference."
+                ]
+            ]
+        ]
+    ]
+
 let private laboratoryResults model dispatch =
     Html.section [
         prop.className "panel lab-results"
         prop.ariaLabel "Laboratory results"
         prop.children [
-            Html.h2 "Baseline and fork"
+            Html.h2 "Simulation result"
             match model.Lab.Report with
             | None ->
-                Html.p "Select a fixed scenario to produce a comparison."
+                Html.p "Click “Simulate now” on any scenario above. Its deterministic result will appear here."
             | Some report ->
                 Html.p [
                     prop.className "evidence-label"
                     prop.text report.EvidenceLabel
                 ]
+                let remaining =
+                    Map.find
+                        "remaining-health"
+                        report.Comparison.Fork.Metrics
+
+                let damage =
+                    Map.find "total-damage" report.Comparison.Fork.Metrics
+
+                let attacks =
+                    Map.find
+                        "attack-events"
+                        report.Comparison.Fork.Metrics
+
+                Html.p [
+                    prop.className "simulation-summary"
+                    prop.role.status
+                    prop.text (
+                        string attacks
+                        + " attacks resolved · "
+                        + string damage
+                        + " damage · target finishes on "
+                        + string remaining
+                        + " HP"
+                    )
+                ]
+                Html.h3 "Attack sequence"
+                Html.div [
+                    prop.className "simulation-frames"
+                    prop.role.img
+                    prop.ariaLabel "Target health after each simulated attack"
+                    prop.children [
+                        for attack, health in Lab.attackFrames report do
+                            Html.div [
+                                prop.className "simulation-frame"
+                                prop.children [
+                                    Html.strong (
+                                        if attack = 0 then
+                                            "Start"
+                                        else
+                                            "Attack " + string attack
+                                    )
+                                    Html.meter [
+                                        prop.min 0
+                                        prop.max 100
+                                        prop.value health
+                                        prop.ariaLabel (
+                                            "Target health after "
+                                            + string attack
+                                            + " attacks: "
+                                            + string health
+                                        )
+                                    ]
+                                    Html.span (string health + " HP")
+                                ]
+                            ]
+                    ]
+                ]
+                Html.h3 "Baseline and editable fork"
                 resultTable "Immutable baseline" report.Comparison.Baseline
                 resultTable "Derived fork" report.Comparison.Fork
                 Html.h3 "Delta"
@@ -679,13 +877,10 @@ let private laboratoryResults model dispatch =
 let view model dispatch =
     Html.main [
         prop.className "app-shell"
+        prop.ariaLabel "Replay and rules laboratory application"
         prop.children [
-            Html.header [
-                Html.p [ prop.className "eyebrow"; prop.text "S.I.R. rules laboratory" ]
-                Html.h1 "Replay and rules laboratory"
-                Html.p "Inspect deterministic replay state and compare reproducible sandbox experiments without granting this browser authority."
-            ]
             scenarioCatalog model dispatch
+            laboratoryResults model dispatch
             statusView model
             workerStatus model
             Html.div [
@@ -695,9 +890,9 @@ let view model dispatch =
                     controls model dispatch
                     inspector model dispatch
                     sandbox model dispatch
-                    laboratoryResults model dispatch
                 ]
             ]
+            rulesDataCatalog
             Html.p [
                 prop.className "sr-only"
                 prop.role.status

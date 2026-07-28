@@ -246,6 +246,16 @@ let main _ =
          && (Lab.catalog |> List.map _.Identity |> Set.ofList |> Set.count) = 6)
         "The interactive scenario gallery is incomplete or has duplicate identities."
 
+    require
+        (RulesCatalog.unitRoles.Length = 11
+         && RulesCatalog.bodyProfiles.Length = 3
+         && RulesCatalog.perkProfiles.Length = 42
+         && RulesCatalog.weaponRoles.Length = 7
+         && RulesCatalog.weaponProfiles.Length = 5
+         && RulesCatalog.armorProfiles.Length = 3
+         && RulesCatalog.equipmentGroups.Length = 11)
+        "The inspectable unit, perk, weapon, armor, or equipment catalog is incomplete."
+
     let defaultResults =
         Lab.catalog
         |> List.map (fun candidate ->
@@ -261,6 +271,10 @@ let main _ =
     let baselineReport =
         Lab.run scenario Map.empty None
         |> Result.defaultWith failwith
+
+    require
+        (Lab.attackFrames baselineReport = [ 0, 100; 1, 75; 2, 50; 3, 25; 4, 0 ])
+        "The visible attack-sequence simulation does not match the canonical result."
 
     let forkReport =
         Lab.run scenario (Map.ofList [ ("attack-power", 30) ]) (Some "attack-power")
