@@ -6,6 +6,8 @@ type OperationId = private OperationId of int32
 
 [<RequireQualifiedAccess>]
 module OperationId =
+    let create value = OperationId value
+
     let value (OperationId value) = value
 
 type ReplayKind =
@@ -19,6 +21,13 @@ type ReplayMetadata =
       EngineIdentity: string
       FinalTick: int32
       Kind: ReplayKind }
+
+type ReplayMetadataTransport =
+    { SourceName: string
+      SourceIdentity: string
+      EngineIdentity: string
+      FinalTick: int32
+      Kind: int32 }
 
 type PlaybackSpeed =
     | Half
@@ -90,6 +99,17 @@ type InspectionProjection =
       Checkpoints: CheckpointProjection list
       PerspectiveHash: string option }
 
+type InspectionProjectionTransport =
+    { Tick: int32
+      BoardMinimumColumn: int32
+      BoardMinimumRow: int32
+      BoardMaximumColumn: int32
+      BoardMaximumRow: int32
+      Units: UnitProjection array
+      Events: EventProjection array
+      Checkpoints: CheckpointProjection array
+      PerspectiveHash: string option }
+
 type WorkerState =
     | WorkerStarting
     | WorkerReady
@@ -132,11 +152,11 @@ type RunnerClaim =
     | ScenarioReady
 
 type RunnerResponse =
-    | LoadedPackage of ReplayMetadata * RunnerClaim * InspectionProjection
-    | RunnerProgress of tick: int32 * completedBatches: int32 * InspectionProjection
-    | Progressed of tick: int32 * InspectionProjection
+    | LoadedPackage of ReplayMetadataTransport * RunnerClaim * InspectionProjectionTransport
+    | RunnerProgress of tick: int32 * completedBatches: int32 * InspectionProjectionTransport
+    | Progressed of tick: int32 * InspectionProjectionTransport
     | Forked of derivedIdentity: string
-    | LoadedScenario of ReplayMetadata * DesignScenarioTransport * LabReportTransport * InspectionProjection
+    | LoadedScenario of ReplayMetadataTransport * DesignScenarioTransport * LabReportTransport * InspectionProjectionTransport
     | ExperimentCompleted of derivedIdentity: string * LabReportTransport
     | RunnerUnsupported of reason: string
     | RunnerDiverged of tick: int32 * phase: string * detail: string
@@ -164,18 +184,18 @@ type Msg =
 
 type WorkerRequestEnvelope =
     { ProtocolVersion: int32
-      Operation: OperationId
+      Operation: int32
       Request: RunnerRequest }
 
 type WorkerResponseEnvelope =
     { ProtocolVersion: int32
-      Operation: OperationId
+      Operation: int32
       Response: RunnerResponse }
 
 [<RequireQualifiedAccess>]
 module WorkerProtocol =
     [<Literal>]
-    let CurrentVersion = 1
+    let CurrentVersion = 2
 
     [<Literal>]
     let BatchSize = 256
@@ -186,6 +206,69 @@ module WorkerProtocol =
           while tick < targetTick do
               tick <- min targetTick (tick + int32 BatchSize)
               yield tick ]
+
+[<RequireQualifiedAccess>]
+module WorkerTransport =
+    let metadataToTransport
+        (metadata: ReplayMetadata)
+        : ReplayMetadataTransport
+        =
+        { SourceName = metadata.SourceName
+          SourceIdentity = metadata.SourceIdentity
+          EngineIdentity = metadata.EngineIdentity
+          FinalTick = metadata.FinalTick
+          Kind =
+            match metadata.Kind with
+            | FullReplay -> 0
+            | PerspectiveReplay -> 1
+            | DesignScenario -> 2 }
+
+    let metadataFromTransport
+        (metadata: ReplayMetadataTransport)
+        : ReplayMetadata
+        =
+        { SourceName = metadata.SourceName
+          SourceIdentity = metadata.SourceIdentity
+          EngineIdentity = metadata.EngineIdentity
+          FinalTick = metadata.FinalTick
+          Kind =
+            match metadata.Kind with
+            | 0 -> FullReplay
+            | 1 -> PerspectiveReplay
+            | 2 -> DesignScenario
+            | value ->
+                failwith (
+                    "Unknown replay kind from worker transport: "
+                    + string value
+                ) }
+
+    let inspectionToTransport
+        (inspection: InspectionProjection)
+        : InspectionProjectionTransport
+        =
+        { Tick = inspection.Tick
+          BoardMinimumColumn = inspection.BoardMinimumColumn
+          BoardMinimumRow = inspection.BoardMinimumRow
+          BoardMaximumColumn = inspection.BoardMaximumColumn
+          BoardMaximumRow = inspection.BoardMaximumRow
+          Units = List.toArray inspection.Units
+          Events = List.toArray inspection.Events
+          Checkpoints = List.toArray inspection.Checkpoints
+          PerspectiveHash = inspection.PerspectiveHash }
+
+    let inspectionFromTransport
+        (inspection: InspectionProjectionTransport)
+        : InspectionProjection
+        =
+        { Tick = inspection.Tick
+          BoardMinimumColumn = inspection.BoardMinimumColumn
+          BoardMinimumRow = inspection.BoardMinimumRow
+          BoardMaximumColumn = inspection.BoardMaximumColumn
+          BoardMaximumRow = inspection.BoardMaximumRow
+          Units = Array.toList inspection.Units
+          Events = Array.toList inspection.Events
+          Checkpoints = Array.toList inspection.Checkpoints
+          PerspectiveHash = inspection.PerspectiveHash }
 
 [<RequireQualifiedAccess>]
 module Shell =
@@ -262,6 +345,10 @@ module Shell =
     let private applyRunnerResponse response model =
         match response with
         | LoadedPackage(metadata, claim, inspection) ->
+            let metadata = WorkerTransport.metadataFromTransport metadata
+            let inspection =
+                WorkerTransport.inspectionFromTransport inspection
+
             let mode, verification, announcement =
                 match claim with
                 | KernelVerified ->
@@ -291,6 +378,9 @@ module Shell =
                 Announcement = announcement }
             |> stopOperation
         | RunnerProgress(tick, completedBatches, inspection) ->
+            let inspection =
+                WorkerTransport.inspectionFromTransport inspection
+
             let tick = clampTick model.Playback.FinalTick tick
 
             { model with
@@ -304,6 +394,9 @@ module Shell =
                     + string tick
                     + "." }
         | Progressed(tick, inspection) ->
+            let inspection =
+                WorkerTransport.inspectionFromTransport inspection
+
             let tick = clampTick model.Playback.FinalTick tick
 
             { model with
@@ -325,8 +418,11 @@ module Shell =
                 Announcement = "Sandbox fork created. Verification no longer applies." }
             |> stopOperation
         | LoadedScenario(metadata, scenario, report, inspection) ->
+            let metadata = WorkerTransport.metadataFromTransport metadata
             let scenario = Lab.scenarioFromTransport scenario
             let report = Lab.reportFromTransport report
+            let inspection =
+                WorkerTransport.inspectionFromTransport inspection
 
             { model with
                 Source = Loaded metadata

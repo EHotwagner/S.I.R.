@@ -18,7 +18,7 @@ let private shortIdentity (bytes: byte array) =
     |> Array.map (fun value -> value.ToString("x2"))
     |> String.concat ""
 
-let private emptyProjection tick =
+let private emptyProjection tick : InspectionProjection =
     { Tick = tick
       BoardMinimumColumn = 0
       BoardMinimumRow = 0
@@ -29,7 +29,7 @@ let private emptyProjection tick =
       Checkpoints = []
       PerspectiveHash = None }
 
-let private scenarioMetadata (scenario: DesignScenario) (report: LabReport) =
+let private scenarioMetadata (scenario: DesignScenario) (report: LabReport) : ReplayMetadata =
     { SourceName = scenario.Identity + ".sir-scenario"
       SourceIdentity = report.Comparison.Baseline.ResultIdentity
       EngineIdentity = scenario.EngineIdentity
@@ -95,7 +95,7 @@ let private stateAt tick (full: FullReplay) =
 
     state
 
-let private fullProjection tick (full: FullReplay) =
+let private fullProjection tick (full: FullReplay) : InspectionProjection =
     let state = stateAt tick full
 
     let units =
@@ -144,7 +144,7 @@ let private fullProjection tick (full: FullReplay) =
       Checkpoints = checkpoints
       PerspectiveHash = None }
 
-let private perspectiveProjection tick (frames: PerspectiveFrame list) =
+let private perspectiveProjection tick (frames: PerspectiveFrame list) : InspectionProjection =
     let frame =
         frames
         |> List.filter (fun candidate -> candidate.Tick <= tick)
@@ -157,7 +157,7 @@ let private perspectiveProjection tick (frames: PerspectiveFrame list) =
             PerspectiveHash = Some(shortIdentity selected.ProjectionHash) }
     | None -> emptyProjection 0
 
-let private projectionAt tick package =
+let private projectionAt tick package : InspectionProjection =
     match package.Content with
     | AuthorizedFullReplay full -> fullProjection tick full
     | PerspectivePlayback frames -> perspectiveProjection tick frames
@@ -209,7 +209,7 @@ let private replayError error =
             "accepted output sequence " + string sequence
         )
 
-let private metadata sourceName package =
+let private metadata sourceName package : ReplayMetadata =
     let kind, finalTick =
         match package.Content with
         | AuthorizedFullReplay full -> FullReplay, full.FinalResult.Tick
@@ -236,7 +236,7 @@ let mutable private cancelled: Set<int32> = Set.empty
 let private post operation response =
     let envelope: WorkerResponseEnvelope =
         { ProtocolVersion = int32 WorkerProtocol.CurrentVersion
-          Operation = operation
+          Operation = OperationId.value operation
           Response = response }
 
     scope?postMessage (envelope)
@@ -261,18 +261,22 @@ let private execute operation request =
                     loadedPackage <- Some package
                     post operation (
                         LoadedPackage(
-                            metadata sourceName package,
+                            metadata sourceName package
+                            |> WorkerTransport.metadataToTransport,
                             KernelVerified,
                             projectionAt 0 package
+                            |> WorkerTransport.inspectionToTransport
                         )
                     )
                 | Ok(PerspectiveReady _) ->
                     loadedPackage <- Some package
                     post operation (
                         LoadedPackage(
-                            metadata sourceName package,
+                            metadata sourceName package
+                            |> WorkerTransport.metadataToTransport,
                             ProjectionOnly,
                             projectionAt 0 package
+                            |> WorkerTransport.inspectionToTransport
                         )
                     )
                 | Ok(AuthoritativeVerified _) ->
@@ -299,6 +303,7 @@ let private execute operation request =
                                 tick,
                                 completedBatches,
                                 projectionAt tick package
+                                |> WorkerTransport.inspectionToTransport
                             )
                         )
                     | _ -> ()
@@ -307,13 +312,26 @@ let private execute operation request =
 
             if not (isCancelled operation) then
                 match loadedPackage with
-                | Some package -> post operation (Progressed(tick, projectionAt tick package))
+                | Some package ->
+                    post operation (
+                        Progressed(
+                            tick,
+                            projectionAt tick package
+                            |> WorkerTransport.inspectionToTransport
+                        )
+                    )
                 | None -> post operation (RunnerFailed "no replay is loaded in the worker")
         | Seek(targetTick, finalTick) ->
             match loadedPackage with
             | Some package ->
                 let tick = max 0 (min finalTick targetTick)
-                post operation (Progressed(tick, projectionAt tick package))
+                post operation (
+                    Progressed(
+                        tick,
+                        projectionAt tick package
+                        |> WorkerTransport.inspectionToTransport
+                    )
+                )
             | None -> post operation (RunnerFailed "no replay is loaded in the worker")
         | Fork(identity, _) -> post operation (Forked identity)
         | LoadScenario scenarioIdentity ->
@@ -326,10 +344,12 @@ let private execute operation request =
                     let metadata = scenarioMetadata scenario report
                     post operation (
                         LoadedScenario(
-                            metadata,
+                            metadata
+                            |> WorkerTransport.metadataToTransport,
                             Lab.scenarioToTransport scenario,
                             Lab.reportToTransport report,
                             emptyProjection 0
+                            |> WorkerTransport.inspectionToTransport
                         )
                     )
         | RunExperiment(scenarioIdentity, patch, sweepParameter) ->
@@ -355,9 +375,10 @@ let private execute operation request =
 
 let private receive (event: MessageEvent) =
     let envelope = unbox<WorkerRequestEnvelope> event.data
+    let operation = OperationId.create envelope.Operation
 
     if envelope.ProtocolVersion <> int32 WorkerProtocol.CurrentVersion then
-        post envelope.Operation (
+        post operation (
             RunnerFailed(
                 "worker protocol "
                 + string envelope.ProtocolVersion
@@ -365,6 +386,6 @@ let private receive (event: MessageEvent) =
             )
         )
     else
-        execute envelope.Operation envelope.Request |> Async.StartImmediate
+        execute operation envelope.Request |> Async.StartImmediate
 
 scope?onmessage <- receive
