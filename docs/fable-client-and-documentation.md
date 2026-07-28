@@ -6,7 +6,7 @@ document-type: living-architecture
 category: Design
 categoryindex: 4
 index: 13
-version: "2.6"
+version: "2.7"
 last-updated: 2026-07-28
 description: Shared .NET/Fable simulation, upstream FS.GG.Game compatibility, deterministic numerics, Elmish MVU browser tooling, replay verification, and delivery roadmap.
 related:
@@ -45,7 +45,10 @@ mode disclosures, accessible controls, and irreversible sandbox transition
 without moving authority into the browser. Replay execution now runs in a
 dedicated versioned Web Worker, yields between bounded batches, and returns
 compact inspection projections rather than copying the complete world into
-Elmish state.
+Elmish state. The same worker now runs a fixed, versioned rules-laboratory
+catalog with bounded typed parameters, immutable baseline/fork comparisons,
+deterministic integer sweeps, explicit exploratory-evidence labeling, and
+reproducible experiment exports.
 
 ## Decision
 
@@ -1520,7 +1523,7 @@ browser-verification display.
   and reports non-canonical timing observations. The browser smoke gate checks
   the inspector and protocol disclosures in the production bundle.
 
-### [ ] 🟦 M10 — Interactive rules laboratory
+### [x] 🟩 M10 — Interactive rules laboratory
 
 **Unblocked by:** completed M9 worker execution and responsive inspection.
 
@@ -1542,10 +1545,57 @@ browser-verification display.
 - charts remain derived from canonical integer results; and
 - balance evidence is labeled separately from accepted balance.
 
+**Outcome:** `SIR.Client` now owns a platform-neutral rules-laboratory model
+with two fixed, revisioned design scenarios, exact engine and ruleset
+identities, typed parameter definitions, bounded validation, deterministic
+integer evaluation through `Simulation.runTickWithRules`, baseline/fork
+comparison, and sweep results. The laboratory varies bounded rule inputs but
+does not reimplement attack resolution. The baseline is always recomputed from
+catalog defaults and is never mutated by a patch.
+Every result carries its complete effective parameter map plus scenario,
+revision, engine, ruleset, and content-derived result identities.
+
+Scenario selection and experiment execution cross the existing versioned
+worker boundary. Editing a parameter creates a derived sandbox identity and
+cannot restore a verification claim. Sweep values follow the parameter's
+declared integer minimum, maximum, and step; tables and accessible meter charts
+are presentation projections of those integer results. Reports are always
+labeled `Exploratory balance evidence — not accepted balance`.
+
+The versioned `sir-lab-experiment-v1` text export records the immutable
+baseline, derived fork, exact compatibility identities, effective inputs,
+integer metrics, and optional sweep identities. The checked-in
+`attack-power-30.sir-lab` export demonstrates that a useful browser experiment
+can be promoted directly into a permanent regression fixture.
+
+**Evidence:**
+
+- `src/SIR.Client/Lab.fs` owns the fixed catalog, typed validation,
+  shared-kernel experiment runner, comparison and sweep model, result
+  identities, and reproducible export format;
+- `src/SIR.Simulation/Simulation.fs` exposes bounded
+  `SimulationRules`/`runTickWithRules` while retaining `runTick` with the
+  canonical default rules for replay compatibility;
+- `src/SIR.Client/Shell.fs` and `src/SIR.Client.Web/Worker.fs` keep scenario
+  loading, sandbox transitions, experiments, and sweeps behind the typed
+  operation protocol with stale-response and cancellation protection;
+- `src/SIR.Client.Web/App.fs` provides the catalog, parameter editor,
+  baseline/fork/delta tables, integer sweep chart, compatibility disclosures,
+  evidence label, and experiment download;
+- `tests/SIR.Client.Tests/fixtures/attack-power-30.sir-lab` is a promoted
+  permanent fixture whose complete export is checked by the client tests;
+- `tests/SIR.Client.Tests/Program.fs` proves baseline immutability, complete
+  inputs and identities, range rejection, deterministic repeated execution,
+  the 100-value integer sweep, fixture stability, and the worker-driven
+  scenario/fork state transitions; and
+- `scripts/test-conformance.sh` retains the 717-byte .NET/Fable replay oracle,
+  builds the laboratory source with Fable, creates the separately emitted
+  production worker, and runs the browser smoke gate for the scenario catalog
+  and comparison surface.
+
 ### [ ] 🟦 M11 — Literate corpus integration
 
-**Unblocked by:** completed M8 for the mount and explanatory corpus; full
-rules-lab pages still depend on M10.
+**Unblocked by:** completed M8 mount and completed M10 rules laboratory.
 
 **Deliverables:**
 

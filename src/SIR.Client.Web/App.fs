@@ -15,6 +15,7 @@ type Msg =
     | FileSelected of File
     | PlaybackPulse
     | KeyPressed of string
+    | ExportExperiment
 
 let private fileBytes (file: File) =
     async {
@@ -30,6 +31,20 @@ let private runEffect effect =
 
 let private effectsToCmd effects =
     Cmd.ofEffect (fun _ -> effects |> List.iter runEffect)
+
+let private downloadExperiment report =
+    let content = Lab.export report
+    emitJsStatement
+        content
+        """
+        const blob = new Blob([$0], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = "sir-lab-experiment.sir-lab";
+        anchor.click();
+        URL.revokeObjectURL(url);
+        """
 
 let init () =
     Shell.init (), Cmd.none
@@ -56,6 +71,11 @@ let rec update msg model =
         | "ArrowRight" -> update (ShellMsg StepForward) model
         | "Escape" -> update (ShellMsg CancelRequested) model
         | _ -> model, Cmd.none
+    | ExportExperiment ->
+        model,
+        (model.Lab.Report
+         |> Option.map (fun report -> Cmd.ofEffect (fun _ -> downloadExperiment report))
+         |> Option.defaultValue Cmd.none)
 
 let subscriptions model =
     let runner dispatch =
@@ -436,38 +456,189 @@ let private workerStatus model =
     ]
 
 let private sandbox model dispatch =
-    let current =
-        model.Patch |> Map.tryFind "attack-power" |> Option.defaultValue 25
+    let scenario = model.Lab.Scenario
 
     Html.section [
         prop.className "panel sandbox-panel"
         prop.ariaLabel "Sandbox parameters"
         prop.children [
-            Html.h2 "Sandbox fork"
-            Html.p "The first edit permanently changes this loaded run from verified replay to a derived sandbox."
-            Html.label [
-                prop.htmlFor "attack-power"
-                prop.text ("Attack power: " + string current)
+            Html.h2 "Typed parameters"
+            Html.p "Every edit creates a derived sandbox; the immutable baseline remains visible in the comparison."
+            match scenario with
+            | None ->
+                Html.p "Load a design scenario or verified replay to edit parameters."
+            | Some selected ->
+                for parameter in selected.Parameters do
+                    let current =
+                        model.Patch
+                        |> Map.tryFind parameter.Key
+                        |> Option.defaultValue parameter.DefaultValue
+
+                    Html.label [
+                        prop.htmlFor parameter.Key
+                        prop.text (parameter.Label + ": " + string current)
+                    ]
+                    Html.input [
+                        prop.id parameter.Key
+                        prop.type'.number
+                        prop.min parameter.Minimum
+                        prop.max parameter.Maximum
+                        prop.step parameter.Step
+                        prop.value current
+                        prop.onChange (fun (value: int) ->
+                            dispatch (
+                                ShellMsg(ParameterEdited(parameter.Key, int32 value))
+                            ))
+                    ]
+            model.Lab.ValidationError
+            |> Option.map (fun error ->
+                Html.p [
+                    prop.className "validation-error"
+                    prop.role.alert
+                    prop.text error
+                ])
+            |> Option.defaultValue Html.none
+        ]
+    ]
+
+let private scenarioCatalog dispatch =
+    Html.section [
+        prop.className "panel catalog-panel"
+        prop.ariaLabel "Design scenario catalog"
+        prop.children [
+            Html.h2 "Design scenarios"
+            Html.p "Fixed, versioned inputs for reproducible rules experiments."
+            for scenario in Lab.catalog do
+                Html.article [
+                    prop.className "scenario-card"
+                    prop.children [
+                        Html.h3 scenario.Title
+                        Html.p scenario.Description
+                        Html.p [
+                            prop.className "identity"
+                            prop.text (
+                                scenario.Identity
+                                + " r"
+                                + string scenario.Revision
+                                + " · engine "
+                                + scenario.EngineIdentity.Substring(0, 12)
+                            )
+                        ]
+                        button
+                            ("Load " + scenario.Title)
+                            ("Load design scenario " + scenario.Title)
+                            false
+                            (fun _ ->
+                                dispatch (ShellMsg(ScenarioSelected scenario.Identity)))
+                    ]
+                ]
+        ]
+    ]
+
+let private resultTable (title: string) (result: ExperimentResult) =
+    Html.div [
+        Html.h3 title
+        Html.p [
+            prop.className "identity"
+            prop.text (
+                "Result "
+                + result.ResultIdentity
+                + " · engine "
+                + result.Input.EngineIdentity.Substring(0, 12)
+                + " · rules "
+                + result.Input.RulesetIdentity.Substring(0, 12)
+            )
+        ]
+        Html.table [
+            Html.thead [
+                Html.tr [ Html.th "Metric"; Html.th "Canonical integer result" ]
             ]
-            Html.input [
-                prop.id "attack-power"
-                prop.type'.range
-                prop.min 1
-                prop.max 100
-                prop.value current
-                prop.disabled (
-                    match model.Mode with
-                    | VerifiedReplay
-                    | SandboxFork _
-                    | ScenarioSandbox _ -> false
-                    | NoRun
-                    | PerspectivePlayback -> true
-                )
-                prop.onChange (fun (value: int) ->
-                    dispatch (
-                        ShellMsg(ParameterEdited("attack-power", int32 value))
-                    ))
+            Html.tbody [
+                for KeyValue(key, value) in result.Metrics do
+                    Html.tr [ Html.td key; Html.td (string value) ]
             ]
+        ]
+    ]
+
+let private laboratoryResults model dispatch =
+    Html.section [
+        prop.className "panel lab-results"
+        prop.ariaLabel "Laboratory results"
+        prop.children [
+            Html.h2 "Baseline and fork"
+            match model.Lab.Report with
+            | None ->
+                Html.p "Select a fixed scenario to produce a comparison."
+            | Some report ->
+                Html.p [
+                    prop.className "evidence-label"
+                    prop.text report.EvidenceLabel
+                ]
+                resultTable "Immutable baseline" report.Comparison.Baseline
+                resultTable "Derived fork" report.Comparison.Fork
+                Html.h3 "Delta"
+                Html.table [
+                    Html.thead [
+                        Html.tr [ Html.th "Metric"; Html.th "Fork − baseline" ]
+                    ]
+                    Html.tbody [
+                        for KeyValue(key, value) in report.Comparison.Delta do
+                            Html.tr [ Html.td key; Html.td (string value) ]
+                    ]
+                ]
+                match model.Lab.Scenario with
+                | Some scenario ->
+                    Html.div [
+                        prop.className "control-row"
+                        prop.children [
+                            for parameter in scenario.Parameters do
+                                button
+                                    ("Sweep " + parameter.Label)
+                                    ("Run deterministic sweep for " + parameter.Label)
+                                    (Option.isSome model.Lab.ValidationError)
+                                    (fun _ ->
+                                        dispatch (ShellMsg(SweepRequested parameter.Key)))
+                        ]
+                    ]
+                | None -> Html.none
+                match report.Sweep with
+                | Some sweep ->
+                    Html.h3 ("Sweep chart · " + sweep.Parameter)
+                    Html.div [
+                        prop.className "integer-chart"
+                        prop.ariaLabel ("Integer results for " + sweep.Parameter)
+                        prop.children [
+                            for result in sweep.Results do
+                                let parameterValue =
+                                    Map.find sweep.Parameter result.Input.Parameters
+                                let remaining = Map.find "remaining-health" result.Metrics
+
+                                Html.div [
+                                    prop.className "chart-row"
+                                    prop.children [
+                                        Html.span (string parameterValue)
+                                        Html.meter [
+                                            prop.min 0
+                                            prop.max 200
+                                            prop.value remaining
+                                            prop.ariaLabel (
+                                                string parameterValue
+                                                + ": remaining health "
+                                                + string remaining
+                                            )
+                                        ]
+                                        Html.span (string remaining)
+                                    ]
+                                ]
+                        ]
+                    ]
+                | None -> Html.none
+                button
+                    "Export reproducible experiment"
+                    "Export reproducible laboratory experiment"
+                    false
+                    (fun _ -> dispatch ExportExperiment)
+                Html.p "Export includes the exact scenario revision, parameters, engine and ruleset identities, result identities, integer metrics, and optional sweep."
         ]
     ]
 
@@ -477,8 +648,8 @@ let view model dispatch =
         prop.children [
             Html.header [
                 Html.p [ prop.className "eyebrow"; prop.text "S.I.R. rules laboratory" ]
-                Html.h1 "Replay shell"
-                Html.p "Inspect deterministic replay state without granting this browser authority."
+                Html.h1 "Replay and rules laboratory"
+                Html.p "Inspect deterministic replay state and compare reproducible sandbox experiments without granting this browser authority."
             ]
             statusView model
             workerStatus model
@@ -486,9 +657,11 @@ let view model dispatch =
                 prop.className "dashboard"
                 prop.children [
                     sourcePanel dispatch
+                    scenarioCatalog dispatch
                     controls model dispatch
                     inspector model dispatch
                     sandbox model dispatch
+                    laboratoryResults model dispatch
                 ]
             ]
             Html.p [

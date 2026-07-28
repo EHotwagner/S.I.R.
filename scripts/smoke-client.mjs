@@ -42,7 +42,7 @@ const labelledButtons = [...window.document.querySelectorAll("button")].filter(
   (button) => button.getAttribute("aria-label"),
 );
 
-if (heading?.textContent !== "Replay shell") {
+if (heading?.textContent !== "Replay and rules laboratory") {
   throw new Error("The React replay shell did not mount.");
 }
 
@@ -60,6 +60,8 @@ if (labelledButtons.length < 4) {
 
 const inspector = window.document.querySelector('[aria-label="Replay inspector"]');
 const workerStatus = window.document.querySelector(".worker-status");
+const catalog = window.document.querySelector('[aria-label="Design scenario catalog"]');
+const labResults = window.document.querySelector('[aria-label="Laboratory results"]');
 
 if (!inspector?.textContent.includes("Timeline and events")) {
   throw new Error("The responsive replay inspectors did not mount.");
@@ -69,8 +71,16 @@ if (!workerStatus?.textContent.includes("protocol 1")) {
   throw new Error("The worker protocol disclosure is missing.");
 }
 
+if (!catalog?.textContent.includes("Adjacent duel")) {
+  throw new Error("The fixed design-scenario catalog did not mount.");
+}
+
+if (!labResults?.textContent.includes("Baseline and fork")) {
+  throw new Error("The laboratory comparison surface did not mount.");
+}
+
 console.log(
-  `Browser smoke passed: React mounted with ${labelledButtons.length} labelled controls, responsive inspectors, protocol status, and a live verification status.`,
+  `Browser smoke passed: React mounted with ${labelledButtons.length} labelled controls, scenario catalog, laboratory comparison, responsive inspectors, protocol status, and a live verification status.`,
 );
 
 window.happyDOM.close();

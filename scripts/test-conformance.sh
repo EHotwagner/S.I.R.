@@ -137,5 +137,5 @@ printf 'Divergence guard passed: %s failed first at byte 0 in both runtimes.\n' 
 printf 'Simulation divergence guard passed: tick 1 phase %s failed first at byte 0 in both runtimes.\n' \
   "$simulation_phase"
 printf 'Replay gate passed: format v1, SHA-256, checkpoint seeks, safety limits, disclosure boundaries, and verification levels agree.\n'
-printf 'Elmish shell gate passed: modes, sandbox transition, stale operations, cancellation, Fable compilation, production bundle, and browser mount agree.\n'
+printf 'Elmish and rules-lab gate passed: modes, immutable baseline/fork comparison, typed validation, deterministic sweep, reproducible fixture export, stale operations, cancellation, Fable compilation, production bundle, and browser mount agree.\n'
 printf 'Worker gate passed: %s\n' "$worker_measurement"

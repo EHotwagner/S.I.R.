@@ -8,4 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="../../src/SIR.Client/SIR.Client.fsproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="fixtures/*.sir-lab" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

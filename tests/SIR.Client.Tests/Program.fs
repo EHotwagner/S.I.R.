@@ -1,5 +1,7 @@
 module SIR.Client.Tests
 
+open System
+open System.IO
 open SIR.Client
 
 let private require condition message =
@@ -208,5 +210,119 @@ let main _ =
          && not workerStopped.Playback.IsPlaying)
         "Worker termination left the shell in a verified or playing state."
 
-    printfn "Elmish shell tests passed: deterministic update, modes, bounded worker batches, compact progress, failure revocation, sandbox, stale responses, and cancellation."
+    let scenario =
+        Lab.tryScenario "adjacent-duel"
+        |> Option.defaultWith (fun () -> failwith "The adjacent duel scenario is missing.")
+
+    let baselineReport =
+        Lab.run scenario Map.empty None
+        |> Result.defaultWith failwith
+
+    let forkReport =
+        Lab.run scenario (Map.ofList [ ("attack-power", 30) ]) (Some "attack-power")
+        |> Result.defaultWith failwith
+
+    require
+        (baselineReport.Comparison.Baseline = forkReport.Comparison.Baseline)
+        "Changing a parameter mutated the fixed baseline."
+    require
+        (forkReport.Comparison.Fork.Input.EngineIdentity = scenario.EngineIdentity
+         && forkReport.Comparison.Fork.Input.RulesetIdentity = scenario.RulesetIdentity
+         && forkReport.Comparison.Fork.Input.Parameters
+            = Map.ofList [ ("attack-count", 4); ("attack-power", 30) ])
+        "A laboratory result omitted its exact inputs or compatibility identities."
+    require
+        (forkReport.Comparison.Fork.Metrics = Map.ofList [
+            ("attack-events", 4)
+            ("remaining-health", 0)
+            ("total-damage", 100)
+        ])
+        "The integer experiment metrics changed unexpectedly."
+    require
+        (forkReport.EvidenceLabel.Contains("not accepted balance"))
+        "Exploratory evidence was not separated from accepted balance."
+
+    let repeated =
+        Lab.run scenario (Map.ofList [ ("attack-power", 30) ]) (Some "attack-power")
+        |> Result.defaultWith failwith
+
+    require (repeated = forkReport) "Equal experiment inputs produced different results."
+    require
+        (forkReport.Sweep
+         |> Option.exists (fun sweep ->
+             sweep.Parameter = "attack-power"
+             && List.length sweep.Results = 100))
+        "The deterministic sweep did not cover the typed parameter domain."
+
+    require
+        (match Lab.run scenario (Map.ofList [ ("attack-power", 101) ]) None with
+         | Error error -> error.Contains("between 1 and 100")
+         | Ok _ -> false)
+        "Out-of-range laboratory input passed validation."
+
+    let promotedReport =
+        Lab.run scenario (Map.ofList [ ("attack-power", 30) ]) None
+        |> Result.defaultWith failwith
+
+    let export = Lab.export promotedReport
+    let fixturePath =
+        Path.Combine(AppContext.BaseDirectory, "fixtures", "attack-power-30.sir-lab")
+    let fixture = File.ReadAllText fixturePath
+
+    require (export = fixture) "The promoted experiment fixture no longer matches its export."
+    require
+        (export.Contains("format=" + Lab.ExportFormat)
+         && export.Contains("fork.parameter.attack-power=30")
+         && export.Contains("fork.engine=" + scenario.EngineIdentity))
+        "The experiment export is missing reproducibility fields."
+
+    let scenarioLoading, scenarioEffects =
+        Shell.update (ScenarioSelected "adjacent-duel") initial
+    let scenarioOperation = operationFrom scenarioEffects
+
+    let scenarioReady =
+        Shell.update
+            (RunnerResponded(
+                scenarioOperation,
+                LoadedScenario(
+                    { metadata DesignScenario with
+                        SourceName = "adjacent-duel.sir-scenario"
+                        SourceIdentity = baselineReport.Comparison.Baseline.ResultIdentity
+                        FinalTick = 1 },
+                    scenario,
+                    baselineReport,
+                    projection 0
+                )
+            ))
+            scenarioLoading
+        |> fst
+
+    require
+        (scenarioReady.Mode = ScenarioSandbox baselineReport.Comparison.Baseline.ResultIdentity
+         && scenarioReady.Lab.Report = Some baselineReport)
+        "A selected design scenario did not enter the scenario sandbox."
+
+    let editedScenario, experimentEffects =
+        Shell.update (ParameterEdited("attack-power", 30)) scenarioReady
+    let experimentOperation = operationFrom experimentEffects
+
+    let compared =
+        Shell.update
+            (RunnerResponded(
+                experimentOperation,
+                ExperimentCompleted(
+                    forkReport.Comparison.Fork.ResultIdentity,
+                    forkReport
+                )
+            ))
+            editedScenario
+        |> fst
+
+    require
+        (compared.Lab.Report = Some forkReport
+         && compared.Verification
+            = SandboxDerived forkReport.Comparison.Fork.ResultIdentity)
+        "The worker experiment did not replace the comparison with a derived result."
+
+    printfn "Elmish and laboratory tests passed: deterministic update, modes, bounded worker batches, compact progress, failure revocation, immutable baseline, typed validation, deterministic sweep, reproducible fixture export, sandbox, stale responses, and cancellation."
     0
