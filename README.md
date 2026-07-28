@@ -1,5 +1,17 @@
 # S.I.R.
 
+The deterministic gameplay foundation is built from the root solution:
+
+```bash
+npm ci
+./scripts/test-conformance.sh
+```
+
+The conformance gate restores only pinned published packages, compiles the
+shared numeric fixtures for .NET and Fable/Node, compares their canonical byte
+vectors, proves first-divergence reporting, and rejects floating-point source
+from authoritative projects.
+
 A fast-paced, grid-based, **real-time tactical skirmish game** for large forces
 in a near-future world undergoing an incursion by monsters and magic.
 

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="BoundedInt32.fs" />
+    <Compile Include="FixedPoint.fs" />
+    <Compile Include="CanonicalEncoding.fs" />
+  </ItemGroup>
+</Project>

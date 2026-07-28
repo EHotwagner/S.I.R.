@@ -6,7 +6,7 @@ document-type: living-architecture
 category: Design
 categoryindex: 4
 index: 13
-version: "2.1"
+version: "2.2"
 last-updated: 2026-07-28
 description: Shared .NET/Fable simulation, upstream FS.GG.Game compatibility, deterministic numerics, Elmish MVU browser tooling, replay verification, and delivery roadmap.
 related:
@@ -1192,7 +1192,7 @@ adversarial blocked-cell insertion order.
 - [FS.GG.Game#532](https://github.com/FS-GG/FS.GG.Game/pull/532) finalized the
   upstream compatibility report and closed the receiving request.
 
-### [ ] 🟦 M5 — S.I.R. solution and shared numeric foundation
+### [x] 🟩 M5 — S.I.R. solution and shared numeric foundation
 
 **Unblocked by:** completed M4 compatibility profile and published package.
 
@@ -1213,9 +1213,46 @@ adversarial blocked-cell insertion order.
 - authoritative projects contain no floating state; and
 - a deliberately introduced divergence fails at its first fixture.
 
-### [ ] 🟨 M6 — Minimal shared simulation slice
+**Outcome:** the root `SIR.slnx` now contains `SIR.Domain`, the minimal
+`SIR.Simulation` package seam, and separate .NET and Fable/Node conformance
+hosts linked to the same fixture source. Dependencies and tools are centrally
+locked to .NET SDK 10.0.302, Fable 5.13.0, Node 26.5.0,
+`@fable-org/fable-library-js` 2.5.1, `FSharp.Core` 10.1.302, and the exact
+published `FS.GG.Game.Core` 0.13.0 package. NuGet and npm lock files are
+committed; the simulation consumes no sibling checkout or project reference
+outside this repository.
 
-**Blocked by:** M5.
+`BoundedInt32` carries an inclusive range and rejects invalid construction or
+mixed-bound operations. Its add and subtract operations saturate through
+64-bit intermediates. `FixedPoint` stores four base-ten places in a signed
+32-bit raw value, uses 64-bit intermediates, saturates overflow, and rounds
+nearest with ties away from zero. Canonical primitives define signed-value
+ordering and little-endian encoding without platform-dependent conversion.
+Authoritative source contains no floating-point type or operation.
+
+**Evidence:**
+
+- [S.I.R.#53](https://github.com/EHotwagner/S.I.R./pull/53) introduced the
+  foundation, shared fixtures, lock files, clean-checkout gate, and roadmap
+  transition;
+- `scripts/test-conformance.sh` restores in locked mode from nuget.org into an
+  isolated package cache, builds both hosts, compiles the package-derived Fable
+  source, and runs it under Node;
+- ten shared boundary fixtures produce the same 60 canonical bytes in .NET
+  and Fable/Node, with SHA-256
+  `99a578d8dbb135b9bb33cdaebed9e10a347398abd394474668b1ca75f3689eb4`;
+- the vector covers bounded overflow and underflow, positive and negative
+  half-away rounding, fixed-point saturation and multiplication, signed
+  ordering, little-endian encoding, and an `FS.GG.Game.Core.Cell` restored
+  from the published package;
+- a deliberate mutation of `bounded-add-overflow-saturates` is rejected at
+  that first changed fixture and byte zero by both runtime hosts; and
+- the pull-request CI runs the same conformance, lock, published-package, and
+  floating-source gates from a clean checkout.
+
+### [ ] 🟦 M6 — Minimal shared simulation slice
+
+**Unblocked by:** completed M5 shared numeric foundation.
 
 **Scope:** fixed board state, two units, one semantic edge, deterministic
 movement, one observation, one attack, one event stream, and one state digest.
