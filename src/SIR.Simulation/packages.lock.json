@@ -12,12 +12,16 @@
         }
       },
       "FSharp.Core": {
-        "type": "Transitive",
+        "type": "Direct",
+        "requested": "[10.1.302, 10.1.302]",
         "resolved": "10.1.302",
         "contentHash": "bN7XMQrAQg1dyHScJ7FcsznERBkvm74LtIo1O6C5mUzgbDqSwNbDpb3+nBGaJAjDmtC/suK5Vx5pFysKY6Hm+Q=="
       },
       "sir.domain": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[10.1.302, 10.1.302]"
+        }
       }
     }
   }

@@ -4,6 +4,7 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="FSharp.Core" Version="[10.1.302]" />
     <PackageVersion Include="FS.GG.Game.Core" Version="[0.13.0]" />
   </ItemGroup>
 </Project>

@@ -1217,10 +1217,10 @@ adversarial blocked-cell insertion order.
 `SIR.Simulation` package seam, and separate .NET and Fable/Node conformance
 hosts linked to the same fixture source. Dependencies and tools are centrally
 locked to .NET SDK 10.0.302, Fable 5.13.0, Node 26.5.0,
-`@fable-org/fable-library-js` 2.5.1, and the exact published
-`FS.GG.Game.Core` 0.13.0 package. NuGet and npm lock files are committed; the
-simulation consumes no sibling checkout or project reference outside this
-repository.
+`@fable-org/fable-library-js` 2.5.1, `FSharp.Core` 10.1.302, and the exact
+published `FS.GG.Game.Core` 0.13.0 package. NuGet and npm lock files are
+committed; the simulation consumes no sibling checkout or project reference
+outside this repository.
 
 `BoundedInt32` carries an inclusive range and rejects invalid construction or
 mixed-bound operations. Its add and subtract operations saturate through

@@ -7,5 +7,10 @@
     <Deterministic>true</Deterministic>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <IsPackable>false</IsPackable>
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+    <_FSharpCoreLibraryPacksFolder>$(MSBuildThisFileDirectory).packages/fsharp-core</_FSharpCoreLibraryPacksFolder>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" />
+  </ItemGroup>
 </Project>
