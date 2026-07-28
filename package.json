@@ -7,7 +7,8 @@
     "build:docs": "./scripts/build-docs.sh",
     "dev:client": "vite --config src/SIR.Client.Web/vite.config.js",
     "measure:worker": "node scripts/measure-worker.mjs",
-    "test": "./scripts/test-conformance.sh"
+    "test": "./scripts/test-conformance.sh",
+    "verify:baseline": "node scripts/verify-fable-client-baseline.mjs"
   },
   "dependencies": {
     "@fable-org/fable-library-js": "2.5.1",

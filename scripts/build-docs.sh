@@ -7,6 +7,8 @@ client_output="$repo_root/artifacts/client"
 
 cd "$repo_root"
 
+node scripts/verify-fable-client-baseline.mjs
+
 dotnet tool restore
 dotnet restore SIR.slnx --locked-mode
 dotnet build SIR.slnx -c Release --no-restore

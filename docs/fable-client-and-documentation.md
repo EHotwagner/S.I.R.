@@ -67,6 +67,11 @@ The optional browser-WASM spike reproduced common core semantics, instance
 state, host calls, scheduling, and explicit traps, but rejected authoritative
 browser verification because native browser WebAssembly has no deterministic
 equivalent of Wasmtime fuel or its out-of-fuel boundary.
+The completed v1 implementation parameters are now recorded in one
+machine-readable compatibility baseline and checked against executable source,
+locked toolchains, browser protocol, publication policy, and test harnesses.
+Only production policy that depends on future game scale remains outside the
+v1 contract.
 
 ## Decision
 
@@ -1862,6 +1867,56 @@ outputs and may claim only browser-kernel verification.
 - `scripts/test-conformance.sh` runs the M14 decision gate with the canonical
   replay and match qualification suite.
 
+### [x] 🟩 M15 — V1 compatibility baseline and maintenance handoff
+
+**Unblocked by:** completed M14 research and the accepted M7–M13 runtime,
+publication, and verification contracts.
+
+**Purpose:** close the feature roadmap without leaving implemented v1 choices
+misclassified as open design questions, and make later compatibility changes
+deliberate.
+
+**Acceptance:**
+
+- every implemented replay, numeric, worker, publication, toolchain, export,
+  smoke, and accessibility parameter has one machine-readable baseline;
+- the baseline is checked against executable source and locked configuration;
+- incompatible changes fail before the conformance and documentation builds;
+- production-scale policy that cannot yet be selected is named and owned by a
+  future profile rather than implied to be part of v1; and
+- the architecture document distinguishes compatibility contracts from tuning
+  policy.
+
+**Outcome:** `sir-fable-client-baseline-v1` records replay format 1, canonical
+uncompressed little-endian binary encoding, flat SHA-256 state/event hashes,
+decoder limits, four-place fixed point, worker protocol 1, 256-tick batches,
+the experiment-export schema, SHA-384 publication integrity, engine-retention
+policy, browser test harness, and the complete locked .NET/Fable/Elmish/React/
+Vite/fsdocs toolchain. The baseline does not create a second runtime
+configuration source: a verification script compares its declarations with
+the existing F#, JSON, XML, and npm owners and fails on drift.
+
+Three choices remain intentionally outside v1 because the current bounded
+qualification fixtures cannot select them honestly: production checkpoint
+cadence, time-based public replay/engine retention, and subsystem-specific
+numeric scales and ranges. Each now requires a future compatibility or
+production profile. Changing a frozen v1 encoding, hash, protocol, worker
+budget, export schema, or retained-engine contract requires a new versioned
+identity and migration evidence.
+
+**Evidence:**
+
+- `config/fable-client-baseline.json` is the machine-readable inventory of
+  frozen v1 contracts and explicitly deferred production profiles;
+- `scripts/verify-fable-client-baseline.mjs` checks replay and numeric
+  constants, worker protocol and batching, export schema, retention policy,
+  browser harness, and every locked toolchain version against their executable
+  owners;
+- `scripts/test-conformance.sh` and `scripts/build-docs.sh` run the drift gate
+  before their existing cross-runtime and publication work; and
+- the v1 implementation-baseline table below replaces the stale undifferentiated
+  list of open parameters.
+
 ## Definition of feature-ready
 
 The feature is ready for ordinary design use after M10 when:
@@ -1877,24 +1932,40 @@ versioned application deploy reproducibly to GitHub Pages.
 It is ready for authoritative match replay after M13 when a real server package
 passes kernel replay, WASM re-execution, disclosure, and retention gates.
 
-## Open implementation parameters
+## V1 implementation baseline
 
-- Canonical replay encoding and compression.
-- State and event hash algorithms and hash-tree layout.
-- Checkpoint cadence and retained diagnostic detail.
-- Engine-bundle and replay retention duration.
-- Exact browser resource limits and worker topology.
-- Fixed-point scales by subsystem.
-- Exact bounded ranges for authoritative numeric types.
-- Upstream `FS.GG.Game` source/package partition.
-- Pinned Fable, Elmish, React, view DSL, Vite, Node, and fsdocs versions.
-- Worker batch budgets and projection cadence.
-- Scenario and experiment export schema.
-- Browser smoke-test and accessibility-test tooling.
+The compatibility inventory is
+`config/fable-client-baseline.json`. The values below are frozen for v1 and
+verified against their executable owners by
+`scripts/verify-fable-client-baseline.mjs`.
 
-These choices may change without weakening the shared-source, exact-equivalence,
-upstream-publication, numeric, Elmish-MVU, version-binding, disclosure, or
-verification-level decisions above.
+| Surface | V1 contract | Change rule |
+|---|---|---|
+| Replay | Format 1; canonical uncompressed little-endian binary | New replay-format identity and migration evidence |
+| Digests | Flat SHA-256 state and event hashes; no hash tree | New replay/engine compatibility identity |
+| Replay limits | 1 MiB package; 16,384 inputs; 16,384 WASM outputs; 4,096 checkpoints; 65,536 perspective frames; 4,096 units; 16,384 edges; 65,536 observations | New validated resource profile |
+| Numerics | Signed int32 storage, saturating overflow, four-place base-ten fixed point, nearest ties away from zero | New ruleset/engine identity when authoritative output can change |
+| Browser execution | Worker protocol 1; one dedicated versioned worker for the active engine; 256-tick batches; one compact projection per completed batch | New protocol/engine identity and responsiveness evidence |
+| Laboratory export | `sir-lab-experiment-v1` with exact engine, ruleset, scenario, inputs, and integer results | New export schema and fixture migration |
+| Publication | SHA-384 asset integrity; retain each engine while its replay format is supported | New publication schema and retention audit |
+| Upstream package | `FS.GG.Game.Core` 0.13.0, profile `fs-gg-game-core-fable-lockstep-v1`, source delivered through the existing package | New published profile and consumer conformance |
+| Toolchain | .NET SDK 10.0.302; Fable 5.13.0; FSharp.Core 10.1.302; Elmish 5.0.2; Elmish.React 5.6.0; React 19.2.8; Vite 8.1.5; Node 26.5.0; fsdocs 22.1.0 | Coherent lock update plus complete conformance and documentation gates |
+| Browser quality gates | Production-bundle mount, generated-site mount, and structural accessibility checks under happy-dom | Replacement requires equivalent or stronger checked evidence |
+
+## Future production profiles
+
+The following are not silently open v1 parameters. They belong to later work
+whose scale and retention inputs do not yet exist:
+
+- production checkpoint cadence and retained diagnostic detail;
+- time-based public replay and engine-bundle retention duration; and
+- subsystem-specific fixed-point scales and bounded numeric ranges.
+
+Those profiles may tune future content without weakening the shared-source,
+exact-equivalence, upstream-publication, numeric, Elmish-MVU, version-binding,
+disclosure, or verification-level decisions above. Any output-affecting change
+must also advance the appropriate ruleset, engine, replay, protocol, or export
+identity.
 
 ## References
 
