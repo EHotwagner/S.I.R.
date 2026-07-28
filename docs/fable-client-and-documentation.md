@@ -1797,6 +1797,10 @@ verification is a separate .NET operation.
 
 **Evidence:**
 
+- [S.I.R.#61](https://github.com/EHotwagner/S.I.R./pull/61) introduced the
+  bounded authoritative match host, exact-artifact re-execution, full and
+  perspective qualification packages, verification/disclosure gates, and this
+  roadmap transition;
 - `src/SIR.Match/MatchReplay.fs` owns the pinned execution profile, immutable
   binary artifact, deterministic invocation, accepted-output journal, complete
   match run, exact-artifact re-execution, and both disclosure packages;
