@@ -50,23 +50,7 @@
     radial-gradient(circle at 12% 0%, #254438 0, transparent 30rem),
     #101715;
 }
-#sir-replay-app .app-shell > header {
-  position: static;
-  inset: auto;
-  z-index: auto;
-  max-width: 64rem;
-  margin-bottom: 1rem;
-}
 #sir-replay-app .eyebrow { color: #d8b36a; letter-spacing: .14em; text-transform: uppercase; }
-#sir-replay-app h1 {
-  position: static;
-  max-width: 100%;
-  margin: .15rem 0;
-  font-family: Georgia, serif;
-  font-size: clamp(1.8rem, 4vw, 3rem);
-  line-height: 1.08;
-  overflow-wrap: anywhere;
-}
 #sir-replay-app h2 { margin-top: 0; }
 
 #sir-replay-app .verification-banner {
@@ -143,8 +127,54 @@
 }
 #sir-replay-app .event-list button { width: 100%; margin-bottom: .35rem; text-align: left; }
 #sir-replay-app table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+#sir-replay-app caption {
+  color: #f5f1e8;
+  padding: .75rem 0;
+  text-align: left;
+  font-weight: 700;
+}
 #sir-replay-app th,
 #sir-replay-app td { border-bottom: 1px solid #43584e; padding: .4rem; text-align: left; }
+#sir-replay-app .simulation-summary {
+  border-left: .35rem solid #8ee3ae;
+  background: #10291d;
+  padding: 1rem;
+  color: #8ee3ae;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+#sir-replay-app .simulation-frames {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: .6rem;
+  margin-bottom: 1rem;
+}
+#sir-replay-app .simulation-frame {
+  display: grid;
+  gap: .35rem;
+  border: 1px solid #43584e;
+  border-radius: .35rem;
+  padding: .65rem;
+  background: #111a17;
+}
+#sir-replay-app .simulation-frame meter { width: 100%; }
+#sir-replay-app .rules-data-panel { margin-top: 1rem; }
+#sir-replay-app .rules-data-panel details {
+  border-top: 1px solid #43584e;
+  padding: .8rem 0;
+}
+#sir-replay-app .rules-data-panel summary {
+  color: #ffd166;
+  cursor: pointer;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+#sir-replay-app .catalog-table-scroll {
+  max-width: 100%;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+#sir-replay-app .catalog-table-scroll table { min-width: 42rem; }
 #sir-replay-app .control-row { display: flex; flex-wrap: wrap; gap: .55rem; margin: 1rem 0; }
 #sir-replay-app label { display: block; margin: .85rem 0 .35rem; }
 #sir-replay-app input[type="range"] { width: 100%; accent-color: #ffd166; }

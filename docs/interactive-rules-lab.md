@@ -21,11 +21,18 @@ Changing a parameter creates a derived sandbox identity and permanently ends
 any verification claim for that run. Laboratory charts are projections of
 canonical integer results and are labeled as exploratory evidence.
 
-No replay file is required for the laboratory. Choose one of the scenario cards
-at the top of the application, run its fixed baseline, edit attack power or
-attack count, then sweep either parameter or export the reproducible result.
-The scenarios include short and sustained exchanges, one heavy strike, rapid
-chip damage, and both sides of the exact lethality threshold.
+No replay file is required for the laboratory. Choose a scenario card and click
+**Simulate now**. Its deterministic attacks, damage, and remaining HP appear
+immediately below the cards, together with an attack-by-attack target-health
+strip. You can then edit attack power or attack count, sweep either parameter,
+or export the reproducible result. The scenarios include short and sustained
+exchanges, one heavy strike, rapid chip damage, and both sides of the exact
+lethality threshold.
+
+The application also contains expandable tables for unit roles, prototype body
+profiles, all human perk families, canonical weapon roles, prototype weapon
+profiles, armor, and human and proposed arcane equipment. Status labels keep
+canonical design, proposals, and experimental balance inputs distinct.
 
 <noscript>
   <div class="sir-status sir-status-warning">

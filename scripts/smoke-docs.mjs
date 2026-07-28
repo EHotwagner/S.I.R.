@@ -42,11 +42,13 @@ await import(pathToFileURL(bundle));
 await window.happyDOM.waitUntilComplete();
 
 const mount = window.document.getElementById("sir-replay-app");
-const heading = mount?.querySelector("h1");
+const application = mount?.querySelector(
+  'main[aria-label="Replay and rules laboratory application"]',
+);
 const status = mount?.querySelector('[role="status"]');
 const catalog = mount?.querySelector('[aria-label="Design scenario catalog"]');
 
-if (heading?.textContent !== "Replay and rules laboratory") {
+if (!application || mount?.querySelector("header, h1")) {
   throw new Error("The Fable application did not mount inside the fsdocs page.");
 }
 
@@ -55,7 +57,7 @@ if (!status?.textContent.includes("Ready — choose a scenario or load a replay"
 }
 
 const scenarioButtons = [
-  ...catalog?.querySelectorAll('button[aria-label^="Run design scenario"]') ?? [],
+  ...catalog?.querySelectorAll('button[aria-label^="Simulate design scenario"]') ?? [],
 ];
 
 if (
@@ -76,8 +78,20 @@ if (
   throw new Error("The generated-site scenario action did not reach the worker.");
 }
 
+const result = mount?.querySelector('[aria-label="Laboratory results"]');
+const rulesData = mount?.querySelector('[aria-label="Rules data tables"]');
+
+if (
+  !result?.textContent.includes("Simulation result") ||
+  rulesData?.querySelectorAll("table").length !== 7 ||
+  !rulesData?.textContent.includes("Point Man") ||
+  !rulesData?.textContent.includes("Rifle")
+) {
+  throw new Error("The generated site omitted the immediate result or rules-data tables.");
+}
+
 console.log(
-  "Documentation browser smoke passed: the Fable application mounted inside the generated fsdocs page with six runnable scenarios and a worker-backed scenario action.",
+  "Documentation browser smoke passed: the Fable application has no duplicate masthead, exposes six explicit simulation actions and an immediate-result panel, and includes seven unit/perk/weapon/equipment tables.",
 );
 
 window.happyDOM.close();

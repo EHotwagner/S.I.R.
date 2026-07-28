@@ -87,8 +87,9 @@ across ticks and use swept paths.
 
 ### Prototype weapon profiles
 
-These are the exact inputs currently compiled in
-[`Catalog.fs`](../spikes/rules-lab/Catalog.fs). They are not canonical stats.
+These values are mirrored in the browser laboratory's structured
+[`RulesCatalog.fs`](https://github.com/EHotwagner/S.I.R./blob/main/src/SIR.Client/RulesCatalog.fs)
+catalog. They are not canonical stats.
 
 | Weapon | Kind | Base engage (s) | Range slope | Exponent | Accuracy | Dispersion/m | Damage | Penetration | Shots/s | Effect density | Suppression/s |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|

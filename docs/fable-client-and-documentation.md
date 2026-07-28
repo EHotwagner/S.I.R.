@@ -1570,10 +1570,12 @@ browser-verification display.
 - balance evidence is labeled separately from accepted balance.
 
 **Outcome:** `SIR.Client` now owns a platform-neutral rules-laboratory model
-with six fixed, revisioned attack-resolution scenarios, exact engine and ruleset
-identities, typed parameter definitions, bounded validation, deterministic
-integer evaluation through `Simulation.runTickWithRules`, baseline/fork
-comparison, and sweep results. The laboratory varies bounded rule inputs but
+with six fixed, revisioned attack-resolution scenarios, an inspectable
+unit/perk/weapon/armor/equipment catalog, exact engine and ruleset identities,
+typed parameter definitions, bounded validation, deterministic integer
+evaluation through `Simulation.runTickWithRules`, immediate baseline/fork
+comparison, an attack-by-attack visual result, and sweep results. The laboratory
+varies bounded rule inputs but
 does not reimplement attack resolution. The baseline is always recomputed from
 catalog defaults and is never mutated by a patch.
 Every result carries its complete effective parameter map plus scenario,
