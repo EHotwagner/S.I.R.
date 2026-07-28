@@ -6,7 +6,7 @@ document-type: living-architecture
 category: Design
 categoryindex: 4
 index: 13
-version: "2.2"
+version: "2.3"
 last-updated: 2026-07-28
 description: Shared .NET/Fable simulation, upstream FS.GG.Game compatibility, deterministic numerics, Elmish MVU browser tooling, replay verification, and delivery roadmap.
 related:
@@ -1250,7 +1250,7 @@ Authoritative source contains no floating-point type or operation.
 - the pull-request CI runs the same conformance, lock, published-package, and
   floating-source gates from a clean checkout.
 
-### [ ] 🟦 M6 — Minimal shared simulation slice
+### [x] 🟩 M6 — Minimal shared simulation slice
 
 **Unblocked by:** completed M5 shared numeric foundation.
 
@@ -1265,9 +1265,49 @@ movement, one observation, one attack, one event stream, and one state digest.
 - a first-divergence report identifies tick and phase; and
 - no rendering or network dependency enters the kernel.
 
-### [ ] 🟨 M7 — Replay format and runner
+**Outcome:** `SIR.Simulation` now owns a headless one-tick kernel slice with a
+fixed 3×2 board, two units, one movement-blocking semantic edge, canonicalized
+kernel inputs, and stable movement, observation, attack, and commit phases. The
+red unit completes one equal-cost diagonal Chebyshev step. The blue unit's
+orthogonal step is rejected by the canonical `FS.GG.Game.Core.Edge` between
+the cells. Symmetric integer supercover LOS then creates one observation, and
+the observed adjacent target receives one fixed 25-point attack.
 
-**Blocked by:** M6.
+The movement adapter applies S.I.R.'s strict diagonal rule: all four
+origin/side/destination semantic boundaries around a diagonal step must be
+passable. Movement candidates read one stable pre-phase state, destination
+conflicts are rejected symmetrically, and accepted moves commit as one batch.
+The input list is deduplicated and canonically ordered before execution;
+reversing the complete M6 journal must reproduce the same state, events,
+checkpoints, and digest.
+
+The M6 encoding is explicitly provisional until M7 selects the replay schema
+and cryptographic hashes. It produces 561 canonical simulation bytes across
+four phase checkpoints, including 55 final-state bytes, 93 event bytes, and
+the four digest bytes `9baa05cc`. Combined with the M5 numeric vector, the
+shared .NET and Fable/Node hosts now agree on a 621-byte conformance oracle
+with SHA-256
+`6e822e333a46ce1f3e6716841a5a47a69780a428407d426b26ddf98984210d99`.
+
+**Evidence:**
+
+- [S.I.R.#54](https://github.com/EHotwagner/S.I.R./pull/54) introduced the
+  shared slice, phase oracles, divergence gate, and roadmap transition;
+- `src/SIR.Simulation/Simulation.fs` contains the shared state, inputs, phase
+  transitions, semantic-edge adapter, Chebyshev rule, LOS observation, attack,
+  event encoding, and state encoding without rendering or network references;
+- `tests/SIR.Conformance.Shared/SimulationFixtures.fs` executes the same source
+  in both runtimes, holds independent phase oracles, and proves that reversing
+  the journal does not change the result;
+- `scripts/test-conformance.sh` restores published dependencies into an
+  isolated cache, builds .NET, compiles Fable, executes Node, compares the
+  complete oracle, and checks the floating-source gate; and
+- deliberate mutation of the movement checkpoint is rejected at tick 1,
+  phase `movement`, byte zero by both runtime hosts.
+
+### [ ] 🟦 M7 — Replay format and runner
+
+**Unblocked by:** completed M6 minimal shared simulation slice.
 
 **Deliverables:**
 

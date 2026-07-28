@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  numeric-conformance:
+  cross-runtime-conformance:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
