@@ -8,6 +8,17 @@ export NUGET_PACKAGES="$task_tmp/nuget-packages"
 
 cd "$repo_root"
 
+search_fixed() {
+  local pattern=$1
+  local file=$2
+
+  if command -v rg >/dev/null 2>&1; then
+    rg -F "$pattern" "$file" >/dev/null
+  else
+    grep -F -- "$pattern" "$file" >/dev/null
+  fi
+}
+
 dotnet tool restore
 dotnet restore SIR.slnx --locked-mode
 dotnet build SIR.slnx --no-restore
@@ -42,7 +53,7 @@ if dotnet run \
   exit 1
 fi
 
-if ! rg -F "$divergence_pattern" "$task_tmp/dotnet-divergence.log" >/dev/null; then
+if ! search_fixed "$divergence_pattern" "$task_tmp/dotnet-divergence.log"; then
   echo "The .NET divergence guard did not identify the first changed fixture" >&2
   sed -n '1,80p' "$task_tmp/dotnet-divergence.log" >&2
   exit 1
@@ -54,13 +65,25 @@ if node "$fable_entry" \
   exit 1
 fi
 
-if ! rg -F "$divergence_pattern" "$task_tmp/fable-divergence.log" >/dev/null; then
+if ! search_fixed "$divergence_pattern" "$task_tmp/fable-divergence.log"; then
   echo "The Fable divergence guard did not identify the first changed fixture" >&2
   sed -n '1,80p' "$task_tmp/fable-divergence.log" >&2
   exit 1
 fi
 
-if rg -n '\b(float|float32|double|decimal)\b' src --glob '*.fs'; then
+if command -v rg >/dev/null 2>&1; then
+  floating_source=$(rg -n '\b(float|float32|double|decimal)\b' src --glob '*.fs' || true)
+else
+  floating_source=$(
+    grep -RInE \
+      --include='*.fs' \
+      '(^|[^[:alnum:]_])(float|float32|double|decimal)([^[:alnum:]_]|$)' \
+      src || true
+  )
+fi
+
+if [[ -n "$floating_source" ]]; then
+  printf '%s\n' "$floating_source" >&2
   echo "Authoritative source contains floating-point state or operations" >&2
   exit 1
 fi
