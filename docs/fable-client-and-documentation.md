@@ -6,7 +6,7 @@ document-type: living-architecture
 category: Design
 categoryindex: 4
 index: 13
-version: "2.7"
+version: "2.8"
 last-updated: 2026-07-28
 description: Shared .NET/Fable simulation, upstream FS.GG.Game compatibility, deterministic numerics, Elmish MVU browser tooling, replay verification, and delivery roadmap.
 related:
@@ -49,6 +49,11 @@ Elmish state. The same worker now runs a fixed, versioned rules-laboratory
 catalog with bounded typed parameters, immutable baseline/fork comparisons,
 deterministic integer sweeps, explicit exploratory-evidence labeling, and
 reproducible experiment exports.
+The explanatory corpus, evaluated .NET evidence, generated API reference, and
+Fable application now build together through a pinned, strict
+FSharp.Formatting pipeline. The default fsdocs template supplies navigation
+and search while supported extension points mount the versioned browser bundle
+with an integrity manifest and an explicit no-JavaScript fallback.
 
 ## Decision
 
@@ -1596,7 +1601,7 @@ can be promoted directly into a permanent regression fixture.
   production worker, and runs the browser smoke gate for the scenario catalog
   and comparison surface.
 
-### [ ] 🟦 M11 — Literate corpus integration
+### [x] 🟩 M11 — Literate corpus integration
 
 **Unblocked by:** completed M8 mount and completed M10 rules laboratory.
 
@@ -1619,9 +1624,58 @@ can be promoted directly into a permanent regression fixture.
 - interactive assets are versioned and integrity-checked; and
 - generated outputs remain uncommitted.
 
-### [ ] 🟨 M12 — Versioned engine publication and GitHub Pages
+**Outcome:** `fsdocs-tool` 22.1.0 is pinned in the repository-local tool
+manifest. A strict, locked build now compiles the solution in Release mode,
+evaluates fixed literate F# examples on .NET, generates the complete
+explanatory corpus and public API reference, builds the Fable client, combines
+the outputs under `artifacts/site`, and rejects broken Pages-root links,
+missing source links, absent search entries, incomplete runtime disclosures,
+or asset-integrity drift.
 
-**Blocked by:** M7 and M11.
+The default FSharp.Formatting template remains intact. Supported `_head.html`,
+`_body.html`, and `fsdocs-theme.css` extension points add the scoped client
+styles, mount the Fable application only when its dedicated element exists,
+and reuse the established verified, browser, sandbox, and warning color
+vocabulary. The interactive page identifies Fable/JavaScript browser
+execution and its verification boundary; the evaluated tutorial identifies
+.NET build-time execution. A visible `<noscript>` explanation preserves routes
+to the corpus, fixed evidence, architecture, and API pages.
+
+Vite emits the application, worker, and scoped stylesheet beneath
+`content/sir-client/v1`. The combined build creates
+`sir-docs-assets-v1`, records byte lengths and SHA-384 integrity for every
+browser asset, and verifies the manifest before acceptance. Generated HTML,
+Markdown, search indexes, API pages, client bundles, and manifests remain
+ignored build outputs.
+
+**Evidence:**
+
+- [S.I.R.#59](https://github.com/EHotwagner/S.I.R./pull/59) introduced the
+  strict literate corpus, evaluated .NET evidence, embedded Fable application,
+  integrity gates, generated-page browser smoke, and this roadmap transition;
+- `docs/index.md`, `docs/deterministic-simulation.fsx`, and
+  `docs/interactive-rules-lab.md` provide navigation, evaluated fixed
+  evidence, the Fable mount, runtime/trust disclosures, and the no-JavaScript
+  path;
+- `Directory.Build.props` supplies the Pages project root, repository/source
+  identities, navigation metadata, AGPL link, and default-template styling
+  parameters for all documented libraries;
+- `scripts/build-docs.sh` performs the locked Release build, strict evaluated
+  fsdocs generation, Fable/Vite build, and uncommitted artifact assembly;
+- `scripts/generate-docs-manifest.mjs` and `scripts/verify-docs.mjs` prove
+  versioned SHA-384 asset integrity, project-root links, main-branch source
+  links, API output, search membership, evaluated results, runtime labels, and
+  fallback content;
+- `scripts/smoke-docs.mjs` loads the generated fsdocs page and proves that the
+  production Fable application mounts there with live verification status and
+  the fixed scenario catalog; and
+- the pull-request workflow runs this complete documentation gate separately
+  from the retained cross-runtime conformance gate.
+
+### [ ] 🟦 M12 — Versioned engine publication and GitHub Pages
+
+**Unblocked by:** completed M7 replay format and completed M11 literate corpus
+integration.
 
 **Deliverables:**
 

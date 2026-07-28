@@ -2,6 +2,9 @@
 bin/
 obj/
 artifacts/
+output/
+.fsdocs/
+tmp/
 node_modules/
 src/SIR.Client.Web/.fable/
 src/SIR.Client.Web/fable/

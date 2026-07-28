@@ -23,3 +23,17 @@ jobs:
           cache: npm
       - run: npm ci
       - run: ./scripts/test-conformance.sh
+
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26.5.0
+          cache: npm
+      - run: npm ci
+      - run: ./scripts/build-docs.sh
