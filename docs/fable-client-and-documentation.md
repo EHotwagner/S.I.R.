@@ -63,6 +63,10 @@ through the pinned Wasmtime profile, records its accepted outputs, emits full
 and knowledge-filtered replay packages, and re-executes the exact artifact
 before granting the stronger authoritative verification claim. Browser replay
 continues to claim kernel verification only.
+The optional browser-WASM spike reproduced common core semantics, instance
+state, host calls, scheduling, and explicit traps, but rejected authoritative
+browser verification because native browser WebAssembly has no deterministic
+equivalent of Wasmtime fuel or its out-of-fuel boundary.
 
 ## Decision
 
@@ -1816,9 +1820,10 @@ verification is a separate .NET operation.
 - `scripts/test-conformance.sh` runs the new match gate alongside the existing
   .NET/Fable canonical replay, first-divergence, browser, and worker gates.
 
-### [ ] 🟧 M14 — Optional browser WASM verification research
+### [x] 🟩 M14 — Optional browser WASM verification research
 
-**Blocked by:** M13. This is not required for the canonical browser replay.
+**Unblocked by:** completed M13. This is not required for the canonical browser
+replay.
 
 **Question:** can a browser WASM host reproduce the pinned Wasmtime ABI,
 instance state, fuel, traps, scheduling, and host services closely enough for
@@ -1827,6 +1832,35 @@ full authoritative verification?
 **Exit:** accept a separate implementation milestone only if the spike passes
 the complete module-execution conformance contract. Otherwise retain recorded
 accepted outputs as the canonical browser boundary.
+
+**Outcome:** the spike rejected a separate browser-WASM verification
+implementation milestone. One shared 125-byte core module produced identical
+SHA-256 identity, integer decisions, persistent and fresh-instance state,
+ordered host calls, and explicit guest-trap behavior under Wasmtime 44.0.0 and
+the JavaScript `WebAssembly` API. The shared vector is decisions `[8, 10, 2]`,
+host-call arguments `[4, 5, 1]`, final counter `3`, and fresh-instance counter
+`0`.
+
+The complete profile does not qualify. Wasmtime deterministically traps the
+module's unbounded loop at a 1,000-unit fuel allowance. Native browser
+WebAssembly exposes no store fuel allowance, consumed-fuel counter, or
+out-of-fuel trap. Wall-clock Web Worker termination is device- and
+scheduler-dependent and cannot reproduce the authoritative instruction
+boundary. Browser replay therefore continues to consume recorded accepted
+outputs and may claim only browser-kernel verification.
+
+**Evidence:**
+
+- `spikes/browser-wasm-verification/` holds the exact shared artifact,
+  Wasmtime oracle, JavaScript WebAssembly host, and contract evaluator;
+- `scripts/test-browser-wasm-verification.sh` proves all common vectors match,
+  proves Wasmtime fuel enforcement, and deliberately fails if the browser API
+  later exposes a fuel surface without renewed qualification;
+- [Browser WASM Verification Spike](research/browser-wasm-verification-spike.md)
+  records the passed and failed contract surfaces and the negative
+  implementation decision; and
+- `scripts/test-conformance.sh` runs the M14 decision gate with the canonical
+  replay and match qualification suite.
 
 ## Definition of feature-ready
 
