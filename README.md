@@ -14,6 +14,11 @@ implementation status, research, API reference, and development roadmap. The
 README is intentionally limited to repository orientation and build commands;
 project information belongs in the published documentation.
 
+> **URL note:** the repository name ends in a period, so the Pages project path
+> is `/S.I.R./`. The final period in
+> `https://ehotwagner.github.io/S.I.R./` is required; `/S.I.R/` is a different
+> path and returns 404.
+
 Start with:
 
 - [Game vision](https://ehotwagner.github.io/S.I.R./game-vision.html) — the
