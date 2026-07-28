@@ -46,6 +46,43 @@ type LabReport =
       Sweep: SweepResult option
       EvidenceLabel: string }
 
+/// A structured-clone-safe key/value entry for the browser worker boundary.
+type Int32Entry =
+    { Key: string
+      Value: int32 }
+
+type DesignScenarioTransport =
+    { Identity: string
+      Revision: int32
+      Title: string
+      Description: string
+      EngineIdentity: string
+      RulesetIdentity: string
+      Parameters: LabParameter array }
+
+type ExperimentInputTransport =
+    { ScenarioIdentity: string
+      ScenarioRevision: int32
+      EngineIdentity: string
+      RulesetIdentity: string
+      Parameters: Int32Entry array }
+
+type ExperimentResultTransport =
+    { Input: ExperimentInputTransport
+      ResultIdentity: string
+      Metrics: Int32Entry array }
+
+type SweepResultTransport =
+    { Parameter: string
+      Results: ExperimentResultTransport array }
+
+type LabReportTransport =
+    { Baseline: ExperimentResultTransport
+      Fork: ExperimentResultTransport
+      Delta: Int32Entry array
+      Sweep: SweepResultTransport option
+      EvidenceLabel: string }
+
 [<RequireQualifiedAccess>]
 module Lab =
     [<Literal>]
@@ -60,7 +97,7 @@ module Lab =
     let private rulesetIdentity =
         "6d31302d72756c65732d6c61622d763100000000000000000000000000000000"
 
-    let private attackParameters attackPower attackCount =
+    let private attackParameters attackPower attackCount : LabParameter list =
         [ { Key = "attack-power"
             Label = "Attack power"
             Minimum = 1
@@ -74,7 +111,7 @@ module Lab =
             Step = 1
             DefaultValue = attackCount } ]
 
-    let catalog =
+    let catalog: DesignScenario list =
         [ { Identity = "adjacent-duel"
             Revision = 1
             Title = "Four-hit baseline"
@@ -178,7 +215,11 @@ module Lab =
         |> Array.map (fun value -> value.ToString("x2"))
         |> String.concat ""
 
-    let evaluate (scenario: DesignScenario) (parameters: Map<string, int32>) =
+    let evaluate
+        (scenario: DesignScenario)
+        (parameters: Map<string, int32>)
+        : ExperimentResult
+        =
         let attackPower = required "attack-power" parameters
         let attackCount = required "attack-count" parameters
 
@@ -215,7 +256,7 @@ module Lab =
 
         let totalDamage = 100 - remainingHealth
 
-        let input =
+        let input: ExperimentInput =
             { ScenarioIdentity = scenario.Identity
               ScenarioRevision = scenario.Revision
               EngineIdentity = scenario.EngineIdentity
@@ -247,12 +288,12 @@ module Lab =
                 baseline.Metrics
                 |> Map.map (fun key value -> Map.find key fork.Metrics - value)
 
-            let comparison =
+            let comparison: ExperimentComparison =
                 { Baseline = baseline
                   Fork = fork
                   Delta = delta }
 
-            let sweep =
+            let sweep: SweepResult option =
                 sweepParameter
                 |> Option.bind (fun key ->
                     scenario.Parameters
@@ -269,10 +310,12 @@ module Lab =
                                 |> Map.add key value
                                 |> evaluate scenario) }))
 
-            Ok
+            let report: LabReport =
                 { Comparison = comparison
                   Sweep = sweep
                   EvidenceLabel = EvidenceLabel }
+
+            Ok report
 
     let attackFrames (report: LabReport) =
         let parameters = report.Comparison.Fork.Input.Parameters
@@ -282,6 +325,113 @@ module Lab =
         [ 0 .. attackCount ]
         |> List.map (fun attack ->
             attack, max 0 (100 - (attack * attackPower)))
+
+    let private entriesOf
+        (map: Map<string, int32>)
+        : Int32Entry array
+        =
+        map
+        |> Map.toArray
+        |> Array.map (fun (key, value) -> { Key = key; Value = value })
+
+    let private mapOfEntries
+        (entries: Int32Entry array)
+        : Map<string, int32>
+        =
+        entries
+        |> Array.map (fun entry -> entry.Key, entry.Value)
+        |> Map.ofArray
+
+    let parametersToTransport
+        (parameters: Map<string, int32>)
+        : Int32Entry array
+        =
+        entriesOf parameters
+
+    let parametersFromTransport
+        (parameters: Int32Entry array)
+        : Map<string, int32>
+        =
+        mapOfEntries parameters
+
+    let scenarioToTransport
+        (scenario: DesignScenario)
+        : DesignScenarioTransport
+        =
+        { Identity = scenario.Identity
+          Revision = scenario.Revision
+          Title = scenario.Title
+          Description = scenario.Description
+          EngineIdentity = scenario.EngineIdentity
+          RulesetIdentity = scenario.RulesetIdentity
+          Parameters = List.toArray scenario.Parameters }
+
+    let scenarioFromTransport
+        (scenario: DesignScenarioTransport)
+        : DesignScenario
+        =
+        { Identity = scenario.Identity
+          Revision = scenario.Revision
+          Title = scenario.Title
+          Description = scenario.Description
+          EngineIdentity = scenario.EngineIdentity
+          RulesetIdentity = scenario.RulesetIdentity
+          Parameters = Array.toList scenario.Parameters }
+
+    let private resultToTransport
+        (result: ExperimentResult)
+        : ExperimentResultTransport
+        =
+        { Input =
+            { ScenarioIdentity = result.Input.ScenarioIdentity
+              ScenarioRevision = result.Input.ScenarioRevision
+              EngineIdentity = result.Input.EngineIdentity
+              RulesetIdentity = result.Input.RulesetIdentity
+              Parameters = entriesOf result.Input.Parameters }
+          ResultIdentity = result.ResultIdentity
+          Metrics = entriesOf result.Metrics }
+
+    let private resultFromTransport
+        (result: ExperimentResultTransport)
+        : ExperimentResult
+        =
+        { Input =
+            { ScenarioIdentity = result.Input.ScenarioIdentity
+              ScenarioRevision = result.Input.ScenarioRevision
+              EngineIdentity = result.Input.EngineIdentity
+              RulesetIdentity = result.Input.RulesetIdentity
+              Parameters = mapOfEntries result.Input.Parameters }
+          ResultIdentity = result.ResultIdentity
+          Metrics = mapOfEntries result.Metrics }
+
+    let reportToTransport
+        (report: LabReport)
+        : LabReportTransport
+        =
+        { Baseline = resultToTransport report.Comparison.Baseline
+          Fork = resultToTransport report.Comparison.Fork
+          Delta = entriesOf report.Comparison.Delta
+          Sweep =
+            report.Sweep
+            |> Option.map (fun sweep ->
+                { Parameter = sweep.Parameter
+                  Results = sweep.Results |> List.map resultToTransport |> List.toArray })
+          EvidenceLabel = report.EvidenceLabel }
+
+    let reportFromTransport
+        (report: LabReportTransport)
+        : LabReport
+        =
+        { Comparison =
+            { Baseline = resultFromTransport report.Baseline
+              Fork = resultFromTransport report.Fork
+              Delta = mapOfEntries report.Delta }
+          Sweep =
+            report.Sweep
+            |> Option.map (fun sweep ->
+                { Parameter = sweep.Parameter
+                  Results = sweep.Results |> Array.map resultFromTransport |> Array.toList })
+          EvidenceLabel = report.EvidenceLabel }
 
     let export (report: LabReport) =
         let resultLines prefix (result: ExperimentResult) =

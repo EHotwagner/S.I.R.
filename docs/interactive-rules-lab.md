@@ -34,6 +34,11 @@ profiles, all human perk families, canonical weapon roles, prototype weapon
 profiles, armor, and human and proposed arcane equipment. Status labels keep
 canonical design, proposals, and experimental balance inputs distinct.
 
+Scenario inputs and results cross the Web Worker boundary as clone-safe plain
+records. The documentation build runs the compiled worker and requires both a
+scenario and an edited experiment to complete a real structured-clone round
+trip.
+
 <noscript>
   <div class="sir-status sir-status-warning">
     <strong>JavaScript is disabled.</strong>

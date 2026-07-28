@@ -325,19 +325,29 @@ let private execute operation request =
                 | Ok report ->
                     let metadata = scenarioMetadata scenario report
                     post operation (
-                        LoadedScenario(metadata, scenario, report, emptyProjection 0)
+                        LoadedScenario(
+                            metadata,
+                            Lab.scenarioToTransport scenario,
+                            Lab.reportToTransport report,
+                            emptyProjection 0
+                        )
                     )
         | RunExperiment(scenarioIdentity, patch, sweepParameter) ->
             match Lab.tryScenario scenarioIdentity with
             | None -> post operation (RunnerFailed("unknown design scenario: " + scenarioIdentity))
             | Some scenario ->
-                match Lab.run scenario patch sweepParameter with
+                match
+                    Lab.run
+                        scenario
+                        (Lab.parametersFromTransport patch)
+                        sweepParameter
+                with
                 | Error error -> post operation (RunnerFailed error)
                 | Ok report ->
                     post operation (
                         ExperimentCompleted(
                             report.Comparison.Fork.ResultIdentity,
-                            report
+                            Lab.reportToTransport report
                         )
                     )
         | Cancel -> cancelled <- cancelled |> Set.add (OperationId.value operation)
