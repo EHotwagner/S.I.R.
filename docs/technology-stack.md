@@ -13,7 +13,7 @@ related:
   - docs/research/wasm-runtime-selection.md
   - docs/research/public-transport-selection.md
   - docs/public-protocol-architecture.md
-  - docs/cross-runtime-replay.md
+  - docs/fable-client-and-documentation.md
 ---
 
 # S.I.R. Technology Stack and FS.GG Integration
@@ -170,7 +170,7 @@ authorized, completed replay packages over ordinary static or replay-service
 delivery and runs the shared kernel locally. Exact behavior, historical engine
 bundle retention, and the distinction between kernel replay and authoritative
 WASM verification are defined by
-[Cross-Runtime Determinism and Browser Replay](cross-runtime-replay.md).
+[Fable Client and Interactive Documentation](fable-client-and-documentation.md).
 
 ## FS.GG.Rendering and FS.GG.Audio integration
 

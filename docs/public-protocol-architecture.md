@@ -12,7 +12,7 @@ related:
   - docs/research/public-transport-selection.md
   - docs/wasm-control-architecture.md
   - docs/mission-lifecycle.md
-  - docs/cross-runtime-replay.md
+  - docs/fable-client-and-documentation.md
 ---
 
 # S.I.R. Public gRPC Protocol Architecture
@@ -206,7 +206,7 @@ browser re-simulation. A player-perspective package contains only the
 knowledge-filtered projections and messages the player may receive and is
 projection playback rather than complete re-simulation. The protocol labels
 the disclosure scope and verification level explicitly. See
-[Cross-Runtime Determinism and Browser Replay](cross-runtime-replay.md).
+[Fable Client and Interactive Documentation](fable-client-and-documentation.md).
 
 ## Live-session envelopes
 

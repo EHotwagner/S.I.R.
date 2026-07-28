@@ -12,7 +12,7 @@ related:
   - docs/skirmish-development-plan.md
   - docs/wasm-control-architecture.md
   - docs/public-protocol-architecture.md
-  - docs/cross-runtime-replay.md
+  - docs/fable-client-and-documentation.md
 ---
 
 # S.I.R. F# Codebase Architecture
