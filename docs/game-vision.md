@@ -2,8 +2,8 @@
 title: S.I.R. Game Vision
 status: proposed
 document-type: living-vision
-version: "1.13"
-last-updated: 2026-07-27
+version: "1.17"
+last-updated: 2026-07-28
 ---
 
 # S.I.R. Game Vision
@@ -148,6 +148,22 @@ shattering events. Any loss of HP immediately reevaluates the threshold, so
 damage can force an already strained caster to breach even when the caster is
 not performing a spell. Resolving a breach discharges some accumulated strain
 but does not necessarily reset the caster to zero or restore a safe state.
+
+Every senior caster normally leads a cell of two or three persistent magical
+assistants. Assistants possess lesser spells and ritual abilities and contribute
+preparation, maintenance, stability, interruption tolerance, and controlled
+shutdown. Minor workings may use one complete caster cell, but major rituals
+and portals still require multiple senior casters. Assistants cannot substitute
+without limit for senior casters or erase HP, Strain, component, anchor-load, or
+breach costs.
+
+Arcane anchored information flow is asymmetric. Legitimate observations and
+status from an anchored unit, including observations borrowed from an attuned
+critter, reach the controlling caster on the next authoritative tick without
+distance or relay delay. A deliberate caster command reaches an anchored
+subordinate after a flat 20 ticks or one second. Distance within one anchor
+influence does not change that delay, no subordinate relay chain exists, and a
+unit outside valid influence receives no new command.
 
 Arcane rituals are distinct from individual spells. They are site-bound,
 observable actions requiring multiple casters to maintain a quorum. They commit
@@ -517,6 +533,12 @@ general class changes or unrestricted multiclassing.
   movement and combat resolution continue.
 - The fixed-step model provides a shared temporal basis for server authority,
   control-module execution, replays, debugging, and multiplayer synchronization.
+- The authoritative F# gameplay kernel is shared between .NET and Fable builds.
+  Given the same validated snapshot and ordered kernel inputs, they must produce
+  exactly equal authoritative state, events, and hashes. An authorized browser
+  replay re-simulates that kernel from a version-bound package; a
+  player-perspective replay plays recorded knowledge-filtered projections and
+  cannot reconstruct hidden state.
 - At the target duration and tick rate, a normal match spans approximately
   24,000 authoritative simulation ticks. Replay, storage, module metering, and
   server-capacity designs should use that order of magnitude while supporting
@@ -1576,6 +1598,20 @@ Reports cost link capacity and emit like any other traffic, so report volume
 trades information against signature. They are not drawn from allocated command
 bandwidth, which prices only what a commander gives a unit.
 
+Reports, observations, orders, acknowledgements, friendly status, and
+player-defined messages all pay the same transport latency. A direct local
+squad-net transmission takes at least one tick. Every physical command-net leg,
+including leader-to-leader and leader-to-headquarters, takes 20 ticks or one
+second. A leader-to-relay-to-headquarters route has two command legs and
+therefore takes at least two seconds one way.
+
+The player consequently sees a stale remote command picture rather than live
+server truth. Reports preserve observation time, arrival time, source,
+provenance, and identity. An older observation arriving over a slower path
+cannot overwrite newer knowledge of the same event or contact, while conflicting
+independent observations remain separate evidence. Order receipt and execution
+are known only when acknowledgements return through the delayed network.
+
 See [Observation Reporting Model](reporting-model.md).
 
 Fixed observation reports are distinct from the player-defined command and
@@ -1615,6 +1651,17 @@ fixed report rules do not imply fixed certainty categories in the interface.
   round trip through the network is strictly longer than a local reaction, and
   no protocol compression shortens it. Global coordination is therefore possible
   but slow, and local reaction fast.
+- Every command-network transmission leg costs 20 simulation ticks. The delay is
+  symmetric for orders, reports, observations, acknowledgements, status, and
+  player-defined messages; command traffic has no zero-delay report path.
+- Portable command sets provide command-net access. Dedicated relays provide
+  materially greater range and capacity, with exact ratios left to prototyping.
+  Their longer links reduce the number of one-second legs compared with a chain
+  of leaders.
+- Arcane anchoring does not inherit human command-net timing. Anchored
+  observations and status rise to the controlling caster on the next tick;
+  caster commands descend to anchored subordinates after a flat 20 ticks.
+  Arcane information does not accumulate relay hops.
 - Restricting which messages may be sent is not attempted. Any preset vocabulary
   is a channel a player will encode arbitrary instructions into, so volume is
   charged instead of meaning.
@@ -2079,6 +2126,14 @@ equipment changes, or other consequences back to campaign personnel or state.
   through an acyclic project graph.
 - Local sibling checkouts do not silently determine a build. CI, releases,
   replays, and ordinary development use an explicit coherent dependency set.
+- Fable compiles the shared deterministic kernel for browser experiments and
+  replay. FSharp.Formatting builds the literate documentation site, and GitHub
+  Pages hosts its static HTML, JavaScript, and immutable version-bound replay
+  engine bundles.
+- The browser rules laboratory and replay interface uses Elmish MVU from its
+  first implementation. Required Fable compatibility in `FS.GG.Game` is
+  developed upstream and consumed through published, pinned packages rather
+  than copied source or permanent sibling references.
 
 ### Derived implications
 

@@ -3,8 +3,8 @@ title: S.I.R. Arcane Civilization Forces
 status: accepted
 decision-status: canonical
 document-type: living-content
-version: "1.3"
-last-updated: 2026-07-27
+version: "1.4"
+last-updated: 2026-07-28
 related:
   - docs/setting-and-factions.md
   - docs/human-forces.md
@@ -66,6 +66,7 @@ The properties this produces are the exact inverse of the human network:
 | Attacked by | jamming, direction finding, traffic analysis | reaching the anchor and destroying it |
 | Shape | topology | **geography** |
 | Extended by | relays and drones | placing and holding ground |
+| Timing | one second per command-net leg in either direction | observations rise on the next tick; caster commands arrive after one second |
 | Failure | isolation, still fights | isolation; overloaded anchors become hazardous |
 
 The last row matters: neither faction collapses when cut off. Both continue on
@@ -75,6 +76,35 @@ local judgement, which is the same rule applied to two different mechanisms.
 approached, destroyed, and in some cases captured. Extending arcane coordination
 means physically occupying more ground, which is why this faction contests
 terrain that a human force would bypass.
+
+### Information rises; intent descends
+
+Anchored coordination is deliberately asymmetric:
+
+```text
+anchored unit observation or status → controlling caster = next tick
+controlling caster command → anchored subordinate       = 20 ticks
+```
+
+The upward path adds no artificial transport delay beyond delivery on the next
+authoritative tick. This applies to legitimate observations and status from
+anchored units and to observations borrowed from an actively attuned critter.
+It does not improve what the observer perceived, identify unknown equipment, or
+expose hidden server truth.
+
+A deliberate instruction from a controlling senior caster reaches an anchored
+subordinate after a flat 20 ticks, or one second. Distance within the same
+anchor influence does not change that delay, and there are no caster, assistant,
+or unit relay chains. A subordinate outside valid anchor influence receives
+nothing new and continues on prior intent and local judgement.
+
+This is not the human report-and-order loop with different visual effects.
+Humans receive richer but delayed remote reports and accumulate delay over
+network legs. Arcane casters receive poorer observations immediately on the next
+tick but impose a flat one-second delay when projecting intent downward. The
+balance cost remains geographical anchor dependence, finite Anchor Capacity,
+caster concentration, overload, breach risk, and the lower precision of arcane
+sensing.
 
 ### Anchoring has finite capacity
 
@@ -158,6 +188,27 @@ action that requires multiple casters to maintain a quorum. One caster cannot
 perform the same ritual merely by taking longer; cooperation is the defining
 requirement rather than a speed bonus.
 
+The caster caste has two functional levels. Every senior caster normally leads
+a cell of **two or three magical assistants**. Assistants are persistent junior
+characters rather than anonymous equipment or nonmagical attendants. They know
+lesser spells and ritual abilities, prepare components and circles, and
+contribute to cooperative magical work.
+
+Assistants expand a ritual cell without erasing senior-caster scarcity:
+
+- minor workings may require one senior caster and some or all of that caster's
+  assistants;
+- standard rituals may use a complete caster cell as their magical quorum; and
+- major rituals and portals still require multiple senior casters, supported by
+  their assistants.
+
+An assistant cannot replace a required senior caster merely by taking longer,
+and additional assistants cannot accelerate completion without bound. Their
+contribution may improve preparation, stability, interruption tolerance,
+maintenance, or controlled shutdown according to the ritual. It cannot erase
+Strain, HP expenditure, components, geographical commitment, anchor load, or
+breach risk.
+
 Rituals commit scarce casters for a substantial and observable preparation
 period. Participants cannot use their ordinary spell capability while
 contributing. The ritual also consumes prepared components and temporarily
@@ -238,10 +289,15 @@ inherently feral.
 Human forces distribute capability across many similar people. The arcane
 concentrate it.
 
-- **Casters** are few, individually decisive, and fragile in a specific way:
+- **Senior casters** are few, individually decisive, and fragile in a specific
+  way:
   damaging one does not merely reduce its output but can push accumulated strain
   past its remaining health and trigger a breach. A caster is a liability that
   grows more valuable and more dangerous at the same time.
+- **Magical assistants** normally occur in cells of two or three per senior
+  caster. They provide lesser spells, ritual work, magical preparation, and
+  continuity, but do not independently exercise senior command, major anchor
+  authority, or decisive spell capability.
 - **Nonmagical peoples** — goblins, orcs, trolls, and others — are the mass that
   makes scarcity survivable. They are not failed casters. They screen, hold
   ground, absorb the ranged fire humans are best at delivering, and carry the
@@ -251,6 +307,11 @@ Substantial armour and regeneration are the candidate characteristics for the
 heavier of these, which directly answers human strengths: armour against small
 arms, and recovery against a faction whose in-match healing is deliberately
 limited.
+
+Assistant losses create an intermediate failure state. A damaged cell can
+retain its senior caster and command authority while losing ritual resilience,
+lesser magic, and the ability to maintain several magical tasks. Killing the
+senior caster remains the more decisive blow.
 
 **This inverts the human answer to attrition.** Humans stabilise casualties and
 evacuate them for recovery between missions. The arcane recover during the
@@ -421,21 +482,24 @@ where drones cannot see is fighting on its own terms.
 Settled: coordination that is anchored rather than transmitted, so an arcane
 geography is attacked physically where a human network is attacked
 electronically; the two economies, with humans limited by supply and the arcane
-by accumulation; a force shape of scarce decisive casters and durable mass, in
-which the nonmagical peoples are not failed casters; information that differs
+by accumulation; and a force shape of scarce decisive senior casters, two or
+three persistent lesser-magical assistants per senior caster, and durable mass
+in which the nonmagical peoples are not failed casters. Information differs
 rather than ranks, seeing through obstruction and vaguely where humans see far
-and exactly; and the sensory split, in which human sensors work completely
-against this faction and human electronic warfare does nothing at all. Anchoring
-has finite structural capacity; overload becomes observably unstable, disrupts
-the whole force relying on the anchor, and can produce indiscriminate lightning
-or a severe uncontrolled daemon portal hostile to every side. Rituals are
-cooperative, site-bound magic requiring a caster quorum, observable preparation,
-and a geographical commitment; their initial shapes are delayed culminations,
-prepared traps, and portal rituals. Transit portals move owned assets, goblin
-portals release unaffiliated hostiles that count toward no arcane resource, and
-daemon portals are uncontrolled overload failures. Arcane casters may borrow
-only the ordinary observations of attuned ambient critters without controlling
-them.
+and exactly. Anchored observations rise to the controlling caster on the next
+tick, while caster commands descend after a flat 20 ticks without relay chains.
+Human sensors work completely against this faction and human electronic warfare
+does nothing at all. Anchoring has finite structural capacity; overload becomes
+observably unstable, disrupts the whole force relying on the anchor, and can
+produce indiscriminate lightning or a severe uncontrolled daemon portal hostile
+to every side. Rituals are cooperative, site-bound magic requiring a caster
+quorum, observable preparation, and a geographical commitment; minor workings
+may use one caster cell, while major rituals and portals still require multiple
+senior casters. Their initial shapes are delayed culminations, prepared traps,
+and portal rituals. Transit portals move owned assets, goblin portals release
+unaffiliated hostiles that count toward no arcane resource, and daemon portals
+are uncontrolled overload failures. Arcane casters may borrow only the ordinary
+observations of attuned ambient critters without controlling them.
 
 Not settled: every number, and the open parameters at the end.
 
@@ -506,7 +570,7 @@ choice rather than an automatic upgrade.
   neutral reward treatment, and safeguards against farming or reliably using
   the incursion as artillery.
 - Ambient-critter species, populations, movement, perception, attunement range
-  and duration, report delay and detail, magical evidence, countermeasures, and
+  and duration, report detail, magical evidence, countermeasures, and
   treatment of critters that leave or re-enter the playable area.
 - Whether anchors can be captured and used, or only destroyed.
 - Which aspects each spell permits empowering, and at what rates. The spell set

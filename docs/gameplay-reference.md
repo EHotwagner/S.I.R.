@@ -5,7 +5,7 @@ document-type: reference-index
 category: Reference
 categoryindex: 5
 index: 1
-version: "0.1"
+version: "0.3"
 last-updated: 2026-07-28
 related:
   - docs/game-vision.md
@@ -115,10 +115,16 @@ Canonical rules include:
 - physical traces, physical cover, directional armor, HP, wounds,
   incapacitation, suppression, and friendly fire;
 - six permanent human classes with automatic bounded-random progression;
-- scarce arcane casters, durable non-caster mass, finite anchor capacity,
-  cooperative rituals, and risk-based magic;
+- scarce senior arcane casters, two or three persistent magical assistants per
+  senior caster, durable non-caster mass, finite anchor capacity, cooperative
+  rituals, and risk-based magic;
 - faction-limited knowledge, physical communications, and electronic emissions;
-  and
+- local squad messages taking at least one tick, and every command-net leg
+  taking 20 ticks symmetrically for orders, reports, observations,
+  acknowledgements, status, and player-defined traffic;
+- anchored arcane observations and status reaching their controlling caster on
+  the next tick, while caster commands take a flat 20 ticks to reach anchored
+  subordinates without relay chains; and
 - battlefield treatment preserving casualties without returning them to combat.
 
 ### 🟨 Prototype values and equations
@@ -152,7 +158,7 @@ Important unresolved areas include:
 - final physical projectile and cover-destruction formulas;
 - multi-attacker concentration;
 - exact strain gain, casting checks, breach tables, and ritual timings;
-- command-net and anchor-capacity numbers; and
+- command-net range, capacity, queue, and saturation numbers; and
 - movement, readiness, acquisition, and suppression feedback curves.
 
 ## Source-of-truth policy

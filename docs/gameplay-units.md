@@ -5,7 +5,7 @@ document-type: reference
 category: Reference
 categoryindex: 5
 index: 3
-version: "0.1"
+version: "0.2"
 last-updated: 2026-07-28
 related:
   - docs/gameplay-reference.md
@@ -206,8 +206,13 @@ These compete with ordinary milestones rather than forming a second full tree.
 🟩 The arcane faction contains **scarce decisive casters and durable nonmagical
 mass**.
 
-- Casters spend HP, accumulate Strain, maintain or use magical infrastructure,
-  and participate in cooperative rituals.
+- Senior casters spend HP, accumulate Strain, maintain or use magical
+  infrastructure, command major formations, and participate in cooperative
+  rituals.
+- Every senior caster normally leads two or three persistent magical
+  assistants. Assistants use lesser spells and abilities, prepare and maintain
+  magical work, and contribute to rituals without replacing senior-caster
+  requirements for major workings.
 - Goblins, orcs, trolls, and other non-casters screen casters, hold terrain,
   carry components and anchors, force human expenditure, and keep the faction
   functional after caster loss.
@@ -222,15 +227,18 @@ The following organization is a proposal:
 ```text
 small caster circle
         ↓ intent, magic, rituals, and anchors
+senior caster cells with 2–3 magical assistants each
+        ↓ lesser magic, ritual work, and magical continuity
 orc captains and goblin bosses
         ↓ bounded local interpretation
 goblin screens, orc formations, and trolls
 ```
 
-A representative 50–100-unit force may contain only three to six casters. One
-is the senior commander; others lead major warbands, work magic, maintain
-anchors, and assemble for rituals. Gathering a ritual quorum therefore
-concentrates several scarce leaders at one exposed site.
+A representative 50–100-unit force may contain only three to six senior
+casters, supported by six to eighteen assistants. One senior caster is the
+commander; others lead major warbands, work magic, maintain anchors, and
+assemble for rituals. Gathering a major ritual quorum therefore concentrates
+several scarce leaders and their supporting cells at one exposed site.
 
 Mundane officers execute prior intent and make bounded local decisions. Caster
 loss removes magical capability and strategic replanning, but does not
@@ -243,7 +251,8 @@ mind-control the surviving horde into passivity.
 | 🟪 **Goblins** | 🟧 Proposal | Numerous scouts, skirmishers, sappers, trap layers, handlers, attendants, carriers, and crews |
 | 🟪 **Orcs** | 🟧 Proposal | Disciplined shield and spear formations, assault troops, archers, bodyguards, captains, and anchor defenders |
 | 🟪 **Trolls** | 🟧 Proposal | Living heavy assets providing assault, mobile cover, obstacle destruction, transport, recovery, and short-ranged siege action |
-| 🟪 **Casters** | 🟩 Canonical shape | Few leaders and magical specialists whose strain career and ritual commitment shape the force |
+| 🟪 **Senior casters** | 🟩 Canonical shape | Few leaders and decisive magical specialists whose strain career and ritual commitment shape the force |
+| 🟪 **Magical assistants** | 🟩 Canonical shape | Two or three persistent juniors per senior caster, providing lesser spells, ritual contribution, preparation, maintenance, and continuity |
 
 Organized goblin soldiers are distinct from unaffiliated goblins emerging from a
 goblin portal. Portal goblins belong to neither side and are hostile to
@@ -281,6 +290,8 @@ Strain risk, or convert anchor capacity into an unconditional bonus.
 ### 🟧 Proposed progression depth
 
 - Casters receive full character depth.
+- Magical assistants receive medium character depth, bounded lesser-spell
+  development, injuries, and persistent history.
 - Captains, specialists, handlers, and trolls receive medium depth.
 - Rank-and-file goblins and orcs retain lighter individual traits,
   proficiencies, scars, and history.
