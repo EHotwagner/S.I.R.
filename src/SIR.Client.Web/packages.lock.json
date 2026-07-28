@@ -1,0 +1,164 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net10.0": {
+      "Fable.Browser.Dom": {
+        "type": "Direct",
+        "requested": "[2.20.0, 2.20.0]",
+        "resolved": "2.20.0",
+        "contentHash": "8MnTBQ3NtWABhT8KXJZ7dracK4La3LrX265eqRJiiXayU6acNvzjBltYsyMmarqUhRf723e3hyHTKNOLQITosQ==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2",
+          "Fable.Browser.Blob": "1.4.0",
+          "Fable.Browser.Event": "1.7.0",
+          "Fable.Browser.WebStorage": "1.3.0",
+          "Fable.Core": "3.2.8"
+        }
+      },
+      "Fable.Elmish": {
+        "type": "Direct",
+        "requested": "[5.0.2, 5.0.2]",
+        "resolved": "5.0.2",
+        "contentHash": "2/5a5Isu9O1cQQeUZ4I70ZFKF1kkl14xoQXZ6zP4tWTQotNDJCWN2LlLku+1+4mO/jnOUGQy2jJ1KgzG5MhoLw==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2",
+          "Fable.Core": "4.0.0"
+        }
+      },
+      "Fable.Elmish.React": {
+        "type": "Direct",
+        "requested": "[5.6.0, 5.6.0]",
+        "resolved": "5.6.0",
+        "contentHash": "rxhcPlzTIGKxToGY5oQViqd7EOC84h9ieR5nNgF++4fyCkNzarCz+ZUjqvnou+KE2XC3N5dz1jsCOxPtclHqLQ==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2",
+          "Fable.Elmish": "5.0.2",
+          "Fable.ReactDom.Types": "18.2.0"
+        }
+      },
+      "Feliz": {
+        "type": "Direct",
+        "requested": "[3.3.3, 3.3.3]",
+        "resolved": "3.3.3",
+        "contentHash": "LmAq2TW9pCBu9pFhjs9JVFzVw4LydPcDaU3pP8Q+mhrVZc22T82lQBTC886lIROegcZbBWeXfM3/e9e6ccpJAA==",
+        "dependencies": {
+          "Fable.Core": "4.5.0",
+          "Fable.React.Types": "18.4.0",
+          "Fable.ReactDom.Types": "18.2.0",
+          "Feliz.CompilerPlugins": "3.2.0"
+        }
+      },
+      "FSharp.Core": {
+        "type": "Direct",
+        "requested": "[10.1.302, 10.1.302]",
+        "resolved": "10.1.302",
+        "contentHash": "bN7XMQrAQg1dyHScJ7FcsznERBkvm74LtIo1O6C5mUzgbDqSwNbDpb3+nBGaJAjDmtC/suK5Vx5pFysKY6Hm+Q=="
+      },
+      "Fable.AST": {
+        "type": "Transitive",
+        "resolved": "5.0.0-rc.3",
+        "contentHash": "Lg+io2OqGztHovglpCdcRqYmNezS0V8L3CudaAsmcgpN7/f80ndwpuuelWd8SaDgRh+/LlwvlyzDhdmkljecvQ=="
+      },
+      "Fable.Browser.Blob": {
+        "type": "Transitive",
+        "resolved": "1.4.0",
+        "contentHash": "UlaxrIXUfMmABjP+8a4XJp/Af+eCRKa8KJ57Olq4sqphmPLn/gNtp3sk5hRNBZ385lwUszbO5yd3Q/rrl9BdOQ==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2",
+          "Fable.Core": "3.2.8"
+        }
+      },
+      "Fable.Browser.Event": {
+        "type": "Transitive",
+        "resolved": "1.7.0",
+        "contentHash": "x+wqXQK0l4VlCnELDp68GC/mZAx6NbicDxYPliyAoNq8RPNDeR3R782icNwI5YmA+ufq11XvG6w1JjsL/ldy7w==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2",
+          "Fable.Browser.Gamepad": "1.3.0",
+          "Fable.Core": "3.2.8"
+        }
+      },
+      "Fable.Browser.Gamepad": {
+        "type": "Transitive",
+        "resolved": "1.3.0",
+        "contentHash": "C4HZDzCgff+U094QjpQlJh425W5j5/vojvOi2FV5UFS34l7TJ6YBgBPpKoro02QhAi/UF3AeocR+V2yiYxHb0A==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2",
+          "Fable.Core": "3.2.8"
+        }
+      },
+      "Fable.Browser.WebStorage": {
+        "type": "Transitive",
+        "resolved": "1.3.0",
+        "contentHash": "x8JL9oEtPiK0JY4GrRTqhomiLxT6Jaiv5uu8VXiNeA78bFvUogZWxQeejsK83iNFGErK5wpdiPd0tsREZTRLeg==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2",
+          "Fable.Browser.Event": "1.6.0",
+          "Fable.Core": "3.2.8"
+        }
+      },
+      "Fable.Core": {
+        "type": "Transitive",
+        "resolved": "4.5.0",
+        "contentHash": "ZcX8XN5sQZGCbrS8VYnsa/ynhrCBfpDyqDkTl33GTXOpgfKibxoq0+W0hCSbRzuukVNoLtqGL/B6+8yTNDXbNA=="
+      },
+      "Fable.React.Types": {
+        "type": "Transitive",
+        "resolved": "18.4.0",
+        "contentHash": "XKUBsAycABet6+ZRwIceG3dSuUzgG8SndVIu43uZMNOO+wXAeGS4u2WrRWZOetZ7Q0MlVukPVwN7jfbPRg4j/A==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2",
+          "Fable.Browser.Dom": "2.4.4",
+          "Fable.Core": "3.2.7"
+        }
+      },
+      "Fable.ReactDom.Types": {
+        "type": "Transitive",
+        "resolved": "18.2.0",
+        "contentHash": "2WoBjsLiSgrvR68OJXko0iVaqeMbkPM5Bx813A1WlxOSCJ50M9fwnlwG/MUEZtiOIhQmku/YTJY5a8E8r1+j2Q==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2",
+          "Fable.React.Types": "18.3.0"
+        }
+      },
+      "Feliz.CompilerPlugins": {
+        "type": "Transitive",
+        "resolved": "3.2.0",
+        "contentHash": "UP9jymqxszqAOyL9a+VkYpSeD9oQJ0K4cJySztPMgszReoloqi9Ik5BgTkzK6Ofil9FMOeeWLtYYXfVq4OHjLw==",
+        "dependencies": {
+          "Fable.AST": "5.0.0-rc.3"
+        }
+      },
+      "sir.client": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[10.1.302, 10.1.302]",
+          "SIR.Domain": "[1.0.0, )"
+        }
+      },
+      "sir.domain": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[10.1.302, 10.1.302]"
+        }
+      },
+      "sir.simulation": {
+        "type": "Project",
+        "dependencies": {
+          "FS.GG.Game.Core": "[0.13.0, 0.13.0]",
+          "FSharp.Core": "[10.1.302, 10.1.302]",
+          "SIR.Domain": "[1.0.0, )"
+        }
+      },
+      "FS.GG.Game.Core": {
+        "type": "CentralTransitive",
+        "requested": "[0.13.0, 0.13.0]",
+        "resolved": "0.13.0",
+        "contentHash": "h4IVQKlYkhOOLO9bPgrR6JsoPKBH3cozfO+qgk/gr67Tel02dvHPBe4buIs3L4Hq+fDwwDXA/qDFmis8qQiJKA==",
+        "dependencies": {
+          "FSharp.Core": "10.1.302"
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,10 @@
 # build output
 bin/
 obj/
+artifacts/
+node_modules/
+src/SIR.Client.Web/.fable/
+src/SIR.Client.Web/fable/
 
 # local tooling
 .vs/
