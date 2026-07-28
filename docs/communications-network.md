@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Communications Network Architecture
+category: Design
+categoryindex: 4
+index: 29
 status: accepted
 decision-status: canonical
 document-type: living-design

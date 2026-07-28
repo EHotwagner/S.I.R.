@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Mission Lifecycle and Delivery Sequence
+category: Design
+categoryindex: 4
+index: 37
 status: proposed
 document-type: living-design
 version: "0.4"

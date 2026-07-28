@@ -4,6 +4,12 @@
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   font-synthesis: none;
   min-width: 320px;
+  width: 100%;
+  max-width: 100%;
+  clear: both;
+  position: relative;
+  isolation: isolate;
+  overflow-x: auto;
 }
 
 #sir-replay-app,
@@ -33,15 +39,34 @@
 #sir-replay-app button:disabled { opacity: .5; }
 
 #sir-replay-app .app-shell {
+  position: relative;
+  display: flow-root;
+  width: 100%;
   max-width: 96rem;
+  min-width: 0;
   margin: auto;
   padding: 2rem;
   background:
     radial-gradient(circle at 12% 0%, #254438 0, transparent 30rem),
     #101715;
 }
+#sir-replay-app .app-shell > header {
+  position: static;
+  inset: auto;
+  z-index: auto;
+  max-width: 64rem;
+  margin-bottom: 1rem;
+}
 #sir-replay-app .eyebrow { color: #d8b36a; letter-spacing: .14em; text-transform: uppercase; }
-#sir-replay-app h1 { font-family: Georgia, serif; font-size: clamp(2.4rem, 6vw, 4.7rem); margin: .15rem 0; }
+#sir-replay-app h1 {
+  position: static;
+  max-width: 100%;
+  margin: .15rem 0;
+  font-family: Georgia, serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
 #sir-replay-app h2 { margin-top: 0; }
 
 #sir-replay-app .verification-banner {
@@ -70,6 +95,33 @@
   border-radius: .6rem;
   padding: 1.2rem;
 }
+#sir-replay-app .quick-start-panel {
+  margin: 1.5rem 0;
+  border-color: #8fae9e;
+  background: linear-gradient(145deg, #1c2c26, #17211e);
+}
+#sir-replay-app .scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: .8rem;
+  margin-top: 1rem;
+}
+#sir-replay-app .scenario-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 15rem;
+  border: 1px solid #43584e;
+  border-radius: .5rem;
+  padding: 1rem;
+  background: #111a17;
+}
+#sir-replay-app .scenario-card-selected {
+  border-color: #ffd166;
+  box-shadow: 0 0 0 1px #ffd166;
+}
+#sir-replay-app .scenario-card button { margin-top: auto; }
+#sir-replay-app .scenario-defaults { color: #d8b36a; font-weight: 700; }
 #sir-replay-app .inspector-panel { grid-column: span 2; }
 #sir-replay-app .worker-status { color: #b9c8c0; }
 #sir-replay-app .board {
@@ -108,7 +160,6 @@
 #sir-replay-app dt { color: #a8b9b0; }
 #sir-replay-app dd { margin: 0; }
 #sir-replay-app .keyboard-help { color: #b9c8c0; font-size: .9rem; }
-#sir-replay-app .scenario-card { border-top: 1px solid #43584e; padding: .8rem 0; }
 #sir-replay-app .scenario-card h3 { margin-bottom: .3rem; }
 #sir-replay-app .identity { color: #b9c8c0; font-family: ui-monospace, monospace; font-size: .82rem; overflow-wrap: anywhere; }
 #sir-replay-app .validation-error { color: #ff9b9b; }
@@ -146,6 +197,7 @@
 }
 
 @media (max-width: 48rem) {
+  #sir-replay-app .app-shell { padding: 1rem; }
   #sir-replay-app .inspector-panel,
   #sir-replay-app .lab-results { grid-column: span 1; }
 }

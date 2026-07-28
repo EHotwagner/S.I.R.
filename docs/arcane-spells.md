@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Arcane Spells
+category: Reference
+categoryindex: 5
+index: 21
 status: accepted
 decision-status: canonical
 document-type: living-content

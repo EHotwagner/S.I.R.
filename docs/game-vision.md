@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Game Vision
+category: Overview
+categoryindex: 1
+index: 3
 status: proposed
 document-type: living-vision
 version: "1.17"

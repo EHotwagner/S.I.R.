@@ -16,8 +16,12 @@ const window = new Window({
 });
 window.document.body.innerHTML = body;
 
+const workerMessages = [];
+
 class SmokeWorker {
-  postMessage() {}
+  postMessage(message) {
+    workerMessages.push(message);
+  }
   terminate() {}
 }
 
@@ -46,16 +50,34 @@ if (heading?.textContent !== "Replay and rules laboratory") {
   throw new Error("The Fable application did not mount inside the fsdocs page.");
 }
 
-if (!status?.textContent.includes("No replay loaded")) {
-  throw new Error("The mounted documentation application has no live status.");
+if (!status?.textContent.includes("Ready — choose a scenario or load a replay")) {
+  throw new Error("The mounted documentation application has no scenario call to action.");
 }
 
-if (!catalog?.textContent.includes("Adjacent duel")) {
-  throw new Error("The mounted documentation application has no scenario catalog.");
+const scenarioButtons = [
+  ...catalog?.querySelectorAll('button[aria-label^="Run design scenario"]') ?? [],
+];
+
+if (
+  scenarioButtons.length !== 6 ||
+  !catalog?.textContent.includes("Lethality threshold")
+) {
+  throw new Error("The mounted documentation application has no runnable scenario gallery.");
+}
+
+scenarioButtons[0].click();
+await window.happyDOM.waitUntilComplete();
+
+if (
+  !workerMessages.some((message) =>
+    JSON.stringify(message).includes("adjacent-duel"),
+  )
+) {
+  throw new Error("The generated-site scenario action did not reach the worker.");
 }
 
 console.log(
-  "Documentation browser smoke passed: the Fable application mounted inside the generated fsdocs page with live status and the scenario catalog.",
+  "Documentation browser smoke passed: the Fable application mounted inside the generated fsdocs page with six runnable scenarios and a worker-backed scenario action.",
 );
 
 window.happyDOM.close();

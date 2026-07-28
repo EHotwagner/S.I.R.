@@ -241,6 +241,23 @@ let main _ =
         Lab.tryScenario "adjacent-duel"
         |> Option.defaultWith (fun () -> failwith "The adjacent duel scenario is missing.")
 
+    require
+        (Lab.catalog.Length = 6
+         && (Lab.catalog |> List.map _.Identity |> Set.ofList |> Set.count) = 6)
+        "The interactive scenario gallery is incomplete or has duplicate identities."
+
+    let defaultResults =
+        Lab.catalog
+        |> List.map (fun candidate ->
+            Lab.run candidate Map.empty None
+            |> Result.defaultWith failwith
+            |> fun report -> report.Comparison.Baseline.ResultIdentity)
+        |> Set.ofList
+
+    require
+        (defaultResults.Count = Lab.catalog.Length)
+        "The scenario gallery contains indistinguishable default experiments."
+
     let baselineReport =
         Lab.run scenario Map.empty None
         |> Result.defaultWith failwith

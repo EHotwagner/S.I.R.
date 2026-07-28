@@ -34,8 +34,10 @@ design host, never the match authority.
 | Rules laboratory | Fable/JavaScript in a Web Worker | Exploratory sandbox evidence |
 | Match host | .NET with exact player-WASM execution | Authoritative |
 
-The complete explanatory corpus is indexed by site search. Generated API pages
-include links back to the corresponding source on the `main` branch.
+The sidebar is intentionally limited to the primary vision, architecture,
+interactive, and reference entry points. The complete explanatory corpus,
+including retained research evidence, remains indexed by site search. Generated
+API pages include links back to the corresponding source on the `main` branch.
 
 ## Build locally
 

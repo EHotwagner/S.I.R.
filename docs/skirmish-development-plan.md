@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Robust Skirmish Development Plan
+category: Design
+categoryindex: 4
+index: 41
 status: proposed
 document-type: development-plan
 version: "0.15"

@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Electronic Warfare Architecture
+category: Design
+categoryindex: 4
+index: 33
 status: accepted
 decision-status: canonical
 document-type: living-design

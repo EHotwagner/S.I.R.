@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Control ABI Surface
+category: Design
+categoryindex: 4
+index: 19
 status: proposed
 document-type: living-design
 version: "0.3"

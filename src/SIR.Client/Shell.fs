@@ -211,7 +211,7 @@ module Shell =
           Worker = WorkerStarting
           ActiveOperation = None
           NextOperation = 1
-          Announcement = "Choose a replay package to begin." }
+          Announcement = "Choose a design scenario to run, or load a replay package." }
 
     let private beginOperation request model =
         let operation = OperationId model.NextOperation

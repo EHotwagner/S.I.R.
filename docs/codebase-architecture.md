@@ -1,5 +1,8 @@
 ---
 title: S.I.R. F# Codebase Architecture
+category: Design
+categoryindex: 4
+index: 5
 status: accepted
 decision-status: canonical
 document-type: living-architecture

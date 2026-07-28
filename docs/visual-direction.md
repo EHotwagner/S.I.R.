@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Visual Direction
+category: Reference
+categoryindex: 5
+index: 23
 status: proposed
 document-type: living-vision
 version: 0.10

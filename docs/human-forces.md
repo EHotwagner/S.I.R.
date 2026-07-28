@@ -1,5 +1,8 @@
 ---
 title: S.I.R. Human Forces
+category: Reference
+categoryindex: 5
+index: 17
 status: accepted
 decision-status: canonical
 document-type: living-content

@@ -1570,7 +1570,7 @@ browser-verification display.
 - balance evidence is labeled separately from accepted balance.
 
 **Outcome:** `SIR.Client` now owns a platform-neutral rules-laboratory model
-with two fixed, revisioned design scenarios, exact engine and ruleset
+with six fixed, revisioned attack-resolution scenarios, exact engine and ruleset
 identities, typed parameter definitions, bounded validation, deterministic
 integer evaluation through `Simulation.runTickWithRules`, baseline/fork
 comparison, and sweep results. The laboratory varies bounded rule inputs but
