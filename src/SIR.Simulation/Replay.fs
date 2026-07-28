@@ -80,6 +80,7 @@ type ReplayError =
     | ReplayDivergence of tick: int32 * field: string
     | PerspectiveHasNoKernel
     | WasmExecutionNotVerified
+    | WasmOutputDivergence of tick: int32 * sequence: int32
 
 /// The verification claim is explicit in the returned value.
 type ReplayVerification =
@@ -771,19 +772,43 @@ module Replay =
                     | Ok finalResult -> Ok(BrowserKernelVerified finalResult)
                     | Error error -> Error error
 
-    /// Adds the stronger authoritative claim only after exact WASM re-execution.
-    let verifyAuthoritative limits expectedEngine wasmExecutionVerified package =
-        if not wasmExecutionVerified then
-            Error WasmExecutionNotVerified
-        else
-            match package.Content with
-            | PerspectivePlayback _ -> Error PerspectiveHasNoKernel
-            | AuthorizedFullReplay _ ->
-                match runKernelReplay limits expectedEngine package with
-                | Ok(BrowserKernelVerified finalResult) ->
-                    Ok(AuthoritativeVerified finalResult)
-                | Ok _ -> Error PerspectiveHasNoKernel
-                | Error error -> Error error
+    let private firstWasmDifference
+        (expected: AcceptedWasmOutput list)
+        (actual: AcceptedWasmOutput list)
+        =
+        let rec compareEntries
+            (expectedEntries: AcceptedWasmOutput list)
+            (actualEntries: AcceptedWasmOutput list)
+            =
+            match expectedEntries, actualEntries with
+            | [], [] -> None
+            | expected :: expectedTail, actual :: actualTail when expected = actual ->
+                compareEntries expectedTail actualTail
+            | expected :: _, actual :: _ ->
+                Some(min expected.Tick actual.Tick, min expected.Sequence actual.Sequence)
+            | expected :: _, [] -> Some(expected.Tick, expected.Sequence)
+            | [], actual :: _ -> Some(actual.Tick, actual.Sequence)
+
+        compareEntries expected actual
+
+    /// Adds the stronger authoritative claim only when exact WASM re-execution
+    /// reproduces the complete accepted-output journal byte for byte.
+    let verifyAuthoritative limits expectedEngine reexecutedWasmOutputs package =
+        match package.Content with
+        | PerspectivePlayback _ -> Error PerspectiveHasNoKernel
+        | AuthorizedFullReplay full ->
+            match reexecutedWasmOutputs with
+            | None -> Error WasmExecutionNotVerified
+            | Some actualOutputs ->
+                match firstWasmDifference full.AcceptedWasmOutputs actualOutputs with
+                | Some(tick, sequence) ->
+                    Error(WasmOutputDivergence(tick, sequence))
+                | None ->
+                    match runKernelReplay limits expectedEngine package with
+                    | Ok(BrowserKernelVerified finalResult) ->
+                        Ok(AuthoritativeVerified finalResult)
+                    | Ok _ -> Error PerspectiveHasNoKernel
+                    | Error error -> Error error
 
     /// Explicitly rejects attempts to obtain kernel verification from perspective data.
     let requireKernel package =

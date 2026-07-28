@@ -202,6 +202,12 @@ let private replayError error =
         RunnerFailed "perspective playback has no reconstructable kernel"
     | WasmExecutionNotVerified ->
         RunnerFailed "browser verification does not include WASM execution"
+    | WasmOutputDivergence(tick, sequence) ->
+        RunnerDiverged(
+            tick,
+            "WASM re-execution",
+            "accepted output sequence " + string sequence
+        )
 
 let private metadata sourceName package =
     let kind, finalTick =

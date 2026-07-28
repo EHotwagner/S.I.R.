@@ -23,6 +23,7 @@ dotnet fsdocs build \
   --projects \
     src/SIR.Domain/SIR.Domain.fsproj \
     src/SIR.Simulation/SIR.Simulation.fsproj \
+    src/SIR.Match/SIR.Match.fsproj \
     src/SIR.Client/SIR.Client.fsproj \
   --output "$site_output" \
   --properties Configuration=Release

@@ -6,7 +6,7 @@ document-type: living-architecture
 category: Design
 categoryindex: 4
 index: 13
-version: "2.9"
+version: "3.0"
 last-updated: 2026-07-29
 description: Shared .NET/Fable simulation, upstream FS.GG.Game compatibility, deterministic numerics, Elmish MVU browser tooling, replay verification, and delivery roadmap.
 related:
@@ -58,6 +58,11 @@ The combined static artifact now publishes retained replay workers beneath
 immutable engine-identity paths, verifies retention and SHA-384 integrity
 through a publication manifest, rejects sensitive runtime material, and
 deploys from the locked build through GitHub Pages.
+A bounded authoritative match host now runs an immutable binary player module
+through the pinned Wasmtime profile, records its accepted outputs, emits full
+and knowledge-filtered replay packages, and re-executes the exact artifact
+before granting the stronger authoritative verification claim. Browser replay
+continues to claim kernel verification only.
 
 ## Decision
 
@@ -1365,7 +1370,8 @@ errors.
 `Replay.runKernelReplay` re-simulates from the initial snapshot and every
 retained checkpoint and returns only `BrowserKernelVerified`.
 `Replay.verifyAuthoritative` can return `AuthoritativeVerified` only when its
-host supplies successful exact player-WASM re-execution. A perspective package
+host supplies the exact player-WASM re-execution journal and every accepted
+output matches the package by tick, sequence, and input. A perspective package
 returns `PerspectiveReady`, and an attempt to require its kernel fails with
 `PerspectiveHasNoKernel`.
 
@@ -1745,9 +1751,10 @@ privileged service.
 - `.github/workflows/pages.yml` builds the locked combined artifact and
   deploys it through GitHub's static Pages artifact contract.
 
-### [ ] 🟨 M13 — Full match replay qualification
+### [x] 🟩 M13 — Full match replay qualification
 
-**Blocked by:** authoritative match/WASM implementation and M12.
+**Unblocked by:** completed M12 publication and the bounded authoritative
+match/WASM host delivered in this milestone.
 
 **Deliverables:**
 
@@ -1765,6 +1772,45 @@ privileged service.
 - the UI labels both verification levels accurately;
 - the perspective package reveals no unauthorized state; and
 - first-divergence diagnostics survive an intentionally corrupted fixture.
+
+**Outcome:** `SIR.Match` now owns a completed four-tick authoritative
+qualification match. It validates the SHA-256 identity of an immutable binary
+WebAssembly artifact, compiles it once with Wasmtime 44.0.0 under the pinned
+core-only, no-WASI, fuel-metered profile, resets the fuel allowance for every
+invocation, and records four accepted attack outputs in stable tick/sequence
+order. The shared .NET kernel produces retained checkpoints and terminal state
+and event hashes from those outputs.
+
+The host emits a 933-byte authorized full package and a 258-byte
+knowledge-filtered perspective package. The full package passes the same shared
+kernel runner used by the Fable worker. Authoritative verification then starts
+a fresh Wasmtime instance for the exact artifact and profile and compares every
+re-executed output with the recorded journal before returning
+`AuthoritativeVerified`; a Boolean assertion is no longer sufficient.
+
+The perspective package contains only five tick-indexed projection hashes. Its
+type cannot expose a kernel snapshot or input journal, and the qualification
+gate additionally proves its canonical bytes contain neither the hidden final
+state hash nor the player artifact. The browser UI labels its own result as
+browser-kernel verification and states that exact-artifact authoritative
+verification is a separate .NET operation.
+
+**Evidence:**
+
+- `src/SIR.Match/MatchReplay.fs` owns the pinned execution profile, immutable
+  binary artifact, deterministic invocation, accepted-output journal, complete
+  match run, exact-artifact re-execution, and both disclosure packages;
+- `src/SIR.Simulation/Replay.fs` compares the complete re-executed WASM journal
+  and reports the first changed tick and sequence before it can grant
+  `AuthoritativeVerified`;
+- `tests/SIR.Match.Tests/Program.fs` proves browser/authoritative terminal hash
+  equality, rejects a changed WASM output at tick/sequence 2, localizes an
+  intentionally corrupted checkpoint to tick 2, and audits the perspective
+  package for hidden state and artifact bytes;
+- `src/SIR.Client.Web/App.fs` and the browser smoke gate preserve the visible
+  distinction between browser-kernel and authoritative verification; and
+- `scripts/test-conformance.sh` runs the new match gate alongside the existing
+  .NET/Fable canonical replay, first-divergence, browser, and worker gates.
 
 ### [ ] 🟧 M14 — Optional browser WASM verification research
 

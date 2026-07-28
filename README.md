@@ -9,8 +9,8 @@ npm ci
 
 The conformance gate restores only pinned published packages, compiles the
 shared numeric fixtures for .NET and Fable/Node, compares their canonical byte
-vectors, proves first-divergence reporting, and rejects floating-point source
-from authoritative projects.
+vectors, qualifies exact-artifact Wasmtime replay, proves first-divergence
+reporting, and rejects floating-point source from authoritative projects.
 
 A fast-paced, grid-based, **real-time tactical skirmish game** for large forces
 in a near-future world undergoing an incursion by monsters and magic.
@@ -27,11 +27,12 @@ so the game tests judgment and preparation rather than actions per minute.
 
 ## Status
 
-**Design phase.** This repository contains the design set, a self-contained
-gameplay reference corpus, and disposable measurement and balance spikes under
-[`spikes/`](spikes/). No product code exists yet. Spike results are measured
-evidence; numerical gameplay values remain explicitly marked as prototype
-parameters unless a document says otherwise.
+**Foundation implementation.** This repository contains the design set, a
+self-contained gameplay reference corpus, the shared .NET/Fable deterministic
+kernel, browser replay and rules laboratory, a bounded authoritative Wasmtime
+match qualification host, and disposable measurement and balance spikes under
+[`spikes/`](spikes/). Numerical gameplay values remain explicitly marked as
+prototype parameters unless a document says otherwise.
 
 Documents carry a `status` of `proposed` or `accepted` in their front matter.
 `accepted` with `decision-status: canonical` marks a decision that later work
