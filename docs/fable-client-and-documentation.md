@@ -6,7 +6,7 @@ document-type: living-architecture
 category: Design
 categoryindex: 4
 index: 13
-version: "2.0"
+version: "2.1"
 last-updated: 2026-07-28
 description: Shared .NET/Fable simulation, upstream FS.GG.Game compatibility, deterministic numerics, Elmish MVU browser tooling, replay verification, and delivery roadmap.
 related:
@@ -1073,12 +1073,12 @@ algorithms, and a second public package without a new decision are rejected.
 - org
   [ADR-0069](https://github.com/FS-GG/.github/blob/main/docs/adr/0069-fable-lockstep-is-a-profiled-game-core-package-contract.md)
   makes the cross-repository package/profile decision durable; and
-- the request is scheduled on the FS-GG Coordination board as
-  `fs-gg-game-fable-lockstep`, phase `P6 Game`, status `Ready`.
+- the request was scheduled on the FS-GG Coordination board as
+  `fs-gg-game-fable-lockstep`, phase `P6 Game`, and completed through M4.
 
-Producer publication remains sequenced before registry activation and S.I.R.
-adoption. The receiving issue stays open for M3/M4 implementation; completing
-this proposal milestone does not claim that a function is already qualified.
+Producer publication was sequenced before registry activation and S.I.R.
+adoption. The receiving issue stayed open through M3/M4 implementation;
+completing the proposal milestone did not itself qualify a function.
 
 ### [x] 🟩 M3 — Upstream Fable packaging and compilation spike
 
@@ -1136,14 +1136,14 @@ Linux and Windows builds, and all 872 .NET tests remain green.
   `Packed Fable consumer (Fable/Node)` pull-request gate prove artifact-only
   restore, compilation, and Node execution; and
 - issue
-  [FS.GG.Game#526](https://github.com/FS-GG/FS.GG.Game/issues/526) remains open
-  for M4 expansion and publication.
+  [FS.GG.Game#526](https://github.com/FS-GG/FS.GG.Game/issues/526) carried the
+  M4 expansion, publication, and registry activation through completion.
 
-This milestone does not promote the four exercised functions to
-`LockstepExact`. Canonical binary cross-runtime vectors, expanded
-classification, publication, and registry activation remain M4 work.
+At M3, the four exercised functions were not yet promoted to `LockstepExact`;
+canonical binary cross-runtime vectors, expanded classification, publication,
+and registry activation remained M4 work.
 
-### [ ] 🟦 M4 — Upstream lockstep compatibility profile
+### [x] 🟩 M4 — Upstream lockstep compatibility profile
 
 **Unblocked by:** completed M3 packaging and compilation spike.
 
@@ -1164,9 +1164,37 @@ classification, publication, and registry activation remain M4 work.
 - the package version and profile are recorded in the FS.GG compatibility
   registry.
 
-### [ ] 🟨 M5 — S.I.R. solution and shared numeric foundation
+**Outcome:** `FS.GG.Game.Core` 0.13.0 now publishes the bounded
+`fs-gg-game-core-fable-lockstep-v1` profile. Cell ordering,
+`Edges.edgeBetween`, `Los.lineOfSightBy`, and `Pathfinding.astar` are certified
+`LockstepExact`; packaged float value types are `Portable`; explicitly excluded
+modules remain `DotNetOnly`. One generated fixture vector is compiled by both
+the .NET package consumer and Fable/Node, and both must reproduce the packaged
+442-byte oracle with SHA-256
+`9c0d7128f7b9558ef7e985618b1165199f83a0bb4af7533b175cc95b340c4a24`.
+Boundary coverage includes full-width ordering, coordinate extremes, reversed
+and corner LOS, equal-cost paths, exhaustion, unreachable paths, and
+adversarial blocked-cell insertion order.
 
-**Blocked by:** M4.
+**Evidence:**
+
+- [FS.GG.Game#531](https://github.com/FS-GG/FS.GG.Game/pull/531) merged the
+  compatibility profile, canonical vectors, first-byte diagnostics, separate
+  .NET/Fable conformance legs, and isolated packaged-consumer runner;
+- tag `v0.13.0` and release run
+  [30395301449](https://github.com/FS-GG/FS.GG.Game/actions/runs/30395301449)
+  published the coherent Core/Render/Harness set;
+- Core, Render, and Harness were independently downloaded from GitHub Packages
+  and nuget.org, with all 43/9/19 payload entries matching byte for byte after
+  excluding nuget.org signatures;
+- [FS-GG/.github#1852](https://github.com/FS-GG/.github/pull/1852) activated
+  `game-sim-core@0.13.0` and the profile in the org compatibility registry; and
+- [FS.GG.Game#532](https://github.com/FS-GG/FS.GG.Game/pull/532) finalized the
+  upstream compatibility report and closed the receiving request.
+
+### [ ] 🟦 M5 — S.I.R. solution and shared numeric foundation
+
+**Unblocked by:** completed M4 compatibility profile and published package.
 
 **Deliverables:**
 
