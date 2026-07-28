@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../SIR.Conformance.Shared/NumericFixtures.fs" Link="NumericFixtures.fs" />
+    <Compile Include="../SIR.Conformance.Shared/Program.fs" Link="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/SIR.Domain/SIR.Domain.fsproj" />
+    <ProjectReference Include="../../src/SIR.Simulation/SIR.Simulation.fsproj" />
+  </ItemGroup>
+</Project>

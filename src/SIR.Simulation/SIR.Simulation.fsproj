@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Compile Include="Substrate.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../SIR.Domain/SIR.Domain.fsproj" />
+    <PackageReference Include="FS.GG.Game.Core" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,14 @@
+{
+  "name": "sir-conformance",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "./scripts/test-conformance.sh"
+  },
+  "dependencies": {
+    "@fable-org/fable-library-js": "2.5.1"
+  },
+  "engines": {
+    "node": "26.5.0"
+  }
+}
