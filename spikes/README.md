@@ -16,6 +16,7 @@ code stays here as provenance.
 | [perception](perception/) | What does edge-aware, multi-level perception cost at 100 units per side? | [About 1% of the tick](../docs/research/perception-spike.md) |
 | [movement](movement/) | What do footprint reservation, conflict resolution and path search cost? | [Resolution is free; replan cadence is the constraint](../docs/research/movement-spike.md) |
 | [rules-lab](rules-lab/) | Which provisional combat parameters preserve the intended weapon, facing, suppression, and species relationships? | [The initial relationships hold, while troll regeneration exposes sharp immunity boundaries](../docs/research/rules-lab-prototype.md) |
+| [browser-wasm-verification](browser-wasm-verification/) | Can native browser WebAssembly reproduce the authoritative Wasmtime execution profile? | [No: deterministic fuel has no native browser equivalent](../docs/research/browser-wasm-verification-spike.md) |
 
 ## Running
 

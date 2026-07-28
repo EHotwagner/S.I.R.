@@ -38,6 +38,8 @@ match_output=$(dotnet run \
   --no-build \
   --no-restore)
 
+browser_wasm_output=$(./scripts/test-browser-wasm-verification.sh)
+
 dotnet fable tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj \
   --outDir "$task_tmp/fable" \
   --noCache
@@ -143,5 +145,6 @@ printf 'Simulation divergence guard passed: tick 1 phase %s failed first at byte
   "$simulation_phase"
 printf 'Replay gate passed: format v1, SHA-256, checkpoint seeks, safety limits, disclosure boundaries, and verification levels agree.\n'
 printf '%s\n' "$match_output"
+printf '%s\n' "$browser_wasm_output"
 printf 'Elmish and rules-lab gate passed: modes, immutable baseline/fork comparison, typed validation, deterministic sweep, reproducible fixture export, stale operations, cancellation, Fable compilation, production bundle, and browser mount agree.\n'
 printf 'Worker gate passed: %s\n' "$worker_measurement"
