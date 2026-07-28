@@ -1080,7 +1080,7 @@ Producer publication remains sequenced before registry activation and S.I.R.
 adoption. The receiving issue stays open for M3/M4 implementation; completing
 this proposal milestone does not claim that a function is already qualified.
 
-### [ ] 🟦 M3 — Upstream Fable packaging and compilation spike
+### [x] 🟩 M3 — Upstream Fable packaging and compilation spike
 
 **Purpose:** retire packaging and compiler uncertainty before broad conversion.
 
@@ -1104,9 +1104,48 @@ this proposal milestone does not claim that a function is already qualified.
 cannot support the minimum surface without unacceptable API or source
 duplication.
 
-### [ ] 🟨 M4 — Upstream lockstep compatibility profile
+**Outcome:** the existing `FS.GG.Game.Core` package now carries a bounded Fable
+source view built with `Fable.Package.SDK`. The view packages the same canonical
+`Primitives`, `Pathfinding`, `Edges`, and `Los` implementation files used by the
+.NET assembly, together with a versioned spike profile, fixture schema, and
+toolchain manifest. It does not copy algorithms or introduce a second public
+package.
 
-**Blocked by:** M3.
+An initial whole-project package compile failed on unsupported float-heavy BCL
+calls including `System.Double.IsFinite`, `System.Math.ScaleB`, and
+`System.Math.ILogB`. The accepted view therefore exposes only the selected
+integer/grid source files and records every other surface as unclassified.
+This is the intended bounded-spike result, not an assembly-wide compatibility
+claim.
+
+The isolated consumer packs a synthetic exact-version artifact, restores it
+outside the producer checkout into an empty global-packages directory, compiles
+the package-derived source with Fable 5.13.0, and executes it under Node 26.
+Smoke fixtures cover `Cell` ordering, `Edges.edgeBetween`, symmetric integer
+LOS, and bounded four-way `Pathfinding.astar`. Normal .NET public surface gates,
+Linux and Windows builds, and all 872 .NET tests remain green.
+
+**Evidence:**
+
+- merged upstream implementation
+  [FS.GG.Game#528](https://github.com/FS-GG/FS.GG.Game/pull/528);
+- the producer's
+  [M3 result](https://github.com/FS-GG/FS.GG.Game/blob/main/docs/reports/2026-07-28-fable-lockstep-compatibility-proposal.md#m3-result)
+  records the successful package shape and the rejected whole-project shape;
+- `scripts/test-fable-package-consumer.sh` and the
+  `Packed Fable consumer (Fable/Node)` pull-request gate prove artifact-only
+  restore, compilation, and Node execution; and
+- issue
+  [FS.GG.Game#526](https://github.com/FS-GG/FS.GG.Game/issues/526) remains open
+  for M4 expansion and publication.
+
+This milestone does not promote the four exercised functions to
+`LockstepExact`. Canonical binary cross-runtime vectors, expanded
+classification, publication, and registry activation remain M4 work.
+
+### [ ] 🟦 M4 — Upstream lockstep compatibility profile
+
+**Unblocked by:** completed M3 packaging and compilation spike.
 
 **Deliverables:**
 
