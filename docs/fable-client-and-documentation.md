@@ -1353,6 +1353,9 @@ returns `PerspectiveReady`, and an attempt to require its kernel fails with
 
 **Evidence:**
 
+- [S.I.R.#55](https://github.com/EHotwagner/S.I.R./pull/55) introduced replay
+  format v1, the shared runners and SHA-256 implementation, safety fixtures,
+  and this roadmap transition;
 - `src/SIR.Simulation/Replay.fs` owns the versioned schema, canonical
   encoding/decoding, resource limits, disclosure boundary, checkpoint runner,
   and the distinct browser and authoritative verification claims;
