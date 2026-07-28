@@ -1232,6 +1232,9 @@ Authoritative source contains no floating-point type or operation.
 
 **Evidence:**
 
+- [S.I.R.#53](https://github.com/EHotwagner/S.I.R./pull/53) introduced the
+  foundation, shared fixtures, lock files, clean-checkout gate, and roadmap
+  transition;
 - `scripts/test-conformance.sh` restores in locked mode, builds both hosts,
   compiles the package-derived Fable source, and runs it under Node;
 - ten shared boundary fixtures produce the same 60 canonical bytes in .NET
