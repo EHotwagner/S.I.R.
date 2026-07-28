@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <Compile Include="Substrate.fs" />
+    <Compile Include="Simulation.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../SIR.Domain/SIR.Domain.fsproj" />

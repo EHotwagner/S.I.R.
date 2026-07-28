@@ -71,6 +71,38 @@ if ! search_fixed "$divergence_pattern" "$task_tmp/fable-divergence.log"; then
   exit 1
 fi
 
+simulation_phase="movement"
+simulation_pattern="first divergence: tick=1 phase=$simulation_phase byte=0"
+
+if dotnet run \
+  --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj \
+  --no-build \
+  --no-restore \
+  -- --inject-simulation-divergence "$simulation_phase" \
+  >"$task_tmp/dotnet-simulation-divergence.log" 2>&1; then
+  echo "The .NET simulation divergence guard accepted a deliberately changed checkpoint" >&2
+  exit 1
+fi
+
+if ! search_fixed "$simulation_pattern" "$task_tmp/dotnet-simulation-divergence.log"; then
+  echo "The .NET simulation divergence guard did not identify the first changed tick and phase" >&2
+  sed -n '1,80p' "$task_tmp/dotnet-simulation-divergence.log" >&2
+  exit 1
+fi
+
+if node "$fable_entry" \
+  --inject-simulation-divergence "$simulation_phase" \
+  >"$task_tmp/fable-simulation-divergence.log" 2>&1; then
+  echo "The Fable simulation divergence guard accepted a deliberately changed checkpoint" >&2
+  exit 1
+fi
+
+if ! search_fixed "$simulation_pattern" "$task_tmp/fable-simulation-divergence.log"; then
+  echo "The Fable simulation divergence guard did not identify the first changed tick and phase" >&2
+  sed -n '1,80p' "$task_tmp/fable-simulation-divergence.log" >&2
+  exit 1
+fi
+
 if command -v rg >/dev/null 2>&1; then
   floating_source=$(rg -n '\b(float|float32|double|decimal)\b' src --glob '*.fs' || true)
 else
@@ -92,3 +124,5 @@ printf 'Conformance passed: %d bytes agree across .NET and Fable/Node.\n' \
   "$(( ${#dotnet_output} / 2 ))"
 printf 'Divergence guard passed: %s failed first at byte 0 in both runtimes.\n' \
   "$divergence_fixture"
+printf 'Simulation divergence guard passed: tick 1 phase %s failed first at byte 0 in both runtimes.\n' \
+  "$simulation_phase"

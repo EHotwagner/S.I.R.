@@ -12,9 +12,9 @@ let main arguments =
             | [ _; fixtureName ] -> Some fixtureName
             | _ -> None
 
-        let evaluated = NumericFixtures.evaluate injectAt
+        let numeric = NumericFixtures.evaluate injectAt
 
-        match NumericFixtures.firstDivergence evaluated with
+        match NumericFixtures.firstDivergence numeric with
         | Some divergence ->
             eprintfn
                 "first divergence: fixture=%s byte=%d expected=%02x actual=%02x"
@@ -25,8 +25,59 @@ let main arguments =
 
             failwith "Canonical conformance failed."
         | None ->
-            printfn "%s" (evaluated |> NumericFixtures.canonicalBytes |> NumericFixtures.hex)
-            0
+            let simulation = SimulationFixtures.evaluate None
+
+            match SimulationFixtures.firstDivergence simulation with
+            | Some divergence ->
+                eprintfn
+                    "first divergence: tick=%d phase=%s byte=%d expected=%02x actual=%02x"
+                    divergence.Tick
+                    (SimulationFixtures.phaseName divergence.Phase)
+                    divergence.ByteOffset
+                    divergence.Expected
+                    divergence.Actual
+
+                failwith "Simulation conformance failed."
+            | None ->
+                [ NumericFixtures.canonicalBytes numeric
+                  SimulationFixtures.canonicalBytes simulation ]
+                |> SIR.Domain.CanonicalEncoding.concatenate
+                |> NumericFixtures.hex
+                |> printfn "%s"
+
+                0
+    | [ "--inject-simulation-divergence"; phaseName ] ->
+        match SimulationFixtures.tryParsePhase phaseName with
+        | None ->
+            eprintfn "Unknown simulation phase: %s" phaseName
+            2
+        | Some phase ->
+            let evaluated = SimulationFixtures.evaluate (Some phase)
+
+            match SimulationFixtures.firstDivergence evaluated with
+            | Some divergence ->
+                eprintfn
+                    "first divergence: tick=%d phase=%s byte=%d expected=%02x actual=%02x"
+                    divergence.Tick
+                    (SimulationFixtures.phaseName divergence.Phase)
+                    divergence.ByteOffset
+                    divergence.Expected
+                    divergence.Actual
+
+                failwith "Simulation conformance failed."
+            | None ->
+                failwith "The deliberately changed simulation checkpoint was accepted."
+    | [ "--print-simulation-oracle" ] ->
+        SimulationFixtures.evaluate None
+        |> List.iter (fun (fixture, actual) ->
+            printfn
+                "%s=%s"
+                (SimulationFixtures.phaseName fixture.Phase)
+                (NumericFixtures.hex actual))
+
+        0
     | _ ->
-        eprintfn "Usage: conformance [--inject-divergence FIXTURE]"
+        eprintfn
+            "Usage: conformance [--inject-divergence FIXTURE | --inject-simulation-divergence PHASE | --print-simulation-oracle]"
+
         2
