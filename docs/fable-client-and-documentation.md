@@ -1650,6 +1650,9 @@ ignored build outputs.
 
 **Evidence:**
 
+- [S.I.R.#59](https://github.com/EHotwagner/S.I.R./pull/59) introduced the
+  strict literate corpus, evaluated .NET evidence, embedded Fable application,
+  integrity gates, generated-page browser smoke, and this roadmap transition;
 - `docs/index.md`, `docs/deterministic-simulation.fsx`, and
   `docs/interactive-rules-lab.md` provide navigation, evaluated fixed
   evidence, the Fable mount, runtime/trust disclosures, and the no-JavaScript
