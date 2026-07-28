@@ -32,9 +32,114 @@ window.document.body.innerHTML = '<div id="sir-replay-app"></div>';
 
 const workerMessages = [];
 
+const scenarioDefaults = {
+  "adjacent-duel": [25, 4],
+  "short-duel": [25, 2],
+  "single-heavy-strike": [60, 1],
+  "rapid-chip-damage": [8, 8],
+  "lethality-threshold": [34, 3],
+  "near-threshold": [33, 3],
+};
+
+const scenarioResponse = (message) => {
+  const identity = message.Request.fields[0];
+  const [power, count] = scenarioDefaults[identity];
+  const remaining = Math.max(0, 100 - power * count);
+  const parameters = [
+    { Key: "attack-power", Value: power },
+    { Key: "attack-count", Value: count },
+  ];
+  const metrics = [
+    { Key: "attack-events", Value: count },
+    { Key: "remaining-health", Value: remaining },
+    { Key: "total-damage", Value: 100 - remaining },
+  ];
+  const result = {
+    Input: {
+      ScenarioIdentity: identity,
+      ScenarioRevision: 1,
+      EngineIdentity:
+        "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      RulesetIdentity:
+        "6d31302d72756c65732d6c61622d763100000000000000000000000000000000",
+      Parameters: parameters,
+    },
+    ResultIdentity: "0123456789abcdef",
+    Metrics: metrics,
+  };
+  const report = {
+    Baseline: result,
+    Fork: result,
+    Delta: metrics.map(({ Key }) => ({ Key, Value: 0 })),
+    Sweep: undefined,
+    EvidenceLabel: "Exploratory balance evidence — not accepted balance",
+  };
+  const parameterDefinitions = [
+    {
+      Key: "attack-power",
+      Label: "Attack power",
+      Minimum: 1,
+      Maximum: 100,
+      Step: 1,
+      DefaultValue: power,
+    },
+    {
+      Key: "attack-count",
+      Label: "Attack count",
+      Minimum: 1,
+      Maximum: 8,
+      Step: 1,
+      DefaultValue: count,
+    },
+  ];
+
+  return {
+    ProtocolVersion: 2,
+    Operation: message.Operation,
+    Response: {
+      tag: 4,
+      fields: [
+        {
+          SourceName: `${identity}.sir-scenario`,
+          SourceIdentity: result.ResultIdentity,
+          EngineIdentity: result.Input.EngineIdentity,
+          FinalTick: 1,
+          Kind: 2,
+        },
+        {
+          Identity: identity,
+          Revision: 1,
+          Title: identity,
+          Description: "Smoke scenario",
+          EngineIdentity: result.Input.EngineIdentity,
+          RulesetIdentity: result.Input.RulesetIdentity,
+          Parameters: parameterDefinitions,
+        },
+        report,
+        {
+          Tick: 0,
+          BoardMinimumColumn: 0,
+          BoardMinimumRow: 0,
+          BoardMaximumColumn: 0,
+          BoardMaximumRow: 0,
+          Units: [],
+          Events: [],
+          Checkpoints: [],
+          PerspectiveHash: undefined,
+        },
+      ],
+    },
+  };
+};
+
 class SmokeWorker {
   postMessage(message) {
     workerMessages.push(message);
+    if (message.Request?.tag === 4) {
+      queueMicrotask(() =>
+        this.onmessage?.({ data: structuredClone(scenarioResponse(message)) }),
+      );
+    }
   }
   terminate() {}
 }
@@ -93,7 +198,7 @@ if (!inspector?.textContent.includes("Timeline and events")) {
   throw new Error("The responsive replay inspectors did not mount.");
 }
 
-if (!workerStatus?.textContent.includes("protocol 1")) {
+if (!workerStatus?.textContent.includes("protocol 2")) {
   throw new Error("The worker protocol disclosure is missing.");
 }
 
@@ -103,6 +208,15 @@ if (
   !catalog?.textContent.includes("Near-threshold survivor")
 ) {
   throw new Error("The interactive design-scenario gallery did not mount.");
+}
+
+if (
+  !labResults?.textContent.includes("Simulation result") ||
+  !labResults?.textContent.includes(
+    "Click “Simulate now” on any scenario above.",
+  )
+) {
+  throw new Error("The laboratory comparison surface did not mount.");
 }
 
 const scenarioButtons = [
@@ -129,12 +243,14 @@ if (
 }
 
 if (
-  !labResults?.textContent.includes("Simulation result") ||
   !labResults?.textContent.includes(
-    "Click “Simulate now” on any scenario above.",
-  )
+    "1 attacks resolved · 60 damage · target finishes on 40 HP",
+  ) ||
+  status?.textContent.includes("Loading replay")
 ) {
-  throw new Error("The laboratory comparison surface did not mount.");
+  throw new Error(
+    "The structured-cloned worker response did not correlate with the pending operation.",
+  );
 }
 
 const rulesData = window.document.querySelector(

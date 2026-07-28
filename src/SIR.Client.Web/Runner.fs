@@ -25,7 +25,12 @@ module Runner =
                 let envelope = unbox<WorkerResponseEnvelope> message.data
 
                 if envelope.ProtocolVersion = int32 WorkerProtocol.CurrentVersion then
-                    dispatch (RunnerResponded(envelope.Operation, envelope.Response))
+                    dispatch (
+                        RunnerResponded(
+                            OperationId.create envelope.Operation,
+                            envelope.Response
+                        )
+                    )
                 else
                     dispatch (
                         WorkerTerminated(
@@ -65,7 +70,7 @@ module Runner =
     let post operation request =
         let envelope: WorkerRequestEnvelope =
             { ProtocolVersion = int32 WorkerProtocol.CurrentVersion
-              Operation = operation
+              Operation = OperationId.value operation
               Request = request }
 
         match request with

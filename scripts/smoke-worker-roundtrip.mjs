@@ -43,11 +43,10 @@ if (ready.kind !== "ready") {
   throw new Error("The worker did not initialize.");
 }
 
-const operation = (value) => ({ tag: 0, fields: [value] });
 const request = (tag, fields) => ({ tag, fields });
 const envelope = (operationValue, workerRequest) => ({
-  ProtocolVersion: 1,
-  Operation: operation(operationValue),
+  ProtocolVersion: 2,
+  Operation: operationValue,
   Request: workerRequest,
 });
 
@@ -56,6 +55,7 @@ const loaded = await nextMessage();
 
 if (
   loaded.kind !== "response" ||
+  loaded.data?.Operation !== 1 ||
   loaded.data?.Response?.tag !== 4 ||
   loaded.data.Response.fields[1]?.Identity !== "adjacent-duel" ||
   !Array.isArray(loaded.data.Response.fields[2]?.Baseline?.Metrics)
@@ -79,6 +79,7 @@ const damage = forkMetrics?.find((entry) => entry.Key === "total-damage")?.Value
 
 if (
   experimented.kind !== "response" ||
+  experimented.data?.Operation !== 2 ||
   experimented.data?.Response?.tag !== 5 ||
   damage !== 100
 ) {
@@ -88,5 +89,5 @@ if (
 await worker.terminate();
 
 console.log(
-  "Worker round-trip smoke passed: scenario and edited experiment crossed both structured-clone boundaries without functions.",
+  "Worker round-trip smoke passed: primitive operation correlation, scenario load, and edited experiment crossed both structured-clone boundaries.",
 );

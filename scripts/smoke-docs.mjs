@@ -18,9 +18,103 @@ window.document.body.innerHTML = body;
 
 const workerMessages = [];
 
+const scenarioResponse = (message) => {
+  const identity = message.Request.fields[0];
+  const parameters = [
+    { Key: "attack-power", Value: 25 },
+    { Key: "attack-count", Value: 4 },
+  ];
+  const metrics = [
+    { Key: "attack-events", Value: 4 },
+    { Key: "remaining-health", Value: 0 },
+    { Key: "total-damage", Value: 100 },
+  ];
+  const input = {
+    ScenarioIdentity: identity,
+    ScenarioRevision: 1,
+    EngineIdentity:
+      "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+    RulesetIdentity:
+      "6d31302d72756c65732d6c61622d763100000000000000000000000000000000",
+    Parameters: parameters,
+  };
+  const result = {
+    Input: input,
+    ResultIdentity: "0123456789abcdef",
+    Metrics: metrics,
+  };
+
+  return {
+    ProtocolVersion: 2,
+    Operation: message.Operation,
+    Response: {
+      tag: 4,
+      fields: [
+        {
+          SourceName: `${identity}.sir-scenario`,
+          SourceIdentity: result.ResultIdentity,
+          EngineIdentity: input.EngineIdentity,
+          FinalTick: 1,
+          Kind: 2,
+        },
+        {
+          Identity: identity,
+          Revision: 1,
+          Title: "Four-hit baseline",
+          Description: "Smoke scenario",
+          EngineIdentity: input.EngineIdentity,
+          RulesetIdentity: input.RulesetIdentity,
+          Parameters: [
+            {
+              Key: "attack-power",
+              Label: "Attack power",
+              Minimum: 1,
+              Maximum: 100,
+              Step: 1,
+              DefaultValue: 25,
+            },
+            {
+              Key: "attack-count",
+              Label: "Attack count",
+              Minimum: 1,
+              Maximum: 8,
+              Step: 1,
+              DefaultValue: 4,
+            },
+          ],
+        },
+        {
+          Baseline: result,
+          Fork: result,
+          Delta: metrics.map(({ Key }) => ({ Key, Value: 0 })),
+          Sweep: undefined,
+          EvidenceLabel:
+            "Exploratory balance evidence — not accepted balance",
+        },
+        {
+          Tick: 0,
+          BoardMinimumColumn: 0,
+          BoardMinimumRow: 0,
+          BoardMaximumColumn: 0,
+          BoardMaximumRow: 0,
+          Units: [],
+          Events: [],
+          Checkpoints: [],
+          PerspectiveHash: undefined,
+        },
+      ],
+    },
+  };
+};
+
 class SmokeWorker {
   postMessage(message) {
     workerMessages.push(message);
+    if (message.Request?.tag === 4) {
+      queueMicrotask(() =>
+        this.onmessage?.({ data: structuredClone(scenarioResponse(message)) }),
+      );
+    }
   }
   terminate() {}
 }
@@ -82,7 +176,10 @@ const result = mount?.querySelector('[aria-label="Laboratory results"]');
 const rulesData = mount?.querySelector('[aria-label="Rules data tables"]');
 
 if (
-  !result?.textContent.includes("Simulation result") ||
+  !result?.textContent.includes(
+    "4 attacks resolved · 100 damage · target finishes on 0 HP",
+  ) ||
+  status?.textContent.includes("Loading replay") ||
   rulesData?.querySelectorAll("table").length !== 7 ||
   !rulesData?.textContent.includes("Point Man") ||
   !rulesData?.textContent.includes("Rifle")

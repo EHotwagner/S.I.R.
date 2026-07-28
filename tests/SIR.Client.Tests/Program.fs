@@ -15,14 +15,14 @@ let private operationFrom effects =
         | Run(operation, _) -> Some operation)
     |> List.exactlyOne
 
-let private metadata kind =
+let private metadata kind : ReplayMetadata =
     { SourceName = "fixture.sirr"
       SourceIdentity = "fixture"
       EngineIdentity = "engine"
       FinalTick = 20
       Kind = kind }
 
-let private projection tick =
+let private projection tick : InspectionProjection =
     { Tick = tick
       BoardMinimumColumn = 0
       BoardMinimumRow = 0
@@ -94,7 +94,13 @@ let main _ =
         Shell.update
             (RunnerResponded(
                 replacementOperation,
-                LoadedPackage(metadata FullReplay, KernelVerified, projection 0)
+                LoadedPackage(
+                    metadata FullReplay
+                    |> WorkerTransport.metadataToTransport,
+                    KernelVerified,
+                    projection 0
+                    |> WorkerTransport.inspectionToTransport
+                )
             ))
             superseded
         |> fst
@@ -112,7 +118,13 @@ let main _ =
         Shell.update
             (RunnerResponded(
                 operation,
-                LoadedPackage(metadata PerspectiveReplay, ProjectionOnly, projection 0)
+                LoadedPackage(
+                    metadata PerspectiveReplay
+                    |> WorkerTransport.metadataToTransport,
+                    ProjectionOnly,
+                    projection 0
+                    |> WorkerTransport.inspectionToTransport
+                )
             ))
             pending
         |> fst
@@ -210,7 +222,12 @@ let main _ =
         Shell.update
             (RunnerResponded(
                 advanceOperation,
-                RunnerProgress(256, 1, progressProjection)
+                RunnerProgress(
+                    256,
+                    1,
+                    progressProjection
+                    |> WorkerTransport.inspectionToTransport
+                )
             ))
             advancing
         |> fst
@@ -353,10 +370,12 @@ let main _ =
                     { metadata DesignScenario with
                         SourceName = "adjacent-duel.sir-scenario"
                         SourceIdentity = baselineReport.Comparison.Baseline.ResultIdentity
-                        FinalTick = 1 },
+                        FinalTick = 1 }
+                    |> WorkerTransport.metadataToTransport,
                     Lab.scenarioToTransport scenario,
                     Lab.reportToTransport baselineReport,
                     projection 0
+                    |> WorkerTransport.inspectionToTransport
                 )
             ))
             scenarioLoading
