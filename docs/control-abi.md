@@ -5,8 +5,8 @@ categoryindex: 6
 index: 13
 status: proposed
 document-type: living-design
-version: "0.3"
-last-updated: 2026-07-27
+version: "0.4"
+last-updated: 2026-07-29
 related:
   - docs/wasm-control-architecture.md
   - docs/combat-resolution.md
@@ -54,6 +54,115 @@ The ABI itself is small and stable. Content lives in versioned ruleset data:
 
 Adding content extends the descriptors and the catalog. It does not change the
 contract.
+
+## Control ABI v1 encoding
+
+Control ABI v1 is frozen as a bulk-memory, canonical little-endian contract.
+The host performs one copy to module input memory and one read from module
+output memory. Modules export:
+
+```text
+memory
+sir_abi_version() -> i32       // 0x0001_0000 for v1.0
+sir_input_ptr() -> i32
+sir_input_capacity() -> i32
+sir_output_ptr() -> i32
+sir_output_capacity() -> i32
+sir_decide(input_length: i32) -> i32
+```
+
+There are no gameplay imports. `sir_decide` returns a non-negative output byte
+length or a negative stable module status. Input and output memory ranges must
+not overlap during an invocation.
+
+The generated-code source of truth is
+[`control-abi-v1.json`](control-abi-v1.json). Running
+`node scripts/generate-control-abi.mjs` publishes the F# constants in
+`SIR.ControlAbi.V1Constants` and the standalone ES-module binding in
+`generated/control-abi-v1.mjs`.
+
+### Envelope and bounds
+
+Input magic is `SIRI`; output magic is `SIRO`. Both use this 32-byte header:
+
+| Offset | Width | Field |
+|---:|---:|---|
+| 0 | 4 | ASCII magic |
+| 4 | 1 | ABI major (`1`) |
+| 5 | 1 | ABI minor (`0`) |
+| 6 | 2 | header length (`32`) |
+| 8 | 4 | total byte length, including header |
+| 12 | 4 | non-negative tick |
+| 16 | 4 | non-negative unit ID |
+| 20 | 4 | invocation flags |
+| 24 | 4 | budget summary |
+| 28 | 2 | section count |
+| 30 | 2 | reserved zero |
+
+Every section begins with a 12-byte header:
+
+| Offset | Width | Field |
+|---:|---:|---|
+| 0 | 2 | section tag |
+| 2 | 2 | flags; bit 0 means required, all other bits are zero |
+| 4 | 4 | payload byte length |
+| 8 | 2 | element count |
+| 10 | 2 | reserved zero |
+
+Sections are unique and strictly ascending by tag. An encoder sorts them; a
+decoder rejects a non-canonical order or duplicate. Unknown optional sections
+are retained or skipped, while unknown required sections reject the complete
+invocation. The assigned tags are:
+
+| Tag | Section |
+|---|---|
+| `0x0001` | own state |
+| `0x0002` | resolved orientation |
+| `0x0003` | action and recovery |
+| `0x0004` | observations and stimuli |
+| `0x0005` | events |
+| `0x0006` | messages and reports |
+| `0x0007` | capability descriptors |
+| `0x0008` | service results |
+| `0x0009` | request status |
+| `0x1001` | output requests |
+
+The v1.0 execution-profile limits are 65,536 input bytes, 16,384 output bytes,
+32 sections, 256 elements per section, 255 bytes per canonical UTF-8 string,
+and 4,096 bytes per opaque payload. Lengths and counts are checked before
+allocation. Integers are unsigned unless the field explicitly says otherwise;
+ticks and unit IDs must fit a non-negative signed 32-bit value.
+
+Each output request has a 12-byte header followed by its request-specific
+payload: request kind `u16`, reserved zero `u16`, module-local request ID `u32`,
+and payload length `u32`. Requests are unique and strictly ascending by
+module-local ID. Their kind codes are `SetMovementIntent=1`, `SetFacing=2`,
+`SetAttention=3`, `SetStance=4`, `SetEngagement=5`,
+`StartCapability=6`, `CancelAction=7`, `SendMessage=8`,
+`RequestService=9`, `SetEmissionPolicy=10`, `SetFormationIntent=11`, and
+`Sleep=12`.
+
+The registry also freezes direction codes `0..7` clockwise from north, event
+codes `1..28` in the catalog order below, target kinds, movement postures,
+emission policies, formation and engagement operations, and the v1
+`PathSearch` asynchronous service. Consumers must use the generated binding
+rather than reproduce these integers.
+
+### Stable failures
+
+Negative module statuses are `MalformedInput=-1`, `UnsupportedVersion=-2`,
+`InputTooLarge=-3`, `OutputCapacityInsufficient=-4`,
+`ConfigurationInvalid=-5`, and `InternalFault=-6`.
+
+Host invocation failures use positive codes: module rejection `1`, trap `2`,
+fuel exhaustion `3`, invalid output length `4`, malformed output `5`, forbidden
+request `6`, memory limit `7`, and host-service limit `8`. Request rejection
+and action-lifecycle failure codes are separately assigned in the generated
+registry. A host records only the integer compatibility code in authoritative
+state; accompanying diagnostic text is not stable.
+
+Any malformed header, section, request, string, length, count, reserved field,
+or unknown required value rejects the entire invocation atomically.
 
 ## Action request kinds
 
@@ -163,13 +272,9 @@ same contract.
 
 ## Open parameters
 
-- Binary encoding and layout of the observation snapshot.
-- Whether events are delivered as a flat log or grouped by category.
-- Bounds on events per tick, and what happens when a unit exceeds them.
 - Which events are always delivered and which are gated by observation richness.
 - Whether a module may decline event kinds it does not use, and whether
   declining refunds bandwidth.
-- The stable reason-code set for failed and rejected requests.
 - Whether `SetEngagement` is distinct from `StartCapability` or a special case
   of it.
 - Whether emission policy is a unit setting, a per-message decision, or both.

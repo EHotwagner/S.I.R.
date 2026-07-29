@@ -6,7 +6,7 @@ document-type: architecture-and-roadmap
 category: Engineering
 categoryindex: 6
 index: 15
-version: "0.4"
+version: "0.5"
 created: 2026-07-29T19:27:00+02:00
 last-updated: 2026-07-29
 description: Design and milestone roadmap for converging the simulator, planning interface, control ABI, and authoritative deterministic kernel.
@@ -716,7 +716,9 @@ Evidence:
   smoke, replay, worker, accessibility, regenerated map-editor evidence, and
   zero build warnings.
 
-### [ ] ⬜ Milestone 3 — Control ABI v1 codec
+### [x] 🟩 Milestone 3 — Control ABI v1 codec
+
+Status: implemented on 2026-07-29.
 
 - implement the assigned ABI tags and bounds and assign the remaining integer
   codes and stable failure codes;
@@ -731,6 +733,21 @@ Exit gate:
   byte;
 - fuzz/property tests cannot escape declared bounds; and
 - the ABI specification contains no editor-only types.
+
+Evidence:
+
+- the machine-readable v1 registry generates deterministic F# and ES-module
+  bindings for the assigned section, request, direction, event, service, and
+  stable failure codes;
+- the runtime-neutral codec enforces the frozen 32-byte envelope and 12-byte
+  section/request headers, canonical ordering, reserved fields, UTF-8 and
+  opaque-payload limits, and atomic output decoding;
+- F#, Fable, the standalone decoder, and a complete-surface reference WASM
+  module agree on the frozen 73-byte output vector;
+- malformed, optional/required unknown-tag, maximum-size, ordering, duplicate,
+  and 4,096 deterministic mutation cases remain within declared bounds; and
+- the full conformance and documentation gates pass with generated-binding
+  freshness enforced and no editor or Wasmtime dependency in the codec.
 
 ### [ ] ⬜ Milestone 4 — reusable Wasmtime control host
 

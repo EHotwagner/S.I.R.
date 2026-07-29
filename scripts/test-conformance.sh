@@ -10,6 +10,34 @@ cd "$repo_root"
 
 node scripts/verify-fable-client-baseline.mjs
 
+control_abi_generated_before=$(
+  sha256sum \
+    src/SIR.Domain/ControlAbiV1.Generated.fs \
+    generated/control-abi-v1.mjs
+)
+node scripts/generate-control-abi.mjs
+control_abi_generated_after=$(
+  sha256sum \
+    src/SIR.Domain/ControlAbiV1.Generated.fs \
+    generated/control-abi-v1.mjs
+)
+
+if [[ "$control_abi_generated_before" != "$control_abi_generated_after" ]]; then
+  echo "Generated Control ABI v1 bindings were stale" >&2
+  exit 1
+fi
+
+control_abi_fixture=$(tr -d '[:space:]' < tests/fixtures/control-abi-v1-output.hex)
+control_abi_decoded=$(
+  node scripts/decode-control-abi-v1.mjs \
+    tests/fixtures/control-abi-v1-output.hex
+)
+
+if [[ "$control_abi_fixture" != "$control_abi_decoded" ]]; then
+  echo "Standalone Control ABI v1 decoder changed the frozen bytes" >&2
+  exit 1
+fi
+
 search_fixed() {
   local pattern=$1
   local file=$2
@@ -180,6 +208,7 @@ worker_measurement=$(node scripts/measure-worker.mjs)
 
 printf 'Conformance passed: %d bytes agree across .NET and Fable/Node.\n' \
   "$(( ${#dotnet_output} / 2 ))"
+printf 'Control ABI v1 gate passed: F#, Fable, and the standalone decoder agree on the frozen bytes.\n'
 printf 'Divergence guard passed: %s failed first at byte 0 in both runtimes.\n' \
   "$divergence_fixture"
 printf 'Simulation divergence guard passed: tick 1 phase %s failed first at byte 0 in both runtimes.\n' \

@@ -3,6 +3,8 @@ module SIR.Match.Tests
 open SIR.Domain
 open SIR.Match
 open SIR.Simulation
+open SIR.ControlAbi
+open Wasmtime
 
 let private require condition message =
     if not condition then failwith message
@@ -15,8 +17,88 @@ let private containsSubsequence (needle: byte array) (haystack: byte array) =
         |> List.exists (fun offset ->
             haystack[offset .. offset + needle.Length - 1] = needle)
 
+let private controlAbiOutput () =
+    V1Codec.encodeOutput
+        42
+        7
+        0u
+        1000u
+        [ { Kind = RequestKind.Sleep
+            ModuleRequestId = 9u
+            Payload = [| 100uy; 0uy; 0uy; 0uy |] }
+          { Kind = RequestKind.SetAttention
+            ModuleRequestId = 7u
+            Payload = [| 2uy |] } ]
+        []
+    |> Result.defaultWith (fun error -> failwithf "%A" error)
+
+let private executeReferenceControlModule expectedOutput =
+    let data =
+        expectedOutput
+        |> Array.map (fun value -> sprintf "\\%02x" value)
+        |> String.concat ""
+
+    let wat =
+        $"""(module
+          (memory (export "memory") 2)
+          (data (i32.const 65536) "{data}")
+          (func (export "sir_abi_version") (result i32) i32.const 65536)
+          (func (export "sir_input_ptr") (result i32) i32.const 0)
+          (func (export "sir_input_capacity") (result i32) i32.const 65536)
+          (func (export "sir_output_ptr") (result i32) i32.const 65536)
+          (func (export "sir_output_capacity") (result i32) i32.const 16384)
+          (func (export "sir_decide") (param i32) (result i32)
+            i32.const {expectedOutput.Length}))"""
+
+    use engine = new Engine()
+    use compiled = Module.FromText(engine, "control-abi-v1-reference", wat)
+    use linker = new Linker(engine)
+    use store = new Store(engine)
+    let instance = linker.Instantiate(store, compiled)
+    let memory =
+        match instance.GetMemory("memory") with
+        | null -> failwith "Reference ABI module did not export memory."
+        | value -> value
+
+    let decide =
+        match instance.GetFunction("sir_decide") with
+        | null -> failwith "Reference ABI module did not export sir_decide."
+        | value -> value
+
+    let input =
+        { Kind = MessageKind.Input
+          MinorVersion = 0uy
+          Tick = 42
+          UnitId = 7
+          Flags = 0u
+          Budget = 1000u
+          Sections =
+            [ { Tag = V1Constants.OwnStateTag
+                Required = true
+                ElementCount = 1
+                Payload = [| 1uy |] } ] }
+        |> V1Codec.encode
+        |> Result.defaultWith (fun error -> failwithf "%A" error)
+
+    System.ReadOnlySpan<byte>(input).CopyTo(memory.GetSpan(0L, input.Length))
+
+    let outputLength =
+        match decide.Invoke(input.Length) with
+        | :? int as value -> value
+        | value -> failwithf "Unexpected reference ABI result: %A" value
+
+    memory.GetSpan(65536L, outputLength).ToArray()
+
 [<EntryPoint>]
 let main _ =
+    let expectedControlOutput = controlAbiOutput ()
+    let referenceControlOutput =
+        executeReferenceControlModule expectedControlOutput
+
+    require
+        (referenceControlOutput = expectedControlOutput)
+        "Reference WASM module and F# Control ABI v1 codec disagree."
+
     let qualification = MatchReplay.qualify ()
     let fullBytes = Replay.encode qualification.FullPackage
     let perspectiveBytes = Replay.encode qualification.PerspectivePackage
@@ -127,8 +209,9 @@ let main _ =
         "Perspective package is not a reduced disclosure."
 
     printfn
-        "Full match replay qualified: %d full bytes, %d perspective bytes, 4 exact WASM outputs."
+        "Full match replay qualified: %d full bytes, %d perspective bytes, 4 exact WASM outputs; %d Control ABI v1 reference-module bytes agree."
         fullBytes.Length
         perspectiveBytes.Length
+        referenceControlOutput.Length
 
     0
