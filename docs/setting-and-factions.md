@@ -1,8 +1,8 @@
 ---
-title: S.I.R. Setting and Faction Architecture
-category: Reference
-categoryindex: 5
-index: 15
+title: Setting and Factions
+category: Forces & Equipment
+categoryindex: 3
+index: 9
 status: proposed
 document-type: living-design
 version: "1.8"

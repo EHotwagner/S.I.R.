@@ -43,5 +43,6 @@ node scripts/generate-docs-manifest.mjs \
   "$site_output/content/sir-client/v1"
 node scripts/generate-publication-manifest.mjs "$site_output"
 node scripts/verify-docs.mjs "$site_output"
+node scripts/test-docs-experience.mjs "$site_output"
 node scripts/smoke-docs.mjs "$site_output"
 node scripts/test-docs-accessibility.mjs "$site_output"

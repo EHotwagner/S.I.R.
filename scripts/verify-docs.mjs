@@ -96,12 +96,15 @@ if (forbidden.length > 0) {
 
 for (const required of [
   "index.html",
+  "foundations.html",
+  "combat-formulas.html",
   "deterministic-simulation.html",
   "interactive-rules-lab.html",
   "research/rules-lab-prototype.html",
   "reference/index.html",
   "reference/sir-match-matchreplay.html",
   "content/fsdocs-search.js",
+  "content/sir-docs.js",
   "content/sir-client/v1/app.js",
   "content/sir-client/v1/styles.css",
   "publication-manifest.json",
@@ -115,6 +118,8 @@ const interactive = await readFile(
   resolve(site, "interactive-rules-lab.html"),
   "utf8",
 );
+const foundations = await readFile(resolve(site, "foundations.html"), "utf8");
+const formulas = await readFile(resolve(site, "combat-formulas.html"), "utf8");
 const example = await readFile(
   resolve(site, "deterministic-simulation.html"),
   "utf8",
@@ -131,6 +136,41 @@ const searchIndex = JSON.parse(await readFile(resolve(site, "index.json"), "utf8
 
 if (/(?:>\s*Other\s*<)/.test(interactive)) {
   throw new Error("The generated sidebar still exposes the uncurated Other section.");
+}
+
+for (const category of [
+  "Start",
+  "Foundations",
+  "Forces & Equipment",
+  "Battlefield Systems",
+  "Tools & Evidence",
+  "Engineering",
+]) {
+  if (!home.includes(category)) {
+    throw new Error(`The structured sidebar omitted the ${category} category.`);
+  }
+}
+
+if (
+  /class="nav-link"[^>]*>\s*S\.I\.R\./.test(home) ||
+  !home.includes("Attributes and State") ||
+  !home.includes("Weapons and Equipment") ||
+  home.indexOf("Weapons and Equipment") > home.indexOf("Units, Classes, and Progression")
+) {
+  throw new Error(
+    "The sidebar labels or primitive-to-composed reading order regressed.",
+  );
+}
+
+if (
+  !home.includes("sir-system-map") ||
+  !foundations.includes("sir-unit-anatomy") ||
+  !home.includes('data-svg-tip="') ||
+  !foundations.includes('data-svg-tip="') ||
+  /<svg[\s\S]*?<pre class="fssnip/.test(home) ||
+  /<svg[\s\S]*?<pre class="fssnip/.test(foundations)
+) {
+  throw new Error("The accessible SVG explainers were omitted or rendered as code.");
 }
 
 for (const curatedPage of [
@@ -159,6 +199,18 @@ if (
 }
 
 if (
+  !formulas.includes("engagementSeconds") ||
+  !formulas.includes("Rifle, 25 m, 35% exposure: 1.629 s preparation") ||
+  !formulas.includes("Front armour") ||
+  !formulas.includes("Rear") ||
+  !formulas.includes("expected damage/shot")
+) {
+  throw new Error(
+    "The evaluated combat formula source or its build-time output is missing.",
+  );
+}
+
+if (
   !example.includes("Runtime: .NET build-time evaluation") ||
   !example.includes("90 + 25 in [0, 100] = 100")
 ) {
@@ -171,6 +223,8 @@ if (!home.includes("fsdocs-search")) {
 
 if (
   !searchIndex.some((entry) => entry.uri.endsWith("/deterministic-simulation.html")) ||
+  !searchIndex.some((entry) => entry.uri.endsWith("/foundations.html")) ||
+  !searchIndex.some((entry) => entry.uri.endsWith("/combat-formulas.html")) ||
   !searchIndex.some((entry) => entry.uri.endsWith("/interactive-rules-lab.html")) ||
   !searchIndex.some((entry) =>
     entry.uri.endsWith("/research/rules-lab-prototype.html"),

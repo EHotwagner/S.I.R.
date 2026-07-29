@@ -1,8 +1,8 @@
 ---
-title: S.I.R. Performance Budget
-category: Design
-categoryindex: 4
-index: 43
+title: Performance Budget
+category: Tools & Evidence
+categoryindex: 5
+index: 5
 status: proposed
 document-type: living-design
 version: "0.7"

@@ -1,8 +1,8 @@
 ---
-title: S.I.R. Combat Resolution Architecture
-category: Design
+title: Combat Resolution
+category: Battlefield Systems
 categoryindex: 4
-index: 15
+index: 1
 status: proposed
 document-type: living-design
 version: "0.6"

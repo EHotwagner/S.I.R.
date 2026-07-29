@@ -1,8 +1,8 @@
 ---
-title: S.I.R. Deterministic Simulation Core
-category: Design
-categoryindex: 4
-index: 3
+title: Simulation Core
+category: Engineering
+categoryindex: 6
+index: 1
 status: proposed
 document-type: living-design
 version: "0.8"

@@ -1,10 +1,10 @@
 ---
-title: Gameplay Combat and Formula Reference
+title: Combat Values and Formulas
 status: proposed
 document-type: reference
-category: Reference
-categoryindex: 5
-index: 7
+category: Foundations
+categoryindex: 2
+index: 3
 version: "0.1"
 last-updated: 2026-07-28
 related:
@@ -26,6 +26,12 @@ page states the required inputs and qualitative relationship instead of
 inventing a number.
 
 Return to the [Gameplay Reference](gameplay-reference.md).
+
+> **Prefer running code to copied algebra.** The
+> [executable combat-formula walkthrough](combat-formulas.fsx) displays
+> literate F# for engagement, retained effect, cover, and expected damage. The
+> strict documentation build evaluates every example and compares it with the
+> rules-laboratory implementation, so drift fails the build.
 
 ## Formula status legend
 

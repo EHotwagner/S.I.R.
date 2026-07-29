@@ -1,10 +1,10 @@
 ---
-title: Gameplay Testing and Balance Evidence
+title: Testing and Balance Evidence
 status: proposed
 document-type: evidence-reference
-category: Reference
+category: Tools & Evidence
 categoryindex: 5
-index: 13
+index: 3
 version: "0.1"
 last-updated: 2026-07-28
 related:

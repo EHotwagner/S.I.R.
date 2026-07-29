@@ -1,10 +1,10 @@
 ---
-title: Gameplay Command, Information, and Mission Rules
+title: Command, Information, and Missions
 status: proposed
 document-type: reference
-category: Reference
-categoryindex: 5
-index: 11
+category: Battlefield Systems
+categoryindex: 4
+index: 5
 version: "0.3"
 last-updated: 2026-07-28
 related:

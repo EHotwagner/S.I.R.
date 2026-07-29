@@ -1,11 +1,11 @@
 ---
-title: SVG Replay Player Contract and Visual Catalog
+title: SVG Player and Visual Catalog
 status: accepted
 decision-status: canonical
 document-type: living-architecture
-category: Design
-categoryindex: 4
-index: 45
+category: Tools & Evidence
+categoryindex: 5
+index: 7
 version: "1.0"
 last-updated: 2026-07-29
 description: Durable boundaries, disclosure-safe render contract, initial element inventory, glyph coverage, and palettes for the documentation SVG replay player.

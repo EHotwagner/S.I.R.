@@ -1,8 +1,8 @@
 ---
-title: S.I.R. Mission Lifecycle and Delivery Sequence
-category: Design
+title: Mission Lifecycle
+category: Battlefield Systems
 categoryindex: 4
-index: 37
+index: 21
 status: proposed
 document-type: living-design
 version: "0.4"

@@ -1,10 +1,10 @@
 ---
-title: Gameplay Magic, Anchors, Rituals, and Portals
+title: Magic, Anchors, and Rituals
 status: proposed
 document-type: reference
-category: Reference
-categoryindex: 5
-index: 9
+category: Battlefield Systems
+categoryindex: 4
+index: 18
 version: "0.2"
 last-updated: 2026-07-28
 related:

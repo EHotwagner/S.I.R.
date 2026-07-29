@@ -1,8 +1,8 @@
 ---
-title: S.I.R. Visual Direction
-category: Reference
-categoryindex: 5
-index: 23
+title: Visual Language
+category: Forces & Equipment
+categoryindex: 3
+index: 13
 status: proposed
 document-type: living-vision
 version: 0.10

@@ -1,9 +1,9 @@
 (**
 ---
 title: Deterministic simulation evidence
-category: Tutorials
+category: Foundations
 categoryindex: 2
-index: 1
+index: 7
 description: Evaluate fixed authoritative integer behavior on .NET and identify the equivalent Fable browser boundary.
 ---
 *)

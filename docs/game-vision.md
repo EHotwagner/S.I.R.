@@ -1,6 +1,6 @@
 ---
-title: S.I.R. Game Vision
-category: Overview
+title: Game Vision
+category: Start
 categoryindex: 1
 index: 3
 status: proposed

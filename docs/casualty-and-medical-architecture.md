@@ -1,8 +1,8 @@
 ---
-title: S.I.R. Casualty and Medical Architecture
-category: Design
+title: Casualties and Medical
+category: Battlefield Systems
 categoryindex: 4
-index: 25
+index: 7
 status: proposed
 document-type: living-design
 version: "0.2"
