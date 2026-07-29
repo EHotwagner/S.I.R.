@@ -119,7 +119,11 @@ let private fullProjection tick (full: FullReplay) : InspectionProjection =
               Column = unit.Cell.Col
               Row = unit.Cell.Row
               Health = BoundedInt32.value unit.Health
-              HealthMaximum = BoundedInt32.maximum unit.Health })
+              HealthMaximum = BoundedInt32.maximum unit.Health
+              MovementDirection = None
+              BodyFacing = int32 (Direction8.toCode unit.BodyFacing)
+              AttentionDirection =
+                  int32 (Direction8.toCode unit.AttentionDirection) })
 
     let externalEvents =
         full.OrderedInputs

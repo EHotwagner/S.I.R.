@@ -1,5 +1,7 @@
 namespace SIR.Client
 
+open SIR.Domain
+
 type ExperienceMapSample =
     { Id: string
       Title: string
@@ -195,7 +197,10 @@ unit 4 red orc 7 8 2 35 35 general -
                   Column = unit.Column
                   Row = unit.Row
                   Health = unit.Health
-                  HealthMaximum = unit.HealthMaximum })
+                  HealthMaximum = unit.HealthMaximum
+                  MovementDirection = None
+                  BodyFacing = int32 (Direction8.toCode North)
+                  AttentionDirection = int32 (Direction8.toCode North) })
           Edges =
             map.Edges
             |> Map.toList

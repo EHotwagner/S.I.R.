@@ -3,10 +3,6 @@ namespace SIR.Simulation
 open FS.GG.Game.Core
 open SIR.Domain
 
-/// A stable unit identity in the authoritative simulation.
-[<Struct>]
-type UnitId = private UnitId of int32
-
 /// The two sides used by the minimal simulation slice.
 type Side =
     | Red
@@ -17,7 +13,9 @@ type UnitState =
     { Id: UnitId
       Side: Side
       Cell: Cell
-      Health: BoundedInt32 }
+      Health: BoundedInt32
+      BodyFacing: Direction8
+      AttentionDirection: Direction8 }
 
 /// A canonical boundary with semantics owned by S.I.R.
 type SemanticEdge =
@@ -80,8 +78,20 @@ type SimulationRules =
 /// Deterministic construction and execution of the minimal shared slice.
 [<RequireQualifiedAccess>]
 module Simulation =
-    let unitId value = UnitId value
-    let unitIdValue (UnitId value) = value
+    let unitId value = UnitId.create value
+    let unitIdValue id = UnitId.value id
+
+    /// Resolves orientation from authoritative body/attention state and an
+    /// optional active route segment. Movement direction is never stored.
+    let resolvedOrientation origin destination (unit: UnitState) =
+        { MovementDirection =
+            destination
+            |> Option.bind (fun target ->
+                Direction8.tryFromDelta
+                    (target.Col - origin.Col)
+                    (target.Row - origin.Row))
+          BodyFacing = unit.BodyFacing
+          AttentionDirection = unit.AttentionDirection }
 
     let private required result =
         match result with
@@ -105,13 +115,17 @@ module Simulation =
             { Id = unitId 10
               Side = Red
               Cell = cell 0 0
-              Health = health 100 }
+              Health = health 100
+              BodyFacing = North
+              AttentionDirection = North }
 
         let blue =
             { Id = unitId 20
               Side = Blue
               Cell = cell 2 0
-              Health = health 100 }
+              Health = health 100
+              BodyFacing = North
+              AttentionDirection = North }
 
         let edge =
             { Edge = requiredEdge (cell 1 0) (cell 2 0)
@@ -329,7 +343,9 @@ module Simulation =
                 [ unitIdBytes id
                   CanonicalEncoding.byteValue (sideCode unit.Side)
                   cellBytes unit.Cell
-                  CanonicalEncoding.boundedInt32 unit.Health ])
+                  CanonicalEncoding.boundedInt32 unit.Health
+                  CanonicalEncoding.direction8 unit.BodyFacing
+                  CanonicalEncoding.direction8 unit.AttentionDirection ])
 
         let observationBytes =
             state.Observations
@@ -338,7 +354,7 @@ module Simulation =
                 [ unitIdBytes observerId; unitIdBytes targetId ])
 
         CanonicalEncoding.concatenate
-            ([ CanonicalEncoding.byteValue 1uy
+            ([ CanonicalEncoding.byteValue 2uy
                CanonicalEncoding.int32LittleEndian state.Tick
                CanonicalEncoding.int32LittleEndian state.Units.Count ]
              @ unitBytes

@@ -1,7 +1,7 @@
 {
   "format": "sir-map-editor-review-v1",
   "generatedFrom": "production Fable/React SVG workspaces",
-  "productionBundleSha256": "284c144c17f87cd6b1e5881d964091a39d59262f24c5bb31e9cad254548630fd",
+  "productionBundleSha256": "1cc3556f0a5e9bc243a5e496950683e75e2ddac4e21649824ec2e665a0ce39aa",
   "rasterizer": "rsvg-convert 2.62.3",
   "width": 960,
   "height": 640,
@@ -51,8 +51,8 @@
       "description": "Immutable authored revision rendered by the simulator.",
       "svg": "simulator-handoff.svg",
       "png": "simulator-handoff.png",
-      "svgSha256": "7e79dfdf4fe1ad5fd7d883ce4122254345d5de160fc875111d7ab15d96a60ac8",
-      "pngSha256": "49d309b18233e076c8ee1218ea97d037cd77ba6163c1630785d43decf15e30d8"
+      "svgSha256": "bf6a6f1a69c3d24b02fdd72df74022bc0aa79f855ecae2f4fe830761305feb71",
+      "pngSha256": "eb2e7c963bbff09023bc1f605d69c3f0c6b61aa4880d4aef39d25f9fb14124d7"
     },
     {
       "domain": "validation",

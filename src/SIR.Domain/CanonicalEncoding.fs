@@ -20,6 +20,19 @@ module CanonicalEncoding =
     let concatenate (segments: byte array seq) =
         segments |> Seq.collect id |> Seq.toArray
 
+    let direction8 value =
+        value |> Direction8.toCode |> byteValue
+
+    let resolvedOrientation value =
+        concatenate
+            [ match value.MovementDirection with
+              | None -> yield byteValue 0uy
+              | Some direction ->
+                  yield byteValue 1uy
+                  yield direction8 direction
+              yield direction8 value.BodyFacing
+              yield direction8 value.AttentionDirection ]
+
     /// A provisional non-cryptographic digest for conformance checkpoints.
     /// Replay-format hash selection remains an M7 concern.
     let digest32 (bytes: byte array) =

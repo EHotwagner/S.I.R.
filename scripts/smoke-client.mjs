@@ -368,7 +368,7 @@ const editorCanvas = window.document.querySelector(
   '[aria-label="SVG tactical map workspace"]',
 );
 const initialEditorDigest =
-  "eab8b1c053454ed4d944c3b73f30e84c7025d13664d88f52e27d68e92c046608";
+  "d4171834d6286d6c143cf3ec71b84b58ea7448f52665a05e7d19f9188462a860";
 if (
   !editorWorkspace ||
   editorCanvas?.getAttribute("data-editor-revision") !== initialEditorDigest ||

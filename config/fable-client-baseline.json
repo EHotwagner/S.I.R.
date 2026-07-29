@@ -1,7 +1,7 @@
 {
   "schema": "sir-fable-client-baseline-v1",
   "replay": {
-    "formatVersion": 1,
+    "formatVersion": 2,
     "encoding": "canonical-binary-little-endian",
     "compression": "none",
     "stateHash": "sha-256",

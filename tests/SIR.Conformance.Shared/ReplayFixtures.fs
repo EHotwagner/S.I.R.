@@ -98,6 +98,28 @@ module ReplayFixtures =
         let package = fullPackage ()
         let encoded = canonicalPackageBytes ()
 
+        let legacyPackage =
+            { package with
+                FormatVersion = Replay.LegacyFormatVersion }
+
+        let legacyDecoded =
+            legacyPackage
+            |> Replay.encode
+            |> Replay.decode Replay.defaultLimits
+            |> Result.defaultWith (fun error ->
+                failwithf "Legacy replay did not import: %A" error)
+
+        match legacyDecoded.Content with
+        | AuthorizedFullReplay legacy ->
+            legacy.InitialSnapshot.Units
+            |> Map.iter (fun _ unit ->
+                require
+                    (unit.BodyFacing = North
+                     && unit.AttentionDirection = North)
+                    "Legacy replay orientation defaults were not deterministic.")
+        | PerspectivePlayback _ ->
+            failwith "Legacy full replay changed disclosure kind."
+
         let decoded =
             match Replay.decode Replay.defaultLimits encoded with
             | Ok decoded -> decoded

@@ -40,8 +40,10 @@ let main arguments =
                 failwith "Simulation conformance failed."
             | None ->
                 let replay = ReplayFixtures.evaluate ()
+                let orientation = OrientationFixtures.evaluate ()
 
                 [ NumericFixtures.canonicalBytes numeric
+                  orientation
                   SimulationFixtures.canonicalBytes simulation
                   replay ]
                 |> SIR.Domain.CanonicalEncoding.concatenate

@@ -6,7 +6,7 @@ index: 2
 status: accepted
 decision-status: implemented
 document-type: reference
-version: "1.10"
+version: "1.11"
 last-updated: 2026-07-29
 description: Map records, terrain, semantic edges, square unit footprints, controller modes, and deterministic execution.
 related:
@@ -44,9 +44,11 @@ authority boundaries:
 - `Repository bundle` exports editor and simulator design state for explicit
   import into a version-controlled checkout. The static client never stores a
   repository credential.
-- `SIR-MAP 2` is the canonical portable format because typed deployment zones
-  and polygon geometry cannot be represented in version 1. Version 1 remains
-  readable and is migrated in memory before canonical version 2 export.
+- `SIR-MAP 3` is the canonical portable format. It retains the typed zones
+  introduced in version 2 and adds explicit body-facing and attention
+  directions to unit records. Versions 1 and 2 remain readable; units imported
+  from either receive deterministic `North` body-facing and `North` attention
+  defaults before canonical version 3 export.
 
 ## Map
 
@@ -269,7 +271,7 @@ mouse drag, touch pinch, release cleanup, and reduced-motion state.
 Committed authoring changes pass through a typed `EditorCommand`, pure
 validation, and immutable `MapRevision`. A revision contains the complete
 `MapDefinition`, its parent digest, a monotonic local revision number, and the
-lowercase SHA-256 digest of the canonical UTF-8 `SIR-MAP 2` document. Camera,
+lowercase SHA-256 digest of the canonical UTF-8 `SIR-MAP 3` document. Camera,
 selection, clipboard, gestures, panels, runtime ticks, and animation never
 contribute to that digest.
 
@@ -453,7 +455,7 @@ route/distance/collision results, and the two gated-unavailable explanations.
 ## Local backgrounds and interchange review
 
 Raster backgrounds are local presentation references in `EditorWorkspaceState`.
-They are not fields in `MapDefinition`, `SIR-MAP 2`, its canonical digest,
+They are not fields in `MapDefinition`, `SIR-MAP 3`, its canonical digest,
 autosave, simulation input, or exported evidence. The browser never fetches a
 background URL. A file must pass signature inspection as PNG, JPEG, or WebP,
 match its declared media type, contain dimensions from 1 through 8,192 pixels
@@ -478,7 +480,7 @@ External maps use a two-stage workflow:
 2. Inspect the complete field report. Every source leaf is classified as
    **mapped**, **ignored**, **lossy**, or **rejected**. **Accept reviewed
    import** remains disabled when no deterministic candidate exists. Acceptance
-   atomically replaces the map through the normal validated `SIR-MAP 2` import.
+   atomically replaces the map through the normal validated `SIR-MAP 3` import.
 
 The currently reviewed mappings are deliberately narrow:
 
@@ -640,12 +642,12 @@ Zones panel supplies labelled creation and editing controls, a polite live
 announcement reports changes, and the object list supports Arrow, Home, End,
 Enter, and Escape conventions without adding a tab stop for every grid cell.
 
-`SIR-MAP 2` accepts only the declared line grammar. It has no macro, script,
+`SIR-MAP 3` accepts only the declared line grammar. It has no macro, script,
 callback, expression, or trusted behavior record. Unknown records and
 unversioned behavior tokens fail the complete atomic import. Any future region
 behavior requires a new reviewed union case and a versioned format change.
-Legacy `SIR-MAP 1` documents remain loadable and migrate to the same immutable
-model before their next canonical version 2 export.
+Legacy `SIR-MAP 1` and `SIR-MAP 2` documents remain loadable and migrate to the
+same immutable model before their next canonical version 3 export.
 The deterministic
 `tests/SIR.Client.Tests/fixtures/map-editor-milestone-7-zones.txt` fixture
 freezes rectangle/polygon editing, v1 loading and v2 canonicalization,
@@ -745,7 +747,7 @@ units, and regions. **Confirm** applies the filtered document as one validated r
 **Cancel** preserves the complete prior revision. Clear uses the same explicit
 confirmation path. Import parses and validates the entire input before a
 single `ReplaceDocument` command, so malformed input cannot partially replace
-the map. Export remains the deterministic canonical `SIR-MAP 2` ordering
+the map. Export remains the deterministic canonical `SIR-MAP 3` ordering
 described below.
 
 The browser debounces local autosave for 500 ms. On startup, a different valid
@@ -770,19 +772,21 @@ isolation, thumbnail generation, and clear confirmation.
 The export format is line-oriented UTF-8:
 
 ```text
-SIR-MAP 2
+SIR-MAP 3
 size 12 8
 terrain 5 3 objective
 edge 6 2 south door closed
 zone 1 objective rectangle 4 2 3 2
 zone 2 deployment blue polygon 0,0 4,0 2,3
-unit 1 blue rifleman 1 1 2 12 12 manual -
-unit 2 blue medic 1 5 2 12 12 scripted E,E,N
-unit 3 red goblin 9 1 1 12 12 general -
+unit 1 blue rifleman 1 1 2 12 12 manual - N N
+unit 2 blue medic 1 5 2 12 12 scripted E,E,N N W
+unit 3 red goblin 9 1 1 12 12 general - S S
 ```
 
-Exports sort terrain, edges, zones, and units. Import accepts versions 1 and 2,
-validates the complete document, and always exports canonical version 2.
+The final two unit fields are body facing and attention. Their codes are the
+closed `N, NE, E, SE, S, SW, W, NW` set shared with simulation and replay.
+Exports sort terrain, edges, zones, and units. Import accepts versions 1, 2,
+and 3, validates the complete document, and always exports canonical version 3.
 
 ## Authority
 

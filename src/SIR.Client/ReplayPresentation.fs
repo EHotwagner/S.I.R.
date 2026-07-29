@@ -1,6 +1,7 @@
 namespace SIR.Client
 
 open System
+open SIR.Domain
 
 /// The reason a presentation field has no disclosed value.
 type Disclosure<'value> =
@@ -58,6 +59,21 @@ module HeadingRadians =
 
     let value (HeadingRadians value) = value
 
+    let ofDirection8 direction =
+        let radians =
+            match direction with
+            | North -> -Math.PI / 2.0
+            | NorthEast -> -Math.PI / 4.0
+            | East -> 0.0
+            | SouthEast -> Math.PI / 4.0
+            | South -> Math.PI / 2.0
+            | SouthWest -> Math.PI * 3.0 / 4.0
+            | West -> Math.PI
+            | NorthWest -> Math.PI * 5.0 / 4.0
+
+        tryCreate radians
+        |> Option.defaultWith (fun () -> failwith "Canonical direction produced an invalid heading.")
+
 /// A positive cell extent used by an authoritative footprint.
 type CellExtent = private CellExtent of int32
 
@@ -108,9 +124,10 @@ type UnitVisual =
       ShortLabel: Disclosure<string>
       StatusIds: string array }
 
-/// The accepted gameplay channel that explicitly disclosed a second heading.
-/// Attention/facing are intentionally not members of this type.
+/// The accepted gameplay channel that explicitly disclosed attention or a
+/// legacy capability-specific secondary heading.
 and SecondaryHeadingSource =
+    | AttentionHeading
     | WeaponHeading
     | SensorHeading
 
@@ -313,7 +330,8 @@ module RenderFrameTransport =
             |> Option.map (fun value ->
                 match value.Source with
                 | WeaponHeading -> 0
-                | SensorHeading -> 1)
+                | SensorHeading -> 1
+                | AttentionHeading -> 2)
           ShortLabelKind = labelKind
           ShortLabel = label
           StatusIds = Array.copy unit.StatusIds }
@@ -374,6 +392,7 @@ module RenderFrameTransport =
                     match source with
                     | 0 -> WeaponHeading
                     | 1 -> SensorHeading
+                    | 2 -> AttentionHeading
                     | _ ->
                         invalidArg
                             "SecondaryHeadingSource"

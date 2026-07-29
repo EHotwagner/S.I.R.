@@ -20,15 +20,15 @@ type MapController =
     | Scripted
     | General
 
-type MapDirection =
-    | North
-    | NorthEast
-    | East
-    | SouthEast
-    | South
-    | SouthWest
-    | West
-    | NorthWest
+/// Editor compatibility name. The authoritative direction type is shared.
+type MapDirection = Direction8
+
+[<RequireQualifiedAccess>]
+module MapDirection =
+    let toShared (direction: MapDirection) : Direction8 = direction
+    let ofShared (direction: Direction8) : MapDirection = direction
+    let toWireCode direction = Direction8.toCode direction
+    let tryFromWireCode code = Direction8.tryFromCode code
 
 type MapEdgeDirection =
     | EastEdge
@@ -73,7 +73,9 @@ type EditorUnit =
       HealthMaximum: int32
       Controller: MapController
       Script: MapDirection list
-      ScriptIndex: int }
+      ScriptIndex: int
+      BodyFacing: Direction8
+      AttentionDirection: Direction8 }
 
 type MapDefinition =
     { Width: int32
@@ -332,10 +334,13 @@ type MapEditorAction =
 [<RequireQualifiedAccess>]
 module MapEditor =
     [<Literal>]
-    let FormatVersion = 2
+    let FormatVersion = 3
 
     [<Literal>]
     let LegacyFormatVersion = 1
+
+    [<Literal>]
+    let PreviousFormatVersion = 2
 
     [<Literal>]
     let MaximumHistoryCommands = 100
@@ -503,10 +508,6 @@ module MapEditor =
     let private health remaining maximum =
         HealthVisual.tryCreate remaining maximum
         |> Option.defaultWith (fun () -> invalidArg "remaining" "Health is out of bounds.")
-
-    let private heading =
-        HeadingRadians.tryCreate 0.0
-        |> Option.defaultWith (fun () -> failwith "Zero radians must be valid.")
 
     let private terrainName terrain =
         match terrain with
@@ -703,7 +704,11 @@ module MapEditor =
                       + " "
                       + controllerName unit.Controller
                       + " "
-                      + (if List.isEmpty unit.Script then "-" else scriptText unit.Script)) ]
+                      + (if List.isEmpty unit.Script then "-" else scriptText unit.Script)
+                      + " "
+                      + directionCode unit.BodyFacing
+                      + " "
+                      + directionCode unit.AttentionDirection) ]
 
         String.concat "\n" lines + "\n"
 
@@ -750,7 +755,9 @@ module MapEditor =
                 HealthMaximum = 12
                 Controller = Manual
                 Script = []
-                ScriptIndex = 0 }
+                ScriptIndex = 0
+                BodyFacing = North
+                AttentionDirection = North }
               { Id = 2
                 Side = Blue
                 ClassId = "medic"
@@ -761,7 +768,9 @@ module MapEditor =
                 HealthMaximum = 12
                 Controller = Scripted
                 Script = [ East; East; North ]
-                ScriptIndex = 0 }
+                ScriptIndex = 0
+                BodyFacing = North
+                AttentionDirection = North }
               { Id = 3
                 Side = Red
                 ClassId = "goblin"
@@ -772,7 +781,9 @@ module MapEditor =
                 HealthMaximum = 12
                 Controller = General
                 Script = []
-                ScriptIndex = 0 }
+                ScriptIndex = 0
+                BodyFacing = North
+                AttentionDirection = North }
               { Id = 4
                 Side = Red
                 ClassId = "troll"
@@ -783,7 +794,9 @@ module MapEditor =
                 HealthMaximum = 12
                 Controller = General
                 Script = []
-                ScriptIndex = 0 } ]
+                ScriptIndex = 0
+                BodyFacing = North
+                AttentionDirection = North } ]
             |> List.map (fun unit -> unit.Id, unit)
             |> Map.ofList
         let map =
@@ -980,7 +993,9 @@ module MapEditor =
               HealthMaximum = 12
               Controller = Manual
               Script = []
-              ScriptIndex = 0 }
+              ScriptIndex = 0
+              BodyFacing = North
+              AttentionDirection = North }
 
         if validPlacement state.Map None unit column row then
             let map =
@@ -1632,11 +1647,12 @@ module MapEditor =
         let version =
             if lines.Length = 0 then None
             elif lines[0] = "SIR-MAP " + string LegacyFormatVersion then Some LegacyFormatVersion
+            elif lines[0] = "SIR-MAP " + string PreviousFormatVersion then Some PreviousFormatVersion
             elif lines[0] = "SIR-MAP " + string FormatVersion then Some FormatVersion
             else None
 
         if lines.Length < 2 || version.IsNone then
-            Error "The file is not a supported SIR-MAP 1 or SIR-MAP 2 document."
+            Error "The file is not a supported SIR-MAP 1, SIR-MAP 2, or SIR-MAP 3 document."
         else
             let mutable result = Ok(emptyMap 12 8)
 
@@ -1752,7 +1768,59 @@ module MapEditor =
                         | _, _, Error error -> result <- Error error
                         | _, None, _ -> result <- fail line "unknown zone purpose."
                         | _ -> result <- fail line "invalid or duplicate zone identifier."
-                    | [ "unit"; id; side; classId; column; row; size; remaining; maximum; controller; script ] ->
+                    | [ "unit"; id; side; classId; column; row; size; remaining; maximum; controller; script; body; attention ]
+                        when version = Some FormatVersion ->
+                        match
+                            parseInt line id,
+                            sideFromName side,
+                            parseInt line column,
+                            parseInt line row,
+                            parseInt line size,
+                            parseInt line remaining,
+                            parseInt line maximum,
+                            controllerFromName controller,
+                            (if script = "-" then Ok [] else parseScript script),
+                            directionFromCode body,
+                            directionFromCode attention
+                        with
+                        | Ok id, Some side, Ok column, Ok row, Ok size, Ok remaining, Ok maximum, Some controller, Ok script, Some bodyFacing, Some attentionDirection
+                            when id > 0
+                                 && not (Map.containsKey id map.Units)
+                                 && classId.Length <= MaximumClassIdLength
+                                 && size > 0
+                                 && maximum > 0
+                                 && remaining >= 0
+                                 && remaining <= maximum ->
+                            let unit =
+                                { Id = id
+                                  Side = side
+                                  ClassId = classId
+                                  Column = column
+                                  Row = row
+                                  Size = size
+                                  Health = remaining
+                                  HealthMaximum = maximum
+                                  Controller = controller
+                                  Script = script
+                                  ScriptIndex = 0
+                                  BodyFacing = bodyFacing
+                                  AttentionDirection = attentionDirection }
+                            result <-
+                                Ok
+                                    { map with
+                                        Units = Map.add id unit map.Units
+                                        NextUnitId = max map.NextUnitId (id + 1) }
+                        | Error error, _, _, _, _, _, _, _, _, _, _
+                        | _, _, Error error, _, _, _, _, _, _, _, _
+                        | _, _, _, Error error, _, _, _, _, _, _, _
+                        | _, _, _, _, Error error, _, _, _, _, _, _
+                        | _, _, _, _, _, Error error, _, _, _, _, _
+                        | _, _, _, _, _, _, Error error, _, _, _, _
+                        | _, _, _, _, _, _, _, _, Error error, _, _ ->
+                            result <- Error error
+                        | _ -> result <- fail line "invalid unit orientation."
+                    | [ "unit"; id; side; classId; column; row; size; remaining; maximum; controller; script ]
+                        when version <> Some FormatVersion ->
                         match
                             parseInt line id,
                             sideFromName side,
@@ -1783,7 +1851,9 @@ module MapEditor =
                                   HealthMaximum = maximum
                                   Controller = controller
                                   Script = script
-                                  ScriptIndex = 0 }
+                                  ScriptIndex = 0
+                                  BodyFacing = North
+                                  AttentionDirection = North }
                             result <-
                                 Ok
                                     { map with
@@ -2519,7 +2589,9 @@ module MapEditor =
           HealthMaximum = preset |> Option.map _.HealthMaximum |> Option.defaultValue 12
           Controller = Manual
           Script = []
-          ScriptIndex = 0 }
+          ScriptIndex = 0
+          BodyFacing = North
+          AttentionDirection = North }
 
     let private selectedUnits state =
         state.SelectedUnits
@@ -3665,8 +3737,14 @@ module MapEditor =
                   Health = Disclosed(health unit.Health unit.HealthMaximum)
                   Level = Disclosed 0
                   StanceId = NotPresent
-                  BodyHeading = Disclosed heading
-                  SecondaryHeading = NotPresent
+                  BodyHeading =
+                    Disclosed(HeadingRadians.ofDirection8 unit.BodyFacing)
+                  SecondaryHeading =
+                    Disclosed
+                        { Radians =
+                            HeadingRadians.ofDirection8
+                                unit.AttentionDirection
+                          Source = AttentionHeading }
                   ShortLabel = Disclosed(string unit.Id)
                   StatusIds = [| controllerName unit.Controller |] })
             |> List.toArray

@@ -102,6 +102,7 @@ module EvidenceExport =
                       match secondary.Source with
                       | WeaponHeading -> 0uy
                       | SensorHeading -> 1uy
+                      | AttentionHeading -> 2uy
                   )
                   floatBytes (HeadingRadians.value secondary.Radians) ]
         let unitBytes (unit: UnitVisual) =

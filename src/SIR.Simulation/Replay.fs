@@ -98,7 +98,10 @@ type private ReplayReader =
 [<RequireQualifiedAccess>]
 module Replay =
     [<Literal>]
-    let CurrentFormatVersion = 1
+    let CurrentFormatVersion = 2
+
+    [<Literal>]
+    let LegacyFormatVersion = 1
 
     let defaultLimits =
         { MaxPackageBytes = 1_048_576
@@ -142,8 +145,7 @@ module Replay =
             CanonicalEncoding.concatenate
                 [ [| 2uy |]; unitIdBytes attackerId; unitIdBytes targetId ]
 
-    /// Complete version-1 snapshot encoding, including board semantics.
-    let snapshotBytes (state: SimulationState) =
+    let private snapshotBytesForVersion formatVersion (state: SimulationState) =
         let edgeSegments =
             state.Board.Edges
             |> List.sortBy (fun edge ->
@@ -164,7 +166,11 @@ module Replay =
                 [ unitIdBytes unitId
                   [| sideByte unit.Side |]
                   cellBytes unit.Cell
-                  CanonicalEncoding.boundedInt32 unit.Health ])
+                  CanonicalEncoding.boundedInt32 unit.Health
+                  if formatVersion >= CurrentFormatVersion then
+                      CanonicalEncoding.direction8 unit.BodyFacing
+                  if formatVersion >= CurrentFormatVersion then
+                      CanonicalEncoding.direction8 unit.AttentionDirection ])
 
         let observationSegments =
             state.Observations
@@ -183,7 +189,17 @@ module Replay =
              @ [ CanonicalEncoding.int32LittleEndian state.Observations.Count ]
              @ observationSegments)
 
-    let stateHash state = state |> snapshotBytes |> CanonicalHash.sha256
+    /// Complete current-version snapshot encoding, including orientation.
+    let snapshotBytes state =
+        snapshotBytesForVersion CurrentFormatVersion state
+
+    let private stateHashForVersion formatVersion state =
+        state
+        |> snapshotBytesForVersion formatVersion
+        |> CanonicalHash.sha256
+
+    let stateHash state =
+        stateHashForVersion CurrentFormatVersion state
     let eventHash events = events |> Simulation.eventsBytes |> CanonicalHash.sha256
 
     let private lengthPrefixed (bytes: byte array) =
@@ -202,20 +218,25 @@ module Replay =
               CanonicalEncoding.int32LittleEndian output.Sequence
               inputBytes output.Input ]
 
-    let private checkpointBytes (checkpoint: ReplayCheckpoint) =
+    let private checkpointBytes formatVersion (checkpoint: ReplayCheckpoint) =
         CanonicalEncoding.concatenate
             [ CanonicalEncoding.int32LittleEndian checkpoint.Tick
-              checkpoint.State |> snapshotBytes |> lengthPrefixed
+              checkpoint.State
+              |> snapshotBytesForVersion formatVersion
+              |> lengthPrefixed
               checkpoint.StateHash
               checkpoint.EventHash ]
 
-    let private fullReplayBytes (full: FullReplay) =
+    let private fullReplayBytes formatVersion (full: FullReplay) =
         let inputSegments = full.OrderedInputs |> List.map replayInputBytes
         let wasmSegments = full.AcceptedWasmOutputs |> List.map wasmOutputBytes
-        let checkpointSegments = full.Checkpoints |> List.map checkpointBytes
+        let checkpointSegments =
+            full.Checkpoints |> List.map (checkpointBytes formatVersion)
 
         CanonicalEncoding.concatenate
-            ([ full.InitialSnapshot |> snapshotBytes |> lengthPrefixed
+            ([ full.InitialSnapshot
+               |> snapshotBytesForVersion formatVersion
+               |> lengthPrefixed
                CanonicalEncoding.int32LittleEndian full.OrderedInputs.Length ]
              @ inputSegments
              @ [ CanonicalEncoding.int32LittleEndian full.AcceptedWasmOutputs.Length ]
@@ -239,7 +260,8 @@ module Replay =
     let encode package =
         let disclosure, payload =
             match package.Content with
-            | AuthorizedFullReplay full -> 0uy, fullReplayBytes full
+            | AuthorizedFullReplay full ->
+                0uy, fullReplayBytes package.FormatVersion full
             | PerspectivePlayback frames -> 1uy, perspectiveBytes frames
 
         CanonicalEncoding.concatenate
@@ -306,6 +328,11 @@ module Replay =
         | Ok health -> health
         | Error _ -> failDecode "Unit health is outside 0..100."
 
+    let private readDirection field reader =
+        match Direction8.tryFromCode (readByte reader) with
+        | Some direction -> direction
+        | None -> failDecode ("Invalid " + field + " direction code.")
+
     let private readInput reader =
         match readByte reader with
         | 0uy -> Move(Simulation.unitId (readInt32 reader), readCell reader)
@@ -321,7 +348,7 @@ module Replay =
             )
         | value -> failDecode (sprintf "Invalid kernel-input tag %d." value)
 
-    let private readSnapshot limits reader =
+    let private readSnapshot formatVersion limits reader =
         let declaredLength = readInt32 reader
 
         if declaredLength < 0
@@ -359,7 +386,17 @@ module Replay =
                       { Id = unitId
                         Side = readSide reader
                         Cell = readCell reader
-                        Health = readHealth reader } ]
+                        Health = readHealth reader
+                        BodyFacing =
+                            if formatVersion >= CurrentFormatVersion then
+                                readDirection "body-facing" reader
+                            else
+                                North
+                        AttentionDirection =
+                            if formatVersion >= CurrentFormatVersion then
+                                readDirection "attention" reader
+                            else
+                                North } ]
 
         if units |> List.map fst |> Set.ofList |> Set.count <> unitCount then
             failDecode "Snapshot contains duplicate unit identifiers."
@@ -398,14 +435,14 @@ module Replay =
           Sequence = readInt32 reader
           Input = readInput reader }
 
-    let private readCheckpoint limits reader =
+    let private readCheckpoint formatVersion limits reader =
         { Tick = readInt32 reader
-          State = readSnapshot limits reader
+          State = readSnapshot formatVersion limits reader
           StateHash = readBytes 32 reader
           EventHash = readBytes 32 reader }
 
-    let private readFull limits reader : FullReplay =
-        let initial = readSnapshot limits reader
+    let private readFull formatVersion limits reader : FullReplay =
+        let initial = readSnapshot formatVersion limits reader
         let inputCount = readCount "inputs" limits.MaxInputs reader
         let inputs: ReplayInput list =
             [ for _ in 1 .. inputCount -> readReplayInput reader ]
@@ -416,7 +453,9 @@ module Replay =
         let wasm: AcceptedWasmOutput list =
             [ for _ in 1 .. wasmCount -> readWasmOutput reader ]
         let checkpointCount = readCount "checkpoints" limits.MaxCheckpoints reader
-        let checkpoints = [ for _ in 1 .. checkpointCount -> readCheckpoint limits reader ]
+        let checkpoints =
+            [ for _ in 1 .. checkpointCount ->
+                  readCheckpoint formatVersion limits reader ]
 
         { InitialSnapshot = initial
           OrderedInputs = inputs
@@ -449,6 +488,11 @@ module Replay =
                     failDecode "Replay magic is invalid."
 
                 let version = readInt32 reader
+
+                if version <> LegacyFormatVersion
+                   && version <> CurrentFormatVersion then
+                    failDecode (sprintf "Unsupported replay format %d." version)
+
                 let disclosure = readByte reader
                 let engineHash = readBytes 32 reader
                 let rulesetHash = readBytes 32 reader
@@ -456,7 +500,8 @@ module Replay =
 
                 let content =
                     match disclosure with
-                    | 0uy -> readFull limits reader |> AuthorizedFullReplay
+                    | 0uy ->
+                        readFull version limits reader |> AuthorizedFullReplay
                     | 1uy -> readPerspective limits reader |> PerspectivePlayback
                     | value -> failDecode (sprintf "Invalid disclosure byte %d." value)
 
@@ -482,7 +527,8 @@ module Replay =
             | false -> Error(InvalidOrdering field)
 
     let private validateHeader (expectedEngine: byte array) (package: ReplayPackage) =
-        if package.FormatVersion <> int32 CurrentFormatVersion then
+        if package.FormatVersion <> int32 LegacyFormatVersion
+           && package.FormatVersion <> int32 CurrentFormatVersion then
             Error(
                 UnsupportedFormat(
                     package.FormatVersion,
@@ -496,7 +542,7 @@ module Replay =
             | Error error -> Error error
             | Ok() -> requireHash "ruleset" package.RulesetHash
 
-    let private validateFull (limits: ReplayLimits) (full: FullReplay) =
+    let private validateFull formatVersion (limits: ReplayLimits) (full: FullReplay) =
         let limit field maximum values =
             if List.length values > maximum then
                 Error(ResourceLimitExceeded(field, List.length values, maximum))
@@ -588,12 +634,14 @@ module Replay =
                             elif
                                 full.Checkpoints
                                 |> List.exists (fun checkpoint ->
-                                    checkpoint.StateHash <> stateHash checkpoint.State)
+                                    checkpoint.StateHash
+                                    <> stateHashForVersion formatVersion checkpoint.State)
                             then
                                 let checkpoint =
                                     full.Checkpoints
                                     |> List.find (fun checkpoint ->
-                                        checkpoint.StateHash <> stateHash checkpoint.State)
+                                        checkpoint.StateHash
+                                        <> stateHashForVersion formatVersion checkpoint.State)
 
                                 Error(
                                     InvalidCheckpoint(
@@ -700,7 +748,7 @@ module Replay =
     let private checkpointAt tick (full: FullReplay) =
         full.Checkpoints |> List.tryFind (fun checkpoint -> checkpoint.Tick = tick)
 
-    let private replayFrom (full: FullReplay) (start: SimulationState) =
+    let private replayFrom formatVersion (full: FullReplay) (start: SimulationState) =
         let mutable state = start
         let mutable lastEvents = []
         let mutable failure: ReplayError option = None
@@ -708,7 +756,8 @@ module Replay =
         for tick in start.Tick + 1 .. full.FinalResult.Tick do
             if Option.isNone failure then
                 let result = Simulation.runTick state (journalAt tick full)
-                let actualStateHash = stateHash result.State
+                let actualStateHash =
+                    stateHashForVersion formatVersion result.State
                 let actualEventHash = eventHash result.Events
 
                 match checkpointAt tick full with
@@ -716,7 +765,10 @@ module Replay =
                     failure <- Some(ReplayDivergence(tick, "checkpoint state hash"))
                 | Some checkpoint when checkpoint.EventHash <> actualEventHash ->
                     failure <- Some(ReplayDivergence(tick, "checkpoint event hash"))
-                | Some checkpoint when snapshotBytes checkpoint.State <> snapshotBytes result.State ->
+                | Some checkpoint when
+                    snapshotBytesForVersion formatVersion checkpoint.State
+                    <> snapshotBytesForVersion formatVersion result.State
+                    ->
                     failure <- Some(ReplayDivergence(tick, "checkpoint snapshot"))
                 | _ ->
                     state <- result.State
@@ -725,7 +777,7 @@ module Replay =
         match failure with
         | Some error -> Error error
         | None ->
-            let actualStateHash = stateHash state
+            let actualStateHash = stateHashForVersion formatVersion state
             let actualEventHash = eventHash lastEvents
 
             if actualStateHash <> full.FinalResult.StateHash then
@@ -735,7 +787,7 @@ module Replay =
             else
                 Ok full.FinalResult
 
-    let private verifyAllSeekPoints (full: FullReplay) =
+    let private verifyAllSeekPoints formatVersion (full: FullReplay) =
         let starts =
             full.InitialSnapshot
             :: (full.Checkpoints
@@ -745,7 +797,7 @@ module Replay =
 
         starts
         |> List.tryPick (fun state ->
-            match replayFrom full state with
+            match replayFrom formatVersion full state with
             | Ok _ -> None
             | Error error -> Some error)
         |> function
@@ -765,10 +817,10 @@ module Replay =
             | AuthorizedFullReplay _ when not package.FullReplayAuthorized ->
                 Error UnauthorizedFullReplay
             | AuthorizedFullReplay full ->
-                match validateFull limits full with
+                match validateFull package.FormatVersion limits full with
                 | Error error -> Error error
                 | Ok() ->
-                    match verifyAllSeekPoints full with
+                    match verifyAllSeekPoints package.FormatVersion full with
                     | Ok finalResult -> Ok(BrowserKernelVerified finalResult)
                     | Error error -> Error error
 
