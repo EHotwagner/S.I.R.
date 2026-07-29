@@ -1115,12 +1115,15 @@ const trollSampleCard = [...(samplesWorkspace?.querySelectorAll(".sample-card") 
   .find((card) => card.textContent.includes("Troll assault"));
 if (
   !samplesWorkspace ||
+  trollSampleCard?.tagName !== "DETAILS" ||
   !trollSampleCard?.textContent.includes("240 HP armored troll") ||
   !samplesWorkspace.textContent.includes("Troll reaches the line") ||
   !samplesWorkspace.textContent.includes("Closed-door stalemate")
 ) {
-  throw new Error("The curated map, simulation, and replay samples did not mount.");
+  throw new Error("The expandable curated sample lists did not mount.");
 }
+trollSampleCard.querySelector("summary")?.click();
+await window.happyDOM.waitUntilComplete();
 trollSampleCard
   .querySelector('button[aria-label*="Run Troll assault"]')
   ?.click();
@@ -1136,10 +1139,31 @@ if (
 ) {
   throw new Error("The troll assault sample did not open in the compact simulator.");
 }
+buttonByText("Step")?.click();
+buttonByText("Step")?.click();
+buttonByText("Step")?.click();
+await window.happyDOM.waitUntilComplete();
+buttonByText("Events")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document.querySelector(
+    '[data-combat-indicator="combat-projectile"] [data-projectile="true"]',
+  ) ||
+  !window.document
+    .querySelector('[aria-label="Combat indicator legend"]')
+    ?.textContent.includes("Melee strike") ||
+  !window.document
+    .querySelector('[aria-label="Simulator command panel"]')
+    ?.textContent.includes("ranged attack")
+) {
+  throw new Error("Riflemen did not resolve and display typed ranged attacks.");
+}
 buttonByText("Samples")?.click();
 await window.happyDOM.waitUntilComplete();
 const trollReplayCard = [...window.document.querySelectorAll(".sample-card")]
   .find((card) => card.textContent.includes("Troll reaches the line"));
+trollReplayCard?.querySelector("summary")?.click();
+await window.happyDOM.waitUntilComplete();
 trollReplayCard
   ?.querySelector('button[aria-label*="Troll reaches the line"]')
   ?.click();

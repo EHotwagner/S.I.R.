@@ -1945,16 +1945,90 @@ let private battlefieldView
                                         svg.custom ("data-layer", "effects")
                                         svg.children [
                                             for trace in scene.ActionTraces do
-                                                Svg.line [
+                                                let color, width, dash =
+                                                    match trace.Kind with
+                                                    | "combat-melee" ->
+                                                        scene.Palette.HealthActive, 5, [||]
+                                                    | "combat-projectile" ->
+                                                        scene.Palette.NeutralFaction, 3, [| 9; 4 |]
+                                                    | "combat-lobbed-area" ->
+                                                        scene.Palette.HumanFaction, 3, [| 3; 5 |]
+                                                    | "combat-spell-area" ->
+                                                        scene.Palette.ArcaneFaction, 4, [| 2; 4 |]
+                                                    | _ ->
+                                                        scene.Palette.HealthActive, 2, [| 3; 3 |]
+                                                let projectileX =
+                                                    trace.SourceX
+                                                    + (trace.TargetX - trace.SourceX) * 0.68
+                                                let projectileY =
+                                                    trace.SourceY
+                                                    + (trace.TargetY - trace.SourceY) * 0.68
+                                                Svg.g [
+                                                    svg.custom ("data-combat-indicator", trace.Kind)
                                                     svg.custom ("data-action-trace", string trace.EventId)
-                                                    svg.custom ("data-action-kind", trace.Kind)
-                                                    svg.x1 trace.SourceX
-                                                    svg.y1 trace.SourceY
-                                                    svg.x2 trace.TargetX
-                                                    svg.y2 trace.TargetY
-                                                    svg.stroke scene.Palette.HealthActive
-                                                    svg.strokeWidth 2
-                                                    svg.strokeDasharray [| 3; 3 |]
+                                                    svg.children [
+                                                        Svg.line [
+                                                            svg.custom ("data-action-kind", trace.Kind)
+                                                            svg.x1 trace.SourceX
+                                                            svg.y1 trace.SourceY
+                                                            svg.x2 trace.TargetX
+                                                            svg.y2 trace.TargetY
+                                                            svg.stroke color
+                                                            svg.strokeWidth width
+                                                            svg.strokeDasharray dash
+                                                        ]
+                                                        match trace.Kind with
+                                                        | "combat-projectile" ->
+                                                            Svg.circle [
+                                                                svg.custom ("data-projectile", "true")
+                                                                svg.cx projectileX
+                                                                svg.cy projectileY
+                                                                svg.r 5
+                                                                svg.fill color
+                                                                svg.stroke scene.Palette.Text
+                                                                svg.strokeWidth 1
+                                                            ]
+                                                            Svg.circle [
+                                                                svg.custom ("data-impact", "projectile")
+                                                                svg.cx trace.TargetX
+                                                                svg.cy trace.TargetY
+                                                                svg.r 9
+                                                                svg.fill "none"
+                                                                svg.stroke color
+                                                                svg.strokeWidth 2
+                                                            ]
+                                                        | "combat-melee" ->
+                                                            Svg.line [
+                                                                svg.custom ("data-impact", "melee")
+                                                                svg.x1 (trace.TargetX - 7.0)
+                                                                svg.y1 (trace.TargetY - 7.0)
+                                                                svg.x2 (trace.TargetX + 7.0)
+                                                                svg.y2 (trace.TargetY + 7.0)
+                                                                svg.stroke color
+                                                                svg.strokeWidth 4
+                                                            ]
+                                                            Svg.line [
+                                                                svg.x1 (trace.TargetX + 7.0)
+                                                                svg.y1 (trace.TargetY - 7.0)
+                                                                svg.x2 (trace.TargetX - 7.0)
+                                                                svg.y2 (trace.TargetY + 7.0)
+                                                                svg.stroke color
+                                                                svg.strokeWidth 4
+                                                            ]
+                                                        | "combat-lobbed-area"
+                                                        | "combat-spell-area" ->
+                                                            Svg.circle [
+                                                                svg.custom ("data-impact", trace.Kind)
+                                                                svg.cx trace.TargetX
+                                                                svg.cy trace.TargetY
+                                                                svg.r 14
+                                                                svg.fill "none"
+                                                                svg.stroke color
+                                                                svg.strokeWidth 3
+                                                                svg.strokeDasharray dash
+                                                            ]
+                                                        | _ -> Html.none
+                                                    ]
                                                 ]
                                         ]
                                     ]
@@ -1990,6 +2064,26 @@ let private battlefieldView
                                     + " px/cell"
                                 )
                             ]
+                            if not (Array.isEmpty scene.ActionTraces) then
+                                Html.section [
+                                    prop.className "combat-indicator-legend"
+                                    prop.ariaLabel "Combat indicator legend"
+                                    prop.children [
+                                        Html.h3 "Combat effects"
+                                        Html.span [
+                                            Html.i [ prop.className "combat-swatch is-projectile"; prop.ariaHidden true ]
+                                            Html.span "Ranged projectile"
+                                        ]
+                                        Html.span [
+                                            Html.i [ prop.className "combat-swatch is-melee"; prop.ariaHidden true ]
+                                            Html.span "Melee strike"
+                                        ]
+                                        Html.span [
+                                            Html.i [ prop.className "combat-swatch is-area"; prop.ariaHidden true ]
+                                            Html.span "Area delivery"
+                                        ]
+                                    ]
+                                ]
                             Html.label [
                                 Html.input [
                                     prop.type'.checkbox
@@ -5241,7 +5335,7 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                 prop.children [
                     Html.article [ Html.h3 "Manual"; Html.p "Issue explicit movement commands." ]
                     Html.article [ Html.h3 "Scripted AI"; Html.p "Repeat a deterministic direction script." ]
-                    Html.article [ Html.h3 "General AI"; Html.p "Approach the nearest hostile and attack when adjacent." ]
+                    Html.article [ Html.h3 "General AI"; Html.p "Approach the nearest hostile until its class-specific melee or ranged attack is in range." ]
                 ]
             ]
             match selected with
@@ -5813,40 +5907,54 @@ let private simulatorDock
 
 let private sampleCatalogView (dispatch: Msg -> unit) =
     let mapCard (sample: ExperienceMapSample) =
-        Html.article [
-            prop.className "panel sample-card"
+        Html.details [
+            prop.className "panel sample-list-item sample-card"
             prop.children [
-                Html.p [ prop.className "eyebrow"; prop.text "Map and simulation" ]
-                Html.h3 sample.Title
-                Html.p sample.Summary
-                Html.ul [
-                    for highlight in sample.Highlights do
-                        Html.li highlight
+                Html.summary [
+                    Html.span [ prop.className "sample-kind"; prop.text "Map · Simulation" ]
+                    Html.strong sample.Title
+                    Html.span [ prop.className "sample-summary"; prop.text sample.Summary ]
                 ]
                 Html.div [
-                    prop.className "control-row"
+                    prop.className "sample-list-body"
                     prop.children [
-                        button "Open map" ("Open " + sample.Title + " in Editor") false (fun _ ->
-                            dispatch (LoadMapSample sample.Id))
-                        button "Run simulation" ("Run " + sample.Title + " in Simulator") false (fun _ ->
-                            dispatch (LoadSimulationSample sample.Id))
+                        Html.ul [
+                            for highlight in sample.Highlights do
+                                Html.li highlight
+                        ]
+                        Html.div [
+                            prop.className "control-row"
+                            prop.children [
+                                button "Open map" ("Open " + sample.Title + " in Editor") false (fun _ ->
+                                    dispatch (LoadMapSample sample.Id))
+                                button "Run simulation" ("Run " + sample.Title + " in Simulator") false (fun _ ->
+                                    dispatch (LoadSimulationSample sample.Id))
+                            ]
+                        ]
                     ]
                 ]
             ]
         ]
     let replayCard (sample: ExperienceReplaySample) =
-        Html.article [
-            prop.className "panel sample-card"
+        Html.details [
+            prop.className "panel sample-list-item sample-card"
             prop.children [
-                Html.p [ prop.className "eyebrow"; prop.text "Replay walkthrough" ]
-                Html.h3 sample.Title
-                Html.p sample.Summary
-                Html.p (
-                    string sample.Ticks
-                    + " deterministic sample ticks · locally navigable · sandbox evidence"
-                )
-                button "Open replay" ("Open replay walkthrough " + sample.Title) false (fun _ ->
-                    dispatch (LoadReplaySample sample.Id))
+                Html.summary [
+                    Html.span [ prop.className "sample-kind"; prop.text "Replay" ]
+                    Html.strong sample.Title
+                    Html.span [ prop.className "sample-summary"; prop.text sample.Summary ]
+                ]
+                Html.div [
+                    prop.className "sample-list-body"
+                    prop.children [
+                        Html.p (
+                            string sample.Ticks
+                            + " deterministic sample ticks · locally navigable · sandbox evidence"
+                        )
+                        button "Open replay" ("Open replay walkthrough " + sample.Title) false (fun _ ->
+                            dispatch (LoadReplaySample sample.Id))
+                    ]
+                ]
             ]
         ]
     Html.section [
@@ -5863,7 +5971,7 @@ let private sampleCatalogView (dispatch: Msg -> unit) =
             ]
             Html.h3 "Maps and simulations"
             Html.div [
-                prop.className "sample-card-grid"
+                prop.className "sample-list"
                 prop.children [
                     for sample in ExperienceSamples.maps do
                         mapCard sample
@@ -5871,7 +5979,7 @@ let private sampleCatalogView (dispatch: Msg -> unit) =
             ]
             Html.h3 "Replay walkthroughs"
             Html.div [
-                prop.className "sample-card-grid"
+                prop.className "sample-list"
                 prop.children [
                     for sample in ExperienceSamples.replays do
                         replayCard sample
