@@ -17,14 +17,86 @@ type SimulationDivergence =
 
 [<RequireQualifiedAccess>]
 module SimulationFixtures =
+    let private mapScaleUnit id column : MapScaleUnit =
+        { Id = id
+          Side = id
+          ClassId = "rifleman"
+          Cell = MapScale.cell column 0
+          Size = 1
+          Health = 100
+          Controller = ManualController
+          Script = []
+          ScriptIndex = 0
+          BodyFacing = North
+          AttentionDirection = North }
+
+    let private mapScaleState firstColumn secondColumn firstDirection secondDirection : MapScaleState =
+        let first = mapScaleUnit 1 firstColumn
+        let second = mapScaleUnit 2 secondColumn
+        { Tick = 0
+          Board =
+            { Width = 3
+              Height = 1
+              Terrain = Map.empty
+              Edges = Map.empty }
+          Units = [ first.Id, first; second.Id, second ] |> Map.ofList
+          MovementCreditsMillimeters = Map.ofList [ 1, 500; 2, 500 ]
+          MovementProgress = Map.empty
+          MovementIntents = Map.ofList [ 1, firstDirection; 2, secondDirection ]
+          PlannedRoutes = Map.empty
+          Engagements = Map.empty }
+
+    /// Canonical simultaneous-contention fixtures and checkpoint diagnostics.
+    let mapScaleEvidence () =
+        let destination = mapScaleState 0 2 East West |> MapScale.tick
+        let crossing = mapScaleState 0 1 East West |> MapScale.tick
+        let resolveEvents (result: MapScaleTickResult) =
+            result.Checkpoints
+            |> List.find (fun checkpoint -> checkpoint.Phase = MapScalePhase.ResolvePhase)
+            |> _.Events
+        let destinationCanonical =
+            resolveEvents destination
+            |> List.map (function
+                | MapScaleEvent.MovementRejected(id, _, DestinationConflict address) ->
+                    id, address.Col, address.Row
+                | event -> failwithf "Expected destination conflict, got %A." event)
+        let crossingCanonical =
+            resolveEvents crossing
+            |> List.map (function
+                | MapScaleEvent.MovementRejected(id, _, CrossingConflict otherId) -> id, otherId
+                | event -> failwithf "Expected crossing conflict, got %A." event)
+        if destinationCanonical <> [ 1, 1, 0; 2, 1, 0 ] then
+            failwithf "Destination conflict fixture changed: %A." destinationCanonical
+        if crossingCanonical <> [ 1, 2; 2, 1 ] then
+            failwithf "Crossing conflict fixture changed: %A." crossingCanonical
+        if destination.State.Units |> Map.exists (fun id unit ->
+            unit.Cell <> (if id = 1 then MapScale.cell 0 0 else MapScale.cell 2 0)) then
+            failwith "Destination contention committed a movement."
+        if crossing.State.Units |> Map.exists (fun id unit ->
+            unit.Cell <> (if id = 1 then MapScale.cell 0 0 else MapScale.cell 1 0)) then
+            failwith "Crossing contention committed a movement."
+        let changed =
+            destination.Checkpoints
+            |> List.map (fun checkpoint ->
+                if checkpoint.Phase = MapScalePhase.ResolvePhase then
+                    { checkpoint with Events = checkpoint.Events @ [ MapScaleEvent.UnitHeld(99, "diagnostic") ] }
+                else checkpoint)
+        match MapScale.firstCheckpointDivergence destination.Checkpoints changed with
+        | Some divergence when divergence.Tick = 1 && divergence.Phase = MapScalePhase.ResolvePhase -> ()
+        | divergence -> failwithf "Map-scale phase divergence diagnostic changed: %A." divergence
+        [ destination.Checkpoints; crossing.Checkpoints ]
+        |> List.collect id
+        |> List.map MapScale.checkpointBytes
+        |> CanonicalEncoding.concatenate
+
     let private expectedOracles =
-        [ MovementPhase,
+        [ SimulationPhase.MovementPhase,
           "01000000000200000000020000000a00000000010000000100000064000000000014000000010200000000000000640000000000000000000102000000000a0000000000000000000000010000000100000001140000000200000000000000010000000000000001000000000000000200000000000000"
-          ObservationPhase,
+          SimulationPhase.ObservationPhase,
           "01000000010200000000020000000a00000000010000000100000064000000000014000000010200000000000000640000000000010000000a000000140000000103000000000a0000000000000000000000010000000100000001140000000200000000000000010000000000000001000000000000000200000000000000020a0000001400000001000000"
-          AttackPhase,
+          SimulationPhase.AttackPhase,
           "01000000020200000000020000000a000000000100000001000000640000000000140000000102000000000000004b0000000000010000000a000000140000000104000000000a0000000000000000000000010000000100000001140000000200000000000000010000000000000001000000000000000200000000000000020a0000001400000001000000030a00000014000000190000004b000000"
-          CommitPhase,
+          SimulationPhase.CommitPhase,
           "01000000030201000000020000000a000000000100000001000000640000000000140000000102000000000000004b0000000000010000000a000000140000000104000000000a0000000000000000000000010000000100000001140000000200000000000000010000000000000001000000000000000200000000000000020a0000001400000001000000030a00000014000000190000004b00000093d95660" ]
 
     let private fromHex (hex: string) =
@@ -41,7 +113,7 @@ module SimulationFixtures =
     let private resultBytes result checkpoint =
         let encodedCheckpoint = Simulation.checkpointBytes checkpoint
 
-        if checkpoint.Phase = CommitPhase then
+        if checkpoint.Phase = SimulationPhase.CommitPhase then
             CanonicalEncoding.concatenate [ encodedCheckpoint; result.StateDigest ]
         else
             encodedCheckpoint
@@ -110,15 +182,15 @@ module SimulationFixtures =
 
     let phaseName phase =
         match phase with
-        | MovementPhase -> "movement"
-        | ObservationPhase -> "observation"
-        | AttackPhase -> "attack"
-        | CommitPhase -> "commit"
+        | SimulationPhase.MovementPhase -> "movement"
+        | SimulationPhase.ObservationPhase -> "observation"
+        | SimulationPhase.AttackPhase -> "attack"
+        | SimulationPhase.CommitPhase -> "commit"
 
     let tryParsePhase value =
         match value with
-        | "movement" -> Some MovementPhase
-        | "observation" -> Some ObservationPhase
-        | "attack" -> Some AttackPhase
-        | "commit" -> Some CommitPhase
+        | "movement" -> Some SimulationPhase.MovementPhase
+        | "observation" -> Some SimulationPhase.ObservationPhase
+        | "attack" -> Some SimulationPhase.AttackPhase
+        | "commit" -> Some SimulationPhase.CommitPhase
         | _ -> None

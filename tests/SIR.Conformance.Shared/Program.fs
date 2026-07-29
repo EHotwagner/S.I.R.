@@ -41,10 +41,12 @@ let main arguments =
             | None ->
                 let replay = ReplayFixtures.evaluate ()
                 let orientation = OrientationFixtures.evaluate ()
+                let mapScale = SimulationFixtures.mapScaleEvidence ()
 
                 [ NumericFixtures.canonicalBytes numeric
                   orientation
                   SimulationFixtures.canonicalBytes simulation
+                  mapScale
                   replay ]
                 |> SIR.Domain.CanonicalEncoding.concatenate
                 |> NumericFixtures.hex

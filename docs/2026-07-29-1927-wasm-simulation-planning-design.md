@@ -6,7 +6,7 @@ document-type: architecture-and-roadmap
 category: Engineering
 categoryindex: 6
 index: 15
-version: "0.3"
+version: "0.4"
 created: 2026-07-29T19:27:00+02:00
 last-updated: 2026-07-29
 description: Design and milestone roadmap for converging the simulator, planning interface, control ABI, and authoritative deterministic kernel.
@@ -683,7 +683,9 @@ Evidence:
   map-editor qualification, accessibility, and deterministic evidence gates
   pass.
 
-### [ ] ⬜ Milestone 2 — shared map-scale kernel
+### [x] 🟩 Milestone 2 — shared map-scale kernel
+
+Status: implemented on 2026-07-29.
 
 - move fixed-timestep movement, square-footprint collision, terrain cost, and
   semantic-edge traversal from `MapEditorSimulator` into `SIR.Simulation`;
@@ -698,6 +700,21 @@ Exit gate:
 - editor and headless runs consume the same kernel;
 - simultaneous destination and crossing conflicts have canonical fixtures; and
 - no authoritative numeric or rules logic remains in the web project.
+
+Evidence:
+
+- `SIR.Simulation.MapScale` owns fixed-timestep movement credit,
+  square-footprint collision, terrain cost, semantic-edge traversal,
+  deterministic pathfinding, typed combat profiles, and engagement recovery;
+- every map-scale tick produces collect, validate, resolve, and commit
+  checkpoints, while the editor simulator only converts, orchestrates,
+  narrates, and interpolates shared-kernel results;
+- native/Fable canonical fixtures reject same-destination and crossing/swap
+  conflicts symmetrically from the pre-tick snapshot and identify the first
+  divergent tick, phase, and byte; and
+- the full conformance suite passes with exact .NET/Fable output, browser
+  smoke, replay, worker, accessibility, regenerated map-editor evidence, and
+  zero build warnings.
 
 ### [ ] ⬜ Milestone 3 — Control ABI v1 codec
 
