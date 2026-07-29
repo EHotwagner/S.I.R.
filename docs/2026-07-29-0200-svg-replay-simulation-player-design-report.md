@@ -5,7 +5,7 @@ categoryindex: 4
 index: 44
 status: proposed
 document-type: timestamped-design-report
-version: "1.4"
+version: "1.5"
 created-at: 2026-07-29T02:00:41+02:00
 last-updated: 2026-07-29
 related:
@@ -916,14 +916,32 @@ documentation, publication, and accessibility gates passed.
 
 ### Phase 3 — overlays and playback polish
 
-- [ ] Add exact selected overlays, semantic timeline lanes, deterministic
+- [x] Add exact selected overlays, semantic timeline lanes, deterministic
   interpolation, action traces, and reduced motion.
-- [ ] Aggregate or decline whole-force overlays above the 8,000-path-segment
+- [x] Aggregate or decline whole-force overlays above the 8,000-path-segment
   limit while preserving precise selected-unit overlays.
-- [ ] Add the optional second heading only with an accepted gameplay source.
+- [x] Add the optional second heading only with an accepted gameplay source.
 
 **Exit:** exact-tick and interpolated modes converge on every committed frame;
 two-heading and exact-overlay visual reviews pass.
+
+**Completed 2026-07-29:** presentation-only interpolation moves only adjacent,
+unblocked disclosed positions and converges to the exact committed scene at
+alpha one; spawn/disappearance, footprint/level changes, longer moves,
+diagonal ambiguity, and blocking edges cut interpolation. Exact-tick and
+reduced-motion modes bypass it. Selected exact geometry remains independent
+of whole-force budgets: the stress fixture preserves a 1,999-segment selected
+overlay while aggregating 8,001 whole-force segments to a four-segment
+contour; a 2,001-segment selected overlay simplifies deterministically to
+2,000 with a visible warning. Invalid geometry is declined. Semantic timeline
+lanes and disclosed-participant action traces are present. Secondary headings
+require a finite angle plus typed weapon or sensor source; production replay
+projections still omit the channel because no such source exists there. The
+sandbox-only review fixture supplies explicit weapon and sensor examples.
+All three deterministic SVG/PNG boards were inspected at native size and show
+the centre-out secondary pointers as distinct from perimeter facing and
+ground overlays. Full conformance, browser, documentation, publication,
+accessibility, security, and focused endpoint/budget tests passed.
 
 ### Phase 4 — simulation comparison and export
 

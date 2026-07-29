@@ -18,7 +18,9 @@ type BattlefieldViewState =
       SemanticZoom: SemanticZoom
       SelectedUnit: int32 option
       FocusedUnit: int32 option
-      PaletteId: string }
+      PaletteId: string
+      ExactTicks: bool
+      ReducedMotion: bool }
 
 type BattlefieldAction =
     | PanBy of x: float * y: float
@@ -27,7 +29,40 @@ type BattlefieldAction =
     | FocusUnit of int32 option
     | FocusDirection of x: int * y: int
     | ChoosePalette of string
+    | ChooseExactTicks of bool
+    | ChooseReducedMotion of bool
     | ResetCamera
+
+type OverlayDisposition =
+    | ExactOverlay
+    | SimplifiedSelectedOverlay of originalSegments: int
+    | AggregatedWholeForceOverlay of originalSegments: int
+    | DeclinedUnsafeOverlay of reason: string
+
+type ProjectedOverlay =
+    { Overlay: OverlayVisual
+      Points: float array
+      PathSegments: int
+      Disposition: OverlayDisposition }
+
+type ProjectedActionTrace =
+    { EventId: int32
+      Kind: string
+      SourceX: float
+      SourceY: float
+      TargetX: float
+      TargetY: float }
+
+type TimelineLane =
+    | AuthoritativeEvents
+    | UnitActions
+    | Communications
+
+type TimelineItem =
+    { EventId: int32
+      Lane: TimelineLane
+      Tick: int32
+      Summary: Disclosure<string> }
 
 type ProjectedUnit =
     { Unit: UnitVisual
@@ -51,6 +86,10 @@ type BattlefieldScene =
       Board: BoardVisual
       Units: ProjectedUnit array
       Edges: EdgeVisual array
+      Overlays: ProjectedOverlay array
+      ActionTraces: ProjectedActionTrace array
+      Timeline: TimelineItem array
+      WholeForceOverlaySegments: int
       Disclosure: DisclosureLabel
       Palette: PaletteTokens
       Camera: BattlefieldCamera
@@ -81,7 +120,18 @@ module Battlefield =
           SemanticZoom = Detailed
           SelectedUnit = Some 1
           FocusedUnit = Some 1
-          PaletteId = ReplayPalettes.accessibleDefault.Id }
+          PaletteId = ReplayPalettes.accessibleDefault.Id
+          ExactTicks = false
+          ReducedMotion = false }
+
+    [<Literal>]
+    let SelectedOverlaySegmentLimit = 2_000
+
+    [<Literal>]
+    let WholeForceOverlaySegmentLimit = 8_000
+
+    [<Literal>]
+    let OverlayCoordinateLimit = 100_000
 
     let private clamp minimum maximum value =
         max minimum (min maximum value)
@@ -240,6 +290,184 @@ module Battlefield =
                | _ -> false
           AccessibleLabel = unitLabel unit }
 
+    let private overlaySegments (points: float array) =
+        if points.Length < 4 || points.Length % 2 <> 0 then 0
+        else points.Length / 2 - 1
+
+    let private validOverlayGeometry (points: float array) =
+        points.Length >= 4
+        && points.Length % 2 = 0
+        && points.Length <= OverlayCoordinateLimit
+        && points
+           |> Array.forall (fun value ->
+               not (Double.IsNaN value || Double.IsInfinity value)
+               && abs value <= 1_000_000.0)
+
+    let private simplifyTo maximumSegments (points: float array) =
+        let vertices = points.Length / 2
+        let wantedVertices = maximumSegments + 1
+        if vertices <= wantedVertices then Array.copy points
+        else
+            Array.init (wantedVertices * 2) (fun coordinate ->
+                let targetVertex = coordinate / 2
+                let sourceVertex =
+                    if targetVertex = wantedVertices - 1 then vertices - 1
+                    else targetVertex * (vertices - 1) / (wantedVertices - 1)
+                points[sourceVertex * 2 + coordinate % 2])
+
+    let private boundingBox (points: float array) =
+        let xs = Array.init (points.Length / 2) (fun index -> points[index * 2])
+        let ys = Array.init (points.Length / 2) (fun index -> points[index * 2 + 1])
+        let minimumX, maximumX = Array.min xs, Array.max xs
+        let minimumY, maximumY = Array.min ys, Array.max ys
+        [| minimumX; minimumY
+           maximumX; minimumY
+           maximumX; maximumY
+           minimumX; maximumY
+           minimumX; minimumY |]
+
+    let private boundingBoxMany (pointSets: float array array) =
+        let mutable minimumX = Double.PositiveInfinity
+        let mutable minimumY = Double.PositiveInfinity
+        let mutable maximumX = Double.NegativeInfinity
+        let mutable maximumY = Double.NegativeInfinity
+        for points in pointSets do
+            for index in 0 .. points.Length / 2 - 1 do
+                minimumX <- min minimumX points[index * 2]
+                minimumY <- min minimumY points[index * 2 + 1]
+                maximumX <- max maximumX points[index * 2]
+                maximumY <- max maximumY points[index * 2 + 1]
+        boundingBox
+            [| minimumX; minimumY
+               maximumX; maximumY |]
+
+    let private projectOverlays selectedUnit (overlays: OverlayVisual array) =
+        let eligible =
+            overlays
+            |> Array.filter (fun overlay ->
+                match overlay.Scope with
+                | SelectedUnitOverlay owner -> selectedUnit = Some owner
+                | WholeForceOverlay -> true)
+
+        let valid, invalid =
+            eligible |> Array.partition (fun overlay -> validOverlayGeometry overlay.Points)
+
+        let wholeForceSegments =
+            valid
+            |> Array.fold (fun total overlay ->
+                let additional =
+                    match overlay.Scope with
+                    | WholeForceOverlay -> int64 (overlaySegments overlay.Points)
+                    | SelectedUnitOverlay _ -> 0L
+                min (int64 Int32.MaxValue) (total + additional)) 0L
+            |> int
+
+        let aggregateWholeForcePoints =
+            if wholeForceSegments > WholeForceOverlaySegmentLimit then
+                valid
+                |> Array.choose (fun overlay ->
+                    match overlay.Scope with
+                    | WholeForceOverlay -> Some overlay.Points
+                    | SelectedUnitOverlay _ -> None)
+                |> boundingBoxMany
+                |> Some
+            else
+                None
+
+        let mutable emittedWholeForceAggregate = false
+
+        let projectedValid =
+            valid
+            |> Array.map (fun overlay ->
+                let segments = overlaySegments overlay.Points
+                match overlay.Scope with
+                | SelectedUnitOverlay _ when segments >= SelectedOverlaySegmentLimit ->
+                    let points = simplifyTo SelectedOverlaySegmentLimit overlay.Points
+                    { Overlay = overlay
+                      Points = points
+                      PathSegments = overlaySegments points
+                      Disposition = SimplifiedSelectedOverlay segments }
+                | SelectedUnitOverlay _ ->
+                    { Overlay = overlay
+                      Points = Array.copy overlay.Points
+                      PathSegments = segments
+                      Disposition = ExactOverlay }
+                | WholeForceOverlay when wholeForceSegments > WholeForceOverlaySegmentLimit ->
+                    if emittedWholeForceAggregate then
+                        { Overlay = overlay
+                          Points = [||]
+                          PathSegments = 0
+                          Disposition =
+                            DeclinedUnsafeOverlay
+                                "geometry represented by the combined whole-force aggregate" }
+                    else
+                        emittedWholeForceAggregate <- true
+                        let points = Option.get aggregateWholeForcePoints
+                        { Overlay = overlay
+                          Points = points
+                          PathSegments = overlaySegments points
+                          Disposition =
+                            AggregatedWholeForceOverlay wholeForceSegments }
+                | WholeForceOverlay ->
+                    { Overlay = overlay
+                      Points = Array.copy overlay.Points
+                      PathSegments = segments
+                      Disposition = ExactOverlay })
+
+        let projectedInvalid =
+            invalid
+            |> Array.map (fun overlay ->
+                { Overlay = overlay
+                  Points = [||]
+                  PathSegments = 0
+                  Disposition =
+                    DeclinedUnsafeOverlay
+                        "geometry must contain bounded finite coordinate pairs" })
+
+        Array.append projectedValid projectedInvalid, wholeForceSegments
+
+    let private actionTraces
+        (units: ProjectedUnit array)
+        (events: RenderEventVisual array)
+        =
+        let centers =
+            units
+            |> Array.map (fun unit ->
+                unit.Unit.Id, (unit.SymbolCenterX, unit.SymbolCenterY))
+            |> Map.ofArray
+
+        events
+        |> Array.choose (fun event ->
+            match event.SourceUnitId, event.TargetUnitId with
+            | Disclosed source, Disclosed target ->
+                match Map.tryFind source centers, Map.tryFind target centers with
+                | Some(sourceX, sourceY), Some(targetX, targetY) ->
+                    Some
+                        { EventId = event.Id
+                          Kind = event.Kind
+                          SourceX = sourceX
+                          SourceY = sourceY
+                          TargetX = targetX
+                          TargetY = targetY }
+                | _ -> None
+            | _ -> None)
+
+    let private timeline (events: RenderEventVisual array) =
+        events
+        |> Array.map (fun event ->
+            let lane =
+                match event.Kind with
+                | "communication"
+                | "acknowledgement" -> Communications
+                | "move"
+                | "attack"
+                | "heal" -> UnitActions
+                | _ -> AuthoritativeEvents
+            { EventId = event.Id
+              Lane = lane
+              Tick = event.Tick
+              Summary = event.Summary })
+
     let private nodeEstimate tier (units: ProjectedUnit array) edgeCount =
         let perUnit unit =
             // group, footprint, symbol, glyph primitives, health positions,
@@ -260,6 +488,8 @@ module Battlefield =
         let tier =
             semanticZoom state.SemanticZoom (CellSize * state.Camera.Zoom)
         let units = frame.Units |> Array.map (projectUnit frame.Board tier)
+        let overlays, wholeForceSegments =
+            projectOverlays state.SelectedUnit frame.Overlays
         let columns = frame.Board.MaximumColumn - frame.Board.MinimumColumn + 1
         let rows = frame.Board.MaximumRow - frame.Board.MinimumRow + 1
 
@@ -270,13 +500,106 @@ module Battlefield =
           Board = frame.Board
           Units = units
           Edges = frame.Edges
+          Overlays = overlays
+          ActionTraces = actionTraces units frame.Events
+          Timeline = timeline frame.Events
+          WholeForceOverlaySegments = wholeForceSegments
           Disclosure = frame.Disclosure
           Palette = palette state.PaletteId
           Camera = state.Camera
           SemanticZoom = tier
           SelectedUnit = state.SelectedUnit
           FocusedUnit = state.FocusedUnit
-          InteractiveNodeEstimate = nodeEstimate tier units frame.Edges.Length }
+          InteractiveNodeEstimate =
+            nodeEstimate tier units frame.Edges.Length
+            + (overlays |> Array.sumBy (fun overlay -> max 1 overlay.PathSegments))
+            + frame.Events.Length }
+
+    /// Deterministic presentation-only translation. Non-position facts stay
+    /// on the earlier committed frame until alpha one. Spawn, disappearance,
+    /// footprint change, level change, or a move longer than one adjacent cell
+    /// is a discontinuity and is never interpolated.
+    let interpolatedScene
+        alpha
+        (previous: RenderFrame)
+        (next: RenderFrame)
+        (state: BattlefieldViewState)
+        =
+        let alpha = clamp 0.0 1.0 alpha
+        let previousUnitIds =
+            previous.Units |> Array.map _.Id |> Set.ofArray
+        let nextUnitIds =
+            next.Units |> Array.map _.Id |> Set.ofArray
+        let sameUnitSet = previousUnitIds = nextUnitIds
+        if alpha >= 1.0 || previous.Tick = next.Tick || not sameUnitSet then
+            scene next state
+        else
+            let blockedMove (fromUnit: UnitVisual) (toUnit: UnitVisual) =
+                let blocked (edge: EdgeVisual) =
+                    match edge.Kind, edge.State with
+                    | "door", "open" -> false
+                    | "wall", _
+                    | "door", _
+                    | "fence", "closed" -> true
+                    | _ -> false
+
+                let crosses (edge: EdgeVisual) =
+                    let fromColumn = fromUnit.AnchorColumn
+                    let fromRow = fromUnit.AnchorRow
+                    let toColumn = toUnit.AnchorColumn
+                    let toRow = toUnit.AnchorRow
+                    if fromRow = toRow && abs (toColumn - fromColumn) = 1 then
+                        let boundaryColumn = max fromColumn toColumn
+                        edge.StartColumn = boundaryColumn
+                        && edge.EndColumn = boundaryColumn
+                        && min edge.StartRow edge.EndRow <= fromRow
+                        && max edge.StartRow edge.EndRow >= fromRow + 1
+                    elif fromColumn = toColumn && abs (toRow - fromRow) = 1 then
+                        let boundaryRow = max fromRow toRow
+                        edge.StartRow = boundaryRow
+                        && edge.EndRow = boundaryRow
+                        && min edge.StartColumn edge.EndColumn <= fromColumn
+                        && max edge.StartColumn edge.EndColumn >= fromColumn + 1
+                    else
+                        // Diagonal movement is not interpolated because an
+                        // unambiguous semantic-edge traversal is unavailable.
+                        fromColumn <> toColumn && fromRow <> toRow
+
+                Array.append previous.Edges next.Edges
+                |> Array.exists (fun edge -> blocked edge && crosses edge)
+
+            let earlier = scene previous state
+            let later = scene next state
+            let laterById =
+                later.Units |> Array.map (fun unit -> unit.Unit.Id, unit) |> Map.ofArray
+            let nextRaw =
+                next.Units |> Array.map (fun unit -> unit.Id, unit) |> Map.ofArray
+            let units =
+                earlier.Units
+                |> Array.map (fun unit ->
+                    match Map.tryFind unit.Unit.Id laterById, Map.tryFind unit.Unit.Id nextRaw with
+                    | Some target, Some targetRaw
+                        when unit.Unit.Level = targetRaw.Level
+                             && unit.Unit.FootprintWidth = targetRaw.FootprintWidth
+                             && unit.Unit.FootprintDepth = targetRaw.FootprintDepth
+                             && abs (targetRaw.AnchorColumn - unit.Unit.AnchorColumn)
+                                + abs (targetRaw.AnchorRow - unit.Unit.AnchorRow)
+                                <= 1
+                             && not (blockedMove unit.Unit targetRaw) ->
+                        let lerp start finish = start + (finish - start) * alpha
+                        let footprintX = lerp unit.FootprintX target.FootprintX
+                        let footprintY = lerp unit.FootprintY target.FootprintY
+                        { unit with
+                            FootprintX = footprintX
+                            FootprintY = footprintY
+                            SymbolCenterX =
+                                footprintX + unit.FootprintWidth / 2.0
+                            SymbolCenterY =
+                                footprintY + unit.FootprintDepth / 2.0 }
+                    | _ -> unit)
+            { earlier with
+                Units = units
+                ActionTraces = actionTraces units previous.Events }
 
     let private directionalFocus
         xDirection
@@ -340,7 +663,13 @@ module Battlefield =
                 { state with PaletteId = paletteId }
             else
                 state
-        | ResetCamera -> { initial with PaletteId = state.PaletteId }
+        | ChooseExactTicks value -> { state with ExactTicks = value }
+        | ChooseReducedMotion value -> { state with ReducedMotion = value }
+        | ResetCamera ->
+            { initial with
+                PaletteId = state.PaletteId
+                ExactTicks = state.ExactTicks
+                ReducedMotion = state.ReducedMotion }
 
     /// Removes interaction state for entities that are no longer disclosed.
     let reconcile (frame: RenderFrame) (state: BattlefieldViewState) =
@@ -393,6 +722,13 @@ module Battlefield =
           ShortLabel = Disclosed label
           StatusIds = [||] }
 
+    let private withSecondary source radians unit =
+        { unit with
+            SecondaryHeading =
+                Disclosed
+                    { Radians = heading radians
+                      Source = source } }
+
     /// A committed six-by-six documentation frame. It is never interpolated.
     let representativeFrame =
         { Tick = 24
@@ -403,7 +739,9 @@ module Battlefield =
               MaximumRow = 5 }
           Units =
             [| sampleUnit 1 0 0 1 1 "rifleman" Human 12 0 (Some "standing") 0.0 "Bravo 6"
+               |> withSecondary WeaponHeading (Math.PI / 4.0)
                sampleUnit 2 2 0 1 1 "medic" Human 9 2 (Some "kneeling") (Math.PI / 4.0) "Mercy"
+               |> withSecondary SensorHeading (Math.PI * 1.25)
                sampleUnit 3 0 3 2 1 "gunner" Human 6 4 (Some "prone") (Math.PI * 1.5) "Anvil"
                sampleUnit 4 4 1 1 2 "observation-drone" Neutral 11 1 None Math.PI "Kite"
                sampleUnit 5 4 4 1 1 "goblin" Arcane 8 0 (Some "crouched") Math.PI "Needle"
@@ -430,8 +768,41 @@ module Battlefield =
                  StartRow = 1
                  EndColumn = 2
                  EndRow = 1 } |]
-          Overlays = [||]
-          Events = [||]
+          Overlays =
+            [| { Id = "selected-los-1"
+                 Kind = "line-of-sight"
+                 Scope = SelectedUnitOverlay 1
+                 GeometryRevision = 1
+                 Points =
+                    [| 24.0; 24.0
+                       72.0; 40.0
+                       120.0; 72.0
+                       176.0; 104.0 |]
+                 Label = Disclosed "Exact selected line of sight" }
+               { Id = "whole-command-1"
+                 Kind = "command"
+                 Scope = WholeForceOverlay
+                 GeometryRevision = 1
+                 Points =
+                    [| 12.0; 12.0
+                       276.0; 12.0
+                       276.0; 132.0
+                       12.0; 132.0
+                       12.0; 12.0 |]
+                 Label = Disclosed "Whole-force command area" } |]
+          Events =
+            [| { Id = 2401
+                 Tick = 24
+                 Kind = "attack"
+                 SourceUnitId = Disclosed 1
+                 TargetUnitId = Disclosed 5
+                 Summary = Disclosed "Bravo 6 attacks Needle" }
+               { Id = 2402
+                 Tick = 24
+                 Kind = "communication"
+                 SourceUnitId = Disclosed 2
+                 TargetUnitId = Disclosed 1
+                 Summary = Disclosed "Mercy acknowledges Bravo 6" } |]
           Disclosure = SandboxDisclosure }
 
     let performanceFrame unitCount =

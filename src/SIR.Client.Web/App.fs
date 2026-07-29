@@ -20,7 +20,12 @@ type Msg =
 
 type Model =
     { Shell: SIR.Client.Model
-      Battlefield: BattlefieldViewState }
+      Battlefield: BattlefieldViewState
+      PreviousFrame: RenderFrame option
+      PresentationAlpha: float }
+
+[<Emit("window.matchMedia('(prefers-reduced-motion: reduce)').matches")>]
+let private prefersReducedMotion: bool = jsNative
 
 let private fileBytes (file: File) =
     async {
@@ -53,7 +58,12 @@ let private downloadExperiment report =
 
 let init () =
     { Shell = Shell.init ()
-      Battlefield = Battlefield.initial },
+      Battlefield =
+        { Battlefield.initial with
+            ReducedMotion =
+                prefersReducedMotion }
+      PreviousFrame = None
+      PresentationAlpha = 1.0 },
     Cmd.none
 
 let rec update msg model =
@@ -65,9 +75,11 @@ let rec update msg model =
             file
             (fun (name, bytes) -> ShellMsg(ReplayBytesSelected(name, bytes)))
     | ShellMsg shellMsg ->
+        let previousFrame = Shell.renderFrame model.Shell
         let next, effects = Shell.update shellMsg model.Shell
+        let nextFrame = Shell.renderFrame next
         let battlefield =
-            match Shell.renderFrame next with
+            match nextFrame with
             | Some frame -> Battlefield.reconcile frame model.Battlefield
             | None when next.Verification = Loading ->
                 { model.Battlefield with
@@ -75,25 +87,58 @@ let rec update msg model =
                     FocusedUnit = None }
             | None -> model.Battlefield
 
+        let interpolation =
+            match previousFrame, nextFrame with
+            | Some before, Some after
+                when before.Tick <> after.Tick
+                     && next.Playback.IsPlaying
+                     && not battlefield.ExactTicks
+                     && not battlefield.ReducedMotion
+                     && before.Disclosure = after.Disclosure
+                     && (before.Units |> Array.map _.Id |> Set.ofArray)
+                        = (after.Units |> Array.map _.Id |> Set.ofArray) ->
+                Some before, 0.0
+            | _ -> model.PreviousFrame, model.PresentationAlpha
+
         { model with
             Shell = next
-            Battlefield = battlefield },
+            Battlefield = battlefield
+            PreviousFrame = fst interpolation
+            PresentationAlpha = snd interpolation },
         effectsToCmd effects
     | BattlefieldChanged action ->
         let frame =
             Shell.renderFrame model.Shell
             |> Option.defaultValue Battlefield.representativeFrame
 
+        let battlefield = Battlefield.update frame action model.Battlefield
         { model with
-            Battlefield =
-                Battlefield.update
-                    frame
-                    action
-                    model.Battlefield },
+            Battlefield = battlefield
+            PreviousFrame =
+                if battlefield.ExactTicks || battlefield.ReducedMotion then
+                    None
+                else model.PreviousFrame
+            PresentationAlpha =
+                if battlefield.ExactTicks || battlefield.ReducedMotion then
+                    1.0
+                else model.PresentationAlpha },
         Cmd.none
     | PlaybackPulse ->
-        let next, effects = Shell.playbackTick model.Shell
-        { model with Shell = next }, effectsToCmd effects
+        if
+            model.PreviousFrame.IsSome
+            && model.PresentationAlpha < 1.0
+            && not model.Battlefield.ExactTicks
+            && not model.Battlefield.ReducedMotion
+        then
+            let alpha = min 1.0 (model.PresentationAlpha + 0.25)
+            { model with
+                PresentationAlpha = alpha
+                PreviousFrame =
+                    if alpha >= 1.0 then None else model.PreviousFrame },
+            Cmd.none
+        else
+            let next, effects = Shell.playbackTick model.Shell
+            { model with Shell = next }, effectsToCmd effects
     | KeyPressed key ->
         match key with
         | " "
@@ -561,6 +606,44 @@ let private unitView
                     svg.strokeWidth 1
                 ]
             | None -> Html.none
+            match unit.SecondaryHeading with
+            | Disclosed secondary ->
+                let angle = HeadingRadians.value secondary.Radians
+                let clearRadius = 7.0
+                let endRadius = half - 4.0
+                let startX =
+                    projected.SymbolCenterX + Math.Cos(angle) * clearRadius
+                let startY =
+                    projected.SymbolCenterY + Math.Sin(angle) * clearRadius
+                let endX =
+                    projected.SymbolCenterX + Math.Cos(angle) * endRadius
+                let endY =
+                    projected.SymbolCenterY + Math.Sin(angle) * endRadius
+                let source =
+                    match secondary.Source with
+                    | WeaponHeading -> "weapon"
+                    | SensorHeading -> "sensor"
+                Svg.g [
+                    svg.custom ("data-secondary-heading", source)
+                    svg.custom ("aria-label", source + " heading")
+                    svg.children [
+                        Svg.line [
+                            svg.x1 startX
+                            svg.y1 startY
+                            svg.x2 endX
+                            svg.y2 endY
+                            svg.stroke palette.Focus
+                            svg.strokeWidth 1.5
+                        ]
+                        Svg.circle [
+                            svg.cx endX
+                            svg.cy endY
+                            svg.r 2
+                            svg.fill palette.Focus
+                        ]
+                    ]
+                ]
+            | _ -> Html.none
             if scene.SemanticZoom <> Overview then
                 for index in 0 .. projected.ElevationBars - 1 do
                     Svg.line [
@@ -665,8 +748,34 @@ let private battlefieldInspector (scene: BattlefieldScene) =
                         | NotApplicable -> "Not applicable"
                         | ExplicitlyUnknown -> "Explicitly unknown"
                     )
+                    Html.dt "Second heading"
+                    Html.dd (
+                        match unit.Unit.SecondaryHeading with
+                        | Disclosed value ->
+                            let source =
+                                match value.Source with
+                                | WeaponHeading -> "weapon"
+                                | SensorHeading -> "sensor"
+                            source
+                            + " source explicitly disclosed ("
+                            + string (HeadingRadians.value value.Radians)
+                            + " radians)"
+                        | NotPresent -> "Not present in this projection"
+                        | NotApplicable -> "Not applicable"
+                        | ExplicitlyUnknown -> "Explicitly unknown"
+                    )
+                    Html.dt "Selected exact overlays"
+                    Html.dd (
+                        scene.Overlays
+                        |> Array.filter (fun overlay ->
+                            match overlay.Overlay.Scope with
+                            | SelectedUnitOverlay id -> id = unit.Unit.Id
+                            | WholeForceOverlay -> false)
+                        |> Array.sumBy _.PathSegments
+                        |> fun count -> string count + " rendered path segments"
+                    )
                     Html.dt "Committed tick"
-                    Html.dd (string scene.Tick + " (exact; no interpolation)")
+                    Html.dd (string scene.Tick)
                 ]
         ]
     ]
@@ -674,11 +783,22 @@ let private battlefieldInspector (scene: BattlefieldScene) =
 let private battlefieldView
     (shell: SIR.Client.Model)
     (state: BattlefieldViewState)
+    (previousFrame: RenderFrame option)
+    presentationAlpha
     (dispatch: Msg -> unit)
     =
     let loadedFrame = Shell.renderFrame shell
     let frame = loadedFrame |> Option.defaultValue Battlefield.representativeFrame
-    let scene = Battlefield.scene frame state
+    let scene =
+        match previousFrame with
+        | Some previous when presentationAlpha < 1.0 ->
+            Battlefield.interpolatedScene presentationAlpha previous frame state
+        | _ -> Battlefield.scene frame state
+    let presentationMode, presentationDescription =
+        if previousFrame.IsSome && presentationAlpha < 1.0 then
+            "interpolated", "interpolated presentation"
+        else
+            "exact", "exact committed frame"
     let transform =
         "translate("
         + string scene.Camera.PanX
@@ -729,7 +849,9 @@ let private battlefieldView
                             disclosure
                             + " · tick "
                             + string scene.Tick
-                            + " · exact frame, no interpolation · north is up"
+                            + " · "
+                            + presentationDescription
+                            + " · north is up"
                         )
                     ]
                     Html.div [
@@ -754,7 +876,9 @@ let private battlefieldView
                         svg.custom ("role", "application")
                         svg.custom ("aria-label", (
                             disclosure
-                            + " battlefield at exact tick "
+                            + " battlefield at "
+                            + presentationMode
+                            + " tick "
                             + string scene.Tick
                             + ", "
                             + string scene.Units.Length
@@ -812,6 +936,38 @@ let private battlefieldView
                                         ]
                                     ]
                                     Svg.g [
+                                        svg.custom ("data-layer", "overlays")
+                                        svg.children [
+                                            for overlay in scene.Overlays do
+                                                match overlay.Disposition with
+                                                | DeclinedUnsafeOverlay _ -> Html.none
+                                                | disposition ->
+                                                    let points =
+                                                        overlay.Points
+                                                        |> Array.chunkBySize 2
+                                                        |> Array.map (fun pair ->
+                                                            string pair[0] + "," + string pair[1])
+                                                        |> String.concat " "
+                                                    let dispositionName =
+                                                        match disposition with
+                                                        | ExactOverlay -> "exact"
+                                                        | SimplifiedSelectedOverlay _ -> "simplified-selected"
+                                                        | AggregatedWholeForceOverlay _ -> "aggregated-whole-force"
+                                                        | DeclinedUnsafeOverlay _ -> "declined"
+                                                    Svg.polyline [
+                                                        svg.custom ("data-overlay-id", overlay.Overlay.Id)
+                                                        svg.custom ("data-overlay-kind", overlay.Overlay.Kind)
+                                                        svg.custom ("data-overlay-disposition", dispositionName)
+                                                        svg.custom ("data-path-segments", string overlay.PathSegments)
+                                                        svg.points points
+                                                        svg.fill "none"
+                                                        svg.stroke scene.Palette.Focus
+                                                        svg.strokeWidth 3
+                                                        svg.strokeDasharray [| 6; 3 |]
+                                                    ]
+                                        ]
+                                    ]
+                                    Svg.g [
                                         svg.custom ("data-layer", "edges")
                                         svg.children [
                                             for edge in scene.Edges do
@@ -863,6 +1019,23 @@ let private battlefieldView
                                                 unitView scene dispatch unit
                                         ]
                                     ]
+                                    Svg.g [
+                                        svg.custom ("data-layer", "effects")
+                                        svg.children [
+                                            for trace in scene.ActionTraces do
+                                                Svg.line [
+                                                    svg.custom ("data-action-trace", string trace.EventId)
+                                                    svg.custom ("data-action-kind", trace.Kind)
+                                                    svg.x1 trace.SourceX
+                                                    svg.y1 trace.SourceY
+                                                    svg.x2 trace.TargetX
+                                                    svg.y2 trace.TargetY
+                                                    svg.stroke scene.Palette.HealthActive
+                                                    svg.strokeWidth 2
+                                                    svg.strokeDasharray [| 3; 3 |]
+                                                ]
+                                        ]
+                                    ]
                                 ]
                             ]
                         ]
@@ -895,6 +1068,101 @@ let private battlefieldView
                                     + " px/cell"
                                 )
                             ]
+                            Html.label [
+                                Html.input [
+                                    prop.type'.checkbox
+                                    prop.ariaLabel "Use exact-tick playback"
+                                    prop.isChecked state.ExactTicks
+                                    prop.onChange (fun value ->
+                                        dispatch (BattlefieldChanged(ChooseExactTicks value)))
+                                ]
+                                Html.span " Exact ticks (disable interpolation)"
+                            ]
+                            Html.label [
+                                Html.input [
+                                    prop.type'.checkbox
+                                    prop.ariaLabel "Use reduced motion"
+                                    prop.isChecked state.ReducedMotion
+                                    prop.onChange (fun value ->
+                                        dispatch (BattlefieldChanged(ChooseReducedMotion value)))
+                                ]
+                                Html.span " Reduced motion"
+                            ]
+                            Html.section [
+                                prop.className "timeline-lanes"
+                                prop.ariaLabel "Semantic replay timeline lanes"
+                                prop.children [
+                                    Html.h3 "Timeline"
+                                    for lane in [ AuthoritativeEvents; UnitActions; Communications ] do
+                                        let laneName =
+                                            match lane with
+                                            | AuthoritativeEvents -> "Disclosed events"
+                                            | UnitActions -> "Unit actions"
+                                            | Communications -> "Communications"
+                                        Html.div [
+                                            prop.custom ("data-timeline-lane", laneName)
+                                            prop.children [
+                                                Html.strong laneName
+                                                let items =
+                                                    scene.Timeline
+                                                    |> Array.filter (fun item -> item.Lane = lane)
+                                                if Array.isEmpty items then
+                                                    Html.span " — none"
+                                                else
+                                                    Html.ul [
+                                                        for item in items do
+                                                            Html.li [
+                                                                prop.custom ("data-event-id", string item.EventId)
+                                                                prop.text (
+                                                                    "T"
+                                                                    + string item.Tick
+                                                                    + " · "
+                                                                    + match item.Summary with
+                                                                      | Disclosed text -> text
+                                                                      | _ -> "Disclosed event"
+                                                                )
+                                                            ]
+                                                    ]
+                                            ]
+                                        ]
+                                ]
+                            ]
+                            let adjustedOverlays =
+                                scene.Overlays
+                                |> Array.filter (fun overlay ->
+                                    overlay.Disposition <> ExactOverlay)
+                            if not (Array.isEmpty adjustedOverlays) then
+                                Html.section [
+                                    prop.className "overlay-budget-notices"
+                                    prop.ariaLabel "Overlay rendering notices"
+                                    prop.children [
+                                        Html.h3 "Overlay limits"
+                                        for overlay in adjustedOverlays do
+                                            Html.p (
+                                                match overlay.Disposition with
+                                                | SimplifiedSelectedOverlay original ->
+                                                    overlay.Overlay.Id
+                                                    + ": selected overlay simplified from "
+                                                    + string original
+                                                    + " to "
+                                                    + string overlay.PathSegments
+                                                    + " path segments."
+                                                | AggregatedWholeForceOverlay original ->
+                                                    overlay.Overlay.Id
+                                                    + ": whole-force overlays aggregated from "
+                                                    + string original
+                                                    + " to "
+                                                    + string overlay.PathSegments
+                                                    + " path segments."
+                                                | DeclinedUnsafeOverlay reason ->
+                                                    overlay.Overlay.Id
+                                                    + ": overlay declined — "
+                                                    + reason
+                                                    + "."
+                                                | ExactOverlay -> ""
+                                            )
+                                    ]
+                                ]
                             Html.section [
                                 prop.className "battlefield-legend"
                                 prop.ariaLabel "Battlefield legend"
@@ -904,6 +1172,8 @@ let private battlefieldView
                                         Html.li "Solid / dashed / dotted faction outlines remain distinct in monochrome."
                                         Html.li "Twelve health positions fill from left to right."
                                         Html.li "Perimeter wedge is body facing; the class glyph stays upright."
+                                        Html.li "Centre-out dot pointer is an explicitly disclosed weapon or sensor heading, never attention."
+                                        Html.li "Ground polylines are bounded exact overlays; whole-force geometry aggregates above its budget."
                                         Html.li "Corner bars show elevation; +N and stance appear only at detailed zoom."
                                         Html.li "Separate ground outline is the authoritative footprint."
                                     ]
@@ -1509,7 +1779,12 @@ let view model dispatch =
         prop.className "app-shell"
         prop.ariaLabel "Replay and rules laboratory application"
         prop.children [
-            battlefieldView shell model.Battlefield dispatch
+            battlefieldView
+                shell
+                model.Battlefield
+                model.PreviousFrame
+                model.PresentationAlpha
+                dispatch
             scenarioCatalog shell dispatch
             laboratoryResults shell dispatch
             statusView shell

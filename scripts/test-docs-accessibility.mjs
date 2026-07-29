@@ -111,6 +111,23 @@ require(
   "the battlefield channel legend is missing",
 );
 require(
+  battlefield?.querySelectorAll("[data-secondary-heading][aria-label]").length ===
+    2,
+  "an explicitly sourced second heading lacks accessible source text",
+);
+require(
+  window.document.querySelector(
+    '[aria-label="Semantic replay timeline lanes"]',
+  )?.querySelectorAll("[data-timeline-lane]").length === 3,
+  "the semantic event lanes are not represented in accessible HTML",
+);
+require(
+  [...window.document.querySelectorAll(".battlefield-sidecar label")].some(
+    (label) => label.textContent.includes("Reduced motion"),
+  ),
+  "the explicit reduced-motion setting is unavailable",
+);
+require(
   Boolean(
     window.document.querySelector(
       'button[aria-label="Step backward one committed replay tick"]',

@@ -104,9 +104,19 @@ type UnitVisual =
       Level: Disclosure<int32>
       StanceId: Disclosure<string>
       BodyHeading: Disclosure<HeadingRadians>
-      SecondaryHeading: Disclosure<HeadingRadians>
+      SecondaryHeading: Disclosure<SecondaryHeadingVisual>
       ShortLabel: Disclosure<string>
       StatusIds: string array }
+
+/// The accepted gameplay channel that explicitly disclosed a second heading.
+/// Attention/facing are intentionally not members of this type.
+and SecondaryHeadingSource =
+    | WeaponHeading
+    | SensorHeading
+
+and SecondaryHeadingVisual =
+    { Radians: HeadingRadians
+      Source: SecondaryHeadingSource }
 
 type BoardVisual =
     { MinimumColumn: int32
@@ -123,15 +133,21 @@ type EdgeVisual =
       EndColumn: int32
       EndRow: int32 }
 
+type OverlayScope =
+    | SelectedUnitOverlay of unitId: int32
+    | WholeForceOverlay
+
 type OverlayVisual =
     { Id: string
       Kind: string
+      Scope: OverlayScope
       GeometryRevision: int32
       Points: float array
       Label: Disclosure<string> }
 
 type RenderEventVisual =
     { Id: int32
+      Tick: int32
       Kind: string
       SourceUnitId: Disclosure<int32>
       TargetUnitId: Disclosure<int32>
@@ -173,6 +189,7 @@ type UnitVisualTransport =
       BodyHeadingRadians: float option
       SecondaryHeadingKind: int32
       SecondaryHeadingRadians: float option
+      SecondaryHeadingSource: int32 option
       ShortLabelKind: int32
       ShortLabel: string option
       StatusIds: string array }
@@ -189,6 +206,8 @@ type EdgeVisualTransport =
 type OverlayVisualTransport =
     { Id: string
       Kind: string
+      ScopeKind: int32
+      ScopeUnitId: int32 option
       GeometryRevision: int32
       Points: float array
       LabelKind: int32
@@ -196,6 +215,7 @@ type OverlayVisualTransport =
 
 type RenderEventVisualTransport =
     { Id: int32
+      Tick: int32
       Kind: string
       SourceUnitIdKind: int32
       SourceUnitId: int32 option
@@ -286,7 +306,14 @@ module RenderFrameTransport =
           BodyHeadingKind = bodyKind
           BodyHeadingRadians = body |> Option.map HeadingRadians.value
           SecondaryHeadingKind = secondaryKind
-          SecondaryHeadingRadians = secondary |> Option.map HeadingRadians.value
+          SecondaryHeadingRadians =
+            secondary |> Option.map (fun value -> HeadingRadians.value value.Radians)
+          SecondaryHeadingSource =
+            secondary
+            |> Option.map (fun value ->
+                match value.Source with
+                | WeaponHeading -> 0
+                | SensorHeading -> 1)
           ShortLabelKind = labelKind
           ShortLabel = label
           StatusIds = Array.copy unit.StatusIds }
@@ -330,10 +357,34 @@ module RenderFrameTransport =
                 unit.BodyHeadingKind
                 unit.BodyHeadingRadians
           SecondaryHeading =
-            headingFromTransport
-                "SecondaryHeadingKind"
-                unit.SecondaryHeadingKind
-                unit.SecondaryHeadingRadians
+            match
+                unit.SecondaryHeadingKind,
+                unit.SecondaryHeadingRadians,
+                unit.SecondaryHeadingSource
+            with
+            | 0, None, None -> NotPresent
+            | 1, None, None -> NotApplicable
+            | 2, None, None -> ExplicitlyUnknown
+            | 3, Some radians, Some source ->
+                let heading =
+                    HeadingRadians.tryCreate radians
+                    |> Option.defaultWith (fun () ->
+                        invalidArg "SecondaryHeadingRadians" "Heading must be finite.")
+                let acceptedSource =
+                    match source with
+                    | 0 -> WeaponHeading
+                    | 1 -> SensorHeading
+                    | _ ->
+                        invalidArg
+                            "SecondaryHeadingSource"
+                            "Unknown secondary-heading gameplay source."
+                Disclosed
+                    { Radians = heading
+                      Source = acceptedSource }
+            | _ ->
+                invalidArg
+                    "SecondaryHeadingKind"
+                    "A second heading requires a disclosed angle and accepted typed source."
           ShortLabel =
             disclosureFromTransport
                 "ShortLabelKind"
@@ -362,8 +413,14 @@ module RenderFrameTransport =
             frame.Overlays
             |> Array.map (fun overlay ->
                 let labelKind, label = disclosureToTransport overlay.Label
+                let scopeKind, scopeUnit =
+                    match overlay.Scope with
+                    | SelectedUnitOverlay unitId -> 0, Some unitId
+                    | WholeForceOverlay -> 1, None
                 { Id = overlay.Id
                   Kind = overlay.Kind
+                  ScopeKind = scopeKind
+                  ScopeUnitId = scopeUnit
                   GeometryRevision = overlay.GeometryRevision
                   Points = Array.copy overlay.Points
                   LabelKind = labelKind
@@ -375,6 +432,7 @@ module RenderFrameTransport =
                 let targetKind, target = disclosureToTransport event.TargetUnitId
                 let summaryKind, summary = disclosureToTransport event.Summary
                 { Id = event.Id
+                  Tick = event.Tick
                   Kind = event.Kind
                   SourceUnitIdKind = sourceKind
                   SourceUnitId = source
@@ -411,6 +469,14 @@ module RenderFrameTransport =
             |> Array.map (fun overlay ->
                 { Id = overlay.Id
                   Kind = overlay.Kind
+                  Scope =
+                    match overlay.ScopeKind, overlay.ScopeUnitId with
+                    | 0, Some unitId -> SelectedUnitOverlay unitId
+                    | 1, None -> WholeForceOverlay
+                    | _ ->
+                        invalidArg
+                            "ScopeKind"
+                            "Invalid overlay scope tag/value combination."
                   GeometryRevision = overlay.GeometryRevision
                   Points = Array.copy overlay.Points
                   Label =
@@ -422,6 +488,7 @@ module RenderFrameTransport =
             frame.Events
             |> Array.map (fun event ->
                 { Id = event.Id
+                  Tick = event.Tick
                   Kind = event.Kind
                   SourceUnitId =
                     disclosureFromTransport

@@ -138,6 +138,18 @@
 }
 #sir-replay-app .battlefield-legend li { margin-bottom: .45rem; }
 #sir-replay-app .battlefield-inspector dd { overflow-wrap: anywhere; }
+#sir-replay-app .timeline-lanes {
+  margin-block: 1rem;
+  padding-block: .75rem;
+  border-block: 1px solid #43584e;
+}
+#sir-replay-app .timeline-lanes [data-timeline-lane] {
+  margin-block: .5rem;
+  border-left: .25rem solid #d8b36a;
+  padding-left: .65rem;
+}
+#sir-replay-app .timeline-lanes ul { margin-block: .3rem; padding-left: 1.25rem; }
+#sir-replay-app .battlefield-sidecar > label { display: block; margin-block: .55rem; }
 #sir-replay-app .scenario-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));

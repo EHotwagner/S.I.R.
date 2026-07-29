@@ -176,3 +176,40 @@ previously disclosed unit or event, the shell removes its inspection selection
 and the battlefield removes its SVG selection and roving focus before render.
 Consequently no unit geometry, accessible name, event control, selection,
 focus, or pointer hit target survives lost contact.
+
+## Overlay and playback policy
+
+`RenderFrame` carries only typed coordinate arrays; replay input never supplies
+SVG path syntax. The battlefield validates finite, bounded coordinate pairs
+before rendering. Selected-unit geometry is shown only while its disclosed
+owner is selected. It stays exact through 1,999 path segments; geometry above
+the 2,000-segment review threshold is deterministically simplified and labeled
+as such. Whole-force geometry has an independent combined budget: at more than
+8,000 path segments it is replaced by bounded aggregate contours or declined.
+Whole-force aggregation never consumes or degrades the selected-unit budget.
+
+The current worker projection does not contain authoritative overlay geometry,
+so production full and perspective replay adaptation emits none. The Phase 3
+visual board uses an explicit sandbox fixture to review exact geometry without
+weakening that boundary.
+
+Playback translation may interpolate between adjacent disclosed positions
+only. Spawn, disappearance, level/footprint change, and moves longer than one
+cell are discontinuities. Health, status, facing, overlays, and events remain
+on the earlier committed frame until the next boundary. Alpha derives from the
+replay presentation pulse, not CSS/SMIL or an untracked animation clock.
+Exact-tick and reduced-motion settings bypass interpolation. At alpha one the
+interpolated path returns the same pure scene as direct rendering of the
+committed frame.
+
+Timeline events are grouped into disclosed-event, unit-action, and
+communication lanes. Action traces require both participants to be disclosed
+and present; otherwise no trace or hidden endpoint remains in SVG or accessible
+HTML.
+
+`SecondaryHeadingVisual` accepts only the typed `WeaponHeading` or
+`SensorHeading` sources. Transport requires the source tag and finite angle
+together. Attention and body facing cannot inhabit this channel. The current
+worker projection exposes no accepted second-heading source, so production
+replay adaptation omits it; the sandbox visual review deliberately supplies
+one weapon and one sensor example.
