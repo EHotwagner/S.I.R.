@@ -41,9 +41,9 @@ authority boundaries:
   become a second source of map rules.
 - The static GitHub Pages client reads local inputs and exports local evidence.
   It is not an authoritative match host and does not upload maps or assets.
-- `SIR-MAP 1` remains the portable format until an accepted authoritative
-  concept requires a tested successor. Editor-only state does not trigger a
-  format bump.
+- `SIR-MAP 2` is the canonical portable format because typed deployment zones
+  and polygon geometry cannot be represented in version 1. Version 1 remains
+  readable and is migrated in memory before canonical version 2 export.
 
 ## Map
 
@@ -53,6 +53,7 @@ authority boundaries:
 | Coordinates | Zero-based integers |
 | Terrain | Open, rough, blocked, or objective |
 | Edges | East or south edge of a cell |
+| Regions | Positive-ID rectangle or simple polygon; objective or blue/red deployment purpose |
 | Edge kinds | Wall, door, or window |
 | Units | Positive identifier, square footprint, current and maximum HP, controller |
 
@@ -195,7 +196,7 @@ mouse drag, touch pinch, release cleanup, and reduced-motion state.
 Committed authoring changes pass through a typed `EditorCommand`, pure
 validation, and immutable `MapRevision`. A revision contains the complete
 `MapDefinition`, its parent digest, a monotonic local revision number, and the
-lowercase SHA-256 digest of the canonical UTF-8 `SIR-MAP 1` document. Camera,
+lowercase SHA-256 digest of the canonical UTF-8 `SIR-MAP 2` document. Camera,
 selection, clipboard, gestures, panels, runtime ticks, and animation never
 contribute to that digest.
 
@@ -351,6 +352,41 @@ export is byte-identical. The deterministic
 freezes normalization, polyline order, conversions, gap and leading-side lint
 codes, and exact round-trip behavior.
 
+## Zones, objectives, and deployment
+
+Regions are authoritative records with three independent fields:
+
+- `Geometry` is either a positive-size cell rectangle or a simple polygon of
+  at least three unique integer grid-intersection vertices.
+- `Purpose` is objective, blue deployment, or red deployment.
+- `Behavior` is the closed `NoRegionBehavior` case in version 2.
+
+Rectangles must remain inside the cell bounds. Polygon vertices may lie on the
+outer grid boundary, but the polygon must have non-zero area and cannot
+self-intersect. Stable validation codes cover identity, purpose, bounds,
+rectangle size, vertex count, duplicate vertices, area, and self-intersection.
+
+Create, select, translate, change-purpose, move-polygon-vertex, and delete
+operations all use `AddRegions`, `UpdateRegions`, or `RemoveRegions`; therefore
+they participate in pure validation, revision digests, bounded undo/redo,
+layer locks, resize-loss preview, crash recovery, and deterministic export.
+The SVG region shapes and the HTML object list both expose selection. The
+Zones panel supplies labelled creation and editing controls, a polite live
+announcement reports changes, and the object list supports Arrow, Home, End,
+Enter, and Escape conventions without adding a tab stop for every grid cell.
+
+`SIR-MAP 2` accepts only the declared line grammar. It has no macro, script,
+callback, expression, or trusted behavior record. Unknown records and
+unversioned behavior tokens fail the complete atomic import. Any future region
+behavior requires a new reviewed union case and a versioned format change.
+Legacy `SIR-MAP 1` documents remain loadable and migrate to the same immutable
+model before their next canonical version 2 export.
+The deterministic
+`tests/SIR.Client.Tests/fixtures/map-editor-milestone-7-zones.txt` fixture
+freezes rectangle/polygon editing, v1 loading and v2 canonicalization,
+round-trip order, stable invalid-geometry codes, lock behavior, and rejection
+of macro/behavior records.
+
 ## Controllers
 
 ### Manual
@@ -426,11 +462,11 @@ non-interactive SVG validation overlay; the HTML issues panel remains the
 assistive-technology authority.
 
 Shrinking a map first produces an exact loss preview for terrain cells, edges,
-and units. **Confirm** applies the filtered document as one validated revision;
+units, and regions. **Confirm** applies the filtered document as one validated revision;
 **Cancel** preserves the complete prior revision. Clear uses the same explicit
 confirmation path. Import parses and validates the entire input before a
 single `ReplaceDocument` command, so malformed input cannot partially replace
-the map. Export remains the deterministic canonical `SIR-MAP 1` ordering
+the map. Export remains the deterministic canonical `SIR-MAP 2` ordering
 described below.
 
 The browser debounces local autosave for 500 ms. On startup, a different valid
@@ -455,18 +491,19 @@ isolation, thumbnail generation, and clear confirmation.
 The export format is line-oriented UTF-8:
 
 ```text
-SIR-MAP 1
+SIR-MAP 2
 size 12 8
 terrain 5 3 objective
 edge 6 2 south door closed
+zone 1 objective rectangle 4 2 3 2
+zone 2 deployment blue polygon 0,0 4,0 2,3
 unit 1 blue rifleman 1 1 2 12 12 manual -
 unit 2 blue medic 1 5 2 12 12 scripted E,E,N
 unit 3 red goblin 9 1 1 12 12 general -
 ```
 
-Exports sort terrain, edges, and units. Import validates the version, bounds,
-identifiers, health, controller names, scripts, footprints, terrain, and edge
-records before replacing the current map.
+Exports sort terrain, edges, zones, and units. Import accepts versions 1 and 2,
+validates the complete document, and always exports canonical version 2.
 
 ## Authority
 

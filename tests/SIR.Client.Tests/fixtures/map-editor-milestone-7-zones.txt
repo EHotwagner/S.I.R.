@@ -1,0 +1,28 @@
+SIR-MAP 2
+size 12 8
+terrain 4 3 rough
+terrain 4 4 rough
+terrain 5 3 objective
+terrain 5 4 objective
+terrain 6 3 rough
+terrain 6 4 rough
+edge 5 2 south wall closed
+edge 6 2 south door closed
+edge 7 2 south window closed
+zone 1 deployment blue rectangle 3 2 3 2
+zone 2 deployment red polygon 6,1 9,1 7,4
+unit 1 blue rifleman 1 1 2 12 12 manual -
+unit 2 blue medic 1 5 2 12 12 scripted E,E,N
+unit 3 red goblin 9 1 1 12 12 general -
+unit 4 red troll 8 5 3 12 12 general -
+round-trip=True
+v1-load=True
+v1-canonical-header=SIR-MAP 2
+invalid-codes=REGION-POLYGON-AREA,REGION-POLYGON-SELF-INTERSECTION
+locked-preserved=True
+undo-redo=True
+resize-region-loss=2
+hidden-validation=REGION-POLYGON-AREA,REGION-POLYGON-SELF-INTERSECTION
+invalid-import-rejected=True
+macro-rejected=True
+behavior-rejected=True

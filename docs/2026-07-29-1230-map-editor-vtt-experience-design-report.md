@@ -5,7 +5,7 @@ categoryindex: 5
 index: 10
 status: in-progress
 document-type: timestamped-design-report
-version: "1.8"
+version: "1.9"
 created-at: 2026-07-29T12:30:56+02:00
 last-updated: 2026-07-29
 related:
@@ -20,7 +20,7 @@ related:
 
 **Report timestamp:** 2026-07-29 12:30:56 CEST (UTC+02:00)
 
-**Status:** implementation in progress; Milestones 0–6 complete
+**Status:** implementation in progress; Milestones 0–7 complete
 
 ## Executive decision
 
@@ -808,14 +808,14 @@ within it is checked.
 
 ### Milestone 7 — Zones, objectives, and deployment
 
-- [ ] Define authoritative rectangle and polygon region geometry.
-- [ ] Separate region geometry, purpose, and future behavior.
-- [ ] Implement objective and deployment-zone creation, selection, editing, and
+- [x] Define authoritative rectangle and polygon region geometry.
+- [x] Separate region geometry, purpose, and future behavior.
+- [x] Implement objective and deployment-zone creation, selection, editing, and
   validation.
-- [ ] Decide whether the accepted region model requires `SIR-MAP 2`.
-- [ ] If required, add v1-to-v2 migration, canonical v2 serialization, and
+- [x] Decide whether the accepted region model requires `SIR-MAP 2`.
+- [x] If required, add v1-to-v2 migration, canonical v2 serialization, and
   retained v1 loading.
-- [ ] Reject arbitrary trusted macros and unversioned behaviors.
+- [x] Reject arbitrary trusted macros and unversioned behaviors.
 
 ### Milestone 8 — Background references and interchange
 

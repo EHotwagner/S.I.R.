@@ -322,7 +322,7 @@ const editorCanvas = window.document.querySelector(
   '[aria-label="SVG tactical map workspace"]',
 );
 const initialEditorDigest =
-  "3f6b58588b769dfa1ded7fc564a204c8b0055753b5caedbe74f15ebf61e2b943";
+  "eab8b1c053454ed4d944c3b73f30e84c7025d13664d88f52e27d68e92c046608";
 if (
   !editorWorkspace ||
   editorCanvas?.getAttribute("data-editor-revision") !== initialEditorDigest ||
@@ -495,6 +495,35 @@ if (
   !editorCanvas?.textContent.includes("Door opened")
 ) {
   throw new Error("The accessible edge actions did not convert and open the cursor door.");
+}
+
+buttonByText("Zones")?.click();
+await window.happyDOM.waitUntilComplete();
+buttonByText("Objective rectangle")?.click();
+await window.happyDOM.waitUntilComplete();
+const regionDigest = editorCanvas?.getAttribute("data-editor-revision");
+const regionShape = editorWorkspace?.querySelector(
+  '[data-layer="regions"] [data-region-id="1"]',
+);
+const regionList = objectList?.querySelector(
+  '[aria-label="Authoritative map regions"]',
+);
+if (
+  regionDigest === edgeDigest ||
+  regionShape?.getAttribute("role") !== "button" ||
+  !regionList?.textContent.includes("Region 1 · Objective · rectangle") ||
+  !editorCanvas?.textContent.includes("Objective rectangle created as region 1")
+) {
+  throw new Error(
+    "The accessible region workflow did not create, project, list, and announce an authoritative objective rectangle.",
+  );
+}
+window.document
+  .querySelector('button[aria-label="Move selected region right"]')
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+if (editorCanvas?.getAttribute("data-editor-revision") === regionDigest) {
+  throw new Error("The selected region edit did not create an immutable revision.");
 }
 
 buttonByText("Map file")?.click();

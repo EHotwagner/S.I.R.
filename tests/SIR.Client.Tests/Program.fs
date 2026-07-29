@@ -2219,7 +2219,7 @@ let main _ =
         String.concat
             "\n"
             [ "layers="
-              + ([ TerrainDomain; EdgeDomain; UnitDomain; DocumentDomain ]
+              + ([ TerrainDomain; EdgeDomain; UnitDomain; RegionDomain; DocumentDomain ]
                  |> List.map (fun domain ->
                      string domain + ":" + string (MapEditor.layerState domain hiddenEdgeState))
                  |> String.concat ",")
@@ -2259,6 +2259,117 @@ let main _ =
         (lifecycleFixture = expectedLifecycleFixture)
         ("The deterministic Milestone 6 lifecycle review fixture changed.\n"
          + lifecycleFixture)
+
+    let zoneAuthored =
+        editor
+        |> MapEditor.update (
+            CreateRectangleRegion(
+                ObjectiveRegion,
+                address 2 2,
+                address 4 3
+            )
+        )
+        |> MapEditor.update (
+            CreatePolygonRegion(
+                DeploymentZone Red,
+                [| address 6 1; address 9 1; address 8 4 |]
+            )
+        )
+        |> MapEditor.update (SelectEditorRegion(Some 1))
+        |> MapEditor.update (MoveSelectedRegion(1, 0))
+        |> MapEditor.update (SetSelectedRegionPurpose(DeploymentZone Blue))
+        |> MapEditor.update (SelectEditorRegion(Some 2))
+        |> MapEditor.update (MoveSelectedRegionVertex(2, -1, 0))
+    let zoneText = MapEditor.export zoneAuthored
+    let zoneImported =
+        MapEditor.tryImport zoneText |> Result.defaultWith failwith
+    let legacyV1 =
+        "SIR-MAP 1\nsize 4 4\nterrain 1 1 rough\n"
+    let migratedV1 =
+        MapEditor.tryImport legacyV1 |> Result.defaultWith failwith
+    let migratedText =
+        MapEditor.export { editor with Map = migratedV1 }
+    let invalidBowTie =
+        { Id = 99
+          Purpose = ObjectiveRegion
+          Geometry =
+            RegionPolygon(
+                [| address 1 1
+                   address 4 4
+                   address 1 4
+                   address 4 1 |]
+            )
+          Behavior = NoRegionBehavior }
+    let invalidRegionCodes =
+        match MapEditor.validateCommand zoneAuthored.Map (AddRegions [| invalidBowTie |]) with
+        | Ok _ -> []
+        | Error issues -> issues |> List.map _.Code
+    let lockedZone =
+        zoneAuthored
+        |> MapEditor.update (SetEditorLayerState(RegionDomain, LockedLayer))
+    let lockedZoneAttempt =
+        lockedZone |> MapEditor.update (MoveSelectedRegion(1, 0))
+    let zoneUndone = zoneAuthored |> MapEditor.update UndoEditorCommand
+    let zoneRedone = zoneUndone |> MapEditor.update RedoEditorCommand
+    let zoneResizeLoss = MapEditor.resizeLossPreview 4 4 zoneAuthored.Map
+    let hiddenInvalidRegions =
+        { zoneAuthored.Map with
+            Regions = Map.add invalidBowTie.Id invalidBowTie zoneAuthored.Map.Regions }
+        |> MapEditor.validationIssues
+        |> Array.map _.Code
+        |> Array.filter (_.StartsWith("REGION-"))
+    let zoneFixture =
+        String.concat
+            "\n"
+            [ zoneText.TrimEnd()
+              "round-trip=" + string (zoneImported = zoneAuthored.Map)
+              "v1-load=" + string (migratedV1.Regions.IsEmpty)
+              "v1-canonical-header=" + migratedText.Split('\n')[0]
+              "invalid-codes=" + String.concat "," invalidRegionCodes
+              "locked-preserved=" + string (lockedZoneAttempt.Map = lockedZone.Map)
+              "undo-redo=" + string (zoneRedone.Map = zoneAuthored.Map)
+              "resize-region-loss=" + string zoneResizeLoss.LostRegions
+              "hidden-validation=" + String.concat "," hiddenInvalidRegions
+              "invalid-import-rejected="
+              + string (
+                  MapEditor.tryImport (
+                      "SIR-MAP 2\nsize 6 6\nzone 1 objective polygon 1,1 4,4 1,4 4,1\n"
+                  )
+                  |> Result.isError
+              )
+              "macro-rejected="
+              + string (
+                  MapEditor.tryImport (
+                      "SIR-MAP 2\nsize 4 4\nmacro 1 trusted launch\n"
+                  )
+                  |> Result.isError
+              )
+              "behavior-rejected="
+              + string (
+                  MapEditor.tryImport (
+                      "SIR-MAP 2\nsize 4 4\nzone 1 objective behavior trusted\n"
+                  )
+                  |> Result.isError
+              ) ]
+    let expectedZoneFixture =
+        File.ReadAllText(
+            Path.Combine(
+                __SOURCE_DIRECTORY__,
+                "fixtures",
+                "map-editor-milestone-7-zones.txt"
+            )
+        ).TrimEnd()
+    require
+        (zoneFixture = expectedZoneFixture
+         && zoneAuthored.Revision.Number = editor.Revision.Number + 5L
+         && zoneAuthored.UndoHistory.Length = 5
+         && zoneResizeLoss.LostRegions = 2
+         && zoneRedone.Map = zoneAuthored.Map
+         && invalidRegionCodes =
+            [ "REGION-POLYGON-AREA"
+              "REGION-POLYGON-SELF-INTERSECTION" ])
+        ("The deterministic Milestone 7 zone review fixture changed.\n"
+         + zoneFixture)
 
     let maximumMap =
         { editor.Map with

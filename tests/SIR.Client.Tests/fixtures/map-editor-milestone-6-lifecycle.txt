@@ -1,4 +1,4 @@
-layers=TerrainDomain:VisibleLayer,EdgeDomain:HiddenLayer,UnitDomain:VisibleLayer,DocumentDomain:VisibleLayer
+layers=TerrainDomain:VisibleLayer,EdgeDomain:HiddenLayer,UnitDomain:VisibleLayer,RegionDomain:VisibleLayer,DocumentDomain:VisibleLayer
 hidden-validation=EDGE-GAP
 issue-index=Some(0)
 locked-edit-preserved=True
