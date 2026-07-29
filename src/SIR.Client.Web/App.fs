@@ -41,6 +41,7 @@ and EditorToolPanel =
     | TerrainTools
     | UnitTools
     | EdgeTools
+    | ZoneTools
     | DocumentTools
 
 type Model =
@@ -443,6 +444,7 @@ let rec update msg model =
             | ("x" | "X"), false, _ -> update (EditorChanged(ChooseTool(Terrain EraseTool))) model
             | ("u" | "U"), false, _ -> update (EditorToolPanelChanged UnitTools) model
             | ("e" | "E"), false, _ -> update (EditorToolPanelChanged EdgeTools) model
+            | ("z" | "Z"), false, _ -> update (EditorToolPanelChanged ZoneTools) model
             | "Escape", false, _ ->
                 model
                 |> update (EditorWorkspaceChanged CancelEditorPointers)
@@ -2857,6 +2859,12 @@ let private editorBattlefield
                 prop.ariaAtomic true
                 prop.text state.EdgeAnnouncement
             ]
+            Html.p [
+                prop.className "sr-only"
+                prop.ariaLive.polite
+                prop.ariaAtomic true
+                prop.text state.RegionAnnouncement
+            ]
             Html.div [
                 prop.className (
                     "editor-context-hud"
@@ -3347,6 +3355,69 @@ let private editorBattlefield
                                 ]
                             | _ -> ()
                             Svg.g [
+                                svg.custom ("data-layer", "regions")
+                                svg.custom ("display", editorLayerDisplay RegionDomain state)
+                                svg.custom ("opacity", editorLayerOpacity RegionDomain state)
+                                svg.children [
+                                    for _, region in state.Map.Regions |> Map.toList do
+                                        let selected = state.SelectedRegion = Some region.Id
+                                        let color =
+                                            match region.Purpose with
+                                            | ObjectiveRegion -> palette.NeutralFaction
+                                            | DeploymentZone Blue -> palette.HumanFaction
+                                            | DeploymentZone Red -> palette.ArcaneFaction
+                                            | DeploymentZone NeutralSide -> palette.Text
+                                        let common =
+                                            [ svg.custom ("data-region-id", string region.Id)
+                                              svg.custom ("data-region-purpose", MapEditor.regionPurposeLabel region.Purpose)
+                                              svg.custom ("role", "button")
+                                              svg.custom (
+                                                  "aria-label",
+                                                  "Select region "
+                                                  + string region.Id
+                                                  + ", "
+                                                  + MapEditor.regionPurposeLabel region.Purpose
+                                              )
+                                              svg.tabIndex (if selected then 0 else -1)
+                                              svg.fill color
+                                              svg.custom ("fill-opacity", "0.18")
+                                              svg.stroke (if selected then palette.Focus else color)
+                                              svg.strokeWidth (if selected then 5 else 3)
+                                              svg.custom ("vector-effect", "non-scaling-stroke")
+                                              svg.onClick (fun event ->
+                                                  event.stopPropagation ()
+                                                  dispatch (EditorChanged(SelectEditorRegion(Some region.Id))))
+                                              svg.onKeyDown (fun event ->
+                                                  match event.key with
+                                                  | "Enter"
+                                                  | " " ->
+                                                      event.preventDefault ()
+                                                      dispatch (EditorChanged(SelectEditorRegion(Some region.Id)))
+                                                  | "Escape" ->
+                                                      event.preventDefault ()
+                                                      dispatch (EditorChanged(SelectEditorRegion None))
+                                                  | _ -> ()) ]
+                                        match region.Geometry with
+                                        | RegionRectangle(column, row, width, height) ->
+                                            Svg.rect (
+                                                common
+                                                @ [ svg.x (float column * Battlefield.CellSize)
+                                                    svg.y (float row * Battlefield.CellSize)
+                                                    svg.width (float width * Battlefield.CellSize)
+                                                    svg.height (float height * Battlefield.CellSize) ]
+                                            )
+                                        | RegionPolygon vertices ->
+                                            let points =
+                                                vertices
+                                                |> Array.map (fun vertex ->
+                                                    string (float vertex.CellColumn * Battlefield.CellSize)
+                                                    + ","
+                                                    + string (float vertex.CellRow * Battlefield.CellSize))
+                                                |> String.concat " "
+                                            Svg.polygon (common @ [ svg.points points ])
+                                ]
+                            ]
+                            Svg.g [
                                 svg.custom ("data-layer", "grid")
                                 svg.custom ("display", editorLayerDisplay DocumentDomain state)
                                 svg.custom ("opacity", editorLayerOpacity DocumentDomain state)
@@ -3641,6 +3712,7 @@ let private editorToolbar
                     choosePanel "Terrain" TerrainTools
                     choosePanel "Units" UnitTools
                     choosePanel "Edges" EdgeTools
+                    choosePanel "Zones" ZoneTools
                     choosePanel "Map file" DocumentTools
                 ]
             ]
@@ -3829,6 +3901,152 @@ let private editorToolbar
                                     ))
                             ]
                         ]
+                    | ZoneTools ->
+                        let cursor =
+                            { CellColumn =
+                                min (state.Map.Width - 2) state.TerrainCursor.CellColumn
+                              CellRow =
+                                min (state.Map.Height - 2) state.TerrainCursor.CellRow }
+                        let rectangle purpose =
+                            CreateRectangleRegion(
+                                purpose,
+                                cursor,
+                                { CellColumn = cursor.CellColumn + 1
+                                  CellRow = cursor.CellRow + 1 }
+                            )
+                        let polygon purpose =
+                            CreatePolygonRegion(
+                                purpose,
+                                [| cursor
+                                   { CellColumn = cursor.CellColumn + 2
+                                     CellRow = cursor.CellRow }
+                                   { CellColumn = cursor.CellColumn + 1
+                                     CellRow = cursor.CellRow + 2 } |]
+                            )
+                        Html.h3 "Zones and objectives"
+                        Html.p "Create authoritative geometry at the keyboard terrain cursor, then select and edit it below."
+                        Html.div [
+                            prop.className "control-row"
+                            prop.role.group
+                            prop.ariaLabel "Create authoritative map region"
+                            prop.children [
+                                button "Objective rectangle" "Create a two by two objective rectangle" false (fun _ ->
+                                    dispatch (EditorChanged(rectangle ObjectiveRegion)))
+                                button "Objective polygon" "Create a triangular objective polygon" false (fun _ ->
+                                    dispatch (EditorChanged(polygon ObjectiveRegion)))
+                                button "Blue deployment" "Create a blue deployment rectangle" false (fun _ ->
+                                    dispatch (EditorChanged(rectangle (DeploymentZone Blue))))
+                                button "Red deployment" "Create a red deployment rectangle" false (fun _ ->
+                                    dispatch (EditorChanged(rectangle (DeploymentZone Red))))
+                                button "Blue deployment polygon" "Create a triangular blue deployment zone" false (fun _ ->
+                                    dispatch (EditorChanged(polygon (DeploymentZone Blue))))
+                                button "Red deployment polygon" "Create a triangular red deployment zone" false (fun _ ->
+                                    dispatch (EditorChanged(polygon (DeploymentZone Red))))
+                            ]
+                        ]
+                        match state.SelectedRegion |> Option.bind (fun id -> Map.tryFind id state.Map.Regions) with
+                        | None -> Html.p "Select a region in the map or region list to edit it."
+                        | Some region ->
+                            Html.h4 ("Region " + string region.Id)
+                            Html.div [
+                                prop.className "control-row"
+                                prop.role.group
+                                prop.ariaLabel "Selected region purpose"
+                                prop.children [
+                                    button "Objective" "Set purpose to objective" false (fun _ ->
+                                        dispatch (EditorChanged(SetSelectedRegionPurpose ObjectiveRegion)))
+                                    button "Blue deploy" "Set purpose to blue deployment" false (fun _ ->
+                                        dispatch (EditorChanged(SetSelectedRegionPurpose(DeploymentZone Blue))))
+                                    button "Red deploy" "Set purpose to red deployment" false (fun _ ->
+                                        dispatch (EditorChanged(SetSelectedRegionPurpose(DeploymentZone Red))))
+                                ]
+                            ]
+                            Html.div [
+                                prop.className "control-row"
+                                prop.role.group
+                                prop.ariaLabel "Move selected region one grid coordinate"
+                                prop.children [
+                                    button "↑" "Move selected region up" false (fun _ ->
+                                        dispatch (EditorChanged(MoveSelectedRegion(0, -1))))
+                                    button "←" "Move selected region left" false (fun _ ->
+                                        dispatch (EditorChanged(MoveSelectedRegion(-1, 0))))
+                                    button "→" "Move selected region right" false (fun _ ->
+                                        dispatch (EditorChanged(MoveSelectedRegion(1, 0))))
+                                    button "↓" "Move selected region down" false (fun _ ->
+                                        dispatch (EditorChanged(MoveSelectedRegion(0, 1))))
+                                    button "Delete" "Delete selected region" false (fun _ ->
+                                        dispatch (EditorChanged RemoveSelectedRegion))
+                                ]
+                            ]
+                            match region.Geometry with
+                            | RegionPolygon vertices ->
+                                Html.div [
+                                    prop.className "control-row"
+                                    prop.role.group
+                                    prop.ariaLabel "Move polygon vertices"
+                                    prop.children [
+                                        for index in 0 .. vertices.Length - 1 do
+                                            for label, columnDelta, rowDelta in
+                                                [ "up", 0, -1
+                                                  "left", -1, 0
+                                                  "right", 1, 0
+                                                  "down", 0, 1 ] do
+                                                button
+                                                    ("Vertex " + string (index + 1) + " " + label)
+                                                    ("Move polygon vertex " + string (index + 1) + " " + label)
+                                                    false
+                                                    (fun _ ->
+                                                        dispatch (
+                                                            EditorChanged(
+                                                                MoveSelectedRegionVertex(
+                                                                    index,
+                                                                    int32 columnDelta,
+                                                                    int32 rowDelta
+                                                                )
+                                                            )
+                                                        ))
+                                    ]
+                                ]
+                            | RegionRectangle(column, row, width, height) ->
+                                Html.div [
+                                    prop.className "control-row"
+                                    prop.role.group
+                                    prop.ariaLabel "Resize selected region rectangle"
+                                    prop.children [
+                                        button "Wider" "Increase rectangle width by one cell" false (fun _ ->
+                                            dispatch (
+                                                EditorChanged(
+                                                    SetSelectedRegionGeometry(
+                                                        RegionRectangle(column, row, width + 1, height)
+                                                    )
+                                                )
+                                            ))
+                                        button "Narrower" "Decrease rectangle width by one cell" (width <= 1) (fun _ ->
+                                            dispatch (
+                                                EditorChanged(
+                                                    SetSelectedRegionGeometry(
+                                                        RegionRectangle(column, row, width - 1, height)
+                                                    )
+                                                )
+                                            ))
+                                        button "Taller" "Increase rectangle height by one cell" false (fun _ ->
+                                            dispatch (
+                                                EditorChanged(
+                                                    SetSelectedRegionGeometry(
+                                                        RegionRectangle(column, row, width, height + 1)
+                                                    )
+                                                )
+                                            ))
+                                        button "Shorter" "Decrease rectangle height by one cell" (height <= 1) (fun _ ->
+                                            dispatch (
+                                                EditorChanged(
+                                                    SetSelectedRegionGeometry(
+                                                        RegionRectangle(column, row, width, height - 1)
+                                                    )
+                                                )
+                                            ))
+                                    ]
+                                ]
                     | DocumentTools ->
                         Html.h3 "Map document"
                         Html.label [
@@ -3850,6 +4068,7 @@ let private editorToolbar
                                     [ TerrainDomain
                                       EdgeDomain
                                       UnitDomain
+                                      RegionDomain
                                       DocumentDomain ] do
                                     Html.fieldSet [
                                         Html.legend (string domain)
@@ -3981,7 +4200,8 @@ let private editorToolbar
                                             + string loss.TargetWidth + "×" + string loss.TargetHeight
                                             + "; remove " + string loss.LostTerrainCells
                                             + " terrain cells, " + string loss.LostEdges
-                                            + " edges, and " + string loss.LostUnits + " units?"
+                                            + " edges, " + string loss.LostUnits + " units, and "
+                                            + string loss.LostRegions + " regions?"
                                     )
                                     button "Confirm" "Confirm destructive map change" false (fun _ ->
                                         dispatch (EditorChanged ConfirmDestructiveChange))
@@ -4105,6 +4325,51 @@ let private editorGrid state dispatch =
                                         | _ -> ())
                                 ]
                             ]
+                    ]
+                Html.h3 "Regions"
+                if state.Map.Regions.IsEmpty then
+                    Html.p "No regions."
+                else
+                    Html.ul [
+                        prop.ariaLabel "Authoritative map regions"
+                        prop.children [
+                            for _, region in state.Map.Regions |> Map.toList do
+                                Html.li [
+                                    Html.button [
+                                        prop.type'.button
+                                        prop.ariaPressed (state.SelectedRegion = Some region.Id)
+                                        prop.text (
+                                            "Region "
+                                            + string region.Id
+                                            + " · "
+                                            + MapEditor.regionPurposeLabel region.Purpose
+                                            + " · "
+                                            + (match region.Geometry with
+                                               | RegionRectangle(column, row, width, height) ->
+                                                   "rectangle "
+                                                   + string width + "×" + string height
+                                                   + " at " + string column + "," + string row
+                                               | RegionPolygon vertices ->
+                                                   "polygon with " + string vertices.Length + " vertices")
+                                        )
+                                        prop.onClick (fun _ ->
+                                            dispatch (EditorChanged(SelectEditorRegion(Some region.Id))))
+                                        prop.onKeyDown (fun event ->
+                                            let move amount =
+                                                event.preventDefault ()
+                                                focusEditorObjectList event.currentTarget amount
+                                            match event.key with
+                                            | "ArrowUp" -> move -1
+                                            | "ArrowDown" -> move 1
+                                            | "Home" -> move -2
+                                            | "End" -> move 2
+                                            | "Enter" ->
+                                                event.preventDefault ()
+                                                dispatch (EditorChanged(SelectEditorRegion(Some region.Id)))
+                                            | _ -> ())
+                                    ]
+                                ]
+                        ]
                     ]
                 Html.h3 "Cells"
                 Html.div [

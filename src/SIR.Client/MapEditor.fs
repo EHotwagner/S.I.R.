@@ -39,6 +39,29 @@ type MapEdgeKind =
     | Door
     | Window
 
+type EditorCellAddress =
+    { CellColumn: int32
+      CellRow: int32 }
+
+type RegionPurpose =
+    | ObjectiveRegion
+    | DeploymentZone of MapSide
+
+type RegionGeometry =
+    | RegionRectangle of column: int32 * row: int32 * width: int32 * height: int32
+    | RegionPolygon of EditorCellAddress array
+
+/// Deliberately closed and inert in SIR-MAP 2. Future behavior must introduce
+/// a reviewed, versioned case rather than embedding trusted code or macros.
+type RegionBehavior =
+    | NoRegionBehavior
+
+type MapRegion =
+    { Id: int32
+      Geometry: RegionGeometry
+      Purpose: RegionPurpose
+      Behavior: RegionBehavior }
+
 type EditorUnit =
     { Id: int32
       Side: MapSide
@@ -58,7 +81,9 @@ type MapDefinition =
       Terrain: Map<int32 * int32, MapTerrain>
       Edges: Map<int32 * int32 * MapEdgeDirection, MapEdgeKind * bool>
       Units: Map<int32, EditorUnit>
-      NextUnitId: int32 }
+      NextUnitId: int32
+      Regions: Map<int32, MapRegion>
+      NextRegionId: int32 }
 
 type MapEditorTool =
     | Select
@@ -79,6 +104,7 @@ type EditorDomain =
     | TerrainDomain
     | EdgeDomain
     | UnitDomain
+    | RegionDomain
     | DocumentDomain
 
 type EditorLayerState =
@@ -102,7 +128,8 @@ type ResizeLossPreview =
       TargetHeight: int32
       LostTerrainCells: int
       LostEdges: int
-      LostUnits: int }
+      LostUnits: int
+      LostRegions: int }
 
 type PendingDestructiveChange =
     | ResizePending of ResizeLossPreview
@@ -111,10 +138,6 @@ type PendingDestructiveChange =
 type CrashRecoveryDraft =
     { SourceDigest: string
       Map: MapDefinition }
-
-type EditorCellAddress =
-    { CellColumn: int32
-      CellRow: int32 }
 
 type EditorBox =
     { FirstColumn: int32
@@ -146,6 +169,9 @@ and EditorCommand =
     | AddUnits of EditorUnit array
     | UpdateUnits of EditorUnit array
     | RemoveUnits of int32 array
+    | AddRegions of MapRegion array
+    | UpdateRegions of MapRegion array
+    | RemoveRegions of int32 array
     | ResizeDocument of width: int32 * height: int32
     | ReplaceDocument of reason: string * MapDefinition
 
@@ -200,8 +226,10 @@ type MapEditorState =
       EdgeAnnouncement: string
       UnitPaletteSearch: string
       UnitAnnouncement: string
+      RegionAnnouncement: string
       SelectedUnit: int32 option
       SelectedUnits: Set<int32>
+      SelectedRegion: int32 option
       Gesture: EditorGesture
       Revision: MapRevision
       RevisionState: RevisionState
@@ -240,6 +268,14 @@ type MapEditorAction =
     | SplitEdge of column: int32 * row: int32 * direction: MapEdgeDirection
     | JoinEdge of column: int32 * row: int32 * direction: MapEdgeDirection
     | SetUnitPaletteSearch of string
+    | CreateRectangleRegion of RegionPurpose * first: EditorCellAddress * last: EditorCellAddress
+    | CreatePolygonRegion of RegionPurpose * vertices: EditorCellAddress array
+    | SelectEditorRegion of int32 option
+    | SetSelectedRegionPurpose of RegionPurpose
+    | SetSelectedRegionGeometry of RegionGeometry
+    | MoveSelectedRegion of columnDelta: int32 * rowDelta: int32
+    | MoveSelectedRegionVertex of index: int * columnDelta: int32 * rowDelta: int32
+    | RemoveSelectedRegion
     | PreviewUnitPlacement of EditorCellAddress
     | BeginUnitMove of EditorCellAddress
     | ExtendUnitMove of EditorCellAddress
@@ -294,7 +330,10 @@ type MapEditorAction =
 [<RequireQualifiedAccess>]
 module MapEditor =
     [<Literal>]
-    let FormatVersion = 1
+    let FormatVersion = 2
+
+    [<Literal>]
+    let LegacyFormatVersion = 1
 
     [<Literal>]
     let MaximumHistoryCommands = 100
@@ -444,6 +483,29 @@ module MapEditor =
         | Door -> "door"
         | Window -> "window"
 
+    let regionPurposeLabel purpose =
+        match purpose with
+        | ObjectiveRegion -> "Objective"
+        | DeploymentZone Blue -> "Blue deployment"
+        | DeploymentZone Red -> "Red deployment"
+        | DeploymentZone NeutralSide -> "Neutral deployment"
+
+    let private regionPurposeFields purpose =
+        match purpose with
+        | ObjectiveRegion -> [ "objective" ]
+        | DeploymentZone side -> [ "deployment"; sideName side ]
+
+    let private regionGeometryFields geometry =
+        match geometry with
+        | RegionRectangle(column, row, width, height) ->
+            [ "rectangle"; string column; string row; string width; string height ]
+        | RegionPolygon vertices ->
+            "polygon"
+            :: (vertices
+                |> Array.map (fun vertex ->
+                    string vertex.CellColumn + "," + string vertex.CellRow)
+                |> Array.toList)
+
     /// Normalizes one unit grid segment to its single authoritative east/south
     /// record. North and west border segments have no owning cell and are
     /// rejected instead of being silently shifted into the document.
@@ -534,6 +596,14 @@ module MapEditor =
                       + " "
                       + (if isOpen then "open" else "closed"))
               yield!
+                  map.Regions
+                  |> Map.toList
+                  |> List.map (fun (_, region) ->
+                      [ "zone"; string region.Id ]
+                      @ regionPurposeFields region.Purpose
+                      @ regionGeometryFields region.Geometry
+                      |> String.concat " ")
+              yield!
                   map.Units
                   |> Map.toList
                   |> List.map (fun (_, unit) ->
@@ -587,7 +657,9 @@ module MapEditor =
           Terrain = Map.empty
           Edges = Map.empty
           Units = Map.empty
-          NextUnitId = 1 }
+          NextUnitId = 1
+          Regions = Map.empty
+          NextRegionId = 1 }
 
     let initial =
         let units =
@@ -669,8 +741,10 @@ module MapEditor =
           EdgeAnnouncement = "Semantic edge authoring ready."
           UnitPaletteSearch = ""
           UnitAnnouncement = "Unit authoring ready."
+          RegionAnnouncement = "Zone authoring ready."
           SelectedUnit = Some 1
           SelectedUnits = Set.singleton 1
+          SelectedRegion = None
           Gesture = IdleGesture
           Revision = initialRevision
           RevisionState = SavedRevision
@@ -686,7 +760,7 @@ module MapEditor =
           LastEvents = []
           Validation = None
           Layers =
-            [ TerrainDomain; EdgeDomain; UnitDomain; DocumentDomain ]
+            [ TerrainDomain; EdgeDomain; UnitDomain; RegionDomain; DocumentDomain ]
             |> List.map (fun domain -> domain, VisibleLayer)
             |> Map.ofList
           Issues = [||]
@@ -950,6 +1024,25 @@ module MapEditor =
             |> Map.toList
             |> List.filter (fun (_, unit) ->
                 unit.Column + unit.Size > width || unit.Row + unit.Size > height)
+            |> List.length
+          LostRegions =
+            map.Regions
+            |> Map.toList
+            |> List.filter (fun (_, region) ->
+                let points =
+                    match region.Geometry with
+                    | RegionRectangle(column, row, regionWidth, regionHeight) ->
+                        [ column, row
+                          column + regionWidth, row
+                          column + regionWidth, row + regionHeight
+                          column, row + regionHeight ]
+                    | RegionPolygon vertices ->
+                        vertices
+                        |> Array.map (fun point -> point.CellColumn, point.CellRow)
+                        |> Array.toList
+                points
+                |> List.exists (fun (column, row) ->
+                    column < 0 || row < 0 || column > width || row > height))
             |> List.length }
 
     let private resizedDocument (preview: ResizeLossPreview) (map: MapDefinition) =
@@ -966,20 +1059,41 @@ module MapEditor =
             |> Map.filter (fun _ unit ->
                 unit.Column + unit.Size <= preview.TargetWidth
                 && unit.Row + unit.Size <= preview.TargetHeight)
+        let regions =
+            map.Regions
+            |> Map.filter (fun _ region ->
+                let points =
+                    match region.Geometry with
+                    | RegionRectangle(column, row, width, height) ->
+                        [ column, row
+                          column + width, row
+                          column + width, row + height
+                          column, row + height ]
+                    | RegionPolygon vertices ->
+                        vertices
+                        |> Array.map (fun point -> point.CellColumn, point.CellRow)
+                        |> Array.toList
+                points
+                |> List.forall (fun (column, row) ->
+                    column >= 0
+                    && row >= 0
+                    && column <= preview.TargetWidth
+                    && row <= preview.TargetHeight))
 
         { map with
             Width = preview.TargetWidth
             Height = preview.TargetHeight
             Terrain = terrain
             Edges = edges
-            Units = units }
+            Units = units
+            Regions = regions }
 
     let private resize width height state =
         let preview = resizeLossPreview width height state.Map
         { state with
             PendingDestructiveChange = Some(ResizePending preview)
             Validation =
-                if preview.LostTerrainCells + preview.LostEdges + preview.LostUnits = 0 then None
+                if preview.LostTerrainCells + preview.LostEdges + preview.LostUnits + preview.LostRegions = 0 then None
                 else
                     Some(
                         "Resize would remove "
@@ -988,7 +1102,9 @@ module MapEditor =
                         + string preview.LostEdges
                         + " edges, and "
                         + string preview.LostUnits
-                        + " units. Confirm to continue."
+                        + " units, and "
+                        + string preview.LostRegions
+                        + " regions. Confirm to continue."
                     ) }
 
     let private inBounds map address =
@@ -1340,11 +1456,100 @@ module MapEditor =
             | true, parsed -> Ok parsed
             | _ -> fail line ("invalid integer '" + value + "'.")
 
+        let parsePoint line (value: string) =
+            match value.Split(',') with
+            | [| column; row |] ->
+                match parseInt line column, parseInt line row with
+                | Ok column, Ok row ->
+                    Ok
+                        { CellColumn = column
+                          CellRow = row }
+                | Error error, _
+                | _, Error error -> Error error
+            | _ -> fail line ("invalid polygon vertex '" + value + "'.")
+
+        let polygonArea (vertices: EditorCellAddress array) =
+            vertices
+            |> Array.mapi (fun index point ->
+                let next = vertices[(index + 1) % vertices.Length]
+                int64 point.CellColumn * int64 next.CellRow
+                - int64 next.CellColumn * int64 point.CellRow)
+            |> Array.sum
+
+        let polygonIntersectsItself (vertices: EditorCellAddress array) =
+            let orientation a b c =
+                (b.CellColumn - a.CellColumn) * (c.CellRow - a.CellRow)
+                - (b.CellRow - a.CellRow) * (c.CellColumn - a.CellColumn)
+            let onSegment a b c =
+                min a.CellColumn c.CellColumn <= b.CellColumn
+                && b.CellColumn <= max a.CellColumn c.CellColumn
+                && min a.CellRow c.CellRow <= b.CellRow
+                && b.CellRow <= max a.CellRow c.CellRow
+            let intersects a b c d =
+                let first = orientation a b c
+                let second = orientation a b d
+                let third = orientation c d a
+                let fourth = orientation c d b
+                (sign first <> sign second && sign third <> sign fourth)
+                || (first = 0 && onSegment a c b)
+                || (second = 0 && onSegment a d b)
+                || (third = 0 && onSegment c a d)
+                || (fourth = 0 && onSegment c b d)
+            [ for first in 0 .. vertices.Length - 1 do
+                  for second in first + 1 .. vertices.Length - 1 do
+                      if
+                          second <> first + 1
+                          && not (first = 0 && second = vertices.Length - 1)
+                      then
+                          yield
+                              intersects
+                                  vertices[first]
+                                  vertices[(first + 1) % vertices.Length]
+                                  vertices[second]
+                                  vertices[(second + 1) % vertices.Length] ]
+            |> List.exists id
+
+        let invalidRegion map =
+            map.Regions
+            |> Map.toList
+            |> List.tryPick (fun (id, region) ->
+                if id <> region.Id || id <= 0 then Some "region identity is invalid."
+                elif region.Purpose = DeploymentZone NeutralSide then Some "deployment zones must belong to blue or red."
+                else
+                    match region.Geometry with
+                    | RegionRectangle(column, row, width, height)
+                        when width <= 0
+                             || height <= 0
+                             || column < 0
+                             || row < 0
+                             || column + width > map.Width
+                             || row + height > map.Height ->
+                        Some "region rectangle is invalid or outside the map."
+                    | RegionPolygon vertices
+                        when vertices.Length < 3
+                             || Array.distinct vertices |> Array.length <> vertices.Length
+                             || polygonArea vertices = 0L
+                             || (vertices.Length >= 4 && polygonIntersectsItself vertices)
+                             || (vertices
+                                 |> Array.exists (fun vertex ->
+                                     vertex.CellColumn < 0
+                                     || vertex.CellRow < 0
+                                     || vertex.CellColumn > map.Width
+                                     || vertex.CellRow > map.Height)) ->
+                        Some "region polygon is invalid or outside the map."
+                    | _ -> None)
+
         let lines =
             text.Replace("\r", "").Split('\n', StringSplitOptions.RemoveEmptyEntries)
 
-        if lines.Length < 2 || lines[0] <> "SIR-MAP " + string FormatVersion then
-            Error "The file is not a supported SIR-MAP 1 document."
+        let version =
+            if lines.Length = 0 then None
+            elif lines[0] = "SIR-MAP " + string LegacyFormatVersion then Some LegacyFormatVersion
+            elif lines[0] = "SIR-MAP " + string FormatVersion then Some FormatVersion
+            else None
+
+        if lines.Length < 2 || version.IsNone then
+            Error "The file is not a supported SIR-MAP 1 or SIR-MAP 2 document."
         else
             let mutable result = Ok(emptyMap 12 8)
 
@@ -1401,6 +1606,61 @@ module MapEditor =
                         | Error error, _, _, _
                         | _, Error error, _, _ -> result <- Error error
                         | _ -> result <- fail line "invalid edge direction, kind, or state."
+                    | "zone" :: _ when version = Some LegacyFormatVersion ->
+                        result <- fail line "SIR-MAP 1 cannot contain zone records."
+                    | "zone" :: id :: purposeAndGeometry ->
+                        let geometryIndex, purpose =
+                            match purposeAndGeometry with
+                            | "objective" :: _ -> 1, Some ObjectiveRegion
+                            | "deployment" :: side :: _ ->
+                                2, sideFromName side |> Option.map DeploymentZone
+                            | _ -> 0, None
+                        let geometryFields =
+                            purposeAndGeometry |> List.skip (min geometryIndex purposeAndGeometry.Length)
+                        let geometry =
+                            match geometryFields with
+                            | [ "rectangle"; column; row; width; height ] ->
+                                match
+                                    parseInt line column,
+                                    parseInt line row,
+                                    parseInt line width,
+                                    parseInt line height
+                                with
+                                | Ok column, Ok row, Ok width, Ok height ->
+                                    Ok(RegionRectangle(column, row, width, height))
+                                | Error error, _, _, _
+                                | _, Error error, _, _
+                                | _, _, Error error, _
+                                | _, _, _, Error error -> Error error
+                            | "polygon" :: vertices when vertices.Length >= 3 ->
+                                vertices
+                                |> List.map (parsePoint line)
+                                |> List.fold
+                                    (fun current point ->
+                                        match current, point with
+                                        | Ok points, Ok value -> Ok(value :: points)
+                                        | Error error, _
+                                        | _, Error error -> Error error)
+                                    (Ok [])
+                                |> Result.map (List.rev >> List.toArray >> RegionPolygon)
+                            | _ -> fail line "invalid or unsupported zone geometry."
+                        match parseInt line id, purpose, geometry with
+                        | Ok id, Some purpose, Ok geometry
+                            when id > 0 && not (Map.containsKey id map.Regions) ->
+                            let region =
+                                { Id = id
+                                  Geometry = geometry
+                                  Purpose = purpose
+                                  Behavior = NoRegionBehavior }
+                            result <-
+                                Ok
+                                    { map with
+                                        Regions = Map.add id region map.Regions
+                                        NextRegionId = max map.NextRegionId (id + 1) }
+                        | Error error, _, _
+                        | _, _, Error error -> result <- Error error
+                        | _, None, _ -> result <- fail line "unknown zone purpose."
+                        | _ -> result <- fail line "invalid or duplicate zone identifier."
                     | [ "unit"; id; side; classId; column; row; size; remaining; maximum; controller; script ] ->
                         match
                             parseInt line id,
@@ -1480,7 +1740,10 @@ module MapEditor =
                     Error "Only doors may carry open edge state."
                 | _, _, _, Some unit ->
                     Error("Unit " + string unit.Id + " does not fit the map.")
-                | None, None, None, None -> Ok map)
+                | None, None, None, None ->
+                    match invalidRegion map with
+                    | Some error -> Error("Map zone: " + error)
+                    | None -> Ok map)
 
     let private issue code message =
         { Code = code; Message = message }
@@ -1560,6 +1823,88 @@ module MapEditor =
                 None)
         |> Array.toList
 
+    let private polygonTwiceArea (vertices: EditorCellAddress array) =
+        vertices
+        |> Array.mapi (fun index point ->
+            let next = vertices[(index + 1) % vertices.Length]
+            int64 point.CellColumn * int64 next.CellRow
+            - int64 next.CellColumn * int64 point.CellRow)
+        |> Array.sum
+
+    let private polygonSelfIntersects (vertices: EditorCellAddress array) =
+        let orientation a b c =
+            (b.CellColumn - a.CellColumn) * (c.CellRow - a.CellRow)
+            - (b.CellRow - a.CellRow) * (c.CellColumn - a.CellColumn)
+        let onSegment a b c =
+            min a.CellColumn c.CellColumn <= b.CellColumn
+            && b.CellColumn <= max a.CellColumn c.CellColumn
+            && min a.CellRow c.CellRow <= b.CellRow
+            && b.CellRow <= max a.CellRow c.CellRow
+        let intersects a b c d =
+            let first = orientation a b c
+            let second = orientation a b d
+            let third = orientation c d a
+            let fourth = orientation c d b
+            (sign first <> sign second && sign third <> sign fourth)
+            || (first = 0 && onSegment a c b)
+            || (second = 0 && onSegment a d b)
+            || (third = 0 && onSegment c a d)
+            || (fourth = 0 && onSegment c b d)
+
+        [ for first in 0 .. vertices.Length - 1 do
+              for second in first + 1 .. vertices.Length - 1 do
+                  let adjacent =
+                      second = first + 1
+                      || (first = 0 && second = vertices.Length - 1)
+                  if not adjacent then
+                      let a = vertices[first]
+                      let b = vertices[(first + 1) % vertices.Length]
+                      let c = vertices[second]
+                      let d = vertices[(second + 1) % vertices.Length]
+                      yield intersects a b c d ]
+        |> List.exists id
+
+    /// Validates authoritative geometry independently from its semantic purpose.
+    let regionIssues (map: MapDefinition) =
+        map.Regions
+        |> Map.toList
+        |> List.collect (fun (id, region) ->
+            [ if id <= 0 || id <> region.Id then
+                  issue "REGION-IDENTITY" "Region keys and positive identifiers must agree."
+              match region.Purpose with
+              | DeploymentZone NeutralSide ->
+                  issue "REGION-PURPOSE" "Deployment zones must belong to blue or red."
+              | _ -> ()
+              match region.Geometry with
+              | RegionRectangle(column, row, width, height) ->
+                  if width <= 0 || height <= 0 then
+                      issue "REGION-RECTANGLE-SIZE" "Region rectangles must have positive width and height."
+                  if
+                      column < 0
+                      || row < 0
+                      || column + width > map.Width
+                      || row + height > map.Height
+                  then
+                      issue "REGION-OUTSIDE" ("Region " + string id + " leaves the map boundary.")
+              | RegionPolygon vertices ->
+                  if vertices.Length < 3 then
+                      issue "REGION-POLYGON-VERTICES" "Region polygons require at least three vertices."
+                  if vertices |> Array.distinct |> Array.length <> vertices.Length then
+                      issue "REGION-POLYGON-DUPLICATE" "Region polygon vertices must be unique."
+                  if
+                      vertices
+                      |> Array.exists (fun vertex ->
+                          vertex.CellColumn < 0
+                          || vertex.CellRow < 0
+                          || vertex.CellColumn > map.Width
+                          || vertex.CellRow > map.Height)
+                  then
+                      issue "REGION-OUTSIDE" ("Region " + string id + " leaves the map boundary.")
+                  if vertices.Length >= 3 && polygonTwiceArea vertices = 0L then
+                      issue "REGION-POLYGON-AREA" "Region polygons must enclose non-zero area."
+                  if vertices.Length >= 4 && polygonSelfIntersects vertices then
+                      issue "REGION-POLYGON-SELF-INTERSECTION" "Region polygons cannot self-intersect." ])
+
     let private validateDocument map =
         let dimensions =
             if map.Width < 4 || map.Width > 40 || map.Height < 4 || map.Height > 40 then
@@ -1612,7 +1957,7 @@ module MapEditor =
             edgeIssues map
             |> List.filter (fun edgeIssue -> edgeIssue.Code <> "EDGE-GAP")
 
-        dimensions @ terrain @ edges @ semanticEdgeState @ units
+        dimensions @ terrain @ edges @ semanticEdgeState @ units @ regionIssues map
 
     /// Runs validation against the authoritative document only. Layer
     /// visibility and locks are deliberately ignored, so hidden content keeps
@@ -1658,6 +2003,21 @@ module MapEditor =
                 Units =
                     identifiers
                     |> Array.fold (fun current id -> Map.remove id current) map.Units }
+        | AddRegions regions
+        | UpdateRegions regions ->
+            { map with
+                Regions =
+                    regions
+                    |> Array.fold (fun current region ->
+                        Map.add region.Id region current) map.Regions
+                NextRegionId =
+                    regions
+                    |> Array.fold (fun next region -> max next (region.Id + 1)) map.NextRegionId }
+        | RemoveRegions identifiers ->
+            { map with
+                Regions =
+                    identifiers
+                    |> Array.fold (fun current id -> Map.remove id current) map.Regions }
         | ResizeDocument(width, height) ->
             { map with Width = width; Height = height }
         | ReplaceDocument(_, document) -> document
@@ -1707,6 +2067,24 @@ module MapEditor =
                 [ issue "UNIT-DUPLICATE" "A remove command contains duplicate identifiers." ]
             | RemoveUnits identifiers when identifiers |> Array.exists (fun id -> not (Map.containsKey id map.Units)) ->
                 [ issue "UNIT-MISSING" "A removed unit does not exist." ]
+            | AddRegions regions when Array.isEmpty regions ->
+                [ issue "COMMAND-EMPTY" "An add command must contain at least one region." ]
+            | AddRegions regions when regions |> Array.map _.Id |> duplicate ->
+                [ issue "REGION-DUPLICATE" "An add command contains duplicate region identifiers." ]
+            | AddRegions regions when regions |> Array.exists (fun region -> Map.containsKey region.Id map.Regions) ->
+                [ issue "REGION-DUPLICATE" "An added region identifier already exists." ]
+            | UpdateRegions regions when Array.isEmpty regions ->
+                [ issue "COMMAND-EMPTY" "An update command must contain at least one region." ]
+            | UpdateRegions regions when regions |> Array.map _.Id |> duplicate ->
+                [ issue "REGION-DUPLICATE" "An update command contains duplicate region identifiers." ]
+            | UpdateRegions regions when regions |> Array.exists (fun region -> not (Map.containsKey region.Id map.Regions)) ->
+                [ issue "REGION-MISSING" "An updated region does not exist." ]
+            | RemoveRegions identifiers when Array.isEmpty identifiers ->
+                [ issue "COMMAND-EMPTY" "A remove command must contain at least one region." ]
+            | RemoveRegions identifiers when duplicate identifiers ->
+                [ issue "REGION-DUPLICATE" "A remove command contains duplicate identifiers." ]
+            | RemoveRegions identifiers when identifiers |> Array.exists (fun id -> not (Map.containsKey id map.Regions)) ->
+                [ issue "REGION-MISSING" "A removed region does not exist." ]
             | ResizeDocument(width, height) when width < 4 || width > 40 || height < 4 || height > 40 ->
                 [ issue "MAP-DIMENSIONS" "Map dimensions must be between 4 and 40 cells." ]
             | _ -> []
@@ -1766,6 +2144,9 @@ module MapEditor =
                         state.SelectedUnit
                         |> Option.filter (fun id -> Set.contains id selected)
                         |> Option.orElseWith (fun () -> selected |> Set.toList |> List.tryHead)
+                    SelectedRegion =
+                        state.SelectedRegion
+                        |> Option.filter (fun id -> Map.containsKey id map.Regions)
                     Gesture = IdleGesture
                     Revision = after
                     RevisionState = DirtyRevision
@@ -1925,6 +2306,13 @@ module MapEditor =
         | DeleteEditorSelection
         | PasteEditorClipboard
         | DuplicateEditorSelection -> Some UnitDomain
+        | CreateRectangleRegion _
+        | CreatePolygonRegion _
+        | SetSelectedRegionPurpose _
+        | SetSelectedRegionGeometry _
+        | MoveSelectedRegion _
+        | MoveSelectedRegionVertex _
+        | RemoveSelectedRegion -> Some RegionDomain
         | Resize _
         | RequestClearMap
         | ClearMap
@@ -1999,6 +2387,17 @@ module MapEditor =
         |> Set.toArray
         |> Array.choose (fun id -> Map.tryFind id state.Map.Units)
         |> Array.sortBy _.Id
+
+    let private translatedRegionGeometry columnDelta rowDelta geometry =
+        match geometry with
+        | RegionRectangle(column, row, width, height) ->
+            RegionRectangle(column + columnDelta, row + rowDelta, width, height)
+        | RegionPolygon vertices ->
+            vertices
+            |> Array.map (fun vertex ->
+                { CellColumn = vertex.CellColumn + columnDelta
+                  CellRow = vertex.CellRow + rowDelta })
+            |> RegionPolygon
 
     let private translatedSelection columnDelta rowDelta (source: EditorUnit array) =
         source
@@ -2125,7 +2524,7 @@ module MapEditor =
               PendingDestructiveChange = Some ClearPending
               Validation =
                   Some
-                      "Clearing removes every terrain cell, edge, and unit. Confirm to continue." }
+                      "Clearing removes every terrain cell, edge, unit, and region. Confirm to continue." }
         | ConfirmDestructiveChange ->
           match state.PendingDestructiveChange with
           | Some(ResizePending preview) ->
@@ -2215,6 +2614,109 @@ module MapEditor =
                     + " canonical unit "
                     + (if count = 1 then "preset" else "presets")
                     + " shown." }
+        | CreateRectangleRegion(purpose, first, last) ->
+            let column = min first.CellColumn last.CellColumn
+            let row = min first.CellRow last.CellRow
+            let region =
+                { Id = state.Map.NextRegionId
+                  Geometry =
+                    RegionRectangle(
+                        column,
+                        row,
+                        abs (last.CellColumn - first.CellColumn) + 1,
+                        abs (last.CellRow - first.CellRow) + 1
+                    )
+                  Purpose = purpose
+                  Behavior = NoRegionBehavior }
+            let next = commit (AddRegions [| region |]) state
+            if next.Revision.Number = state.Revision.Number then
+                { next with RegionAnnouncement = "Region creation rejected." }
+            else
+                { next with
+                    SelectedRegion = Some region.Id
+                    SelectedUnit = None
+                    SelectedUnits = Set.empty
+                    RegionAnnouncement =
+                        regionPurposeLabel purpose
+                        + " rectangle created as region "
+                        + string region.Id
+                        + "." }
+        | CreatePolygonRegion(purpose, vertices) ->
+            let region =
+                { Id = state.Map.NextRegionId
+                  Geometry = RegionPolygon(Array.copy vertices)
+                  Purpose = purpose
+                  Behavior = NoRegionBehavior }
+            let next = commit (AddRegions [| region |]) state
+            if next.Revision.Number = state.Revision.Number then
+                { next with RegionAnnouncement = "Region creation rejected." }
+            else
+                { next with
+                    SelectedRegion = Some region.Id
+                    SelectedUnit = None
+                    SelectedUnits = Set.empty
+                    RegionAnnouncement =
+                        regionPurposeLabel purpose
+                        + " polygon created as region "
+                        + string region.Id
+                        + "." }
+        | SelectEditorRegion id ->
+            let selected = id |> Option.filter (fun value -> Map.containsKey value state.Map.Regions)
+            { state with
+                SelectedRegion = selected
+                SelectedUnit = None
+                SelectedUnits = Set.empty
+                Validation = None
+                RegionAnnouncement =
+                    selected
+                    |> Option.map (fun value -> "Region " + string value + " selected.")
+                    |> Option.defaultValue "Region selection cleared." }
+        | SetSelectedRegionPurpose purpose ->
+            match state.SelectedRegion |> Option.bind (fun id -> Map.tryFind id state.Map.Regions) with
+            | None -> { state with Validation = Some "Select a region first." }
+            | Some region ->
+                let next = commit (UpdateRegions [| { region with Purpose = purpose } |]) state
+                { next with RegionAnnouncement = regionPurposeLabel purpose + " purpose applied." }
+        | SetSelectedRegionGeometry geometry ->
+            match state.SelectedRegion |> Option.bind (fun id -> Map.tryFind id state.Map.Regions) with
+            | None -> { state with Validation = Some "Select a region first." }
+            | Some region ->
+                let next = commit (UpdateRegions [| { region with Geometry = geometry } |]) state
+                { next with RegionAnnouncement = "Region geometry updated." }
+        | MoveSelectedRegion(columnDelta, rowDelta) ->
+            match state.SelectedRegion |> Option.bind (fun id -> Map.tryFind id state.Map.Regions) with
+            | None -> { state with Validation = Some "Select a region first." }
+            | Some region ->
+                let geometry = translatedRegionGeometry columnDelta rowDelta region.Geometry
+                let next = commit (UpdateRegions [| { region with Geometry = geometry } |]) state
+                { next with
+                    RegionAnnouncement =
+                        if next.Validation.IsSome then "Region move rejected."
+                        else "Region moved." }
+        | MoveSelectedRegionVertex(index, columnDelta, rowDelta) ->
+            match state.SelectedRegion |> Option.bind (fun id -> Map.tryFind id state.Map.Regions) with
+            | Some({ Geometry = RegionPolygon vertices } as region)
+                when index >= 0 && index < vertices.Length ->
+                let moved = Array.copy vertices
+                let vertex = moved[index]
+                moved[index] <-
+                    { CellColumn = vertex.CellColumn + columnDelta
+                      CellRow = vertex.CellRow + rowDelta }
+                let next =
+                    commit
+                        (UpdateRegions [| { region with Geometry = RegionPolygon moved } |])
+                        state
+                { next with RegionAnnouncement = "Polygon vertex updated." }
+            | Some _ -> { state with Validation = Some "Select a polygon vertex first." }
+            | None -> { state with Validation = Some "Select a region first." }
+        | RemoveSelectedRegion ->
+            match state.SelectedRegion with
+            | None -> { state with Validation = Some "Select a region first." }
+            | Some id ->
+                let next = commit (RemoveRegions [| id |]) state
+                { next with
+                    SelectedRegion = None
+                    RegionAnnouncement = "Region " + string id + " removed." }
         | PreviewUnitPlacement address ->
             match state.Tool with
             | Place(side, classId, size) ->
@@ -2536,6 +3038,7 @@ module MapEditor =
                 Tool = Select
                 SelectedUnit = id |> Option.filter (fun identifier -> Set.contains identifier selected)
                 SelectedUnits = selected
+                SelectedRegion = None
                 Gesture = IdleGesture
                 Validation = None }
         | ToggleEditorUnitSelection id when Map.containsKey id state.Map.Units ->
@@ -2546,6 +3049,7 @@ module MapEditor =
                 Tool = Select
                 SelectedUnits = selected
                 SelectedUnit = if Set.contains id selected then Some id else selected |> Set.toList |> List.tryHead
+                SelectedRegion = None
                 Validation = None }
         | ToggleEditorUnitSelection _ -> state
         | SelectEditorUnitsInBox box ->
@@ -2641,6 +3145,7 @@ module MapEditor =
                 { state with
                     SelectedUnits = selected
                     SelectedUnit = selected |> Set.toList |> List.tryHead
+                    SelectedRegion = None
                     Validation = None }
             else
                 { state with
@@ -2731,6 +3236,9 @@ module MapEditor =
                         else DirtyRevision
                     SelectedUnits = selected
                     SelectedUnit = selected |> Set.toList |> List.tryHead
+                    SelectedRegion =
+                        state.SelectedRegion
+                        |> Option.filter (fun id -> Map.containsKey id entry.Before.Document.Regions)
                     Gesture = IdleGesture
                     UndoHistory = remaining
                     RedoHistory = entry :: state.RedoHistory |> historyWithinBounds
@@ -2757,6 +3265,9 @@ module MapEditor =
                         else DirtyRevision
                     SelectedUnits = selected
                     SelectedUnit = selected |> Set.toList |> List.tryHead
+                    SelectedRegion =
+                        state.SelectedRegion
+                        |> Option.filter (fun id -> Map.containsKey id entry.After.Document.Regions)
                     Gesture = IdleGesture
                     UndoHistory = undo
                     RedoHistory = remaining
