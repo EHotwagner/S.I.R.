@@ -1,0 +1,66 @@
+{
+  "format": "sir-map-editor-review-v1",
+  "generatedFrom": "production Fable/React SVG workspaces",
+  "productionBundleSha256": "9bf1f2e7ec4817f824f1aaf4948bb112983a2ee28d572a2392665231cbf2e97b",
+  "rasterizer": "rsvg-convert 2.62.3",
+  "width": 960,
+  "height": 640,
+  "files": [
+    {
+      "domain": "terrain",
+      "description": "Open, rough, objective, and blocked terrain with grid context.",
+      "svg": "terrain.svg",
+      "png": "terrain.png",
+      "svgSha256": "1d12400eb7d5162a2818e3336a98882b40bf02cf28107125ab887663b97a2fa5",
+      "pngSha256": "b340b5ff43224d36d51e50f8137e4342d2e0e20a7fa49ebff8c11df4ea2f1976"
+    },
+    {
+      "domain": "edges",
+      "description": "Wall, open door, and window semantic edge meanings.",
+      "svg": "edges.svg",
+      "png": "edges.png",
+      "svgSha256": "b406e5c6341cb834406a677e0f7f609eba40c67e5b6f8080bad38dd737ba15f1",
+      "pngSha256": "40e82cd3942a9ef34ac9cfaa60ff48a570c4781d6624f2023ae4a70408cd48c8"
+    },
+    {
+      "domain": "units",
+      "description": "Canonical 1×1, 2×2, and 3×3 square unit footprints.",
+      "svg": "units.svg",
+      "png": "units.png",
+      "svgSha256": "fdcc8a8311532e02d21922a2ca47af5943ce6d27370e1e0b3b4a190618aa3b48",
+      "pngSha256": "b9859b259d3a605085532cc0f64b99a895508878dd154cee9700e4a9343e44ef"
+    },
+    {
+      "domain": "zones",
+      "description": "Objective rectangle and blue deployment polygon.",
+      "svg": "zones.svg",
+      "png": "zones.png",
+      "svgSha256": "86dbe0e88e1aa6a4f87e0c6554111f6f983d0a33f172379e60474a9bc87f020b",
+      "pngSha256": "09e3b6d424b467266fb42b3fff3c9c044922e25e40bc48b7fbb83868b31bdfcf"
+    },
+    {
+      "domain": "background",
+      "description": "Signature-validated local raster alignment beneath the grid.",
+      "svg": "background.svg",
+      "png": "background.png",
+      "svgSha256": "e092727bcd4233550f68f2b09b3ca427904f4a699fe0b8bdc26237472757f73f",
+      "pngSha256": "64bf2a83aaca1b2421122c5eb291bb7a05eb16be69e9a6acaa602b05c821525e"
+    },
+    {
+      "domain": "simulator-handoff",
+      "description": "Immutable authored revision rendered by the simulator.",
+      "svg": "simulator-handoff.svg",
+      "png": "simulator-handoff.png",
+      "svgSha256": "d3449f9b7ea9ac9270fdd7abd8727e10f05f7337a33fd7559c90db0f79e3fe4c",
+      "pngSha256": "e45e9fd6c696ef66988e941c4885c174a97d90a44a20f83d5626ea9739fd75f1"
+    },
+    {
+      "domain": "validation",
+      "description": "EDGE-GAP issue projected without hiding authoritative domains.",
+      "svg": "validation.svg",
+      "png": "validation.png",
+      "svgSha256": "132d9934dee023a559e0f7eaaacda5b9843ab731766636a4170bbed0bfb185e2",
+      "pngSha256": "18e86fa85ebd61195a97695110f3f3f720f4049de44cb4c27c59550ad3bbde4e"
+    }
+  ]
+}

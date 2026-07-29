@@ -2675,6 +2675,176 @@ let main _ =
         ("The deterministic Milestone 8 background/interchange review fixture changed.\n"
          + interchangeFixture)
 
+    let qualificationStarted = Diagnostics.Stopwatch.StartNew()
+    let qualificationBlank =
+        editor
+        |> MapEditor.update RequestClearMap
+        |> MapEditor.update ConfirmDestructiveChange
+        |> MapEditor.update (Resize(24, 16))
+        |> MapEditor.update ConfirmDestructiveChange
+    let qualificationTerrain =
+        qualificationBlank
+        |> MapEditor.update (ChooseTerrain Rough)
+        |> MapEditor.update (ChooseTool(Terrain RectangleTool))
+        |> MapEditor.update (BeginTerrainGesture(address 2 2))
+        |> MapEditor.update (ExtendTerrainGesture(address 5 4))
+        |> MapEditor.update CommitEditorGesture
+    let qualificationTerrainUndone =
+        qualificationTerrain |> MapEditor.update UndoEditorCommand
+    let qualificationTerrainRedone =
+        qualificationTerrainUndone |> MapEditor.update RedoEditorCommand
+    let qualificationUnits =
+        qualificationTerrainRedone
+        |> MapEditor.update (ChooseTool(Place(Red, "goblin", 1)))
+        |> MapEditor.update (ActivateCell(10, 2))
+        |> MapEditor.update (ChooseTool(Place(Red, "orc", 2)))
+        |> MapEditor.update (ActivateCell(13, 2))
+        |> MapEditor.update (ChooseTool(Place(Red, "troll", 3)))
+        |> MapEditor.update (ActivateCell(18, 5))
+    let qualificationDeployment =
+        qualificationUnits
+        |> MapEditor.update (
+            CreateRectangleRegion(
+                DeploymentZone Blue,
+                address 1 11,
+                address 6 14
+            )
+        )
+    let qualificationWalls =
+        qualificationDeployment
+        |> MapEditor.update (ChooseTool(Edge(EastEdge, Wall)))
+        |> MapEditor.update (ActivateEdge(8, 6, EastEdge))
+        |> MapEditor.update (ActivateEdge(8, 7, EastEdge))
+        |> MapEditor.update (ActivateEdge(8, 8, EastEdge))
+        |> MapEditor.update FinishEdgePolyline
+        |> MapEditor.update (ConvertEdge(8, 7, EastEdge, Door))
+        |> MapEditor.update (ToggleDoorState(8, 7, EastEdge))
+    let qualificationSaved =
+        qualificationWalls |> MapEditor.update MarkEditorSaved
+    let qualificationText = MapEditor.export qualificationSaved
+    let qualificationReloaded =
+        MapEditor.tryImport qualificationText |> Result.defaultWith failwith
+    let qualificationReloadDigest =
+        MapEditor.revisionDigest qualificationReloaded
+    let qualificationRecoverySource =
+        qualificationSaved
+        |> MapEditor.update (ChooseTerrain Objective)
+        |> MapEditor.update (ChooseTool(Terrain PencilTool))
+        |> MapEditor.update (ActivateCell(0, 0))
+    let qualificationRecovered =
+        qualificationSaved
+        |> MapEditor.update (
+            OfferCrashRecovery(MapEditor.autosaveText qualificationRecoverySource)
+        )
+        |> MapEditor.update RecoverCrashDraft
+    let qualificationHandoff =
+        MapEditorSimulator.tryHandoff qualificationSaved
+        |> Result.defaultWith failwith
+    qualificationStarted.Stop()
+    require
+        (qualificationBlank.Map.Width = 24
+         && qualificationBlank.Map.Height = 16
+         && qualificationTerrain.Map.Terrain.Count = 12
+         && qualificationTerrainUndone.Map.Terrain.IsEmpty
+         && qualificationTerrainRedone.Map = qualificationTerrain.Map
+         && qualificationUnits.Map.Units.Count = 3
+         && qualificationDeployment.Map.Regions.Count = 1
+         && qualificationWalls.Map.Edges.Count = 3
+         && qualificationWalls.Map.Edges[(8, 7, EastEdge)] = (Door, true)
+         && Array.isEmpty (MapEditor.validationIssues qualificationSaved.Map)
+         && qualificationReloadDigest = qualificationSaved.Revision.Digest
+         && MapEditor.export { qualificationSaved with Map = qualificationReloaded }
+            = qualificationText
+         && qualificationRecovered.RevisionState = RecoveredRevision
+         && qualificationRecovered.Revision.Digest = qualificationRecoverySource.Revision.Digest
+         && qualificationHandoff.Revision.Digest = qualificationSaved.Revision.Digest)
+        "The automated first-map, deployment, walling, correction, import, recovery, or immutable handoff task trace failed."
+
+    let legacyQualified =
+        MapEditor.tryImport "SIR-MAP 1\nsize 4 4\nterrain 1 1 rough\n"
+        |> Result.defaultWith failwith
+    let malformedInputs =
+        [ "SIR-MAP 3\nsize 4 4\n"
+          "SIR-MAP 2\nsize 4 4\nterrain zero 1 rough\n"
+          "SIR-MAP 2\nsize 4 4\nedge 1 1 east wall open\n"
+          "SIR-MAP 2\nsize 4 4\nunit 1 blue x 0 0 9 1 1 manual -\n"
+          "SIR-MAP 2\nsize 4 4\nzone 1 objective polygon 0,0 2,2 0,2 2,0\n"
+          "SIR-MAP 2\nsize 4 4\nunknown <script>alert(1)</script>\n" ]
+    let oversizedMapText =
+        "SIR-MAP 2\nsize 4 4\n#"
+        + String('x', MapEditor.MaximumImportBytes)
+    let longClassId =
+        String('x', MapEditor.MaximumClassIdLength + 1)
+    let excessivePolygon =
+        [ 0 .. MapEditor.MaximumRegionVertices ]
+        |> List.map (fun index -> string index + ",0")
+        |> String.concat " "
+    let hostileInterchange =
+        MapEditorInterchange.evaluate
+            UniversalVtt
+            "oversized.dd2vtt"
+            oversizedMapText
+    let clipboardUnits =
+        [ for row in 0 .. 16 do
+              for column in 0 .. 15 do
+                  let id = int32 (row * 16 + column + 1)
+                  yield
+                      id,
+                      { Id = id
+                        Side = Blue
+                        ClassId = "goblin"
+                        Column = int32 column
+                        Row = int32 row
+                        Size = 1
+                        Health = 1
+                        HealthMaximum = 1
+                        Controller = Manual
+                        Script = []
+                        ScriptIndex = 0 } ]
+        |> Map.ofList
+    let oversizedClipboardState =
+        { editor with
+            Map =
+                { editor.Map with
+                    Width = 40
+                    Height = 40
+                    Terrain = Map.empty
+                    Edges = Map.empty
+                    Units = clipboardUnits
+                    NextUnitId = int32 clipboardUnits.Count + 1
+                    Regions = Map.empty
+                    NextRegionId = 1 }
+            SelectedUnits = clipboardUnits |> Map.toSeq |> Seq.map fst |> Set.ofSeq
+            SelectedUnit = Some 1 }
+        |> MapEditor.update CopyEditorSelection
+    require
+        (MapEditor.export { editor with Map = legacyQualified }
+            |> _.StartsWith("SIR-MAP 2")
+         && malformedInputs |> List.forall (MapEditor.tryImport >> Result.isError)
+         && MapEditor.tryImport oversizedMapText |> Result.isError
+         && MapEditor.tryImport (
+             "SIR-MAP 2\nsize 4 4\nunit 1 blue "
+             + longClassId
+             + " 0 0 1 1 1 manual -\n"
+         )
+            |> Result.isError
+         && MapEditor.tryImport (
+             "SIR-MAP 2\nsize 40 40\nzone 1 objective polygon "
+             + excessivePolygon
+             + "\n"
+         )
+            |> Result.isError
+         && oversizedClipboardState.Clipboard.IsNone
+         && oversizedClipboardState.Validation
+            |> Option.exists (_.Contains(string MapEditor.MaximumClipboardUnits))
+         && hostileInterchange.Candidate.IsNone
+         && hostileInterchange.Errors
+            |> Array.exists (_.Contains("qualification limit"))
+         && svgRejected
+         && oversizedDimensions
+         && oversizedBytes)
+        "Migration, malformed input, bounded clipboard, or hostile asset qualification failed."
+
     let maximumMap =
         { editor.Map with
             Width = 40
@@ -2715,6 +2885,174 @@ let main _ =
         "Maximum-map terrain evidence: 40x40 cells, flood-fill/line preview plus validation p95 %.3f ms over %d alternating gestures."
         maximumGestureP95
         maximumGestureTimings.Length
+
+    let denseTerrain =
+        [ for row in 0 .. 39 do
+              for column in 0 .. 39 do
+                  yield (int32 column, int32 row), Rough ]
+        |> Map.ofList
+    let denseEdges =
+        [ for row in 0 .. 39 do
+              for column in 0 .. 38 do
+                  yield (int32 column, int32 row, EastEdge), (Wall, false)
+          for row in 0 .. 38 do
+              for column in 0 .. 39 do
+                  yield (int32 column, int32 row, SouthEdge), (Wall, false) ]
+        |> Map.ofList
+    let denseUnits =
+        [ for row in 0 .. 9 do
+              for column in 0 .. 19 do
+                  let id = int32 (row * 20 + column + 1)
+                  yield
+                      id,
+                      { Id = id
+                        Side = if id % 2 = 0 then Blue else Red
+                        ClassId = "orc"
+                        Column = int32 (column * 2)
+                        Row = int32 (row * 2)
+                        Size = 2
+                        Health = 100
+                        HealthMaximum = 100
+                        Controller = Manual
+                        Script = []
+                        ScriptIndex = 0 } ]
+        |> Map.ofList
+    let denseRegions =
+        [ for index in 0 .. 199 do
+              let id = int32 index + 1
+              yield
+                  id,
+                  { Id = id
+                    Purpose =
+                        if index % 3 = 0 then ObjectiveRegion
+                        elif index % 3 = 1 then DeploymentZone Blue
+                        else DeploymentZone Red
+                    Geometry =
+                        RegionRectangle(
+                            int32 (index % 40),
+                            int32 (index / 40),
+                            1,
+                            1
+                        )
+                    Behavior = NoRegionBehavior } ]
+        |> Map.ofList
+    let denseMaximumMap =
+        { maximumMap with
+            Terrain = denseTerrain
+            Edges = denseEdges
+            Units = denseUnits
+            NextUnitId = 201
+            Regions = denseRegions
+            NextRegionId = 201 }
+    let denseMaximumText =
+        MapEditor.export { editor with Map = denseMaximumMap }
+    let denseMaximumState =
+        MapEditor.update (LoadMapText denseMaximumText) editor
+
+    let p95 runs operation =
+        for _ in 1 .. 5 do operation ()
+        let timings =
+            Array.init runs (fun _ ->
+                let started = Diagnostics.Stopwatch.GetTimestamp()
+                operation ()
+                let elapsed = Diagnostics.Stopwatch.GetTimestamp() - started
+                float elapsed * 1000.0 / float Diagnostics.Stopwatch.Frequency)
+            |> Array.sort
+        timings[int (float timings.Length * 0.95)]
+
+    let pointerPreviewP95 =
+        p95 80 (fun () ->
+            denseMaximumState
+            |> MapEditor.update (ChooseTerrain Objective)
+            |> MapEditor.update (ChooseTool(Terrain LineTool))
+            |> MapEditor.update (BeginTerrainGesture(address 0 0))
+            |> MapEditor.update (ExtendTerrainGesture(address 39 39))
+            |> MapEditor.terrainPreview
+            |> ignore)
+    let panZoomP95 =
+        let view = MapEditorWorkspace.initial false
+        p95 120 (fun () ->
+            view
+            |> MapEditorWorkspace.update
+                denseMaximumMap
+                (MapEditor.selected denseMaximumState)
+                (PanEditorBy(2.0, -1.0))
+            |> MapEditorWorkspace.update
+                denseMaximumMap
+                (MapEditor.selected denseMaximumState)
+                (ZoomEditorAt(480.0, 320.0, 1.01))
+            |> ignore)
+    let commandValidationP95 =
+        p95 40 (fun () ->
+            MapEditor.validateCommand
+                denseMaximumMap
+                (PaintCells(Objective, [| address 0 0 |]))
+            |> ignore)
+    let fullValidationP95 =
+        p95 30 (fun () ->
+            MapEditor.validationIssues denseMaximumMap |> ignore)
+    let changedDenseState =
+        denseMaximumState
+        |> MapEditor.update (ChooseTerrain Objective)
+        |> MapEditor.update (ChooseTool(Terrain PencilTool))
+        |> MapEditor.update (ActivateCell(0, 0))
+    let undoRedoP95 =
+        p95 50 (fun () ->
+            changedDenseState
+            |> MapEditor.update UndoEditorCommand
+            |> MapEditor.update RedoEditorCommand
+            |> ignore)
+    let importP95 =
+        p95 20 (fun () ->
+            MapEditor.tryImport denseMaximumText
+            |> Result.defaultWith failwith
+            |> ignore)
+    let exportP95 =
+        p95 20 (fun () ->
+            MapEditor.export { editor with Map = denseMaximumMap } |> ignore)
+    let denseScene =
+        Battlefield.scene
+            (MapEditor.frame denseMaximumState)
+            { Battlefield.initial with
+                Camera =
+                    { PanX = 0.0
+                      PanY = 0.0
+                      Zoom = MapEditorWorkspace.MinimumZoom } }
+    require
+        (denseMaximumState.Map = denseMaximumMap
+         && pointerPreviewP95 < 8.0
+         && panZoomP95 < (1000.0 / 60.0)
+         && commandValidationP95 < 16.0
+         && fullValidationP95 < 100.0
+         && undoRedoP95 < 50.0
+         && importP95 < 250.0
+         && exportP95 < 250.0
+         && denseScene.InteractiveNodeEstimate < 8_000)
+        (sprintf
+            "Maximum-document editor budgets failed: preview %.3f ms, pan/zoom %.3f ms, command %.3f ms, document %.3f ms, undo/redo %.3f ms, import %.3f ms, export %.3f ms, interactive nodes %d."
+            pointerPreviewP95
+            panZoomP95
+            commandValidationP95
+            fullValidationP95
+            undoRedoP95
+            importP95
+            exportP95
+            denseScene.InteractiveNodeEstimate)
+    printfn
+        "Map-editor qualification: automated task trace %.1f ms; dense 40x40 document (%d terrain, %d edges, %d units, %d regions) p95 preview %.3f ms, pan/zoom %.3f ms, command %.3f ms, document %.3f ms, undo/redo %.3f ms, import %.3f ms, export %.3f ms; %d estimated interactive nodes."
+        qualificationStarted.Elapsed.TotalMilliseconds
+        denseMaximumMap.Terrain.Count
+        denseMaximumMap.Edges.Count
+        denseMaximumMap.Units.Count
+        denseMaximumMap.Regions.Count
+        pointerPreviewP95
+        panZoomP95
+        commandValidationP95
+        fullValidationP95
+        undoRedoP95
+        importP95
+        exportP95
+        denseScene.InteractiveNodeEstimate
 
     let performanceFrame = Battlefield.performanceFrame 200
     for _ in 1 .. 20 do

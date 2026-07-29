@@ -6,7 +6,7 @@ index: 2
 status: accepted
 decision-status: implemented
 document-type: reference
-version: "1.5"
+version: "1.6"
 last-updated: 2026-07-29
 description: Map records, terrain, semantic edges, square unit footprints, controller modes, and deterministic execution.
 related:
@@ -56,6 +56,14 @@ authority boundaries:
 | Regions | Positive-ID rectangle or simple polygon; objective or blue/red deployment purpose |
 | Edge kinds | Wall, door, or window |
 | Units | Positive identifier, square footprint, current and maximum HP, controller |
+
+Qualification safety limits bound untrusted work before semantic validation:
+native and interchange inputs are at most 2,000,000 UTF-8 bytes, class IDs are
+at most 128 characters, polygons are at most 256 vertices, a document contains
+at most 1,600 regions, and the internal unit clipboard contains at most 256
+units. Local rasters retain the separate 10,000,000-byte and 8,192-pixel
+dimension limits. Exceeding a limit rejects the complete operation without
+changing the authored revision.
 
 Blocked terrain cannot contain a unit. Unit footprints cannot overlap or extend
 outside the map. A selected unit exposes editable side, class identifier,
@@ -602,3 +610,42 @@ The editor is a browser sandbox. It projects map state into the shared SVG
 battlefield but does not host an authoritative match, execute player WASM, or
 grant replay verification. Exported maps are design inputs, not accepted match
 state.
+
+## Qualification evidence
+
+The automated release gate executes the accepted task path through the real
+pure editor model: create and resize a 24×16 map, paint and undo/redo a rough
+rectangle, place canonical goblin/orc/troll footprints, add deployment
+geometry, author a wall run, convert and open a door, save and canonically
+reload, recover a newer draft, and hand one immutable revision to the
+simulator. It also tests v1 migration, malformed and oversized documents,
+bounded clipboard behavior, hostile interchange text, executable SVG
+rejection, raster signature mismatch, and oversized assets.
+
+A representative dense 40×40 qualification document contains 1,600 terrain
+records, 3,120 semantic edges, 200 units, and 200 regions. The test enforces
+the design budgets directly: preview below 8 ms p95, pan/zoom below one 60 Hz
+frame, command validation below 16 ms p95, full validation below 100 ms p95,
+undo/redo below 50 ms p95, import and export below 250 ms p95 each, and fewer
+than 8,000 estimated interactive nodes. The evidence run on 2026-07-29 measured
+2.385 ms preview, effectively zero pure pan/zoom work, 2.293 ms command
+validation, 2.844 ms full validation, 12.807 ms undo/redo, 12.705 ms import,
+0.982 ms export, and 7,136 estimated nodes. Runtime output remains the
+authoritative measurement because hardware and scheduling vary.
+
+`scripts/test-map-editor-qualification.mjs` audits the production browser
+structure for keyboard reachability, accessible names, SVG title/description
+and roving semantic focus, the HTML object-list and issues alternatives,
+touch-action ownership, forced-colors support, 400% narrow-layout collapse,
+reduced motion, and 44 CSS-pixel target rules. Pure workspace tests exercise
+two-pointer pinch/pan and capture cleanup. The same gate verifies hashes for
+seven production-rendered review pairs under
+`docs/assets/map-editor-review/`: terrain, edges, units, zones, local
+background, validation, and simulator handoff.
+
+Automated conformance is not evidence that a new human completed the workflow
+in under five minutes or that a particular screen reader and browser pair
+worked comfortably. Those claims require the reproducible assisted protocol in
+[Map Editor Human Qualification](map-editor-qualification.md). Until a dated
+human session is recorded there, human usability and real assistive-technology
+qualification remain release blockers even though the automated gate passes.

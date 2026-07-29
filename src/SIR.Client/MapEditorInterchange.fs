@@ -1,6 +1,7 @@
 namespace SIR.Client
 
 open System
+open System.Text
 
 type InterchangeFormat =
     | UniversalVtt
@@ -486,32 +487,42 @@ module MapEditorInterchange =
         | _ -> ()
         finish FoundryScene sourceName root dimensions edges (List.ofSeq reports) consumed errors
 
-    let evaluate format sourceName text =
-        match format with
-        | FantasyGroundsImage ->
+    let evaluate format sourceName (text: string) =
+        if (Encoding.UTF8.GetBytes text).Length > MapEditor.MaximumImportBytes then
             { Format = format
               SourceName = sourceName
               Candidate = None
-              Fields =
-                [| { Path = "image/grid/occluder XML"
-                     Disposition = RejectedField
-                     Meaning = "Fantasy Grounds image exports vary by campaign/database schema and encode paint, occluders, assets, and extensions without a stable portable semantic contract." } |]
+              Fields = [||]
               Errors =
-                [| "Fantasy Grounds XML import is evaluation-only: no deterministic, reviewable mapping is accepted. Export through Universal VTT or author semantic edges in S.I.R." |] }
-        | UniversalVtt
-        | FoundryScene ->
-            match parseJson text with
-            | Error message ->
+                [| "Interchange input is missing or exceeds the "
+                   + string MapEditor.MaximumImportBytes
+                   + "-byte qualification limit." |] }
+        else
+            match format with
+            | FantasyGroundsImage ->
                 { Format = format
                   SourceName = sourceName
                   Candidate = None
-                  Fields = [||]
-                  Errors = [| message |] }
-            | Ok root ->
-                match format with
-                | UniversalVtt -> evaluateUniversal sourceName root
-                | FoundryScene -> evaluateFoundry sourceName root
-                | FantasyGroundsImage -> failwith "unreachable"
+                  Fields =
+                    [| { Path = "image/grid/occluder XML"
+                         Disposition = RejectedField
+                         Meaning = "Fantasy Grounds image exports vary by campaign/database schema and encode paint, occluders, assets, and extensions without a stable portable semantic contract." } |]
+                  Errors =
+                    [| "Fantasy Grounds XML import is evaluation-only: no deterministic, reviewable mapping is accepted. Export through Universal VTT or author semantic edges in S.I.R." |] }
+            | UniversalVtt
+            | FoundryScene ->
+                match parseJson text with
+                | Error message ->
+                    { Format = format
+                      SourceName = sourceName
+                      Candidate = None
+                      Fields = [||]
+                      Errors = [| message |] }
+                | Ok root ->
+                    match format with
+                    | UniversalVtt -> evaluateUniversal sourceName root
+                    | FoundryScene -> evaluateFoundry sourceName root
+                    | FantasyGroundsImage -> failwith "unreachable"
 
     let canAccept review =
         review.Candidate.IsSome && Array.isEmpty review.Errors
