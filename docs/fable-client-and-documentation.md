@@ -101,7 +101,7 @@ contract.
 | Fable support for reusable `FS.GG.Game` surfaces is implemented upstream | 🟩 **Canonical** | S.I.R. consumes a published, versioned artifact |
 | Authoritative values use bounded integers and explicit fixed-point arithmetic | 🟩 **Canonical** | Floats cannot affect authoritative outcomes or hashes |
 | The browser application uses Elmish MVU from its first implementation | 🟩 **Canonical** | Replay and laboratory state do not begin as ad-hoc DOM state |
-| The documentation opens on a map and simulation workspace | 🟩 **Implemented** | Maps, controllers, ticks, and SVG output form the primary interactive path |
+| The documentation opens on a full-width Simulator tab beside the sidebar | 🟩 **Implemented** | Editor, Simulator, Replay, and Rules are separate tabs; editor tools use nested tabs |
 | FSharp.Formatting builds the documentation corpus | 🟩 **Canonical** | Literate build-time evaluation and browser execution remain separate |
 | Verified replay and editable sandbox are distinct modes | 🟩 **Canonical** | Parameter editing produces a derived run, never a verified replay |
 

@@ -116,6 +116,21 @@ main {
   padding-bottom: 5rem;
 }
 
+body.sir-application-page #content {
+  width: 100%;
+  max-width: none;
+  padding-right: 1.25rem;
+  padding-left: 1.25rem;
+}
+
+body.sir-application-page #fsdocs-page-menu {
+  display: none;
+}
+
+body.sir-application-page main {
+  min-width: 0;
+}
+
 #content > h1:first-child {
   font-size: clamp(2rem, 5vw, 3.4rem);
   letter-spacing: -.035em;

@@ -17,8 +17,9 @@ related:
 
 # Map Editor Reference
 
-The browser editor creates deterministic sandbox maps. It supports terrain,
-semantic edges, square units, manual control, repeatable scripts, and a bundled
+The browser application separates full-width **Editor** and **Simulator** tabs.
+The editor supports terrain, semantic edges, square units, and versioned map
+files. The simulator provides manual control, repeatable scripts, and a bundled
 general controller.
 
 Open the [simulation workspace](interactive-rules-lab.md) to use it.
@@ -36,7 +37,8 @@ Open the [simulation workspace](interactive-rules-lab.md) to use it.
 
 Blocked terrain cannot contain a unit. Unit footprints cannot overlap or extend
 outside the map. A selected unit exposes editable side, class identifier,
-square size, HP, controller, and script fields.
+square size, and HP fields. Controller and script fields are in the Simulator
+tab.
 
 ## Square unit geometry
 
@@ -47,9 +49,10 @@ footprintWidth = size
 footprintDepth = size
 ```
 
-The SVG symbol uses the same square bounds. A size-1 unit occupies 1×1 cells; a
-size-2 unit occupies 2×2 cells. Movement checks every crossed edge along the
-complete leading side of that square.
+The editor and simulator both resolve symbols through the canonical unit glyph
+catalog. One symbol uses the same square bounds as its base. A size-1 unit
+occupies 1×1 cells; a size-2 unit occupies 2×2 cells. Movement checks every
+crossed edge along the complete leading side of that square.
 
 ## Semantic edges
 

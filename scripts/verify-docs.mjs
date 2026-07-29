@@ -125,6 +125,8 @@ const gameVision = await readFile(resolve(site, "game-vision.html"), "utf8");
 const units = await readFile(resolve(site, "gameplay-units.html"), "utf8");
 const svgPlayer = await readFile(resolve(site, "svg-replay-player.html"), "utf8");
 const mapEditor = await readFile(resolve(site, "map-editor.html"), "utf8");
+const docsTheme = await readFile(resolve(site, "content/fsdocs-theme.css"), "utf8");
+const docsScript = await readFile(resolve(site, "content/sir-docs.js"), "utf8");
 const reportingSource = await readFile(
   resolve("docs/reporting-model.md"),
   "utf8",
@@ -188,8 +190,17 @@ if (
 }
 
 if (
+  !docsTheme.includes("body.sir-application-page #content") ||
+  !docsTheme.includes("body.sir-application-page #fsdocs-page-menu") ||
+  !docsScript.includes('classList.add("sir-application-page")')
+) {
+  throw new Error("The application page no longer receives all width beside the sidebar.");
+}
+
+if (
   !home.includes("Open the simulation workspace") ||
-  !interactive.includes("Map and simulation") ||
+  !interactive.includes("Simulator") ||
+  !interactive.includes("Editor") ||
   !interactive.includes("Scripted AI") ||
   !interactive.includes("General AI") ||
   !mapEditor.includes("Square unit geometry") ||
