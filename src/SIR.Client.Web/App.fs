@@ -2710,8 +2710,11 @@ let private editorBattlefield
                 screenX
                 screenY
             |> Option.iter (fun hit ->
-                dispatch (EditorChanged(ChooseTool(Edge(hit.Direction, kind))))
-                dispatch (EditorChanged(ActivateCell(hit.Column, hit.Row))))
+                dispatch (
+                    EditorChanged(
+                        ActivateEdge(hit.Column, hit.Row, hit.Direction)
+                    )
+                ))
         | tool ->
             MapEditorWorkspace.tryHitCell
                 state.Map.Width
@@ -2813,6 +2816,12 @@ let private editorBattlefield
                 prop.ariaLive.polite
                 prop.ariaAtomic true
                 prop.text state.UnitAnnouncement
+            ]
+            Html.p [
+                prop.className "sr-only"
+                prop.ariaLive.polite
+                prop.ariaAtomic true
+                prop.text state.EdgeAnnouncement
             ]
             Html.div [
                 prop.className (
@@ -2922,6 +2931,43 @@ let private editorBattlefield
                             event.preventDefault ()
                             event.stopPropagation ()
                             dispatch (EditorChanged ActivateTerrainCursor)
+                        | None -> ()
+                    elif
+                        match state.Tool with
+                        | Edge _ -> true
+                        | _ -> false
+                    then
+                        let movement =
+                            match event.key with
+                            | "ArrowLeft" -> Some(-1, 0)
+                            | "ArrowRight" -> Some(1, 0)
+                            | "ArrowUp" -> Some(0, -1)
+                            | "ArrowDown" -> Some(0, 1)
+                            | _ -> None
+                        match movement with
+                        | Some(columnDelta, rowDelta) ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            dispatch (
+                                EditorChanged(
+                                    MoveEdgeCursor(
+                                        int32 columnDelta,
+                                        int32 rowDelta,
+                                        event.shiftKey
+                                    )
+                                )
+                            )
+                        | None when event.key = "Enter" ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            match state.Gesture with
+                            | EdgePolylineGesture _ ->
+                                dispatch (EditorChanged FinishEdgePolyline)
+                            | _ -> dispatch (EditorChanged ActivateEdgeCursor)
+                        | None when event.key = " " ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            dispatch (EditorChanged ActivateEdgeCursor)
                         | None -> ())
                 svg.onWheel (fun event ->
                     event.preventDefault ()
@@ -2940,7 +2986,13 @@ let private editorBattlefield
                             event.currentTarget
                             event.clientX
                             event.clientY
-                    activateAt x y)
+                    activateAt x y
+                    if event.detail >= 2 then
+                        match state.Tool with
+                        | Edge _ ->
+                            event.preventDefault ()
+                            dispatch (EditorChanged FinishEdgePolyline)
+                        | _ -> ())
                 svg.onPointerDown (fun event ->
                     let kind = editorPointerKind event.pointerType
                     let terrainToolActive =
@@ -3302,6 +3354,11 @@ let private editorBattlefield
                                             | Window, _ -> palette.HumanFaction, "3 3"
                                         Svg.line [
                                             svg.custom ("data-edge-kind", string kind)
+                                            svg.custom (
+                                                "data-edge-state",
+                                                if isOpen then "open" else "closed"
+                                            )
+                                            svg.custom ("data-edge-direction", string direction)
                                             svg.x1 x1
                                             svg.y1 y1
                                             svg.x2 x2
@@ -3310,9 +3367,48 @@ let private editorBattlefield
                                             svg.strokeWidth 5
                                             svg.custom ("stroke-dasharray", dash)
                                             svg.custom ("vector-effect", "non-scaling-stroke")
-                                        ]
+                                    ]
                                 ]
                             ]
+                            match state.Gesture with
+                            | EdgePolylineGesture(kind, segments) ->
+                                Svg.g [
+                                    svg.custom ("data-layer", "edge-preview")
+                                    svg.custom ("pointer-events", "none")
+                                    svg.children [
+                                        for column, row, direction in segments do
+                                            let x1, y1, x2, y2 =
+                                                match direction with
+                                                | EastEdge ->
+                                                    let x =
+                                                        float (column + 1)
+                                                        * Battlefield.CellSize
+                                                    x,
+                                                    float row * Battlefield.CellSize,
+                                                    x,
+                                                    float (row + 1) * Battlefield.CellSize
+                                                | SouthEdge ->
+                                                    let y =
+                                                        float (row + 1)
+                                                        * Battlefield.CellSize
+                                                    float column * Battlefield.CellSize,
+                                                    y,
+                                                    float (column + 1) * Battlefield.CellSize,
+                                                    y
+                                            Svg.line [
+                                                svg.custom ("data-edge-preview", string kind)
+                                                svg.x1 x1
+                                                svg.y1 y1
+                                                svg.x2 x2
+                                                svg.y2 y2
+                                                svg.stroke palette.Focus
+                                                svg.strokeWidth 7
+                                                svg.custom ("stroke-dasharray", "7 4")
+                                                svg.custom ("vector-effect", "non-scaling-stroke")
+                                            ]
+                                    ]
+                                ]
+                            | _ -> Html.none
                             Svg.g [
                                 svg.key ("editor-units-" + state.Revision.Digest)
                                 svg.custom ("data-layer", "units")
@@ -3580,6 +3676,7 @@ let private editorToolbar
                             ]
                         ]
                     | EdgeTools ->
+                        let edgeColumn, edgeRow, edgeDirection = state.EdgeCursor
                         Html.h3 "Semantic edges"
                         Html.div [
                             prop.className "control-row"
@@ -3590,6 +3687,59 @@ let private editorToolbar
                                 choose "South door" (Edge(SouthEdge, Door))
                                 choose "East window" (Edge(EastEdge, Window))
                                 choose "South window" (Edge(SouthEdge, Window))
+                            ]
+                        ]
+                        Html.div [
+                            prop.className "control-row"
+                            prop.role.group
+                            prop.ariaLabel "Edge actions at the keyboard cursor"
+                            prop.children [
+                                button "Finish" "Finish wall polyline (Enter)" false (fun _ ->
+                                    dispatch (EditorChanged FinishEdgePolyline))
+                                button "Back" "Remove last polyline segment (Escape)" false (fun _ ->
+                                    dispatch (EditorChanged BacktrackEdgePolyline))
+                                button "Wall" "Convert cursor edge to wall" false (fun _ ->
+                                    dispatch (
+                                        EditorChanged(
+                                            ConvertEdge(edgeColumn, edgeRow, edgeDirection, Wall)
+                                        )
+                                    ))
+                                button "Door" "Convert cursor edge to a closed door" false (fun _ ->
+                                    dispatch (
+                                        EditorChanged(
+                                            ConvertEdge(edgeColumn, edgeRow, edgeDirection, Door)
+                                        )
+                                    ))
+                                button "Window" "Convert cursor edge to a window" false (fun _ ->
+                                    dispatch (
+                                        EditorChanged(
+                                            ConvertEdge(edgeColumn, edgeRow, edgeDirection, Window)
+                                        )
+                                    ))
+                                button "Open/close" "Toggle door open or closed" false (fun _ ->
+                                    dispatch (
+                                        EditorChanged(
+                                            ToggleDoorState(edgeColumn, edgeRow, edgeDirection)
+                                        )
+                                    ))
+                                button "Erase" "Erase cursor edge" false (fun _ ->
+                                    dispatch (
+                                        EditorChanged(
+                                            EraseEdge(edgeColumn, edgeRow, edgeDirection)
+                                        )
+                                    ))
+                                button "Split" "Split an edge run at the cursor" false (fun _ ->
+                                    dispatch (
+                                        EditorChanged(
+                                            SplitEdge(edgeColumn, edgeRow, edgeDirection)
+                                        )
+                                    ))
+                                button "Join" "Join an edge run at the cursor" false (fun _ ->
+                                    dispatch (
+                                        EditorChanged(
+                                            JoinEdge(edgeColumn, edgeRow, edgeDirection)
+                                        )
+                                    ))
                             ]
                         ]
                     | DocumentTools ->

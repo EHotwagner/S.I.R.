@@ -5,7 +5,7 @@ categoryindex: 5
 index: 10
 status: in-progress
 document-type: timestamped-design-report
-version: "1.6"
+version: "1.7"
 created-at: 2026-07-29T12:30:56+02:00
 last-updated: 2026-07-29
 related:
@@ -20,7 +20,7 @@ related:
 
 **Report timestamp:** 2026-07-29 12:30:56 CEST (UTC+02:00)
 
-**Status:** implementation in progress; Milestones 0–4 complete
+**Status:** implementation in progress; Milestones 0–5 complete
 
 ## Executive decision
 
@@ -785,14 +785,14 @@ within it is checked.
 
 ### Milestone 5 — Semantic edge authoring
 
-- [ ] Implement continuous wall polylines with click, double-click, `Enter`, and
+- [x] Implement continuous wall polylines with click, double-click, `Enter`, and
   `Escape` completion semantics.
-- [ ] Add door and window conversion, open/closed editing, erase, split, and
+- [x] Add door and window conversion, open/closed editing, erase, split, and
   join.
-- [ ] Normalize every gesture to one east/south edge record.
-- [ ] Add gap, duplicate, overlap, border, and leading-side movement linting.
-- [ ] Add keyboard edge placement and zoom-independent edge hit targets.
-- [ ] Verify map round-trips preserve exact edge meaning and order.
+- [x] Normalize every gesture to one east/south edge record.
+- [x] Add gap, duplicate, overlap, border, and leading-side movement linting.
+- [x] Add keyboard edge placement and zoom-independent edge hit targets.
+- [x] Verify map round-trips preserve exact edge meaning and order.
 
 ### Milestone 6 — Layers, validation, and map lifecycle
 

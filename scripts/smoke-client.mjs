@@ -450,6 +450,53 @@ if (
   throw new Error("Undo did not remove the complete keyboard terrain stroke atomically.");
 }
 
+buttonByText("Edges")?.click();
+await window.happyDOM.waitUntilComplete();
+buttonByText("East wall")?.click();
+await window.happyDOM.waitUntilComplete();
+editorWorkspace?.dispatchEvent(
+  new window.KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
+);
+await window.happyDOM.waitUntilComplete();
+editorWorkspace?.dispatchEvent(
+  new window.KeyboardEvent("keydown", {
+    key: "ArrowDown",
+    shiftKey: true,
+    bubbles: true,
+  }),
+);
+await window.happyDOM.waitUntilComplete();
+if (
+  editorWorkspace?.querySelectorAll('[data-edge-preview="Wall"]').length !== 2 ||
+  !editorCanvas?.textContent.includes("2 wall polyline segments previewed")
+) {
+  throw new Error("Keyboard edge placement did not expose an announced two-segment preview.");
+}
+editorWorkspace?.dispatchEvent(
+  new window.KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
+);
+await window.happyDOM.waitUntilComplete();
+const edgeDigest = editorCanvas?.getAttribute("data-editor-revision");
+if (
+  edgeDigest === pastedDigest ||
+  editorWorkspace?.querySelectorAll('[data-edge-kind="Wall"]').length < 3 ||
+  !editorCanvas?.textContent.includes("Committed 2-segment wall polyline")
+) {
+  throw new Error("Keyboard edge completion did not commit one announced revision.");
+}
+buttonByText("Door")?.click();
+await window.happyDOM.waitUntilComplete();
+buttonByText("Open/close")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  !editorWorkspace?.querySelector(
+    '[data-edge-kind="Door"][data-edge-state="open"]',
+  ) ||
+  !editorCanvas?.textContent.includes("Door opened")
+) {
+  throw new Error("The accessible edge actions did not convert and open the cursor door.");
+}
+
 buttonByText("Map file")?.click();
 await window.happyDOM.waitUntilComplete();
 if (

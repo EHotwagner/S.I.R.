@@ -311,14 +311,45 @@ formation-safe copy/paste.
 
 ## Semantic edges
 
-Edges are stored once:
+Every physical grid segment is normalized to one authoritative east or south
+record:
 
 ```text
 edge <column> <row> <east|south> <wall|door|window> <open|closed>
 ```
 
-Wall and window edges block movement. Closed doors block movement; open doors
-do not. Selecting the same door cycles `closed → open → removed`.
+Vertical gestures belong to the east edge of the cell on their west; horizontal
+gestures belong to the south edge of the cell on their north. A gesture on the
+north or west outer border is rejected because it has no owning cell. The
+normalizer never creates both a leading and trailing representation.
+
+Wall clicks accumulate a disposable polyline preview. Double-click, **Finish**,
+`Enter`, or selecting another tool commits all unique segments as one
+`ReplaceEdges` command and immutable revision. `Escape` or **Back** removes the
+last preview segment; repeating it after the preview is empty cancels.
+Arrow keys move the snapped keyboard edge cursor, `Shift`+Arrow adds the moved
+segment to a wall preview, and `Space` activates the current segment. The same
+nine-CSS-pixel screen-space tolerance is applied before inverse camera
+projection at every zoom.
+
+Door and window activation converts an existing segment or creates it
+atomically. Inspector-equivalent buttons convert to wall, door, or window,
+toggle a door open/closed, erase, split a run by removing one segment, and join
+a run with one wall segment. Each operation uses the command/revision path and
+is independently undoable. Wall and window edges block movement. Closed doors
+block movement; open doors do not.
+
+Pure validation rejects duplicate or overlapping canonical addresses in one
+command, invalid owner/border records, and open state on non-door edges.
+Non-destructive lint identifies enclosed gaps in collinear runs. Movement lint
+checks every cell of a square footprint's leading side.
+
+Canonical export orders edge records by their structural map key. Import
+reconstructs the same edge kind, door state, direction, and key, and a second
+export is byte-identical. The deterministic
+`tests/SIR.Client.Tests/fixtures/map-editor-milestone-5-edges.txt` fixture
+freezes normalization, polyline order, conversions, gap and leading-side lint
+codes, and exact round-trip behavior.
 
 ## Controllers
 
