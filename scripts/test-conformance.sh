@@ -117,20 +117,51 @@ if ! search_fixed "$simulation_pattern" "$task_tmp/fable-simulation-divergence.l
   exit 1
 fi
 
+authoritative_roots=(
+  src/SIR.Domain
+  src/SIR.Simulation
+  src/SIR.Match
+)
+
 if command -v rg >/dev/null 2>&1; then
-  floating_source=$(rg -n '\b(float|float32|double|decimal)\b' src --glob '*.fs' || true)
+  floating_source=$(
+    rg -n \
+      '\b(float|float32|double|decimal)\b' \
+      "${authoritative_roots[@]}" \
+      --glob '*.fs' || true
+  )
+  client_reference=$(
+    rg -n \
+      'ProjectReference[^>]+SIR\.Client' \
+      src/SIR.Domain/SIR.Domain.fsproj \
+      src/SIR.Simulation/SIR.Simulation.fsproj \
+      src/SIR.Match/SIR.Match.fsproj || true
+  )
 else
   floating_source=$(
     grep -RInE \
       --include='*.fs' \
       '(^|[^[:alnum:]_])(float|float32|double|decimal)([^[:alnum:]_]|$)' \
-      src || true
+      "${authoritative_roots[@]}" || true
+  )
+  client_reference=$(
+    grep -nE \
+      'ProjectReference[^>]+SIR\.Client' \
+      src/SIR.Domain/SIR.Domain.fsproj \
+      src/SIR.Simulation/SIR.Simulation.fsproj \
+      src/SIR.Match/SIR.Match.fsproj || true
   )
 fi
 
 if [[ -n "$floating_source" ]]; then
   printf '%s\n' "$floating_source" >&2
   echo "Authoritative source contains floating-point state or operations" >&2
+  exit 1
+fi
+
+if [[ -n "$client_reference" ]]; then
+  printf '%s\n' "$client_reference" >&2
+  echo "An authoritative project references the presentation-only client" >&2
   exit 1
 fi
 
@@ -147,6 +178,7 @@ printf 'Divergence guard passed: %s failed first at byte 0 in both runtimes.\n' 
 printf 'Simulation divergence guard passed: tick 1 phase %s failed first at byte 0 in both runtimes.\n' \
   "$simulation_phase"
 printf 'Replay gate passed: format v1, SHA-256, checkpoint seeks, safety limits, disclosure boundaries, and verification levels agree.\n'
+printf 'Numeric authority gate passed: Domain, Simulation, and Match contain no floating-point state and do not reference the presentation-only client.\n'
 printf '%s\n' "$match_output"
 printf '%s\n' "$browser_wasm_output"
 printf 'Elmish and rules-lab gate passed: modes, immutable baseline/fork comparison, typed validation, deterministic sweep, reproducible fixture export, stale operations, cancellation, Fable compilation, production bundle, and browser mount agree.\n'

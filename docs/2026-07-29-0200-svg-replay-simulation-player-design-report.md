@@ -5,7 +5,7 @@ categoryindex: 4
 index: 44
 status: proposed
 document-type: timestamped-design-report
-version: "1.1"
+version: "1.2"
 created-at: 2026-07-29T02:00:41+02:00
 last-updated: 2026-07-29
 related:
@@ -829,22 +829,33 @@ evidence are complete.
 
 ### Phase 0 — contract and catalog
 
-- [ ] Accept this report or extract its durable decisions into living design
+- [x] Accept this report or extract its durable decisions into living design
   docs.
-- [ ] Record the boundary between the top-down documentation renderer and the
+- [x] Record the boundary between the top-down documentation renderer and the
   Babylon.js production client.
-- [ ] Define `UnitVisual`, `RenderFrame`, disclosure-safe optional fields, and
+- [x] Define `UnitVisual`, `RenderFrame`, disclosure-safe optional fields, and
   structured-clone transport.
-- [ ] Inventory unit and overlay elements.
-- [ ] Author one primary glyph for every exact class, with accessibility
+- [x] Inventory unit and overlay elements.
+- [x] Author one primary glyph for every exact class, with accessibility
   descriptions and a visible safe placeholder.
-- [ ] Define the accessible default, high-contrast, and monochrome/pattern
+- [x] Define the accessible default, high-contrast, and monochrome/pattern
   palette tokens.
-- [ ] Record whether the sibling symbology package is a semantic reference
+- [x] Record whether the sibling symbology package is a semantic reference
   only or a future build-time dependency.
 
 **Exit:** typed contract review, complete initial coverage inventory, and no
 ambiguous disclosure defaults; every initial class has a catalog entry.
+
+**Completed 2026-07-29:** durable decisions, the renderer boundary, the
+coverage inventory, and the semantic-reference-only decision now live in
+[SVG Replay Player Contract and Visual Catalog](svg-replay-player.md).
+`SIR.Client` contains the constrained presentation contract, validated
+structured-clone transport, fourteen-class glyph catalog, safe unknown-class
+placeholder, and three palette token sets. Client tests cover contract
+round-tripping, invalid disclosure rejection, catalog completeness,
+accessibility metadata, placeholder behavior, and palette coverage. The full
+.NET/Fable conformance, production browser build, documentation verification,
+browser smoke, and accessibility gates passed.
 
 ### Phase 1 — static SVG battlefield
 
