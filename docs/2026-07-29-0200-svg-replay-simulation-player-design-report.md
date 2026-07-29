@@ -5,7 +5,7 @@ categoryindex: 4
 index: 44
 status: proposed
 document-type: timestamped-design-report
-version: "1.3"
+version: "1.4"
 created-at: 2026-07-29T02:00:41+02:00
 last-updated: 2026-07-29
 related:
@@ -891,13 +891,28 @@ publication, and accessibility gates passed.
 
 ### Phase 2 — replay transport
 
-- [ ] Connect current worker projections to the SVG.
-- [ ] Add seek, step backward/forward, event navigation, checkpoint markers,
+- [x] Connect current worker projections to the SVG.
+- [x] Add seek, step backward/forward, event navigation, checkpoint markers,
   cancellation, and progress.
-- [ ] Preserve all verification and divergence states.
+- [x] Preserve all verification and divergence states.
 
 **Exit:** full and perspective fixtures seek deterministically; disclosure
 tests prove lost contact leaves no visual or accessible residue.
+
+**Completed 2026-07-29:** worker protocol 3 carries bounded replay/render
+projections into the SVG while leaving absent class, heading, elevation,
+stance, overlay, and perspective-unit facts undisclosed. Loaded replay
+transport includes exact projection ticks, bounded health, semantic edges,
+event endpoints, and checkpoints. The shell supports reverse/forward step,
+range seek, previous/next event navigation, correlated progress,
+cancellation, and checkpoint jumps while preserving all verification and
+failure states. Production-worker smoke fixtures prove repeatable full and
+perspective seeks; the projection tick is the sole committed display source,
+including duplicate-response mismatch regressions. Browser disclosure tests
+prove lost contact removes unit geometry, footprints, hit targets, accessible
+names, event controls and links, inspector selection, SVG selection, roving
+focus, and detached DOM references. Full conformance, production browser,
+documentation, publication, and accessibility gates passed.
 
 ### Phase 3 — overlays and playback polish
 

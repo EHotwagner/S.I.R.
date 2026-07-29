@@ -342,6 +342,15 @@ module Battlefield =
                 state
         | ResetCamera -> { initial with PaletteId = state.PaletteId }
 
+    /// Removes interaction state for entities that are no longer disclosed.
+    let reconcile (frame: RenderFrame) (state: BattlefieldViewState) =
+        let disclosed = frame.Units |> Array.map _.Id |> Set.ofArray
+        let keep id = id |> Option.filter (fun value -> Set.contains value disclosed)
+
+        { state with
+            SelectedUnit = keep state.SelectedUnit
+            FocusedUnit = keep state.FocusedUnit }
+
     let private extent value =
         CellExtent.tryCreate value
         |> Option.defaultWith (fun () -> invalidArg "value" "Extent must be positive.")

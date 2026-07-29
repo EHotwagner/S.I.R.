@@ -24,7 +24,7 @@
     "overflow": "saturating-int32"
   },
   "browser": {
-    "workerProtocolVersion": 2,
+    "workerProtocolVersion": 3,
     "workerBatchTicks": 256,
     "workerTopology": "one-dedicated-versioned-worker-for-the-active-engine",
     "projectionCadence": "one-compact-projection-per-completed-batch",

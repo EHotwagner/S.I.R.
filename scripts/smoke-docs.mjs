@@ -45,7 +45,7 @@ const scenarioResponse = (message) => {
   };
 
   return {
-    ProtocolVersion: 2,
+    ProtocolVersion: 3,
     Operation: message.Operation,
     Response: {
       tag: 4,
@@ -98,6 +98,7 @@ const scenarioResponse = (message) => {
           BoardMaximumColumn: 0,
           BoardMaximumRow: 0,
           Units: [],
+          Edges: [],
           Events: [],
           Checkpoints: [],
           PerspectiveHash: undefined,

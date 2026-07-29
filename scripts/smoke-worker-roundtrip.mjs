@@ -23,19 +23,27 @@ const worker = new Worker(
 
 const nextMessage = () =>
   new Promise((resolveMessage, reject) => {
+    const onError = (error) => {
+      clearTimeout(timeout);
+      worker.off("message", onMessage);
+      reject(error);
+    };
+    const onMessage = (message) => {
+      clearTimeout(timeout);
+      worker.off("error", onError);
+      resolveMessage(message);
+    };
     const timeout = setTimeout(
-      () => reject(new Error("The worker round trip timed out.")),
+      () => {
+        worker.off("message", onMessage);
+        worker.off("error", onError);
+        reject(new Error("The worker round trip timed out."));
+      },
       5_000,
     );
 
-    worker.once("message", (message) => {
-      clearTimeout(timeout);
-      resolveMessage(message);
-    });
-    worker.once("error", (error) => {
-      clearTimeout(timeout);
-      reject(error);
-    });
+    worker.once("message", onMessage);
+    worker.once("error", onError);
   });
 
 const ready = await nextMessage();
@@ -45,10 +53,87 @@ if (ready.kind !== "ready") {
 
 const request = (tag, fields) => ({ tag, fields });
 const envelope = (operationValue, workerRequest) => ({
-  ProtocolVersion: 2,
+  ProtocolVersion: 3,
   Operation: operationValue,
   Request: workerRequest,
 });
+
+const fullFixture = Uint8Array.from(
+  Buffer.from(
+    "U0lSUgEAAAAAAQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyBRm0jlXu7so0HFYRkthl8tq0TTRjdnXgCzzz2lcGeRrQFTAAAAAAAAAAAAAAAAAAAAAgAAAAEAAAABAAAAAQAAAAAAAAACAAAAAAAAAAECAAAACgAAAAAAAAAAAAAAAGQAAAAUAAAAAQIAAAAAAAAAZAAAAAAAAAAAAAAABAAAAAEAAAABAAAAAgoAAAAUAAAAAgAAAAIAAAACCgAAABQAAAADAAAAAwAAAAIKAAAAFAAAAAQAAAAEAAAAAgoAAAAUAAAABAAAAAAAAABTAAAAAAAAAAAAAAAAAAAAAgAAAAEAAAABAAAAAQAAAAAAAAACAAAAAAAAAAECAAAACgAAAAAAAAAAAAAAAGQAAAAUAAAAAQIAAAAAAAAAZAAAAAAAAAAqsjm1kXfimMLzMNV9RUNBuZn1xV0TFOItwGzHw4qU/pV7iLEnMOZG4PM9Nhi3ffpXnoIx48WccQS+cWVhHIAnAQAAAFMAAAABAAAAAAAAAAAAAAACAAAAAQAAAAEAAAABAAAAAAAAAAIAAAAAAAAAAQIAAAAKAAAAAAAAAAAAAAAAZAAAABQAAAABAgAAAAAAAABkAAAAAAAAAGvgyj4VcBlj/q8rn1l0tsZf44WfVPeGX10b1QcE6P96lXuIsScw5kbg8z02GLd9+leegjHjxZxxBL5xZWEcgCcCAAAAUwAAAAIAAAAAAAAAAAAAAAIAAAABAAAAAQAAAAEAAAAAAAAAAgAAAAAAAAABAgAAAAoAAAAAAAAAAAAAAABkAAAAFAAAAAECAAAAAAAAAGQAAAAAAAAAtCwQJzVtTWKbcAzNk0Uk4icaGsm1qLT5LnFnK7HKN8mVe4ixJzDmRuDzPTYYt336V56CMePFnHEEvnFlYRyAJwMAAABTAAAAAwAAAAAAAAAAAAAAAgAAAAEAAAABAAAAAQAAAAAAAAACAAAAAAAAAAECAAAACgAAAAAAAAAAAAAAAGQAAAAUAAAAAQIAAAAAAAAAZAAAAAAAAACAEFkVzVmrPoLBUA4TY0/M+4VsqAnE4ZC6eGS7fHDJVJV7iLEnMOZG4PM9Nhi3ffpXnoIx48WccQS+cWVhHIAnBAAAAAEAAAAJuQFY8unb+hDZe6CXfYMOnel5GRWm3H+21r5fUmki6ZV7iLEnMOZG4PM9Nhi3ffpXnoIx48WccQS+cWVhHIAn",
+    "base64",
+  ),
+);
+const perspectiveFixture = Uint8Array.from(
+  Buffer.from(
+    "U0lSUgEAAAABAQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyBRm0jlXu7so0HFYRkthl8tq0TTRjdnXgCzzz2lcGeRrQAFAAAAAAAAAJLxhTMz+7Yqip79XHtI3hG5QAoWs8kWWsJX97HF5+diAQAAABzFqHvDjdif42xRgv3NHXflYslcxWEywQbgvWCFIM2+AgAAAP4v2oYmxxxhG7t7qVXw0rbfHfRA6MXRzUJvZhpz0crhAwAAAAfHslBNObv79g5Qmm8EUAXj33UM+5OpUcso3AKey5e/BAAAAF+bfVlf21lT792KgXeKQa8OL6AKzqPHYDmXhGOIY2u9",
+    "base64",
+  ),
+);
+
+worker.postMessage(envelope(10, request(0, ["full.sirr", fullFixture])));
+const fullLoaded = await nextMessage();
+if (
+  fullLoaded.kind !== "response" ||
+  fullLoaded.data?.Operation !== 10 ||
+  fullLoaded.data?.Response?.tag !== 0 ||
+  fullLoaded.data.Response.fields[1]?.tag !== 0 ||
+  fullLoaded.data.Response.fields[2]?.Tick !== 0 ||
+  fullLoaded.data.Response.fields[2]?.Units?.length !== 2 ||
+  fullLoaded.data.Response.fields[2]?.Edges?.length !== 1
+) {
+  throw new Error("The full replay fixture did not load into its bounded projection.");
+}
+
+const seek = async (operation, tick) => {
+  worker.postMessage(envelope(operation, request(2, [tick, 4])));
+  const progress = await nextMessage();
+  const completed = await nextMessage();
+  if (
+    progress.data?.Operation !== operation ||
+    progress.data?.Response?.tag !== 1 ||
+    completed.data?.Operation !== operation ||
+    completed.data?.Response?.tag !== 2
+  ) {
+    throw new Error(`Seek ${operation} lost correlated progress or completion.`);
+  }
+  return completed.data.Response.fields[1];
+};
+
+const fullAtThree = await seek(11, 3);
+const fullAtOneLeft = await seek(12, 1);
+const fullAtOneRight = await seek(13, 1);
+if (
+  fullAtThree.Tick !== 3 ||
+  fullAtOneLeft.Tick !== 1 ||
+  JSON.stringify(fullAtOneLeft) !== JSON.stringify(fullAtOneRight)
+) {
+  throw new Error("The full replay fixture did not seek deterministically.");
+}
+
+worker.postMessage(
+  envelope(20, request(0, ["perspective.sirr", perspectiveFixture])),
+);
+const perspectiveLoaded = await nextMessage();
+if (
+  perspectiveLoaded.data?.Operation !== 20 ||
+  perspectiveLoaded.data?.Response?.tag !== 0 ||
+  perspectiveLoaded.data.Response.fields[1]?.tag !== 1 ||
+  perspectiveLoaded.data.Response.fields[2]?.Units?.length !== 0 ||
+  !perspectiveLoaded.data.Response.fields[2]?.PerspectiveHash
+) {
+  throw new Error("The perspective replay exposed hidden state or failed to load.");
+}
+
+const perspectiveAtThreeLeft = await seek(21, 3);
+const perspectiveAtThreeRight = await seek(22, 3);
+if (
+  perspectiveAtThreeLeft.Tick !== 3 ||
+  JSON.stringify(perspectiveAtThreeLeft) !==
+    JSON.stringify(perspectiveAtThreeRight)
+) {
+  throw new Error("The perspective fixture did not seek deterministically.");
+}
 
 worker.postMessage(envelope(1, request(4, ["adjacent-duel"])));
 const loaded = await nextMessage();
@@ -89,5 +174,5 @@ if (
 await worker.terminate();
 
 console.log(
-  "Worker round-trip smoke passed: primitive operation correlation, scenario load, and edited experiment crossed both structured-clone boundaries.",
+  "Worker round-trip smoke passed: full and perspective fixtures loaded and sought deterministically with correlated progress, disclosure stayed bounded, and scenario/experiment messages crossed both structured-clone boundaries.",
 );

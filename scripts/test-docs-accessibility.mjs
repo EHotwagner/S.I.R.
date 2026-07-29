@@ -110,12 +110,41 @@ require(
   window.document.querySelector('[aria-label="Battlefield legend"]'),
   "the battlefield channel legend is missing",
 );
+require(
+  Boolean(
+    window.document.querySelector(
+      'button[aria-label="Step backward one committed replay tick"]',
+    ),
+  ),
+  "the exact reverse-step control is missing",
+);
+require(
+  Boolean(
+    window.document.querySelector(
+      'button[aria-label="Go to previous disclosed replay event"]',
+    ),
+  ) &&
+    Boolean(
+      window.document.querySelector(
+        'button[aria-label="Go to next disclosed replay event"]',
+      ),
+    ),
+  "event navigation does not expose equivalent accessible controls",
+);
+require(
+  Boolean(
+    window.document.querySelector(
+      '[aria-label="Static SVG battlefield demonstration"]',
+    ),
+  ),
+  "the unloaded static demonstration is not explicitly separated from playback",
+);
 
 if (failures.length > 0) {
   throw new Error(`Accessibility gate failed: ${failures.join("; ")}.`);
 }
 
 console.log(
-  "Documentation accessibility passed: language, title, fallback, live status, controls, application regions, SVG title/description, six named units, roving focus, HTML inspector, and legend.",
+  "Documentation accessibility passed: language, title, fallback, live status, exact step/event controls, separated static demonstration, application regions, SVG title/description, six named units, roving focus, HTML inspector, and legend.",
 );
 window.happyDOM.close();

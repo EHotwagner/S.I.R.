@@ -25,6 +25,7 @@ let private emptyProjection tick : InspectionProjection =
       BoardMaximumColumn = 0
       BoardMaximumRow = 0
       Units = []
+      Edges = []
       Events = []
       Checkpoints = []
       PerspectiveHash = None }
@@ -55,6 +56,14 @@ let private inputSummary input =
         + string (Simulation.unitIdValue attackerId)
         + " attacks unit "
         + string (Simulation.unitIdValue targetId)
+
+let private inputUnits input =
+    match input with
+    | Move(unitId, _) -> Some(Simulation.unitIdValue unitId), None
+    | Observe(observerId, targetId)
+    | Attack(observerId, targetId) ->
+        Some(Simulation.unitIdValue observerId),
+        Some(Simulation.unitIdValue targetId)
 
 let private journalAt tick (full: FullReplay) =
     let externalInputs =
@@ -109,23 +118,42 @@ let private fullProjection tick (full: FullReplay) : InspectionProjection =
                 | Blue -> "Blue"
               Column = unit.Cell.Col
               Row = unit.Cell.Row
-              Health = BoundedInt32.value unit.Health })
+              Health = BoundedInt32.value unit.Health
+              HealthMaximum = BoundedInt32.maximum unit.Health })
 
     let externalEvents =
         full.OrderedInputs
         |> List.mapi (fun index input ->
+            let sourceUnitId, targetUnitId = inputUnits input.Input
             { Id = index
               Tick = input.Tick
               Source = "External input"
-              Summary = inputSummary input.Input })
+              Summary = inputSummary input.Input
+              SourceUnitId = sourceUnitId
+              TargetUnitId = targetUnitId })
 
     let wasmEvents =
         full.AcceptedWasmOutputs
         |> List.mapi (fun index output ->
+            let sourceUnitId, targetUnitId = inputUnits output.Input
             { Id = List.length externalEvents + index
               Tick = output.Tick
               Source = "Accepted WASM output"
-              Summary = inputSummary output.Input })
+              Summary = inputSummary output.Input
+              SourceUnitId = sourceUnitId
+              TargetUnitId = targetUnitId })
+
+    let edges =
+        state.Board.Edges
+        |> List.mapi (fun index edge ->
+            ({ Id = "edge-" + string index
+               Kind = "wall"
+               State = if edge.BlocksMovement then "solid" else "open"
+               StartColumn = edge.Edge.Lo.Col
+               StartRow = edge.Edge.Lo.Row
+               EndColumn = edge.Edge.Hi.Col
+               EndRow = edge.Edge.Hi.Row }
+            : EdgeProjection))
 
     let checkpoints =
         full.Checkpoints
@@ -140,6 +168,7 @@ let private fullProjection tick (full: FullReplay) : InspectionProjection =
       BoardMaximumColumn = state.Board.Maximum.Col
       BoardMaximumRow = state.Board.Maximum.Row
       Units = units
+      Edges = edges
       Events = externalEvents @ wasmEvents
       Checkpoints = checkpoints
       PerspectiveHash = None }
@@ -313,10 +342,11 @@ let private execute operation request =
             if not (isCancelled operation) then
                 match loadedPackage with
                 | Some package ->
+                    let projection = projectionAt tick package
                     post operation (
                         Progressed(
-                            tick,
-                            projectionAt tick package
+                            projection.Tick,
+                            projection
                             |> WorkerTransport.inspectionToTransport
                         )
                     )
@@ -325,13 +355,25 @@ let private execute operation request =
             match loadedPackage with
             | Some package ->
                 let tick = max 0 (min finalTick targetTick)
+                let projection = projectionAt tick package
                 post operation (
-                    Progressed(
-                        tick,
-                        projectionAt tick package
+                    RunnerProgress(
+                        projection.Tick,
+                        1,
+                        projection
                         |> WorkerTransport.inspectionToTransport
                     )
                 )
+                do! Async.Sleep 0
+
+                if not (isCancelled operation) then
+                    post operation (
+                        Progressed(
+                            projection.Tick,
+                            projection
+                            |> WorkerTransport.inspectionToTransport
+                        )
+                    )
             | None -> post operation (RunnerFailed "no replay is loaded in the worker")
         | Fork(identity, _) -> post operation (Forked identity)
         | LoadScenario scenarioIdentity ->

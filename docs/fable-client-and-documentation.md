@@ -1893,7 +1893,7 @@ deliberate.
 
 **Outcome:** `sir-fable-client-baseline-v1` records replay format 1, canonical
 uncompressed little-endian binary encoding, flat SHA-256 state/event hashes,
-decoder limits, four-place fixed point, worker protocol 2, 256-tick batches,
+decoder limits, four-place fixed point, worker protocol 3, 256-tick batches,
 the experiment-export schema, SHA-384 publication integrity, engine-retention
 policy, browser test harness, and the complete locked .NET/Fable/Elmish/React/
 Vite/fsdocs toolchain. The baseline does not create a second runtime
@@ -1952,7 +1952,7 @@ verified against their executable owners by
 | Digests | Flat SHA-256 state and event hashes; no hash tree | New replay/engine compatibility identity |
 | Replay limits | 1 MiB package; 16,384 inputs; 16,384 WASM outputs; 4,096 checkpoints; 65,536 perspective frames; 4,096 units; 16,384 edges; 65,536 observations | New validated resource profile |
 | Numerics | Signed int32 storage, saturating overflow, four-place base-ten fixed point, nearest ties away from zero | New ruleset/engine identity when authoritative output can change |
-| Browser execution | Worker protocol 2 with primitive operation correlation and clone-safe laboratory records; one dedicated versioned worker for the active engine; 256-tick batches; one compact projection per completed batch | New protocol/engine identity and responsiveness evidence |
+| Browser execution | Worker protocol 3 with primitive operation correlation and clone-safe replay/render projections; one dedicated versioned worker for the active engine; 256-tick batches; one compact projection per completed batch | New protocol/engine identity and responsiveness evidence |
 | Laboratory export | `sir-lab-experiment-v1` with exact engine, ruleset, scenario, inputs, and integer results | New export schema and fixture migration |
 | Publication | SHA-384 asset integrity; retain each engine while its replay format is supported | New publication schema and retention audit |
 | Upstream package | `FS.GG.Game.Core` 0.13.0, profile `fs-gg-game-core-fable-lockstep-v1`, source delivered through the existing package | New published profile and consumer conformance |
