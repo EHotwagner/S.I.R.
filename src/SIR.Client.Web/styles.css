@@ -84,6 +84,60 @@
   border-color: #8fae9e;
   background: linear-gradient(145deg, #1c2c26, #17211e);
 }
+#sir-replay-app .battlefield-panel {
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+#sir-replay-app .battlefield-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+#sir-replay-app .battlefield-heading .eyebrow { margin: 0 0 .35rem; }
+#sir-replay-app .battlefield-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: .35rem;
+}
+#sir-replay-app .battlefield-controls button { min-width: 2.65rem; }
+#sir-replay-app .battlefield-layout {
+  display: grid;
+  grid-template-columns: minmax(20rem, 3fr) minmax(15rem, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+#sir-replay-app .battlefield-svg {
+  display: block;
+  width: 100%;
+  max-height: 46rem;
+  border: 2px solid #60776b;
+  border-radius: .4rem;
+  background: #0b100f;
+  touch-action: none;
+}
+#sir-replay-app .battlefield-svg [data-unit-id] { cursor: pointer; }
+#sir-replay-app .battlefield-svg [data-unit-id]:focus { outline: none; }
+#sir-replay-app .battlefield-sidecar {
+  min-width: 0;
+  padding: .8rem;
+  border: 1px solid #43584e;
+  border-radius: .4rem;
+  background: #111a17;
+}
+#sir-replay-app .battlefield-sidecar select { width: 100%; }
+#sir-replay-app .semantic-zoom {
+  color: #d8b36a;
+  font-family: ui-monospace, monospace;
+}
+#sir-replay-app .battlefield-legend {
+  border-block: 1px solid #43584e;
+  margin-block: 1rem;
+  padding-block: 1rem;
+}
+#sir-replay-app .battlefield-legend li { margin-bottom: .45rem; }
+#sir-replay-app .battlefield-inspector dd { overflow-wrap: anywhere; }
 #sir-replay-app .scenario-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
@@ -230,4 +284,7 @@
   #sir-replay-app .app-shell { padding: 1rem; }
   #sir-replay-app .inspector-panel,
   #sir-replay-app .lab-results { grid-column: span 1; }
+  #sir-replay-app .battlefield-heading { display: block; }
+  #sir-replay-app .battlefield-controls { justify-content: flex-start; margin-bottom: 1rem; }
+  #sir-replay-app .battlefield-layout { grid-template-columns: 1fr; }
 }

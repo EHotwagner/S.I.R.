@@ -5,7 +5,7 @@ categoryindex: 4
 index: 44
 status: proposed
 document-type: timestamped-design-report
-version: "1.2"
+version: "1.3"
 created-at: 2026-07-29T02:00:41+02:00
 last-updated: 2026-07-29
 related:
@@ -859,20 +859,35 @@ browser smoke, and accessibility gates passed.
 
 ### Phase 1 — static SVG battlefield
 
-- [ ] Implement the orthographic top-down projection, square grid, terrain,
+- [x] Implement the orthographic top-down projection, square grid, terrain,
   semantic edges, and authoritative footprint outlines.
-- [ ] Implement the fixed square symbol with faction outline, exact-class
+- [x] Implement the fixed square symbol with faction outline, exact-class
   glyph, 12-segment health track, and perimeter facing wedge.
-- [ ] Implement the corner elevation stack, capped `+N` detailed label, and
+- [x] Implement the corner elevation stack, capped `+N` detailed label, and
   detailed-zoom stance mark.
-- [ ] Apply the 24 px and 48 px semantic-zoom thresholds with approximately
+- [x] Apply the 24 px and 48 px semantic-zoom thresholds with approximately
   10% hysteresis.
-- [ ] Add pan, zoom, selection, focus, inspector, legend, and palettes.
-- [ ] Render exact committed frames without interpolation.
+- [x] Add pan, zoom, selection, focus, inspector, legend, and palettes.
+- [x] Render exact committed frames without interpolation.
 
 **Exit:** representative static frames pass mapping tests, accessibility tests,
 legibility review, all three palette reviews, and the 200-unit performance
 target.
+
+**Completed 2026-07-29:** the Fable documentation client renders a committed
+six-by-six tick-24 frame through the pure `Battlefield` projection and an
+accessible Feliz SVG view. Pure and browser-DOM tests cover board-relative
+projection, semantic edges, independent footprints, all symbol channels,
+disclosure omission, semantic-zoom hysteresis, pointer/keyboard parity,
+inspector equivalence, and palette-stable geometry. The 200-unit fixture
+projects 6,933 estimated interactive nodes; the parent verification run
+measured pure scene projection p95 at 0.173 ms over 240 runs. The three
+deterministic 768 × 768 SVG/PNG palette boards and their hashes are recorded
+in [Static SVG battlefield review evidence](assets/svg-player-review/README.md);
+native-size review found the footprint, glyph, health, facing, elevation,
+stance, edge-state, and monochrome-pattern channels legible. Full
+cross-runtime conformance, production client, browser smoke, documentation,
+publication, and accessibility gates passed.
 
 ### Phase 2 — replay transport
 

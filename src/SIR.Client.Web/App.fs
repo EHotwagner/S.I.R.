@@ -12,10 +12,15 @@ open SIR.Client
 
 type Msg =
     | ShellMsg of SIR.Client.Msg
+    | BattlefieldChanged of BattlefieldAction
     | FileSelected of File
     | PlaybackPulse
     | KeyPressed of string
     | ExportExperiment
+
+type Model =
+    { Shell: SIR.Client.Model
+      Battlefield: BattlefieldViewState }
 
 let private fileBytes (file: File) =
     async {
@@ -47,7 +52,9 @@ let private downloadExperiment report =
         """
 
 let init () =
-    Shell.init (), Cmd.none
+    { Shell = Shell.init ()
+      Battlefield = Battlefield.initial },
+    Cmd.none
 
 let rec update msg model =
     match msg with
@@ -58,11 +65,19 @@ let rec update msg model =
             file
             (fun (name, bytes) -> ShellMsg(ReplayBytesSelected(name, bytes)))
     | ShellMsg shellMsg ->
-        let next, effects = Shell.update shellMsg model
-        next, effectsToCmd effects
+        let next, effects = Shell.update shellMsg model.Shell
+        { model with Shell = next }, effectsToCmd effects
+    | BattlefieldChanged action ->
+        { model with
+            Battlefield =
+                Battlefield.update
+                    Battlefield.representativeFrame
+                    action
+                    model.Battlefield },
+        Cmd.none
     | PlaybackPulse ->
-        let next, effects = Shell.playbackTick model
-        next, effectsToCmd effects
+        let next, effects = Shell.playbackTick model.Shell
+        { model with Shell = next }, effectsToCmd effects
     | KeyPressed key ->
         match key with
         | " "
@@ -73,7 +88,7 @@ let rec update msg model =
         | _ -> model, Cmd.none
     | ExportExperiment ->
         model,
-        (model.Lab.Report
+        (model.Shell.Lab.Report
          |> Option.map (fun report -> Cmd.ofEffect (fun _ -> downloadExperiment report))
          |> Option.defaultValue Cmd.none)
 
@@ -94,7 +109,7 @@ let subscriptions model =
 
     let timer dispatch =
         let interval =
-            match model.Playback.Speed with
+            match model.Shell.Playback.Speed with
             | Half -> 100
             | Normal
             | Double
@@ -111,9 +126,9 @@ let subscriptions model =
 
     [ [ "replay-worker-v1" ], runner
       [ "keyboard" ], keyboard
-      if model.Playback.IsPlaying then
+      if model.Shell.Playback.IsPlaying then
           let speedKey =
-              match model.Playback.Speed with
+              match model.Shell.Playback.Speed with
               | Half -> "half"
               | Normal -> "normal"
               | Double -> "two"
@@ -286,6 +301,525 @@ let private controls model dispatch =
             Html.p [
                 prop.className "keyboard-help"
                 prop.text "Keyboard: Space or K plays/pauses; Right Arrow steps; Escape cancels."
+            ]
+        ]
+    ]
+
+let private factionStyle (palette: PaletteTokens) (faction: FactionVisual) =
+    match faction with
+    | Human ->
+        palette.HumanFaction,
+        (if palette.Id = ReplayPalettes.monochromePattern.Id then "none" else "none")
+    | Arcane ->
+        palette.ArcaneFaction,
+        (if palette.Id = ReplayPalettes.monochromePattern.Id then "4 2" else "none")
+    | Neutral ->
+        palette.NeutralFaction,
+        (if palette.Id = ReplayPalettes.monochromePattern.Id then "1 2" else "none")
+    | OtherFaction _ -> palette.NeutralFaction, "6 2 1 2"
+
+let private glyphView
+    (palette: PaletteTokens)
+    (centerX: float)
+    (centerY: float)
+    (classId: UnitClassId)
+    =
+    let glyph = UnitGlyphCatalog.resolve classId
+    let transform =
+        "translate("
+        + string (centerX - 12.0)
+        + " "
+        + string (centerY - 12.0)
+        + ")"
+
+    Svg.g [
+        svg.custom ("transform", transform)
+        svg.custom ("data-class-id", UnitClassId.value classId)
+        svg.children [
+            for primitive in glyph.Primitives do
+                match primitive with
+                | FilledPath path ->
+                    Svg.path [
+                        svg.d path
+                        svg.fill palette.Text
+                    ]
+                | StrokedPath path ->
+                    Svg.path [
+                        svg.d path
+                        svg.fill "none"
+                        svg.stroke palette.Text
+                        svg.strokeWidth 1.8
+                        svg.strokeLineCap "round"
+                        svg.strokeLineJoin "round"
+                    ]
+                | Circle(x, y, radius) ->
+                    Svg.circle [
+                        svg.cx x
+                        svg.cy y
+                        svg.r radius
+                        svg.fill palette.Text
+                    ]
+        ]
+    ]
+
+let private unitView
+    (scene: BattlefieldScene)
+    (dispatch: Msg -> unit)
+    (projected: ProjectedUnit)
+    =
+    let unit = projected.Unit
+    let palette = scene.Palette
+    let faction, dash = factionStyle palette unit.Faction
+    let selected = scene.SelectedUnit = Some unit.Id
+    let focused = scene.FocusedUnit = Some unit.Id
+    let symbolSize =
+        match scene.SemanticZoom with
+        | Overview -> 24.0
+        | Standard
+        | Detailed -> 36.0
+    let half = symbolSize / 2.0
+
+    let wedge =
+        match unit.BodyHeading with
+        | Disclosed heading ->
+            let angle = HeadingRadians.value heading
+            let radius = half + 3.0
+            let x = projected.SymbolCenterX + Math.Cos(angle) * radius
+            let y = projected.SymbolCenterY + Math.Sin(angle) * radius
+            let tangentX = -Math.Sin(angle) * 4.0
+            let tangentY = Math.Cos(angle) * 4.0
+            let tipX = projected.SymbolCenterX + Math.Cos(angle) * (radius + 7.0)
+            let tipY = projected.SymbolCenterY + Math.Sin(angle) * (radius + 7.0)
+            Some (
+                string (x + tangentX)
+                + ","
+                + string (y + tangentY)
+                + " "
+                + string tipX
+                + ","
+                + string tipY
+                + " "
+                + string (x - tangentX)
+                + ","
+                + string (y - tangentY)
+            )
+        | _ -> None
+
+    Svg.g [
+        svg.custom ("data-unit-id", string unit.Id)
+        match projected.HealthSegments with
+        | Some segments ->
+            svg.custom ("data-health-segments", string segments)
+        | None ->
+            svg.custom ("data-health-disclosure", "omitted")
+        svg.custom ("data-semantic-zoom", string scene.SemanticZoom)
+        svg.tabIndex (if focused then 0 else -1)
+        svg.custom ("role", "button")
+        svg.custom ("aria-label", projected.AccessibleLabel)
+        svg.onFocus (fun _ -> dispatch (BattlefieldChanged(FocusUnit(Some unit.Id))))
+        svg.onClick (fun _ -> dispatch (BattlefieldChanged(SelectUnit(Some unit.Id))))
+        svg.onKeyDown (fun event ->
+            match event.key with
+            | "Enter" ->
+                dispatch (BattlefieldChanged(SelectUnit(Some unit.Id)))
+            | "Escape" ->
+                dispatch (BattlefieldChanged(SelectUnit None))
+            | "ArrowLeft" ->
+                event.preventDefault ()
+                dispatch (BattlefieldChanged(FocusDirection(-1, 0)))
+            | "ArrowRight" ->
+                event.preventDefault ()
+                dispatch (BattlefieldChanged(FocusDirection(1, 0)))
+            | "ArrowUp" ->
+                event.preventDefault ()
+                dispatch (BattlefieldChanged(FocusDirection(0, -1)))
+            | "ArrowDown" ->
+                event.preventDefault ()
+                dispatch (BattlefieldChanged(FocusDirection(0, 1)))
+            | _ -> ())
+        svg.children [
+            Svg.rect [
+                svg.custom ("data-authoritative-footprint", "true")
+                svg.x (projected.FootprintX + 2.0)
+                svg.y (projected.FootprintY + 2.0)
+                svg.width (projected.FootprintWidth - 4.0)
+                svg.height (projected.FootprintDepth - 4.0)
+                svg.rx 4
+                svg.fill "none"
+                svg.stroke (if selected then palette.Focus else faction)
+                svg.strokeWidth (if selected then 4.0 else 2.0)
+                svg.custom ("strokeDasharray", dash)
+            ]
+            Svg.rect [
+                svg.x (projected.SymbolCenterX - half)
+                svg.y (projected.SymbolCenterY - half)
+                svg.width symbolSize
+                svg.height symbolSize
+                svg.rx 3
+                svg.fill palette.Canvas
+                svg.stroke faction
+                svg.strokeWidth 3
+                svg.custom ("strokeDasharray", dash)
+            ]
+            glyphView palette projected.SymbolCenterX projected.SymbolCenterY unit.ClassId
+            if scene.SemanticZoom <> Overview && projected.HealthSegments.IsSome then
+                let healthSegments = Option.get projected.HealthSegments
+                for index in 0 .. 11 do
+                    Svg.rect [
+                        svg.custom ("data-health-position", string index)
+                        svg.x (projected.SymbolCenterX - 18.0 + float index * 3.0)
+                        svg.y (projected.SymbolCenterY + half + 3.0)
+                        svg.width 2.0
+                        svg.height 4.0
+                        svg.fill (
+                            if index < healthSegments then
+                                palette.HealthActive
+                            else
+                                palette.HealthDepleted
+                        )
+                    ]
+            match wedge with
+            | Some points ->
+                Svg.polygon [
+                    svg.custom ("data-facing-wedge", "body")
+                    svg.points points
+                    svg.fill faction
+                    svg.stroke palette.Canvas
+                    svg.strokeWidth 1
+                ]
+            | None -> Html.none
+            if scene.SemanticZoom <> Overview then
+                for index in 0 .. projected.ElevationBars - 1 do
+                    Svg.line [
+                        svg.custom ("data-elevation-bar", string (index + 1))
+                        svg.x1 (projected.SymbolCenterX - half + 3.0)
+                        svg.y1 (projected.SymbolCenterY - half + 4.0 + float index * 4.0)
+                        svg.x2 (projected.SymbolCenterX - half + 10.0)
+                        svg.y2 (projected.SymbolCenterY - half + 4.0 + float index * 4.0)
+                        svg.stroke palette.Text
+                        svg.strokeWidth 2
+                    ]
+            match projected.ElevationLabel with
+            | Some label ->
+                Svg.text [
+                    svg.custom ("data-elevation-label", "true")
+                    svg.x (projected.SymbolCenterX - half + 2.0)
+                    svg.y (projected.SymbolCenterY - half + 20.0)
+                    svg.fill palette.Text
+                    svg.fontSize 7
+                    svg.text label
+                ]
+            | None -> Html.none
+            if projected.ShowStance then
+                let stance =
+                    match unit.StanceId with
+                    | Disclosed value -> value.Substring(0, 1).ToUpperInvariant()
+                    | _ -> ""
+                Svg.text [
+                    svg.custom ("data-stance-mark", "true")
+                    svg.x (projected.SymbolCenterX + half - 8.0)
+                    svg.y (projected.SymbolCenterY - half + 8.0)
+                    svg.fill palette.Text
+                    svg.fontSize 7
+                    svg.text stance
+                ]
+            if focused then
+                Svg.circle [
+                    svg.custom ("data-focus-ring", "true")
+                    svg.cx projected.SymbolCenterX
+                    svg.cy projected.SymbolCenterY
+                    svg.r (half + 8.0)
+                    svg.fill "none"
+                    svg.stroke palette.Focus
+                    svg.strokeWidth 2
+                    svg.strokeDasharray [| 2; 2 |]
+                ]
+        ]
+    ]
+
+let private battlefieldInspector (scene: BattlefieldScene) =
+    let selected =
+        scene.SelectedUnit
+        |> Option.bind (fun selected ->
+            scene.Units
+            |> Array.tryFind (fun unit -> unit.Unit.Id = selected))
+
+    Html.aside [
+        prop.className "battlefield-inspector"
+        prop.ariaLabel "Battlefield unit inspector"
+        prop.children [
+            Html.h3 "Unit inspector"
+            match selected with
+            | None -> Html.p "No unit selected."
+            | Some unit ->
+                Html.p unit.AccessibleLabel
+                Html.dl [
+                    Html.dt "Exact class"
+                    Html.dd (
+                        UnitClassId.value unit.Unit.ClassId
+                    )
+                    Html.dt "Footprint"
+                    Html.dd (
+                        string (CellExtent.value unit.Unit.FootprintWidth)
+                        + " × "
+                        + string (CellExtent.value unit.Unit.FootprintDepth)
+                        + " cells"
+                    )
+                    Html.dt "Health"
+                    Html.dd (
+                        match unit.Unit.Health with
+                        | Disclosed value ->
+                            string (HealthVisual.remaining value)
+                            + " / "
+                            + string (HealthVisual.maximum value)
+                        | NotPresent -> "Not present in this projection"
+                        | NotApplicable -> "Not applicable"
+                        | ExplicitlyUnknown -> "Explicitly unknown"
+                    )
+                    Html.dt "Elevation"
+                    Html.dd (
+                        match unit.Unit.Level with
+                        | Disclosed value -> string value
+                        | NotPresent -> "Not present in this projection"
+                        | NotApplicable -> "Not applicable"
+                        | ExplicitlyUnknown -> "Explicitly unknown"
+                    )
+                    Html.dt "Stance"
+                    Html.dd (
+                        match unit.Unit.StanceId with
+                        | Disclosed value -> value
+                        | NotPresent -> "Not present in this projection"
+                        | NotApplicable -> "Not applicable"
+                        | ExplicitlyUnknown -> "Explicitly unknown"
+                    )
+                    Html.dt "Committed tick"
+                    Html.dd (string scene.Tick + " (exact; no interpolation)")
+                ]
+        ]
+    ]
+
+let private battlefieldView
+    (state: BattlefieldViewState)
+    (dispatch: Msg -> unit)
+    =
+    let frame = Battlefield.representativeFrame
+    let scene = Battlefield.scene frame state
+    let transform =
+        "translate("
+        + string scene.Camera.PanX
+        + " "
+        + string scene.Camera.PanY
+        + ") scale("
+        + string scene.Camera.Zoom
+        + ")"
+    let disclosure =
+        match scene.Disclosure with
+        | FullReplayDisclosure -> "Full replay"
+        | PerspectiveDisclosure -> "Perspective playback"
+        | SandboxDisclosure -> "Simulation sandbox"
+    let columns =
+        int (scene.Board.MaximumColumn - scene.Board.MinimumColumn + 1)
+    let rows =
+        int (scene.Board.MaximumRow - scene.Board.MinimumRow + 1)
+
+    Html.section [
+        prop.className "panel battlefield-panel"
+        prop.ariaLabel "Static SVG battlefield prototype"
+        prop.children [
+            Html.div [
+                prop.className "battlefield-heading"
+                prop.children [
+                    Html.div [
+                        Html.p [ prop.className "eyebrow"; prop.text "Committed documentation frame" ]
+                        Html.h2 "Six-by-six SVG battlefield"
+                        Html.p (
+                            disclosure
+                            + " · tick "
+                            + string scene.Tick
+                            + " · exact frame, no interpolation · north is up"
+                        )
+                    ]
+                    Html.div [
+                        prop.className "battlefield-controls"
+                        prop.children [
+                            button "←" "Pan battlefield left" false (fun _ -> dispatch (BattlefieldChanged(PanBy(-24, 0))))
+                            button "↑" "Pan battlefield up" false (fun _ -> dispatch (BattlefieldChanged(PanBy(0, -24))))
+                            button "↓" "Pan battlefield down" false (fun _ -> dispatch (BattlefieldChanged(PanBy(0, 24))))
+                            button "→" "Pan battlefield right" false (fun _ -> dispatch (BattlefieldChanged(PanBy(24, 0))))
+                            button "−" "Zoom battlefield out" false (fun _ -> dispatch (BattlefieldChanged(ZoomBy 0.8)))
+                            button "+" "Zoom battlefield in" false (fun _ -> dispatch (BattlefieldChanged(ZoomBy 1.25)))
+                            button "Reset" "Reset battlefield camera" false (fun _ -> dispatch (BattlefieldChanged ResetCamera))
+                        ]
+                    ]
+                ]
+            ]
+            Html.div [
+                prop.className "battlefield-layout"
+                prop.children [
+                    Svg.svg [
+                        svg.className "battlefield-svg"
+                        svg.custom ("role", "application")
+                        svg.custom ("aria-label", (
+                            disclosure
+                            + " battlefield at exact tick "
+                            + string scene.Tick
+                            + ", "
+                            + string scene.Units.Length
+                            + " visible units; selected unit "
+                            + (scene.SelectedUnit |> Option.map string |> Option.defaultValue "none")
+                        ))
+                        svg.viewBox (0, 0, 360, 360)
+                        svg.children [
+                            Svg.title ("Replay battlefield at tick " + string scene.Tick)
+                            Svg.desc "Flat orthographic six-by-six battlefield. Arrow keys move unit focus; Enter selects; Escape clears selection."
+                            Svg.g [
+                                svg.custom ("transform", transform)
+                                svg.children [
+                                    Svg.rect [
+                                        svg.custom ("data-layer", "terrain")
+                                        svg.x 0
+                                        svg.y 0
+                                        svg.width scene.Width
+                                        svg.height scene.Height
+                                        svg.fill scene.Palette.Terrain
+                                    ]
+                                    for row in 0 .. rows - 1 do
+                                        for column in 0 .. columns - 1 do
+                                            if (row + column) % 3 = 0 then
+                                                Svg.rect [
+                                                    svg.custom ("data-terrain", "rough")
+                                                    svg.x (float column * scene.CellSize)
+                                                    svg.y (float row * scene.CellSize)
+                                                    svg.width scene.CellSize
+                                                    svg.height scene.CellSize
+                                                    svg.fill scene.Palette.Canvas
+                                                    svg.custom ("opacity", 0.22)
+                                                ]
+                                    Svg.g [
+                                        svg.custom ("data-layer", "grid")
+                                        svg.children [
+                                            for index in 0 .. columns do
+                                                Svg.line [
+                                                    svg.x1 (float index * scene.CellSize)
+                                                    svg.y1 0
+                                                    svg.x2 (float index * scene.CellSize)
+                                                    svg.y2 scene.Height
+                                                    svg.stroke scene.Palette.Grid
+                                                    svg.strokeWidth 1
+                                                ]
+                                            for index in 0 .. rows do
+                                                Svg.line [
+                                                    svg.x1 0
+                                                    svg.y1 (float index * scene.CellSize)
+                                                    svg.x2 scene.Width
+                                                    svg.y2 (float index * scene.CellSize)
+                                                    svg.stroke scene.Palette.Grid
+                                                    svg.strokeWidth 1
+                                                ]
+                                        ]
+                                    ]
+                                    Svg.g [
+                                        svg.custom ("data-layer", "edges")
+                                        svg.children [
+                                            for edge in scene.Edges do
+                                                let color, width, dash =
+                                                    match edge.Kind, edge.State with
+                                                    | "wall", _ -> scene.Palette.Text, 5.0, "none"
+                                                    | "door", "open" -> scene.Palette.NeutralFaction, 3.0, "7 4"
+                                                    | "window", _ -> scene.Palette.HumanFaction, 3.0, "2 2"
+                                                    | _ -> scene.Palette.Text, 2.0, "3 3"
+                                                let endColumn, endRow =
+                                                    if edge.Kind = "door" && edge.State = "open" then
+                                                        edge.StartColumn
+                                                        + edge.EndRow
+                                                        - edge.StartRow,
+                                                        edge.StartRow
+                                                        - edge.EndColumn
+                                                        + edge.StartColumn
+                                                    else
+                                                        edge.EndColumn, edge.EndRow
+                                                let startX =
+                                                    float (edge.StartColumn - scene.Board.MinimumColumn)
+                                                    * scene.CellSize
+                                                let startY =
+                                                    float (edge.StartRow - scene.Board.MinimumRow)
+                                                    * scene.CellSize
+                                                let endX =
+                                                    float (endColumn - scene.Board.MinimumColumn)
+                                                    * scene.CellSize
+                                                let endY =
+                                                    float (endRow - scene.Board.MinimumRow)
+                                                    * scene.CellSize
+                                                Svg.line [
+                                                    svg.custom ("data-edge-kind", edge.Kind)
+                                                    svg.custom ("data-edge-state", edge.State)
+                                                    svg.x1 startX
+                                                    svg.y1 startY
+                                                    svg.x2 endX
+                                                    svg.y2 endY
+                                                    svg.stroke color
+                                                    svg.strokeWidth width
+                                                    svg.custom ("strokeDasharray", dash)
+                                                ]
+                                        ]
+                                    ]
+                                    Svg.g [
+                                        svg.custom ("data-layer", "units")
+                                        svg.children [
+                                            for unit in scene.Units do
+                                                unitView scene dispatch unit
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                    Html.div [
+                        prop.className "battlefield-sidecar"
+                        prop.children [
+                            Html.label [
+                                prop.htmlFor "battlefield-palette"
+                                prop.text "Palette"
+                            ]
+                            Html.select [
+                                prop.id "battlefield-palette"
+                                prop.value scene.Palette.Id
+                                prop.onChange (fun value -> dispatch (BattlefieldChanged(ChoosePalette value)))
+                                prop.children [
+                                    for palette in ReplayPalettes.all do
+                                        Html.option [
+                                            prop.value palette.Id
+                                            prop.text palette.Id
+                                        ]
+                                ]
+                            ]
+                            Html.p [
+                                prop.className "semantic-zoom"
+                                prop.text (
+                                    string scene.SemanticZoom
+                                    + " · "
+                                    + string (Math.Round(scene.CellSize * scene.Camera.Zoom))
+                                    + " px/cell"
+                                )
+                            ]
+                            Html.section [
+                                prop.className "battlefield-legend"
+                                prop.ariaLabel "Battlefield legend"
+                                prop.children [
+                                    Html.h3 "Legend"
+                                    Html.ul [
+                                        Html.li "Solid / dashed / dotted faction outlines remain distinct in monochrome."
+                                        Html.li "Twelve health positions fill from left to right."
+                                        Html.li "Perimeter wedge is body facing; the class glyph stays upright."
+                                        Html.li "Corner bars show elevation; +N and stance appear only at detailed zoom."
+                                        Html.li "Separate ground outline is the authoritative footprint."
+                                    ]
+                                ]
+                            ]
+                            battlefieldInspector scene
+                        ]
+                    ]
+                ]
             ]
         ]
     ]
@@ -875,21 +1409,24 @@ let private laboratoryResults model dispatch =
     ]
 
 let view model dispatch =
+    let shell = model.Shell
+
     Html.main [
         prop.className "app-shell"
         prop.ariaLabel "Replay and rules laboratory application"
         prop.children [
-            scenarioCatalog model dispatch
-            laboratoryResults model dispatch
-            statusView model
-            workerStatus model
+            battlefieldView model.Battlefield dispatch
+            scenarioCatalog shell dispatch
+            laboratoryResults shell dispatch
+            statusView shell
+            workerStatus shell
             Html.div [
                 prop.className "dashboard"
                 prop.children [
                     sourcePanel dispatch
-                    controls model dispatch
-                    inspector model dispatch
-                    sandbox model dispatch
+                    controls shell dispatch
+                    inspector shell dispatch
+                    sandbox shell dispatch
                 ]
             ]
             rulesDataCatalog
@@ -897,7 +1434,7 @@ let view model dispatch =
                 prop.className "sr-only"
                 prop.role.status
                 prop.ariaLive.polite
-                prop.text model.Announcement
+                prop.text shell.Announcement
             ]
         ]
     ]

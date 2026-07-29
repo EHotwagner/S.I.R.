@@ -165,7 +165,13 @@ if [[ -n "$client_reference" ]]; then
   exit 1
 fi
 
-npm ci
+# The only locked dependency with an install script is optional macOS fsevents;
+# none of the Linux conformance/build dependencies require lifecycle scripts.
+# Remove an inherited npm 12 allow-scripts value and keep CI installs inert.
+env \
+  -u npm_config_allow_scripts \
+  -u NPM_CONFIG_ALLOW_SCRIPTS \
+  npm ci --ignore-scripts
 ./scripts/build-client.sh
 node scripts/smoke-client.mjs
 node scripts/smoke-worker-roundtrip.mjs
