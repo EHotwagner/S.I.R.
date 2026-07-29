@@ -75,6 +75,21 @@ There are no gameplay imports. `sir_decide` returns a non-negative output byte
 length or a negative stable module status. Input and output memory ranges must
 not overlap during an invocation.
 
+A module that consumes immutable per-instance configuration exports both of
+these additional buffer functions:
+
+```text
+sir_configuration_ptr() -> i32
+sir_configuration_capacity() -> i32
+```
+
+The host copies the bounded opaque configuration once during instantiation.
+The configuration range may not overlap either invocation buffer, and its
+capacity remains subject to the execution profile's 4 KiB opaque-payload
+limit. Modules that do not consume configuration may omit both exports; they
+must never export only one. This is an explicit lifecycle surface, not a
+gameplay host import, and it grants no ambient capability.
+
 The generated-code source of truth is
 [`control-abi-v1.json`](control-abi-v1.json). Running
 `node scripts/generate-control-abi.mjs` publishes the F# constants in

@@ -6,7 +6,7 @@ document-type: architecture-and-roadmap
 category: Engineering
 categoryindex: 6
 index: 15
-version: "0.6"
+version: "0.7"
 created: 2026-07-29T19:27:00+02:00
 last-updated: 2026-07-29
 description: Design and milestone roadmap for converging the simulator, planning interface, control ABI, and authoritative deterministic kernel.
@@ -785,7 +785,9 @@ Evidence:
   structurally valid opaque requests remain journaled until their
   request-specific payload schemas and later capability semantics are frozen.
 
-### [ ] ⬜ Milestone 5 — `SIR-PLAN 1` and standard controller
+### [x] 🟩 Milestone 5 — `SIR-PLAN 1` and standard controller
+
+Status: implemented on 2026-07-29.
 
 - implement plan domain types, canonical encoding, digest, validation, and
   dependency scheduling;
@@ -801,6 +803,25 @@ Exit gate:
   repeated native runs;
 - invalid and cyclic plans produce stable command-scoped diagnostics; and
 - the standard controller uses only the public ABI.
+
+Evidence:
+
+- `SIR-PLAN 1` has a strict bounded canonical UTF-8 line codec, semantic and
+  source SHA-256 identities, stable layered diagnostics, dependency/fallback
+  cycle analysis, horizon scheduling, and bounded `SIR-PCFG 1` unit tracks;
+- annotation-only edits change source identity without changing execution
+  identity, while invalid paths, dependency cycles, and fallback jumps produce
+  repeatable command-scoped codes;
+- fresh native instances execute a two-unit movement, fixed facing,
+  body-relative attention, hold, point-engagement, and preloaded-sync plan with
+  identical accepted request tuples across repeated runs;
+- the readable import-free standard WAT module reads immutable configuration
+  through the bounded public lifecycle exports and otherwise uses only Control
+  ABI v1 buffers and requests; and
+- acknowledged synchronization conservatively waits to its absolute deadline
+  until communications events are integrated, while point engagement is
+  accepted and journaled as an opaque public request pending later
+  capability/kernel payload semantics.
 
 ### [ ] ⬜ Milestone 6 — simulator worker protocol
 

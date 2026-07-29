@@ -366,6 +366,53 @@ module ControlHost =
                 | null -> invalidArg (nameof artifact) "The module does not export sir_decide."
                 | value -> value
 
+            // Instance configuration is outside the per-tick input envelope, but its
+            // handoff is still an explicit, bounded public module surface. Modules
+            // that do not consume configuration need not export these functions.
+            match
+                instance.GetFunction("sir_configuration_ptr"),
+                instance.GetFunction("sir_configuration_capacity")
+            with
+            | null, null -> ()
+            | null, _
+            | _, null ->
+                invalidArg
+                    (nameof artifact)
+                    "Configured modules must export both configuration buffer functions."
+            | _, _ ->
+                let configurationPointer =
+                    invokeI32 instance "sir_configuration_ptr"
+                let configurationCapacity =
+                    invokeI32 instance "sir_configuration_capacity"
+                checkedRange
+                    memorySize
+                    configurationPointer
+                    configurationCapacity
+                    "configuration range"
+
+                if configuration.Length > configurationCapacity then
+                    invalidArg
+                        (nameof configuration)
+                        "Instance configuration exceeds the module's configuration buffer."
+
+                let configurationEnd =
+                    int64 configurationPointer + int64 configurationCapacity
+
+                if (int64 configurationPointer < inputEnd
+                    && int64 inputPointer < configurationEnd)
+                   || (int64 configurationPointer < outputEnd
+                       && int64 outputPointer < configurationEnd) then
+                    invalidArg
+                        (nameof artifact)
+                        "The configuration range overlaps an invocation buffer."
+
+                ReadOnlySpan<byte>(configuration).CopyTo(
+                    memory.GetSpan(
+                        int64 configurationPointer,
+                        configuration.Length
+                    )
+                )
+
             new ControlInstance(
                 artifact,
                 unitId,

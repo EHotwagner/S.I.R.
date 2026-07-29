@@ -17,6 +17,29 @@ related:
 
 # Standard Module and Commanding Without Code
 
+## Reference plan controller
+
+The first executable standard controller is the readable, import-free
+[`StandardController.wat`](../src/SIR.Match/StandardController.wat) reference
+module. `SIR-PLAN 1` compilation produces one bounded `SIR-PCFG 1` opaque
+configuration per unit. The native host copies that configuration once through
+the public configuration-buffer lifecycle exports; each tick the module reads
+only the canonical Control ABI input and emits canonical Control ABI requests.
+
+The initial executable slice covers path movement intent, fixed body facing,
+fixed and body-relative attention, stance, hold/sleep, point engagement, and
+preloaded-clock or acknowledged-deadline synchronization. Synchronization is
+bounded by an absolute deadline; acknowledged synchronization conservatively
+waits to that deadline until message/event semantics are supplied by the
+communications milestone. Plan fallback targets participate in the same
+dependency-cycle analysis as predecessor edges.
+
+`SIR-PLAN 1` is canonical bounded UTF-8 line text. Unit and command order is
+canonicalized, decoding rejects any source that does not re-encode byte for
+byte, and all variable command data uses bounded binary fields rendered as
+lowercase hexadecimal. The semantic SHA-256 digest excludes annotations only;
+the source SHA-256 digest includes them for save/conflict identity.
+
 ## Purpose
 
 Writing a control module is not required to play. When standing doctrine was

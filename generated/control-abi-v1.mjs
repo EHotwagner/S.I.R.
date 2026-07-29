@@ -7,6 +7,10 @@ export const CONTROL_ABI_V1 = Object.freeze({
     "input": "SIRI",
     "output": "SIRO"
   },
+  "optionalExports": {
+    "configurationPointer": "sir_configuration_ptr",
+    "configurationCapacity": "sir_configuration_capacity"
+  },
   "layout": {
     "headerBytes": 32,
     "sectionHeaderBytes": 12,

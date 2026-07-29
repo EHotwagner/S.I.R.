@@ -403,9 +403,267 @@ let private runControlHostQualifications () =
     finally
         instances |> Array.iter (fun instance -> (instance :> IDisposable).Dispose())
 
+let private runPlanQualifications () =
+    let artifactBytes = StandardController.artifactBytes ()
+    require
+        (not (StandardController.source.Contains("(import", StringComparison.Ordinal)))
+        "The standard controller source introduced a non-public host import."
+    let firstMove = Guid.ParseExact("10000000000000000000000000000001", "N")
+    let firstFace = Guid.ParseExact("10000000000000000000000000000002", "N")
+    let firstAttend = Guid.ParseExact("10000000000000000000000000000003", "N")
+    let firstSync = Guid.ParseExact("10000000000000000000000000000004", "N")
+    let firstEngage = Guid.ParseExact("10000000000000000000000000000005", "N")
+    let firstHold = Guid.ParseExact("10000000000000000000000000000006", "N")
+
+    let command commandId predecessors kind annotation =
+        { CommandId = commandId
+          EarliestStartTick = 1
+          Predecessors = predecessors
+          InterruptionPolicy = ApplyFallback
+          Fallback = HoldPosition
+          Kind = kind
+          Annotation = annotation }
+
+    let planUnit unitId origin destination target (prefix: byte) =
+        let id (source: Guid) =
+            let bytes = source.ToByteArray()
+            bytes[15] <- bytes[15] + prefix
+            Guid bytes
+
+        let move = id firstMove
+        let face = id firstFace
+        let attend = id firstAttend
+        let sync = id firstSync
+        let engage = id firstEngage
+        let hold = id firstHold
+
+        { UnitId = unitId
+          ControllerArtifact = artifactBytes
+          Commands =
+            [| command move [||] (MovePath([| origin; destination |], Balanced)) "route annotation"
+               command face [| move |] (SetFacingIntent(FaceFixed East)) "face annotation"
+               command attend [| face |] (SetAttentionIntent(AttendRelativeToBody North)) ""
+               command
+                   sync
+                   [| attend |]
+                   (Synchronize
+                       { MarkerId = "line-ready"
+                         Mode = PreloadedClock 30
+                         DeadlineTick = 35
+                         Timeout = Continue })
+                   "clock synchronization"
+               command engage [| sync |] (EngageUnit(target, "rifle")) "point engagement"
+               command hold [| engage |] Hold "" |]
+          Fallback = AbortUnitPlan }
+
+    let state =
+        { Tick = 0
+          Board =
+            { Width = 6
+              Height = 3
+              Terrain = Map.empty
+              Edges = Map.empty }
+          Units =
+            Map.ofList
+                [ 1,
+                  { Id = 1
+                    Side = 1
+                    ClassId = "rifleman"
+                    Cell = MapScale.cell 0 1
+                    Size = 1
+                    Health = 10
+                    Controller = GeneralController
+                    Script = []
+                    ScriptIndex = 0
+                    BodyFacing = North
+                    AttentionDirection = North }
+                  2,
+                  { Id = 2
+                    Side = 1
+                    ClassId = "rifleman"
+                    Cell = MapScale.cell 5 1
+                    Size = 1
+                    Health = 10
+                    Controller = GeneralController
+                    Script = []
+                    ScriptIndex = 0
+                    BodyFacing = North
+                    AttentionDirection = North } ]
+          MovementCreditsMillimeters = Map.empty
+          MovementProgress = Map.empty
+          MovementIntents = Map.empty
+          PlannedRoutes = Map.empty
+          Engagements = Map.empty }
+
+    let mapDigest = Array.init 32 byte
+    let document =
+        { FormatVersion = SirPlan.FormatVersion
+          PlanId = Guid.ParseExact("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "N")
+          Revision = 4L
+          ParentDigest = Some(Array.create 32 0x11uy)
+          MapRevisionDigest = mapDigest
+          RulesetIdentity = "prototype-rules-1"
+          StartTick = 1
+          HorizonTicks = 100
+          UnitPlans =
+            [| planUnit 1 (MapScale.cell 0 1) (MapScale.cell 1 1) 2 0uy
+               planUnit 2 (MapScale.cell 5 1) (MapScale.cell 4 1) 1 16uy |] }
+
+    let context =
+        { Map = state
+          RulesetIdentity = document.RulesetIdentity
+          MapRevisionDigest = mapDigest
+          MaximumConfigurationBytes = ControlHost.defaultProfile.MaximumConfigurationBytes }
+
+    let encoded =
+        SirPlan.encode document
+        |> Result.defaultWith failwith
+    let decoded =
+        SirPlan.decode encoded
+        |> Result.defaultWith failwith
+    require
+        (SirPlan.encode decoded = Ok encoded)
+        "SIR-PLAN 1 canonical source did not round-trip exactly."
+
+    let annotationEdit =
+        { document with
+            UnitPlans =
+                document.UnitPlans
+                |> Array.mapi (fun index unit ->
+                    if index <> 0 then unit
+                    else
+                        { unit with
+                            Commands =
+                                unit.Commands
+                                |> Array.mapi (fun commandIndex item ->
+                                    if commandIndex = 0 then
+                                        { item with Annotation = "edited only" }
+                                    else item) }) }
+    require
+        (SirPlan.semanticDigest annotationEdit = SirPlan.semanticDigest document
+         && SirPlan.sourceDigest annotationEdit <> SirPlan.sourceDigest document)
+        "Annotations changed execution identity or failed to change source identity."
+
+    let compiled =
+        SirPlan.compile context document
+        |> Result.defaultWith (fun issues -> failwithf "Coordinated plan failed validation: %A" issues)
+    require
+        (compiled.Units.Length = 2
+         && compiled.Units |> Array.forall (fun unit -> unit.Configuration.Length <= 4096))
+        "The coordinated plan did not compile to two bounded configurations."
+
+    let cyclic =
+        let unit = document.UnitPlans[0]
+        let first = unit.Commands[0]
+        let second = unit.Commands[1]
+        { document with
+            UnitPlans =
+                [| { unit with
+                       Commands =
+                           [| { first with
+                                  Predecessors = [| second.CommandId |]
+                                  Kind =
+                                    MovePath(
+                                        [| MapScale.cell 0 1
+                                           MapScale.cell 4 1 |],
+                                        Balanced) }
+                              { second with Predecessors = [| first.CommandId |] } |] } |] }
+
+    let fallbackCyclic =
+        let unit = document.UnitPlans[0]
+        let first = unit.Commands[0]
+        let second = unit.Commands[1]
+        { document with
+            UnitPlans =
+                [| { unit with
+                       Commands =
+                           [| { first with
+                                  Predecessors = [||]
+                                  Fallback = JumpTo second.CommandId }
+                              { second with
+                                  Predecessors = [||]
+                                  Fallback = JumpTo first.CommandId } |] } |] }
+
+    let diagnosticSignature candidate =
+        SirPlan.validate context candidate
+        |> Array.map (fun diagnostic ->
+            diagnostic.Code, diagnostic.UnitId, diagnostic.CommandId, diagnostic.Fields)
+
+    let firstDiagnostics = diagnosticSignature cyclic
+    let secondDiagnostics = diagnosticSignature cyclic
+    require
+        (firstDiagnostics = secondDiagnostics
+         && firstDiagnostics
+            |> Array.exists (fun (code, _, commandId, _) ->
+                code = "SIR.PLAN.SCHEDULE.CYCLE" && commandId.IsSome)
+         && firstDiagnostics
+            |> Array.exists (fun (code, _, commandId, _) ->
+                code = "SIR.PLAN.MAP.NON_ADJACENT_PATH" && commandId.IsSome))
+        "Invalid/cyclic plans did not produce stable command-scoped diagnostics."
+    require
+        (diagnosticSignature fallbackCyclic
+         |> Array.exists (fun (code, _, commandId, _) ->
+             code = "SIR.PLAN.SCHEDULE.CYCLE" && commandId.IsSome))
+        "Fallback JumpTo cycles escaped dependency validation."
+
+    use artifact =
+        ControlHost.compile
+            ControlHost.defaultProfile
+            "sir-standard-controller"
+            artifactBytes
+
+    let run () =
+        let instances =
+            compiled.Units
+            |> Array.map (fun unit ->
+                unit.UnitId,
+                ControlHost.instantiate artifact unit.UnitId unit.Configuration)
+        try
+            [| for tick in document.StartTick .. document.StartTick + document.HorizonTicks - 1 do
+                   for unitId, instance in instances do
+                       match ControlHost.invoke tick (abiInput tick unitId) instance with
+                       | Accepted(output, _) when not output.Requests.IsEmpty ->
+                           yield
+                               tick,
+                               unitId,
+                               output.Requests
+                               |> List.map (fun request ->
+                                   request.Kind,
+                                   request.ModuleRequestId,
+                                   Convert.ToHexString request.Payload)
+                       | Accepted _ -> ()
+                       | SleepingUntil _ -> ()
+                       | result ->
+                           failwithf
+                               "Standard controller failed at tick %d for unit %d: %A"
+                               tick
+                               unitId
+                               result |]
+        finally
+            instances
+            |> Array.iter (fun (_, instance) ->
+                (instance :> IDisposable).Dispose())
+
+    let firstRun = run ()
+    let secondRun = run ()
+    require
+        (firstRun = secondRun
+         && firstRun
+            |> Array.exists (fun (_, _, requests) ->
+                requests
+                |> List.exists (fun (kind, _, _) ->
+                    kind = RequestKind.SetMovementIntent))
+         && firstRun
+            |> Array.exists (fun (_, _, requests) ->
+                requests
+                |> List.exists (fun (kind, _, _) ->
+                    kind = RequestKind.SetEngagement)))
+        "Repeated coordinated native runs did not produce identical movement and engagement requests."
+
 [<EntryPoint>]
 let main _ =
     let controllerTickMs = runControlHostQualifications ()
+    runPlanQualifications ()
     let expectedControlOutput = controlAbiOutput ()
     let referenceControlOutput =
         executeReferenceControlModule expectedControlOutput
