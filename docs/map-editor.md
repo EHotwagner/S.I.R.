@@ -358,7 +358,13 @@ sandbox without entering authored history.
 
 ### Fixed-timestep movement
 
-The sandbox uses the canonical 20 Hz simulation rate: one tick is 50 ms and
+The editor sandbox delegates each step and route query to the shared
+`SIR.Simulation.MapScale` kernel. The editor simulator converts immutable map
+revisions into kernel state, forwards controller intent, and projects returned
+events and interpolation only; it does not own numeric movement, collision, or
+combat rules.
+
+The kernel uses the canonical 20 Hz simulation rate: one tick is 50 ms and
 one map cell represents 500 mm. Movement stays in fixed-point integer
 millimetres:
 
@@ -369,10 +375,9 @@ diagonal cell cost     = 707 mm
 rough-ground cost      = base cost × 1.5
 ```
 
-The reference movement profiles are 2.0 m/s for goblins, 1.5 m/s for
+The shared prototype movement profiles are 2.0 m/s for goblins, 1.5 m/s for
 riflemen and fallback units, 1.2 m/s for orcs, 1.0 m/s for trolls, and
-3.0 m/s for observation drones. These are explicit sandbox values pending the
-shared gameplay movement catalogue. Credits are capped at 1,060 mm, preventing
+3.0 m/s for observation drones. Credits are capped at 1,060 mm, preventing
 unbounded stored movement while still permitting a rough diagonal step.
 
 A 1.5 m/s rifleman earns 75 mm per tick. It therefore commits its first 500 mm

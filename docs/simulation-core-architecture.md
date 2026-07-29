@@ -226,6 +226,15 @@ completed attacks
 Hash-map iteration, memory layout, task scheduling, and thread completion cannot
 change a result.
 
+The map-scale slice implements this contract in `SIR.Simulation.MapScale`.
+Every tick records collect, validate, resolve, and commit checkpoints. Movement
+credit, square-footprint collision, rough-ground cost, semantic-edge traversal,
+controller intents, typed combat profiles, and engagement recovery are kernel
+state and rules. Same-destination reservations and crossing/swapping movements
+are rejected symmetrically from the pre-tick snapshot; stable conformance
+fixtures cover both conflicts. Checkpoint bytes identify the first divergent
+tick, phase, and byte across .NET and Fable runs.
+
 ## Deterministic parallelism
 
 The initial implementation prioritizes a correct logical ordering. Read-only
