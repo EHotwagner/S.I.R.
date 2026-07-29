@@ -15,6 +15,11 @@ type Msg =
     | BattlefieldChanged of BattlefieldAction
     | FileSelected of File
     | MapFileSelected of File
+    | MapTextRead of sourceName: string * text: string
+    | BackgroundFileSelected of File
+    | BackgroundBytesRead of fileName: string * mediaType: string * bytes: byte array
+    | AcceptInterchangeReview
+    | RejectInterchangeReview
     | PlaybackPulse
     | EditorPulse
     | KeyPressed of key: string * controlOrMeta: bool * shift: bool
@@ -51,6 +56,7 @@ type Model =
       EditorToolPanel: EditorToolPanel
       EditorView: EditorWorkspaceState
       EditorSpacePressed: bool
+      PendingInterchangeReview: InterchangeReview option
       Battlefield: BattlefieldViewState
       PreviousFrame: RenderFrame option
       PresentationAlpha: float
@@ -73,7 +79,14 @@ let private fileBytes (file: File) =
 let private fileText (file: File) =
     async {
         let! text = file.text () |> Async.AwaitPromise
-        return text
+        return file.name, text
+    }
+
+let private rasterBytes (file: File) =
+    async {
+        let! buffer = file.arrayBuffer () |> Async.AwaitPromise
+        let typed = JS.Constructors.Uint8Array.Create(buffer)
+        return file.name, file.``type``, Array.init typed.length (fun index -> typed[index])
     }
 
 let private runEffect effect =
@@ -247,6 +260,7 @@ let init () =
       EditorToolPanel = TerrainTools
       EditorView = editorView
       EditorSpacePressed = false
+      PendingInterchangeReview = None
       Battlefield =
         { Battlefield.initial with
             ReducedMotion =
@@ -270,7 +284,45 @@ let rec update msg model =
         Cmd.OfAsync.perform
             fileText
             file
-            (fun text -> EditorChanged(LoadMapText text))
+            (fun (name, text) -> MapTextRead(name, text))
+    | MapTextRead(sourceName, text) ->
+        let lower = sourceName.ToLowerInvariant()
+        if lower.EndsWith(".sir-map") then
+            update (EditorChanged(LoadMapText text)) model
+        else
+            let format =
+                if lower.EndsWith(".dd2vtt") || lower.EndsWith(".uvtt") then UniversalVtt
+                elif lower.EndsWith(".xml") then FantasyGroundsImage
+                else FoundryScene
+            { model with
+                PendingInterchangeReview =
+                    Some(MapEditorInterchange.evaluate format sourceName text) },
+            Cmd.none
+    | BackgroundFileSelected file ->
+        model,
+        Cmd.OfAsync.perform
+            rasterBytes
+            file
+            (fun (name, mediaType, bytes) -> BackgroundBytesRead(name, mediaType, bytes))
+    | BackgroundBytesRead(fileName, mediaType, bytes) ->
+        update
+            (EditorWorkspaceChanged(
+                AttachLocalRaster(fileName, mediaType, bytes)
+            ))
+            model
+    | RejectInterchangeReview ->
+        { model with PendingInterchangeReview = None }, Cmd.none
+    | AcceptInterchangeReview ->
+        match model.PendingInterchangeReview with
+        | Some review ->
+            match MapEditorInterchange.accept review with
+            | Ok candidate ->
+                let importText =
+                    MapEditor.export { model.Editor with Map = candidate }
+                let next, command = update (EditorChanged(LoadMapText importText)) model
+                { next with PendingInterchangeReview = None }, command
+            | Error _ -> model, Cmd.none
+        | None -> model, Cmd.none
     | WorkspaceChanged workspace ->
         let editor =
             if workspace = SimulatorWorkspace then
@@ -3185,6 +3237,56 @@ let private editorBattlefield
                     Svg.g [
                         svg.custom ("transform", transform)
                         svg.children [
+                            match view.Background with
+                            | Some background ->
+                                let x, y, width, height =
+                                    MapEditorWorkspace.backgroundRenderBox
+                                        state.Map.Width
+                                        state.Map.Height
+                                        background
+                                match background.Crop with
+                                | Some crop ->
+                                    Svg.svg [
+                                        svg.custom ("data-layer", "local-raster-background")
+                                        svg.custom ("x", string x)
+                                        svg.custom ("y", string y)
+                                        svg.custom ("width", string width)
+                                        svg.custom ("height", string height)
+                                        svg.custom ("viewBox", string crop.Left + " " + string crop.Top + " " + string crop.Width + " " + string crop.Height)
+                                        svg.custom ("overflow", "hidden")
+                                        svg.custom ("opacity", string background.Opacity)
+                                        svg.custom ("pointer-events", "none")
+                                        svg.custom ("aria-hidden", "true")
+                                        svg.children [
+                                            Svg.image [
+                                                svg.custom ("href", background.DataUrl)
+                                                svg.custom ("x", "0")
+                                                svg.custom ("y", "0")
+                                                svg.custom ("width", string background.PixelWidth)
+                                                svg.custom ("height", string background.PixelHeight)
+                                                svg.custom ("preserveAspectRatio", "none")
+                                            ]
+                                        ]
+                                    ]
+                                | None ->
+                                    Svg.image [
+                                        svg.custom ("data-layer", "local-raster-background")
+                                        svg.custom ("href", background.DataUrl)
+                                        svg.custom ("x", string x)
+                                        svg.custom ("y", string y)
+                                        svg.custom ("width", string width)
+                                        svg.custom ("height", string height)
+                                        svg.custom ("opacity", string background.Opacity)
+                                        svg.custom (
+                                            "preserveAspectRatio",
+                                            if background.Fit = FillAndCrop then
+                                                "xMidYMid slice"
+                                            else "none"
+                                        )
+                                        svg.custom ("pointer-events", "none")
+                                        svg.custom ("aria-hidden", "true")
+                                    ]
+                            | None -> ()
                             Svg.rect [
                                 svg.custom ("data-layer", "terrain")
                                 svg.custom ("display", editorLayerDisplay TerrainDomain state)
@@ -3192,6 +3294,8 @@ let private editorBattlefield
                                 svg.width boardWidth
                                 svg.height boardHeight
                                 svg.fill palette.Terrain
+                                if view.Background.IsSome then
+                                    svg.fillOpacity 0.58
                             ]
                             for row in 0 .. int state.Map.Height - 1 do
                                 for column in 0 .. int state.Map.Width - 1 do
@@ -4049,6 +4153,142 @@ let private editorToolbar
                                 ]
                     | DocumentTools ->
                         Html.h3 "Map document"
+                        Html.fieldSet [
+                            Html.legend "Local raster background (presentation only)"
+                            Html.p [
+                                prop.role.status
+                                prop.ariaLive.polite
+                                prop.text view.BackgroundAnnouncement
+                            ]
+                            Html.label [
+                                prop.children [
+                                    Html.span "Choose local PNG, JPEG, or WebP"
+                                    Html.input [
+                                        prop.type'.file
+                                        prop.accept "image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp"
+                                        prop.ariaLabel "Choose local raster map background"
+                                        prop.onChange (fun (files: File list) ->
+                                            files
+                                            |> List.tryHead
+                                            |> Option.iter (BackgroundFileSelected >> dispatch))
+                                    ]
+                                ]
+                            ]
+                            match view.Background with
+                            | None ->
+                                Html.p "No raster background. Remote URLs, SVG, and executable content are never fetched or accepted."
+                            | Some background ->
+                                Html.p (
+                                    background.FileName + " · "
+                                    + string background.PixelWidth + "×" + string background.PixelHeight
+                                    + " · " + string background.ByteLength + " bytes · "
+                                    + background.AssetId.Substring(0, 19)
+                                )
+                                Html.div [
+                                    prop.className "control-row"
+                                    prop.role.group
+                                    prop.ariaLabel "Background lock and fit"
+                                    prop.children [
+                                        button
+                                            (if background.Locked then "Unlock" else "Lock")
+                                            "Toggle local raster background lock"
+                                            false
+                                            (fun _ -> dispatch (EditorWorkspaceChanged ToggleBackgroundLock))
+                                        for fit, label in
+                                            [ FitInside, "Fit"
+                                              FillAndCrop, "Fill/crop"
+                                              StretchToBoard, "Stretch"
+                                              NativePixels, "Grid scale" ] do
+                                            Html.button [
+                                                prop.type'.button
+                                                prop.text label
+                                                prop.ariaPressed (background.Fit = fit)
+                                                prop.disabled background.Locked
+                                                prop.onClick (fun _ ->
+                                                    dispatch (EditorWorkspaceChanged(SetBackgroundFit fit)))
+                                            ]
+                                        button "Remove" "Remove local raster background" false (fun _ ->
+                                            dispatch (EditorWorkspaceChanged RemoveLocalRaster))
+                                    ]
+                                ]
+                                Html.label [
+                                    prop.htmlFor "background-opacity"
+                                    prop.text ("Opacity " + string (int (background.Opacity * 100.0)) + "%")
+                                ]
+                                Html.input [
+                                    prop.id "background-opacity"
+                                    prop.type'.range
+                                    prop.min 0
+                                    prop.max 100
+                                    prop.value (int (background.Opacity * 100.0))
+                                    prop.onChange (fun (value: int) ->
+                                        dispatch (EditorWorkspaceChanged(SetBackgroundOpacity(float value / 100.0))))
+                                ]
+                                Html.div [
+                                    prop.className "control-row"
+                                    prop.role.group
+                                    prop.ariaLabel "Background grid offset"
+                                    prop.children [
+                                        button "↑" "Nudge unlocked background up one board pixel" background.Locked (fun _ ->
+                                            dispatch (EditorWorkspaceChanged(NudgeBackgroundGridOffset(0.0, -1.0))))
+                                        button "←" "Nudge unlocked background left one board pixel" background.Locked (fun _ ->
+                                            dispatch (EditorWorkspaceChanged(NudgeBackgroundGridOffset(-1.0, 0.0))))
+                                        button "→" "Nudge unlocked background right one board pixel" background.Locked (fun _ ->
+                                            dispatch (EditorWorkspaceChanged(NudgeBackgroundGridOffset(1.0, 0.0))))
+                                        button "↓" "Nudge unlocked background down one board pixel" background.Locked (fun _ ->
+                                            dispatch (EditorWorkspaceChanged(NudgeBackgroundGridOffset(0.0, 1.0))))
+                                        button "Reset offset" "Reset background grid offset" background.Locked (fun _ ->
+                                            dispatch (EditorWorkspaceChanged(SetBackgroundGridOffset(0.0, 0.0))))
+                                    ]
+                                ]
+                                Html.label [
+                                    prop.htmlFor "background-pixels-per-cell"
+                                    prop.text "Source pixels per grid cell"
+                                ]
+                                Html.input [
+                                    prop.id "background-pixels-per-cell"
+                                    prop.type'.number
+                                    prop.min 1
+                                    prop.max MapEditorWorkspace.MaximumBackgroundDimension
+                                    prop.value background.PixelsPerCell
+                                    prop.disabled background.Locked
+                                    prop.onChange (fun (value: float) ->
+                                        dispatch (EditorWorkspaceChanged(SetBackgroundPixelsPerCell value)))
+                                ]
+                                Html.div [
+                                    prop.className "control-row"
+                                    prop.children [
+                                        button "Use full image" "Clear background crop" background.Locked (fun _ ->
+                                            dispatch (EditorWorkspaceChanged(SetBackgroundCrop None)))
+                                        button "Crop 10%" "Inset crop by ten percent on every side" background.Locked (fun _ ->
+                                            let left = background.PixelWidth / 10
+                                            let top = background.PixelHeight / 10
+                                            dispatch (
+                                                EditorWorkspaceChanged(
+                                                    SetBackgroundCrop(
+                                                        Some
+                                                            { Left = left
+                                                              Top = top
+                                                              Width = background.PixelWidth - left * 2
+                                                              Height = background.PixelHeight - top * 2 }
+                                                    )
+                                                )
+                                            ))
+                                        button "Align first cell" "Align a source grid using zero and one source-cell markers" background.Locked (fun _ ->
+                                            dispatch (
+                                                EditorWorkspaceChanged(
+                                                    AlignBackgroundGrid(
+                                                        0.0,
+                                                        0.0,
+                                                        background.PixelsPerCell,
+                                                        0.0,
+                                                        1
+                                                    )
+                                                )
+                                            ))
+                                    ]
+                                ]
+                        ]
                         Html.label [
                             prop.htmlFor "map-name"
                             prop.text "Map name"
@@ -4174,8 +4414,9 @@ let private editorToolbar
                                         Html.span "Import map"
                                         Html.input [
                                             prop.type'.file
-                                            prop.accept ".sir-map,text/plain"
+                                            prop.accept ".sir-map,.dd2vtt,.uvtt,.json,.xml,text/plain,application/json"
                                             prop.ariaLabel "Import SIR map"
+                                            prop.title "Import SIR-MAP directly or review a Universal VTT, Foundry, or Fantasy Grounds export"
                                             prop.onChange (fun (files: File list) ->
                                                 files
                                                 |> List.tryHead
@@ -4765,6 +5006,60 @@ let view model dispatch =
                             model.EditorView
                             model.EditorToolPanel
                             dispatch
+                        match model.PendingInterchangeReview with
+                        | Some review ->
+                            Html.section [
+                                prop.className "panel editor-interchange-review"
+                                prop.ariaLabel "Interchange import review"
+                                prop.role.alert
+                                prop.children [
+                                    Html.h2 ("Review " + string review.Format + " import")
+                                    Html.p (
+                                        review.SourceName + " · "
+                                        + string (review.Fields |> Array.filter (fun field -> field.Disposition = Mapped) |> Array.length)
+                                        + " mapped · "
+                                        + string (review.Fields |> Array.filter (fun field -> field.Disposition = Ignored) |> Array.length)
+                                        + " ignored · "
+                                        + string (review.Fields |> Array.filter (fun field -> field.Disposition = Lossy) |> Array.length)
+                                        + " lossy"
+                                    )
+                                    if not (Array.isEmpty review.Errors) then
+                                        Html.ul [
+                                            prop.ariaLabel "Import errors"
+                                            prop.children [
+                                                for error in review.Errors do Html.li error
+                                            ]
+                                        ]
+                                    Html.table [
+                                        prop.ariaLabel "Mapped, ignored, lossy, and rejected source fields"
+                                        prop.children [
+                                            Html.thead [
+                                                Html.tr [
+                                                    Html.th "Source field"
+                                                    Html.th "Disposition"
+                                                    Html.th "Meaning"
+                                                ]
+                                            ]
+                                            Html.tbody [
+                                                for field in review.Fields do
+                                                    Html.tr [
+                                                        Html.td field.Path
+                                                        Html.td (string field.Disposition)
+                                                        Html.td field.Meaning
+                                                    ]
+                                            ]
+                                        ]
+                                    ]
+                                    button
+                                        "Accept reviewed import"
+                                        "Accept the reviewed deterministic semantic mappings"
+                                        (not (MapEditorInterchange.canAccept review))
+                                        (fun _ -> dispatch AcceptInterchangeReview)
+                                    button "Cancel import" "Cancel interchange import without changing the map" false (fun _ ->
+                                        dispatch RejectInterchangeReview)
+                                ]
+                            ]
+                        | None -> Html.none
                         editorBattlefield
                             model.Editor
                             model.EditorView

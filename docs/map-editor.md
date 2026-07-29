@@ -6,7 +6,7 @@ index: 2
 status: accepted
 decision-status: implemented
 document-type: reference
-version: "1.3"
+version: "1.4"
 last-updated: 2026-07-29
 description: Map records, terrain, semantic edges, square unit footprints, controller modes, and deterministic execution.
 related:
@@ -233,6 +233,54 @@ revision-state labels. Generated command tests prove `.NET` undo/redo
 round-trips over 64 cell choices. The Fable/Node browser smoke test checks the
 same initial digest, commits a copied unit, and proves undo and redo return to
 the same digests and object counts.
+
+## Local backgrounds and interchange review
+
+Raster backgrounds are local presentation references in `EditorWorkspaceState`.
+They are not fields in `MapDefinition`, `SIR-MAP 2`, its canonical digest,
+autosave, simulation input, or exported evidence. The browser never fetches a
+background URL. A file must pass signature inspection as PNG, JPEG, or WebP,
+match its declared media type, contain dimensions from 1 through 8,192 pixels
+on each axis, and contain no more than 10,000,000 bytes. SVG is rejected even
+when presented as an image because it may contain executable or externally
+referenced content.
+
+The Document tool exposes a labelled local-file input and ordinary controls for
+lock, opacity, fit-inside, fill-and-crop, stretch, source crop, grid offset, and
+source pixels per cell. Backgrounds start locked. Unlocking is required before
+nudging, cropping, scaling, or aligning. Every pointer-oriented adjustment has
+a focusable button or numeric input, its result is announced through a polite
+live region, and the raster is `aria-hidden` because canonical terrain and
+objects remain available through the SVG and parallel object list. Camera and
+background changes cannot create an undo entry or change the map revision.
+
+External maps use a two-stage workflow:
+
+1. Select a local `.dd2vtt`, `.uvtt`, Foundry `.json`, or Fantasy Grounds
+   `.xml` export. The file is parsed locally; external asset paths are never
+   opened.
+2. Inspect the complete field report. Every source leaf is classified as
+   **mapped**, **ignored**, **lossy**, or **rejected**. **Accept reviewed
+   import** remains disabled when no deterministic candidate exists. Acceptance
+   atomically replaces the map through the normal validated `SIR-MAP 2` import.
+
+The currently reviewed mappings are deliberately narrow:
+
+| Source | Deterministic mapping | Ignored or lossy |
+|---|---|---|
+| Universal VTT 0.3-style JSON | Integral `resolution.map_size`, positive `pixels_per_grid`, `map_origin`, axis-aligned on-grid `line_of_sight` to closed walls, and two-point `portals` to doors with open/closed state | Images, lights, environment, textures, and unknown fields are reported and ignored. Curves, diagonals, off-grid segments, and unrepresentable top/left border geometry are reported as lossy. |
+| Foundry scene JSON with square grid | Integral `width`/`height` divided by `grid.size`; axis-aligned on-grid `walls[].c`; `door` and `ds=1` to semantic open doors | Tokens, actors, tiles, notes, regions, lighting, vision, sounds, remote background paths, wall restrictions, and unknown flags are reported and ignored. Locked doors are reported as lossy and become closed doors. |
+| Fantasy Grounds image/campaign XML | None | Evaluation found no stable portable contract across campaign/database schemas and extensions. Import is rejected with an explanation; export through Universal VTT or recreate semantic edges in S.I.R. |
+
+No pixels, filenames, light polygons, token art, wall colors, scripts, macros,
+or remote asset paths infer terrain, occupancy, units, objectives, deployment,
+or behavior. Duplicate source JSON keys and conflicting duplicate semantic
+edges reject the complete import instead of depending on parser or file order.
+The deterministic
+`tests/SIR.Client.Tests/fixtures/map-editor-milestone-8-interchange.txt` fixture
+freezes raster validation, transform state, unchanged authority digest,
+Universal VTT mappings, Foundry loss reporting, ignored remote paths, and the
+Fantasy Grounds rejection.
 
 ## Terrain authoring
 

@@ -2371,6 +2371,177 @@ let main _ =
         ("The deterministic Milestone 7 zone review fixture changed.\n"
          + zoneFixture)
 
+    let pngHeader =
+        [| 137uy; 80uy; 78uy; 71uy; 13uy; 10uy; 26uy; 10uy
+           0uy; 0uy; 0uy; 13uy; 73uy; 72uy; 68uy; 82uy
+           0uy; 0uy; 4uy; 0uy; 0uy; 0uy; 2uy; 0uy |]
+    let background =
+        MapEditorWorkspace.tryCreateLocalRaster
+            "review.png"
+            "image/png"
+            pngHeader
+        |> Result.defaultWith failwith
+    let backgroundView =
+        MapEditorWorkspace.initial false
+        |> MapEditorWorkspace.update
+            editor.Map
+            (MapEditor.selected editor)
+            (AttachLocalRaster("review.png", "image/png", pngHeader))
+        |> MapEditorWorkspace.update
+            editor.Map
+            (MapEditor.selected editor)
+            ToggleBackgroundLock
+        |> MapEditorWorkspace.update
+            editor.Map
+            (MapEditor.selected editor)
+            (AlignBackgroundGrid(10.0, 20.0, 210.0, 20.0, 2))
+        |> MapEditorWorkspace.update
+            editor.Map
+            (MapEditor.selected editor)
+            (NudgeBackgroundGridOffset(1.0, -1.0))
+        |> MapEditorWorkspace.update
+            editor.Map
+            (MapEditor.selected editor)
+            (SetBackgroundCrop(
+                Some
+                    { Left = 10
+                      Top = 10
+                      Width = 800
+                      Height = 400 }
+            ))
+    let alignedBackground = backgroundView.Background |> Option.get
+    let backgroundBox =
+        MapEditorWorkspace.backgroundRenderBox
+            editor.Map.Width
+            editor.Map.Height
+            alignedBackground
+    let svgRejected =
+        MapEditorWorkspace.tryCreateLocalRaster
+            "executable.svg"
+            "image/svg+xml"
+            (Text.Encoding.UTF8.GetBytes("<svg onload='alert(1)'/>"))
+        |> Result.isError
+    let oversizedDimensions =
+        let bytes = Array.copy pngHeader
+        bytes[16] <- 0uy
+        bytes[17] <- 0uy
+        bytes[18] <- 32uy
+        bytes[19] <- 1uy
+        MapEditorWorkspace.tryCreateLocalRaster "wide.png" "image/png" bytes
+        |> Result.isError
+    let oversizedBytes =
+        MapEditorWorkspace.tryCreateLocalRaster
+            "large.png"
+            "image/png"
+            (Array.zeroCreate (MapEditorWorkspace.MaximumBackgroundBytes + 1))
+        |> Result.isError
+
+    let universalText =
+        """{
+  "format": 0.3,
+  "resolution": {
+    "map_size": { "x": 6, "y": 4 },
+    "pixels_per_grid": 100,
+    "map_origin": { "x": 0, "y": 0 }
+  },
+  "line_of_sight": [[{"x":100,"y":0},{"x":100,"y":200}]],
+  "portals": [{"bounds":[{"x":100,"y":200},{"x":200,"y":200}],"closed":false,"secret":true}],
+  "lights": [{"position":{"x":50,"y":50},"range":300}]
+}"""
+    let universalReview =
+        MapEditorInterchange.evaluate UniversalVtt "review.dd2vtt" universalText
+    let universalMap =
+        MapEditorInterchange.accept universalReview |> Result.defaultWith failwith
+    let universalIgnored =
+        universalReview.Fields
+        |> Array.filter (fun field -> field.Disposition = Ignored)
+        |> Array.map _.Path
+        |> Array.sort
+    let foundryText =
+        """{
+  "name":"Review scene",
+  "width":600,
+  "height":400,
+  "grid":{"type":1,"size":100,"distance":5},
+  "walls":[
+    {"c":[100,0,100,200],"door":0,"ds":0,"move":20},
+    {"c":[200,200,300,200],"door":1,"ds":2}
+  ],
+  "tokens":[{"name":"Untrusted actor","x":100,"y":100}],
+  "background":{"src":"https://example.invalid/never-fetch.png"}
+}"""
+    let foundryReview =
+        MapEditorInterchange.evaluate FoundryScene "scene.json" foundryText
+    let foundryMap =
+        MapEditorInterchange.accept foundryReview |> Result.defaultWith failwith
+    let foundryLossy =
+        foundryReview.Fields
+        |> Array.filter (fun field -> field.Disposition = Lossy)
+        |> Array.map _.Path
+    let fantasyGroundsReview =
+        MapEditorInterchange.evaluate
+            FantasyGroundsImage
+            "campaign.xml"
+            "<root><image><bitmap>map.png</bitmap></image></root>"
+    let borderLossReview =
+        MapEditorInterchange.evaluate
+            UniversalVtt
+            "border.dd2vtt"
+            """{"resolution":{"map_size":{"x":4,"y":4},"pixels_per_grid":100},"line_of_sight":[[{"x":0,"y":0},{"x":100,"y":0}]]}"""
+    let duplicateJsonReview =
+        MapEditorInterchange.evaluate
+            FoundryScene
+            "ambiguous.json"
+            """{"width":400,"width":500,"height":400,"grid":100}"""
+
+    let interchangeFixture =
+        String.concat
+            "\n"
+            [ "background-type=" + background.MediaType
+              "background-dimensions=" + string background.PixelWidth + "x" + string background.PixelHeight
+              "background-bytes=" + string background.ByteLength
+              "background-id=" + background.AssetId
+              "background-defaults=" + string background.Locked + "," + string background.Opacity + "," + string background.Fit
+              "background-aligned=" + string alignedBackground.PixelsPerCell + "," + string alignedBackground.GridOffsetX + "," + string alignedBackground.GridOffsetY
+              "background-crop=" + string alignedBackground.Crop
+              "background-box=" + string backgroundBox
+              "svg-rejected=" + string svgRejected
+              "oversized-dimensions-rejected=" + string oversizedDimensions
+              "oversized-bytes-rejected=" + string oversizedBytes
+              "map-digest-unchanged=" + string (MapEditor.revisionDigest editor.Map = editor.Revision.Digest)
+              "universal-size=" + string universalMap.Width + "x" + string universalMap.Height
+              "universal-edges=" + string universalMap.Edges.Count
+              "universal-ignored=" + String.concat "," universalIgnored
+              "foundry-size=" + string foundryMap.Width + "x" + string foundryMap.Height
+              "foundry-edges=" + string foundryMap.Edges.Count
+              "foundry-lossy=" + String.concat "," foundryLossy
+              "fantasy-grounds-accept=" + string (MapEditorInterchange.canAccept fantasyGroundsReview)
+              "fantasy-grounds-report=" + string fantasyGroundsReview.Fields[0].Disposition ]
+    let expectedInterchangeFixture =
+        File.ReadAllText(
+            Path.Combine(
+                __SOURCE_DIRECTORY__,
+                "fixtures",
+                "map-editor-milestone-8-interchange.txt"
+            )
+        ).TrimEnd()
+    require
+        (interchangeFixture = expectedInterchangeFixture
+         && background.DataUrl.StartsWith("data:image/png;base64,")
+         && svgRejected
+         && oversizedDimensions
+         && oversizedBytes
+         && universalMap.Edges.Count = 3
+         && universalIgnored |> Array.contains "portals[0].secret"
+         && universalIgnored |> Array.exists (_.StartsWith("lights["))
+         && foundryLossy = [| "walls[1]" |]
+         && foundryReview.Fields |> Array.exists (fun field -> field.Path = "background.src" && field.Disposition = Ignored)
+         && borderLossReview.Fields |> Array.exists (fun field -> field.Disposition = Lossy)
+         && duplicateJsonReview.Errors |> Array.exists (_.Contains("Duplicate JSON field"))
+         && not (MapEditorInterchange.canAccept fantasyGroundsReview))
+        ("The deterministic Milestone 8 background/interchange review fixture changed.\n"
+         + interchangeFixture)
+
     let maximumMap =
         { editor.Map with
             Width = 40

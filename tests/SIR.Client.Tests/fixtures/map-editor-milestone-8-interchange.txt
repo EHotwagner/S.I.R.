@@ -1,0 +1,23 @@
+background-type=image/png
+background-dimensions=1024x512
+background-bytes=24
+background-id=sha256:f1aad65e5f5761344476c08f855d4c8b3f4537576c622c05e470e527a570778d
+background-defaults=True,0.65,FitInside
+background-aligned=100,-3.8,-10.6
+background-crop=Some({ Left = 10
+  Top = 10
+  Width = 800
+  Height = 400 })
+background-box=(-3.8, -10.6, 384, 192)
+svg-rejected=True
+oversized-dimensions-rejected=True
+oversized-bytes-rejected=True
+map-digest-unchanged=True
+universal-size=6x4
+universal-edges=3
+universal-ignored=format,lights[0].position.x,lights[0].position.y,lights[0].range,portals[0].secret
+foundry-size=6x4
+foundry-edges=3
+foundry-lossy=walls[1]
+fantasy-grounds-accept=False
+fantasy-grounds-report=RejectedField

@@ -16,5 +16,6 @@
     <Content Include="fixtures/map-editor-milestone-3-terrain.txt" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="fixtures/map-editor-milestone-4-units.txt" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="fixtures/map-editor-milestone-7-zones.txt" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="fixtures/map-editor-milestone-8-interchange.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
