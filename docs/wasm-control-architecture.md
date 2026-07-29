@@ -5,8 +5,8 @@ categoryindex: 6
 index: 7
 status: proposed
 document-type: living-design
-version: "0.14"
-last-updated: 2026-07-27
+version: "0.15"
+last-updated: 2026-07-29
 related:
   - docs/game-vision.md
   - docs/combat-resolution.md
@@ -165,6 +165,15 @@ configuration. The same fixture verifies isolated mutable globals,
 snapshot/resume output and state-hash equality, atomic malformed-output and
 fuel failures, sleep, MapScale handoff, rejected WASI imports, rejected hidden
 mutable globals, and denied growth beyond the 128 KiB memory limit.
+
+The accepted live vertical slice additionally runs canonical `SIR-PLAN 1`
+through the embedded standard controller, this host, and the shared MapScale
+and capability kernels for 40 continuous ticks. Its replay re-executes the same
+path and pins map, semantic/source plan, ruleset, descriptor set, controller,
+engine, replay, and match-lock identities. This acceptance is limited to the
+representative slice documented in
+[Live Integration Qualification](live-integration-qualification.md); broader
+distributed operations remain proposed.
 
 ## Instance configuration
 

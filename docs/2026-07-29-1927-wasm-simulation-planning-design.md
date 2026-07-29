@@ -6,7 +6,7 @@ document-type: architecture-and-roadmap
 category: Engineering
 categoryindex: 6
 index: 15
-version: "1.0"
+version: "1.1"
 created: 2026-07-29T19:27:00+02:00
 last-updated: 2026-07-29
 description: Design and milestone roadmap for converging the simulator, planning interface, control ABI, and authoritative deterministic kernel.
@@ -940,7 +940,9 @@ Evidence:
   emits a repeatable 16,306-byte review artifact. The complete live vertical
   slice remains Milestone 9.
 
-### [ ] ⬜ Milestone 9 — end-to-end qualification and live integration
+### [x] 🟩 Milestone 9 — end-to-end qualification and live integration
+
+Status: implemented on 2026-07-29.
 
 - run one map and plan through editor handoff, plan compiler, standard WASM,
   native host, shared kernel, projection, browser playback, and authoritative
@@ -956,6 +958,31 @@ Exit gate:
 - disclosure and reconnect behavior pass adversarial tests; and
 - the architecture documents are updated from proposed to accepted only for
   the portions demonstrated by evidence.
+
+Evidence:
+
+- the representative canonical `SIR-PLAN 1` artifact runs through the sole
+  native compiler, embedded standard WASM controller, reusable `ControlHost`,
+  MapScale and capability kernels, knowledge-scoped projection builder, shared
+  browser-worker DTO, and deterministic authoritative replay verifier for 40
+  continuous 20 Hz ticks and 80 isolated controller invocations;
+- match admission pins map, semantic/source plan, ruleset, descriptor-set
+  version, controller artifact, engine, replay, and match-lock identities;
+  forged artifacts, inconsistent reconnect cursors, and projection tampering
+  are rejected, while bounded gaps resume or replace with the latest disclosed
+  snapshot;
+- server-only replay identities cover complete MapScale and capability state
+  and event contents, while browser checkpoint identities derive only from
+  disclosed units and a constant empty disclosed-event stream, preventing
+  hidden activity from becoming a hash side channel;
+- the production worker accepts only ordered, bounded, structurally valid
+  host-produced projections, selects exact loaded ticks, and rejects missing
+  ticks rather than synthesizing authoritative state; and
+- full execution measures 30.197 ms, preview mapping 0.254 ms, serialization
+  0.151 ms, worker copy 0.025 ms, and render projection 0.092 ms for a
+  4,800-byte journal, all within their gates. Continuous execution is the only
+  qualified mode; WEGO, real network authentication, distributed resume
+  storage, and active-writer takeover remain separate proposals.
 
 ## Recommended implementation order
 

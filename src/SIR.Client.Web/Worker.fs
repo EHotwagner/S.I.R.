@@ -273,7 +273,8 @@ type private SimulatorSessionState =
       InitialProjection: InspectionProjectionTransport
       CurrentProjection: InspectionProjectionTransport
       MaximumHorizonTicks: int32
-      CommittedPlan: SimulatorPlanTransport option }
+      CommittedPlan: SimulatorPlanTransport option
+      AuthoritativeRun: Map<int32, InspectionProjectionTransport> }
 
 let mutable private simulatorSession: SimulatorSessionState option = None
 let mutable private cancelledSimulatorOperations: Set<int32> = Set.empty
@@ -338,6 +339,63 @@ let private simulatorDelta tick (projection: InspectionProjectionTransport) =
         Events = [||]
         Checkpoints = [||] }
 
+let private authoritativeProjection
+    (initial: InspectionProjectionTransport)
+    (frame: AuthoritativeProjectionFrame)
+    =
+    let units =
+        frame.VisibleUnits
+        |> Array.map (fun visible ->
+            match
+                initial.Units
+                |> Array.tryFind (fun unit -> unit.Id = visible.UnitId)
+            with
+            | Some unit ->
+                { unit with
+                    Column = visible.DisplayColumn
+                    Row = visible.DisplayRow
+                    Health = visible.Health }
+            | None ->
+                { Id = visible.UnitId
+                  Side = "disclosed"
+                  Column = visible.DisplayColumn
+                  Row = visible.DisplayRow
+                  Health = visible.Health
+                  HealthMaximum = max 1 visible.Health
+                  MovementDirection = None
+                  BodyFacing = int32 (Direction8.toCode North)
+                  AttentionDirection = int32 (Direction8.toCode North) })
+    { initial with
+        Tick = frame.Tick
+        Units = units
+        Events = [||]
+        Checkpoints =
+            [| { Tick = frame.Tick
+                 StateHash = shortIdentity frame.StateIdentity
+                 EventHash = shortIdentity frame.EventIdentity } |] }
+
+let private validAuthoritativeFrame
+    (initial: InspectionProjectionTransport)
+    (frame: AuthoritativeProjectionFrame)
+    =
+    frame.Tick > initial.Tick
+    && frame.ServerSequence > 0L
+    && frame.ProjectionRevision > 0L
+    && frame.StateIdentity.Length = 32
+    && frame.EventIdentity.Length = 32
+    && frame.VisibleUnits.Length <= SimulatorProtocol.MaximumProjectionUnits
+    && (frame.VisibleUnits
+        |> Array.distinctBy _.UnitId
+        |> Array.length) = frame.VisibleUnits.Length
+    && (frame.VisibleUnits
+        |> Array.forall (fun unit ->
+            unit.UnitId > 0
+            && unit.DisplayColumn >= initial.BoardMinimumColumn
+            && unit.DisplayColumn <= initial.BoardMaximumColumn
+            && unit.DisplayRow >= initial.BoardMinimumRow
+            && unit.DisplayRow <= initial.BoardMaximumRow
+            && unit.Health >= 0))
+
 let private executeSimulator
     (correlation: SimulatorCorrelation)
     (request: SimulatorRequest)
@@ -366,7 +424,8 @@ let private executeSimulator
                       InitialProjection = initialization.InitialProjection
                       CurrentProjection = initialization.InitialProjection
                       MaximumHorizonTicks = initialization.MaximumHorizonTicks
-                      CommittedPlan = None }
+                      CommittedPlan = None
+                      AuthoritativeRun = Map.empty }
 
                 simulatorSession <- Some session
                 cancelledSimulatorOperations <- Set.empty
@@ -506,6 +565,52 @@ let private executeSimulator
                         postSimulator
                             correlation
                             (PlanCommitted correlation.PlanRevision)
+                | LoadAuthoritativeRun(matchLock, replayIdentity, updates) ->
+                    let projections =
+                        updates
+                        |> Array.map (authoritativeProjection session.InitialProjection)
+                    let ordered =
+                        updates
+                        |> Array.pairwise
+                        |> Array.forall (fun (left, right) ->
+                            left.Tick < right.Tick
+                            && left.ServerSequence < right.ServerSequence
+                            && left.ProjectionRevision < right.ProjectionRevision)
+                    if
+                        session.CommittedPlan.IsNone
+                        || System.String.IsNullOrWhiteSpace matchLock
+                        || System.String.IsNullOrWhiteSpace replayIdentity
+                        || projections.Length = 0
+                        || not ordered
+                        || not (
+                            updates
+                            |> Array.forall (validAuthoritativeFrame session.InitialProjection)
+                        )
+                        || projections[0].Tick <= session.InitialProjection.Tick
+                        || projections[projections.Length - 1].Tick
+                           > session.InitialProjection.Tick
+                             + session.MaximumHorizonTicks
+                    then
+                        postSimulator
+                            correlation
+                            (SimulatorRequestRejected(
+                                "SIR.SIMULATOR.AUTHORITATIVE_RUN.INVALID",
+                                "A qualified run requires pinned identities and ordered bounded projections."
+                            ))
+                    else
+                        let run =
+                            projections
+                            |> Array.map (fun projection -> projection.Tick, projection)
+                            |> Map.ofArray
+                        simulatorSession <-
+                            Some { session with AuthoritativeRun = run }
+                        postSimulator
+                            correlation
+                            (AuthoritativeRunLoaded(
+                                matchLock,
+                                replayIdentity,
+                                projections[projections.Length - 1].Tick
+                            ))
                 | Step tickCount ->
                     match session.CommittedPlan with
                     | _ when correlation.PlanRevision <> session.PlanRevision ->
@@ -531,10 +636,26 @@ let private executeSimulator
                             ))
                     | Some _ ->
                         let tick = session.CurrentProjection.Tick + tickCount
-                        let delta = simulatorDelta tick session.CurrentProjection
-                        simulatorSession <-
-                            Some { session with CurrentProjection = { session.CurrentProjection with Tick = tick } }
-                        postSimulator correlation (SimulatorStepped(simulatorUpdate false delta))
+                        match Map.tryFind tick session.AuthoritativeRun with
+                        | Some projection ->
+                            simulatorSession <-
+                                Some { session with CurrentProjection = projection }
+                            postSimulator correlation (SimulatorStepped(simulatorUpdate false projection))
+                        | None when session.AuthoritativeRun.IsEmpty ->
+                            let delta = simulatorDelta tick session.CurrentProjection
+                            simulatorSession <-
+                                Some
+                                    { session with
+                                        CurrentProjection =
+                                            { session.CurrentProjection with Tick = tick } }
+                            postSimulator correlation (SimulatorStepped(simulatorUpdate false delta))
+                        | None ->
+                            postSimulator
+                                correlation
+                                (SimulatorRequestRejected(
+                                    "SIR.SIMULATOR.AUTHORITATIVE_RUN.MISSING_TICK",
+                                    "No qualified authoritative projection exists for the requested tick."
+                                ))
                 | RunTo targetTick ->
                     match session.CommittedPlan with
                     | _ when correlation.PlanRevision <> session.PlanRevision ->
@@ -586,32 +707,56 @@ let private executeSimulator
                                         (SimulatorOperationCancelled correlation.Operation)
                                 else
                                     completed <- completed + 1
-                                    let delta =
-                                        simulatorDelta
-                                            batchEnd
-                                            current.CurrentProjection
-
-                                    current <-
-                                        { current with
-                                            CurrentProjection =
-                                                { current.CurrentProjection with
-                                                    Tick = batchEnd } }
-
-                                    simulatorSession <- Some current
-
-                                    if batchEnd = targetTick then
+                                    match Map.tryFind batchEnd current.AuthoritativeRun with
+                                    | None when current.AuthoritativeRun.IsEmpty ->
+                                        let delta =
+                                            simulatorDelta
+                                                batchEnd
+                                                current.CurrentProjection
+                                        current <-
+                                            { current with
+                                                CurrentProjection =
+                                                    { current.CurrentProjection with Tick = batchEnd } }
+                                        simulatorSession <- Some current
+                                        if batchEnd = targetTick then
+                                            postSimulator
+                                                correlation
+                                                (SimulatorRunCompleted(
+                                                    simulatorUpdate false delta
+                                                ))
+                                        else
+                                            postSimulator
+                                                correlation
+                                                (SimulatorProgress(
+                                                    completed,
+                                                    simulatorUpdate false delta
+                                                ))
+                                    | None ->
+                                        stopped <- true
                                         postSimulator
                                             correlation
-                                            (SimulatorRunCompleted(
-                                                simulatorUpdate false delta
+                                            (SimulatorRequestRejected(
+                                                "SIR.SIMULATOR.AUTHORITATIVE_RUN.MISSING_TICK",
+                                                "No qualified authoritative projection exists for the requested tick."
                                             ))
-                                    else
-                                        postSimulator
-                                            correlation
-                                            (SimulatorProgress(
-                                                completed,
-                                                simulatorUpdate false delta
-                                            ))
+                                    | Some projection ->
+                                        current <-
+                                            { current with CurrentProjection = projection }
+                                        simulatorSession <- Some current
+
+                                        if batchEnd = targetTick then
+                                            postSimulator
+                                                correlation
+                                                (SimulatorRunCompleted(
+                                                    simulatorUpdate false projection
+                                                ))
+                                        else
+                                            postSimulator
+                                                correlation
+                                                (SimulatorProgress(
+                                                    completed,
+                                                    simulatorUpdate false projection
+                                                ))
                 | Reset ->
                     if correlation.PlanRevision <> session.PlanRevision then
                         postSimulator

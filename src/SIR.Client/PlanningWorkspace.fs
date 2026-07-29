@@ -398,6 +398,11 @@ module PlanningWorkspace =
                 CommittedRevision = Some revision
                 CommittedTick = Some envelope.CurrentTick
                 WorkerStatus = "Plan committed to simulator session" }
+        | AuthoritativeRunLoaded(_, _, finalTick) ->
+            { advanced with
+                WorkerStatus =
+                    "Qualified authoritative playback ready through tick "
+                    + string finalTick }
         | SimulatorStepped _
         | SimulatorRunCompleted _
         | SimulatorReset _ ->
