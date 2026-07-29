@@ -101,7 +101,23 @@ module RulesCatalog =
             Role = "Lesser magic, ritual contribution, preparation, and continuity" } ]
 
     let bodyProfiles =
-        [ { Name = "Goblin skirmisher"
+        [ { Name = "Human operative"
+            Status = "Prototype"
+            Health = "12"
+            FrontArmor = "0"
+            FlankArmor = "0"
+            RearArmor = "0"
+            SuppressionResistance = "1.00"
+            RegenerationPerSecond = "0" }
+          { Name = "Observation or relay drone"
+            Status = "Prototype"
+            Health = "8"
+            FrontArmor = "0"
+            FlankArmor = "0"
+            RearArmor = "0"
+            SuppressionResistance = "—"
+            RegenerationPerSecond = "0" }
+          { Name = "Goblin skirmisher"
             Status = "Prototype"
             Health = "35"
             FrontArmor = "8"
@@ -225,8 +241,10 @@ module RulesCatalog =
     let weaponProfiles =
         [ { Name = "Carbine"; Kind = "Point"; BaseEngageSeconds = "0.32"; RangeSlope = "0.018"; Exponent = "1.15"; Accuracy = "0.86"; DispersionPerMeter = "0.005"; Damage = "30"; Penetration = "24"; ShotsPerSecond = "2.60"; EffectDensity = "1.00"; SuppressionPerSecond = "7" }
           { Name = "Rifle"; Kind = "Point"; BaseEngageSeconds = "0.55"; RangeSlope = "0.012"; Exponent = "1.10"; Accuracy = "0.88"; DispersionPerMeter = "0.004"; Damage = "35"; Penetration = "28"; ShotsPerSecond = "2.20"; EffectDensity = "1.00"; SuppressionPerSecond = "8" }
+          { Name = "Shotgun"; Kind = "Point"; BaseEngageSeconds = "0.18"; RangeSlope = "0.040"; Exponent = "1.25"; Accuracy = "0.82"; DispersionPerMeter = "0.018"; Damage = "52"; Penetration = "16"; ShotsPerSecond = "1.25"; EffectDensity = "1.00"; SuppressionPerSecond = "12" }
           { Name = "Marksman rifle"; Kind = "Point"; BaseEngageSeconds = "1.25"; RangeSlope = "0.003"; Exponent = "1.00"; Accuracy = "0.94"; DispersionPerMeter = "0.001"; Damage = "55"; Penetration = "36"; ShotsPerSecond = "0.65"; EffectDensity = "1.00"; SuppressionPerSecond = "5" }
           { Name = "Support weapon"; Kind = "Area"; BaseEngageSeconds = "0.72"; RangeSlope = "0.006"; Exponent = "1.00"; Accuracy = "0.78"; DispersionPerMeter = "0.006"; Damage = "24"; Penetration = "24"; ShotsPerSecond = "7.00"; EffectDensity = "0.12"; SuppressionPerSecond = "42" }
+          { Name = "Grenade launcher"; Kind = "Area"; BaseEngageSeconds = "1.10"; RangeSlope = "0.010"; Exponent = "1.00"; Accuracy = "0.72"; DispersionPerMeter = "0.008"; Damage = "70"; Penetration = "25"; ShotsPerSecond = "0.25"; EffectDensity = "0.35"; SuppressionPerSecond = "30" }
           { Name = "Anti-armor launcher"; Kind = "Point"; BaseEngageSeconds = "1.50"; RangeSlope = "0.006"; Exponent = "1.00"; Accuracy = "0.76"; DispersionPerMeter = "0.003"; Damage = "120"; Penetration = "85"; ShotsPerSecond = "0.30"; EffectDensity = "1.00"; SuppressionPerSecond = "18" } ]
 
     let armorProfiles =

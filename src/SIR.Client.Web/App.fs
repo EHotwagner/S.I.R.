@@ -1371,13 +1371,17 @@ let private unitView
         match unit.BodyHeading with
         | Disclosed heading ->
             let angle = HeadingRadians.value heading
-            let radius = half + 3.0
+            // Straddle the symbol edge so body facing reads as part of the
+            // unit while remaining distinct from the upright class glyph.
+            // The high-contrast fill and wider base keep the pip legible on
+            // faction borders and at the smallest supported footprint.
+            let radius = half - 1.0
             let x = projected.SymbolCenterX + Math.Cos(angle) * radius
             let y = projected.SymbolCenterY + Math.Sin(angle) * radius
-            let tangentX = -Math.Sin(angle) * 4.0
-            let tangentY = Math.Cos(angle) * 4.0
-            let tipX = projected.SymbolCenterX + Math.Cos(angle) * (radius + 7.0)
-            let tipY = projected.SymbolCenterY + Math.Sin(angle) * (radius + 7.0)
+            let tangentX = -Math.Sin(angle) * 7.0
+            let tangentY = Math.Cos(angle) * 7.0
+            let tipX = projected.SymbolCenterX + Math.Cos(angle) * (half + 10.0)
+            let tipY = projected.SymbolCenterY + Math.Sin(angle) * (half + 10.0)
             Some (
                 string (x + tangentX)
                 + ","
@@ -1481,10 +1485,12 @@ let private unitView
             | Some points ->
                 Svg.polygon [
                     svg.custom ("data-facing-wedge", "body")
+                    svg.custom ("data-facing-emphasis", "high-contrast")
                     svg.points points
-                    svg.fill faction
-                    svg.stroke palette.Canvas
-                    svg.strokeWidth 1
+                    svg.fill palette.Focus
+                    svg.stroke faction
+                    svg.strokeWidth 2.5
+                    svg.strokeLineJoin "round"
                 ]
             | None -> Html.none
             match unit.SecondaryHeading with

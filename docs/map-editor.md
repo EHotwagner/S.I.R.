@@ -101,12 +101,18 @@ occupancy.
 | `orc` | `orc` | 2×2 |
 | `troll` | `troll` | 3×3 |
 | `human` | `rifleman` | 2×2 |
+| `human-gunner` | `gunner` | 2×2 |
+| `human-marksman` | `marksman` | 2×2 |
+| `human-engineer` | `engineer` | 2×2 |
+| `human-medic` | `medic` | 2×2 |
+| `human-signaller` | `signaller` | 2×2 |
 | `drone` | `observation-drone` | 1×1 |
+| `relay-drone` | `relay-drone` | 1×1 |
 
-The human size applies to the initial human personnel classes; `rifleman` is
-the palette representative, not a claim that other human classes have different
-occupancy. Observation and relay drones share the drone size. A new class does
-not inherit a preset by name or image: it must be assigned deliberately.
+The initial human personnel classes deliberately share the same body and
+occupancy defaults while retaining distinct role glyphs. Observation and relay
+drones likewise share a footprint and body profile. A new class does not
+inherit a preset by name or image: it must be assigned deliberately.
 
 ## Initial input contract
 
@@ -532,8 +538,9 @@ conformance run in the repository environment, the measured p95 was 26.123 ms.
 The Units palette searches canonical presets by faction, tactical role, class,
 glyph, or display name, then groups matches by faction. A preset explicitly
 declares its class ID, normalized glyph ID, default side, square footprint,
-current HP, and maximum HP. Goblin, orc, troll, human rifleman, and observation
-drone presets therefore do not depend on hidden placement defaults.
+current HP, and maximum HP. The three arcane bodies, six human personnel
+classes, and two drone roles therefore do not depend on hidden placement
+defaults.
 
 Pointer movement with a placement tool previews the complete occupied square.
 The outline remains a constant screen-space width at every camera zoom and

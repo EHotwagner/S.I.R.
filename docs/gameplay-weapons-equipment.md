@@ -95,8 +95,10 @@ catalog. They are not canonical stats.
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Carbine | Point | 0.32 | 0.018 | 1.15 | 0.86 | 0.005 | 30 | 24 | 2.60 | 1.00 | 7 |
 | Rifle | Point | 0.55 | 0.012 | 1.10 | 0.88 | 0.004 | 35 | 28 | 2.20 | 1.00 | 8 |
+| Shotgun | Point | 0.18 | 0.040 | 1.25 | 0.82 | 0.018 | 52 | 16 | 1.25 | 1.00 | 12 |
 | Marksman rifle | Point | 1.25 | 0.003 | 1.00 | 0.94 | 0.001 | 55 | 36 | 0.65 | 1.00 | 5 |
 | Support weapon | Area | 0.72 | 0.006 | 1.00 | 0.78 | 0.006 | 24 | 24 | 7.00 | 0.12 | 42 |
+| Grenade launcher | Area | 1.10 | 0.010 | 1.00 | 0.72 | 0.008 | 70 | 25 | 0.25 | 0.35 | 30 |
 | Anti-armor launcher | Point | 1.50 | 0.006 | 1.00 | 0.76 | 0.003 | 120 | 85 | 0.30 | 1.00 | 18 |
 
 `Effect density` is the current balance surrogate that dilutes area-fire damage

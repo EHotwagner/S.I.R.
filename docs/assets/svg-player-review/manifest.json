@@ -1,7 +1,7 @@
 {
   "format": "sir-svg-player-review-v1",
   "renderer": "SIR.Client.Web production Fable bundle",
-  "productionBundleSha256": "d54b8c97878d0a52bc3f661402a05dd47888bcfc65d1b2838e49b747bdc34413",
+  "productionBundleSha256": "284c144c17f87cd6b1e5881d964091a39d59262f24c5bb31e9cad254548630fd",
   "rasterizer": "rsvg-convert 2.62.3",
   "committedTick": 24,
   "board": {
@@ -98,22 +98,22 @@
       "palette": "accessible-default",
       "svg": "accessible-default.svg",
       "png": "accessible-default.png",
-      "svgSha256": "bfdaba756a60e72a6360326df3e7bd398d5dc23638220b7290b7bc3ba7828299",
-      "pngSha256": "15fcea2188ba9f1c59c4749bc2803a8ef5baf54ad405bb7e6278bec602c860f7"
+      "svgSha256": "cb14eb9153162096d8461087a2db27644583e57e0a36856ebdbc13f2a87b9f40",
+      "pngSha256": "11824c2993d6bf74b3bc14ffbf83ae99fae992741950a2715033e75b7b9f37ae"
     },
     {
       "palette": "high-contrast",
       "svg": "high-contrast.svg",
       "png": "high-contrast.png",
-      "svgSha256": "8da94ef2f7c7f8077f2ff321e68bb88bdca032b1ddfd4656009931c5aa16d5fa",
-      "pngSha256": "9556b0e38dd6fff03434d5e55285e5aa8cfd911288295b39d8ba8235e9b5f918"
+      "svgSha256": "897024d36a8aef58530636c82da335eaf1baa113ca2077bf50aa4b0f139c1e2e",
+      "pngSha256": "ae45878941b3bdda755f4007bd84b89289d1a440ee874333514ed021c1c96f58"
     },
     {
       "palette": "monochrome-pattern",
       "svg": "monochrome-pattern.svg",
       "png": "monochrome-pattern.png",
-      "svgSha256": "693304a021f35789d4e46333e06b3983b15d1754f3cb7e6a2be395186b1fd2da",
-      "pngSha256": "ed28577195654aa7c97645c22c9a836ca83d21772296a384a9992b3b405fc8e7"
+      "svgSha256": "0af9336998ab156cccf337989a9a457fc660dd3c059a7c422d90d50a5b1af0d7",
+      "pngSha256": "b5b1b6c19bf36710c005acf920432c97c1fb173682e1e2ef8f3a41bf5f99d109"
     }
   ]
 }
