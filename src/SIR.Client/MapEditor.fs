@@ -1,6 +1,8 @@
 namespace SIR.Client
 
 open System
+open System.Text
+open SIR.Domain
 
 type MapTerrain =
     | Open
@@ -64,6 +66,64 @@ type MapEditorTool =
     | Place of MapSide * classId: string * size: int32
     | Edge of MapEdgeDirection * MapEdgeKind
 
+type EditorDomain =
+    | TerrainDomain
+    | EdgeDomain
+    | UnitDomain
+    | DocumentDomain
+
+type EditorCellAddress =
+    { CellColumn: int32
+      CellRow: int32 }
+
+type EditorBox =
+    { FirstColumn: int32
+      FirstRow: int32
+      LastColumn: int32
+      LastRow: int32 }
+
+type EditorGesture =
+    | IdleGesture
+    | BoxSelectionGesture of anchor: EditorCellAddress * current: EditorCellAddress
+    | CommandPreviewGesture of EditorCommand
+
+and EditorCommand =
+    | PaintCells of MapTerrain * EditorCellAddress array
+    | ReplaceEdges of ((int32 * int32 * MapEdgeDirection) * (MapEdgeKind * bool) option) array
+    | AddUnits of EditorUnit array
+    | UpdateUnits of EditorUnit array
+    | RemoveUnits of int32 array
+    | ResizeDocument of width: int32 * height: int32
+    | ReplaceDocument of reason: string * MapDefinition
+
+type MapIssue =
+    { Code: string
+      Message: string }
+
+type ValidatedEditorCommand = private ValidatedEditorCommand of EditorCommand
+
+type MapRevision =
+    { Number: int64
+      ParentDigest: string option
+      Document: MapDefinition
+      Digest: string }
+
+type RevisionState =
+    | DirtyRevision
+    | SavedRevision
+    | SimulatedRevision
+    | RecoveredRevision
+
+type EditorHistoryEntry =
+    { Command: EditorCommand
+      Before: MapRevision
+      After: MapRevision
+      SerializedBytes: int }
+
+type EditorClipboard =
+    { SourceDigest: string
+      UnitFragment: EditorUnit array }
+
 type MapUnitFootprintPreset =
     { Id: string
       ClassId: string
@@ -73,6 +133,17 @@ type MapEditorState =
     { Map: MapDefinition
       Tool: MapEditorTool
       SelectedUnit: int32 option
+      SelectedUnits: Set<int32>
+      Gesture: EditorGesture
+      Revision: MapRevision
+      RevisionState: RevisionState
+      SavedDigest: string option
+      SimulatedDigest: string option
+      RecoveredFromDigest: string option
+      UndoHistory: EditorHistoryEntry list
+      RedoHistory: EditorHistoryEntry list
+      HistoryBytes: int
+      Clipboard: EditorClipboard option
       Tick: int32
       IsRunning: bool
       LastEvents: string list
@@ -83,6 +154,23 @@ type MapEditorAction =
     | ActivateCell of column: int32 * row: int32
     | Resize of width: int32 * height: int32
     | SelectEditorUnit of int32 option
+    | ToggleEditorUnitSelection of int32
+    | SelectEditorUnitsInBox of EditorBox
+    | BeginEditorBoxSelection of EditorCellAddress
+    | ExtendEditorBoxSelection of EditorCellAddress
+    | CommitEditorGesture
+    | CancelEditorGesture
+    | SelectAllInActiveDomain
+    | UndoEditorCommand
+    | RedoEditorCommand
+    | CopyEditorSelection
+    | PasteEditorClipboard
+    | DuplicateEditorSelection
+    | DeleteEditorSelection
+    | MarkEditorSaved
+    | MarkEditorSimulated
+    | MarkEditorRecovered of sourceDigest: string
+    | RestoreEditorDraft
     | RemoveSelectedUnit
     | SetSelectedSide of MapSide
     | SetSelectedClass of string
@@ -100,6 +188,12 @@ type MapEditorAction =
 module MapEditor =
     [<Literal>]
     let FormatVersion = 1
+
+    [<Literal>]
+    let MaximumHistoryCommands = 100
+
+    [<Literal>]
+    let MaximumHistoryBytes = 2_000_000
 
     let canonicalFootprintPresets =
         [ { Id = "goblin"
@@ -182,6 +276,17 @@ module MapEditor =
         | "general" -> Some General
         | _ -> None
 
+    let private edgeDirectionName direction =
+        match direction with
+        | EastEdge -> "east"
+        | SouthEdge -> "south"
+
+    let private edgeKindName kind =
+        match kind with
+        | Wall -> "wall"
+        | Door -> "door"
+        | Window -> "window"
+
     let private directionCode direction =
         match direction with
         | North -> "N"
@@ -221,6 +326,82 @@ module MapEditor =
 
     let scriptText script =
         script |> List.map directionCode |> String.concat ","
+
+    let private canonicalMapText (map: MapDefinition) =
+        let lines =
+            [ "SIR-MAP " + string FormatVersion
+              "size " + string map.Width + " " + string map.Height
+              yield!
+                  map.Terrain
+                  |> Map.toList
+                  |> List.map (fun ((column, row), terrain) ->
+                      "terrain "
+                      + string column
+                      + " "
+                      + string row
+                      + " "
+                      + terrainName terrain)
+              yield!
+                  map.Edges
+                  |> Map.toList
+                  |> List.map (fun ((column, row, direction), (kind, isOpen)) ->
+                      "edge "
+                      + string column
+                      + " "
+                      + string row
+                      + " "
+                      + edgeDirectionName direction
+                      + " "
+                      + edgeKindName kind
+                      + " "
+                      + (if isOpen then "open" else "closed"))
+              yield!
+                  map.Units
+                  |> Map.toList
+                  |> List.map (fun (_, unit) ->
+                      "unit "
+                      + string unit.Id
+                      + " "
+                      + sideName unit.Side
+                      + " "
+                      + unit.ClassId
+                      + " "
+                      + string unit.Column
+                      + " "
+                      + string unit.Row
+                      + " "
+                      + string unit.Size
+                      + " "
+                      + string unit.Health
+                      + " "
+                      + string unit.HealthMaximum
+                      + " "
+                      + controllerName unit.Controller
+                      + " "
+                      + (if List.isEmpty unit.Script then "-" else scriptText unit.Script)) ]
+
+        String.concat "\n" lines + "\n"
+
+    let private hex (bytes: byte array) =
+        bytes
+        |> Array.map (fun value -> value.ToString("x2"))
+        |> String.concat ""
+
+    let revisionDigest map =
+        map
+        |> canonicalMapText
+        |> Encoding.UTF8.GetBytes
+        |> CanonicalHash.sha256
+        |> hex
+
+    let private revision number parent map =
+        { Number = number
+          ParentDigest = parent
+          Document = map
+          Digest = revisionDigest map }
+
+    let private serializedBytes map =
+        map |> canonicalMapText |> Encoding.UTF8.GetBytes |> Array.length
 
     let private emptyMap width height =
         { Width = width
@@ -296,9 +477,22 @@ module MapEditor =
                 Units = units
                 NextUnitId = 5 }
 
+        let initialRevision = revision 0L None map
+
         { Map = map
           Tool = Select
           SelectedUnit = Some 1
+          SelectedUnits = Set.singleton 1
+          Gesture = IdleGesture
+          Revision = initialRevision
+          RevisionState = SavedRevision
+          SavedDigest = Some initialRevision.Digest
+          SimulatedDigest = None
+          RecoveredFromDigest = None
+          UndoHistory = []
+          RedoHistory = []
+          HistoryBytes = 0
+          Clipboard = None
           Tick = 0
           IsRunning = false
           LastEvents = []
@@ -563,10 +757,10 @@ module MapEditor =
                 |> Option.filter (fun id -> Map.containsKey id units)
             Validation = None }
 
-    let rec update action state =
+    let rec private legacyUpdate action state =
         match action with
         | ChooseTool tool ->
-            { state with Tool = tool; Validation = None }
+            { state with Tool = tool; Gesture = IdleGesture; Validation = None }
         | ActivateCell(column, row) ->
             match state.Tool with
             | Select ->
@@ -613,6 +807,23 @@ module MapEditor =
         | Resize(width, height) -> resize width height state
         | SelectEditorUnit id ->
             { state with SelectedUnit = id; Tool = Select; Validation = None }
+        | ToggleEditorUnitSelection _
+        | SelectEditorUnitsInBox _
+        | BeginEditorBoxSelection _
+        | ExtendEditorBoxSelection _
+        | CommitEditorGesture
+        | CancelEditorGesture
+        | SelectAllInActiveDomain
+        | UndoEditorCommand
+        | RedoEditorCommand
+        | CopyEditorSelection
+        | PasteEditorClipboard
+        | DuplicateEditorSelection
+        | DeleteEditorSelection
+        | MarkEditorSaved
+        | MarkEditorSimulated
+        | MarkEditorRecovered _
+        | RestoreEditorDraft -> state
         | RemoveSelectedUnit ->
             match state.SelectedUnit with
             | None -> state
@@ -727,69 +938,7 @@ module MapEditor =
             | Error error ->
                 { state with Validation = Some error }
 
-    and export state =
-        let lines =
-            [ "SIR-MAP " + string FormatVersion
-              "size " + string state.Map.Width + " " + string state.Map.Height
-              yield!
-                  state.Map.Terrain
-                  |> Map.toList
-                  |> List.map (fun ((column, row), terrain) ->
-                      "terrain "
-                      + string column
-                      + " "
-                      + string row
-                      + " "
-                      + terrainName terrain)
-              yield!
-                  state.Map.Edges
-                  |> Map.toList
-                  |> List.map (fun ((column, row, direction), (kind, isOpen)) ->
-                      let directionName =
-                          match direction with
-                          | EastEdge -> "east"
-                          | SouthEdge -> "south"
-                      let kindName =
-                          match kind with
-                          | Wall -> "wall"
-                          | Door -> "door"
-                          | Window -> "window"
-                      "edge "
-                      + string column
-                      + " "
-                      + string row
-                      + " "
-                      + directionName
-                      + " "
-                      + kindName
-                      + " "
-                      + (if isOpen then "open" else "closed"))
-              yield!
-                  state.Map.Units
-                  |> Map.toList
-                  |> List.map (fun (_, unit) ->
-                      "unit "
-                      + string unit.Id
-                      + " "
-                      + sideName unit.Side
-                      + " "
-                      + unit.ClassId
-                      + " "
-                      + string unit.Column
-                      + " "
-                      + string unit.Row
-                      + " "
-                      + string unit.Size
-                      + " "
-                      + string unit.Health
-                      + " "
-                      + string unit.HealthMaximum
-                      + " "
-                      + controllerName unit.Controller
-                      + " "
-                      + (if List.isEmpty unit.Script then "-" else scriptText unit.Script)) ]
-
-        String.concat "\n" lines + "\n"
+    and export state = canonicalMapText state.Map
 
     and tryImport text =
         let fail line message =
@@ -926,6 +1075,445 @@ module MapEditor =
                     Error("Edge " + string column + "," + string row + " is outside the map.")
                 | _, _, Some unit -> Error("Unit " + string unit.Id + " does not fit the map.")
                 | None, None, None -> Ok map)
+
+    let private issue code message =
+        { Code = code; Message = message }
+
+    let private validateDocument map =
+        let dimensions =
+            if map.Width < 4 || map.Width > 40 || map.Height < 4 || map.Height > 40 then
+                [ issue "MAP-DIMENSIONS" "Map dimensions must be between 4 and 40 cells." ]
+            else
+                []
+
+        let terrain =
+            map.Terrain
+            |> Map.toList
+            |> List.choose (fun ((column, row), _) ->
+                if column < 0 || row < 0 || column >= map.Width || row >= map.Height then
+                    Some(issue "TERRAIN-OUTSIDE" "A terrain cell is outside the map.")
+                else
+                    None)
+
+        let edges =
+            map.Edges
+            |> Map.toList
+            |> List.choose (fun ((column, row, _), _) ->
+                if column < 0 || row < 0 || column >= map.Width || row >= map.Height then
+                    Some(issue "EDGE-OUTSIDE" "A semantic edge is outside the map.")
+                else
+                    None)
+
+        let units =
+            map.Units
+            |> Map.toList
+            |> List.choose (fun (id, unit) ->
+                if id <> unit.Id || id <= 0 then
+                    Some(issue "UNIT-IDENTITY" "Unit keys and positive identifiers must agree.")
+                elif String.IsNullOrWhiteSpace unit.ClassId || unit.ClassId |> Seq.exists Char.IsWhiteSpace then
+                    Some(issue "UNIT-CLASS" "A unit class ID must be one non-empty token.")
+                elif unit.HealthMaximum <= 0 || unit.Health < 0 || unit.Health > unit.HealthMaximum then
+                    Some(issue "UNIT-HEALTH" "Unit health is outside its accepted range.")
+                elif not (validPlacement map (Some id) unit unit.Column unit.Row) then
+                    Some(issue "UNIT-PLACEMENT" ("Unit " + string id + " does not fit."))
+                else
+                    None)
+
+        dimensions @ terrain @ edges @ units
+
+    let applyCommand (ValidatedEditorCommand command) map =
+        match command with
+        | PaintCells(terrain, addresses) ->
+            let terrainMap =
+                addresses
+                |> Array.fold (fun current address ->
+                    if terrain = Open then
+                        Map.remove (address.CellColumn, address.CellRow) current
+                    else
+                        Map.add (address.CellColumn, address.CellRow) terrain current) map.Terrain
+            { map with Terrain = terrainMap }
+        | ReplaceEdges changes ->
+            let edges =
+                changes
+                |> Array.fold (fun current (address, replacement) ->
+                    match replacement with
+                    | Some edge -> Map.add address edge current
+                    | None -> Map.remove address current) map.Edges
+            { map with Edges = edges }
+        | AddUnits units
+        | UpdateUnits units ->
+            let nextUnits =
+                units
+                |> Array.fold (fun current unit -> Map.add unit.Id unit current) map.Units
+            { map with
+                Units = nextUnits
+                NextUnitId =
+                    units
+                    |> Array.fold (fun next unit -> max next (unit.Id + 1)) map.NextUnitId }
+        | RemoveUnits identifiers ->
+            { map with
+                Units =
+                    identifiers
+                    |> Array.fold (fun current id -> Map.remove id current) map.Units }
+        | ResizeDocument(width, height) ->
+            { map with Width = width; Height = height }
+        | ReplaceDocument(_, document) -> document
+
+    let validateCommand map command =
+        let duplicate values =
+            values |> Array.distinct |> Array.length <> Array.length values
+
+        let shapeIssues =
+            match command with
+            | PaintCells(_, addresses) when Array.isEmpty addresses ->
+                [ issue "COMMAND-EMPTY" "A paint command must contain at least one cell." ]
+            | ReplaceEdges changes when Array.isEmpty changes ->
+                [ issue "COMMAND-EMPTY" "An edge command must contain at least one change." ]
+            | AddUnits units when Array.isEmpty units ->
+                [ issue "COMMAND-EMPTY" "An add command must contain at least one unit." ]
+            | AddUnits units when units |> Array.map _.Id |> duplicate ->
+                [ issue "UNIT-DUPLICATE" "An add command contains duplicate unit identifiers." ]
+            | AddUnits units when units |> Array.exists (fun unit -> Map.containsKey unit.Id map.Units) ->
+                [ issue "UNIT-DUPLICATE" "An added unit identifier already exists." ]
+            | UpdateUnits units when Array.isEmpty units ->
+                [ issue "COMMAND-EMPTY" "An update command must contain at least one unit." ]
+            | UpdateUnits units when units |> Array.map _.Id |> duplicate ->
+                [ issue "UNIT-DUPLICATE" "An update command contains duplicate unit identifiers." ]
+            | UpdateUnits units when units |> Array.exists (fun unit -> not (Map.containsKey unit.Id map.Units)) ->
+                [ issue "UNIT-MISSING" "An updated unit does not exist." ]
+            | RemoveUnits identifiers when Array.isEmpty identifiers ->
+                [ issue "COMMAND-EMPTY" "A remove command must contain at least one unit." ]
+            | RemoveUnits identifiers when duplicate identifiers ->
+                [ issue "UNIT-DUPLICATE" "A remove command contains duplicate identifiers." ]
+            | RemoveUnits identifiers when identifiers |> Array.exists (fun id -> not (Map.containsKey id map.Units)) ->
+                [ issue "UNIT-MISSING" "A removed unit does not exist." ]
+            | ResizeDocument(width, height) when width < 4 || width > 40 || height < 4 || height > 40 ->
+                [ issue "MAP-DIMENSIONS" "Map dimensions must be between 4 and 40 cells." ]
+            | _ -> []
+
+        if not (List.isEmpty shapeIssues) then
+            Error shapeIssues
+        else
+            let candidate = applyCommand (ValidatedEditorCommand command) map
+            match validateDocument candidate with
+            | [] -> Ok(ValidatedEditorCommand command)
+            | issues -> Error issues
+
+    let private historyWithinBounds entries =
+        let rec keep count bytes accepted remaining =
+            match remaining with
+            | [] -> List.rev accepted
+            | entry :: tail
+                when count < MaximumHistoryCommands
+                     && bytes + entry.SerializedBytes <= MaximumHistoryBytes ->
+                keep (count + 1) (bytes + entry.SerializedBytes) (entry :: accepted) tail
+            | _ -> List.rev accepted
+
+        keep 0 0 [] entries
+
+    let private historySize entries =
+        entries |> List.sumBy _.SerializedBytes
+
+    let private selectedAfterMap map selected =
+        selected |> Set.filter (fun id -> Map.containsKey id map.Units)
+
+    let private commit command state =
+        match validateCommand state.Map command with
+        | Error issues ->
+            { state with Validation = issues |> List.map _.Message |> String.concat " " |> Some }
+        | Ok validated ->
+            let map = applyCommand validated state.Map
+            if map = state.Map then
+                { state with Validation = None; Gesture = IdleGesture }
+            else
+                let before = state.Revision
+                let after =
+                    revision
+                        (before.Number + 1L)
+                        (Some before.Digest)
+                        map
+                let entry =
+                    { Command = command
+                      Before = before
+                      After = after
+                      SerializedBytes = serializedBytes before.Document + serializedBytes map }
+                let undo = historyWithinBounds (entry :: state.UndoHistory)
+                let selected = selectedAfterMap map state.SelectedUnits
+                { state with
+                    Map = map
+                    SelectedUnits = selected
+                    SelectedUnit =
+                        state.SelectedUnit
+                        |> Option.filter (fun id -> Set.contains id selected)
+                        |> Option.orElseWith (fun () -> selected |> Set.toList |> List.tryHead)
+                    Gesture = IdleGesture
+                    Revision = after
+                    RevisionState = DirtyRevision
+                    UndoHistory = undo
+                    RedoHistory = []
+                    HistoryBytes = historySize undo
+                    Validation = None }
+
+    let private activeDomain tool =
+        match tool with
+        | Paint _ -> TerrainDomain
+        | Edge _ -> EdgeDomain
+        | Place _ -> UnitDomain
+        | Select -> UnitDomain
+
+    let private idsInBox box map =
+        let minimumColumn = min box.FirstColumn box.LastColumn
+        let maximumColumn = max box.FirstColumn box.LastColumn
+        let minimumRow = min box.FirstRow box.LastRow
+        let maximumRow = max box.FirstRow box.LastRow
+
+        map.Units
+        |> Map.toList
+        |> List.choose (fun (id, unit) ->
+            let lastColumn = unit.Column + unit.Size - 1
+            let lastRow = unit.Row + unit.Size - 1
+            if
+                unit.Column <= maximumColumn
+                && lastColumn >= minimumColumn
+                && unit.Row <= maximumRow
+                && lastRow >= minimumRow
+            then Some id else None)
+        |> Set.ofList
+
+    let private translatedUnits offset (source: EditorUnit array) nextId =
+        source
+        |> Array.sortBy _.Id
+        |> Array.mapi (fun index (unit: EditorUnit) ->
+            { unit with
+                Id = nextId + int32 index
+                Column = unit.Column + offset
+                Row = unit.Row + offset
+                ScriptIndex = 0 })
+
+    let private tryTranslatedCommand (source: EditorUnit array) state =
+        [| 1 .. int (max state.Map.Width state.Map.Height) |]
+        |> Array.tryPick (fun offset ->
+            let units = translatedUnits (int32 offset) source state.Map.NextUnitId
+            let command = AddUnits units
+            match validateCommand state.Map command with
+            | Ok _ -> Some(command, units)
+            | Error _ -> None)
+
+    let private legacyCommand action map =
+        let reason =
+            match action with
+            | ActivateCell _ -> "activate"
+            | Resize _ -> "resize"
+            | RemoveSelectedUnit -> "remove"
+            | SetSelectedSide _
+            | SetSelectedClass _
+            | SetSelectedSize _
+            | SetSelectedHealth _
+            | SetSelectedController _
+            | SetSelectedScript _ -> "update-unit"
+            | MoveSelected _ -> "move-unit"
+            | StepEditor -> "simulation-step"
+            | ClearMap -> "clear"
+            | LoadMapText _ -> "import"
+            | _ -> "editor"
+        ReplaceDocument(reason, map)
+
+    let rec update action state =
+        match action with
+        | SelectEditorUnit id ->
+            let selected =
+                id
+                |> Option.filter (fun identifier -> Map.containsKey identifier state.Map.Units)
+                |> Option.map Set.singleton
+                |> Option.defaultValue Set.empty
+            { state with
+                Tool = Select
+                SelectedUnit = id |> Option.filter (fun identifier -> Set.contains identifier selected)
+                SelectedUnits = selected
+                Gesture = IdleGesture
+                Validation = None }
+        | ToggleEditorUnitSelection id when Map.containsKey id state.Map.Units ->
+            let selected =
+                if Set.contains id state.SelectedUnits then Set.remove id state.SelectedUnits
+                else Set.add id state.SelectedUnits
+            { state with
+                Tool = Select
+                SelectedUnits = selected
+                SelectedUnit = if Set.contains id selected then Some id else selected |> Set.toList |> List.tryHead
+                Validation = None }
+        | ToggleEditorUnitSelection _ -> state
+        | SelectEditorUnitsInBox box ->
+            let selected = idsInBox box state.Map
+            { state with
+                Tool = Select
+                SelectedUnits = selected
+                SelectedUnit = selected |> Set.toList |> List.tryHead
+                Gesture = IdleGesture
+                Validation = None }
+        | BeginEditorBoxSelection address ->
+            { state with Gesture = BoxSelectionGesture(address, address); Validation = None }
+        | ExtendEditorBoxSelection address ->
+            match state.Gesture with
+            | BoxSelectionGesture(anchor, _) ->
+                { state with Gesture = BoxSelectionGesture(anchor, address) }
+            | _ -> state
+        | CommitEditorGesture ->
+            match state.Gesture with
+            | BoxSelectionGesture(anchor, current) ->
+                update
+                    (SelectEditorUnitsInBox
+                          { FirstColumn = anchor.CellColumn
+                            FirstRow = anchor.CellRow
+                            LastColumn = current.CellColumn
+                            LastRow = current.CellRow })
+                    state
+            | CommandPreviewGesture command -> commit command state
+            | IdleGesture -> state
+        | CancelEditorGesture -> { state with Gesture = IdleGesture; Validation = None }
+        | SelectAllInActiveDomain ->
+            if activeDomain state.Tool = UnitDomain then
+                let selected = state.Map.Units |> Map.toList |> List.map fst |> Set.ofList
+                { state with
+                    SelectedUnits = selected
+                    SelectedUnit = selected |> Set.toList |> List.tryHead
+                    Validation = None }
+            else
+                { state with
+                    SelectedUnits = Set.empty
+                    SelectedUnit = None
+                    Validation = Some "The active domain has no selectable objects yet." }
+        | CopyEditorSelection ->
+            let units =
+                state.SelectedUnits
+                |> Set.toArray
+                |> Array.choose (fun id -> Map.tryFind id state.Map.Units)
+                |> Array.sortBy _.Id
+            if Array.isEmpty units then state
+            else
+                { state with
+                    Clipboard = Some { SourceDigest = state.Revision.Digest; UnitFragment = units }
+                    Validation = None }
+        | PasteEditorClipboard ->
+            match state.Clipboard with
+            | None -> { state with Validation = Some "Copy units before pasting." }
+            | Some clipboard ->
+                match tryTranslatedCommand clipboard.UnitFragment state with
+                | None -> { state with Validation = Some "The copied formation does not fit." }
+                | Some(command, units) ->
+                    let next = commit command state
+                    { next with
+                        SelectedUnits = units |> Array.map _.Id |> Set.ofArray
+                        SelectedUnit = units |> Array.tryHead |> Option.map _.Id }
+        | DuplicateEditorSelection ->
+            let copied = update CopyEditorSelection state
+            update PasteEditorClipboard copied
+        | DeleteEditorSelection ->
+            if Set.isEmpty state.SelectedUnits then state
+            else commit (RemoveUnits(state.SelectedUnits |> Set.toArray)) state
+        | UndoEditorCommand ->
+            match state.UndoHistory with
+            | [] -> state
+            | entry :: remaining ->
+                let selected = selectedAfterMap entry.Before.Document state.SelectedUnits
+                { state with
+                    Map = entry.Before.Document
+                    Revision = entry.Before
+                    RevisionState =
+                        if state.SavedDigest = Some entry.Before.Digest then SavedRevision
+                        else DirtyRevision
+                    SelectedUnits = selected
+                    SelectedUnit = selected |> Set.toList |> List.tryHead
+                    Gesture = IdleGesture
+                    UndoHistory = remaining
+                    RedoHistory = entry :: state.RedoHistory |> historyWithinBounds
+                    HistoryBytes = historySize remaining
+                    Validation = None }
+        | RedoEditorCommand ->
+            match state.RedoHistory with
+            | [] -> state
+            | entry :: remaining ->
+                let selected = selectedAfterMap entry.After.Document state.SelectedUnits
+                let undo = entry :: state.UndoHistory |> historyWithinBounds
+                { state with
+                    Map = entry.After.Document
+                    Revision = entry.After
+                    RevisionState =
+                        if state.SavedDigest = Some entry.After.Digest then SavedRevision
+                        else DirtyRevision
+                    SelectedUnits = selected
+                    SelectedUnit = selected |> Set.toList |> List.tryHead
+                    Gesture = IdleGesture
+                    UndoHistory = undo
+                    RedoHistory = remaining
+                    HistoryBytes = historySize undo
+                    Validation = None }
+        | MarkEditorSaved ->
+            { state with
+                RevisionState = SavedRevision
+                SavedDigest = Some state.Revision.Digest
+                Validation = None }
+        | MarkEditorSimulated ->
+            { state with
+                Map = state.Revision.Document
+                RevisionState = SimulatedRevision
+                SimulatedDigest = Some state.Revision.Digest
+                Validation = None }
+        | MarkEditorRecovered sourceDigest ->
+            { state with
+                RevisionState = RecoveredRevision
+                RecoveredFromDigest = Some sourceDigest
+                Validation = None }
+        | RestoreEditorDraft ->
+            { state with
+                Map = state.Revision.Document
+                RevisionState =
+                    if state.SavedDigest = Some state.Revision.Digest then SavedRevision
+                    else DirtyRevision
+                IsRunning = false
+                Tick = 0
+                LastEvents = []
+                Validation = None }
+        | RemoveSelectedUnit ->
+            update DeleteEditorSelection state
+        | StepEditor
+        | MoveSelected _ ->
+            let runtime = legacyUpdate action state
+            { runtime with
+                Revision = state.Revision
+                RevisionState = state.RevisionState
+                UndoHistory = state.UndoHistory
+                RedoHistory = state.RedoHistory
+                HistoryBytes = state.HistoryBytes }
+        | _ ->
+            let legacy = legacyUpdate action state
+            let normalizedSelection =
+                match action with
+                | ActivateCell _ when state.Tool = Select ->
+                    legacy.SelectedUnit |> Option.map Set.singleton |> Option.defaultValue Set.empty
+                | LoadMapText _
+                | ClearMap ->
+                    legacy.SelectedUnit |> Option.map Set.singleton |> Option.defaultValue Set.empty
+                | _ -> selectedAfterMap legacy.Map state.SelectedUnits
+            let legacy =
+                { legacy with
+                    SelectedUnits = normalizedSelection
+                    SelectedUnit =
+                        legacy.SelectedUnit
+                        |> Option.filter (fun id -> Set.contains id normalizedSelection)
+                        |> Option.orElseWith (fun () -> normalizedSelection |> Set.toList |> List.tryHead)
+                    UndoHistory = state.UndoHistory
+                    RedoHistory = state.RedoHistory
+                    HistoryBytes = state.HistoryBytes
+                    Clipboard = state.Clipboard
+                    Revision = state.Revision
+                    RevisionState = state.RevisionState
+                    SavedDigest = state.SavedDigest
+                    SimulatedDigest = state.SimulatedDigest
+                    RecoveredFromDigest = state.RecoveredFromDigest }
+            if legacy.Map = state.Map then legacy
+            elif state.RevisionState = SimulatedRevision then
+                legacy
+            else commit (legacyCommand action legacy.Map) { legacy with Map = state.Map }
 
     let private edgeVisual ((column, row, direction), (kind, isOpen)) : EdgeVisual =
         let kindName =

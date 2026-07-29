@@ -5,7 +5,7 @@ categoryindex: 5
 index: 10
 status: in-progress
 document-type: timestamped-design-report
-version: "1.3"
+version: "1.4"
 created-at: 2026-07-29T12:30:56+02:00
 last-updated: 2026-07-29
 related:
@@ -20,7 +20,7 @@ related:
 
 **Report timestamp:** 2026-07-29 12:30:56 CEST (UTC+02:00)
 
-**Status:** implementation in progress; Milestones 0–1 complete
+**Status:** implementation in progress; Milestones 0–2 complete
 
 ## Executive decision
 
@@ -752,14 +752,14 @@ within it is checked.
 
 ### Milestone 2 — Command history and selection
 
-- [ ] Introduce transient gestures, validated `EditorCommand`, immutable map
+- [x] Introduce transient gestures, validated `EditorCommand`, immutable map
   revisions, and stable revision digests.
-- [ ] Add click, additive, box, and object-list selection.
-- [ ] Add undo, redo, duplicate, delete, copy, paste, and select-all within the
+- [x] Add click, additive, box, and object-list selection.
+- [x] Add undo, redo, duplicate, delete, copy, paste, and select-all within the
   active domain.
-- [ ] Bound history by command count and serialized size.
-- [ ] Add dirty, saved, simulated, and recovered revision states.
-- [ ] Prove undo/redo round-trips with property and cross-runtime tests.
+- [x] Bound history by command count and serialized size.
+- [x] Add dirty, saved, simulated, and recovered revision states.
+- [x] Prove undo/redo round-trips with property and cross-runtime tests.
 
 ### Milestone 3 — Terrain authoring
 

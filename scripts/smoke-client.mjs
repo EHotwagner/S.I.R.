@@ -318,8 +318,15 @@ const objectList = window.document.querySelector(
 );
 const editorSymbols =
   editorWorkspace?.querySelectorAll("[data-editor-unit-id]") ?? [];
+const editorCanvas = window.document.querySelector(
+  '[aria-label="SVG tactical map workspace"]',
+);
+const initialEditorDigest =
+  "3f6b58588b769dfa1ded7fc564a204c8b0055753b5caedbe74f15ebf61e2b943";
 if (
   !editorWorkspace ||
+  editorCanvas?.getAttribute("data-editor-revision") !== initialEditorDigest ||
+  editorCanvas?.getAttribute("data-editor-revision-state") !== "SavedRevision" ||
   !objectList ||
   objectList.querySelectorAll("[data-map-column]").length !== 96 ||
   editorSymbols.length !== 4 ||
@@ -332,6 +339,53 @@ if (
   throw new Error(
     "The editor tab did not use the SVG workspace, canonical square-unit symbols, and object-list fallback.",
   );
+}
+
+objectList
+  ?.querySelectorAll("button")[2]
+  ?.dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
+await window.happyDOM.waitUntilComplete();
+buttonByText("Copy")?.click();
+await window.happyDOM.waitUntilComplete();
+buttonByText("Paste")?.click();
+await window.happyDOM.waitUntilComplete();
+const pastedDigest = editorCanvas?.getAttribute("data-editor-revision");
+if (
+  pastedDigest === initialEditorDigest ||
+  editorWorkspace.querySelectorAll("[data-editor-unit-id]").length !== 5
+) {
+  throw new Error("Fable did not commit a copied formation as one immutable revision.");
+}
+editorWorkspace.dispatchEvent(
+  new window.KeyboardEvent("keydown", {
+    key: "z",
+    ctrlKey: true,
+    bubbles: true,
+  }),
+);
+await window.happyDOM.waitUntilComplete();
+if (
+  editorCanvas?.getAttribute("data-editor-revision") !== initialEditorDigest ||
+  editorWorkspace.querySelectorAll("[data-editor-unit-id]").length !== 4
+) {
+  throw new Error(
+    `Fable undo did not round-trip to the .NET revision digest: ${editorCanvas?.getAttribute("data-editor-revision")} / ${editorWorkspace.querySelectorAll("[data-editor-unit-id]").length}.`,
+  );
+}
+editorWorkspace.dispatchEvent(
+  new window.KeyboardEvent("keydown", {
+    key: "z",
+    ctrlKey: true,
+    shiftKey: true,
+    bubbles: true,
+  }),
+);
+await window.happyDOM.waitUntilComplete();
+if (
+  editorCanvas?.getAttribute("data-editor-revision") !== pastedDigest ||
+  editorWorkspace.querySelectorAll("[data-editor-unit-id]").length !== 5
+) {
+  throw new Error("Fable redo did not round-trip the immutable map revision.");
 }
 
 buttonByText("Map file")?.click();
