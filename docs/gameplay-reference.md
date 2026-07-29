@@ -1,10 +1,10 @@
 ---
-title: S.I.R. Gameplay Reference
+title: Gameplay Index
 status: proposed
 document-type: reference-index
-category: Reference
-categoryindex: 5
-index: 1
+category: Start
+categoryindex: 1
+index: 5
 version: "0.3"
 last-updated: 2026-07-28
 related:
@@ -14,7 +14,7 @@ related:
   - docs/combat-resolution.md
 ---
 
-# S.I.R. Gameplay Reference
+# Gameplay reference
 
 ## Purpose
 
@@ -28,7 +28,28 @@ fit together.
 The corpus distinguishes accepted rule shape from provisional balance values.
 That distinction is part of the information, not a footnote.
 
-## Color legend
+<aside class="sir-infobox">
+  <p class="sir-infobox-title">Reference scope</p>
+  <dl>
+    <dt>Start with</dt><dd><a href="foundations.html">Attributes and state</a></dd>
+    <dt>Build toward</dt><dd>Units, forces, and missions</dd>
+    <dt>Authority</dt><dd>Mixed; every section labels its status</dd>
+    <dt>Executable evidence</dt><dd><a href="combat-formulas.html">Combat formulas</a></dd>
+  </dl>
+</aside>
+
+## How the model composes
+
+| Layer | Read this | What the layer adds |
+|---|---|---|
+| 01 — Facts | [Attributes and State](foundations.md) | Identity, geometry, condition, knowledge, capability, control |
+| 02 — Relationships | [Combat Values and Formulas](gameplay-formulas.md) | Bounded quantities and explicit equations |
+| 03 — Capabilities | [Weapons and Equipment](gameplay-weapons-equipment.md) | Actions, protection, sensors, tools, and resources |
+| 04 — Actors | [Units and Progression](gameplay-units.md) | Persistent state, loadout, knowledge, progression, and one controller |
+| 05 — Coordination | [Command, Information, and Missions](gameplay-command-information.md) | Reports, orders, formations, logistics, and objectives |
+| 06 — Evidence | [Testing and Balance Evidence](gameplay-testing.md) | Measurements, limitations, and reproducible runs |
+
+## Status legend
 
 Color is always paired with a text label so the corpus remains understandable
 without color vision or emoji rendering.
@@ -43,13 +64,14 @@ without color vision or emoji rendering.
 | 🟧 **Proposal** | Designed direction awaiting acceptance |
 | 🟥 **Risk** | Known failure boundary, exploit, or result requiring more testing |
 
-## Corpus index
+## Article index
 
 | Page | What it contains |
 |---|---|
-| [Units, Classes, and Progression](gameplay-units.md) | Human squad structure, six classes, perks, leadership, arcane force shape, goblins, orcs, trolls, casters, drones, and progression |
-| [Weapons and Equipment](gameplay-weapons-equipment.md) | Weapon roles, prototype weapon statistics, armor packages, sensors, communications, EW, engineering, medical, sustainment, and proposed arcane equipment |
 | [Combat and Gameplay Formulas](gameplay-formulas.md) | Authoritative rule order, HP, Armor, Cover, Suppression, engagement, damage, regeneration, and every executable rules-lab equation |
+| [Executable Combat Formulas](combat-formulas.fsx) | Evaluated F# formula implementations and outputs checked against the rules laboratory |
+| [Weapons and Equipment](gameplay-weapons-equipment.md) | Weapon roles, prototype weapon statistics, armor packages, sensors, communications, EW, engineering, medical, sustainment, and proposed arcane equipment |
+| [Units, Classes, and Progression](gameplay-units.md) | Human squad structure, six classes, perks, leadership, arcane force shape, goblins, orcs, trolls, casters, drones, and progression |
 | [Magic, Anchors, Rituals, and Portals](gameplay-magic.md) | HP empowerment, Strain, meditation, breaches, anchor capacity, overload, spells, rituals, portals, and borrowed critter observations |
 | [Command, Information, and Mission Rules](gameplay-command-information.md) | Tick lifecycle, perception, acquisition, communications, electronic warfare, logistics, casualties, reinforcement, and knowledge limits |
 | [Testing and Balance Evidence](gameplay-testing.md) | Testing setting, work completed before the rules lab, complete exposition of the current run, results, invariant checks, limitations, and reproduction |
@@ -58,8 +80,9 @@ without color vision or emoji rendering.
 
 ### “What can I field?”
 
-Start with [Units, Classes, and Progression](gameplay-units.md), then use
-[Weapons and Equipment](gameplay-weapons-equipment.md) for loadouts.
+Start with [Attributes and State](foundations.md), add
+[Weapons and Equipment](gameplay-weapons-equipment.md), then see how those
+parts compose into [Units, Classes, and Progression](gameplay-units.md).
 
 ### “How is an attack resolved?”
 

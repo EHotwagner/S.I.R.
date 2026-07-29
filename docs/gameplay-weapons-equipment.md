@@ -1,10 +1,10 @@
 ---
-title: Gameplay Weapons and Equipment
+title: Weapons and Equipment
 status: proposed
 document-type: reference
-category: Reference
-categoryindex: 5
-index: 5
+category: Forces & Equipment
+categoryindex: 3
+index: 1
 version: "0.1"
 last-updated: 2026-07-28
 related:

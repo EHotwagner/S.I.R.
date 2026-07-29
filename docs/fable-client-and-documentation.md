@@ -1,11 +1,11 @@
 ---
-title: S.I.R. Fable Client and Interactive Documentation Architecture
+title: Browser Client and Documentation
 status: accepted
 decision-status: canonical
 document-type: living-architecture
-category: Design
-categoryindex: 4
-index: 13
+category: Engineering
+categoryindex: 6
+index: 11
 version: "3.0"
 last-updated: 2026-07-29
 description: Shared .NET/Fable simulation, upstream FS.GG.Game compatibility, deterministic numerics, Elmish MVU browser tooling, replay verification, and delivery roadmap.

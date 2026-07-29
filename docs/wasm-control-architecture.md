@@ -1,8 +1,8 @@
 ---
-title: S.I.R. WebAssembly Control Architecture
-category: Design
-categoryindex: 4
-index: 9
+title: WebAssembly Control
+category: Engineering
+categoryindex: 6
+index: 7
 status: proposed
 document-type: living-design
 version: "0.14"

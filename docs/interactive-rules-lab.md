@@ -1,7 +1,7 @@
 ---
 title: Interactive replay and rules laboratory
-category: Interactive
-categoryindex: 3
+category: Tools & Evidence
+categoryindex: 5
 index: 1
 description: Run the Fable replay inspector and exploratory rules laboratory inside the documentation site.
 ---

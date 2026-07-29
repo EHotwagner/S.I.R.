@@ -1,8 +1,8 @@
 ---
-title: S.I.R. Formations and Positional Referents
-category: Design
+title: Formations and Referents
+category: Battlefield Systems
 categoryindex: 4
-index: 23
+index: 3
 status: proposed
 document-type: living-design
 version: "0.2"

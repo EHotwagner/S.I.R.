@@ -1,9 +1,9 @@
 ---
-title: Gameplay Units, Classes, and Progression
+title: Units, Classes, and Progression
 status: proposed
 document-type: reference
-category: Reference
-categoryindex: 5
+category: Forces & Equipment
+categoryindex: 3
 index: 3
 version: "0.2"
 last-updated: 2026-07-28

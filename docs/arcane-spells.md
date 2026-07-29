@@ -1,8 +1,8 @@
 ---
-title: S.I.R. Arcane Spells
-category: Reference
-categoryindex: 5
-index: 21
+title: Arcane Spells
+category: Forces & Equipment
+categoryindex: 3
+index: 11
 status: accepted
 decision-status: canonical
 document-type: living-content

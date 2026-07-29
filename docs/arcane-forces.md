@@ -1,8 +1,8 @@
 ---
-title: S.I.R. Arcane Civilization Forces
-category: Reference
-categoryindex: 5
-index: 19
+title: Arcane Forces
+category: Forces & Equipment
+categoryindex: 3
+index: 7
 status: accepted
 decision-status: canonical
 document-type: living-content

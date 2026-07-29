@@ -1,8 +1,8 @@
 ---
-title: S.I.R. Stakes and Reinforcement
-category: Design
+title: Stakes and Reinforcement
+category: Battlefield Systems
 categoryindex: 4
-index: 39
+index: 19
 status: accepted
 decision-status: canonical
 document-type: living-design

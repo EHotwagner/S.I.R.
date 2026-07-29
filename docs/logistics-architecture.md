@@ -1,8 +1,8 @@
 ---
-title: S.I.R. Logistics Architecture
-category: Design
+title: Logistics
+category: Battlefield Systems
 categoryindex: 4
-index: 27
+index: 9
 status: proposed
 document-type: living-design
 version: "0.1"

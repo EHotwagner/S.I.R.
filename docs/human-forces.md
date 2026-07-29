@@ -1,8 +1,8 @@
 ---
-title: S.I.R. Human Forces
-category: Reference
-categoryindex: 5
-index: 17
+title: Human Forces
+category: Forces & Equipment
+categoryindex: 3
+index: 5
 status: accepted
 decision-status: canonical
 document-type: living-content

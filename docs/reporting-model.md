@@ -1,8 +1,8 @@
 ---
-title: S.I.R. Observation Reporting Model
-category: Design
+title: Observation Reports
+category: Battlefield Systems
 categoryindex: 4
-index: 31
+index: 13
 status: proposed
 document-type: living-design
 version: "0.3"

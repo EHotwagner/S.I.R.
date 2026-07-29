@@ -1,8 +1,8 @@
 ---
-title: S.I.R. Risk-Based Magic System
-category: Design
+title: Risk-Based Magic
+category: Battlefield Systems
 categoryindex: 4
-index: 35
+index: 17
 status: accepted
 decision-status: canonical
 document-type: living-design

@@ -1,8 +1,8 @@
 ---
-title: SVG Replay and Simulation Player Design Report
-category: Design
-categoryindex: 4
-index: 44
+title: SVG Player Design Report
+category: Tools & Evidence
+categoryindex: 5
+index: 9
 status: accepted
 document-type: timestamped-design-report
 version: "1.6"
