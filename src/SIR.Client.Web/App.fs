@@ -17,7 +17,7 @@ type Msg =
     | MapFileSelected of File
     | PlaybackPulse
     | EditorPulse
-    | KeyPressed of string
+    | KeyPressed of key: string * controlOrMeta: bool * shift: bool
     | KeyReleased of string
     | WorkspaceChanged of WorkspaceMode
     | EditorToolPanelChanged of EditorToolPanel
@@ -253,6 +253,13 @@ let rec update msg model =
             file
             (fun text -> EditorChanged(LoadMapText text))
     | WorkspaceChanged workspace ->
+        let editor =
+            if workspace = SimulatorWorkspace then
+                MapEditor.update MarkEditorSimulated model.Editor
+            elif workspace = EditorWorkspace then
+                MapEditor.update RestoreEditorDraft model.Editor
+            else
+                MapEditor.update CancelEditorGesture model.Editor
         let editorView =
             if workspace = EditorWorkspace then
                 model.EditorView
@@ -263,6 +270,7 @@ let rec update msg model =
                     CancelEditorPointers
                     model.EditorView
         { model with
+            Editor = editor
             Workspace = workspace
             EditorView = editorView
             EditorSpacePressed = false },
@@ -303,7 +311,8 @@ let rec update msg model =
         else
             model, Cmd.none
     | ExportMap ->
-        model, Cmd.ofEffect (fun _ -> downloadMap model.Editor)
+        let editor = MapEditor.update MarkEditorSaved model.Editor
+        { model with Editor = editor }, Cmd.ofEffect (fun _ -> downloadMap editor)
     | ShellMsg shellMsg ->
         let previousFrame = Shell.renderFrame model.Shell
         let next, effects = Shell.update shellMsg model.Shell
@@ -369,31 +378,38 @@ let rec update msg model =
         else
             let next, effects = Shell.playbackTick model.Shell
             { model with Shell = next }, effectsToCmd effects
-    | KeyPressed key ->
+    | KeyPressed(key, controlOrMeta, shift) ->
         if model.Workspace = EditorWorkspace then
-            match key with
-            | " " -> { model with EditorSpacePressed = true }, Cmd.none
-            | "0" -> update (EditorWorkspaceChanged FitEditorBoard) model
-            | "1" -> update (EditorWorkspaceChanged ResetEditorCamera) model
-            | "f"
-            | "F" -> update (EditorWorkspaceChanged FrameEditorSelection) model
-            | "v"
-            | "V" ->
+            match key, controlOrMeta, shift with
+            | ("z" | "Z"), true, true -> update (EditorChanged RedoEditorCommand) model
+            | ("z" | "Z"), true, false -> update (EditorChanged UndoEditorCommand) model
+            | ("y" | "Y"), true, _ -> update (EditorChanged RedoEditorCommand) model
+            | ("c" | "C"), true, _ -> update (EditorChanged CopyEditorSelection) model
+            | ("v" | "V"), true, _ -> update (EditorChanged PasteEditorClipboard) model
+            | ("d" | "D"), true, _ -> update (EditorChanged DuplicateEditorSelection) model
+            | ("a" | "A"), true, _ -> update (EditorChanged SelectAllInActiveDomain) model
+            | ("Delete" | "Backspace"), false, _ -> update (EditorChanged DeleteEditorSelection) model
+            | " ", false, _ -> { model with EditorSpacePressed = true }, Cmd.none
+            | "0", false, _ -> update (EditorWorkspaceChanged FitEditorBoard) model
+            | "1", false, _ -> update (EditorWorkspaceChanged ResetEditorCamera) model
+            | ("f" | "F"), false, _ -> update (EditorWorkspaceChanged FrameEditorSelection) model
+            | ("v" | "V"), false, _ ->
                 model
                 |> update (EditorChanged(ChooseTool Select))
                 |> fst
                 |> fun next -> update (EditorToolPanelChanged TerrainTools) next
-            | "t"
-            | "T" -> update (EditorToolPanelChanged TerrainTools) model
-            | "u"
-            | "U" -> update (EditorToolPanelChanged UnitTools) model
-            | "e"
-            | "E" -> update (EditorToolPanelChanged EdgeTools) model
-            | "Escape" ->
+            | ("t" | "T"), false, _ -> update (EditorToolPanelChanged TerrainTools) model
+            | ("u" | "U"), false, _ -> update (EditorToolPanelChanged UnitTools) model
+            | ("e" | "E"), false, _ -> update (EditorToolPanelChanged EdgeTools) model
+            | "Escape", false, _ ->
                 model
                 |> update (EditorWorkspaceChanged CancelEditorPointers)
                 |> fst
-                |> fun next -> update (EditorChanged(SelectEditorUnit None)) next
+                |> fun next ->
+                    if next.Editor.Gesture <> IdleGesture then
+                        update (EditorChanged CancelEditorGesture) next
+                    else
+                        update (EditorChanged(SelectEditorUnit None)) next
             | _ -> model, Cmd.none
         elif model.Workspace = ReplayWorkspace then
             match key with
@@ -450,7 +466,13 @@ let subscriptions model =
                 if not (isTextEntryTarget keyboardEvent.target) then
                     if model.Workspace = EditorWorkspace && keyboardEvent.key = " " then
                         keyboardEvent.preventDefault ()
-                    dispatch (KeyPressed keyboardEvent.key)
+                    dispatch (
+                        KeyPressed(
+                            keyboardEvent.key,
+                            keyboardEvent.ctrlKey || keyboardEvent.metaKey,
+                            keyboardEvent.shiftKey
+                        )
+                    )
         let upHandler =
             fun (event: Event) ->
                 let keyboardEvent: KeyboardEvent = unbox event
@@ -2464,7 +2486,7 @@ let private mapUnitSymbol (state: MapEditorState) dispatch (unit: EditorUnit) =
         | Blue -> palette.HumanFaction
         | Red -> palette.ArcaneFaction
         | NeutralSide -> palette.NeutralFaction
-    let selected = state.SelectedUnit = Some unit.Id
+    let selected = Set.contains unit.Id state.SelectedUnits
 
     Html.button [
         prop.type'.button
@@ -2484,8 +2506,11 @@ let private mapUnitSymbol (state: MapEditorState) dispatch (unit: EditorUnit) =
             + " by "
             + string unit.Size
         )
-        prop.onClick (fun _ ->
-            dispatch (EditorChanged(SelectEditorUnit(Some unit.Id))))
+        prop.onClick (fun event ->
+            if event.shiftKey then
+                dispatch (EditorChanged(ToggleEditorUnitSelection unit.Id))
+            else
+                dispatch (EditorChanged(SelectEditorUnit(Some unit.Id))))
         prop.children [
             Svg.svg [
                 svg.viewBox (0, 0, 48, 48)
@@ -2522,6 +2547,9 @@ let private capturePointer (target: EventTarget) (pointerId: int) : unit = jsNat
 [<Emit("$0.releasePointerCapture($1)")>]
 let private releasePointer (target: EventTarget) (pointerId: int) : unit = jsNative
 
+[<Emit("(() => { const buttons = Array.from($0.closest('ul').querySelectorAll('button')); const index = buttons.indexOf($0); const target = $1 === -2 ? 0 : ($1 === 2 ? buttons.length - 1 : Math.max(0, Math.min(buttons.length - 1, index + $1))); buttons[target]?.focus(); })()")>]
+let private focusEditorObjectList (target: EventTarget) (movement: int) : unit = jsNative
+
 let private editorPointerKind (value: string) =
     match value with
     | "touch" -> TouchPointer
@@ -2552,7 +2580,7 @@ let private editorUnitSvg
         | Blue -> palette.HumanFaction
         | Red -> palette.ArcaneFaction
         | NeutralSide -> palette.NeutralFaction
-    let selected = state.SelectedUnit = Some unit.Id
+    let selected = Set.contains unit.Id state.SelectedUnits
     let x = float unit.Column * Battlefield.CellSize
     let y = float unit.Row * Battlefield.CellSize
     let size = float unit.Size * Battlefield.CellSize
@@ -2572,16 +2600,27 @@ let private editorUnitSvg
             + " by "
             + string unit.Size
         )
-        svg.tabIndex (if selected then 0 else -1)
+        svg.tabIndex (if state.SelectedUnit = Some unit.Id then 0 else -1)
+        svg.onPointerDown (fun event -> event.stopPropagation ())
         svg.onClick (fun event ->
             event.stopPropagation ()
-            dispatch (EditorChanged(SelectEditorUnit(Some unit.Id))))
+            if event.shiftKey then
+                dispatch (EditorChanged(ToggleEditorUnitSelection unit.Id))
+            else
+                dispatch (EditorChanged(SelectEditorUnit(Some unit.Id))))
         svg.onKeyDown (fun event ->
             match event.key with
             | "Enter"
             | " " ->
                 event.preventDefault ()
-                dispatch (EditorChanged(SelectEditorUnit(Some unit.Id)))
+                dispatch (
+                    EditorChanged(
+                        if event.shiftKey then
+                            ToggleEditorUnitSelection unit.Id
+                        else
+                            SelectEditorUnit(Some unit.Id)
+                    )
+                )
             | "Escape" ->
                 event.preventDefault ()
                 dispatch (EditorChanged(SelectEditorUnit None))
@@ -2678,16 +2717,45 @@ let private editorBattlefield
                 screenY
             |> Option.iter (fun hit ->
                 match tool with
-                | Select -> dispatch (EditorChanged(SelectEditorUnit None))
+                | Select -> ()
                 | _ -> dispatch (EditorChanged(ActivateCell(hit.Column, hit.Row))))
+    let selectionAt screenX screenY action =
+        MapEditorWorkspace.tryHitCell
+            state.Map.Width
+            state.Map.Height
+            view.Camera
+            screenX
+            screenY
+        |> Option.iter (fun hit ->
+            action
+                { CellColumn = hit.Column
+                  CellRow = hit.Row }
+            |> EditorChanged
+            |> dispatch)
 
     Html.section [
         prop.className "editor-canvas"
         prop.ariaLabel "SVG tactical map workspace"
+        prop.custom ("data-editor-revision", state.Revision.Digest)
+        prop.custom ("data-editor-revision-state", string state.RevisionState)
         prop.children [
             Html.div [
                 prop.className "editor-camera-controls"
                 prop.children [
+                    button "Undo" "Undo last editor command (Ctrl or Command Z)" state.UndoHistory.IsEmpty (fun _ ->
+                        dispatch (EditorChanged UndoEditorCommand))
+                    button "Redo" "Redo last editor command (Ctrl or Command Shift Z)" state.RedoHistory.IsEmpty (fun _ ->
+                        dispatch (EditorChanged RedoEditorCommand))
+                    button "Copy" "Copy selected units (Ctrl or Command C)" state.SelectedUnits.IsEmpty (fun _ ->
+                        dispatch (EditorChanged CopyEditorSelection))
+                    button "Paste" "Paste copied units (Ctrl or Command V)" state.Clipboard.IsNone (fun _ ->
+                        dispatch (EditorChanged PasteEditorClipboard))
+                    button "Duplicate" "Duplicate selected units (Ctrl or Command D)" state.SelectedUnits.IsEmpty (fun _ ->
+                        dispatch (EditorChanged DuplicateEditorSelection))
+                    button "Delete" "Delete selected units" state.SelectedUnits.IsEmpty (fun _ ->
+                        dispatch (EditorChanged DeleteEditorSelection))
+                    button "Select all" "Select every unit in the active domain" state.Map.Units.IsEmpty (fun _ ->
+                        dispatch (EditorChanged SelectAllInActiveDomain))
                     button "Fit" "Fit board to workspace (0)" false (fun _ ->
                         dispatch (EditorWorkspaceChanged FitEditorBoard))
                     button "100%" "Reset camera to one hundred percent (1)" false (fun _ ->
@@ -2738,6 +2806,27 @@ let private editorBattlefield
                     max 1 (int view.ViewportHeight)
                 )
                 svg.onContextMenu (fun event -> event.preventDefault ())
+                svg.onKeyDown (fun event ->
+                    if event.ctrlKey || event.metaKey then
+                        let action =
+                            match event.key, event.shiftKey with
+                            | ("z" | "Z"), true -> Some RedoEditorCommand
+                            | ("z" | "Z"), false -> Some UndoEditorCommand
+                            | ("y" | "Y"), _ -> Some RedoEditorCommand
+                            | ("c" | "C"), _ -> Some CopyEditorSelection
+                            | ("v" | "V"), _ -> Some PasteEditorClipboard
+                            | ("d" | "D"), _ -> Some DuplicateEditorSelection
+                            | ("a" | "A"), _ -> Some SelectAllInActiveDomain
+                            | _ -> None
+                        action
+                        |> Option.iter (fun editorAction ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            dispatch (EditorChanged editorAction))
+                    elif event.key = "Delete" || event.key = "Backspace" then
+                        event.preventDefault ()
+                        event.stopPropagation ()
+                        dispatch (EditorChanged DeleteEditorSelection))
                 svg.onWheel (fun event ->
                     event.preventDefault ()
                     let x, y =
@@ -2763,7 +2852,12 @@ let private editorBattlefield
                         || event.button = 1
                         || event.button = 2
                         || spacePressed
-                    if requestsPan then
+                    let requestsSelection =
+                        state.Tool = Select
+                        && kind <> TouchPointer
+                        && event.button = 0
+                        && not requestsPan
+                    if requestsPan || requestsSelection then
                         event.preventDefault ()
                         capturePointer event.currentTarget (int event.pointerId)
                         let x, y =
@@ -2781,7 +2875,9 @@ let private editorBattlefield
                                       Y = y
                                       RequestsPan = requestsPan }
                             )
-                        ))
+                        )
+                        if requestsSelection then
+                            selectionAt x y BeginEditorBoxSelection)
                 svg.onPointerMove (fun event ->
                     if Map.containsKey (int32 event.pointerId) view.CapturedPointers then
                         event.preventDefault ()
@@ -2797,21 +2893,35 @@ let private editorBattlefield
                                 MoveEditorPointer
                                     { previous with X = x; Y = y }
                             )
-                        ))
+                        )
+                        if state.Tool = Select && not previous.RequestsPan then
+                            selectionAt x y ExtendEditorBoxSelection)
                 svg.onPointerUp (fun event ->
                     if Map.containsKey (int32 event.pointerId) view.CapturedPointers then
+                        let previous = Map.find (int32 event.pointerId) view.CapturedPointers
+                        let x, y =
+                            editorScreenPoint
+                                view
+                                event.currentTarget
+                                event.clientX
+                                event.clientY
                         releasePointer event.currentTarget (int event.pointerId)
                         dispatch (
                             EditorWorkspaceChanged(
                                 EndEditorPointer(int32 event.pointerId)
                             )
-                        ))
+                        )
+                        if state.Tool = Select && not previous.RequestsPan then
+                            selectionAt x y ExtendEditorBoxSelection
+                            dispatch (EditorChanged CommitEditorGesture))
                 svg.onLostPointerCapture (fun event ->
                     dispatch (
                         EditorWorkspaceChanged(
                             LoseEditorPointerCapture(int32 event.pointerId)
                         )
-                    ))
+                    )
+                    if state.Tool = Select then
+                        dispatch (EditorChanged CancelEditorGesture))
                 svg.children [
                     Svg.title "S.I.R. map editor battlefield"
                     Svg.desc "An SVG square-grid battlefield. Empty cells and semantic objects are also available in the object list after the workspace."
@@ -2928,6 +3038,26 @@ let private editorBattlefield
                                         editorUnitSvg state palette dispatch unit
                                 ]
                             ]
+                            match state.Gesture with
+                            | BoxSelectionGesture(anchor, current) ->
+                                let firstColumn = min anchor.CellColumn current.CellColumn
+                                let firstRow = min anchor.CellRow current.CellRow
+                                let lastColumn = max anchor.CellColumn current.CellColumn
+                                let lastRow = max anchor.CellRow current.CellRow
+                                Svg.rect [
+                                    svg.custom ("data-editor-gesture", "box-selection")
+                                    svg.custom ("pointer-events", "none")
+                                    svg.x (float firstColumn * Battlefield.CellSize)
+                                    svg.y (float firstRow * Battlefield.CellSize)
+                                    svg.width (float (lastColumn - firstColumn + 1) * Battlefield.CellSize)
+                                    svg.height (float (lastRow - firstRow + 1) * Battlefield.CellSize)
+                                    svg.fill "none"
+                                    svg.stroke palette.Focus
+                                    svg.strokeWidth 2
+                                    svg.custom ("stroke-dasharray", "6 4")
+                                    svg.custom ("vector-effect", "non-scaling-stroke")
+                                ]
+                            | _ -> Html.none
                         ]
                     ]
                 ]
@@ -2941,16 +3071,23 @@ let private editorBattlefield
                     Html.span (
                         string (int (view.Camera.Zoom * 100.0))
                         + "% · "
+                        + string state.SelectedUnits.Count
+                        + " selected · "
                         + string state.Map.Units.Count
                         + " units · "
                         + string state.Map.Edges.Count
                         + " edges"
                     )
                     Html.span (
-                        if view.ReducedMotion then
-                            "Reduced motion"
-                        else
-                            "Camera transitions enabled"
+                        (match state.RevisionState with
+                         | DirtyRevision -> "Dirty"
+                         | SavedRevision -> "Saved"
+                         | SimulatedRevision -> "Simulated"
+                         | RecoveredRevision -> "Recovered")
+                        + " revision "
+                        + string state.Revision.Number
+                        + " · "
+                        + state.Revision.Digest.Substring(0, 12)
                     )
                 ]
             ]
@@ -3132,7 +3269,7 @@ let private editorGrid state dispatch =
                             Html.li [
                                 Html.button [
                                     prop.type'.button
-                                    prop.ariaPressed (state.SelectedUnit = Some unit.Id)
+                                    prop.ariaPressed (Set.contains unit.Id state.SelectedUnits)
                                     prop.text (
                                         "Unit "
                                         + string unit.Id
@@ -3147,12 +3284,35 @@ let private editorGrid state dispatch =
                                         + ","
                                         + string unit.Row
                                     )
-                                    prop.onClick (fun _ ->
+                                    prop.onClick (fun event ->
                                         dispatch (
                                             EditorChanged(
-                                                SelectEditorUnit(Some unit.Id)
+                                                if event.shiftKey then
+                                                    ToggleEditorUnitSelection unit.Id
+                                                else
+                                                    SelectEditorUnit(Some unit.Id)
                                             )
                                         ))
+                                    prop.onKeyDown (fun event ->
+                                        let move amount =
+                                            event.preventDefault ()
+                                            focusEditorObjectList event.currentTarget amount
+                                        match event.key with
+                                        | "ArrowUp" -> move -1
+                                        | "ArrowDown" -> move 1
+                                        | "Home" -> move -2
+                                        | "End" -> move 2
+                                        | "Enter" ->
+                                            event.preventDefault ()
+                                            dispatch (
+                                                EditorChanged(
+                                                    if event.shiftKey then
+                                                        ToggleEditorUnitSelection unit.Id
+                                                    else
+                                                        SelectEditorUnit(Some unit.Id)
+                                                )
+                                            )
+                                        | _ -> ())
                                 ]
                             ]
                     ]

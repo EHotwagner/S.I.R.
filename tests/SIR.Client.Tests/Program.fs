@@ -1491,6 +1491,158 @@ let main _ =
          && pinched.ReducedMotion)
         "Two-pointer touch camera behavior, release cleanup, or reduced-motion state failed."
 
+    let initialRevisionDigest = editor.Revision.Digest
+    let historyFixture =
+        [ "initial-digest=" + initialRevisionDigest
+          "history-command-limit=" + string MapEditor.MaximumHistoryCommands
+          "history-byte-limit=" + string MapEditor.MaximumHistoryBytes
+          "selection-order="
+          + (editor.Map.Units |> Map.toList |> List.map (fst >> string) |> String.concat ",")
+          "revision-states="
+          + ([ SavedRevision; DirtyRevision; SimulatedRevision; RecoveredRevision ]
+             |> List.map string
+             |> String.concat ",") ]
+        |> String.concat "\n"
+    let expectedHistoryFixture =
+        Path.Combine(
+            AppContext.BaseDirectory,
+            "fixtures",
+            "map-editor-milestone-2-history.txt"
+        )
+        |> File.ReadAllText
+        |> fun value -> value.TrimEnd('\r', '\n')
+    require
+        (historyFixture = expectedHistoryFixture
+         && initialRevisionDigest = MapEditor.revisionDigest editor.Map
+         && initialRevisionDigest.Length = 64)
+        "The stable map revision digest or deterministic Milestone 2 fixture changed."
+
+    let additiveSelection =
+        editor
+        |> MapEditor.update (SelectEditorUnit(Some 1))
+        |> MapEditor.update (ToggleEditorUnitSelection 3)
+    let boxSelection =
+        editor
+        |> MapEditor.update (
+            BeginEditorBoxSelection
+                { CellColumn = 0
+                  CellRow = 0 }
+        )
+        |> MapEditor.update (
+            ExtendEditorBoxSelection
+                { CellColumn = 4
+                  CellRow = 7 }
+        )
+        |> MapEditor.update CommitEditorGesture
+    require
+        (additiveSelection.SelectedUnits = Set.ofList [ 1; 3 ]
+         && boxSelection.SelectedUnits = Set.ofList [ 1; 2 ]
+         && boxSelection.Gesture = IdleGesture
+         && (editor |> MapEditor.update SelectAllInActiveDomain).SelectedUnits.Count
+            = editor.Map.Units.Count)
+        "Click, additive, box, or active-domain select-all selection failed."
+
+    let duplicated =
+        editor
+        |> MapEditor.update (SelectEditorUnit(Some 3))
+        |> MapEditor.update CopyEditorSelection
+        |> MapEditor.update PasteEditorClipboard
+    let duplicateDigest = duplicated.Revision.Digest
+    let duplicateUndone = duplicated |> MapEditor.update UndoEditorCommand
+    let duplicateRedone = duplicateUndone |> MapEditor.update RedoEditorCommand
+    let deleted =
+        duplicated
+        |> MapEditor.update DeleteEditorSelection
+    let deleteUndone = deleted |> MapEditor.update UndoEditorCommand
+    require
+        (duplicated.Map.Units.Count = editor.Map.Units.Count + 1
+         && duplicated.SelectedUnits.Count = 1
+         && duplicateUndone.Map = editor.Map
+         && duplicateRedone.Map = duplicated.Map
+         && duplicateRedone.Revision.Digest = duplicateDigest
+         && deleted.Map.Units.Count = editor.Map.Units.Count
+         && deleteUndone.Map = duplicated.Map)
+        "Copy, paste, delete, undo, or redo did not preserve an immutable unit revision."
+
+    for index in 0 .. 63 do
+        let column = int32 (index % int editor.Map.Width)
+        let row = int32 ((index * 5) % int editor.Map.Height)
+        let current = MapEditor.terrainAt column row editor
+        let replacement = if current = Rough then Objective else Rough
+        let command =
+            PaintCells(
+                replacement,
+                [| { CellColumn = column
+                     CellRow = row } |]
+            )
+        let committed =
+            { editor with Gesture = CommandPreviewGesture command }
+            |> MapEditor.update CommitEditorGesture
+        let undone = committed |> MapEditor.update UndoEditorCommand
+        let redone = undone |> MapEditor.update RedoEditorCommand
+        require
+            (committed.Map <> editor.Map
+             && undone.Map = editor.Map
+             && undone.Revision.Digest = initialRevisionDigest
+             && redone.Map = committed.Map
+             && redone.Revision.Digest = committed.Revision.Digest)
+            ("Property round-trip failed for generated command " + string index + ".")
+
+    let boundedHistory =
+        [ 0 .. 139 ]
+        |> List.fold (fun state index ->
+            let terrain = if index % 2 = 0 then Rough else Open
+            { state with
+                Gesture =
+                    CommandPreviewGesture(
+                        PaintCells(
+                            terrain,
+                            [| { CellColumn = 0
+                                 CellRow = 0 } |]
+                        )
+                    ) }
+            |> MapEditor.update CommitEditorGesture) editor
+    require
+        (boundedHistory.UndoHistory.Length = MapEditor.MaximumHistoryCommands
+         && boundedHistory.HistoryBytes <= MapEditor.MaximumHistoryBytes
+         && boundedHistory.RedoHistory.IsEmpty)
+        "Editor history exceeded its command-count or serialized-size bound."
+
+    let revisionStates =
+        duplicated
+        |> MapEditor.update MarkEditorSaved
+        |> fun saved ->
+            require
+                (saved.RevisionState = SavedRevision
+                 && saved.SavedDigest = Some saved.Revision.Digest)
+                "Saving did not mark the exact immutable revision."
+            saved
+        |> MapEditor.update MarkEditorSimulated
+        |> fun simulated ->
+            require
+                (simulated.RevisionState = SimulatedRevision
+                 && simulated.SimulatedDigest = Some simulated.Revision.Digest)
+                "Simulation did not snapshot the exact immutable revision."
+            simulated
+        |> MapEditor.update (MarkEditorRecovered initialRevisionDigest)
+    require
+        (revisionStates.RevisionState = RecoveredRevision
+         && revisionStates.RecoveredFromDigest = Some initialRevisionDigest)
+        "Recovered revision provenance was not retained."
+    let simulatedRuntime =
+        editor
+        |> MapEditor.update MarkEditorSimulated
+        |> MapEditor.update StepEditor
+        |> MapEditor.update (SetSelectedHealth(6, 12))
+    let restoredDraft = simulatedRuntime |> MapEditor.update RestoreEditorDraft
+    require
+        (simulatedRuntime.Revision.Digest = initialRevisionDigest
+         && simulatedRuntime.UndoHistory.IsEmpty
+         && simulatedRuntime.Map <> simulatedRuntime.Revision.Document
+         && restoredDraft.Map = editor.Map
+         && restoredDraft.Revision.Digest = initialRevisionDigest)
+        "Simulator runtime state entered authored history or changed revision identity."
+
     let performanceFrame = Battlefield.performanceFrame 200
     for _ in 1 .. 20 do
         Battlefield.scene performanceFrame Battlefield.initial |> ignore

@@ -6,7 +6,7 @@ index: 2
 status: accepted
 decision-status: implemented
 document-type: reference
-version: "1.2"
+version: "1.3"
 last-updated: 2026-07-29
 description: Map records, terrain, semantic edges, square unit footprints, controller modes, and deterministic execution.
 related:
@@ -187,6 +187,49 @@ The deterministic
 fixture records fit, zoom, frame-selection, cell-hit, and low/high-zoom
 edge-hit results. Pure tests also cover resize, pointer capture and loss,
 mouse drag, touch pinch, release cleanup, and reduced-motion state.
+
+## Commands, selection, and revision identity
+
+Committed authoring changes pass through a typed `EditorCommand`, pure
+validation, and immutable `MapRevision`. A revision contains the complete
+`MapDefinition`, its parent digest, a monotonic local revision number, and the
+lowercase SHA-256 digest of the canonical UTF-8 `SIR-MAP 1` document. Camera,
+selection, clipboard, gestures, panels, runtime ticks, and animation never
+contribute to that digest.
+
+Pointer click replaces the active unit selection. `Shift`-click and
+`Shift+Enter` in the object list add or remove one unit. Dragging from empty
+workspace in Select mode previews a disposable box and selects every unit
+footprint intersecting the committed box. The object list and visible command
+buttons provide the same non-pointer path. Select-all is scoped to the active
+domain; until other domains expose selectable semantic objects, it selects
+units only in Select or Unit mode.
+
+Undo and redo restore bounded prior-document snapshots. The newest 100
+commands are retained while their canonical before/after documents remain
+within a combined 2,000,000-byte budget; the older tail is discarded as soon
+as either bound is reached. A new command clears redo. Copy does not create a
+revision. Paste and duplicate allocate fresh IDs, retain formation offsets,
+search deterministic positive diagonal offsets, validate the complete
+formation atomically, and commit one revision or none. Delete removes the
+complete active-domain selection as one undoable command.
+
+Revision lifecycle labels are explicit:
+
+- **Dirty** means the current digest differs from the last explicitly saved
+  revision.
+- **Saved** records the digest exported as a map document.
+- **Simulated** records the exact revision selected when entering Simulator.
+- **Recovered** retains the source autosave digest without changing canonical
+  map identity.
+
+The deterministic
+`tests/SIR.Client.Tests/fixtures/map-editor-milestone-2-history.txt` fixture
+freezes the initial cross-runtime digest, history limits, selection order, and
+revision-state labels. Generated command tests prove `.NET` undo/redo
+round-trips over 64 cell choices. The Fable/Node browser smoke test checks the
+same initial digest, commits a copied unit, and proves undo and redo return to
+the same digests and object counts.
 
 ## Semantic edges
 
