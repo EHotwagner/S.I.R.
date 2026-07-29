@@ -178,11 +178,11 @@ permission; credentials must not be embedded in the static client.
 | Flood fill or eyedrop | Primary click | Tap | Commits one fill or selects one terrain value |
 | Draw edge polyline | Primary click/drag across snapped edges | Tap successive snapped edges | Double-click/**Finish** commits; `Escape` removes the last segment, then cancels |
 | Move selection | Primary drag selected unit(s) | Tap **Move**, reposition cursor, tap **Apply** | Full route and footprint preview; `Escape` cancels |
+| Open object actions | Secondary click or context button | Long-press or context button | Opens the same linear action menu used by keyboard |
 
 Pointer coordinates are mapped through the SVG's centered aspect-fit viewport.
 Horizontal or vertical letterboxing therefore remains non-interactive padding
 and cannot shift a click into a neighboring logical cell.
-| Open object actions | Secondary click or context button | Long-press or context button | Opens the same linear action menu used by keyboard |
 
 Pointer capture belongs to an active drag and must be released on commit,
 cancel, lost capture, tool switch, or unmount. Hover is never required.
