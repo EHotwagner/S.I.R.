@@ -5,7 +5,7 @@ categoryindex: 5
 index: 10
 status: proposed
 document-type: timestamped-design-report
-version: "1.0"
+version: "1.1"
 created-at: 2026-07-29T12:30:56+02:00
 last-updated: 2026-07-29
 related:
@@ -24,7 +24,7 @@ related:
 
 ## Executive decision
 
-Replace the current form-and-grid editor with a canvas-first tactical map
+Replace the current form-and-grid editor with an SVG-first tactical map
 authoring application inspired by Roll20, Battlegrounds: RPG Edition, Fantasy
 Grounds Unity, and Foundry Virtual Tabletop. The battlefield occupies the
 available application area. A compact left tool rail selects an editing
@@ -39,6 +39,16 @@ remain deterministic semantic documents. Terrain, edges, units, objectives,
 deployment zones, and simulation configuration are data. Background images,
 annotations, guides, selection boxes, measurement lines, and animation are
 presentation or authoring aids and cannot silently become authoritative rules.
+
+SVG is the selected renderer for this documentation editor, not a temporary
+prototype on the way to HTML Canvas or WebGL. S.I.R. already has a normalized
+glyph catalog and an SVG replay battlefield. The editor benefits directly from
+SVG event targets, pointer capture, focus, `<title>` and `<desc>`, tooltips,
+CSS state, animation, reusable definitions, inspectable markup, and sanitized
+evidence export. The supported map scale does not justify duplicating those
+facilities around an opaque pixel buffer. The production client remains a
+separate Babylon.js application and may optimize for a different rendering
+problem.
 
 The first implementation target is a fast, reversible editor for square-grid
 tactical maps:
@@ -201,7 +211,7 @@ Limitations to avoid:
 
 | Pattern | Evidence | S.I.R. decision |
 |---|---|---|
-| Dominant canvas | All four products | Adopt; the canvas fills the Editor tab |
+| Dominant editing surface | All four products | Adopt; the SVG battlefield fills the Editor tab |
 | Tool rail and contextual palette | Roll20, Foundry, Fantasy Grounds | Adopt; one active domain and one active tool |
 | Layer isolation | Roll20, Foundry | Adopt as semantic editing domains with lock and visibility |
 | Direct manipulation | All four products | Adopt with command previews and validation |
@@ -217,10 +227,37 @@ Limitations to avoid:
 
 ## Product principles
 
-### Canvas first
+### SVG workspace first
 
-The map is the editor. Panels support the canvas and may collapse; the map is
-not a preview inside a form.
+The map is the editor. Panels support the SVG workspace and may collapse; the
+map is not a preview inside a form.
+
+### SVG is the documentation renderer
+
+SVG is canonical for the documentation editor, simulator, and replay
+battlefield. This is an architectural choice, not only an implementation
+default.
+
+- Canonical class glyphs reuse one normalized vector grammar.
+- Interactive groups receive pointer, keyboard, focus, hover, and tooltip
+  behavior without maintaining a second hit-test object tree.
+- `<title>`, `<desc>`, labels, and the parallel object list provide accessible
+  identity and state.
+- CSS classes express selection, validation, layer visibility, reduced motion,
+  and semantic zoom.
+- `<defs>`, `<symbol>`, and safe `<use>` references may reduce repetition when
+  the accessible name remains on the outer interactive object.
+- Deterministic SVG snapshots are inspectable review evidence and the source
+  for sanitized PNG export.
+- Explanatory animation can attach to semantic objects while committed map
+  state remains discrete and authoritative.
+
+HTML Canvas and WebGL are not planned render targets for this editor. Their
+principal advantage here would be higher rendering throughput. In exchange,
+the application would need replacement systems for object hit testing, focus,
+tooltips, accessible naming, semantic inspection, export, and test evidence.
+That trade is not justified for a bounded abstract map. Babylon.js owns the
+high-fidelity real-client rendering problem and remains independent.
 
 ### One gesture grammar
 
@@ -280,7 +317,7 @@ preserves editor selection, camera, and unsaved draft state.
 ┌─ top bar: map name · revision · undo/redo · validate · save · simulate ──────┐
 ├──────┬──────────────────────────────────────────────────────────┬─────────────┤
 │ tool │                                                          │ inspector   │
-│ rail │                    tactical canvas                       │ selection   │
+│ rail │                 tactical SVG workspace                   │ selection   │
 │      │                                                          │ properties  │
 │      │                                                          │ validation  │
 ├──────┴──────────────────────────────────────────────────────────┴─────────────┤
@@ -295,7 +332,8 @@ more than its exact edge.
 
 ### Narrow editor
 
-The canvas remains first. Tools become a horizontally scrollable tab row.
+The SVG workspace remains first. Tools become a horizontally scrollable tab
+row.
 Layers, assets, and inspector are mutually exclusive bottom sheets. The
 selection HUD stays near the selection but never covers its complete
 footprint. A persistent status row reports tool, coordinates, zoom, snap, and
@@ -333,7 +371,7 @@ document contracts are accepted.
 
 - Click selects the highest-priority object in the active editing domain.
 - `Shift` adds or removes from selection.
-- Dragging empty canvas box-selects objects in the active domain.
+- Dragging empty SVG space box-selects objects in the active domain.
 - Repeated click cycles coincident candidates through a visible chooser.
 - `Escape` clears selection or cancels an active gesture.
 - Selection handles meet a minimum screen-space target independent of zoom.
@@ -351,7 +389,7 @@ document contracts are accepted.
 - Dragging a selected unit previews its route, distance, destination, and
   leading-edge collisions.
 - Arrow keys move one cell; modifiers support selection movement without
-  stealing page navigation when the canvas is unfocused.
+  stealing page navigation when the SVG workspace is unfocused.
 
 ### Terrain painting
 
@@ -393,7 +431,7 @@ The context HUD contains at most six frequent actions:
 
 Every HUD action has a keyboard and inspector equivalent. The inspector
 contains complete typed properties and applies changes through the same command
-path as canvas gestures. Mixed multiselection values display as **Multiple**;
+path as SVG gestures. Mixed multiselection values display as **Multiple**;
 changing one field applies that field to every compatible selected object.
 
 ### Clipboard and duplication
@@ -439,7 +477,7 @@ type MapDefinition =
 
 The current editor directly maps cell activation to `MapEditorAction`. It has
 no gesture preview, multiselection, command history, clipboard, layer state, or
-camera-aware canvas editing. These belong in editor state, not in authoritative
+camera-aware SVG editing. These belong in editor state, not in authoritative
 simulation state.
 
 ### Proposed split
@@ -597,7 +635,8 @@ should not duplicate the complete runtime control panel.
 
 - All tool buttons have visible labels and programmatic names.
 - A keyboard user can reach every command without traversing every cell.
-- The canvas exposes an application-level keyboard model only while focused.
+- The SVG workspace exposes an application-level keyboard model only while
+  focused.
 - A list/tree alternative exposes layers, units, edges, and issues.
 - Selection and placement changes are announced through a concise live region.
 - Focus remains on the invoked tool after commands unless a dialog opens.
@@ -606,7 +645,7 @@ should not duplicate the complete runtime control panel.
 - Patterns, outlines, labels, and glyphs supplement color.
 - Reduced motion disables animated previews without removing state changes.
 - Zoom up to 400% does not force two-dimensional page scrolling around fixed
-  panels; panels collapse before the canvas becomes unusable.
+  panels; panels collapse before the SVG workspace becomes unusable.
 - Touch supports one-finger selection and two-finger camera gestures without
   making hover necessary.
 
@@ -624,10 +663,13 @@ Initial budgets at the supported 40×40 map limit:
 | Map import/export | under 250 ms for maximum supported document |
 | Interactive DOM nodes | below 8,000 |
 
-The canvas uses SVG for current scale and accessibility. It must not render one
-focusable DOM node per empty cell. Grid lines, terrain runs, and preview
-geometry should be batched. A switch to Canvas or WebGL requires measured SVG
-failure and an equivalent accessible object model.
+SVG performance is a guardrail, not a renderer-selection gate. The editor must
+not render one focusable DOM node per empty cell. Grid lines, terrain runs, and
+preview geometry should be batched; pointer events should be delegated at
+stable semantic groups; hidden layers may be detached when they are neither
+visible nor interactive. If a budget is missed, optimize SVG projection,
+grouping, event delegation, and update granularity. Do not introduce an HTML
+Canvas or WebGL battlefield into the documentation editor.
 
 ## Security and trust
 
@@ -657,6 +699,16 @@ hosting, media, chat, character, marketplace, and ruleset problems that do not
 belong in S.I.R.’s static documentation client. Integration would weaken the
 shared F# model and offline publication boundary.
 
+### Render the documentation editor with HTML Canvas or WebGL
+
+Rejected. Increased rendering throughput is not a controlling requirement for
+the bounded, abstract documentation map. Either renderer would discard the
+existing SVG glyph and battlefield pipeline and require parallel structures for
+events, hit testing, focus, tooltips, accessible descriptions, inspection, and
+evidence export. A hybrid SVG overlay would retain most DOM cost while adding
+coordinate synchronization and two render trees. The separate Babylon.js
+client is the appropriate place for a high-throughput real-time renderer.
+
 ### Import Foundry or Universal VTT scenes first
 
 Deferred. Interchange is valuable only after S.I.R.’s semantic model has stable
@@ -684,17 +736,17 @@ within it is checked.
 - [ ] Record canonical goblin, orc, troll, human, and drone footprint presets.
 - [ ] Freeze the initial keyboard and pointer gesture table.
 
-### Milestone 1 — Canvas shell and camera
+### Milestone 1 — SVG workspace and camera
 
-- [ ] Replace the HTML cell-button board with the shared SVG tactical canvas in
-  the Editor tab.
+- [ ] Replace the HTML cell-button board with the shared SVG tactical
+  battlefield in the Editor tab.
 - [ ] Add pointer-centered zoom, pan, fit-board, frame-selection, and reset
   camera controls.
 - [ ] Add screen-to-cell and screen-to-edge hit testing with zoom-independent
   tolerances.
 - [ ] Add the compact tool rail, contextual palette, status row, and collapsible
   inspector.
-- [ ] Preserve a non-canvas object-list fallback for keyboard and assistive
+- [ ] Preserve a non-SVG object-list fallback for keyboard and assistive
   technology.
 - [ ] Add camera, resize, pointer-capture, touch, and reduced-motion tests.
 

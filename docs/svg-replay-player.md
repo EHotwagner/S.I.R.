@@ -37,7 +37,11 @@ line-of-sight geometry remain ground overlays and never reuse a heading mark.
 ## Renderer boundary
 
 The SVG renderer belongs only to generated documentation, interactive
-explanations, replay inspection, and non-authoritative simulation evidence.
+explanations, map authoring, replay inspection, and non-authoritative
+simulation evidence. The map editor reuses the same SVG battlefield, glyph
+catalog, semantic layers, event model, tooltips, focus behavior, and sanitized
+evidence path rather than introducing an HTML Canvas or WebGL renderer.
+
 The production game client remains a separate Babylon.js renderer. It shares
 game facts, disclosure rules, and the canonical relationship between an
 `N×N` square base and its uniformly scaled, base-fitted square information
