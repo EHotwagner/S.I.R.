@@ -265,11 +265,11 @@ await import(pathToFileURL(bundle));
 await window.happyDOM.waitUntilComplete();
 
 const application = window.document.querySelector(
-  'main[aria-label="Simulation workspace"]',
+  'main[aria-label="S.I.R. simulator and editor"]',
 );
 
 if (!application || application.querySelector("header, h1")) {
-  throw new Error("The React simulation workspace did not mount.");
+  throw new Error("The React simulator did not mount.");
 }
 
 const buttonByText = (text) =>
