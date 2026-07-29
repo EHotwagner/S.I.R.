@@ -5,7 +5,7 @@ categoryindex: 5
 index: 10
 status: in-progress
 document-type: timestamped-design-report
-version: "1.10"
+version: "1.11"
 created-at: 2026-07-29T12:30:56+02:00
 last-updated: 2026-07-29
 related:
@@ -20,7 +20,7 @@ related:
 
 **Report timestamp:** 2026-07-29 12:30:56 CEST (UTC+02:00)
 
-**Status:** implementation in progress; Milestones 0–8 complete
+**Status:** implementation in progress; Milestones 0–9 complete
 
 ## Executive decision
 
@@ -830,13 +830,13 @@ within it is checked.
 
 ### Milestone 9 — Simulator handoff and perspective preview
 
-- [ ] Add **Simulate this revision** with immutable revision handoff.
-- [ ] Display when the simulator is behind the editor draft.
-- [ ] Keep runtime ticks and controller effects out of authored history.
-- [ ] Add deterministic route, distance, and collision preview.
-- [ ] Add player-perspective preview only through the accepted
+- [x] Add **Simulate this revision** with immutable revision handoff.
+- [x] Display when the simulator is behind the editor draft.
+- [x] Keep runtime ticks and controller effects out of authored history.
+- [x] Add deterministic route, distance, and collision preview.
+- [x] Add player-perspective preview only through the accepted
   disclosure-filtered projection.
-- [ ] Add manual and derived visibility overlays only after shared-kernel
+- [x] Add manual and derived visibility overlays only after shared-kernel
   perception rules are available.
 
 ### Milestone 10 — Qualification and release

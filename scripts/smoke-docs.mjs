@@ -146,13 +146,22 @@ if (!application || mount?.querySelector("header, h1")) {
   throw new Error("The Fable application did not mount inside the fsdocs page.");
 }
 
+const simulateButton = [...mount.querySelectorAll("button")].find(
+  (button) => button.textContent.trim() === "Simulate this revision",
+);
+if (!simulateButton) {
+  throw new Error("The generated editor omitted the explicit simulator revision handoff.");
+}
+simulateButton.click();
+await window.happyDOM.waitUntilComplete();
+
 if (
   !mount?.textContent.includes("Manual") ||
   !mount?.textContent.includes("Scripted AI") ||
   !mount?.textContent.includes("General AI") ||
   !mount?.querySelector('[aria-label="Editable simulation SVG battlefield"]')
 ) {
-  throw new Error("The generated site did not open on the full-width simulator.");
+  throw new Error("The generated site did not hand the immutable revision to the full-width simulator.");
 }
 
 const editorButton = [...mount.querySelectorAll("button")].find(

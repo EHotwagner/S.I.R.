@@ -1643,6 +1643,139 @@ let main _ =
          && restoredDraft.Revision.Digest = initialRevisionDigest)
         "Simulator runtime state entered authored history or changed revision identity."
 
+    let simulator =
+        MapEditorSimulator.tryHandoff editor
+        |> Result.defaultWith failwith
+    let editedAfterHandoff =
+        { editor with
+            Gesture =
+                CommandPreviewGesture(
+                    PaintCells(
+                        Rough,
+                        [| { CellColumn = 0
+                             CellRow = 0 } |]
+                    )
+                ) }
+        |> MapEditor.update CommitEditorGesture
+    let steppedSimulator =
+        simulator
+        |> MapEditorSimulator.update StepSimulator editor.SelectedUnit
+    let clearPreview =
+        MapEditorSimulator.preview
+            editor.SelectedUnit
+            { CellColumn = 3
+              CellRow = 1 }
+            simulator
+        |> Option.defaultWith (fun () -> failwith "Expected a clear simulator route preview.")
+    let occupiedPreview =
+        MapEditorSimulator.preview
+            editor.SelectedUnit
+            { CellColumn = 8
+              CellRow = 1 }
+            simulator
+        |> Option.defaultWith (fun () -> failwith "Expected an occupied simulator route preview.")
+    let edgePreview =
+        let blockedHandoff =
+            { simulator with
+                RuntimeMap =
+                    { simulator.RuntimeMap with
+                        Edges =
+                            simulator.RuntimeMap.Edges
+                            |> Map.add (2, 1, EastEdge) (Wall, false)
+                            |> Map.add (2, 2, EastEdge) (Wall, false) } }
+        MapEditorSimulator.preview
+            editor.SelectedUnit
+            { CellColumn = 3
+              CellRow = 1 }
+            blockedHandoff
+        |> Option.defaultWith (fun () -> failwith "Expected a semantic-edge simulator route preview.")
+    let outsidePreview =
+        MapEditorSimulator.preview
+            editor.SelectedUnit
+            { CellColumn = -1
+              CellRow = 1 }
+            simulator
+        |> Option.defaultWith (fun () -> failwith "Expected an outside-map simulator route preview.")
+    let acceptedPerspective =
+        { MapEditor.frame editor with Disclosure = PerspectiveDisclosure }
+        |> Some
+        |> MapEditorSimulator.perspectivePreview
+    require
+        (simulator.Revision.Digest = initialRevisionDigest
+         && simulator.RuntimeMap = editor.Revision.Document
+         && MapEditorSimulator.isBehindDraft editedAfterHandoff simulator
+         && steppedSimulator.Revision = simulator.Revision
+         && steppedSimulator.RuntimeMap <> simulator.RuntimeMap
+         && editedAfterHandoff.Map <> steppedSimulator.RuntimeMap
+         && editedAfterHandoff.UndoHistory.Length = 1
+         && clearPreview.Distance = 2
+         && clearPreview.Route.Length = 2
+         && clearPreview.Collision = RouteClear
+         && (match occupiedPreview.Collision with
+             | OccupiedAt(_, 3) -> true
+             | _ -> false)
+         && (match edgePreview.Collision with
+             | BlockingEdgeAt _ -> true
+             | _ -> false)
+         && (match outsidePreview.Collision with
+             | OutsideMap _ -> true
+             | _ -> false)
+         && MapEditorSimulator.perspectivePreview None
+            = PerspectivePreviewUnavailable MapEditorSimulator.PerspectiveUnavailableReason
+         && (match acceptedPerspective with
+             | AcceptedPerspectiveProjection frame ->
+                 frame.Disclosure = PerspectiveDisclosure
+             | _ -> false)
+         && MapEditorSimulator.visibilityOverlays
+            = VisibilityOverlaysUnavailable MapEditorSimulator.VisibilityUnavailableReason)
+        "Immutable simulator handoff, deterministic preview, or disclosure gating failed."
+    let simulatorFixture =
+        let collisionText collision =
+            match collision with
+            | RouteClear -> "clear"
+            | OutsideMap address ->
+                "outside:" + string address.CellColumn + "," + string address.CellRow
+            | BlockedTerrainAt address ->
+                "terrain:" + string address.CellColumn + "," + string address.CellRow
+            | BlockingEdgeAt(origin, destination) ->
+                "edge:"
+                + string origin.CellColumn + "," + string origin.CellRow
+                + "-"
+                + string destination.CellColumn + "," + string destination.CellRow
+            | OccupiedAt(address, id) ->
+                "occupied:"
+                + string address.CellColumn + "," + string address.CellRow
+                + ":"
+                + string id
+        String.concat
+            "\n"
+            [ "revision=" + simulator.Revision.Digest
+              "stale=" + string (MapEditorSimulator.isBehindDraft editedAfterHandoff simulator)
+              "runtime=" + string steppedSimulator.Tick + ":" + string steppedSimulator.LastEvents.Length
+              "clear="
+              + string clearPreview.Distance + ":"
+              + (clearPreview.Route
+                 |> Array.map (fun address ->
+                     string address.CellColumn + "," + string address.CellRow)
+                 |> String.concat ";")
+              "occupied=" + collisionText occupiedPreview.Collision
+              "edge=" + collisionText edgePreview.Collision
+              "outside=" + collisionText outsidePreview.Collision
+              "perspective=" + MapEditorSimulator.PerspectiveUnavailableReason
+              "visibility=" + MapEditorSimulator.VisibilityUnavailableReason ]
+    let expectedSimulatorFixture =
+        File.ReadAllText(
+            Path.Combine(
+                __SOURCE_DIRECTORY__,
+                "fixtures",
+                "map-editor-milestone-9-simulator.txt"
+            )
+        ).TrimEnd()
+    require
+        (simulatorFixture = expectedSimulatorFixture)
+        ("The deterministic Milestone 9 simulator review fixture changed.\n"
+         + simulatorFixture)
+
     let address column row =
         { CellColumn = int32 column
           CellRow = int32 row }

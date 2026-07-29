@@ -6,7 +6,7 @@ index: 2
 status: accepted
 decision-status: implemented
 document-type: reference
-version: "1.4"
+version: "1.5"
 last-updated: 2026-07-29
 description: Map records, terrain, semantic edges, square unit footprints, controller modes, and deterministic execution.
 related:
@@ -233,6 +233,49 @@ revision-state labels. Generated command tests prove `.NET` undo/redo
 round-trips over 64 cell choices. The Fable/Node browser smoke test checks the
 same initial digest, commits a copied unit, and proves undo and redo return to
 the same digests and object counts.
+
+## Simulator handoff and previews
+
+**Simulate this revision** validates the current authored document and creates
+a `SimulatorHandoff` containing that exact immutable `MapRevision` plus a
+separate runtime map, tick, event list, run state, and disposable route
+preview. Opening the Simulator tab alone never creates or refreshes a handoff.
+Editing after a handoff leaves the sandbox intact and displays **Simulator
+behind editor draft** until the author explicitly hands off another revision.
+
+Runtime controller assignment, scripts, movement, damage, ticks, and route
+previews update only the handoff. They do not change `MapDefinition`,
+`MapRevision`, the draft digest, undo/redo entries, saved state, or autosave.
+Re-running **Simulate this revision** deliberately resets the sandbox to a new
+copy of the selected revision.
+
+The route preview takes deterministic diagonal-first Chebyshev steps and
+reports its cell distance. Every step checks the complete square footprint
+against the board, blocked terrain, semantic walls and closed doors, and other
+unit footprints in stable unit-ID order. The accepted prefix is rendered as a
+presentation-only overlay; collision reason and distance are also exposed as
+live text. Arrow keys or the labelled arrow buttons move the destination,
+`Enter` or **Commit route** commits a clear route, and `Escape` or **Cancel
+route** discards it. `Space`/`K`, **Run/Pause**, and **Step** provide equivalent
+keyboard and visible simulator controls without entering authored history.
+
+Player-perspective preview accepts only a `RenderFrame` explicitly labelled
+`PerspectiveDisclosure`. The editor has no accepted disclosure-filtered
+projection producer, so its player-perspective control is disabled with a
+programmatic explanation. A sandbox or full-replay frame is never relabelled
+or filtered in the UI.
+
+The shared simulation kernel does not yet expose accepted perception rules for
+editor maps. Manual reveal and derived visibility overlays are therefore
+disabled with an explicit unavailable status. The editor does not invent
+line-of-sight, fog, or retention behavior from the perception spike. Those
+overlays may be enabled only when an accepted shared-kernel result can supply
+their geometry and disclosure.
+
+The deterministic
+`tests/SIR.Client.Tests/fixtures/map-editor-milestone-9-simulator.txt` review
+fixture freezes the handoff digest, stale state, runtime tick isolation,
+route/distance/collision results, and the two gated-unavailable explanations.
 
 ## Local backgrounds and interchange review
 
