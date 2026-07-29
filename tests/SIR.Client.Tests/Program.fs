@@ -767,7 +767,9 @@ let main _ =
                   * Battlefield.CellSize
              && unit.FootprintDepth
                 = float (CellExtent.value unit.Unit.FootprintDepth)
-                  * Battlefield.CellSize))
+                  * Battlefield.CellSize
+             && unit.Unit.FootprintWidth = unit.Unit.FootprintDepth
+             && unit.FootprintWidth = unit.FootprintDepth))
         "The top-down projection did not preserve authoritative footprint cells."
 
     let offsetFrame =
@@ -892,7 +894,7 @@ let main _ =
     require
         (evidenceLeft = evidenceRight
          && evidenceLeft.Contains("tick=24")
-         && evidenceLeft.Contains("unit=3@0,144:96x48")
+         && evidenceLeft.Contains("unit=3@0,144:96x96")
          && evidenceLeft.Contains("health=12"))
         "Static SVG review evidence is not deterministic."
 
