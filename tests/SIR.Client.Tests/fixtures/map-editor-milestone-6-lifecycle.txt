@@ -1,0 +1,12 @@
+layers=TerrainDomain:VisibleLayer,EdgeDomain:HiddenLayer,UnitDomain:VisibleLayer,DocumentDomain:VisibleLayer
+hidden-validation=EDGE-GAP
+issue-index=Some(0)
+locked-edit-preserved=True
+resize-loss=6,3,3
+resize-confirmed=4x4:1
+atomic-import=True
+recovery-choice=True:True:0
+metadata=Bridge at dusk:1:True
+thumbnail-deterministic=True
+hidden-simulation=1:4
+clear-confirmed=0

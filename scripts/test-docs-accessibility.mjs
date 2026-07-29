@@ -163,6 +163,52 @@ require(
   "the unloaded static demonstration is not explicitly separated from playback",
 );
 
+const editorButton = [...window.document.querySelectorAll(
+  "#sir-replay-app button",
+)].find((button) => button.textContent.trim() === "Editor");
+editorButton?.click();
+await window.happyDOM.waitUntilComplete();
+const mapFileButton = [...window.document.querySelectorAll(
+  "#sir-replay-app button",
+)].find((button) => button.textContent.trim() === "Map file");
+mapFileButton?.click();
+await window.happyDOM.waitUntilComplete();
+
+require(
+  Boolean(window.document.querySelector('[aria-label="Editing layer states"]')),
+  "editing layer states have no accessible group",
+);
+require(
+  Boolean(window.document.querySelector('label[for="map-name"]')),
+  "map authoring name has no explicit label",
+);
+require(
+  Boolean(window.document.querySelector('[aria-label="Map validation issues"]')),
+  "validation issues have no accessible HTML panel",
+);
+require(
+  [...window.document.querySelectorAll("#sir-replay-app button")].some(
+    (button) => button.textContent.trim() === "Previous",
+  ) &&
+    [...window.document.querySelectorAll("#sir-replay-app button")].some(
+      (button) => button.textContent.trim() === "Next",
+    ),
+  "validation issues lack previous/next controls",
+);
+const clearMapButton = [...window.document.querySelectorAll(
+  "#sir-replay-app button",
+)].find((button) => button.textContent.trim() === "Clear");
+clearMapButton?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  Boolean(
+    [...window.document.querySelectorAll('[role="alert"]')].find((alert) =>
+      alert.textContent.includes("Confirmation required"),
+    ),
+  ),
+  "destructive map changes do not expose an explicit alert confirmation",
+);
+
 if (failures.length > 0) {
   throw new Error(`Accessibility gate failed: ${failures.join("; ")}.`);
 }

@@ -5,7 +5,7 @@ categoryindex: 5
 index: 10
 status: in-progress
 document-type: timestamped-design-report
-version: "1.7"
+version: "1.8"
 created-at: 2026-07-29T12:30:56+02:00
 last-updated: 2026-07-29
 related:
@@ -20,7 +20,7 @@ related:
 
 **Report timestamp:** 2026-07-29 12:30:56 CEST (UTC+02:00)
 
-**Status:** implementation in progress; Milestones 0–5 complete
+**Status:** implementation in progress; Milestones 0–6 complete
 
 ## Executive decision
 
@@ -796,15 +796,15 @@ within it is checked.
 
 ### Milestone 6 — Layers, validation, and map lifecycle
 
-- [ ] Add visible, dimmed, hidden, and locked state for every editing domain.
-- [ ] Add stable validation codes, a validation overlay, and an issues panel
+- [x] Add visible, dimmed, hidden, and locked state for every editing domain.
+- [x] Add stable validation codes, a validation overlay, and an issues panel
   with next/previous navigation.
-- [ ] Add safe resize with loss preview, clear confirmation, atomic import, and
+- [x] Add safe resize with loss preview, clear confirmation, atomic import, and
   deterministic export.
-- [ ] Add debounced local autosave and explicit crash-recovery choice.
-- [ ] Add map naming, saved views, revision identity, and map thumbnail
+- [x] Add debounced local autosave and explicit crash-recovery choice.
+- [x] Add map naming, saved views, revision identity, and map thumbnail
   generation as authoring metadata.
-- [ ] Ensure hidden layers still participate in validation and simulation.
+- [x] Ensure hidden layers still participate in validation and simulation.
 
 ### Milestone 7 — Zones, objectives, and deployment
 

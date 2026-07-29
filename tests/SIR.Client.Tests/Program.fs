@@ -2106,6 +2106,160 @@ let main _ =
         ("The deterministic Milestone 5 semantic-edge review fixture changed.\n"
          + edgeFixture)
 
+    let hiddenEdgeState =
+        editor
+        |> MapEditor.update (SetEditorLayerState(EdgeDomain, HiddenLayer))
+    let gapIssues =
+        MapEditor.validationIssues gapMap
+    let issueState =
+        { hiddenEdgeState with
+            Map = gapMap
+            Issues = gapIssues
+            ActiveIssue = Some 0 }
+        |> MapEditor.update SelectNextIssue
+        |> MapEditor.update SelectPreviousIssue
+    require
+        (MapEditor.layerState EdgeDomain hiddenEdgeState = HiddenLayer
+         && gapIssues |> Array.map _.Code = [| "EDGE-GAP" |]
+         && issueState.ActiveIssue = Some 0)
+        "Hidden edge content stopped validating or issue navigation was unstable."
+
+    let lockedTerrain =
+        editor
+        |> MapEditor.update (ChooseTool(Paint Rough))
+        |> MapEditor.update (SetEditorLayerState(TerrainDomain, LockedLayer))
+    let lockedAttempt = MapEditor.update (ActivateCell(0, 0)) lockedTerrain
+    require
+        (lockedAttempt.Map = lockedTerrain.Map
+         && lockedAttempt.Validation |> Option.exists (_.Contains("locked")))
+        "A locked terrain layer accepted an edit."
+
+    let resizeRequested = MapEditor.update (Resize(4, 4)) editor
+    let resizeLoss =
+        match resizeRequested.PendingDestructiveChange with
+        | Some(ResizePending loss) -> loss
+        | _ -> failwith "Resize did not require an explicit confirmation."
+    let resizeCanceled =
+        resizeRequested |> MapEditor.update CancelDestructiveChange
+    let resizeConfirmed =
+        resizeRequested |> MapEditor.update ConfirmDestructiveChange
+    require
+        (resizeLoss.LostTerrainCells = 6
+         && resizeLoss.LostEdges = 3
+         && resizeLoss.LostUnits = 3
+         && resizeCanceled.Map = editor.Map
+         && resizeConfirmed.Map.Width = 4
+         && resizeConfirmed.Map.Height = 4
+         && resizeConfirmed.Map.Units.Count = 1
+         && resizeConfirmed.Revision.Number = editor.Revision.Number + 1L)
+        "Safe resize did not preview loss, cancel cleanly, or commit atomically."
+
+    let invalidImport = MapEditor.update (LoadMapText "not a map") editor
+    require
+        (invalidImport.Map = editor.Map
+         && invalidImport.Revision.Digest = editor.Revision.Digest)
+        "A failed import partially replaced canonical map state."
+
+    let recoveryText = MapEditor.export (MapEditor.update ClearMap editor)
+    let recoveryOffered =
+        editor |> MapEditor.update (OfferCrashRecovery recoveryText)
+    let recoveryDiscarded =
+        recoveryOffered |> MapEditor.update DiscardCrashDraft
+    let recoveryAccepted =
+        recoveryOffered |> MapEditor.update RecoverCrashDraft
+    require
+        (recoveryOffered.PendingRecovery.IsSome
+         && recoveryDiscarded.Map = editor.Map
+         && recoveryAccepted.Map.Units.IsEmpty
+         && recoveryAccepted.RevisionState = RecoveredRevision)
+        "Crash recovery did not require an explicit recover/discard choice."
+
+    let metadataState =
+        editor
+        |> MapEditor.update (SetMapName "Bridge at dusk")
+        |> MapEditor.update (
+            SaveMapView(
+                "Overview",
+                { PanX = 14.0
+                  PanY = 28.0
+                  Zoom = 1.5 }
+            )
+        )
+    let thumbnail = MapEditor.thumbnailSvg metadataState
+    let metadataWithThumbnail =
+        metadataState |> MapEditor.update (SetMapThumbnail(Some thumbnail))
+    require
+        (metadataWithThumbnail.Revision.Digest = editor.Revision.Digest
+         && MapEditor.export metadataWithThumbnail = MapEditor.export editor
+         && metadataWithThumbnail.Authoring.SavedViews.Count = 1
+         && metadataWithThumbnail.Authoring.ThumbnailSvg = Some thumbnail
+         && thumbnail = MapEditor.thumbnailSvg metadataState)
+        "Authoring metadata changed canonical identity or thumbnail generation was unstable."
+
+    let hiddenSimulation =
+        editor
+        |> MapEditor.update (SetEditorLayerState(UnitDomain, HiddenLayer))
+        |> MapEditor.update StepEditor
+    require
+        (hiddenSimulation.Tick = 1
+         && hiddenSimulation.LastEvents.Length = editor.Map.Units.Count)
+        "Hidden units stopped participating in simulation."
+
+    let clearRequested =
+        editor |> MapEditor.update RequestClearMap
+    let clearConfirmed =
+        clearRequested |> MapEditor.update ConfirmDestructiveChange
+    require
+        (clearRequested.Map = editor.Map
+         && clearRequested.PendingDestructiveChange = Some ClearPending
+         && clearConfirmed.Map.Units.IsEmpty)
+        "Clear did not require confirmation or commit as one revision."
+
+    let lifecycleFixture =
+        String.concat
+            "\n"
+            [ "layers="
+              + ([ TerrainDomain; EdgeDomain; UnitDomain; DocumentDomain ]
+                 |> List.map (fun domain ->
+                     string domain + ":" + string (MapEditor.layerState domain hiddenEdgeState))
+                 |> String.concat ",")
+              "hidden-validation=" + (gapIssues |> Array.map _.Code |> String.concat ",")
+              "issue-index=" + string issueState.ActiveIssue
+              "locked-edit-preserved=" + string (lockedAttempt.Map = lockedTerrain.Map)
+              "resize-loss="
+              + String.concat
+                    ","
+                    [ string resizeLoss.LostTerrainCells
+                      string resizeLoss.LostEdges
+                      string resizeLoss.LostUnits ]
+              "resize-confirmed="
+              + string resizeConfirmed.Map.Width + "x" + string resizeConfirmed.Map.Height
+              + ":" + string resizeConfirmed.Map.Units.Count
+              "atomic-import=" + string (invalidImport.Map = editor.Map)
+              "recovery-choice="
+              + string recoveryOffered.PendingRecovery.IsSome + ":"
+              + string (recoveryDiscarded.Map = editor.Map) + ":"
+              + string recoveryAccepted.Map.Units.Count
+              "metadata="
+              + metadataWithThumbnail.Authoring.Name + ":"
+              + string metadataWithThumbnail.Authoring.SavedViews.Count + ":"
+              + string (metadataWithThumbnail.Revision.Digest = editor.Revision.Digest)
+              "thumbnail-deterministic=" + string (thumbnail = MapEditor.thumbnailSvg metadataState)
+              "hidden-simulation=" + string hiddenSimulation.Tick + ":" + string hiddenSimulation.LastEvents.Length
+              "clear-confirmed=" + string clearConfirmed.Map.Units.Count ]
+    let expectedLifecycleFixture =
+        File.ReadAllText(
+            Path.Combine(
+                __SOURCE_DIRECTORY__,
+                "fixtures",
+                "map-editor-milestone-6-lifecycle.txt"
+            )
+        ).TrimEnd()
+    require
+        (lifecycleFixture = expectedLifecycleFixture)
+        ("The deterministic Milestone 6 lifecycle review fixture changed.\n"
+         + lifecycleFixture)
+
     let maximumMap =
         { editor.Map with
             Width = 40

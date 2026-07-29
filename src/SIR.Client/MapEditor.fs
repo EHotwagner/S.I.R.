@@ -81,6 +81,37 @@ type EditorDomain =
     | UnitDomain
     | DocumentDomain
 
+type EditorLayerState =
+    | VisibleLayer
+    | DimmedLayer
+    | HiddenLayer
+    | LockedLayer
+
+type SavedMapView =
+    { Name: string
+      Camera: BattlefieldCamera }
+
+type MapAuthoringMetadata =
+    { Name: string
+      SavedViews: Map<string, SavedMapView>
+      RevisionIdentity: string
+      ThumbnailSvg: string option }
+
+type ResizeLossPreview =
+    { TargetWidth: int32
+      TargetHeight: int32
+      LostTerrainCells: int
+      LostEdges: int
+      LostUnits: int }
+
+type PendingDestructiveChange =
+    | ResizePending of ResizeLossPreview
+    | ClearPending
+
+type CrashRecoveryDraft =
+    { SourceDigest: string
+      Map: MapDefinition }
+
 type EditorCellAddress =
     { CellColumn: int32
       CellRow: int32 }
@@ -184,7 +215,13 @@ type MapEditorState =
       Tick: int32
       IsRunning: bool
       LastEvents: string list
-      Validation: string option }
+      Validation: string option
+      Layers: Map<EditorDomain, EditorLayerState>
+      Issues: MapIssue array
+      ActiveIssue: int option
+      PendingDestructiveChange: PendingDestructiveChange option
+      PendingRecovery: CrashRecoveryDraft option
+      Authoring: MapAuthoringMetadata }
 
 type MapEditorAction =
     | ChooseTool of MapEditorTool
@@ -210,6 +247,19 @@ type MapEditorAction =
     | ExtendTerrainGesture of EditorCellAddress
     | ActivateCell of column: int32 * row: int32
     | Resize of width: int32 * height: int32
+    | RequestClearMap
+    | ConfirmDestructiveChange
+    | CancelDestructiveChange
+    | SetEditorLayerState of EditorDomain * EditorLayerState
+    | SelectNextIssue
+    | SelectPreviousIssue
+    | SetMapName of string
+    | SaveMapView of name: string * camera: BattlefieldCamera
+    | RemoveMapView of string
+    | SetMapThumbnail of string option
+    | OfferCrashRecovery of string
+    | RecoverCrashDraft
+    | DiscardCrashDraft
     | SelectEditorUnit of int32 option
     | ToggleEditorUnitSelection of int32
     | SelectEditorUnitsInBox of EditorBox
@@ -634,7 +684,20 @@ module MapEditor =
           Tick = 0
           IsRunning = false
           LastEvents = []
-          Validation = None }
+          Validation = None
+          Layers =
+            [ TerrainDomain; EdgeDomain; UnitDomain; DocumentDomain ]
+            |> List.map (fun domain -> domain, VisibleLayer)
+            |> Map.ofList
+          Issues = [||]
+          ActiveIssue = None
+          PendingDestructiveChange = None
+          PendingRecovery = None
+          Authoring =
+            { Name = "Untitled battlefield"
+              SavedViews = Map.empty
+              RevisionIdentity = initialRevision.Digest
+              ThumbnailSvg = None } }
 
     let private directionDelta direction =
         match direction with
@@ -867,33 +930,66 @@ module MapEditor =
             LastEvents = List.rev events
             Validation = None }
 
-    let private resize width height state =
+    let resizeLossPreview width height (map: MapDefinition) =
         let width = max 4 (min 40 width)
         let height = max 4 (min 40 height)
-        let terrain =
-            state.Map.Terrain
-            |> Map.filter (fun (column, row) _ -> column < width && row < height)
-        let edges =
-            state.Map.Edges
-            |> Map.filter (fun (column, row, _) _ -> column < width && row < height)
-        let units =
-            state.Map.Units
-            |> Map.filter (fun _ unit ->
-                unit.Column + unit.Size <= width
-                && unit.Row + unit.Size <= height)
+        { TargetWidth = width
+          TargetHeight = height
+          LostTerrainCells =
+            map.Terrain
+            |> Map.toList
+            |> List.filter (fun ((column, row), _) -> column >= width || row >= height)
+            |> List.length
+          LostEdges =
+            map.Edges
+            |> Map.toList
+            |> List.filter (fun ((column, row, _), _) -> column >= width || row >= height)
+            |> List.length
+          LostUnits =
+            map.Units
+            |> Map.toList
+            |> List.filter (fun (_, unit) ->
+                unit.Column + unit.Size > width || unit.Row + unit.Size > height)
+            |> List.length }
 
+    let private resizedDocument (preview: ResizeLossPreview) (map: MapDefinition) =
+        let terrain =
+            map.Terrain
+            |> Map.filter (fun (column, row) _ ->
+                column < preview.TargetWidth && row < preview.TargetHeight)
+        let edges =
+            map.Edges
+            |> Map.filter (fun (column, row, _) _ ->
+                column < preview.TargetWidth && row < preview.TargetHeight)
+        let units =
+            map.Units
+            |> Map.filter (fun _ unit ->
+                unit.Column + unit.Size <= preview.TargetWidth
+                && unit.Row + unit.Size <= preview.TargetHeight)
+
+        { map with
+            Width = preview.TargetWidth
+            Height = preview.TargetHeight
+            Terrain = terrain
+            Edges = edges
+            Units = units }
+
+    let private resize width height state =
+        let preview = resizeLossPreview width height state.Map
         { state with
-            Map =
-                { state.Map with
-                    Width = width
-                    Height = height
-                    Terrain = terrain
-                    Edges = edges
-                    Units = units }
-            SelectedUnit =
-                state.SelectedUnit
-                |> Option.filter (fun id -> Map.containsKey id units)
-            Validation = None }
+            PendingDestructiveChange = Some(ResizePending preview)
+            Validation =
+                if preview.LostTerrainCells + preview.LostEdges + preview.LostUnits = 0 then None
+                else
+                    Some(
+                        "Resize would remove "
+                        + string preview.LostTerrainCells
+                        + " terrain cells, "
+                        + string preview.LostEdges
+                        + " edges, and "
+                        + string preview.LostUnits
+                        + " units. Confirm to continue."
+                    ) }
 
     let private inBounds map address =
         address.CellColumn >= 0
@@ -1231,6 +1327,7 @@ module MapEditor =
                     Validation = None }
             | Error error ->
                 { state with Validation = Some error }
+        | _ -> state
 
     and export state = canonicalMapText state.Map
 
@@ -1517,6 +1614,16 @@ module MapEditor =
 
         dimensions @ terrain @ edges @ semanticEdgeState @ units
 
+    /// Runs validation against the authoritative document only. Layer
+    /// visibility and locks are deliberately ignored, so hidden content keeps
+    /// participating in validation and simulation.
+    let validationIssues map =
+        (validateDocument map
+         @ (edgeIssues map
+            |> List.filter (fun candidate -> candidate.Code = "EDGE-GAP")))
+        |> List.sortBy (fun candidate -> candidate.Code, candidate.Message)
+        |> List.toArray
+
     let applyCommand (ValidatedEditorCommand command) map =
         match command with
         | PaintCells(terrain, addresses) ->
@@ -1665,7 +1772,15 @@ module MapEditor =
                     UndoHistory = undo
                     RedoHistory = []
                     HistoryBytes = historySize undo
-                    Validation = None }
+                    Validation = None
+                    Issues = validationIssues map
+                    ActiveIssue =
+                        if Array.isEmpty (validationIssues map) then None else Some 0
+                    PendingDestructiveChange = None
+                    Authoring =
+                        { state.Authoring with
+                            RevisionIdentity = after.Digest
+                            ThumbnailSvg = None } }
 
     let private validEdgeKey map (column, row, _) =
         column >= 0 && row >= 0 && column < map.Width && row < map.Height
@@ -1773,6 +1888,57 @@ module MapEditor =
         | Edge _ -> EdgeDomain
         | Place _ -> UnitDomain
         | Select -> UnitDomain
+
+    let layerState domain state =
+        state.Layers
+        |> Map.tryFind domain
+        |> Option.defaultValue VisibleLayer
+
+    let private actionDomain action state =
+        match action with
+        | BeginTerrainGesture _
+        | ExtendTerrainGesture _
+        | ActivateTerrainCursor
+        | ChooseTerrain _
+        | SetTerrainBrushSize _ -> Some TerrainDomain
+        | ActivateEdge _
+        | MoveEdgeCursor _
+        | ActivateEdgeCursor
+        | FinishEdgePolyline
+        | BacktrackEdgePolyline
+        | ConvertEdge _
+        | ToggleDoorState _
+        | EraseEdge _
+        | SplitEdge _
+        | JoinEdge _ -> Some EdgeDomain
+        | PreviewUnitPlacement _
+        | BeginUnitMove _
+        | ExtendUnitMove _
+        | RemoveSelectedUnit
+        | SetSelectedSide _
+        | SetSelectedClass _
+        | SetSelectedSize _
+        | SetSelectedHealth _
+        | SetSelectedController _
+        | SetSelectedScript _
+        | MoveSelected _
+        | DeleteEditorSelection
+        | PasteEditorClipboard
+        | DuplicateEditorSelection -> Some UnitDomain
+        | Resize _
+        | RequestClearMap
+        | ClearMap
+        | LoadMapText _
+        | ConfirmDestructiveChange -> Some DocumentDomain
+        | ActivateCell _ -> Some(activeDomain state.Tool)
+        | CommitEditorGesture ->
+            match state.Gesture with
+            | TerrainGesture _ -> Some TerrainDomain
+            | EdgePolylineGesture _ -> Some EdgeDomain
+            | CommandPreviewGesture _
+            | UnitMoveGesture _ -> Some UnitDomain
+            | _ -> None
+        | _ -> None
 
     let private isTerrainAuthoringTool tool =
         match tool with
@@ -1901,19 +2067,116 @@ module MapEditor =
             match action, state.Gesture with
             | ChooseTool _, EdgePolylineGesture _ -> finishEdgePolyline state
             | _ -> state
-        match action with
-        | ChooseTool(Edge(direction, kind)) ->
-            let column, row, _ = state.EdgeCursor
+        match actionDomain action state with
+        | Some domain when layerState domain state = LockedLayer ->
             { state with
-                Tool = Edge(direction, kind)
-                EdgeCursor = column, row, direction
-                Gesture = IdleGesture
-                Validation = None
-                EdgeAnnouncement =
-                    edgeKindName kind
-                    + " "
-                    + edgeDirectionName direction
-                    + " edge tool selected." }
+                Validation = Some("The " + string domain + " layer is locked.") }
+        | _ -> unlockedUpdate action state
+
+    and private unlockedUpdate action state =
+        match action with
+        | SetEditorLayerState(domain, value) ->
+          { state with
+              Layers = Map.add domain value state.Layers
+              Validation = None }
+        | SelectNextIssue ->
+          if Array.isEmpty state.Issues then
+              { state with ActiveIssue = None }
+          else
+              let current = state.ActiveIssue |> Option.defaultValue -1
+              { state with ActiveIssue = Some((current + 1) % state.Issues.Length) }
+        | SelectPreviousIssue ->
+          if Array.isEmpty state.Issues then
+              { state with ActiveIssue = None }
+          else
+              let current = state.ActiveIssue |> Option.defaultValue 0
+              { state with
+                  ActiveIssue =
+                      Some((current - 1 + state.Issues.Length) % state.Issues.Length) }
+        | SetMapName name ->
+          let normalized =
+              if String.IsNullOrWhiteSpace name then "Untitled battlefield"
+              else name.Trim()
+          { state with Authoring = { state.Authoring with Name = normalized } }
+        | SaveMapView(name, camera) ->
+          let normalized = name.Trim()
+          if String.IsNullOrWhiteSpace normalized then
+              { state with Validation = Some "Saved view names cannot be empty." }
+          else
+              let view = { Name = normalized; Camera = camera }
+              { state with
+                  Authoring =
+                      { state.Authoring with
+                          SavedViews =
+                              Map.add normalized view state.Authoring.SavedViews }
+                  Validation = None }
+        | RemoveMapView name ->
+          { state with
+              Authoring =
+                  { state.Authoring with
+                      SavedViews = Map.remove name state.Authoring.SavedViews } }
+        | SetMapThumbnail thumbnail ->
+          { state with
+              Authoring = { state.Authoring with ThumbnailSvg = thumbnail } }
+        | CancelDestructiveChange ->
+          { state with PendingDestructiveChange = None; Validation = None }
+        | RequestClearMap ->
+          { state with
+              PendingDestructiveChange = Some ClearPending
+              Validation =
+                  Some
+                      "Clearing removes every terrain cell, edge, and unit. Confirm to continue." }
+        | ConfirmDestructiveChange ->
+          match state.PendingDestructiveChange with
+          | Some(ResizePending preview) ->
+              commit
+                  (ReplaceDocument(
+                      "confirmed-resize",
+                      resizedDocument preview state.Map
+                  ))
+                  state
+          | Some ClearPending ->
+              commit
+                  (ReplaceDocument(
+                      "confirmed-clear",
+                      emptyMap state.Map.Width state.Map.Height
+                  ))
+                  state
+          | None -> state
+        | OfferCrashRecovery text ->
+          match tryImport text with
+          | Ok map ->
+              let digest = revisionDigest map
+              if digest = state.Revision.Digest then state
+              else
+                  { state with
+                      PendingRecovery = Some { SourceDigest = digest; Map = map } }
+          | Error _ -> state
+        | RecoverCrashDraft ->
+          match state.PendingRecovery with
+          | None -> state
+          | Some draft ->
+              let recovered =
+                  commit
+                      (ReplaceDocument("crash-recovery", draft.Map))
+                      { state with PendingRecovery = None }
+              { recovered with
+                  RevisionState = RecoveredRevision
+                  RecoveredFromDigest = Some draft.SourceDigest }
+        | DiscardCrashDraft ->
+          { state with PendingRecovery = None }
+        | ChooseTool(Edge(direction, kind)) ->
+          let column, row, _ = state.EdgeCursor
+          { state with
+              Tool = Edge(direction, kind)
+              EdgeCursor = column, row, direction
+              Gesture = IdleGesture
+              Validation = None
+              EdgeAnnouncement =
+                  edgeKindName kind
+                  + " "
+                  + edgeDirectionName direction
+                  + " edge tool selected." }
         | ChooseTool(Paint terrain) ->
             { state with
                 Tool = Paint terrain
@@ -2472,7 +2735,14 @@ module MapEditor =
                     UndoHistory = remaining
                     RedoHistory = entry :: state.RedoHistory |> historyWithinBounds
                     HistoryBytes = historySize remaining
-                    Validation = None }
+                    Validation = None
+                    Issues = validationIssues entry.Before.Document
+                    ActiveIssue =
+                        if Array.isEmpty (validationIssues entry.Before.Document) then None else Some 0
+                    Authoring =
+                        { state.Authoring with
+                            RevisionIdentity = entry.Before.Digest
+                            ThumbnailSvg = None } }
         | RedoEditorCommand ->
             match state.RedoHistory with
             | [] -> state
@@ -2491,7 +2761,14 @@ module MapEditor =
                     UndoHistory = undo
                     RedoHistory = remaining
                     HistoryBytes = historySize undo
-                    Validation = None }
+                    Validation = None
+                    Issues = validationIssues entry.After.Document
+                    ActiveIssue =
+                        if Array.isEmpty (validationIssues entry.After.Document) then None else Some 0
+                    Authoring =
+                        { state.Authoring with
+                            RevisionIdentity = entry.After.Digest
+                            ThumbnailSvg = None } }
         | MarkEditorSaved ->
             { state with
                 RevisionState = SavedRevision
@@ -2584,6 +2861,69 @@ module MapEditor =
             elif state.RevisionState = SimulatedRevision then
                 legacy
             else commit (legacyCommand action legacy.Map) { legacy with Map = state.Map }
+
+    let private xmlEscape (value: string) =
+        value.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;")
+
+    /// Generates a deterministic, presentation-only thumbnail. The SVG and
+    /// other authoring metadata are never part of SIR-MAP or its revision
+    /// digest.
+    let thumbnailSvg state =
+        let cell = 12
+        let width = int state.Map.Width * cell
+        let height = int state.Map.Height * cell
+        let terrain =
+            state.Map.Terrain
+            |> Map.toList
+            |> List.map (fun ((column, row), value) ->
+                let fill =
+                    match value with
+                    | Rough -> "#8b7d62"
+                    | Blocked -> "#302e35"
+                    | Objective -> "#b48835"
+                    | Open -> "#d8d0bc"
+                "<rect x=\"" + string (int column * cell) + "\" y=\"" + string (int row * cell)
+                + "\" width=\"" + string cell + "\" height=\"" + string cell + "\" fill=\"" + fill + "\"/>")
+        let units =
+            state.Map.Units
+            |> Map.toList
+            |> List.map (fun (_, unit) ->
+                let fill =
+                    match unit.Side with
+                    | Blue -> "#286b9f"
+                    | Red -> "#a33d3d"
+                    | NeutralSide -> "#77736a"
+                "<rect x=\"" + string (int unit.Column * cell + 2) + "\" y=\""
+                + string (int unit.Row * cell + 2) + "\" width=\""
+                + string (int unit.Size * cell - 4) + "\" height=\""
+                + string (int unit.Size * cell - 4) + "\" rx=\"2\" fill=\"" + fill + "\"/>")
+        String.concat
+            ""
+            ([ "<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\""
+               xmlEscape state.Authoring.Name
+               + " map thumbnail\" viewBox=\"0 0 " + string width + " " + string height + "\">"
+               "<rect width=\"100%\" height=\"100%\" fill=\"#d8d0bc\"/>" ]
+             @ terrain
+             @ units
+             @ [ "</svg>" ])
+
+    let authoringMetadataText state =
+        let safe (value: string) = value.Replace("\r", " ").Replace("\n", " ")
+        String.concat
+            "\n"
+            ([ "SIR-MAP-AUTHORING 1"
+               "name " + safe state.Authoring.Name
+               "revision " + state.Revision.Digest ]
+             @ (state.Authoring.SavedViews
+                |> Map.toList
+                |> List.map (fun (_, view) ->
+                    "view " + safe view.Name + " "
+                    + string view.Camera.PanX + " "
+                    + string view.Camera.PanY + " "
+                    + string view.Camera.Zoom)))
+        + "\n"
+
+    let autosaveText state = export state
 
     let private edgeVisual ((column, row, direction), (kind, isOpen)) : EdgeVisual =
         let kindName =

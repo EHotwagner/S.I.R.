@@ -22,6 +22,7 @@ type Msg =
     | WorkspaceChanged of WorkspaceMode
     | EditorToolPanelChanged of EditorToolPanel
     | EditorWorkspaceChanged of EditorWorkspaceAction
+    | RecallEditorView of string
     | EditorChanged of MapEditorAction
     | ExportMap
     | ExportExperiment
@@ -108,6 +109,19 @@ let private downloadMap state =
         anchor.download = "battlefield.sir-map";
         anchor.click();
         URL.revokeObjectURL(url);
+        """
+
+[<Emit("window.localStorage.getItem('sir.map-editor.autosave.v1')")>]
+let private readMapAutosave () : string = jsNative
+
+let private scheduleMapAutosave content =
+    emitJsStatement
+        content
+        """
+        clearTimeout(window.__sirMapAutosaveTimer);
+        window.__sirMapAutosaveTimer = setTimeout(() => {
+          window.localStorage.setItem("sir.map-editor.autosave.v1", $0);
+        }, 500);
         """
 
 let private downloadEvidenceSvg (evidence: SvgEvidence) =
@@ -214,7 +228,11 @@ let private evidenceFor model =
         frame
 
 let init () =
-    let editor = MapEditor.initial
+    let editor =
+        let initial = MapEditor.initial
+        let autosave = readMapAutosave ()
+        if isNull autosave then initial
+        else MapEditor.update (OfferCrashRecovery autosave) initial
     let editorView =
         MapEditorWorkspace.initial prefersReducedMotion
         |> MapEditorWorkspace.update
@@ -285,6 +303,13 @@ let rec update msg model =
                 action
                 model.EditorView
         { model with EditorView = editorView }, Cmd.none
+    | RecallEditorView name ->
+        match Map.tryFind name model.Editor.Authoring.SavedViews with
+        | None -> model, Cmd.none
+        | Some saved ->
+            { model with
+                EditorView = { model.EditorView with Camera = saved.Camera } },
+            Cmd.none
     | EditorChanged action ->
         let editor = MapEditor.update action model.Editor
         let editorView =
@@ -304,7 +329,8 @@ let rec update msg model =
             Battlefield = battlefield
             PreviousFrame = None
             PresentationAlpha = 1.0 },
-        Cmd.none
+        Cmd.ofEffect (fun _ ->
+            scheduleMapAutosave (MapEditor.autosaveText editor))
     | EditorPulse ->
         if model.Editor.IsRunning then
             update (EditorChanged StepEditor) model
@@ -389,6 +415,8 @@ let rec update msg model =
             | ("d" | "D"), true, _ -> update (EditorChanged DuplicateEditorSelection) model
             | ("a" | "A"), true, _ -> update (EditorChanged SelectAllInActiveDomain) model
             | ("Delete" | "Backspace"), false, _ -> update (EditorChanged DeleteEditorSelection) model
+            | "[", false, _ -> update (EditorChanged SelectPreviousIssue) model
+            | "]", false, _ -> update (EditorChanged SelectNextIssue) model
             | " ", false, _ -> { model with EditorSpacePressed = true }, Cmd.none
             | "1", false, true -> update (EditorChanged(ChooseTerrain Open)) model
             | "2", false, true -> update (EditorChanged(ChooseTerrain Rough)) model
@@ -2443,6 +2471,12 @@ let private toolLabel tool =
             | Window -> "window"
         "Place " + directionName + " " + kindName
 
+let private editorLayerDisplay domain state =
+    if MapEditor.layerState domain state = HiddenLayer then "none" else "inline"
+
+let private editorLayerOpacity domain state =
+    if MapEditor.layerState domain state = DimmedLayer then "0.28" else "1"
+
 let private edgeClass state column row direction =
     state.Map.Edges
     |> Map.tryFind (column, row, direction)
@@ -3145,6 +3179,8 @@ let private editorBattlefield
                         svg.children [
                             Svg.rect [
                                 svg.custom ("data-layer", "terrain")
+                                svg.custom ("display", editorLayerDisplay TerrainDomain state)
+                                svg.custom ("opacity", editorLayerOpacity TerrainDomain state)
                                 svg.width boardWidth
                                 svg.height boardHeight
                                 svg.fill palette.Terrain
@@ -3165,17 +3201,23 @@ let private editorBattlefield
                                                 "data-terrain",
                                                 MapEditor.terrainLabel terrain
                                             )
+                                            svg.custom ("display", editorLayerDisplay TerrainDomain state)
                                             svg.x (float column * Battlefield.CellSize)
                                             svg.y (float row * Battlefield.CellSize)
                                             svg.width Battlefield.CellSize
                                             svg.height Battlefield.CellSize
                                             svg.fill fill
-                                            svg.custom ("opacity", opacity)
+                                            svg.custom (
+                                                "opacity",
+                                                if MapEditor.layerState TerrainDomain state = DimmedLayer then opacity * 0.28 else opacity
+                                            )
                                         ]
                                         match terrain with
                                         | Rough ->
                                             Svg.line [
                                                 svg.custom ("data-terrain-pattern", "diagonal-hatch")
+                                                svg.custom ("display", editorLayerDisplay TerrainDomain state)
+                                                svg.custom ("opacity", editorLayerOpacity TerrainDomain state)
                                                 svg.x1 (float column * Battlefield.CellSize + 8.0)
                                                 svg.y1 (float (row + 1) * Battlefield.CellSize - 8.0)
                                                 svg.x2 (float (column + 1) * Battlefield.CellSize - 8.0)
@@ -3188,6 +3230,8 @@ let private editorBattlefield
                                             for first, last in [ 9.0, Battlefield.CellSize - 9.0; Battlefield.CellSize - 9.0, 9.0 ] do
                                                 Svg.line [
                                                     svg.custom ("data-terrain-pattern", "cross-hatch")
+                                                    svg.custom ("display", editorLayerDisplay TerrainDomain state)
+                                                    svg.custom ("opacity", editorLayerOpacity TerrainDomain state)
                                                     svg.x1 (float column * Battlefield.CellSize + first)
                                                     svg.y1 (float row * Battlefield.CellSize + 9.0)
                                                     svg.x2 (float column * Battlefield.CellSize + last)
@@ -3199,6 +3243,8 @@ let private editorBattlefield
                                         | Objective ->
                                             Svg.rect [
                                                 svg.custom ("data-terrain-pattern", "inset-ring")
+                                                svg.custom ("display", editorLayerDisplay TerrainDomain state)
+                                                svg.custom ("opacity", editorLayerOpacity TerrainDomain state)
                                                 svg.x (float column * Battlefield.CellSize + 7.0)
                                                 svg.y (float row * Battlefield.CellSize + 7.0)
                                                 svg.width (Battlefield.CellSize - 14.0)
@@ -3213,6 +3259,8 @@ let private editorBattlefield
                             | Some(terrain, addresses, isValid) ->
                                 Svg.g [
                                     svg.custom ("data-layer", "terrain-preview")
+                                    svg.custom ("display", editorLayerDisplay TerrainDomain state)
+                                    svg.custom ("opacity", editorLayerOpacity TerrainDomain state)
                                     svg.custom ("data-preview-valid", string isValid)
                                     svg.custom ("pointer-events", "none")
                                     svg.children [
@@ -3242,6 +3290,8 @@ let private editorBattlefield
                             | Some(units, isValid) ->
                                 Svg.g [
                                     svg.custom ("data-layer", "unit-preview")
+                                    svg.custom ("display", editorLayerDisplay UnitDomain state)
+                                    svg.custom ("opacity", editorLayerOpacity UnitDomain state)
                                     svg.custom ("data-preview-valid", string isValid)
                                     svg.custom ("pointer-events", "none")
                                     svg.children [
@@ -3298,6 +3348,8 @@ let private editorBattlefield
                             | _ -> ()
                             Svg.g [
                                 svg.custom ("data-layer", "grid")
+                                svg.custom ("display", editorLayerDisplay DocumentDomain state)
+                                svg.custom ("opacity", editorLayerOpacity DocumentDomain state)
                                 svg.custom ("pointer-events", "none")
                                 svg.children [
                                     for column in 0 .. int state.Map.Width do
@@ -3324,6 +3376,8 @@ let private editorBattlefield
                             ]
                             Svg.g [
                                 svg.custom ("data-layer", "edges")
+                                svg.custom ("display", editorLayerDisplay EdgeDomain state)
+                                svg.custom ("opacity", editorLayerOpacity EdgeDomain state)
                                 svg.custom ("pointer-events", "none")
                                 svg.children [
                                     for (column, row, direction), (kind, isOpen) in
@@ -3374,6 +3428,8 @@ let private editorBattlefield
                             | EdgePolylineGesture(kind, segments) ->
                                 Svg.g [
                                     svg.custom ("data-layer", "edge-preview")
+                                    svg.custom ("display", editorLayerDisplay EdgeDomain state)
+                                    svg.custom ("opacity", editorLayerOpacity EdgeDomain state)
                                     svg.custom ("pointer-events", "none")
                                     svg.children [
                                         for column, row, direction in segments do
@@ -3412,6 +3468,8 @@ let private editorBattlefield
                             Svg.g [
                                 svg.key ("editor-units-" + state.Revision.Digest)
                                 svg.custom ("data-layer", "units")
+                                svg.custom ("display", editorLayerDisplay UnitDomain state)
+                                svg.custom ("opacity", editorLayerOpacity UnitDomain state)
                                 svg.children (
                                     state.Map.Units
                                     |> Map.toList
@@ -3419,6 +3477,34 @@ let private editorBattlefield
                                         editorUnitSvg state palette dispatch unit)
                                 )
                             ]
+                            match state.ActiveIssue with
+                            | Some index when index >= 0 && index < state.Issues.Length ->
+                                let issue = state.Issues[index]
+                                Svg.g [
+                                    svg.custom ("data-layer", "validation-overlay")
+                                    svg.custom ("pointer-events", "none")
+                                    svg.children [
+                                        Svg.rect [
+                                            svg.x 6
+                                            svg.y 6
+                                            svg.width (min 420.0 (boardWidth - 12.0))
+                                            svg.height 38
+                                            svg.rx 5
+                                            svg.fill palette.Canvas
+                                            svg.stroke palette.HealthActive
+                                            svg.strokeWidth 2
+                                            svg.custom ("vector-effect", "non-scaling-stroke")
+                                        ]
+                                        Svg.text [
+                                            svg.x 18
+                                            svg.y 31
+                                            svg.fill palette.Text
+                                            svg.fontSize 15
+                                            svg.text (issue.Code + " · " + issue.Message)
+                                        ]
+                                    ]
+                                ]
+                            | _ -> Html.none
                             match state.Gesture with
                             | BoxSelectionGesture(anchor, current) ->
                                 let firstColumn = min anchor.CellColumn current.CellColumn
@@ -3477,6 +3563,7 @@ let private editorBattlefield
 
 let private editorToolbar
     (state: MapEditorState)
+    (view: EditorWorkspaceState)
     (activePanel: EditorToolPanel)
     dispatch
     =
@@ -3744,6 +3831,97 @@ let private editorToolbar
                         ]
                     | DocumentTools ->
                         Html.h3 "Map document"
+                        Html.label [
+                            prop.htmlFor "map-name"
+                            prop.text "Map name"
+                        ]
+                        Html.input [
+                            prop.id "map-name"
+                            prop.value state.Authoring.Name
+                            prop.onChange (fun value ->
+                                dispatch (EditorChanged(SetMapName value)))
+                        ]
+                        Html.div [
+                            prop.className "editor-layer-controls"
+                            prop.role.group
+                            prop.ariaLabel "Editing layer states"
+                            prop.children [
+                                for domain in
+                                    [ TerrainDomain
+                                      EdgeDomain
+                                      UnitDomain
+                                      DocumentDomain ] do
+                                    Html.fieldSet [
+                                        Html.legend (string domain)
+                                        for value, label in
+                                            [ VisibleLayer, "Visible"
+                                              DimmedLayer, "Dimmed"
+                                              HiddenLayer, "Hidden"
+                                              LockedLayer, "Locked" ] do
+                                            Html.button [
+                                                prop.type'.button
+                                                prop.text label
+                                                prop.ariaPressed (
+                                                    MapEditor.layerState domain state = value
+                                                )
+                                                prop.onClick (fun _ ->
+                                                    dispatch (
+                                                        EditorChanged(
+                                                            SetEditorLayerState(domain, value)
+                                                        )
+                                                    ))
+                                            ]
+                                    ]
+                            ]
+                        ]
+                        Html.div [
+                            prop.className "control-row"
+                            prop.children [
+                                button "Save current view" "Save the current camera as a named authoring view" false (fun _ ->
+                                    dispatch (
+                                        EditorChanged(
+                                            SaveMapView(
+                                                "View " + string (state.Authoring.SavedViews.Count + 1),
+                                                view.Camera
+                                            )
+                                        )
+                                    ))
+                                button "Generate thumbnail" "Generate deterministic authoring thumbnail metadata" false (fun _ ->
+                                    dispatch (
+                                        EditorChanged(
+                                            SetMapThumbnail(Some(MapEditor.thumbnailSvg state))
+                                        )
+                                    ))
+                                Html.span (
+                                    string state.Authoring.SavedViews.Count
+                                    + " saved views · thumbnail "
+                                    + if state.Authoring.ThumbnailSvg.IsSome then "ready" else "not generated"
+                                )
+                            ]
+                        ]
+                        if not state.Authoring.SavedViews.IsEmpty then
+                            Html.ul [
+                                prop.ariaLabel "Saved map views"
+                                prop.children [
+                                    for name, saved in state.Authoring.SavedViews |> Map.toList do
+                                        Html.li [
+                                            Html.button [
+                                                prop.type'.button
+                                                prop.text ("Recall " + saved.Name)
+                                                prop.onClick (fun _ ->
+                                                    dispatch (RecallEditorView name))
+                                            ]
+                                            Html.button [
+                                                prop.type'.button
+                                                prop.text ("Remove " + saved.Name)
+                                                prop.onClick (fun _ ->
+                                                    dispatch (
+                                                        EditorChanged(RemoveMapView name)
+                                                    ))
+                                            ]
+                                        ]
+                                ]
+                            ]
                         Html.div [
                             prop.className "map-size-row"
                             prop.children [
@@ -3768,7 +3946,7 @@ let private editorToolbar
                                         dispatch (EditorChanged(Resize(state.Map.Width, int32 value))))
                                 ]
                                 button "Clear" "Clear the current map" false (fun _ ->
-                                    dispatch (EditorChanged ClearMap))
+                                    dispatch (EditorChanged RequestClearMap))
                                 button "Export map" "Export the current map document" false (fun _ ->
                                     dispatch ExportMap)
                                 Html.label [
@@ -3786,6 +3964,68 @@ let private editorToolbar
                                         ]
                                     ]
                                 ]
+                            ]
+                        ]
+                        match state.PendingDestructiveChange with
+                        | Some pending ->
+                            Html.div [
+                                prop.className "editor-confirmation"
+                                prop.role.alert
+                                prop.children [
+                                    Html.strong "Confirmation required"
+                                    Html.span (
+                                        match pending with
+                                        | ClearPending -> "Clear the complete canonical map?"
+                                        | ResizePending loss ->
+                                            "Resize to "
+                                            + string loss.TargetWidth + "×" + string loss.TargetHeight
+                                            + "; remove " + string loss.LostTerrainCells
+                                            + " terrain cells, " + string loss.LostEdges
+                                            + " edges, and " + string loss.LostUnits + " units?"
+                                    )
+                                    button "Confirm" "Confirm destructive map change" false (fun _ ->
+                                        dispatch (EditorChanged ConfirmDestructiveChange))
+                                    button "Cancel" "Cancel destructive map change" false (fun _ ->
+                                        dispatch (EditorChanged CancelDestructiveChange))
+                                ]
+                            ]
+                        | None -> Html.none
+                        match state.PendingRecovery with
+                        | Some draft ->
+                            Html.div [
+                                prop.className "editor-confirmation"
+                                prop.role.alert
+                                prop.children [
+                                    Html.strong "Crash-recovery draft found"
+                                    Html.span ("Draft revision " + draft.SourceDigest.Substring(0, 12))
+                                    button "Recover draft" "Replace the current map with the local recovery draft" false (fun _ ->
+                                        dispatch (EditorChanged RecoverCrashDraft))
+                                    button "Discard draft" "Keep the current map and discard the recovery choice" false (fun _ ->
+                                        dispatch (EditorChanged DiscardCrashDraft))
+                                ]
+                            ]
+                        | None -> Html.none
+                        Html.section [
+                            prop.className "editor-issues-panel"
+                            prop.ariaLabel "Map validation issues"
+                            prop.children [
+                                Html.h4 ("Issues · " + string state.Issues.Length)
+                                button "Previous" "Previous validation issue" (Array.isEmpty state.Issues) (fun _ ->
+                                    dispatch (EditorChanged SelectPreviousIssue))
+                                button "Next" "Next validation issue" (Array.isEmpty state.Issues) (fun _ ->
+                                    dispatch (EditorChanged SelectNextIssue))
+                                match state.ActiveIssue with
+                                | Some index when index >= 0 && index < state.Issues.Length ->
+                                    let issue = state.Issues[index]
+                                    Html.p [
+                                        prop.role.status
+                                        prop.ariaLive.polite
+                                        prop.text (
+                                            string (index + 1) + " of " + string state.Issues.Length
+                                            + " · " + issue.Code + " · " + issue.Message
+                                        )
+                                    ]
+                                | _ -> Html.p "No validation issues."
                             ]
                         ]
                 ]
@@ -4257,6 +4497,7 @@ let view model dispatch =
                     prop.children [
                         editorToolbar
                             model.Editor
+                            model.EditorView
                             model.EditorToolPanel
                             dispatch
                         editorBattlefield
