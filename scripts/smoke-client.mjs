@@ -521,6 +521,93 @@ if (
   );
 }
 
+const comparison = window.document.querySelector(
+  '[aria-label="Linked baseline and fork comparison"]',
+);
+const comparisonViewport = comparison?.querySelector(".comparison-viewport");
+const comparisonBoards = [
+  ...(comparison?.querySelectorAll("svg[data-comparison-camera]") ?? []),
+];
+if (
+  !comparison?.textContent.includes(
+    "Immutable baseline — exploratory simulation",
+  ) ||
+  !comparison?.textContent.includes(
+    "Derived fork — exploratory simulation, not verified replay",
+  ) ||
+  !comparison?.textContent.includes(
+    "Neither side is a verified replay",
+  ) ||
+  comparisonViewport?.getAttribute("data-linked-camera") !== "true" ||
+  comparisonViewport?.getAttribute("data-linked-selection") !== "true" ||
+  comparisonViewport?.getAttribute("data-linked-overlays") !== "true" ||
+  comparisonBoards.length !== 2 ||
+  comparisonBoards[0].getAttribute("data-comparison-camera") !==
+    comparisonBoards[1].getAttribute("data-comparison-camera") ||
+  comparisonBoards.some(
+    (board) => board.querySelectorAll("[data-comparison-unit]").length !== 2,
+  ) ||
+  !comparison?.textContent.includes("Evidence provenance: source") ||
+  !comparison?.textContent.includes("sir-safe-svg-renderer-v1")
+) {
+  throw new Error(
+    "The persistently labelled linked comparison or evidence provenance is incomplete.",
+  );
+}
+
+comparison
+  ?.querySelector('button[aria-label="Use difference overlay comparison"]')
+  ?.click();
+comparison
+  ?.querySelector('button[aria-label="Bookmark linked comparison tick"]')
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  !comparison?.querySelector(".comparison-difference") ||
+  !comparison
+    ?.querySelector('[aria-label="Comparison bookmarks"]')
+    ?.textContent.includes("Linked comparison at tick")
+) {
+  throw new Error("Comparison view switching or persistent bookmarks failed.");
+}
+
+for (const exportLabel of [
+  "Export sanitized SVG evidence with provenance",
+  "Export PNG evidence rasterized from sanitized SVG",
+]) {
+  if (!comparison?.querySelector(`button[aria-label="${exportLabel}"]`)) {
+    throw new Error(`Missing evidence export control: ${exportLabel}.`);
+  }
+}
+
+const evidenceBlobs = [];
+const originalCreateObjectUrl = URL.createObjectURL;
+URL.createObjectURL = function captureEvidence(blob) {
+  evidenceBlobs.push(blob);
+  return originalCreateObjectUrl.call(URL, blob);
+};
+comparison
+  ?.querySelector(
+    'button[aria-label="Export sanitized SVG evidence with provenance"]',
+  )
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+URL.createObjectURL = originalCreateObjectUrl;
+const exportedSvg = await evidenceBlobs.at(-1)?.text();
+if (
+  !exportedSvg?.includes("DERIVED SIMULATION — NOT VERIFIED REPLAY") ||
+  !exportedSvg.includes("source=") ||
+  !exportedSvg.includes("replay=") ||
+  !exportedSvg.includes("projection=") ||
+  !exportedSvg.includes("palette=high-contrast") ||
+  !exportedSvg.includes("renderer=sir-safe-svg-renderer-v1") ||
+  /<script|onload=|onclick=|onerror=|<foreignObject|href=|url\(|<style|<path| id=/i.test(
+    exportedSvg,
+  )
+) {
+  throw new Error("The browser SVG download is missing provenance or is not closed.");
+}
+
 const rulesData = window.document.querySelector(
   '[aria-label="Rules data tables"]',
 );

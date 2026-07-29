@@ -38,6 +38,9 @@ const bundle = resolve(
   clientOutput,
   scriptMatch[1].replace(/^\.\//, ""),
 );
+const productionBundleSha256 = createHash("sha256")
+  .update(await readFile(bundle))
+  .digest("hex");
 await import(pathToFileURL(bundle));
 await window.happyDOM.waitUntilComplete();
 await mkdir(reviewOutput, { recursive: true });
@@ -95,6 +98,7 @@ for (const paletteId of palettes) {
 const manifest = {
   format: "sir-svg-player-review-v1",
   renderer: "SIR.Client.Web production Fable bundle",
+  productionBundleSha256,
   rasterizer: "rsvg-convert 2.62.3",
   committedTick: 24,
   board: {
@@ -127,6 +131,41 @@ const manifest = {
     semanticTimelineLanes: 3,
     wholeForceSegmentLimit: 8000,
     selectedOverlayWarningSegmentLimit: 2000,
+  },
+  phase4Review: {
+    comparisonDefault: "linked split",
+    persistentLabels: [
+      "Immutable baseline — exploratory simulation",
+      "Derived fork — exploratory simulation, not verified replay",
+    ],
+    linkedState: ["camera", "selection", "tick", "overlays"],
+    inspection: ["first divergent event", "first differing disclosed field", "metric deltas"],
+    bookmarks: true,
+    evidenceExport: {
+      svgRenderer: "sir-safe-svg-renderer-v1",
+      pngSource: "the sanitized SVG evidence snapshot",
+      requiredProvenance: [
+        "source",
+        "replay",
+        "projection",
+        "engine",
+        "ruleset",
+        "tick",
+        "mode",
+        "palette",
+        "renderer",
+      ],
+      forbiddenReplayPayloads: [
+        "paths",
+        "styles",
+        "ids",
+        "scripts",
+        "event handlers",
+        "foreignObject",
+        "external references",
+        "URLs",
+      ],
+    },
   },
   files,
 };

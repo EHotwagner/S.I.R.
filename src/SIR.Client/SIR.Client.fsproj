@@ -5,8 +5,10 @@
     <Compile Include="UnitGlyphCatalog.fs" />
     <Compile Include="Battlefield.fs" />
     <Compile Include="Lab.fs" />
+    <Compile Include="EvidenceExport.fs" />
     <Compile Include="EngineCatalog.fs" />
     <Compile Include="Shell.fs" />
+    <Compile Include="Comparison.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../SIR.Domain/SIR.Domain.fsproj" />

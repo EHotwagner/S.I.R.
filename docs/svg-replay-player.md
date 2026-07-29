@@ -213,3 +213,47 @@ together. Attention and body facing cannot inhabit this channel. The current
 worker projection exposes no accepted second-heading source, so production
 replay adaptation omits it; the sandbox visual review deliberately supplies
 one weapon and one sensor example.
+
+## Simulation comparison and evidence export
+
+The scenario laboratory keeps the default result as an immutable baseline.
+The first typed edit creates a separately identified derived fork, stops
+playback, and changes the verification banner to sandbox mode. The comparison
+surface persistently labels both sides as exploratory simulation and the fork
+as “not verified replay.” Split view is the default; swipe and difference
+views retain the same linked camera, selected unit, committed tick, and overlay
+state. Bookmarks capture that linked tick. The lower inspection area reports
+metric deltas, the first differing disclosed event, and the first differing
+disclosed field.
+
+Evidence export does not serialize the live DOM. `EvidenceExport` builds a
+fresh SVG from the bounded `RenderFrame` with a closed element and attribute
+vocabulary. It emits no script, event handler, `foreignObject`, external
+reference, URL, replay-provided SVG path, style, or identifier. Untrusted
+annotation and provenance text is length-bounded and reduced to inert
+characters. PNG export rasterizes this exact sanitized SVG snapshot in a
+canvas, so the fallback cannot silently contain a richer state than the SVG.
+
+Every artifact identifies source, replay, projection hash, engine, available
+ruleset, exact tick, evidence mode, approved palette, and renderer version.
+Derived exports carry the visible legend “DERIVED SIMULATION — NOT VERIFIED
+REPLAY.” These are presentation evidence, never a substitute for replay
+packages, accepted hashes, or exact-artifact verification.
+
+Projection identity uses a versioned canonical binary encoding: explicit union
+tags and array counts, little-endian integers, raw IEEE-754 float bits, and
+UTF-8 strings prefixed by byte length. It does not concatenate fields with
+text delimiters. Tests pin distinct identities for adversarial edge fields
+whose colons, pipes, and commas would collide under delimiter joining.
+
+Laboratory results adapt only the canonical minimal-slice cells, edge, units,
+events, and bounded health disclosed by the deterministic report. A sandbox
+without that result uses an empty frame instead of the on-screen static
+demonstration. This avoids attaching unrelated review-fixture geometry to a
+scenario identity.
+
+Pure tests pin canonical bytes and SHA-256 output and exercise hostile strings
+containing script, handler, `foreignObject`, URL, style, path, and identifier
+payloads. Browser smoke tests cover persistent labels, linked-state markers,
+view switching, bookmarks, export controls, provenance disclosure, and
+keyboard-readable comparison summaries.

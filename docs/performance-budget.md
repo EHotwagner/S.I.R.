@@ -5,8 +5,8 @@ categoryindex: 4
 index: 43
 status: proposed
 document-type: living-design
-version: "0.6"
-last-updated: 2026-07-27
+version: "0.7"
+last-updated: 2026-07-29
 related:
   - docs/simulation-core-architecture.md
   - docs/skirmish-development-plan.md
@@ -263,6 +263,37 @@ stress   demonstrate graceful degradation rather than desynchronisation
 A gate that a subsystem fails is a decision point about that subsystem's
 fallback, taken deliberately, rather than an occasion for unplanned
 optimisation.
+
+## Documentation replay-player measurement
+
+The SVG documentation player measures its pipeline separately from the
+authoritative 20 Hz server tick. The reproducible Phase 4 validation reports:
+
+- worker execution and bounded projection transfer from
+  `scripts/measure-worker.mjs`;
+- pure projection mapping for 200 normal and 400 stress units;
+- production Fable build and DOM reconciliation through
+  `scripts/smoke-client.mjs`;
+- the normal-view interactive SVG-node estimate against the 8,000-node limit;
+  and
+- canonical safe-SVG construction for the same 200/400-unit fixtures.
+
+The test output records p95 rather than only averages. The 200-unit projection
+has a hard p95 guardrail of 8 ms. Safe export has review guardrails of 100 ms
+normal and 250 ms stress. The 400-unit figure is a stress observation, not a
+promise that 400 interactive units meet the normal 60 Hz paint target. Browser
+paint, style, and layout remain environment-dependent; the browser smoke test
+proves reconciliation and interaction, while the committed review manifest
+pins the production bundle and rasterizer used for human visual evidence.
+
+On the Phase 4 validation host, 240 measured normal projections produced a
+0.166 ms p95; 120 stress projections produced a 0.357 ms p95. Canonical SVG
+construction measured 8.926 ms p95 for 200 units and 10.918 ms for 400 units.
+The 200-unit scene estimated 6,942 interactive nodes. The worker advanced
+24,000 ticks in 94 bounded batches in 99.625 ms elapsed, observed its heartbeat,
+and emitted no more than 94 projection messages; its slowest measured batch was
+0.003 ms. These numbers are dated review evidence, not portable hardware
+guarantees.
 
 ## Open parameters
 

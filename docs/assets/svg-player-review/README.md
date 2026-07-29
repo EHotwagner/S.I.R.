@@ -1,7 +1,8 @@
 # Static SVG battlefield review evidence
 
 These boards are deterministic presentation evidence for the Phase 1 SVG
-battlefield and the Phase 3 two-heading/exact-overlay review. They are not
+battlefield, Phase 3 two-heading/exact-overlay review, and Phase 4 renderer
+provenance. They are not
 simulation authority. Each board comes from an explicit sandbox review fixture
 in the production Fable bundle at exact committed tick 24; no interpolation,
 replay reconstruction, inferred attention heading, or replay-supplied SVG is
@@ -76,6 +77,13 @@ segments, typed second-heading sources, trace count, lane count, and the
 overlay stays exact at 1,999 segments while an 8,001-segment whole-force
 overlay aggregates to four segments, and that interpolation at alpha 1 is
 identical to the exact committed scene.
+
+Phase 4 also pins the production bundle SHA-256, persistent baseline/fork
+labels, linked comparison state, divergence/bookmark inspection features, safe
+renderer version, PNG derivation rule, complete evidence provenance fields,
+and the forbidden replay-controlled payload classes. The palette boards remain
+visual-review evidence; the dedicated closed exporter independently generates
+download artifacts without serializing these DOM trees.
 
 These boards validate the representative detailed frame, not every target
 size. The pure tests separately exercise threshold hysteresis and suppression

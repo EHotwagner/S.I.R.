@@ -138,6 +138,42 @@
 }
 #sir-replay-app .battlefield-legend li { margin-bottom: .45rem; }
 #sir-replay-app .battlefield-inspector dd { overflow-wrap: anywhere; }
+#sir-replay-app .comparison-panel { margin-bottom: 1.5rem; }
+#sir-replay-app .comparison-warning {
+  border: 2px solid #ffd166;
+  padding: .75rem;
+  color: #ffd166;
+  font-weight: 700;
+}
+#sir-replay-app .comparison-viewport {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+#sir-replay-app .comparison-result {
+  min-width: 0;
+  margin: 0;
+  border: 2px solid #8ee3ae;
+  border-radius: .4rem;
+  padding: .75rem;
+}
+#sir-replay-app .comparison-fork { border-color: #ffd166; }
+#sir-replay-app .comparison-result figcaption span {
+  display: block;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, monospace;
+  font-size: .8rem;
+}
+#sir-replay-app .comparison-result svg { display: block; width: 100%; }
+#sir-replay-app .comparison-swipe .comparison-baseline { border-right-width: .5rem; }
+#sir-replay-app .comparison-swipe .comparison-fork { border-left-width: .5rem; }
+#sir-replay-app .comparison-difference .comparison-result { border-style: dashed; }
+#sir-replay-app .linked-state,
+#sir-replay-app .evidence-provenance {
+  color: #d8b36a;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, monospace;
+}
 #sir-replay-app .timeline-lanes {
   margin-block: 1rem;
   padding-block: .75rem;
@@ -308,4 +344,5 @@
   #sir-replay-app .battlefield-heading { display: block; }
   #sir-replay-app .battlefield-controls { justify-content: flex-start; margin-bottom: 1rem; }
   #sir-replay-app .battlefield-layout { grid-template-columns: 1fr; }
+  #sir-replay-app .comparison-viewport { grid-template-columns: 1fr; }
 }
