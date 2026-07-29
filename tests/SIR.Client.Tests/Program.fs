@@ -423,10 +423,10 @@ let main _ =
 
     require
         (RulesCatalog.unitRoles.Length = 11
-         && RulesCatalog.bodyProfiles.Length = 3
+         && RulesCatalog.bodyProfiles.Length = 5
          && RulesCatalog.perkProfiles.Length = 42
          && RulesCatalog.weaponRoles.Length = 7
-         && RulesCatalog.weaponProfiles.Length = 5
+         && RulesCatalog.weaponProfiles.Length = 7
          && RulesCatalog.armorProfiles.Length = 3
          && RulesCatalog.equipmentGroups.Length = 11)
         "The inspectable unit, perk, weapon, armor, or equipment catalog is incomplete."
@@ -2235,7 +2235,13 @@ let main _ =
     require
         (unitPresetFixture = expectedUnitPresetFixture
          && (MapEditor.searchCanonicalUnitPresets "heavy" |> List.map _.Id) = [ "troll" ]
-         && (MapEditor.searchCanonicalUnitPresets "human" |> List.map _.Id) = [ "human" ])
+         && (MapEditor.searchCanonicalUnitPresets "human" |> List.map _.Id)
+            = [ "human-gunner"
+                "human-engineer"
+                "human-medic"
+                "human-signaller"
+                "human"
+                "human-marksman" ])
         "Canonical unit search, grouping, or explicit defaults changed."
 
     let unit id size column row =
