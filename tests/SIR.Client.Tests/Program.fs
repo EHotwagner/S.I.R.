@@ -565,6 +565,153 @@ let main _ =
         (simulatorRequests.Length = 8 && simulatorResponses.Length = 10)
         "The simulator protocol operation matrix is incomplete."
 
+    let intendedPlanningRoster =
+        Array.init PlanningWorkspace.IntendedRosterSize (fun index ->
+            { Id = int32 (index + 1)
+              Side = if index % 2 = 0 then Blue else Red
+              ClassId = "planning-unit"
+              Column = int32 (index % 20)
+              Row = int32 (index / 20)
+              Size = 1
+              Health = 100
+              HealthMaximum = 100
+              Controller = Manual
+              Script = []
+              ScriptIndex = 0
+              BodyFacing = North
+              AttentionDirection = North })
+
+    let planningTimer = Diagnostics.Stopwatch.StartNew()
+    let mutable planning =
+        PlanningWorkspace.initial
+            (String.replicate 64 "a")
+            intendedPlanningRoster
+
+    for unit in intendedPlanningRoster do
+        planning <-
+            planning
+            |> PlanningWorkspace.update (SelectPlanningUnit unit.Id)
+            |> PlanningWorkspace.update
+                (AddRouteWaypoint(unit.Column + 1, unit.Row))
+
+    planning <-
+        planning
+        |> PlanningWorkspace.update (SelectPlanningUnit 1)
+        |> PlanningWorkspace.update (SetPlanningFacing East)
+        |> PlanningWorkspace.update (SetPlanningAttention NorthEast)
+        |> PlanningWorkspace.update (SetPlanningStance "crouched")
+        |> PlanningWorkspace.update AddPlanningHold
+        |> PlanningWorkspace.update (AddPlanningEngagement(2, "rifle"))
+        |> PlanningWorkspace.update
+            (AddPlanningSynchronization("support-ready", 600))
+
+    planningTimer.Stop()
+    printfn
+        "Planning-workspace qualification: %d units, %d authored commands in %.3f ms; deterministic review artifact %d bytes."
+        planning.Roster.Length
+        planning.Commands.Length
+        planningTimer.Elapsed.TotalMilliseconds
+        (PlanningWorkspace.reviewArtifact planning |> Text.Encoding.UTF8.GetByteCount)
+
+    require
+        (planning.Roster.Length = PlanningWorkspace.IntendedRosterSize
+         && planning.Commands.Length = PlanningWorkspace.IntendedRosterSize + 6
+         && planningTimer.ElapsedMilliseconds < 5_000L)
+        "The intended 200-unit planning roster did not author a representative plan within budget."
+
+    let authoredRevision = planning.Revision
+    let authoredDigest = planning.Digest
+    let undoPlanning = PlanningWorkspace.update UndoPlanning planning
+    let redoPlanning = PlanningWorkspace.update RedoPlanning undoPlanning
+
+    require
+        (undoPlanning.Revision = authoredRevision - 1L
+         && redoPlanning.Revision = authoredRevision
+         && redoPlanning.Digest = authoredDigest)
+        "Planning undo/redo did not preserve exact revision identity."
+
+    let branchedPlanning =
+        PlanningWorkspace.update AddPlanningHold undoPlanning
+
+    require
+        (branchedPlanning.Revision > authoredRevision
+         && branchedPlanning.Digest <> authoredDigest)
+        "A new edit after undo reused an authored revision identity."
+
+    let planningCorrelation = PlanningWorkspace.correlation 0 planning
+    let planningEnvelope response currentTick =
+        { Kind = SimulatorProtocol.Kind
+          ProtocolVersion = SimulatorProtocol.CurrentVersion
+          Correlation = planningCorrelation
+          CurrentTick = currentTick
+          Response = response }
+
+    let acceptedPlanning =
+        PlanningWorkspace.receive
+            (planningEnvelope (PlanValidated(Some authoredRevision, [||])) 0)
+            planning
+
+    let predictedPlanning =
+        PlanningWorkspace.receive
+            (planningEnvelope
+                (PlanPreviewed(
+                    IntentOnlyPreview,
+                    [| "Intent only: coordinated plan" |],
+                    [||]
+                ))
+                0)
+            acceptedPlanning
+
+    let committedPlanning =
+        PlanningWorkspace.receive
+            (planningEnvelope (PlanCommitted authoredRevision) 0)
+            predictedPlanning
+
+    require
+        (committedPlanning.Revision = authoredRevision
+         && committedPlanning.Predicted
+            |> Option.exists (fun value ->
+                value.Revision = authoredRevision
+                && value.Label = IntentOnlyPreview)
+         && committedPlanning.AcceptedRevision = Some authoredRevision
+         && committedPlanning.CommittedRevision = Some authoredRevision
+         && committedPlanning.CommittedTick = Some 0)
+        "Authored, predicted, accepted, and committed planning state channels were conflated."
+
+    let afterCommitEdit =
+        PlanningWorkspace.update AddPlanningHold committedPlanning
+
+    require
+        (afterCommitEdit.Revision = authoredRevision + 1L
+         && afterCommitEdit.Predicted.IsNone
+         && afterCommitEdit.AcceptedRevision.IsNone
+         && afterCommitEdit.CommittedRevision = Some authoredRevision)
+        "A new authored edit overwrote or masqueraded as predicted, accepted, or committed state."
+
+    require
+        (PlanningWorkspace.acceptsResponse
+            (planningEnvelope (PlanCommitted authoredRevision) 0)
+            committedPlanning
+         && not (
+             PlanningWorkspace.acceptsResponse
+                 (planningEnvelope
+                     (PlanPreviewed(IntentOnlyPreview, [||], [||]))
+                     0)
+                 afterCommitEdit
+         ))
+        "A late response for an older authored revision could change the active planning workspace."
+
+    let reviewArtifact = PlanningWorkspace.reviewArtifact committedPlanning
+    require
+        (reviewArtifact = PlanningWorkspace.reviewArtifact committedPlanning
+         && reviewArtifact.Contains("authored|" + string authoredRevision)
+         && reviewArtifact.Contains("predicted|" + string authoredRevision)
+         && reviewArtifact.Contains("accepted|" + string authoredRevision)
+         && reviewArtifact.Contains("committed|" + string authoredRevision + "|0")
+         && (PlanningWorkspace.planTransport committedPlanning).EncodedDocument.Length
+            <= SimulatorProtocol.MaximumPlanBytes)
+        "Planning review evidence was non-deterministic, incomplete, or outside the worker budget."
+
     let workerStopped = Shell.update (WorkerTerminated "test crash") verified |> fst
     require
         (workerStopped.Verification = Failed "worker stopped: test crash"

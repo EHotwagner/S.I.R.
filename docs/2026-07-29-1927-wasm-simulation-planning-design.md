@@ -6,7 +6,7 @@ document-type: architecture-and-roadmap
 category: Engineering
 categoryindex: 6
 index: 15
-version: "0.8"
+version: "0.9"
 created: 2026-07-29T19:27:00+02:00
 last-updated: 2026-07-29
 description: Design and milestone roadmap for converging the simulator, planning interface, control ABI, and authoritative deterministic kernel.
@@ -860,7 +860,9 @@ Evidence:
   disclosure classification. Milestone 9 connects the native `SIR-PLAN 1`
   compiler and authoritative shared-kernel execution to this protocol.
 
-### [ ] ⬜ Milestone 7 — planning workspace
+### [x] 🟩 Milestone 7 — planning workspace
+
+Status: implemented on 2026-07-29.
 
 - add roster, battlefield planning tools, timeline lanes, inspector, and
   validation navigation;
@@ -879,6 +881,26 @@ Exit gate:
   state; and
 - accessibility and performance qualification pass at the intended roster
   size.
+
+Evidence:
+
+- the production Planner mounts a roster, native-button battlefield grid,
+  seven planning tools, per-unit timeline lanes, command inspector, validation
+  navigation, and deterministic review export against the real retained worker;
+- a representative route, facing, attention, stance, hold, point engagement,
+  and synchronization plan can be authored without text editing, and every
+  pointer action uses a native keyboard-operable control with an inspector
+  equivalent;
+- authored digest/revision, labelled prediction, worker acceptance, and
+  committed revision/tick remain separate visible channels; late responses are
+  rejected against the current workspace, and monotonic revision allocation
+  prevents an undo branch from reusing an abandoned identity;
+- the intended 200-unit roster authors 206 commands in 73.993 ms and emits a
+  repeatable 6,201-byte `SIR-PLANNING-REVIEW 1` artifact; and
+- 44 px targets, labelled regions, reduced motion, forced colors, and
+  single-column 400% reflow pass the production browser qualification. Native
+  `SIR-PLAN 1` compilation and authoritative kernel prediction remain the
+  Milestone 9 integration boundary.
 
 ### [ ] ⬜ Milestone 8 — capability and roster integration
 

@@ -277,6 +277,57 @@ const buttonByText = (text) =>
     (button) => button.textContent.trim() === text,
   );
 
+buttonByText("Planner")?.click();
+await window.happyDOM.waitUntilComplete();
+const planner = window.document.querySelector(
+  '[aria-label="Coordinated planning workspace"]',
+);
+const stateLabels = [...planner?.querySelectorAll(".planning-status .eyebrow") ?? []]
+  .map((element) => element.textContent.trim());
+if (
+  !planner ||
+  !["Authored", "Predicted", "Accepted", "Committed"].every((label) =>
+    stateLabels.includes(label)
+  ) ||
+  !planner.querySelector('[aria-label^="Planning roster"]') ||
+  !planner.querySelector('[aria-label="Battlefield route authoring"]') ||
+  !planner.querySelector('[aria-label="Planning timeline lanes"]') ||
+  !planner.querySelector('[aria-label="Planning inspector"]') ||
+  !planner.querySelector('[aria-label="Planning validation navigation"]') ||
+  !workerMessages.some((message) => message.Kind === "sir-simulator-session")
+) {
+  throw new Error(
+    "The planning workspace did not mount its distinct state channels, five coordinated panes, and real worker initialization.",
+  );
+}
+const authoredBefore = planner.querySelector(".planning-status strong")?.textContent;
+planner.querySelector("[data-planning-column][data-planning-row]")?.click();
+await window.happyDOM.waitUntilComplete();
+const authoredAfter = window.document
+  .querySelector('[aria-label="Coordinated planning workspace"] .planning-status strong')
+  ?.textContent;
+if (
+  authoredBefore === authoredAfter ||
+  !window.document
+    .querySelector('[aria-label="Planning timeline lanes"]')
+    ?.textContent.includes("Route")
+) {
+  throw new Error("Pointer/keyboard cell activation did not author a revision in its timeline lane.");
+}
+buttonByText("Undo")?.click();
+await window.happyDOM.waitUntilComplete();
+buttonByText("Redo")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document
+    .querySelector('[aria-label="Planning timeline lanes"]')
+    ?.textContent.includes("Route")
+) {
+  throw new Error("Planning undo/redo did not restore the authored command.");
+}
+buttonByText("Editor")?.click();
+await window.happyDOM.waitUntilComplete();
+
 const viewMenu = [...window.document.querySelectorAll(
   '[aria-label="Map editor menus"] summary',
 )].find((summary) => summary.textContent.trim() === "View");
