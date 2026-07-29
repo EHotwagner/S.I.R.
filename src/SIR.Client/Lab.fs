@@ -326,6 +326,72 @@ module Lab =
         |> List.map (fun attack ->
             attack, max 0 (100 - (attack * attackPower)))
 
+    /// Adapts the disclosed deterministic laboratory result to a sandbox frame.
+    /// The fixed cells and edge are facts of the canonical minimal-slice scenario.
+    let renderFrame (result: ExperimentResult) =
+        let extent =
+            CellExtent.tryCreate 1
+            |> Option.defaultWith (fun () -> failwith "One-cell laboratory extent is invalid.")
+        let visualHealth value =
+            HealthVisual.tryCreate value 100
+            |> Option.defaultWith (fun () -> failwith "Laboratory health is outside its validated range.")
+        let remaining = required "remaining-health" result.Metrics
+        let attacks = required "attack-events" result.Metrics
+
+        { Tick = attacks
+          Board =
+            { MinimumColumn = 0
+              MinimumRow = 0
+              MaximumColumn = 2
+              MaximumRow = 1 }
+          Units =
+            [| { Id = 10
+                 AnchorColumn = 1
+                 AnchorRow = 1
+                 FootprintWidth = extent
+                 FootprintDepth = extent
+                 ClassId = UnitClassId.placeholder
+                 Faction = Arcane
+                 Health = Disclosed(visualHealth 100)
+                 Level = NotPresent
+                 StanceId = NotPresent
+                 BodyHeading = NotPresent
+                 SecondaryHeading = NotPresent
+                 ShortLabel = Disclosed "10"
+                 StatusIds = [||] }
+               { Id = 20
+                 AnchorColumn = 2
+                 AnchorRow = 0
+                 FootprintWidth = extent
+                 FootprintDepth = extent
+                 ClassId = UnitClassId.placeholder
+                 Faction = Human
+                 Health = Disclosed(visualHealth remaining)
+                 Level = NotPresent
+                 StanceId = NotPresent
+                 BodyHeading = NotPresent
+                 SecondaryHeading = NotPresent
+                 ShortLabel = Disclosed "20"
+                 StatusIds = [||] } |]
+          Edges =
+            [| { Id = "minimal-slice-blocking-edge"
+                 Kind = "wall"
+                 State = "blocking"
+                 StartColumn = 1
+                 StartRow = 0
+                 EndColumn = 2
+                 EndRow = 0 } |]
+          Overlays = [||]
+          Events =
+            Array.init (int attacks) (fun index ->
+                { Id = int32 index
+                  Tick = int32 (index + 1)
+                  Kind = "derived-attack"
+                  SourceUnitId = Disclosed 10
+                  TargetUnitId = Disclosed 20
+                  Summary = NotPresent })
+          Disclosure = SandboxDisclosure }
+
     let private entriesOf
         (map: Map<string, int32>)
         : Int32Entry array

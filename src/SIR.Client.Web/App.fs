@@ -17,12 +17,18 @@ type Msg =
     | PlaybackPulse
     | KeyPressed of string
     | ExportExperiment
+    | AddComparisonBookmark
+    | ComparisonViewChanged of ComparisonView
+    | ExportEvidenceSvg
+    | ExportEvidencePng
 
 type Model =
     { Shell: SIR.Client.Model
       Battlefield: BattlefieldViewState
       PreviousFrame: RenderFrame option
-      PresentationAlpha: float }
+      PresentationAlpha: float
+      ComparisonBookmarks: ComparisonBookmark list
+      ComparisonView: ComparisonView }
 
 [<Emit("window.matchMedia('(prefers-reduced-motion: reduce)').matches")>]
 let private prefersReducedMotion: bool = jsNative
@@ -56,6 +62,106 @@ let private downloadExperiment report =
         URL.revokeObjectURL(url);
         """
 
+let private downloadEvidenceSvg (evidence: SvgEvidence) =
+    emitJsStatement
+        evidence
+        """
+        const content = $0.Svg;
+        const fileName = $0.FileName;
+        const blob = new Blob([content], { type: "image/svg+xml;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = fileName;
+        anchor.click();
+        URL.revokeObjectURL(url);
+        """
+
+let private downloadEvidencePng (evidence: SvgEvidence) =
+    emitJsStatement
+        evidence
+        """
+        const content = $0.Svg;
+        const fileName = $0.FileName.replace(/\.svg$/, ".png");
+        const source = new Blob([content], { type: "image/svg+xml;charset=utf-8" });
+        const sourceUrl = URL.createObjectURL(source);
+        const image = new Image();
+        image.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.max(1, image.naturalWidth);
+          canvas.height = Math.max(1, image.naturalHeight);
+          const context = canvas.getContext("2d", { alpha: false });
+          context.drawImage(image, 0, 0);
+          canvas.toBlob((png) => {
+            if (!png) throw new Error("The safe SVG snapshot could not be rasterized.");
+            const pngUrl = URL.createObjectURL(png);
+            const anchor = document.createElement("a");
+            anchor.href = pngUrl;
+            anchor.download = fileName;
+            anchor.click();
+            URL.revokeObjectURL(pngUrl);
+            URL.revokeObjectURL(sourceUrl);
+          }, "image/png");
+        };
+        image.onerror = () => {
+          URL.revokeObjectURL(sourceUrl);
+          throw new Error("The sanitized evidence SVG could not be loaded for PNG export.");
+        };
+        image.src = sourceUrl;
+        """
+
+let private evidenceFor model =
+    let emptySandboxFrame =
+        { Tick = model.Shell.Playback.CurrentTick
+          Board =
+            { MinimumColumn = 0
+              MinimumRow = 0
+              MaximumColumn = 0
+              MaximumRow = 0 }
+          Units = [||]
+          Edges = [||]
+          Overlays = [||]
+          Events = [||]
+          Disclosure = SandboxDisclosure }
+    let frame =
+        Shell.renderFrame model.Shell
+        |> Option.orElseWith (fun () ->
+            model.Shell.Lab.Report
+            |> Option.map (fun report -> Lab.renderFrame report.Comparison.Fork))
+        |> Option.defaultValue emptySandboxFrame
+    let sourceIdentity, replayIdentity, engineIdentity =
+        match model.Shell.Source with
+        | Loaded metadata ->
+            metadata.SourceName, metadata.SourceIdentity, metadata.EngineIdentity
+        | Reading name -> name, "not-loaded", "not-loaded"
+        | Rejected(name, _) -> name, "rejected", "not-loaded"
+        | NoSource -> "built-in-review-board", "no-replay", "built-in"
+    let rulesetIdentity =
+        model.Shell.Lab.Report
+        |> Option.map _.Comparison.Fork.Input.RulesetIdentity
+    let mode =
+        match model.Shell.Mode with
+        | VerifiedReplay -> VerifiedReplayEvidence
+        | PerspectivePlayback -> PerspectiveEvidence
+        | SandboxFork _
+        | ScenarioSandbox _
+        | NoRun -> DerivedSimulationEvidence
+    let provenance =
+        { SourceIdentity = sourceIdentity
+          ReplayIdentity = replayIdentity
+          ProjectionIdentity = EvidenceExport.projectionIdentity frame
+          EngineIdentity = engineIdentity
+          RulesetIdentity = rulesetIdentity
+          Tick = frame.Tick
+          Mode = mode
+          PaletteIdentity = model.Battlefield.PaletteId
+          RendererVersion = EvidenceExport.RendererVersion }
+
+    EvidenceExport.svg
+        provenance
+        (Some "Presentation-only evidence; undisclosed and replay-supplied markup omitted.")
+        frame
+
 let init () =
     { Shell = Shell.init ()
       Battlefield =
@@ -63,7 +169,9 @@ let init () =
             ReducedMotion =
                 prefersReducedMotion }
       PreviousFrame = None
-      PresentationAlpha = 1.0 },
+      PresentationAlpha = 1.0
+      ComparisonBookmarks = []
+      ComparisonView = Split },
     Cmd.none
 
 let rec update msg model =
@@ -155,6 +263,26 @@ let rec update msg model =
         (model.Shell.Lab.Report
          |> Option.map (fun report -> Cmd.ofEffect (fun _ -> downloadExperiment report))
          |> Option.defaultValue Cmd.none)
+    | AddComparisonBookmark ->
+        let tick = model.Shell.Playback.CurrentTick
+        let bookmark =
+            { Tick = tick
+              Label = "Linked comparison at tick " + string tick }
+        { model with
+            ComparisonBookmarks =
+                bookmark
+                :: model.ComparisonBookmarks
+                |> List.distinctBy (fun item -> item.Tick, item.Label)
+                |> List.sortBy (fun item -> item.Tick, item.Label) },
+        Cmd.none
+    | ComparisonViewChanged view ->
+        { model with ComparisonView = view }, Cmd.none
+    | ExportEvidenceSvg ->
+        model,
+        Cmd.ofEffect (fun _ -> model |> evidenceFor |> downloadEvidenceSvg)
+    | ExportEvidencePng ->
+        model,
+        Cmd.ofEffect (fun _ -> model |> evidenceFor |> downloadEvidencePng)
 
 let subscriptions model =
     let runner dispatch =
@@ -1187,7 +1315,7 @@ let private battlefieldView
         ]
     ]
 
-let private inspector model dispatch =
+let private inspector (model: SIR.Client.Model) dispatch =
     let inspection =
         model.Inspection
         |> Option.defaultValue
@@ -1339,7 +1467,7 @@ let private inspector model dispatch =
         ]
     ]
 
-let private workerStatus model =
+let private workerStatus (model: SIR.Client.Model) =
     let text =
         match model.Worker with
         | WorkerStarting -> "Worker starting"
@@ -1358,7 +1486,7 @@ let private workerStatus model =
         )
     ]
 
-let private sandbox model dispatch =
+let private sandbox (model: SIR.Client.Model) dispatch =
     let scenario = model.Lab.Scenario
 
     Html.section [
@@ -1488,6 +1616,244 @@ let private resultTable (title: string) (result: ExperimentResult) =
             Html.tbody [
                 for KeyValue(key, value) in result.Metrics do
                     Html.tr [ Html.td key; Html.td (string value) ]
+            ]
+        ]
+    ]
+
+let private comparisonPanel (model: Model) dispatch =
+    let shell = model.Shell
+    let report = shell.Lab.Report
+    let viewName =
+        match model.ComparisonView with
+        | Split -> "Linked split"
+        | Swipe -> "Linked swipe"
+        | DifferenceOverlay -> "Difference overlay"
+
+    let resultPreview label className (result: ExperimentResult) =
+        let remaining =
+            result.Metrics |> Map.tryFind "remaining-health" |> Option.defaultValue 0
+        let frame = Lab.renderFrame result
+        let scene = Battlefield.scene frame model.Battlefield
+        let transform =
+            "translate("
+            + string scene.Camera.PanX
+            + " "
+            + string scene.Camera.PanY
+            + ") scale("
+            + string scene.Camera.Zoom
+            + ")"
+        Html.figure [
+            prop.className ("comparison-result " + className)
+            prop.ariaLabel (label + ", target remaining health " + string remaining)
+            prop.children [
+                Html.figcaption [
+                    Html.strong label
+                    Html.span (" · " + result.ResultIdentity)
+                ]
+                Svg.svg [
+                    svg.viewBox (0, 0, 210, 150)
+                    svg.custom ("role", "img")
+                    svg.custom (
+                        "aria-label",
+                        label
+                        + " battlefield at linked tick "
+                        + string shell.Playback.CurrentTick
+                        + "; target has "
+                        + string remaining
+                        + " of 100 health"
+                    )
+                    svg.custom ("data-comparison-camera", transform)
+                    svg.children [
+                        Svg.g [
+                            svg.custom ("transform", transform)
+                            svg.children [
+                                Svg.rect [
+                                    svg.x 0
+                                    svg.y 0
+                                    svg.width scene.Width
+                                    svg.height scene.Height
+                                    svg.fill scene.Palette.Terrain
+                                    svg.stroke scene.Palette.Grid
+                                ]
+                                for column in 0 .. 3 do
+                                    Svg.line [
+                                        svg.x1 (float column * scene.CellSize)
+                                        svg.y1 0
+                                        svg.x2 (float column * scene.CellSize)
+                                        svg.y2 scene.Height
+                                        svg.stroke scene.Palette.Grid
+                                    ]
+                                for row in 0 .. 2 do
+                                    Svg.line [
+                                        svg.x1 0
+                                        svg.y1 (float row * scene.CellSize)
+                                        svg.x2 scene.Width
+                                        svg.y2 (float row * scene.CellSize)
+                                        svg.stroke scene.Palette.Grid
+                                    ]
+                                Svg.line [
+                                    svg.x1 scene.CellSize
+                                    svg.y1 0
+                                    svg.x2 (scene.CellSize * 2.0)
+                                    svg.y2 0
+                                    svg.stroke scene.Palette.Text
+                                    svg.strokeWidth 4
+                                ]
+                                for unit in scene.Units do
+                                    let selected =
+                                        model.Battlefield.SelectedUnit = Some unit.Unit.Id
+                                    let faction =
+                                        match unit.Unit.Faction with
+                                        | Human -> scene.Palette.HumanFaction
+                                        | Arcane -> scene.Palette.ArcaneFaction
+                                        | Neutral
+                                        | OtherFaction _ -> scene.Palette.NeutralFaction
+                                    Svg.g [
+                                        svg.custom ("data-comparison-unit", string unit.Unit.Id)
+                                        svg.children [
+                                            Svg.rect [
+                                                svg.x (unit.SymbolCenterX - 14.0)
+                                                svg.y (unit.SymbolCenterY - 14.0)
+                                                svg.width 28
+                                                svg.height 28
+                                                svg.fill scene.Palette.Canvas
+                                                svg.stroke (if selected then scene.Palette.Focus else faction)
+                                                svg.strokeWidth (if selected then 4 else 2)
+                                            ]
+                                            Svg.text [
+                                                svg.x (unit.SymbolCenterX - 8.0)
+                                                svg.y (unit.SymbolCenterY + 4.0)
+                                                svg.fill scene.Palette.Text
+                                                svg.fontSize 10
+                                                svg.text (string unit.Unit.Id)
+                                            ]
+                                        ]
+                                    ]
+                            ]
+                        ]
+                        Svg.text [
+                            svg.x 8
+                            svg.y 142
+                            svg.fill "#f5f1e8"
+                            svg.fontSize 11
+                            svg.text ("Target " + string remaining + " HP")
+                        ]
+                    ]
+                ]
+            ]
+        ]
+
+    Html.section [
+        prop.className "panel comparison-panel"
+        prop.ariaLabel "Linked baseline and fork comparison"
+        prop.children [
+            Html.p [ prop.className "eyebrow"; prop.text "Exploratory simulation comparison" ]
+            Html.h2 "Immutable baseline and derived fork"
+            Html.p [
+                prop.className "comparison-warning"
+                prop.role.note
+                prop.text "Neither side is a verified replay. Editing always creates a separately identified derived fork; the baseline cannot be edited."
+            ]
+            match report with
+            | None ->
+                Html.p "Run a design scenario, then edit a typed parameter to create a linked fork comparison."
+            | Some report ->
+                let baseline = report.Comparison.Baseline
+                let fork = report.Comparison.Fork
+                let baselineAttacks =
+                    baseline.Metrics |> Map.tryFind "attack-events" |> Option.defaultValue 0
+                let forkAttacks =
+                    fork.Metrics |> Map.tryFind "attack-events" |> Option.defaultValue 0
+                let firstEvent =
+                    if baselineAttacks = forkAttacks then "No differing disclosed event"
+                    else "Attack event " + string (min baselineAttacks forkAttacks + 1)
+                let firstField =
+                    report.Comparison.Delta
+                    |> Map.toList
+                    |> List.tryFind (fun (_, delta) -> delta <> 0)
+                    |> Option.map (fun (field, delta) -> field + " (" + (if delta > 0 then "+" else "") + string delta + ")")
+                    |> Option.defaultValue "No differing disclosed field"
+
+                Html.div [
+                    prop.className (
+                        "comparison-viewport comparison-"
+                        + (match model.ComparisonView with
+                           | Split -> "split"
+                           | Swipe -> "swipe"
+                           | DifferenceOverlay -> "difference")
+                    )
+                    prop.custom ("data-linked-camera", "true")
+                    prop.custom ("data-linked-selection", "true")
+                    prop.custom ("data-linked-tick", string shell.Playback.CurrentTick)
+                    prop.custom ("data-linked-overlays", "true")
+                    prop.children [
+                        resultPreview Comparison.BaselineLabel "comparison-baseline" baseline
+                        resultPreview Comparison.ForkLabel "comparison-fork" fork
+                    ]
+                ]
+                Html.p [
+                    prop.className "linked-state"
+                    prop.text (
+                        viewName + " · linked camera, selection, tick "
+                        + string shell.Playback.CurrentTick
+                        + ", and overlays · selected unit "
+                        + (model.Battlefield.SelectedUnit |> Option.map string |> Option.defaultValue "none")
+                    )
+                ]
+                Html.dl [
+                    Html.dt "First divergent event"
+                    Html.dd firstEvent
+                    Html.dt "First differing disclosed field"
+                    Html.dd firstField
+                    Html.dt "Source link"
+                    Html.dd (
+                        match shell.Source with
+                        | Loaded metadata -> metadata.SourceIdentity
+                        | _ -> baseline.Input.ScenarioIdentity
+                    )
+                ]
+                Html.table [
+                    Html.caption "Metric deltas (fork − immutable baseline)"
+                    Html.thead [ Html.tr [ Html.th "Metric"; Html.th "Delta" ] ]
+                    Html.tbody [
+                        for KeyValue(metric, delta) in report.Comparison.Delta do
+                            Html.tr [ Html.td metric; Html.td (string delta) ]
+                    ]
+                ]
+                Html.div [
+                    prop.className "control-row"
+                    prop.children [
+                        button "Split" "Use linked split comparison" false (fun _ -> dispatch (ComparisonViewChanged Split))
+                        button "Swipe" "Use linked swipe comparison" false (fun _ -> dispatch (ComparisonViewChanged Swipe))
+                        button "Difference" "Use difference overlay comparison" false (fun _ -> dispatch (ComparisonViewChanged DifferenceOverlay))
+                        button "Bookmark" "Bookmark linked comparison tick" false (fun _ -> dispatch AddComparisonBookmark)
+                    ]
+                ]
+                Html.ul [
+                    prop.ariaLabel "Comparison bookmarks"
+                    prop.children [
+                        for bookmark in model.ComparisonBookmarks do
+                            Html.li (bookmark.Label + " · tick " + string bookmark.Tick)
+                    ]
+                ]
+            Html.div [
+                prop.className "control-row evidence-export-controls"
+                prop.children [
+                    button "Export safe SVG" "Export sanitized SVG evidence with provenance" false (fun _ -> dispatch ExportEvidenceSvg)
+                    button "Export safe PNG" "Export PNG evidence rasterized from sanitized SVG" false (fun _ -> dispatch ExportEvidencePng)
+                ]
+            ]
+            let evidence = evidenceFor model
+            Html.p [
+                prop.className "evidence-provenance"
+                prop.text (
+                    "Evidence provenance: source " + evidence.Provenance.SourceIdentity
+                    + " · replay " + evidence.Provenance.ReplayIdentity
+                    + " · projection " + evidence.Provenance.ProjectionIdentity.Substring(0, 12)
+                    + " · palette " + evidence.Provenance.PaletteIdentity
+                    + " · renderer " + evidence.Provenance.RendererVersion
+                    + " · SHA-256 " + evidence.Sha256.Substring(0, 12)
+                )
             ]
         ]
     ]
@@ -1785,6 +2151,7 @@ let view model dispatch =
                 model.PreviousFrame
                 model.PresentationAlpha
                 dispatch
+            comparisonPanel model dispatch
             scenarioCatalog shell dispatch
             laboratoryResults shell dispatch
             statusView shell

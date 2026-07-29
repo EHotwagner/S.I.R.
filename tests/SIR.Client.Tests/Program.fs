@@ -1055,6 +1055,128 @@ let main _ =
             |> (=) ([| 0 .. 12 |] |> Array.map Some))
         "The normal 200-unit view exceeds the 8,000 interactive-node budget."
 
+    let divergentBaseline =
+        { disclosedProjection with
+            Tick = 4
+            Units =
+                [ { Id = 10
+                    Side = "Red"
+                    Column = 1
+                    Row = 0
+                    Health = 75
+                    HealthMaximum = 100 } ] }
+    let divergentFork =
+        { divergentBaseline with
+            Units =
+                [ { divergentBaseline.Units.Head with
+                      Column = 2
+                      Health = 50 } ]
+            Events =
+                [ { Id = 8
+                    Tick = 4
+                    Source = "sandbox"
+                    Summary = "derived event"
+                    SourceUnitId = Some 10
+                    TargetUnitId = None } ] }
+    let divergence =
+        Comparison.inspect
+            divergentBaseline
+            divergentFork
+            (Map.ofList [ "remaining-health", -25 ])
+    require
+        (divergence.FirstDivergentEvent = Some 7
+         && divergence.FirstDifferingField
+            |> Option.exists (fun field ->
+                field.UnitId = Some 10 && field.Field = "column"))
+        "The comparison did not deterministically identify its first event and disclosed field divergence."
+
+    let linked =
+        Comparison.create
+            "source"
+            "baseline"
+            "fork"
+            4
+            (Some 10)
+            divergence
+        |> Comparison.addBookmark 4 "first difference"
+        |> Comparison.setView DifferenceOverlay
+    require
+        (linked.BaselineLabel.Contains("Immutable")
+         && linked.ForkLabel.Contains("not verified replay")
+         && linked.Tick = 4
+         && linked.SelectedUnit = Some 10
+         && linked.Bookmarks.Length = 1)
+        "Comparison labels, linked state, or bookmarks lost the baseline/fork trust boundary."
+
+    let baselineComparisonFrame = Lab.renderFrame baselineReport.Comparison.Baseline
+    let visiblyDifferentReport =
+        Lab.run scenario (Map.ofList [ "attack-count", 2 ]) None
+        |> Result.defaultWith failwith
+    let forkComparisonFrame = Lab.renderFrame visiblyDifferentReport.Comparison.Fork
+    require
+        (baselineComparisonFrame.Disclosure = SandboxDisclosure
+         && forkComparisonFrame.Disclosure = SandboxDisclosure
+         && baselineComparisonFrame.Units.Length = 2
+         && forkComparisonFrame.Units.Length = 2
+         && baselineComparisonFrame.Units[1].Health
+            <> forkComparisonFrame.Units[1].Health
+         && EvidenceExport.projectionIdentity baselineComparisonFrame
+            <> EvidenceExport.projectionIdentity forkComparisonFrame)
+        "The split comparison did not preserve distinct, fully hashed sandbox result frames."
+
+    let delimiterFrameLeft =
+        { renderFrame with
+            Edges =
+                [| { renderFrame.Edges[0] with
+                         Id = "edge:wall"
+                         Kind = "open|north" } |] }
+    let delimiterFrameRight =
+        { renderFrame with
+            Edges =
+                [| { renderFrame.Edges[0] with
+                         Id = "edge"
+                         Kind = "wall:open|north" } |] }
+    require
+        (EvidenceExport.projectionIdentity delimiterFrameLeft
+         <> EvidenceExport.projectionIdentity delimiterFrameRight)
+        "Length-prefixed projection identity collided on delimiter-shaped edge fields."
+
+    let hostileProvenance =
+        { SourceIdentity = "<script>alert(1)</script> https://host.invalid/x"
+          ReplayIdentity = "onclick=steal()"
+          ProjectionIdentity = "forged-projection"
+          EngineIdentity = "engine\"><foreignObject>"
+          RulesetIdentity = Some "url(https://host.invalid)"
+          Tick = 999
+          Mode = DerivedSimulationEvidence
+          PaletteIdentity = "replay-supplied-palette"
+          RendererVersion = EvidenceExport.RendererVersion }
+    let evidence =
+        EvidenceExport.svg
+            hostileProvenance
+            (Some "<img onerror=steal()> javascript:attack data:text/html")
+            renderFrame
+    let repeatedEvidence =
+        EvidenceExport.svg
+            hostileProvenance
+            (Some "<img onerror=steal()> javascript:attack data:text/html")
+            renderFrame
+    require
+        (evidence = repeatedEvidence
+         && EvidenceExport.isClosedSvg evidence.Svg
+         && evidence.Svg.Contains("DERIVED SIMULATION — NOT VERIFIED REPLAY")
+         && evidence.Svg.Contains("source=")
+         && evidence.Svg.Contains("replay=")
+         && evidence.Svg.Contains("projection=")
+         && evidence.Svg.Contains("palette=accessible-default")
+         && evidence.Svg.Contains("renderer=")
+         && evidence.Provenance.Tick = renderFrame.Tick
+         && evidence.Provenance.ProjectionIdentity
+            = EvidenceExport.projectionIdentity renderFrame
+         && evidence.Provenance.PaletteIdentity = ReplayPalettes.accessibleDefault.Id
+         && evidence.Provenance.RendererVersion = EvidenceExport.RendererVersion)
+        "Deterministic evidence export leaked hostile markup/URLs or omitted provenance and the derived label."
+
     let performanceFrame = Battlefield.performanceFrame 200
     for _ in 1 .. 20 do
         Battlefield.scene performanceFrame Battlefield.initial |> ignore
@@ -1072,11 +1194,56 @@ let main _ =
         (p95SceneMilliseconds < 8.0)
         "The 200-unit pure scene projection exceeded the 8 ms p95 frame-work budget."
 
+    let stressFrame = Battlefield.performanceFrame 400
+    let stressScene = Battlefield.scene stressFrame Battlefield.initial
+    let stressTimings =
+        Array.init 120 (fun _ ->
+            let started = Diagnostics.Stopwatch.GetTimestamp()
+            Battlefield.scene stressFrame Battlefield.initial |> ignore
+            let elapsed = Diagnostics.Stopwatch.GetTimestamp() - started
+            float elapsed * 1000.0 / float Diagnostics.Stopwatch.Frequency)
+        |> Array.sort
+    let p95StressMilliseconds =
+        stressTimings[int (float stressTimings.Length * 0.95)]
+
+    let performanceProvenance frame =
+        { SourceIdentity = "performance-fixture"
+          ReplayIdentity = "none"
+          ProjectionIdentity = EvidenceExport.projectionIdentity frame
+          EngineIdentity = "test-engine"
+          RulesetIdentity = None
+          Tick = frame.Tick
+          Mode = DerivedSimulationEvidence
+          PaletteIdentity = ReplayPalettes.accessibleDefault.Id
+          RendererVersion = EvidenceExport.RendererVersion }
+    let exportTimings frame runs =
+        Array.init runs (fun _ ->
+            let started = Diagnostics.Stopwatch.GetTimestamp()
+            EvidenceExport.svg (performanceProvenance frame) None frame |> ignore
+            let elapsed = Diagnostics.Stopwatch.GetTimestamp() - started
+            float elapsed * 1000.0 / float Diagnostics.Stopwatch.Frequency)
+        |> Array.sort
+    let normalExportTimings = exportTimings performanceFrame 80
+    let stressExportTimings = exportTimings stressFrame 40
+    let p95NormalExport =
+        normalExportTimings[int (float normalExportTimings.Length * 0.95)]
+    let p95StressExport =
+        stressExportTimings[int (float stressExportTimings.Length * 0.95)]
+    require
+        (stressScene.Units.Length = 400
+         && p95NormalExport < 100.0
+         && p95StressExport < 250.0)
+        "Stress projection or deterministic evidence export exceeded its review guardrail."
+
     printfn
-        "Static battlefield performance: 200 units, %d estimated interactive nodes, pure scene projection p95 %.3f ms over %d measured runs."
+        "Static battlefield performance: 200 units, %d estimated interactive nodes, pure scene projection p95 %.3f ms over %d runs; 400-unit stress projection p95 %.3f ms over %d runs; safe SVG export p95 %.3f ms normal / %.3f ms stress."
         performanceScene.InteractiveNodeEstimate
         p95SceneMilliseconds
         sceneTimings.Length
+        p95StressMilliseconds
+        stressTimings.Length
+        p95NormalExport
+        p95StressExport
 
     printfn "Elmish, laboratory, render-contract, glyph-catalog, palette, and static-battlefield tests passed: deterministic update, modes, bounded worker batches, compact progress, failure revocation, immutable baseline, typed validation, deterministic sweep, reproducible fixture export, sandbox, stale responses, cancellation, disclosure-safe transport, complete initial class coverage, safe placeholder, three accessible palette modes, orthographic footprints, twelve-segment health, elevation, stance, semantic-zoom hysteresis, roving focus, exact committed evidence, and a 200-unit view under the node budget."
     0

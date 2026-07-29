@@ -3,9 +3,9 @@ title: SVG Replay and Simulation Player Design Report
 category: Design
 categoryindex: 4
 index: 44
-status: proposed
+status: accepted
 document-type: timestamped-design-report
-version: "1.5"
+version: "1.6"
 created-at: 2026-07-29T02:00:41+02:00
 last-updated: 2026-07-29
 related:
@@ -945,14 +945,33 @@ accessibility, security, and focused endpoint/budget tests passed.
 
 ### Phase 4 — simulation comparison and export
 
-- [ ] Add fork workflow, linked split-view baseline/fork comparison,
+- [x] Add fork workflow, linked split-view baseline/fork comparison,
   divergence inspection, and bookmarks.
-- [ ] Export sanitized SVG and PNG evidence with source, replay, projection,
+- [x] Export sanitized SVG and PNG evidence with source, replay, projection,
   palette, and renderer provenance.
-- [ ] Capture end-to-end performance and visual-review provenance.
+- [x] Capture end-to-end performance and visual-review provenance.
 
 **Exit:** a derived simulation cannot be mistaken for verified replay, exports
 carry complete provenance, and all normal/stress budgets have measured results.
+
+**Completed 2026-07-29:** the immutable laboratory baseline and separately
+identified derived fork now render as linked tactical scenes in split, swipe,
+and difference views. Persistent labels identify both sides as exploratory and
+the fork as not verified replay; camera, selection, tick, overlays, divergence
+inspection, metric deltas, and bookmarks remain linked. Evidence export builds
+a fresh closed SVG rather than serializing the DOM, recomputes exact tick,
+approved palette, renderer, and a canonical length-prefixed projection hash,
+and rasterizes that same sanitized SVG for PNG. Hostile-content and
+delimiter-collision regressions cover scripts, handlers, foreign objects,
+external references, URLs, replay-supplied identifiers, and ambiguous string
+boundaries. Complete source, replay, projection, engine, ruleset, tick, mode,
+palette, renderer, and artifact-hash provenance accompanies exports. Final
+conformance measured a 200-unit projection at 0.172 ms p95, a 400-unit stress
+projection at 0.341 ms p95, safe SVG export at 8.083/10.850 ms p95, and 6,942
+estimated interactive nodes against the 8,000-node limit. The worker advanced
+24,000 ticks in 94 bounded batches with heartbeat and bounded projection
+messages. Full conformance, production browser, worker, documentation,
+publication, accessibility, security, and visual-provenance gates passed.
 
 ## Acceptance criteria
 
