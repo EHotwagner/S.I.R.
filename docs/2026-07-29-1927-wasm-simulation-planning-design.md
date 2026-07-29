@@ -6,7 +6,7 @@ document-type: architecture-and-roadmap
 category: Engineering
 categoryindex: 6
 index: 15
-version: "0.5"
+version: "0.6"
 created: 2026-07-29T19:27:00+02:00
 last-updated: 2026-07-29
 description: Design and milestone roadmap for converging the simulator, planning interface, control ABI, and authoritative deterministic kernel.
@@ -749,7 +749,9 @@ Evidence:
 - the full conformance and documentation gates pass with generated-binding
   freshness enforced and no editor or Wasmtime dependency in the codec.
 
-### [ ] ⬜ Milestone 4 — reusable Wasmtime control host
+### [x] 🟩 Milestone 4 — reusable Wasmtime control host
+
+Status: implemented on 2026-07-29.
 
 - extract the qualification host into a reusable match subsystem;
 - compile artifacts once and instantiate isolated per-unit stores;
@@ -764,6 +766,24 @@ Exit gate:
 - fuel exhaustion and malformed output apply nothing atomically;
 - snapshot/resume reproduces outputs and hashes; and
 - ambient WASI and memory-growth limits are explicitly qualified.
+
+Evidence:
+
+- `SIR.Match.ControlHost` compiles an artifact once and owns isolated per-unit
+  stores, instances, configuration, wake/fault state, fresh fuel, memory
+  limits, bulk ABI transfer, and stable invocation journals;
+- a 200-instance Release qualification completes in 15.948 ms against the
+  declared 50 ms tick budget;
+- fuel exhaustion, malformed output, dynamic out-of-range buffers, traps, and
+  forbidden requests retain no accepted requests or partial kernel changes;
+- checkpoint/resume restores complete linear memory, the exact exported
+  mutable integer-global surface, wake/fault state, output hash, and module
+  state hash, while hidden or incomplete mutable state is rejected;
+- the linker exposes no imports, all WASI and other imports are rejected, and
+  `Store.SetLimits` denies growth beyond the 128 KiB profile; and
+- accepted movement, facing, and attention requests feed `MapScale`; other
+  structurally valid opaque requests remain journaled until their
+  request-specific payload schemas and later capability semantics are frozen.
 
 ### [ ] ⬜ Milestone 5 — `SIR-PLAN 1` and standard controller
 

@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <Compile Include="ControlHost.fs" />
     <Compile Include="MatchReplay.fs" />
   </ItemGroup>
   <ItemGroup>
