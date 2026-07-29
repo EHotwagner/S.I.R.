@@ -1,0 +1,8 @@
+tools=Pencil,Rectangle,Line,Flood fill,Eyedropper,Erase
+shortcuts=P,R,L,G,I,X
+patterns=plain,diagonal hatch,cross hatch,inset ring
+pencil=2,5;2,6;0,7;1,7;2,7
+line=7,0;8,1;9,2;10,3;11,4
+rectangle-count=9
+boundary-brush=0,0;1,0;0,1;1,1
+maximum-map=40x40

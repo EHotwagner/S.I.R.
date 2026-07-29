@@ -390,6 +390,14 @@ let rec update msg model =
             | ("a" | "A"), true, _ -> update (EditorChanged SelectAllInActiveDomain) model
             | ("Delete" | "Backspace"), false, _ -> update (EditorChanged DeleteEditorSelection) model
             | " ", false, _ -> { model with EditorSpacePressed = true }, Cmd.none
+            | "1", false, true -> update (EditorChanged(ChooseTerrain Open)) model
+            | "2", false, true -> update (EditorChanged(ChooseTerrain Rough)) model
+            | "3", false, true -> update (EditorChanged(ChooseTerrain Blocked)) model
+            | "4", false, true -> update (EditorChanged(ChooseTerrain Objective)) model
+            | "!", false, _ -> update (EditorChanged(ChooseTerrain Open)) model
+            | "@", false, _ -> update (EditorChanged(ChooseTerrain Rough)) model
+            | "#", false, _ -> update (EditorChanged(ChooseTerrain Blocked)) model
+            | "$", false, _ -> update (EditorChanged(ChooseTerrain Objective)) model
             | "0", false, _ -> update (EditorWorkspaceChanged FitEditorBoard) model
             | "1", false, _ -> update (EditorWorkspaceChanged ResetEditorCamera) model
             | ("f" | "F"), false, _ -> update (EditorWorkspaceChanged FrameEditorSelection) model
@@ -399,6 +407,12 @@ let rec update msg model =
                 |> fst
                 |> fun next -> update (EditorToolPanelChanged TerrainTools) next
             | ("t" | "T"), false, _ -> update (EditorToolPanelChanged TerrainTools) model
+            | ("p" | "P"), false, _ -> update (EditorChanged(ChooseTool(Terrain PencilTool))) model
+            | ("r" | "R"), false, _ -> update (EditorChanged(ChooseTool(Terrain RectangleTool))) model
+            | ("l" | "L"), false, _ -> update (EditorChanged(ChooseTool(Terrain LineTool))) model
+            | ("g" | "G"), false, _ -> update (EditorChanged(ChooseTool(Terrain FloodFillTool))) model
+            | ("i" | "I"), false, _ -> update (EditorChanged(ChooseTool(Terrain EyedropperTool))) model
+            | ("x" | "X"), false, _ -> update (EditorChanged(ChooseTool(Terrain EraseTool))) model
             | ("u" | "U"), false, _ -> update (EditorToolPanelChanged UnitTools) model
             | ("e" | "E"), false, _ -> update (EditorToolPanelChanged EdgeTools) model
             | "Escape", false, _ ->
@@ -2409,6 +2423,7 @@ let private toolLabel tool =
     match tool with
     | Select -> "Select"
     | Paint terrain -> "Paint " + MapEditor.terrainLabel terrain
+    | Terrain tool -> MapEditor.terrainToolLabel tool
     | Place(side, classId, size) ->
         let sideName =
             match side with
@@ -2718,8 +2733,22 @@ let private editorBattlefield
             |> Option.iter (fun hit ->
                 match tool with
                 | Select -> ()
+                | Terrain _ -> ()
                 | _ -> dispatch (EditorChanged(ActivateCell(hit.Column, hit.Row))))
     let selectionAt screenX screenY action =
+        MapEditorWorkspace.tryHitCell
+            state.Map.Width
+            state.Map.Height
+            view.Camera
+            screenX
+            screenY
+        |> Option.iter (fun hit ->
+            action
+                { CellColumn = hit.Column
+                  CellRow = hit.Row }
+            |> EditorChanged
+            |> dispatch)
+    let terrainAt screenX screenY action =
         MapEditorWorkspace.tryHitCell
             state.Map.Width
             state.Map.Height
@@ -2784,6 +2813,12 @@ let private editorBattlefield
                         ))
                 ]
             ]
+            Html.p [
+                prop.className "sr-only"
+                prop.ariaLive.polite
+                prop.ariaAtomic true
+                prop.text state.TerrainAnnouncement
+            ]
             Svg.svg [
                 svg.className (
                     "editor-battlefield-svg"
@@ -2826,7 +2861,37 @@ let private editorBattlefield
                     elif event.key = "Delete" || event.key = "Backspace" then
                         event.preventDefault ()
                         event.stopPropagation ()
-                        dispatch (EditorChanged DeleteEditorSelection))
+                        dispatch (EditorChanged DeleteEditorSelection)
+                    elif
+                        match state.Tool with
+                        | Terrain _ -> true
+                        | _ -> false
+                    then
+                        let movement =
+                            match event.key with
+                            | "ArrowLeft" -> Some(-1, 0)
+                            | "ArrowRight" -> Some(1, 0)
+                            | "ArrowUp" -> Some(0, -1)
+                            | "ArrowDown" -> Some(0, 1)
+                            | _ -> None
+                        match movement with
+                        | Some(columnDelta, rowDelta) ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            dispatch (
+                                EditorChanged(
+                                    MoveTerrainCursor(
+                                        int32 columnDelta,
+                                        int32 rowDelta,
+                                        event.shiftKey
+                                    )
+                                )
+                            )
+                        | None when event.key = "Enter" || event.key = " " ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            dispatch (EditorChanged ActivateTerrainCursor)
+                        | None -> ())
                 svg.onWheel (fun event ->
                     event.preventDefault ()
                     let x, y =
@@ -2847,8 +2912,14 @@ let private editorBattlefield
                     activateAt x y)
                 svg.onPointerDown (fun event ->
                     let kind = editorPointerKind event.pointerType
+                    let terrainToolActive =
+                        match state.Tool with
+                        | Terrain _ -> true
+                        | _ -> false
                     let requestsPan =
-                        kind = TouchPointer
+                        (kind = TouchPointer
+                         && (not terrainToolActive
+                             || not view.CapturedPointers.IsEmpty))
                         || event.button = 1
                         || event.button = 2
                         || spacePressed
@@ -2857,7 +2928,13 @@ let private editorBattlefield
                         && kind <> TouchPointer
                         && event.button = 0
                         && not requestsPan
-                    if requestsPan || requestsSelection then
+                    let requestsTerrain =
+                        match state.Tool with
+                        | Terrain _ ->
+                            event.button = 0
+                            && not requestsPan
+                        | _ -> false
+                    if requestsPan || requestsSelection || requestsTerrain then
                         event.preventDefault ()
                         capturePointer event.currentTarget (int event.pointerId)
                         let x, y =
@@ -2877,7 +2954,15 @@ let private editorBattlefield
                             )
                         )
                         if requestsSelection then
-                            selectionAt x y BeginEditorBoxSelection)
+                            selectionAt x y BeginEditorBoxSelection
+                        elif requestsTerrain then
+                            terrainAt x y BeginTerrainGesture
+                        elif
+                            requestsPan
+                            && kind = TouchPointer
+                            && terrainToolActive
+                        then
+                            dispatch (EditorChanged CancelEditorGesture))
                 svg.onPointerMove (fun event ->
                     if Map.containsKey (int32 event.pointerId) view.CapturedPointers then
                         event.preventDefault ()
@@ -2895,7 +2980,12 @@ let private editorBattlefield
                             )
                         )
                         if state.Tool = Select && not previous.RequestsPan then
-                            selectionAt x y ExtendEditorBoxSelection)
+                            selectionAt x y ExtendEditorBoxSelection
+                        else
+                            match state.Tool with
+                            | Terrain _ when not previous.RequestsPan ->
+                                terrainAt x y ExtendTerrainGesture
+                            | _ -> ())
                 svg.onPointerUp (fun event ->
                     if Map.containsKey (int32 event.pointerId) view.CapturedPointers then
                         let previous = Map.find (int32 event.pointerId) view.CapturedPointers
@@ -2913,15 +3003,23 @@ let private editorBattlefield
                         )
                         if state.Tool = Select && not previous.RequestsPan then
                             selectionAt x y ExtendEditorBoxSelection
-                            dispatch (EditorChanged CommitEditorGesture))
+                            dispatch (EditorChanged CommitEditorGesture)
+                        else
+                            match state.Tool with
+                            | Terrain _ when not previous.RequestsPan ->
+                                terrainAt x y ExtendTerrainGesture
+                                dispatch (EditorChanged CommitEditorGesture)
+                            | _ -> ())
                 svg.onLostPointerCapture (fun event ->
                     dispatch (
                         EditorWorkspaceChanged(
                             LoseEditorPointerCapture(int32 event.pointerId)
                         )
                     )
-                    if state.Tool = Select then
-                        dispatch (EditorChanged CancelEditorGesture))
+                    match state.Tool with
+                    | Select
+                    | Terrain _ -> dispatch (EditorChanged CancelEditorGesture)
+                    | _ -> ())
                 svg.children [
                     Svg.title "S.I.R. map editor battlefield"
                     Svg.desc "An SVG square-grid battlefield. Empty cells and semantic objects are also available in the object list after the workspace."
@@ -2962,6 +3060,87 @@ let private editorBattlefield
                                             svg.fill fill
                                             svg.custom ("opacity", opacity)
                                         ]
+                                        match terrain with
+                                        | Rough ->
+                                            Svg.line [
+                                                svg.custom ("data-terrain-pattern", "diagonal-hatch")
+                                                svg.x1 (float column * Battlefield.CellSize + 8.0)
+                                                svg.y1 (float (row + 1) * Battlefield.CellSize - 8.0)
+                                                svg.x2 (float (column + 1) * Battlefield.CellSize - 8.0)
+                                                svg.y2 (float row * Battlefield.CellSize + 8.0)
+                                                svg.stroke palette.Grid
+                                                svg.strokeWidth 3
+                                                svg.custom ("pointer-events", "none")
+                                            ]
+                                        | Blocked ->
+                                            for first, last in [ 9.0, Battlefield.CellSize - 9.0; Battlefield.CellSize - 9.0, 9.0 ] do
+                                                Svg.line [
+                                                    svg.custom ("data-terrain-pattern", "cross-hatch")
+                                                    svg.x1 (float column * Battlefield.CellSize + first)
+                                                    svg.y1 (float row * Battlefield.CellSize + 9.0)
+                                                    svg.x2 (float column * Battlefield.CellSize + last)
+                                                    svg.y2 (float (row + 1) * Battlefield.CellSize - 9.0)
+                                                    svg.stroke palette.HealthActive
+                                                    svg.strokeWidth 3
+                                                    svg.custom ("pointer-events", "none")
+                                                ]
+                                        | Objective ->
+                                            Svg.rect [
+                                                svg.custom ("data-terrain-pattern", "inset-ring")
+                                                svg.x (float column * Battlefield.CellSize + 7.0)
+                                                svg.y (float row * Battlefield.CellSize + 7.0)
+                                                svg.width (Battlefield.CellSize - 14.0)
+                                                svg.height (Battlefield.CellSize - 14.0)
+                                                svg.fill "none"
+                                                svg.stroke palette.NeutralFaction
+                                                svg.strokeWidth 3
+                                                svg.custom ("pointer-events", "none")
+                                            ]
+                                        | Open -> ()
+                            match MapEditor.terrainPreview state with
+                            | Some(terrain, addresses, isValid) ->
+                                Svg.g [
+                                    svg.custom ("data-layer", "terrain-preview")
+                                    svg.custom ("data-preview-valid", string isValid)
+                                    svg.custom ("pointer-events", "none")
+                                    svg.children [
+                                        for address in addresses do
+                                            Svg.rect [
+                                                svg.custom (
+                                                    "data-preview-terrain",
+                                                    MapEditor.terrainLabel terrain
+                                                )
+                                                svg.x (float address.CellColumn * Battlefield.CellSize + 3.0)
+                                                svg.y (float address.CellRow * Battlefield.CellSize + 3.0)
+                                                svg.width (Battlefield.CellSize - 6.0)
+                                                svg.height (Battlefield.CellSize - 6.0)
+                                                svg.fill "none"
+                                                svg.stroke (
+                                                    if isValid then palette.Focus
+                                                    else palette.HealthActive
+                                                )
+                                                svg.strokeWidth 4
+                                                svg.custom ("stroke-dasharray", if isValid then "8 4" else "3 3")
+                                                svg.custom ("vector-effect", "non-scaling-stroke")
+                                            ]
+                                    ]
+                                ]
+                            | None -> ()
+                            match state.Tool with
+                            | Terrain _ ->
+                                Svg.rect [
+                                    svg.custom ("data-terrain-cursor", "true")
+                                    svg.x (float state.TerrainCursor.CellColumn * Battlefield.CellSize + 5.0)
+                                    svg.y (float state.TerrainCursor.CellRow * Battlefield.CellSize + 5.0)
+                                    svg.width (Battlefield.CellSize - 10.0)
+                                    svg.height (Battlefield.CellSize - 10.0)
+                                    svg.fill "none"
+                                    svg.stroke palette.Focus
+                                    svg.strokeWidth 2
+                                    svg.custom ("vector-effect", "non-scaling-stroke")
+                                    svg.custom ("pointer-events", "none")
+                                ]
+                            | _ -> ()
                             Svg.g [
                                 svg.custom ("data-layer", "grid")
                                 svg.custom ("pointer-events", "none")
@@ -3107,6 +3286,32 @@ let private editorToolbar
             prop.onClick (fun _ -> dispatch (EditorChanged(ChooseTool tool)))
         ]
 
+    let chooseTerrainValue shortcut terrain =
+        let label =
+            MapEditor.terrainLabel terrain
+            + " · "
+            + MapEditor.terrainPattern terrain
+            + " · "
+            + shortcut
+        Html.button [
+            prop.type'.button
+            prop.className (
+                "terrain-palette-choice terrain-"
+                + MapEditor.terrainLabel terrain
+            )
+            prop.text label
+            prop.ariaLabel (
+                MapEditor.terrainLabel terrain
+                + " terrain, "
+                + MapEditor.terrainPattern terrain
+                + ", shortcut "
+                + shortcut
+            )
+            prop.ariaPressed (state.TerrainSelection = terrain)
+            prop.onClick (fun _ ->
+                dispatch (EditorChanged(ChooseTerrain terrain)))
+        ]
+
     let placePreset side presetId =
         MapEditor.tryCanonicalFootprintPreset presetId
         |> Option.map (fun preset ->
@@ -3157,13 +3362,72 @@ let private editorToolbar
                     | TerrainTools ->
                         Html.h3 "Terrain"
                         Html.div [
-                            prop.className "control-row"
+                            prop.className "control-row terrain-tool-choices"
                             prop.children [
                                 choose "Select" Select
-                                choose "Open" (Paint Open)
-                                choose "Rough" (Paint Rough)
-                                choose "Blocked" (Paint Blocked)
-                                choose "Objective" (Paint Objective)
+                                for tool in
+                                    [ PencilTool
+                                      RectangleTool
+                                      LineTool
+                                      FloodFillTool
+                                      EyedropperTool
+                                      EraseTool ] do
+                                    choose
+                                        (MapEditor.terrainToolLabel tool
+                                         + " ("
+                                         + MapEditor.terrainToolShortcut tool
+                                         + ")")
+                                        (Terrain tool)
+                            ]
+                        ]
+                        Html.div [
+                            prop.className "terrain-palette"
+                            prop.role.group
+                            prop.ariaLabel "Terrain palette"
+                            prop.children [
+                                chooseTerrainValue "Shift+1" Open
+                                chooseTerrainValue "Shift+2" Rough
+                                chooseTerrainValue "Shift+3" Blocked
+                                chooseTerrainValue "Shift+4" Objective
+                            ]
+                        ]
+                        Html.div [
+                            prop.className "terrain-brush-controls"
+                            prop.children [
+                                Html.label [
+                                    prop.htmlFor "terrain-brush-size"
+                                    prop.text "Square brush size"
+                                ]
+                                Html.input [
+                                    prop.id "terrain-brush-size"
+                                    prop.type'.number
+                                    prop.min 1
+                                    prop.max 9
+                                    prop.step 1
+                                    prop.value state.BrushSize
+                                    prop.onChange (fun (value: int) ->
+                                        dispatch (
+                                            EditorChanged(
+                                                SetTerrainBrushSize(int32 value)
+                                            )
+                                        ))
+                                ]
+                                button
+                                    "Apply preview"
+                                    "Commit the terrain preview (Enter)"
+                                    (match state.Gesture with
+                                     | TerrainGesture _ -> false
+                                     | _ -> true)
+                                    (fun _ ->
+                                        dispatch (EditorChanged CommitEditorGesture))
+                                button
+                                    "Cancel preview"
+                                    "Cancel the terrain preview (Escape)"
+                                    (match state.Gesture with
+                                     | TerrainGesture _ -> false
+                                     | _ -> true)
+                                    (fun _ ->
+                                        dispatch (EditorChanged CancelEditorGesture))
                             ]
                         ]
                     | UnitTools ->

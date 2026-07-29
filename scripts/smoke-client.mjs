@@ -388,6 +388,68 @@ if (
   throw new Error("Fable redo did not round-trip the immutable map revision.");
 }
 
+buttonByText("Terrain")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document.querySelector(
+    'button[aria-label="rough terrain, diagonal hatch, shortcut Shift+2"]',
+  ) ||
+  !window.document.querySelector(
+    'button[aria-label="blocked terrain, cross hatch, shortcut Shift+3"]',
+  ) ||
+  !window.document.querySelector("#terrain-brush-size")
+) {
+  throw new Error("The accessible terrain palette, patterns, or integer brush control did not mount.");
+}
+buttonByText("Pencil (P)")?.click();
+await window.happyDOM.waitUntilComplete();
+window.document
+  .querySelector(
+    'button[aria-label="blocked terrain, cross hatch, shortcut Shift+3"]',
+  )
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+window.document
+  .querySelector('[aria-label="SVG tactical map workspace"] svg[role="application"]')
+  ?.dispatchEvent(
+  new window.KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
+  );
+await window.happyDOM.waitUntilComplete();
+const previewWorkspace = window.document.querySelector(
+  '[aria-label="SVG tactical map workspace"] svg[role="application"]',
+);
+if (
+  previewWorkspace?.querySelectorAll('[data-preview-terrain="blocked"]').length !== 1 ||
+  !editorCanvas?.textContent.includes("1 terrain cell previewed")
+) {
+  throw new Error("The keyboard terrain cursor did not create and announce an exact preview.");
+}
+previewWorkspace?.dispatchEvent(
+  new window.KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
+);
+await window.happyDOM.waitUntilComplete();
+const terrainDigest = editorCanvas?.getAttribute("data-editor-revision");
+const committedTerrainWorkspace = window.document.querySelector(
+  '[aria-label="SVG tactical map workspace"] svg[role="application"]',
+);
+if (
+  terrainDigest === pastedDigest ||
+  committedTerrainWorkspace?.querySelectorAll('[data-terrain="blocked"]').length !== 1 ||
+  !editorCanvas?.textContent.includes("Painted 1 terrain cell")
+) {
+  throw new Error("The keyboard terrain gesture did not commit one announced revision.");
+}
+buttonByText("Undo")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  editorCanvas?.getAttribute("data-editor-revision") !== pastedDigest ||
+  window.document.querySelector(
+    '[aria-label="SVG tactical map workspace"] [data-terrain="blocked"]',
+  )
+) {
+  throw new Error("Undo did not remove the complete keyboard terrain stroke atomically.");
+}
+
 buttonByText("Map file")?.click();
 await window.happyDOM.waitUntilComplete();
 if (

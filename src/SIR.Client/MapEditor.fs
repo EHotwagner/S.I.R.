@@ -63,8 +63,17 @@ type MapDefinition =
 type MapEditorTool =
     | Select
     | Paint of MapTerrain
+    | Terrain of TerrainAuthoringTool
     | Place of MapSide * classId: string * size: int32
     | Edge of MapEdgeDirection * MapEdgeKind
+
+and TerrainAuthoringTool =
+    | PencilTool
+    | RectangleTool
+    | LineTool
+    | FloodFillTool
+    | EyedropperTool
+    | EraseTool
 
 type EditorDomain =
     | TerrainDomain
@@ -86,6 +95,11 @@ type EditorGesture =
     | IdleGesture
     | BoxSelectionGesture of anchor: EditorCellAddress * current: EditorCellAddress
     | CommandPreviewGesture of EditorCommand
+    | TerrainGesture of
+        tool: TerrainAuthoringTool *
+        anchor: EditorCellAddress *
+        current: EditorCellAddress *
+        visited: EditorCellAddress array
 
 and EditorCommand =
     | PaintCells of MapTerrain * EditorCellAddress array
@@ -132,6 +146,10 @@ type MapUnitFootprintPreset =
 type MapEditorState =
     { Map: MapDefinition
       Tool: MapEditorTool
+      TerrainSelection: MapTerrain
+      BrushSize: int32
+      TerrainCursor: EditorCellAddress
+      TerrainAnnouncement: string
       SelectedUnit: int32 option
       SelectedUnits: Set<int32>
       Gesture: EditorGesture
@@ -151,6 +169,12 @@ type MapEditorState =
 
 type MapEditorAction =
     | ChooseTool of MapEditorTool
+    | ChooseTerrain of MapTerrain
+    | SetTerrainBrushSize of int32
+    | MoveTerrainCursor of columnDelta: int32 * rowDelta: int32 * extendPreview: bool
+    | ActivateTerrainCursor
+    | BeginTerrainGesture of EditorCellAddress
+    | ExtendTerrainGesture of EditorCellAddress
     | ActivateCell of column: int32 * row: int32
     | Resize of width: int32 * height: int32
     | SelectEditorUnit of int32 option
@@ -481,6 +505,12 @@ module MapEditor =
 
         { Map = map
           Tool = Select
+          TerrainSelection = Rough
+          BrushSize = 1
+          TerrainCursor =
+            { CellColumn = 0
+              CellRow = 0 }
+          TerrainAnnouncement = "Terrain authoring ready."
           SelectedUnit = Some 1
           SelectedUnits = Set.singleton 1
           Gesture = IdleGesture
@@ -757,10 +787,151 @@ module MapEditor =
                 |> Option.filter (fun id -> Map.containsKey id units)
             Validation = None }
 
+    let private inBounds map address =
+        address.CellColumn >= 0
+        && address.CellRow >= 0
+        && address.CellColumn < map.Width
+        && address.CellRow < map.Height
+
+    let private normalizeAddresses addresses =
+        addresses
+        |> Seq.distinct
+        |> Seq.sortBy (fun address -> address.CellRow, address.CellColumn)
+        |> Seq.toArray
+
+    let private lineAddresses first last =
+        let mutable x = first.CellColumn
+        let mutable y = first.CellRow
+        let dx = abs (last.CellColumn - first.CellColumn)
+        let sx = if first.CellColumn < last.CellColumn then 1 else -1
+        let dy = -(abs (last.CellRow - first.CellRow))
+        let sy = if first.CellRow < last.CellRow then 1 else -1
+        let mutable error = dx + dy
+        let addresses = ResizeArray<EditorCellAddress>()
+        let mutable finished = false
+
+        while not finished do
+            addresses.Add
+                { CellColumn = x
+                  CellRow = y }
+            if x = last.CellColumn && y = last.CellRow then
+                finished <- true
+            else
+                let doubled = 2 * error
+                if doubled >= dy then
+                    error <- error + dy
+                    x <- x + sx
+                if doubled <= dx then
+                    error <- error + dx
+                    y <- y + sy
+
+        addresses.ToArray()
+
+    let private brushAddresses map brushSize centers =
+        let brushSize = max 1 brushSize
+        let leading = (brushSize - 1) / 2
+        let trailing = brushSize - leading - 1
+
+        centers
+        |> Seq.collect (fun center ->
+            seq {
+                for row in center.CellRow - leading .. center.CellRow + trailing do
+                    for column in center.CellColumn - leading .. center.CellColumn + trailing do
+                        yield
+                            { CellColumn = column
+                              CellRow = row }
+            })
+        |> Seq.filter (inBounds map)
+        |> normalizeAddresses
+
+    let private rectangleAddresses map brushSize first last =
+        let minimumColumn = min first.CellColumn last.CellColumn
+        let maximumColumn = max first.CellColumn last.CellColumn
+        let minimumRow = min first.CellRow last.CellRow
+        let maximumRow = max first.CellRow last.CellRow
+
+        seq {
+            for row in minimumRow .. maximumRow do
+                for column in minimumColumn .. maximumColumn do
+                    yield
+                        { CellColumn = column
+                          CellRow = row }
+        }
+        |> brushAddresses map brushSize
+
+    let private floodAddresses map start =
+        if not (inBounds map start) then
+            [||]
+        else
+            let source =
+                Map.tryFind (start.CellColumn, start.CellRow) map.Terrain
+                |> Option.defaultValue Open
+            let pending = Collections.Generic.Queue<EditorCellAddress>()
+            let mutable visited = Set.empty
+            pending.Enqueue start
+
+            while pending.Count > 0 do
+                let address = pending.Dequeue()
+                let key = address.CellColumn, address.CellRow
+                let terrain = Map.tryFind key map.Terrain |> Option.defaultValue Open
+                if not (Set.contains key visited) && terrain = source then
+                    visited <- Set.add key visited
+                    [ { address with CellColumn = address.CellColumn - 1 }
+                      { address with CellColumn = address.CellColumn + 1 }
+                      { address with CellRow = address.CellRow - 1 }
+                      { address with CellRow = address.CellRow + 1 } ]
+                    |> List.filter (inBounds map)
+                    |> List.iter pending.Enqueue
+
+            visited
+            |> Seq.map (fun (column, row) ->
+                { CellColumn = column
+                  CellRow = row })
+            |> normalizeAddresses
+
+    let private terrainGestureAddresses map brushSize tool anchor current visited =
+        match tool with
+        | PencilTool ->
+            visited
+            |> Array.append (lineAddresses anchor current)
+            |> brushAddresses map brushSize
+        | RectangleTool -> rectangleAddresses map brushSize anchor current
+        | LineTool ->
+            lineAddresses anchor current
+            |> brushAddresses map brushSize
+        | FloodFillTool -> floodAddresses map anchor
+        | EyedropperTool -> [| anchor |] |> Array.filter (inBounds map)
+        | EraseTool ->
+            visited
+            |> Array.append (lineAddresses anchor current)
+            |> brushAddresses map brushSize
+
+    let private terrainGestureCommand state tool anchor current visited =
+        let terrain =
+            match tool with
+            | EraseTool -> Open
+            | _ -> state.TerrainSelection
+        PaintCells(
+            terrain,
+            terrainGestureAddresses
+                state.Map
+                state.BrushSize
+                tool
+                anchor
+                current
+                visited
+        )
+
     let rec private legacyUpdate action state =
         match action with
         | ChooseTool tool ->
             { state with Tool = tool; Gesture = IdleGesture; Validation = None }
+        | ChooseTerrain _
+        | SetTerrainBrushSize _
+        | MoveTerrainCursor _
+        | ActivateTerrainCursor
+        | BeginTerrainGesture _
+        | ExtendTerrainGesture _ -> state
         | ActivateCell(column, row) ->
             match state.Tool with
             | Select ->
@@ -788,6 +959,7 @@ module MapEditor =
                         { state.Map with
                             Terrain = Map.add (column, row) terrain state.Map.Terrain }
                     Validation = None }
+            | Terrain _ -> state
             | Place(side, classId, size) ->
                 placeUnit side classId size column row state
             | Edge(direction, kind) ->
@@ -1257,9 +1429,15 @@ module MapEditor =
     let private activeDomain tool =
         match tool with
         | Paint _ -> TerrainDomain
+        | Terrain _ -> TerrainDomain
         | Edge _ -> EdgeDomain
         | Place _ -> UnitDomain
         | Select -> UnitDomain
+
+    let private isTerrainAuthoringTool tool =
+        match tool with
+        | Terrain _ -> true
+        | _ -> false
 
     let private idsInBox box map =
         let minimumColumn = min box.FirstColumn box.LastColumn
@@ -1320,6 +1498,148 @@ module MapEditor =
 
     let rec update action state =
         match action with
+        | ChooseTool(Paint terrain) ->
+            { state with
+                Tool = Paint terrain
+                TerrainSelection = terrain
+                Gesture = IdleGesture
+                Validation = None
+                TerrainAnnouncement =
+                    "Pencil selected with "
+                    + terrainName terrain
+                    + " terrain." }
+        | ChooseTool(Terrain tool) ->
+            { state with
+                Tool = Terrain tool
+                Gesture = IdleGesture
+                Validation = None
+                TerrainAnnouncement =
+                    (match tool with
+                     | PencilTool -> "Pencil"
+                     | RectangleTool -> "Rectangle"
+                     | LineTool -> "Line"
+                     | FloodFillTool -> "Flood fill"
+                     | EyedropperTool -> "Eyedropper"
+                     | EraseTool -> "Erase")
+                    + " terrain tool selected." }
+        | ChooseTerrain terrain ->
+            { state with
+                TerrainSelection = terrain
+                Validation = None
+                TerrainAnnouncement = terrainName terrain + " terrain selected." }
+        | SetTerrainBrushSize size ->
+            let size = max 1 (min 9 size)
+            { state with
+                BrushSize = size
+                Gesture = IdleGesture
+                Validation = None
+                TerrainAnnouncement =
+                    "Brush size "
+                    + string size
+                    + " by "
+                    + string size
+                    + " cells." }
+        | BeginTerrainGesture address when inBounds state.Map address ->
+            match state.Tool with
+            | Terrain EyedropperTool ->
+                let sampled =
+                    Map.tryFind
+                        (address.CellColumn, address.CellRow)
+                        state.Map.Terrain
+                    |> Option.defaultValue Open
+                { state with
+                    TerrainSelection = sampled
+                    TerrainCursor = address
+                    Gesture = IdleGesture
+                    Validation = None
+                    TerrainAnnouncement =
+                        "Sampled "
+                        + terrainName sampled
+                        + " terrain at column "
+                        + string (address.CellColumn + 1)
+                        + ", row "
+                        + string (address.CellRow + 1)
+                        + "." }
+            | Terrain tool ->
+                let preview =
+                    terrainGestureAddresses
+                        state.Map
+                        state.BrushSize
+                        tool
+                        address
+                        address
+                        [||]
+                { state with
+                    TerrainCursor = address
+                    Gesture = TerrainGesture(tool, address, address, [||])
+                    Validation = None
+                    TerrainAnnouncement =
+                        string preview.Length
+                        + " terrain "
+                        + (if preview.Length = 1 then "cell" else "cells")
+                        + " previewed." }
+            | _ -> state
+        | BeginTerrainGesture _ -> state
+        | ExtendTerrainGesture address when inBounds state.Map address ->
+            match state.Gesture with
+            | TerrainGesture(tool, anchor, current, visited) ->
+                let nextAnchor, nextVisited =
+                    match tool with
+                    | PencilTool
+                    | EraseTool ->
+                        current,
+                        visited
+                        |> Array.append (lineAddresses anchor current)
+                        |> normalizeAddresses
+                    | _ -> anchor, visited
+                let preview =
+                    terrainGestureAddresses
+                        state.Map
+                        state.BrushSize
+                        tool
+                        nextAnchor
+                        address
+                        nextVisited
+                { state with
+                    TerrainCursor = address
+                    Gesture =
+                        TerrainGesture(
+                            tool,
+                            nextAnchor,
+                            address,
+                            nextVisited
+                        )
+                    TerrainAnnouncement =
+                        string preview.Length
+                        + " terrain "
+                        + (if preview.Length = 1 then "cell" else "cells")
+                        + " previewed." }
+            | _ -> state
+        | ExtendTerrainGesture _ -> state
+        | MoveTerrainCursor(columnDelta, rowDelta, extendPreview) ->
+            let cursor =
+                { CellColumn =
+                    max 0 (min (state.Map.Width - 1) (state.TerrainCursor.CellColumn + columnDelta))
+                  CellRow =
+                    max 0 (min (state.Map.Height - 1) (state.TerrainCursor.CellRow + rowDelta)) }
+            let moved = { state with TerrainCursor = cursor }
+            if extendPreview then update (ExtendTerrainGesture cursor) moved
+            else moved
+        | ActivateTerrainCursor ->
+            match state.Gesture with
+            | TerrainGesture _ -> update CommitEditorGesture state
+            | _ -> update (BeginTerrainGesture state.TerrainCursor) state
+        | ActivateCell(column, row) when isTerrainAuthoringTool state.Tool ->
+            state
+            |> update (
+                BeginTerrainGesture
+                    { CellColumn = column
+                      CellRow = row }
+            )
+            |> fun preview ->
+                match preview.Gesture with
+                | TerrainGesture _ -> update CommitEditorGesture preview
+                | _ -> preview
         | SelectEditorUnit id ->
             let selected =
                 id
@@ -1368,8 +1688,42 @@ module MapEditor =
                             LastRow = current.CellRow })
                     state
             | CommandPreviewGesture command -> commit command state
+            | TerrainGesture(tool, anchor, current, visited) ->
+                let command =
+                    terrainGestureCommand state tool anchor current visited
+                let next = commit command state
+                if next.Gesture = IdleGesture && next.Validation.IsNone then
+                    if next.Revision.Digest = state.Revision.Digest then
+                        { next with
+                            TerrainAnnouncement = "No terrain cells changed." }
+                    else
+                        match command with
+                        | PaintCells(terrain, addresses) ->
+                            { next with
+                                TerrainAnnouncement =
+                                    (if terrain = Open then "Erased " else "Painted ")
+                                    + string addresses.Length
+                                    + " terrain "
+                                    + (if addresses.Length = 1 then "cell" else "cells")
+                                    + " in revision "
+                                    + string next.Revision.Number
+                                    + "." }
+                        | _ -> next
+                else
+                    { next with
+                        Gesture = IdleGesture
+                        TerrainAnnouncement =
+                            "Terrain change rejected. "
+                            + (next.Validation |> Option.defaultValue "The preview is invalid.") }
             | IdleGesture -> state
-        | CancelEditorGesture -> { state with Gesture = IdleGesture; Validation = None }
+        | CancelEditorGesture ->
+            { state with
+                Gesture = IdleGesture
+                Validation = None
+                TerrainAnnouncement =
+                    match state.Gesture with
+                    | TerrainGesture _ -> "Terrain preview canceled."
+                    | _ -> state.TerrainAnnouncement }
         | SelectAllInActiveDomain ->
             if activeDomain state.Tool = UnitDomain then
                 let selected = state.Map.Units |> Map.toList |> List.map fst |> Set.ofList
@@ -1600,6 +1954,43 @@ module MapEditor =
 
     let terrainLabel terrain =
         terrainName terrain
+
+    let terrainToolLabel tool =
+        match tool with
+        | PencilTool -> "Pencil"
+        | RectangleTool -> "Rectangle"
+        | LineTool -> "Line"
+        | FloodFillTool -> "Flood fill"
+        | EyedropperTool -> "Eyedropper"
+        | EraseTool -> "Erase"
+
+    let terrainToolShortcut tool =
+        match tool with
+        | PencilTool -> "P"
+        | RectangleTool -> "R"
+        | LineTool -> "L"
+        | FloodFillTool -> "G"
+        | EyedropperTool -> "I"
+        | EraseTool -> "X"
+
+    let terrainPattern terrain =
+        match terrain with
+        | Open -> "plain"
+        | Rough -> "diagonal hatch"
+        | Blocked -> "cross hatch"
+        | Objective -> "inset ring"
+
+    let terrainPreview state =
+        match state.Gesture with
+        | TerrainGesture(tool, anchor, current, visited) ->
+            let command =
+                terrainGestureCommand state tool anchor current visited
+            match command with
+            | PaintCells(terrain, addresses) ->
+                let isValid = validateCommand state.Map command |> Result.isOk
+                Some(terrain, addresses, isValid)
+            | _ -> None
+        | _ -> None
 
     let controllerLabel controller =
         match controller with
