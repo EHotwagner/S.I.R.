@@ -3,9 +3,9 @@ title: VTT-Inspired Map Editor Design Report
 category: Tools & Evidence
 categoryindex: 5
 index: 10
-status: proposed
+status: in-progress
 document-type: timestamped-design-report
-version: "1.1"
+version: "1.2"
 created-at: 2026-07-29T12:30:56+02:00
 last-updated: 2026-07-29
 related:
@@ -20,7 +20,7 @@ related:
 
 **Report timestamp:** 2026-07-29 12:30:56 CEST (UTC+02:00)
 
-**Status:** proposed implementation plan
+**Status:** implementation in progress; Milestone 0 complete
 
 ## Executive decision
 
@@ -732,9 +732,9 @@ within it is checked.
   Foundry VTT using first-party sources.
 - [x] Inventory the current `MapDefinition`, `MapEditorAction`, SVG battlefield,
   import/export, controller, and GitHub Pages boundaries.
-- [ ] Review and accept, amend, or reject this report.
-- [ ] Record canonical goblin, orc, troll, human, and drone footprint presets.
-- [ ] Freeze the initial keyboard and pointer gesture table.
+- [x] Review and accept, amend, or reject this report.
+- [x] Record canonical goblin, orc, troll, human, and drone footprint presets.
+- [x] Freeze the initial keyboard and pointer gesture table.
 
 ### Milestone 1 — SVG workspace and camera
 

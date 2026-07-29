@@ -6,7 +6,7 @@ index: 2
 status: accepted
 decision-status: implemented
 document-type: reference
-version: "1.0"
+version: "1.1"
 last-updated: 2026-07-29
 description: Map records, terrain, semantic edges, square unit footprints, controller modes, and deterministic execution.
 related:
@@ -23,6 +23,27 @@ files. The simulator provides manual control, repeatable scripts, and a bundled
 general controller.
 
 Open the [simulator](interactive-rules-lab.md) to use it.
+
+## Accepted editor contract
+
+The [VTT-inspired experience report](2026-07-29-1230-map-editor-vtt-experience-design-report.md)
+is accepted as the implementation direction, with the footprint presets and
+input tables below as its initial frozen amendments. The contract keeps these
+authority boundaries:
+
+- `MapDefinition` and a validated `SIR-MAP` document contain authoritative
+  terrain, semantic edges, units, and square occupancy.
+- Camera, panels, selection, pointer previews, guides, and background art are
+  disposable UI state or separately versioned authoring metadata.
+- The Editor produces immutable revisions; controller execution and ticks
+  remain Simulator concerns and cannot rewrite an authored revision.
+- SVG is the documentation editor renderer and review surface. It does not
+  become a second source of map rules.
+- The static GitHub Pages client reads local inputs and exports local evidence.
+  It is not an authoritative match host and does not upload maps or assets.
+- `SIR-MAP 1` remains the portable format until an accepted authoritative
+  concept requires a tested successor. Editor-only state does not trigger a
+  format bump.
 
 ## Map
 
@@ -53,6 +74,80 @@ The editor and simulator both resolve symbols through the canonical unit glyph
 catalog. One symbol uses the same square bounds as its base. A size-1 unit
 occupies 1×1 cells; a size-2 unit occupies 2×2 cells. Movement checks every
 crossed edge along the complete leading side of that square.
+
+### Canonical footprint presets
+
+These presets are the initial placement defaults. Their order is stable review
+evidence, and their dimensions are also recorded by
+`MapEditor.canonicalFootprintPresets`. A placed unit may expose an explicit size
+override only when scenario validation permits it; changing art never changes
+occupancy.
+
+| Preset ID | Default class ID | Footprint |
+|---|---|---:|
+| `goblin` | `goblin` | 1×1 |
+| `orc` | `orc` | 2×2 |
+| `troll` | `troll` | 3×3 |
+| `human` | `rifleman` | 2×2 |
+| `drone` | `observation-drone` | 1×1 |
+
+The human size applies to the initial human personnel classes; `rifleman` is
+the palette representative, not a claim that other human classes have different
+occupancy. Observation and relay drones share the drone size. A new class does
+not inherit a preset by name or image: it must be assigned deliberately.
+
+## Initial input contract
+
+The SVG workspace uses application-level keys only while it has focus.
+Otherwise browser and documentation-page keys retain their normal behavior.
+`Tab` reaches tools, the inspector, and a parallel object list; it does not
+visit every empty cell. A keyboard map cursor and the object list provide the
+non-pointer path for canvas commands.
+
+### Pointer and touch gestures
+
+| Intent | Mouse or pen | Touch | Commit and cancellation |
+|---|---|---|---|
+| Select | Primary click an object | Tap an object | Replaces selection |
+| Toggle selection | `Shift` + primary click | Select-mode toggle, then tap | Adds or removes one object |
+| Box select | Primary drag from empty workspace | Select-mode drag | Pointer/touch release commits; `Escape` cancels |
+| Pan | Middle-drag, right-drag, or hold `Space` while primary-dragging | Two-finger drag | Camera-only; never commits map state |
+| Zoom | Wheel or trackpad scroll around pointer | Two-finger pinch around midpoint | Camera-only and bounded |
+| Place unit | Move for full-footprint preview, then primary click | Move map cursor, then tap **Place** | One unit per activation; `Escape` cancels preview |
+| Paint terrain | Primary drag | One-finger drag in an active paint tool | One drag is one command; release commits |
+| Rectangle or line | Primary drag from anchor | Tap anchor, move cursor, tap **Apply** | Release/**Apply** commits; `Escape` cancels |
+| Flood fill or eyedrop | Primary click | Tap | Commits one fill or selects one terrain value |
+| Draw edge polyline | Primary click/drag across snapped edges | Tap successive snapped edges | Double-click/**Finish** commits; `Escape` removes the last segment, then cancels |
+| Move selection | Primary drag selected unit(s) | Tap **Move**, reposition cursor, tap **Apply** | Full route and footprint preview; `Escape` cancels |
+| Open object actions | Secondary click or context button | Long-press or context button | Opens the same linear action menu used by keyboard |
+
+Pointer capture belongs to an active drag and must be released on commit,
+cancel, lost capture, tool switch, or unmount. Hover is never required.
+
+### Keyboard gestures
+
+| Scope | Keys | Frozen behavior |
+|---|---|---|
+| Global editor | `Ctrl/Cmd+Z`, `Ctrl/Cmd+Shift+Z` | Undo and redo one committed command |
+| Global editor | `Ctrl/Cmd+C`, `Ctrl/Cmd+V`, `Ctrl/Cmd+D` | Copy, paste as a validated preview, and duplicate |
+| Global editor | `Delete` or `Backspace` | Delete selection through an undoable command |
+| Global editor | `Escape` | Cancel active preview first, otherwise clear selection |
+| Tools | `V`, `T`, `U`, `E` | Select the Select, Terrain, Units, or Edges domain |
+| Camera | `0`, `1`, `F` | Fit board, reset to 100%, or frame selection |
+| Camera | `Space` + pointer drag | Temporarily pan without changing the active tool |
+| Object list | Arrow keys, `Home`, `End` | Move list focus without moving map objects |
+| Object list | `Enter`; `Shift+Enter` | Select focused object; toggle it in multiselection |
+| Map cursor | Arrow keys | Move the cursor one cell or snapped edge |
+| Map cursor | `Shift` + Arrow keys | Extend the current box, line, rectangle, or edge preview |
+| Map cursor | `Enter` or standalone `Space` | Start/commit the active tool at the cursor |
+| Selected units | `Alt` + Arrow keys | Preview and commit a one-cell unit move |
+| Edge polyline | `Enter` | Finish the current polyline |
+| Edge polyline | `Escape` | Remove the last preview segment; when empty, cancel |
+
+Platform menu bindings win when focus is in a text field. Repeated movement keys
+produce separate deterministic one-cell commands. No shortcut depends on
+keyboard focus being inside a floating window, and every shortcut also has a
+visible button or inspector/object-list equivalent.
 
 ## Semantic edges
 

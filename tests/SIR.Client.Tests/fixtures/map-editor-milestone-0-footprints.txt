@@ -1,0 +1,5 @@
+goblin|goblin|1|1
+orc|orc|2|2
+troll|troll|3|3
+human|rifleman|2|2
+drone|observation-drone|1|1
