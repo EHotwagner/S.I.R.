@@ -138,7 +138,7 @@ await window.happyDOM.waitUntilComplete();
 
 const mount = window.document.getElementById("sir-replay-app");
 const application = mount?.querySelector(
-  'main[aria-label="Simulation workspace"]',
+  'main[aria-label="S.I.R. simulator and editor"]',
 );
 const status = mount?.querySelector('[role="status"]');
 

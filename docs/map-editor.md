@@ -22,7 +22,7 @@ The editor supports terrain, semantic edges, square units, and versioned map
 files. The simulator provides manual control, repeatable scripts, and a bundled
 general controller.
 
-Open the [simulation workspace](interactive-rules-lab.md) to use it.
+Open the [simulator](interactive-rules-lab.md) to use it.
 
 ## Map
 

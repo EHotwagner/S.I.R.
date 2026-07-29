@@ -2900,16 +2900,8 @@ let view model dispatch =
 
     Html.main [
         prop.className "app-shell"
-        prop.ariaLabel "Simulation workspace"
+        prop.ariaLabel "S.I.R. simulator and editor"
         prop.children [
-            Html.section [
-                prop.className "workspace-intro"
-                prop.children [
-                    Html.p [ prop.className "eyebrow"; prop.text "S.I.R. simulation" ]
-                    Html.h2 "Build, run, and inspect a battlefield"
-                    Html.p "Use each full-width tab for simulation, map authoring, replay inspection, or rules."
-                ]
-            ]
             workspaceNavigation model.Workspace dispatch
             match model.Workspace with
             | SimulatorWorkspace ->

@@ -119,6 +119,10 @@ const interactive = await readFile(
   resolve(site, "interactive-rules-lab.html"),
   "utf8",
 );
+const clientApplication = await readFile(
+  resolve(site, publication.application.script),
+  "utf8",
+);
 const foundations = await readFile(resolve(site, "foundations.html"), "utf8");
 const formulas = await readFile(resolve(site, "combat-formulas.html"), "utf8");
 const gameVision = await readFile(resolve(site, "game-vision.html"), "utf8");
@@ -198,11 +202,11 @@ if (
 }
 
 if (
-  !home.includes("Open the simulation workspace") ||
-  !interactive.includes("Simulator") ||
-  !interactive.includes("Editor") ||
-  !interactive.includes("Scripted AI") ||
-  !interactive.includes("General AI") ||
+  !home.includes("Open the simulator") ||
+  !clientApplication.includes("Simulator") ||
+  !clientApplication.includes("Editor") ||
+  !clientApplication.includes("Scripted AI") ||
+  !clientApplication.includes("General AI") ||
   !mapEditor.includes("Square unit geometry") ||
   !mapEditor.includes("SIR-MAP 1")
 ) {
@@ -283,11 +287,12 @@ if (!home.includes("https://ehotwagner.github.io/S.I.R./content/fsdocs-default.c
 }
 
 if (
-  !interactive.includes("Runtime: Fable/JavaScript in your browser.") ||
+  !interactive.includes("<title>Simulator | S.I.R</title>") ||
   !interactive.includes('id="sir-replay-app"') ||
-  !interactive.includes("JavaScript is disabled.")
+  !interactive.includes("JavaScript is disabled.") ||
+  interactive.includes("<h1")
 ) {
-  throw new Error("The interactive mount or its runtime/fallback disclosure is missing.");
+  throw new Error("The simulator is not a direct, heading-free application surface.");
 }
 
 if (

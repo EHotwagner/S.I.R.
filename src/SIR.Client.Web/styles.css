@@ -10,6 +10,7 @@
   position: relative;
   isolation: isolate;
   overflow-x: auto;
+  min-height: inherit;
 }
 
 #sir-replay-app,
@@ -47,21 +48,13 @@
   margin: auto;
   padding: 1.25rem;
   background: #101715;
+  min-height: inherit;
 }
 #sir-replay-app .eyebrow { color: #d8b36a; letter-spacing: .14em; text-transform: uppercase; }
 #sir-replay-app h2 { margin-top: 0; }
 #sir-replay-app h3 { margin-block: .6rem; }
 #sir-replay-app p { line-height: 1.5; }
 
-#sir-replay-app .workspace-intro {
-  max-width: 60rem;
-  padding: .5rem 0 1rem;
-}
-#sir-replay-app .workspace-intro h2 {
-  margin-bottom: .4rem;
-  font-size: clamp(1.65rem, 4vw, 2.5rem);
-}
-#sir-replay-app .workspace-intro p { margin-block: .25rem; }
 #sir-replay-app .workspace-navigation {
   position: sticky;
   top: 0;

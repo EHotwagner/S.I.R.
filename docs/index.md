@@ -8,14 +8,14 @@ description: Edit maps, run deterministic simulations, inspect replays, and read
 
 # Simulate the battlefield
 
-The simulation workspace is the documentation hub. Use it to build a map,
+The simulator is the documentation hub. Use it to build a map,
 assign manual, scripted, or general controllers, execute ticks, and inspect the
 result as SVG. The reference then defines the model in dependency order:
 attributes and state first, followed by equipment, units, formations, forces,
 and missions.
 
 <div class="sir-hero-actions">
-  <a class="sir-action sir-action-primary" href="interactive-rules-lab.html">Open the simulation workspace</a>
+  <a class="sir-action sir-action-primary" href="interactive-rules-lab.html">Open the simulator</a>
   <a class="sir-action" href="foundations.html">Read from attributes</a>
 </div>
 
