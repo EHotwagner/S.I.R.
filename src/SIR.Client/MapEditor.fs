@@ -105,6 +105,9 @@ type EditorGesture =
         anchor: EditorCellAddress *
         current: EditorCellAddress *
         visited: EditorCellAddress array
+    | EdgePolylineGesture of
+        kind: MapEdgeKind *
+        segments: (int32 * int32 * MapEdgeDirection) array
 
 and EditorCommand =
     | PaintCells of MapTerrain * EditorCellAddress array
@@ -162,6 +165,8 @@ type MapEditorState =
       BrushSize: int32
       TerrainCursor: EditorCellAddress
       TerrainAnnouncement: string
+      EdgeCursor: int32 * int32 * MapEdgeDirection
+      EdgeAnnouncement: string
       UnitPaletteSearch: string
       UnitAnnouncement: string
       SelectedUnit: int32 option
@@ -187,6 +192,16 @@ type MapEditorAction =
     | SetTerrainBrushSize of int32
     | MoveTerrainCursor of columnDelta: int32 * rowDelta: int32 * extendPreview: bool
     | ActivateTerrainCursor
+    | ActivateEdge of column: int32 * row: int32 * direction: MapEdgeDirection
+    | MoveEdgeCursor of columnDelta: int32 * rowDelta: int32 * extendPreview: bool
+    | ActivateEdgeCursor
+    | FinishEdgePolyline
+    | BacktrackEdgePolyline
+    | ConvertEdge of column: int32 * row: int32 * direction: MapEdgeDirection * kind: MapEdgeKind
+    | ToggleDoorState of column: int32 * row: int32 * direction: MapEdgeDirection
+    | EraseEdge of column: int32 * row: int32 * direction: MapEdgeDirection
+    | SplitEdge of column: int32 * row: int32 * direction: MapEdgeDirection
+    | JoinEdge of column: int32 * row: int32 * direction: MapEdgeDirection
     | SetUnitPaletteSearch of string
     | PreviewUnitPlacement of EditorCellAddress
     | BeginUnitMove of EditorCellAddress
@@ -378,6 +393,27 @@ module MapEditor =
         | Wall -> "wall"
         | Door -> "door"
         | Window -> "window"
+
+    /// Normalizes one unit grid segment to its single authoritative east/south
+    /// record. North and west border segments have no owning cell and are
+    /// rejected instead of being silently shifted into the document.
+    let tryNormalizeEdge width height x1 y1 x2 y2 =
+        if x1 = x2 && abs (y2 - y1) = 1 then
+            let column = x1 - 1
+            let row = min y1 y2
+            if column >= 0 && column < width && row >= 0 && row < height then
+                Some(column, row, EastEdge)
+            else
+                None
+        elif y1 = y2 && abs (x2 - x1) = 1 then
+            let column = min x1 x2
+            let row = y1 - 1
+            if column >= 0 && column < width && row >= 0 && row < height then
+                Some(column, row, SouthEdge)
+            else
+                None
+        else
+            None
 
     let private directionCode direction =
         match direction with
@@ -579,6 +615,8 @@ module MapEditor =
             { CellColumn = 0
               CellRow = 0 }
           TerrainAnnouncement = "Terrain authoring ready."
+          EdgeCursor = 0, 0, EastEdge
+          EdgeAnnouncement = "Semantic edge authoring ready."
           UnitPaletteSearch = ""
           UnitAnnouncement = "Unit authoring ready."
           SelectedUnit = Some 1
@@ -1000,6 +1038,16 @@ module MapEditor =
         | SetTerrainBrushSize _
         | MoveTerrainCursor _
         | ActivateTerrainCursor
+        | ActivateEdge _
+        | MoveEdgeCursor _
+        | ActivateEdgeCursor
+        | FinishEdgePolyline
+        | BacktrackEdgePolyline
+        | ConvertEdge _
+        | ToggleDoorState _
+        | EraseEdge _
+        | SplitEdge _
+        | JoinEdge _
         | SetUnitPaletteSearch _
         | PreviewUnitPlacement _
         | BeginUnitMove _
@@ -1238,14 +1286,21 @@ module MapEditor =
                         match parseInt line column, parseInt line row, edgeDirection, edgeKind with
                         | Ok column, Ok row, Some direction, Some kind
                             when state = "open" || state = "closed" ->
-                            result <-
-                                Ok
-                                    { map with
-                                        Edges =
-                                            Map.add
-                                                (column, row, direction)
-                                                (kind, state = "open")
-                                                map.Edges }
+                            let address = column, row, direction
+                            if Map.containsKey address map.Edges then
+                                result <-
+                                    fail
+                                        line
+                                        "duplicate or overlapping canonical edge record."
+                            else
+                                result <-
+                                    Ok
+                                        { map with
+                                            Edges =
+                                                Map.add
+                                                    address
+                                                    (kind, state = "open")
+                                                    map.Edges }
                         | Error error, _, _, _
                         | _, Error error, _, _ -> result <- Error error
                         | _ -> result <- fail line "invalid edge direction, kind, or state."
@@ -1308,22 +1363,105 @@ module MapEditor =
                     |> Map.toList
                     |> List.tryFind (fun ((column, row, _), _) ->
                         column < 0 || row < 0 || column >= map.Width || row >= map.Height)
+                let invalidEdgeState =
+                    map.Edges
+                    |> Map.toList
+                    |> List.tryFind (fun (_, (kind, isOpen)) ->
+                        isOpen && kind <> Door)
                 let invalid =
                     map.Units
                     |> Map.toList
                     |> List.map snd
                     |> List.tryFind (fun unit ->
                         not (validPlacement map (Some unit.Id) unit unit.Column unit.Row))
-                match invalidTerrain, invalidEdge, invalid with
-                | Some((column, row), _), _, _ ->
+                match invalidTerrain, invalidEdge, invalidEdgeState, invalid with
+                | Some((column, row), _), _, _, _ ->
                     Error("Terrain cell " + string column + "," + string row + " is outside the map.")
-                | _, Some((column, row, _), _), _ ->
+                | _, Some((column, row, _), _), _, _ ->
                     Error("Edge " + string column + "," + string row + " is outside the map.")
-                | _, _, Some unit -> Error("Unit " + string unit.Id + " does not fit the map.")
-                | None, None, None -> Ok map)
+                | _, _, Some _, _ ->
+                    Error "Only doors may carry open edge state."
+                | _, _, _, Some unit ->
+                    Error("Unit " + string unit.Id + " does not fit the map.")
+                | None, None, None, None -> Ok map)
 
     let private issue code message =
         { Code = code; Message = message }
+
+    /// Returns deterministic, non-destructive semantic-edge diagnostics. Gaps
+    /// are reported only when two collinear segments enclose missing records;
+    /// intentional endpoints remain valid.
+    let edgeIssues (map: MapDefinition) =
+        let outsideAndState =
+            map.Edges
+            |> Map.toList
+            |> List.collect (fun ((column, row, direction), (kind, isOpen)) ->
+                [ if column < 0 || row < 0 || column >= map.Width || row >= map.Height then
+                      issue
+                          "EDGE-BORDER"
+                          ("Edge "
+                           + string column
+                           + ","
+                           + string row
+                           + " has no canonical owning cell.")
+                  if isOpen && kind <> Door then
+                      issue
+                          "EDGE-OVERLAP"
+                          ("Only a door may carry open state at "
+                           + string column
+                           + ","
+                           + string row
+                           + " "
+                           + edgeDirectionName direction
+                           + ".") ])
+
+        let gaps =
+            [ for direction in [ EastEdge; SouthEdge ] do
+                  let grouped =
+                      map.Edges
+                      |> Map.toList
+                      |> List.choose (fun ((column, row, candidate), _) ->
+                          if candidate <> direction then None
+                          elif direction = EastEdge then Some(column, row)
+                          else Some(row, column))
+                      |> List.groupBy fst
+                  for fixedCoordinate, values in grouped do
+                      let coordinates = values |> List.map snd |> List.distinct |> List.sort
+                      for first, last in List.pairwise coordinates do
+                          if last - first > 1 then
+                              for missing in first + 1 .. last - 1 do
+                                  let column, row =
+                                      if direction = EastEdge then fixedCoordinate, missing
+                                      else missing, fixedCoordinate
+                                  yield
+                                      issue
+                                          "EDGE-GAP"
+                                          ("A collinear edge run has a gap at "
+                                           + string column
+                                           + ","
+                                           + string row
+                                           + " "
+                                           + edgeDirectionName direction
+                                           + ".") ]
+
+        outsideAndState @ gaps
+
+    /// Lints the complete leading side of every moving square footprint.
+    let leadingSideMovementIssues map direction (units: EditorUnit array) =
+        let dx, dy = directionDelta direction
+        units
+        |> Array.choose (fun unit ->
+            if edgeBlocks map unit (int32 dx) (int32 dy) then
+                Some(
+                    issue
+                        "EDGE-LEADING-SIDE"
+                        ("Unit "
+                         + string unit.Id
+                         + " crosses a blocking edge on its complete leading side.")
+                )
+            else
+                None)
+        |> Array.toList
 
     let private validateDocument map =
         let dimensions =
@@ -1373,7 +1511,11 @@ module MapEditor =
                 else
                     None)
 
-        dimensions @ terrain @ edges @ units
+        let semanticEdgeState =
+            edgeIssues map
+            |> List.filter (fun edgeIssue -> edgeIssue.Code <> "EDGE-GAP")
+
+        dimensions @ terrain @ edges @ semanticEdgeState @ units
 
     let applyCommand (ValidatedEditorCommand command) map =
         match command with
@@ -1416,6 +1558,15 @@ module MapEditor =
     let validateCommand map command =
         let duplicate values =
             values |> Array.distinct |> Array.length <> Array.length values
+        let duplicateEdgeAddress changes =
+            changes
+            |> Array.groupBy fst
+            |> Array.tryFind (fun (_, replacements) -> replacements.Length > 1)
+            |> Option.map (fun (_, replacements) ->
+                (replacements
+                 |> Array.map snd
+                 |> Array.distinct
+                 |> Array.length) = 1)
 
         let shapeIssues =
             match command with
@@ -1423,6 +1574,14 @@ module MapEditor =
                 [ issue "COMMAND-EMPTY" "A paint command must contain at least one cell." ]
             | ReplaceEdges changes when Array.isEmpty changes ->
                 [ issue "COMMAND-EMPTY" "An edge command must contain at least one change." ]
+            | ReplaceEdges changes when duplicateEdgeAddress changes = Some true ->
+                [ issue
+                      "EDGE-DUPLICATE"
+                      "An edge command contains the same canonical edge record more than once." ]
+            | ReplaceEdges changes when duplicateEdgeAddress changes = Some false ->
+                [ issue
+                      "EDGE-OVERLAP"
+                      "An edge command assigns conflicting meanings to one canonical edge record." ]
             | AddUnits units when Array.isEmpty units ->
                 [ issue "COMMAND-EMPTY" "An add command must contain at least one unit." ]
             | AddUnits units when units |> Array.map _.Id |> duplicate ->
@@ -1507,6 +1666,105 @@ module MapEditor =
                     RedoHistory = []
                     HistoryBytes = historySize undo
                     Validation = None }
+
+    let private validEdgeKey map (column, row, _) =
+        column >= 0 && row >= 0 && column < map.Width && row < map.Height
+
+    let private edgeEndpoints (column, row, direction) =
+        match direction with
+        | EastEdge -> (column + 1, row), (column + 1, row + 1)
+        | SouthEdge -> (column, row + 1), (column + 1, row + 1)
+
+    let private connectingEdgePath map source target =
+        let sourceEndpoints =
+            let first, second = edgeEndpoints source
+            [ first; second ]
+        let targetEndpoints =
+            let first, second = edgeEndpoints target
+            [ first; second ]
+        let route horizontalFirst start finish =
+            let vertices = ResizeArray<int32 * int32>()
+            let mutable x, y = start
+            let finishX, finishY = finish
+            vertices.Add(x, y)
+            let horizontal () =
+                while x <> finishX do
+                    x <- x + (if finishX > x then 1 else -1)
+                    vertices.Add(x, y)
+            let vertical () =
+                while y <> finishY do
+                    y <- y + (if finishY > y then 1 else -1)
+                    vertices.Add(x, y)
+            if horizontalFirst then
+                horizontal ()
+                vertical ()
+            else
+                vertical ()
+                horizontal ()
+            vertices.ToArray()
+
+        [ for sourcePoint in sourceEndpoints do
+              for targetPoint in targetEndpoints do
+                  for horizontalFirst in [ true; false ] do
+                      let vertices = route horizontalFirst sourcePoint targetPoint
+                      let normalized =
+                          vertices
+                          |> Seq.pairwise
+                          |> Seq.map (fun ((x1, y1), (x2, y2)) ->
+                              tryNormalizeEdge map.Width map.Height x1 y1 x2 y2)
+                          |> Seq.toArray
+                      if normalized |> Array.forall Option.isSome then
+                          yield
+                              normalized.Length,
+                              sourcePoint,
+                              targetPoint,
+                              horizontalFirst,
+                              (normalized |> Array.choose id) ]
+        |> List.sortBy (fun (length, sourcePoint, targetPoint, horizontalFirst, _) ->
+            length, sourcePoint, targetPoint, horizontalFirst)
+        |> List.tryHead
+        |> Option.map (fun (_, _, _, _, path) ->
+            path
+            |> Seq.append [ target ]
+            |> Seq.distinct
+            |> Seq.toArray)
+        |> Option.defaultValue [| target |]
+
+    let private finishEdgePolyline state =
+        match state.Gesture with
+        | EdgePolylineGesture(_, segments) when Array.isEmpty segments ->
+            { state with
+                Gesture = IdleGesture
+                EdgeAnnouncement = "Empty edge polyline canceled." }
+        | EdgePolylineGesture(kind, segments) ->
+            let command =
+                segments
+                |> Array.distinct
+                |> Array.map (fun address -> address, Some(kind, false))
+                |> ReplaceEdges
+            let next = commit command state
+            { next with
+                EdgeAnnouncement =
+                    if next.Validation.IsSome then
+                        "Edge polyline rejected. " + next.Validation.Value
+                    else
+                        "Committed "
+                        + string segments.Length
+                        + "-segment "
+                        + edgeKindName kind
+                        + " polyline in revision "
+                        + string next.Revision.Number
+                        + "." }
+        | _ -> state
+
+    let private replaceOneEdge address replacement announcement state =
+        if not (validEdgeKey state.Map address) then
+            { state with
+                Validation = Some "The edge has no canonical owning cell."
+                EdgeAnnouncement = "Edge change rejected at the map border." }
+        else
+            let next = commit (ReplaceEdges [| address, replacement |]) state
+            { next with EdgeCursor = address; EdgeAnnouncement = announcement }
 
     let private activeDomain tool =
         match tool with
@@ -1639,7 +1897,23 @@ module MapEditor =
         ReplaceDocument(reason, map)
 
     let rec update action state =
+        let state =
+            match action, state.Gesture with
+            | ChooseTool _, EdgePolylineGesture _ -> finishEdgePolyline state
+            | _ -> state
         match action with
+        | ChooseTool(Edge(direction, kind)) ->
+            let column, row, _ = state.EdgeCursor
+            { state with
+                Tool = Edge(direction, kind)
+                EdgeCursor = column, row, direction
+                Gesture = IdleGesture
+                Validation = None
+                EdgeAnnouncement =
+                    edgeKindName kind
+                    + " "
+                    + edgeDirectionName direction
+                    + " edge tool selected." }
         | ChooseTool(Paint terrain) ->
             { state with
                 Tool = Paint terrain
@@ -1836,6 +2110,136 @@ module MapEditor =
             match state.Gesture with
             | TerrainGesture _ -> update CommitEditorGesture state
             | _ -> update (BeginTerrainGesture state.TerrainCursor) state
+        | ActivateEdge(column, row, direction) ->
+            let address = column, row, direction
+            if not (validEdgeKey state.Map address) then
+                { state with
+                    Validation = Some "The edge has no canonical owning cell."
+                    EdgeAnnouncement = "Edge placement rejected at the map border." }
+            else
+                let state =
+                    match state.Tool with
+                    | Edge(_, kind) ->
+                        { state with Tool = Edge(direction, kind) }
+                    | _ -> state
+                match state.Tool with
+                | Edge(_, Wall) ->
+                    match state.Gesture with
+                    | EdgePolylineGesture(Wall, segments) when Array.contains address segments ->
+                        { state with
+                            EdgeCursor = address
+                            Validation = Some "This canonical edge is already in the polyline."
+                            EdgeAnnouncement = "Duplicate edge segment ignored." }
+                    | EdgePolylineGesture(Wall, segments) ->
+                        let path =
+                            connectingEdgePath
+                                state.Map
+                                segments[segments.Length - 1]
+                                address
+                        let segments =
+                            Array.append segments path
+                            |> Array.distinct
+                        { state with
+                            EdgeCursor = address
+                            Gesture = EdgePolylineGesture(Wall, segments)
+                            Validation = None
+                            EdgeAnnouncement =
+                                string segments.Length
+                                + " wall polyline segments previewed. Double-click or press Enter to finish." }
+                    | _ ->
+                        { state with
+                            EdgeCursor = address
+                            Gesture = EdgePolylineGesture(Wall, [| address |])
+                            Validation = None
+                            EdgeAnnouncement = "Wall polyline started with one segment." }
+                | Edge(_, kind) ->
+                    replaceOneEdge
+                        address
+                        (Some(kind, false))
+                        ("Converted edge to " + edgeKindName kind + ".")
+                        state
+                | _ -> state
+        | MoveEdgeCursor(columnDelta, rowDelta, extendPreview) ->
+            let column, row, direction = state.EdgeCursor
+            let cursor =
+                max 0 (min (state.Map.Width - 1) (column + columnDelta)),
+                max 0 (min (state.Map.Height - 1) (row + rowDelta)),
+                direction
+            let moved =
+                { state with
+                    EdgeCursor = cursor
+                    EdgeAnnouncement =
+                        "Edge cursor at column "
+                        + string ((let c, _, _ = cursor in c) + 1)
+                        + ", row "
+                        + string ((let _, r, _ = cursor in r) + 1)
+                        + ", "
+                        + edgeDirectionName direction
+                        + "." }
+            if extendPreview then
+                let c, r, d = cursor
+                update (ActivateEdge(c, r, d)) moved
+            else
+                moved
+        | ActivateEdgeCursor ->
+            let column, row, direction = state.EdgeCursor
+            update (ActivateEdge(column, row, direction)) state
+        | FinishEdgePolyline -> finishEdgePolyline state
+        | BacktrackEdgePolyline ->
+            match state.Gesture with
+            | EdgePolylineGesture(kind, segments) when segments.Length > 0 ->
+                let remaining = segments |> Array.take (segments.Length - 1)
+                { state with
+                    Gesture = EdgePolylineGesture(kind, remaining)
+                    Validation = None
+                    EdgeAnnouncement =
+                        if Array.isEmpty remaining then
+                            "Last edge segment removed. Press Escape again to cancel."
+                        else
+                            "Last edge segment removed; "
+                            + string remaining.Length
+                            + " remain." }
+            | EdgePolylineGesture _ ->
+                { state with
+                    Gesture = IdleGesture
+                    Validation = None
+                    EdgeAnnouncement = "Edge polyline canceled." }
+            | _ -> state
+        | ConvertEdge(column, row, direction, kind) ->
+            replaceOneEdge
+                (column, row, direction)
+                (Some(kind, false))
+                ("Converted edge to " + edgeKindName kind + ".")
+                state
+        | ToggleDoorState(column, row, direction) ->
+            let address = column, row, direction
+            match Map.tryFind address state.Map.Edges with
+            | Some(Door, isOpen) ->
+                replaceOneEdge
+                    address
+                    (Some(Door, not isOpen))
+                    (if isOpen then "Door closed." else "Door opened.")
+                    state
+            | _ ->
+                { state with
+                    EdgeCursor = address
+                    Validation = Some "Only a door has editable open/closed state."
+                    EdgeAnnouncement = "Select or create a door before toggling its state." }
+        | EraseEdge(column, row, direction)
+        | SplitEdge(column, row, direction) ->
+            replaceOneEdge
+                (column, row, direction)
+                None
+                (match action with
+                 | SplitEdge _ -> "Edge run split by removing one canonical segment."
+                 | _ -> "Edge erased.")
+                state
+        | JoinEdge(column, row, direction) ->
+            replaceOneEdge
+                (column, row, direction)
+                (Some(Wall, false))
+                "Edge run joined with one canonical wall segment."
+                state
         | ActivateCell(column, row) when
             match state.Tool with
             | Place _ -> true
@@ -1955,15 +2359,19 @@ module MapEditor =
                         TerrainAnnouncement =
                             "Terrain change rejected. "
                             + (next.Validation |> Option.defaultValue "The preview is invalid.") }
+            | EdgePolylineGesture _ -> finishEdgePolyline state
             | IdleGesture -> state
         | CancelEditorGesture ->
-            { state with
-                Gesture = IdleGesture
-                Validation = None
-                TerrainAnnouncement =
-                    match state.Gesture with
-                    | TerrainGesture _ -> "Terrain preview canceled."
-                    | _ -> state.TerrainAnnouncement }
+            match state.Gesture with
+            | EdgePolylineGesture _ -> update BacktrackEdgePolyline state
+            | _ ->
+                { state with
+                    Gesture = IdleGesture
+                    Validation = None
+                    TerrainAnnouncement =
+                        match state.Gesture with
+                        | TerrainGesture _ -> "Terrain preview canceled."
+                        | _ -> state.TerrainAnnouncement }
         | SelectAllInActiveDomain ->
             if activeDomain state.Tool = UnitDomain then
                 let selected = state.Map.Units |> Map.toList |> List.map fst |> Set.ofList

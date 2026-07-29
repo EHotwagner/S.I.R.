@@ -1,0 +1,10 @@
+normalize-east=Some((1, 1, EastEdge))
+normalize-south=Some((1, 1, SouthEdge))
+polyline=[((1, 1, EastEdge), (Wall, False)); ((1, 2, EastEdge), (Wall, False))]
+edited=[((1, 1, EastEdge), (Door, True)); ((1, 2, EastEdge), (Window, False))]
+gap-codes=EDGE-GAP
+border-codes=EDGE-BORDER
+duplicate-codes=EDGE-DUPLICATE
+overlap-codes=EDGE-OVERLAP
+leading-codes=EDGE-LEADING-SIDE
+round-trip=True

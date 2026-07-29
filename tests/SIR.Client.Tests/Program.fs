@@ -1911,6 +1911,201 @@ let main _ =
          | _ -> false)
         "Placement preview omitted the complete footprint or canonical defaults."
 
+    let edgeBase = MapEditor.update ClearMap editor
+    let wallPreview =
+        edgeBase
+        |> MapEditor.update (ChooseTool(Edge(EastEdge, Wall)))
+        |> MapEditor.update (ActivateEdge(1, 1, EastEdge))
+        |> MapEditor.update (ActivateEdge(1, 2, EastEdge))
+    let duplicatePreview =
+        wallPreview |> MapEditor.update (ActivateEdge(1, 2, EastEdge))
+    require
+        (duplicatePreview.Validation = Some "This canonical edge is already in the polyline."
+         && duplicatePreview.Revision.Digest = edgeBase.Revision.Digest)
+        "A duplicate polyline segment was not linted before commit."
+    let connectedPreview =
+        edgeBase
+        |> MapEditor.update (ChooseTool(Edge(EastEdge, Wall)))
+        |> MapEditor.update (ActivateEdge(1, 1, EastEdge))
+        |> MapEditor.update (ActivateEdge(4, 3, SouthEdge))
+    require
+        (match connectedPreview.Gesture with
+         | EdgePolylineGesture(Wall, segments) ->
+             segments.Length > 2 && segments.Length = (segments |> Array.distinct |> Array.length)
+         | _ -> false)
+        "Separated snapped clicks did not resolve to one continuous canonical polyline."
+    let emptyAfterEscape =
+        edgeBase
+        |> MapEditor.update (ChooseTool(Edge(EastEdge, Wall)))
+        |> MapEditor.update (ActivateEdge(1, 1, EastEdge))
+        |> MapEditor.update CancelEditorGesture
+    let canceledAfterEscape =
+        emptyAfterEscape |> MapEditor.update CancelEditorGesture
+    require
+        ((match emptyAfterEscape.Gesture with
+          | EdgePolylineGesture(Wall, segments) -> Array.isEmpty segments
+          | _ -> false)
+         && canceledAfterEscape.Gesture = IdleGesture)
+        "Escape did not remove the last segment before canceling an empty polyline."
+    let committedOnSwitch =
+        edgeBase
+        |> MapEditor.update (ChooseTool(Edge(EastEdge, Wall)))
+        |> MapEditor.update (ActivateEdge(2, 2, EastEdge))
+        |> MapEditor.update (ChooseTool(Terrain PencilTool))
+    require
+        (Map.containsKey (2, 2, EastEdge) committedOnSwitch.Map.Edges
+         && committedOnSwitch.Revision.Number = edgeBase.Revision.Number + 1L)
+        "Switching tools did not finish the active edge polyline."
+    let backed = duplicatePreview |> MapEditor.update BacktrackEdgePolyline
+    let wallCommitted =
+        backed
+        |> MapEditor.update (ActivateEdge(1, 2, EastEdge))
+        |> MapEditor.update FinishEdgePolyline
+    let wallKeys =
+        wallCommitted.Map.Edges
+        |> Map.toList
+        |> List.map fst
+    require
+        (wallKeys = [ (1, 1, EastEdge); (1, 2, EastEdge) ]
+         && wallCommitted.Revision.Number = edgeBase.Revision.Number + 1L)
+        "A wall polyline did not commit once through revision history."
+
+    let editedEdges =
+        wallCommitted
+        |> MapEditor.update (ConvertEdge(1, 1, EastEdge, Door))
+        |> MapEditor.update (ToggleDoorState(1, 1, EastEdge))
+        |> MapEditor.update (ConvertEdge(1, 2, EastEdge, Window))
+        |> MapEditor.update (JoinEdge(2, 2, SouthEdge))
+        |> MapEditor.update (SplitEdge(2, 2, SouthEdge))
+    require
+        (Map.tryFind (1, 1, EastEdge) editedEdges.Map.Edges = Some(Door, true)
+         && Map.tryFind (1, 2, EastEdge) editedEdges.Map.Edges = Some(Window, false)
+         && not (Map.containsKey (2, 2, SouthEdge) editedEdges.Map.Edges))
+        "Door/window conversion, state editing, split, or join changed edge meaning."
+    let erasedAndRestored =
+        editedEdges
+        |> MapEditor.update (EraseEdge(1, 2, EastEdge))
+        |> MapEditor.update UndoEditorCommand
+        |> MapEditor.update RedoEditorCommand
+    require
+        (not (Map.containsKey (1, 2, EastEdge) erasedAndRestored.Map.Edges))
+        "Edge erase did not participate in undo/redo revision history."
+
+    require
+        (MapEditor.tryNormalizeEdge 12 8 2 1 2 2 = Some(1, 1, EastEdge)
+         && MapEditor.tryNormalizeEdge 12 8 2 2 1 2 = Some(1, 1, SouthEdge)
+         && MapEditor.tryNormalizeEdge 12 8 0 0 0 1 = None
+         && MapEditor.tryNormalizeEdge 12 8 0 0 1 0 = None)
+        "Physical edge gestures did not normalize exactly once or reject ownerless borders."
+
+    let gapMap =
+        { edgeBase.Map with
+            Edges =
+                [ (3, 1, EastEdge), (Wall, false)
+                  (3, 3, EastEdge), (Wall, false) ]
+                |> Map.ofList }
+    require
+        (MapEditor.edgeIssues gapMap |> List.map _.Code = [ "EDGE-GAP" ])
+        "Collinear semantic edge gaps were not linted deterministically."
+    let borderCodes =
+        MapEditor.edgeIssues
+            { edgeBase.Map with
+                Edges = Map.ofList [ (-1, 0, EastEdge), (Wall, false) ] }
+        |> List.map _.Code
+    require
+        (borderCodes = [ "EDGE-BORDER" ])
+        "A canonical edge without an owning border cell was not linted."
+    let overlapCodes =
+        MapEditor.validateCommand
+            edgeBase.Map
+            (ReplaceEdges
+                [| (1, 1, EastEdge), Some(Wall, false)
+                   (1, 1, EastEdge), Some(Door, false) |])
+        |> function
+            | Error issues -> issues |> List.map _.Code
+            | Ok _ -> []
+    let duplicateCodes =
+        MapEditor.validateCommand
+            edgeBase.Map
+            (ReplaceEdges
+                [| (1, 1, EastEdge), Some(Wall, false)
+                   (1, 1, EastEdge), Some(Wall, false) |])
+        |> function
+            | Error issues -> issues |> List.map _.Code
+            | Ok _ -> []
+    require
+        (overlapCodes = [ "EDGE-OVERLAP" ]
+         && duplicateCodes = [ "EDGE-DUPLICATE" ])
+        "Duplicate or overlapping edge replacements passed command validation."
+    require
+        (MapEditor.tryImport
+             "SIR-MAP 1\nsize 4 4\nedge 1 1 east wall closed\nedge 1 1 east door closed\n"
+         |> Result.isError)
+        "Duplicate canonical edge records in an imported map were silently overwritten."
+    require
+        (MapEditor.tryImport
+             "SIR-MAP 1\nsize 4 4\nedge 1 1 east window open\n"
+         |> Result.isError)
+        "Open state on a non-door edge passed import validation."
+
+    let unitOne = Map.find 1 editor.Map.Units
+    let blockedLeadingSide =
+        { editor.Map with
+            Edges =
+                [ (unitOne.Column + unitOne.Size - 1, unitOne.Row, EastEdge),
+                    (Wall, false) ]
+                |> Map.ofList }
+    let leadingCodes =
+        MapEditor.leadingSideMovementIssues blockedLeadingSide East [| unitOne |]
+        |> List.map _.Code
+    require
+        (leadingCodes = [ "EDGE-LEADING-SIDE" ])
+        "Movement lint did not inspect the complete leading side."
+
+    let edgeRoundTripText = MapEditor.export editedEdges
+    let edgeRoundTrip =
+        MapEditor.tryImport edgeRoundTripText
+        |> Result.defaultWith failwith
+    let edgeRoundTripState = { editedEdges with Map = edgeRoundTrip }
+    require
+        (edgeRoundTrip.Edges = editedEdges.Map.Edges
+         && MapEditor.export edgeRoundTripState = edgeRoundTripText)
+        "SIR-MAP round-trip changed edge meaning or canonical record order."
+
+    let edgeFixture =
+        String.concat
+            "\n"
+            [ "normalize-east="
+              + string (MapEditor.tryNormalizeEdge 12 8 2 1 2 2)
+              "normalize-south="
+              + string (MapEditor.tryNormalizeEdge 12 8 2 2 1 2)
+              "polyline=" + string (wallCommitted.Map.Edges |> Map.toList)
+              "edited=" + string (editedEdges.Map.Edges |> Map.toList)
+              "gap-codes="
+              + (MapEditor.edgeIssues gapMap
+                 |> List.map _.Code
+                 |> String.concat ",")
+              "border-codes=" + String.concat "," borderCodes
+              "duplicate-codes=" + String.concat "," duplicateCodes
+              "overlap-codes=" + String.concat "," overlapCodes
+              "leading-codes="
+              + (MapEditor.leadingSideMovementIssues blockedLeadingSide East [| unitOne |]
+                 |> List.map _.Code
+                 |> String.concat ",")
+              "round-trip=" + string (MapEditor.export edgeRoundTripState = edgeRoundTripText) ]
+    let expectedEdgeFixture =
+        File.ReadAllText(
+            Path.Combine(
+                __SOURCE_DIRECTORY__,
+                "fixtures",
+                "map-editor-milestone-5-edges.txt"
+            )
+        ).TrimEnd()
+    require
+        (edgeFixture = expectedEdgeFixture)
+        ("The deterministic Milestone 5 semantic-edge review fixture changed.\n"
+         + edgeFixture)
+
     let maximumMap =
         { editor.Map with
             Width = 40
