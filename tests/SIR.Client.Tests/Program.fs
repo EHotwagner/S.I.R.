@@ -126,7 +126,10 @@ let main _ =
                     Column = 1
                     Row = 0
                     Health = 75
-                    HealthMaximum = 100 } ]
+                    HealthMaximum = 100
+                    MovementDirection = None
+                    BodyFacing = 0
+                    AttentionDirection = 0 } ]
             Edges =
                 [ { Id = "edge-0"
                     Kind = "wall"
@@ -1098,7 +1101,10 @@ let main _ =
                     Column = 1
                     Row = 0
                     Health = 75
-                    HealthMaximum = 100 } ] }
+                    HealthMaximum = 100
+                    MovementDirection = None
+                    BodyFacing = 0
+                    AttentionDirection = 0 } ] }
     let divergentFork =
         { divergentBaseline with
             Units =
@@ -2255,7 +2261,9 @@ let main _ =
           HealthMaximum = 12
           Controller = Manual
           Script = []
-          ScriptIndex = 0 }
+          ScriptIndex = 0
+          BodyFacing = North
+          AttentionDirection = North }
     let unitTestMap size =
         { editor.Map with
             Width = 8
@@ -3099,8 +3107,13 @@ let main _ =
     let legacyQualified =
         MapEditor.tryImport "SIR-MAP 1\nsize 4 4\nterrain 1 1 rough\n"
         |> Result.defaultWith failwith
+    let previousUnitQualified =
+        MapEditor.tryImport
+            "SIR-MAP 2\nsize 4 4\nunit 1 blue rifleman 0 0 1 1 1 manual -\n"
+        |> Result.defaultWith failwith
+        |> _.Units[1]
     let malformedInputs =
-        [ "SIR-MAP 3\nsize 4 4\n"
+        [ "SIR-MAP 4\nsize 4 4\n"
           "SIR-MAP 2\nsize 4 4\nterrain zero 1 rough\n"
           "SIR-MAP 2\nsize 4 4\nedge 1 1 east wall open\n"
           "SIR-MAP 2\nsize 4 4\nunit 1 blue x 0 0 9 1 1 manual -\n"
@@ -3136,7 +3149,9 @@ let main _ =
                         HealthMaximum = 1
                         Controller = Manual
                         Script = []
-                        ScriptIndex = 0 } ]
+                        ScriptIndex = 0
+                        BodyFacing = North
+                        AttentionDirection = North } ]
         |> Map.ofList
     let oversizedClipboardState =
         { editor with
@@ -3155,7 +3170,9 @@ let main _ =
         |> MapEditor.update CopyEditorSelection
     require
         (MapEditor.export { editor with Map = legacyQualified }
-            |> _.StartsWith("SIR-MAP 2")
+            |> _.StartsWith("SIR-MAP 3")
+         && previousUnitQualified.BodyFacing = North
+         && previousUnitQualified.AttentionDirection = North
          && malformedInputs |> List.forall (MapEditor.tryImport >> Result.isError)
          && MapEditor.tryImport oversizedMapText |> Result.isError
          && MapEditor.tryImport (
@@ -3251,7 +3268,9 @@ let main _ =
                         HealthMaximum = 100
                         Controller = Manual
                         Script = []
-                        ScriptIndex = 0 } ]
+                        ScriptIndex = 0
+                        BodyFacing = North
+                        AttentionDirection = North } ]
         |> Map.ofList
     let denseRegions =
         [ for index in 0 .. 199 do

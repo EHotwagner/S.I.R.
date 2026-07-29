@@ -81,11 +81,11 @@ requireValue(
     replay.stateHash === "sha-256" &&
     replay.eventHash === "sha-256" &&
     replay.hashTree === "none",
-  "the replay v1 encoding/hash contract changed without a new baseline schema",
+  "the replay encoding/hash contract changed without a new baseline schema",
 );
 requireSourceValue(
   replaySource,
-  /let stateHash state = state \|> snapshotBytes \|> CanonicalHash\.sha256/,
+  /let stateHash state\s*=\s*stateHashForVersion CurrentFormatVersion state/,
   "state hash",
 );
 requireSourceValue(

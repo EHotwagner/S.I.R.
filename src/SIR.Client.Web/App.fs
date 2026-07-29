@@ -9,6 +9,7 @@ open Fable.Core
 open Fable.Core.JsInterop
 open Feliz
 open SIR.Client
+open SIR.Domain
 
 type Msg =
     | ShellMsg of SIR.Client.Msg
@@ -1510,6 +1511,7 @@ let private unitView
                     match secondary.Source with
                     | WeaponHeading -> "weapon"
                     | SensorHeading -> "sensor"
+                    | AttentionHeading -> "attention"
                 Svg.g [
                     svg.custom ("data-secondary-heading", source)
                     svg.custom ("aria-label", source + " heading")
@@ -1643,6 +1645,7 @@ let private battlefieldInspector (scene: BattlefieldScene) =
                                 match value.Source with
                                 | WeaponHeading -> "weapon"
                                 | SensorHeading -> "sensor"
+                                | AttentionHeading -> "attention"
                             source
                             + " source explicitly disclosed ("
                             + string (HeadingRadians.value value.Radians)

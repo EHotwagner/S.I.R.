@@ -6,7 +6,7 @@ document-type: architecture-and-roadmap
 category: Engineering
 categoryindex: 6
 index: 15
-version: "0.2"
+version: "0.3"
 created: 2026-07-29T19:27:00+02:00
 last-updated: 2026-07-29
 description: Design and milestone roadmap for converging the simulator, planning interface, control ABI, and authoritative deterministic kernel.
@@ -646,7 +646,9 @@ Exit gate:
 - native/Fable conformance, browser smoke, accessibility, map-editor
   qualification, replay, and WASM qualification all pass.
 
-### [ ] ⬜ Milestone 1 — shared orientation domain
+### [x] 🟩 Milestone 1 — shared orientation domain
+
+Status: implemented on 2026-07-29.
 
 - introduce `Direction8`, `ResolvedOrientation`, `FacingIntent`, and
   `AttentionIntent` in the shared domain;
@@ -664,6 +666,22 @@ Exit gate:
   round-trip identically in .NET and Fable;
 - old map documents import deterministically with documented defaults; and
 - no weapon-heading state is introduced.
+
+Evidence:
+
+- the shared .NET/Fable orientation fixture covers every body/attention pair,
+  every body-relative octant pair, all eight movement octants, and rejects
+  invalid direction codes;
+- `SIR-MAP 1` and `SIR-MAP 2` imports default body facing and attention to
+  north before canonical `SIR-MAP 3` export;
+- replay format 2 includes authoritative body facing and attention while
+  replay format 1 remains readable with deterministic north defaults;
+- the projection transport and map renderer disclose attention independently
+  from body facing; legacy weapon and sensor headings remain presentation-only
+  compatibility cases; and
+- the full native/Fable conformance, replay, browser smoke, worker,
+  map-editor qualification, accessibility, and deterministic evidence gates
+  pass.
 
 ### [ ] ⬜ Milestone 2 — shared map-scale kernel
 

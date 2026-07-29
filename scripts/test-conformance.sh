@@ -184,7 +184,7 @@ printf 'Divergence guard passed: %s failed first at byte 0 in both runtimes.\n' 
   "$divergence_fixture"
 printf 'Simulation divergence guard passed: tick 1 phase %s failed first at byte 0 in both runtimes.\n' \
   "$simulation_phase"
-printf 'Replay gate passed: format v1, SHA-256, checkpoint seeks, safety limits, disclosure boundaries, and verification levels agree.\n'
+printf 'Replay gate passed: formats v1-v2, SHA-256, checkpoint seeks, safety limits, disclosure boundaries, and verification levels agree.\n'
 printf 'Numeric authority gate passed: Domain, Simulation, and Match contain no floating-point state and do not reference the presentation-only client.\n'
 printf '%s\n' "$match_output"
 printf '%s\n' "$browser_wasm_output"

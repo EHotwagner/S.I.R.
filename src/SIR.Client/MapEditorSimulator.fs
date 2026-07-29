@@ -1,6 +1,7 @@
 namespace SIR.Client
 
 open System
+open SIR.Domain
 
 type SimulatorCollision =
     | RouteClear

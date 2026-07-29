@@ -75,7 +75,10 @@ type UnitProjection =
       Column: int32
       Row: int32
       Health: int32
-      HealthMaximum: int32 }
+      HealthMaximum: int32
+      MovementDirection: int32 option
+      BodyFacing: int32
+      AttentionDirection: int32 }
 
 type EventProjection =
     { Id: int32
@@ -299,6 +302,11 @@ module Shell =
         HealthVisual.tryCreate remaining maximum
         |> Option.defaultWith (fun () -> failwith "Projected health bounds are invalid.")
 
+    let private projectedDirection field code =
+        match Direction8.tryFromCode (byte code) with
+        | Some direction -> HeadingRadians.ofDirection8 direction
+        | None -> invalidArg field "Projection direction is outside 0..7."
+
     /// Adapts only the worker's currently disclosed bounded projection.
     /// Missing class, footprint-detail, heading, elevation, and stance facts stay absent.
     let renderFrame (model: Model) =
@@ -344,8 +352,15 @@ module Shell =
                             )
                           Level = NotPresent
                           StanceId = NotPresent
-                          BodyHeading = NotPresent
-                          SecondaryHeading = NotPresent
+                          BodyHeading =
+                            Disclosed(projectedDirection "BodyFacing" unit.BodyFacing)
+                          SecondaryHeading =
+                            Disclosed
+                                { Radians =
+                                    projectedDirection
+                                        "AttentionDirection"
+                                        unit.AttentionDirection
+                                  Source = AttentionHeading }
                           ShortLabel = Disclosed(string unit.Id)
                           StatusIds = [||] })
                     |> List.toArray

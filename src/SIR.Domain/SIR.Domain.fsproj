@@ -5,6 +5,7 @@
   <ItemGroup>
     <Compile Include="BoundedInt32.fs" />
     <Compile Include="FixedPoint.fs" />
+    <Compile Include="Orientation.fs" />
     <Compile Include="CanonicalEncoding.fs" />
     <Compile Include="CanonicalHash.fs" />
   </ItemGroup>
