@@ -14,6 +14,10 @@ module Runner =
 
     let mutable private worker: (string * obj) option = None
     let mutable private subscriber: (SIR.Client.Msg -> unit) option = None
+    let mutable private simulatorSubscriber: (SimulatorResponseEnvelope -> unit) option = None
+    let mutable private simulatorGuard: SimulatorWorkspaceGuard =
+        { Active = None
+          PendingOperations = Set.empty }
 
     let private dispatch message =
         subscriber |> Option.iter (fun send -> send message)
@@ -22,24 +26,42 @@ module Runner =
         active?onmessage <-
             fun event ->
                 let message = unbox<MessageEvent> event
-                let envelope = unbox<WorkerResponseEnvelope> message.data
+                let kind: string = message.data?Kind
 
-                if envelope.ProtocolVersion = int32 WorkerProtocol.CurrentVersion then
-                    dispatch (
-                        RunnerResponded(
-                            OperationId.create envelope.Operation,
-                            envelope.Response
-                        )
-                    )
+                if kind = SimulatorProtocol.Kind then
+                    let envelope =
+                        unbox<SimulatorResponseEnvelope> message.data
+
+                    if SimulatorProtocol.accepts envelope simulatorGuard then
+                        simulatorSubscriber
+                        |> Option.iter (fun receive -> receive envelope)
+
+                        match envelope.Response with
+                        | SimulatorProgress _ -> ()
+                        | _ ->
+                            simulatorGuard <-
+                                SimulatorProtocol.completeOperation
+                                    envelope.Correlation.Operation
+                                    simulatorGuard
                 else
-                    dispatch (
-                        WorkerTerminated(
-                            "protocol "
-                            + string envelope.ProtocolVersion
-                            + " is incompatible with protocol "
-                            + string WorkerProtocol.CurrentVersion
+                    let envelope = unbox<WorkerResponseEnvelope> message.data
+
+                    if envelope.ProtocolVersion = int32 WorkerProtocol.CurrentVersion then
+                        dispatch (
+                            RunnerResponded(
+                                OperationId.create envelope.Operation,
+                                envelope.Response
+                            )
                         )
-                    )
+                    else
+                        dispatch (
+                            WorkerTerminated(
+                                "protocol "
+                                + string envelope.ProtocolVersion
+                                + " is incompatible with protocol "
+                                + string WorkerProtocol.CurrentVersion
+                            )
+                        )
 
         active?onerror <-
             fun event ->
@@ -94,6 +116,35 @@ module Runner =
                 // The retained worker owns detailed validation errors for malformed packages.
                 (activate EngineCatalog.Current)?postMessage (envelope)
         | _ -> (activate EngineCatalog.Current)?postMessage (envelope)
+
+    /// Sends a simulator-session operation through the retained browser worker.
+    /// Responses that no longer match the active workspace correlation are
+    /// discarded in `bind` before any UI subscriber can observe them.
+    let postSimulator correlation request =
+        let envelope: SimulatorRequestEnvelope =
+            { Kind = SimulatorProtocol.Kind
+              ProtocolVersion = int32 SimulatorProtocol.CurrentVersion
+              Correlation = correlation
+              Request = request }
+
+        simulatorGuard <-
+            match request with
+            | InitializeSession _ ->
+                SimulatorProtocol.activate correlation
+            | _ ->
+                SimulatorProtocol.beginOperation correlation simulatorGuard
+
+        (activate EngineCatalog.Current)?postMessage (envelope)
+
+    let subscribeSimulator receive =
+        simulatorSubscriber <- Some receive
+
+        { new IDisposable with
+            member _.Dispose() =
+                simulatorSubscriber <- None
+                simulatorGuard <-
+                    { Active = None
+                      PendingOperations = Set.empty } }
 
     let subscribe (send: SIR.Client.Msg -> unit) =
         subscriber <- Some send

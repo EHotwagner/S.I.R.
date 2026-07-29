@@ -13,9 +13,29 @@ related:
   - docs/wasm-control-architecture.md
   - docs/combat-resolution.md
   - docs/tactical-environment-architecture.md
+  - docs/simulator-worker-protocol.md
 ---
 
 # Performance Budget
+
+## Browser simulator session budget
+
+The bounded planning worker uses 256-tick cooperative batches. A normal
+6,000-tick planning horizon has a hard budget of 24 projection messages and
+5,000 milliseconds in the browser-worker qualification harness. The harness
+measures the built retained worker rather than a DTO-only loop, and also proves
+that cancellation can enter between batches.
+
+The deterministic evidence command is:
+
+```shell
+npm run build:client
+node scripts/smoke-worker-roundtrip.mjs
+```
+
+The output records the observed message count and elapsed time. Projection
+deltas remain bounded by the existing inspection projection schema; no
+per-tick render or full-world transfer is permitted.
 
 ## Purpose
 

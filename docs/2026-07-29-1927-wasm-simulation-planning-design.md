@@ -6,7 +6,7 @@ document-type: architecture-and-roadmap
 category: Engineering
 categoryindex: 6
 index: 15
-version: "0.7"
+version: "0.8"
 created: 2026-07-29T19:27:00+02:00
 last-updated: 2026-07-29
 description: Design and milestone roadmap for converging the simulator, planning interface, control ABI, and authoritative deterministic kernel.
@@ -823,7 +823,9 @@ Evidence:
   accepted and journaled as an opaque public request pending later
   capability/kernel payload semantics.
 
-### [ ] ⬜ Milestone 6 — simulator worker protocol
+### [x] 🟩 Milestone 6 — simulator worker protocol
+
+Status: implemented on 2026-07-29.
 
 - add session initialization, plan validation, preview, commit, step, run-to,
   reset, progress, and cancellation;
@@ -839,6 +841,24 @@ Exit gate:
 - a normal planning horizon respects projection-message and elapsed-time
   budgets; and
 - preview disclosure tests receive no hidden state.
+
+Evidence:
+
+- the retained browser worker implements initialization, validation, preview,
+  commit, step, run-to, reset, and cancel across the real structured-clone
+  boundary, with clone-safe coverage for every request and response variant;
+- session, map, exact committed plan revision, operation, and tick correlation
+  reject stale execution and cancellation messages before they can change the
+  active runner workspace;
+- deterministic, assumption-based, and intent-only labels travel with bounded
+  projection snapshots and deltas, while the intent-only qualification
+  discloses zero entities or hidden classifications;
+- a 6,000-tick run emits exactly 24 projection messages in 25.835 ms, below
+  the declared 5,000 ms elapsed-time budget, and cancellation halts an active
+  run-to operation; and
+- browser-side validation currently covers the plan envelope, bounds, and
+  disclosure classification. Milestone 9 connects the native `SIR-PLAN 1`
+  compiler and authoritative shared-kernel execution to this protocol.
 
 ### [ ] ⬜ Milestone 7 — planning workspace
 
