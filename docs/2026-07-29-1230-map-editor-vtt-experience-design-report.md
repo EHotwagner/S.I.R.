@@ -5,7 +5,7 @@ categoryindex: 5
 index: 10
 status: in-progress
 document-type: timestamped-design-report
-version: "1.5"
+version: "1.6"
 created-at: 2026-07-29T12:30:56+02:00
 last-updated: 2026-07-29
 related:
@@ -20,7 +20,7 @@ related:
 
 **Report timestamp:** 2026-07-29 12:30:56 CEST (UTC+02:00)
 
-**Status:** implementation in progress; Milestones 0–3 complete
+**Status:** implementation in progress; Milestones 0–4 complete
 
 ## Executive decision
 
@@ -773,14 +773,14 @@ within it is checked.
 
 ### Milestone 4 — Unit palette and direct manipulation
 
-- [ ] Add searchable canonical unit presets grouped by faction and role.
-- [ ] Make preset footprint, glyph, side, HP defaults, and class explicit.
-- [ ] Implement placement preview, drag movement, multiselection movement, and
+- [x] Add searchable canonical unit presets grouped by faction and role.
+- [x] Make preset footprint, glyph, side, HP defaults, and class explicit.
+- [x] Implement placement preview, drag movement, multiselection movement, and
   keyboard movement.
-- [ ] Add a six-action maximum context HUD and complete inspector.
-- [ ] Fit one canonical square symbol to every square base at every zoom.
-- [ ] Add formation-safe atomic copy/paste and duplicate behavior.
-- [ ] Test `1×1`, `2×2`, `3×3`, and maximum supported footprints at borders,
+- [x] Add a six-action maximum context HUD and complete inspector.
+- [x] Fit one canonical square symbol to every square base at every zoom.
+- [x] Add formation-safe atomic copy/paste and duplicate behavior.
+- [x] Test `1×1`, `2×2`, `3×3`, and maximum supported footprints at borders,
   obstacles, edges, and overlaps.
 
 ### Milestone 5 — Semantic edge authoring

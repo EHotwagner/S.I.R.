@@ -14,5 +14,6 @@
     <Content Include="fixtures/map-editor-milestone-1-camera.txt" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="fixtures/map-editor-milestone-2-history.txt" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="fixtures/map-editor-milestone-3-terrain.txt" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="fixtures/map-editor-milestone-4-units.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

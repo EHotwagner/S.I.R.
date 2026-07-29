@@ -2562,6 +2562,9 @@ let private capturePointer (target: EventTarget) (pointerId: int) : unit = jsNat
 [<Emit("$0.releasePointerCapture($1)")>]
 let private releasePointer (target: EventTarget) (pointerId: int) : unit = jsNative
 
+[<Emit("$0.target.closest('[data-editor-unit-id]')?.getAttribute('data-editor-unit-id') ?? null")>]
+let private pointerEditorUnitId (event: Browser.Types.Event) : string = jsNative
+
 [<Emit("(() => { const buttons = Array.from($0.closest('ul').querySelectorAll('button')); const index = buttons.indexOf($0); const target = $1 === -2 ? 0 : ($1 === 2 ? buttons.length - 1 : Math.max(0, Math.min(buttons.length - 1, index + $1))); buttons[target]?.focus(); })()")>]
 let private focusEditorObjectList (target: EventTarget) (movement: int) : unit = jsNative
 
@@ -2601,6 +2604,7 @@ let private editorUnitSvg
     let size = float unit.Size * Battlefield.CellSize
 
     Svg.g [
+        svg.key ("editor-unit-" + string unit.Id)
         svg.custom ("data-editor-object", "unit")
         svg.custom ("data-editor-unit-id", string unit.Id)
         svg.custom ("role", "button")
@@ -2616,7 +2620,6 @@ let private editorUnitSvg
             + string unit.Size
         )
         svg.tabIndex (if state.SelectedUnit = Some unit.Id then 0 else -1)
-        svg.onPointerDown (fun event -> event.stopPropagation ())
         svg.onClick (fun event ->
             event.stopPropagation ()
             if event.shiftKey then
@@ -2661,26 +2664,12 @@ let private editorUnitSvg
                 svg.strokeWidth (if selected then 5 else 3)
                 svg.custom ("vector-effect", "non-scaling-stroke")
             ]
-            Svg.g [
-                svg.custom (
-                    "transform",
-                    "translate("
-                    + string (x + size / 2.0)
-                    + " "
-                    + string (y + size / 2.0)
-                    + ") scale("
-                    + string (max 1.0 (size / 48.0))
-                    + ") translate(-24 -24)"
-                )
-                svg.children [
-                    glyphView
-                        palette
-                        24
-                        24
-                        1.0
-                        (UnitClassId.resolve unit.ClassId)
-                ]
-            ]
+            glyphView
+                palette
+                (x + size / 2.0)
+                (y + size / 2.0)
+                (max 1.0 ((size - 16.0) / 24.0))
+                (UnitClassId.resolve unit.ClassId)
             Svg.text [
                 svg.x (x + size - 8.0)
                 svg.y (y + size - 8.0)
@@ -2819,6 +2808,35 @@ let private editorBattlefield
                 prop.ariaAtomic true
                 prop.text state.TerrainAnnouncement
             ]
+            Html.p [
+                prop.className "sr-only"
+                prop.ariaLive.polite
+                prop.ariaAtomic true
+                prop.text state.UnitAnnouncement
+            ]
+            Html.div [
+                prop.className (
+                    "editor-context-hud"
+                    + if state.SelectedUnits.IsEmpty then " is-hidden" else ""
+                )
+                prop.role.toolbar
+                prop.ariaHidden state.SelectedUnits.IsEmpty
+                prop.ariaLabel "Selected unit quick actions"
+                prop.children [
+                    button "↑" "Move selected formation north (Alt+Arrow up)" state.SelectedUnits.IsEmpty (fun _ ->
+                        dispatch (EditorChanged(MoveSelected North)))
+                    button "←" "Move selected formation west (Alt+Arrow left)" state.SelectedUnits.IsEmpty (fun _ ->
+                        dispatch (EditorChanged(MoveSelected West)))
+                    button "→" "Move selected formation east (Alt+Arrow right)" state.SelectedUnits.IsEmpty (fun _ ->
+                        dispatch (EditorChanged(MoveSelected East)))
+                    button "↓" "Move selected formation south (Alt+Arrow down)" state.SelectedUnits.IsEmpty (fun _ ->
+                        dispatch (EditorChanged(MoveSelected South)))
+                    button "Duplicate" "Duplicate selected formation (Ctrl or Command D)" state.SelectedUnits.IsEmpty (fun _ ->
+                        dispatch (EditorChanged DuplicateEditorSelection))
+                    button "Delete" "Delete selected formation" state.SelectedUnits.IsEmpty (fun _ ->
+                        dispatch (EditorChanged DeleteEditorSelection))
+                ]
+            ]
             Svg.svg [
                 svg.className (
                     "editor-battlefield-svg"
@@ -2858,6 +2876,19 @@ let private editorBattlefield
                             event.preventDefault ()
                             event.stopPropagation ()
                             dispatch (EditorChanged editorAction))
+                    elif event.altKey then
+                        let direction =
+                            match event.key with
+                            | "ArrowLeft" -> Some West
+                            | "ArrowRight" -> Some East
+                            | "ArrowUp" -> Some North
+                            | "ArrowDown" -> Some South
+                            | _ -> None
+                        direction
+                        |> Option.iter (fun value ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            dispatch (EditorChanged(MoveSelected value)))
                     elif event.key = "Delete" || event.key = "Backspace" then
                         event.preventDefault ()
                         event.stopPropagation ()
@@ -2928,6 +2959,14 @@ let private editorBattlefield
                         && kind <> TouchPointer
                         && event.button = 0
                         && not requestsPan
+                    let movementUnit =
+                        if requestsSelection then
+                            match Int32.TryParse(pointerEditorUnitId event) with
+                            | true, unitId -> Some unitId
+                            | _ -> None
+                        else
+                            None
+                    let requestsMovement = movementUnit.IsSome
                     let requestsTerrain =
                         match state.Tool with
                         | Terrain _ ->
@@ -2953,7 +2992,13 @@ let private editorBattlefield
                                       RequestsPan = requestsPan }
                             )
                         )
-                        if requestsSelection then
+                        if requestsMovement then
+                            movementUnit
+                            |> Option.iter (fun unitId ->
+                                if not (Set.contains unitId state.SelectedUnits) then
+                                    dispatch (EditorChanged(SelectEditorUnit(Some unitId))))
+                            selectionAt x y BeginUnitMove
+                        elif requestsSelection then
                             selectionAt x y BeginEditorBoxSelection
                         elif requestsTerrain then
                             terrainAt x y BeginTerrainGesture
@@ -2980,12 +3025,25 @@ let private editorBattlefield
                             )
                         )
                         if state.Tool = Select && not previous.RequestsPan then
-                            selectionAt x y ExtendEditorBoxSelection
+                            match state.Gesture with
+                            | UnitMoveGesture _ -> selectionAt x y ExtendUnitMove
+                            | _ -> selectionAt x y ExtendEditorBoxSelection
                         else
                             match state.Tool with
                             | Terrain _ when not previous.RequestsPan ->
                                 terrainAt x y ExtendTerrainGesture
-                            | _ -> ())
+                            | _ -> ()
+                    else
+                        match state.Tool with
+                        | Place _ ->
+                            let x, y =
+                                editorScreenPoint
+                                    view
+                                    event.currentTarget
+                                    event.clientX
+                                    event.clientY
+                            selectionAt x y PreviewUnitPlacement
+                        | _ -> ())
                 svg.onPointerUp (fun event ->
                     if Map.containsKey (int32 event.pointerId) view.CapturedPointers then
                         let previous = Map.find (int32 event.pointerId) view.CapturedPointers
@@ -3002,7 +3060,9 @@ let private editorBattlefield
                             )
                         )
                         if state.Tool = Select && not previous.RequestsPan then
-                            selectionAt x y ExtendEditorBoxSelection
+                            match state.Gesture with
+                            | UnitMoveGesture _ -> selectionAt x y ExtendUnitMove
+                            | _ -> selectionAt x y ExtendEditorBoxSelection
                             dispatch (EditorChanged CommitEditorGesture)
                         else
                             match state.Tool with
@@ -3126,6 +3186,49 @@ let private editorBattlefield
                                     ]
                                 ]
                             | None -> ()
+                            match MapEditor.unitPreview state with
+                            | Some(units, isValid) ->
+                                Svg.g [
+                                    svg.custom ("data-layer", "unit-preview")
+                                    svg.custom ("data-preview-valid", string isValid)
+                                    svg.custom ("pointer-events", "none")
+                                    svg.children [
+                                        for unit in units do
+                                            let size =
+                                                float unit.Size
+                                                * Battlefield.CellSize
+                                            Svg.rect [
+                                                svg.custom (
+                                                    "data-preview-unit",
+                                                    unit.ClassId
+                                                )
+                                                svg.x (
+                                                    float unit.Column
+                                                    * Battlefield.CellSize
+                                                    + 3.0
+                                                )
+                                                svg.y (
+                                                    float unit.Row
+                                                    * Battlefield.CellSize
+                                                    + 3.0
+                                                )
+                                                svg.width (size - 6.0)
+                                                svg.height (size - 6.0)
+                                                svg.fill "none"
+                                                svg.stroke (
+                                                    if isValid then palette.Focus
+                                                    else palette.HealthActive
+                                                )
+                                                svg.strokeWidth 4
+                                                svg.custom (
+                                                    "stroke-dasharray",
+                                                    if isValid then "8 4" else "3 3"
+                                                )
+                                                svg.custom ("vector-effect", "non-scaling-stroke")
+                                            ]
+                                    ]
+                                ]
+                            | None -> ()
                             match state.Tool with
                             | Terrain _ ->
                                 Svg.rect [
@@ -3211,11 +3314,14 @@ let private editorBattlefield
                                 ]
                             ]
                             Svg.g [
+                                svg.key ("editor-units-" + state.Revision.Digest)
                                 svg.custom ("data-layer", "units")
-                                svg.children [
-                                    for _, unit in state.Map.Units |> Map.toList do
-                                        editorUnitSvg state palette dispatch unit
-                                ]
+                                svg.children (
+                                    state.Map.Units
+                                    |> Map.toList
+                                    |> List.map (fun (_, unit) ->
+                                        editorUnitSvg state palette dispatch unit)
+                                )
                             ]
                             match state.Gesture with
                             | BoxSelectionGesture(anchor, current) ->
@@ -3312,10 +3418,10 @@ let private editorToolbar
                 dispatch (EditorChanged(ChooseTerrain terrain)))
         ]
 
-    let placePreset side presetId =
+    let placePreset presetId =
         MapEditor.tryCanonicalFootprintPreset presetId
         |> Option.map (fun preset ->
-            Place(side, preset.ClassId, preset.FootprintSize))
+            Place(preset.Side, preset.ClassId, preset.FootprintSize))
         |> Option.defaultWith (fun () ->
             failwith ("Unknown canonical footprint preset: " + presetId))
 
@@ -3432,15 +3538,45 @@ let private editorToolbar
                         ]
                     | UnitTools ->
                         Html.h3 "Unit presets"
+                        Html.label [
+                            prop.htmlFor "editor-unit-preset-search"
+                            prop.text "Search faction, role, class, or glyph"
+                        ]
+                        Html.input [
+                            prop.id "editor-unit-preset-search"
+                            prop.type'.search
+                            prop.value state.UnitPaletteSearch
+                            prop.onChange (fun value ->
+                                dispatch (EditorChanged(SetUnitPaletteSearch value)))
+                        ]
                         Html.div [
-                            prop.className "control-row"
+                            prop.className "unit-preset-groups"
                             prop.children [
-                                choose "Blue rifleman" (placePreset Blue "human")
-                                choose "Blue medic" (Place(Blue, "medic", 2))
-                                choose "Red goblin" (placePreset Red "goblin")
-                                choose "Red orc" (placePreset Red "orc")
-                                choose "Red troll" (placePreset Red "troll")
-                                choose "Neutral drone" (placePreset NeutralSide "drone")
+                                for faction, presets in
+                                    MapEditor.searchCanonicalUnitPresets state.UnitPaletteSearch
+                                    |> List.groupBy _.Faction do
+                                    Html.section [
+                                        prop.className "unit-preset-group"
+                                        prop.ariaLabel (faction + " unit presets")
+                                        prop.children [
+                                            Html.h4 faction
+                                            for preset in presets do
+                                                choose
+                                                    (preset.Name
+                                                     + " · "
+                                                     + preset.Role
+                                                     + " · "
+                                                     + string preset.FootprintSize
+                                                     + "×"
+                                                     + string preset.FootprintSize
+                                                     + " · "
+                                                     + string preset.HealthMaximum
+                                                     + " HP · "
+                                                     + preset.GlyphId
+                                                     + " glyph")
+                                                    (placePreset preset.Id)
+                                        ]
+                                    ]
                             ]
                         ]
                     | EdgeTools ->
@@ -3594,6 +3730,14 @@ let private editorGrid state dispatch =
     ]
 
 let private editorUnitPanel state dispatch =
+    let selectedUnits =
+        state.SelectedUnits
+        |> Set.toList
+        |> List.choose (fun id -> Map.tryFind id state.Map.Units)
+    let fieldLabel label projection =
+        let values = selectedUnits |> List.map projection |> List.distinct
+        label + if values.Length > 1 then " — Multiple" else ""
+
     Html.section [
         prop.className "panel unit-editor-panel"
         prop.ariaLabel "Selected unit properties"
@@ -3605,10 +3749,18 @@ let private editorUnitPanel state dispatch =
                 Html.p "Select a canonical unit symbol on the map."
             | Some unit ->
                 Html.h3 ("Unit " + string unit.Id + " · " + unit.ClassId)
+                if state.SelectedUnits.Count > 1 then
+                    Html.p (
+                        string state.SelectedUnits.Count
+                        + " units selected. Inspector edits apply to the complete compatible selection; differing values are Multiple."
+                    )
                 Html.div [
                     prop.className "unit-properties"
                     prop.children [
-                        Html.label [ prop.htmlFor "editor-unit-side"; prop.text "Side" ]
+                        Html.label [
+                            prop.htmlFor "editor-unit-side"
+                            prop.text (fieldLabel "Side" _.Side)
+                        ]
                         Html.select [
                             prop.id "editor-unit-side"
                             prop.value (
@@ -3630,7 +3782,10 @@ let private editorUnitPanel state dispatch =
                                 Html.option [ prop.value "Neutral"; prop.text "Neutral" ]
                             ]
                         ]
-                        Html.label [ prop.htmlFor "editor-unit-class"; prop.text "Class ID" ]
+                        Html.label [
+                            prop.htmlFor "editor-unit-class"
+                            prop.text (fieldLabel "Class ID" _.ClassId)
+                        ]
                         Html.input [
                             prop.id "editor-unit-class"
                             prop.type'.text
@@ -3638,7 +3793,10 @@ let private editorUnitPanel state dispatch =
                             prop.onChange (fun value ->
                                 dispatch (EditorChanged(SetSelectedClass value)))
                         ]
-                        Html.label [ prop.htmlFor "editor-unit-size"; prop.text "Square size" ]
+                        Html.label [
+                            prop.htmlFor "editor-unit-size"
+                            prop.text (fieldLabel "Square size" _.Size)
+                        ]
                         Html.input [
                             prop.id "editor-unit-size"
                             prop.type'.number
@@ -3648,7 +3806,10 @@ let private editorUnitPanel state dispatch =
                             prop.onChange (fun (value: int) ->
                                 dispatch (EditorChanged(SetSelectedSize(int32 value))))
                         ]
-                        Html.label [ prop.htmlFor "editor-unit-health"; prop.text "Current HP" ]
+                        Html.label [
+                            prop.htmlFor "editor-unit-health"
+                            prop.text (fieldLabel "Current HP" _.Health)
+                        ]
                         Html.input [
                             prop.id "editor-unit-health"
                             prop.type'.number
@@ -3662,7 +3823,10 @@ let private editorUnitPanel state dispatch =
                                     )
                                 ))
                         ]
-                        Html.label [ prop.htmlFor "editor-unit-health-max"; prop.text "Maximum HP" ]
+                        Html.label [
+                            prop.htmlFor "editor-unit-health-max"
+                            prop.text (fieldLabel "Maximum HP" _.HealthMaximum)
+                        ]
                         Html.input [
                             prop.id "editor-unit-health-max"
                             prop.type'.number
@@ -3674,6 +3838,42 @@ let private editorUnitPanel state dispatch =
                                         SetSelectedHealth(unit.Health, int32 value)
                                     )
                                 ))
+                        ]
+                        Html.label [
+                            prop.htmlFor "editor-unit-controller"
+                            prop.text (fieldLabel "Controller" _.Controller)
+                        ]
+                        Html.select [
+                            prop.id "editor-unit-controller"
+                            prop.value (MapEditor.controllerLabel unit.Controller)
+                            prop.onChange (fun value ->
+                                let controller =
+                                    match value with
+                                    | "Scripted AI" -> Scripted
+                                    | "General AI" -> General
+                                    | _ -> Manual
+                                dispatch (EditorChanged(SetSelectedController controller)))
+                            prop.children [
+                                Html.option [ prop.value "Manual"; prop.text "Manual" ]
+                                Html.option [ prop.value "Scripted AI"; prop.text "Scripted AI" ]
+                                Html.option [ prop.value "General AI"; prop.text "General AI" ]
+                            ]
+                        ]
+                        Html.label [
+                            prop.htmlFor "editor-unit-script"
+                            prop.text (
+                                fieldLabel
+                                    "Direction script"
+                                    (fun selected -> MapEditor.scriptText selected.Script)
+                            )
+                        ]
+                        Html.input [
+                            prop.id "editor-unit-script"
+                            prop.type'.text
+                            prop.value (MapEditor.scriptText unit.Script)
+                            prop.placeholder "N,E,E,S"
+                            prop.onChange (fun value ->
+                                dispatch (EditorChanged(SetSelectedScript value)))
                         ]
                     ]
                 ]

@@ -268,6 +268,47 @@ alternates 80 flood-fill and diagonal-line preview-plus-validation gestures on
 a `40×40` map and enforces a 50 ms p95 guardrail. On the 2026-07-29 .NET 10
 conformance run in the repository environment, the measured p95 was 26.123 ms.
 
+## Unit palette and direct manipulation
+
+The Units palette searches canonical presets by faction, tactical role, class,
+glyph, or display name, then groups matches by faction. A preset explicitly
+declares its class ID, normalized glyph ID, default side, square footprint,
+current HP, and maximum HP. Goblin, orc, troll, human rifleman, and observation
+drone presets therefore do not depend on hidden placement defaults.
+
+Pointer movement with a placement tool previews the complete occupied square.
+The outline remains a constant screen-space width at every camera zoom and
+uses different dash shapes as well as color for valid and invalid states.
+Click commits the preview as one `AddUnits` command. Dragging selected units
+previews a translated `UpdateUnits` command; release commits the complete
+selection or none of it. `Alt` plus an arrow key performs the same atomic
+one-cell formation move only while the SVG workspace is focused. Route checks
+include every selected unit's leading edge, and final validation includes map
+borders, blocked terrain, and all occupied footprints.
+
+The context HUD is a linear six-action toolbar: four orthogonal movement
+actions, duplicate, and delete. Every action has a keyboard or inspector
+equivalent. The complete inspector edits side, class, square size, current and
+maximum HP, controller, and direction script through the command/revision
+path. With multiselection, compatible field edits apply to the entire
+selection as one command.
+
+Copy stores sorted semantic units rather than SVG or HTML. Paste allocates IDs
+in source-ID order, retains every relative formation offset, searches stable
+positive diagonal offsets, and validates the whole fragment before creating
+one revision. Duplicate is the same copy-plus-paste operation. A failure leaves
+the map, selection, ID counter, revision, and history unchanged.
+
+One normalized 24×24 glyph from `UnitGlyphCatalog` is centered and scaled
+inside each square base; the base and symbol transform together for `1×1`
+through the maximum supported `8×8` footprint at every camera zoom. The
+deterministic
+`tests/SIR.Client.Tests/fixtures/map-editor-milestone-4-units.txt` fixture
+freezes palette grouping and every preset default. Pure tests cover `1×1`,
+`2×2`, `3×3`, and `8×8` footprints at exact borders and across borders,
+blocked terrain, overlap, blocking edges, atomic multiselection movement, and
+formation-safe copy/paste.
+
 ## Semantic edges
 
 Edges are stored once:

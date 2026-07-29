@@ -1765,6 +1765,152 @@ let main _ =
         (terrainFixture = expectedTerrainFixture)
         "The deterministic Milestone 3 terrain review fixture changed."
 
+    let unitPresetFixture =
+        MapEditor.searchCanonicalUnitPresets ""
+        |> List.map (fun preset ->
+            String.concat
+                "|"
+                [ preset.Faction
+                  preset.Role
+                  preset.Id
+                  preset.ClassId
+                  preset.GlyphId
+                  string preset.Side
+                  string preset.FootprintSize
+                  string preset.Health
+                  string preset.HealthMaximum ])
+        |> String.concat "\n"
+    let expectedUnitPresetFixture =
+        Path.Combine(
+            AppContext.BaseDirectory,
+            "fixtures",
+            "map-editor-milestone-4-units.txt"
+        )
+        |> File.ReadAllText
+        |> fun value -> value.TrimEnd('\r', '\n')
+    require
+        (unitPresetFixture = expectedUnitPresetFixture
+         && (MapEditor.searchCanonicalUnitPresets "heavy" |> List.map _.Id) = [ "troll" ]
+         && (MapEditor.searchCanonicalUnitPresets "human" |> List.map _.Id) = [ "human" ])
+        "Canonical unit search, grouping, or explicit defaults changed."
+
+    let unit id size column row =
+        { Id = id
+          Side = Blue
+          ClassId = "rifleman"
+          Column = column
+          Row = row
+          Size = size
+          Health = 12
+          HealthMaximum = 12
+          Controller = Manual
+          Script = []
+          ScriptIndex = 0 }
+    let unitTestMap size =
+        { editor.Map with
+            Width = 8
+            Height = 8
+            Terrain = Map.empty
+            Edges = Map.empty
+            Units = Map.empty
+            NextUnitId = 1 }
+        |> fun map ->
+            let candidate = unit 1 size (8 - size) (8 - size)
+            map, candidate
+    for size in [ 1; 2; 3; 8 ] do
+        let map, candidate = unitTestMap size
+        require
+            (MapEditor.validateCommand map (AddUnits [| candidate |]) |> Result.isOk)
+            (string size + "x" + string size + " footprint did not fit the exact border.")
+        require
+            (MapEditor.validateCommand map (AddUnits [| { candidate with Column = 9 - size } |])
+             |> Result.isError)
+            (string size + "x" + string size + " footprint crossed the map border.")
+        let blocked =
+            { map with Terrain = Map.ofList [ (7, 7), Blocked ] }
+        require
+            (MapEditor.validateCommand blocked (AddUnits [| candidate |]) |> Result.isError)
+            (string size + "x" + string size + " footprint ignored blocked terrain.")
+        let occupied =
+            { map with
+                Units = Map.ofList [ 9, unit 9 1 candidate.Column candidate.Row ]
+                NextUnitId = 10 }
+        require
+            (MapEditor.validateCommand occupied (AddUnits [| { candidate with Id = 10 } |])
+             |> Result.isError)
+            (string size + "x" + string size + " footprint overlapped another unit.")
+        let movingUnit = unit 1 size 0 0
+        let edgeMap =
+            { map with
+                Edges = Map.ofList [ (size - 1, 0, EastEdge), (Wall, false) ]
+                Units = Map.ofList [ 1, movingUnit ]
+                NextUnitId = 2 }
+        let edgeRevision =
+            { editor.Revision with
+                Document = edgeMap
+                Digest = MapEditor.revisionDigest edgeMap }
+        let edgeState =
+            { editor with
+                Map = edgeMap
+                Revision = edgeRevision
+                SelectedUnit = Some 1
+                SelectedUnits = Set.singleton 1 }
+        let edgeRejected = MapEditor.update (MoveSelected East) edgeState
+        require
+            (edgeRejected.Map = edgeMap
+             && edgeRejected.Revision.Digest = edgeRevision.Digest)
+            (string size + "x" + string size + " footprint crossed a blocking edge.")
+
+    let formationMap =
+        { editor.Map with
+            Width = 8
+            Height = 8
+            Terrain = Map.empty
+            Edges = Map.ofList [ (1, 0, EastEdge), (Wall, false) ]
+            Units = Map.ofList [ 1, unit 1 1 1 0; 2, unit 2 2 1 2 ]
+            NextUnitId = 3 }
+    let formationState =
+        { editor with
+            Map = formationMap
+            Revision =
+                { editor.Revision with
+                    Document = formationMap
+                    Digest = MapEditor.revisionDigest formationMap }
+            SelectedUnit = Some 1
+            SelectedUnits = Set.ofList [ 1; 2 ] }
+    let blockedFormation = MapEditor.update (MoveSelected East) formationState
+    require
+        (blockedFormation.Map = formationMap
+         && blockedFormation.Revision.Digest = formationState.Revision.Digest)
+        "A multiselection crossed a blocking leading edge or partially committed."
+    let movableFormation = { formationState with Map = { formationMap with Edges = Map.empty }; Revision = { formationState.Revision with Document = { formationMap with Edges = Map.empty }; Digest = MapEditor.revisionDigest { formationMap with Edges = Map.empty } } }
+    let movedFormation = MapEditor.update (MoveSelected East) movableFormation
+    let duplicatedFormation =
+        movedFormation
+        |> MapEditor.update CopyEditorSelection
+        |> MapEditor.update PasteEditorClipboard
+    require
+        ((Map.find 1 movedFormation.Map.Units).Column = 2
+         && (Map.find 2 movedFormation.Map.Units).Column = 2
+         && movedFormation.Revision.Number = movableFormation.Revision.Number + 1L
+         && duplicatedFormation.Map.Units.Count = 4
+         && duplicatedFormation.SelectedUnits = Set.ofList [ 3; 4 ]
+         && duplicatedFormation.Revision.Number = movedFormation.Revision.Number + 1L)
+        "Formation movement or copy/paste was not one validated atomic revision."
+
+    let placementPreview =
+        { formationState with Map = { formationMap with Edges = Map.empty; Units = Map.empty; NextUnitId = 1 } }
+        |> MapEditor.update (ChooseTool(Place(Red, "troll", 3)))
+        |> MapEditor.update (PreviewUnitPlacement(address 5 5))
+    require
+        (match MapEditor.unitPreview placementPreview with
+         | Some(units, true) ->
+             units.Length = 1
+             && units[0].HealthMaximum = 240
+             && units[0].Size = 3
+         | _ -> false)
+        "Placement preview omitted the complete footprint or canonical defaults."
+
     let maximumMap =
         { editor.Map with
             Width = 40

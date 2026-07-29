@@ -95,6 +95,11 @@ type EditorGesture =
     | IdleGesture
     | BoxSelectionGesture of anchor: EditorCellAddress * current: EditorCellAddress
     | CommandPreviewGesture of EditorCommand
+    | UnitMoveGesture of
+        anchor: EditorCellAddress *
+        current: EditorCellAddress *
+        original: EditorUnit array *
+        command: EditorCommand
     | TerrainGesture of
         tool: TerrainAuthoringTool *
         anchor: EditorCellAddress *
@@ -140,8 +145,15 @@ type EditorClipboard =
 
 type MapUnitFootprintPreset =
     { Id: string
+      Name: string
+      Faction: string
+      Role: string
       ClassId: string
-      FootprintSize: int32 }
+      GlyphId: string
+      Side: MapSide
+      FootprintSize: int32
+      Health: int32
+      HealthMaximum: int32 }
 
 type MapEditorState =
     { Map: MapDefinition
@@ -150,6 +162,8 @@ type MapEditorState =
       BrushSize: int32
       TerrainCursor: EditorCellAddress
       TerrainAnnouncement: string
+      UnitPaletteSearch: string
+      UnitAnnouncement: string
       SelectedUnit: int32 option
       SelectedUnits: Set<int32>
       Gesture: EditorGesture
@@ -173,6 +187,10 @@ type MapEditorAction =
     | SetTerrainBrushSize of int32
     | MoveTerrainCursor of columnDelta: int32 * rowDelta: int32 * extendPreview: bool
     | ActivateTerrainCursor
+    | SetUnitPaletteSearch of string
+    | PreviewUnitPlacement of EditorCellAddress
+    | BeginUnitMove of EditorCellAddress
+    | ExtendUnitMove of EditorCellAddress
     | BeginTerrainGesture of EditorCellAddress
     | ExtendTerrainGesture of EditorCellAddress
     | ActivateCell of column: int32 * row: int32
@@ -219,27 +237,77 @@ module MapEditor =
     [<Literal>]
     let MaximumHistoryBytes = 2_000_000
 
+    [<Literal>]
+    let MaximumUnitFootprint = 8
+
     let canonicalFootprintPresets =
         [ { Id = "goblin"
+            Name = "Goblin skirmisher"
+            Faction = "Arcane"
+            Role = "Skirmisher"
             ClassId = "goblin"
-            FootprintSize = 1 }
+            GlyphId = "goblin"
+            Side = Red
+            FootprintSize = 1
+            Health = 35
+            HealthMaximum = 35 }
           { Id = "orc"
+            Name = "Orc assault"
+            Faction = "Arcane"
+            Role = "Assault"
             ClassId = "orc"
-            FootprintSize = 2 }
+            GlyphId = "orc"
+            Side = Red
+            FootprintSize = 2
+            Health = 100
+            HealthMaximum = 100 }
           { Id = "troll"
+            Name = "Armored troll"
+            Faction = "Arcane"
+            Role = "Heavy"
             ClassId = "troll"
-            FootprintSize = 3 }
+            GlyphId = "troll"
+            Side = Red
+            FootprintSize = 3
+            Health = 240
+            HealthMaximum = 240 }
           { Id = "human"
+            Name = "Human rifleman"
+            Faction = "Human"
+            Role = "Line infantry"
             ClassId = "rifleman"
-            FootprintSize = 2 }
+            GlyphId = "rifleman"
+            Side = Blue
+            FootprintSize = 2
+            Health = 12
+            HealthMaximum = 12 }
           { Id = "drone"
+            Name = "Observation drone"
+            Faction = "Neutral"
+            Role = "Reconnaissance"
             ClassId = "observation-drone"
-            FootprintSize = 1 } ]
+            GlyphId = "observation-drone"
+            Side = NeutralSide
+            FootprintSize = 1
+            Health = 8
+            HealthMaximum = 8 } ]
 
     let tryCanonicalFootprintPreset id =
         canonicalFootprintPresets
         |> List.tryFind (fun preset ->
             String.Equals(preset.Id, id, StringComparison.Ordinal))
+
+    let searchCanonicalUnitPresets query =
+        let needle =
+            if String.IsNullOrWhiteSpace query then ""
+            else query.Trim().ToLowerInvariant()
+
+        canonicalFootprintPresets
+        |> List.filter (fun preset ->
+            needle = ""
+            || [ preset.Name; preset.Faction; preset.Role; preset.ClassId; preset.GlyphId ]
+               |> List.exists (fun value -> value.ToLowerInvariant().Contains needle))
+        |> List.sortBy (fun preset -> preset.Faction, preset.Role, preset.Name, preset.Id)
 
     let private canonicalFootprintSize id =
         tryCanonicalFootprintPreset id
@@ -511,6 +579,8 @@ module MapEditor =
             { CellColumn = 0
               CellRow = 0 }
           TerrainAnnouncement = "Terrain authoring ready."
+          UnitPaletteSearch = ""
+          UnitAnnouncement = "Unit authoring ready."
           SelectedUnit = Some 1
           SelectedUnits = Set.singleton 1
           Gesture = IdleGesture
@@ -930,6 +1000,10 @@ module MapEditor =
         | SetTerrainBrushSize _
         | MoveTerrainCursor _
         | ActivateTerrainCursor
+        | SetUnitPaletteSearch _
+        | PreviewUnitPlacement _
+        | BeginUnitMove _
+        | ExtendUnitMove _
         | BeginTerrainGesture _
         | ExtendTerrainGesture _ -> state
         | ActivateCell(column, row) ->
@@ -1286,6 +1360,14 @@ module MapEditor =
                     Some(issue "UNIT-CLASS" "A unit class ID must be one non-empty token.")
                 elif unit.HealthMaximum <= 0 || unit.Health < 0 || unit.Health > unit.HealthMaximum then
                     Some(issue "UNIT-HEALTH" "Unit health is outside its accepted range.")
+                elif unit.Size < 1 || unit.Size > MaximumUnitFootprint then
+                    Some(
+                        issue
+                            "UNIT-FOOTPRINT"
+                            ("Unit footprints must be between 1 and "
+                             + string MaximumUnitFootprint
+                             + " cells square.")
+                    )
                 elif not (validPlacement map (Some id) unit unit.Column unit.Row) then
                     Some(issue "UNIT-PLACEMENT" ("Unit " + string id + " does not fit."))
                 else
@@ -1468,6 +1550,66 @@ module MapEditor =
                 Row = unit.Row + offset
                 ScriptIndex = 0 })
 
+    let private placementUnit side classId size address state =
+        let preset =
+            canonicalFootprintPresets
+            |> List.tryFind (fun candidate ->
+                candidate.Side = side
+                && candidate.ClassId = classId
+                && candidate.FootprintSize = size)
+
+        { Id = state.Map.NextUnitId
+          Side = side
+          ClassId = classId
+          Column = address.CellColumn
+          Row = address.CellRow
+          Size = size
+          Health = preset |> Option.map _.Health |> Option.defaultValue 12
+          HealthMaximum = preset |> Option.map _.HealthMaximum |> Option.defaultValue 12
+          Controller = Manual
+          Script = []
+          ScriptIndex = 0 }
+
+    let private selectedUnits state =
+        state.SelectedUnits
+        |> Set.toArray
+        |> Array.choose (fun id -> Map.tryFind id state.Map.Units)
+        |> Array.sortBy _.Id
+
+    let private translatedSelection columnDelta rowDelta (source: EditorUnit array) =
+        source
+        |> Array.map (fun unit ->
+            { unit with
+                Column = unit.Column + columnDelta
+                Row = unit.Row + rowDelta })
+
+    let private movementCrossesEdge map columnDelta rowDelta (source: EditorUnit array) =
+        let stepX = int32 (sign columnDelta)
+        let stepY = int32 (sign rowDelta)
+        let steps = max (abs columnDelta) (abs rowDelta)
+
+        if steps = 0 then
+            false
+        else
+            [ 0 .. int steps - 1 ]
+            |> List.exists (fun step ->
+                let offset = int32 step
+                source
+                |> Array.exists (fun unit ->
+                    let intermediate =
+                        { unit with
+                            Column = unit.Column + stepX * offset
+                            Row = unit.Row + stepY * offset }
+                    edgeBlocks map intermediate stepX stepY))
+
+    let private unitPreviewMessage prefix map command =
+        match validateCommand map command with
+        | Ok _ -> prefix + " Valid destination."
+        | Error issues ->
+            prefix
+            + " Invalid destination: "
+            + (issues |> List.map _.Message |> String.concat " ")
+
     let private tryTranslatedCommand (source: EditorUnit array) state =
         [| 1 .. int (max state.Map.Width state.Map.Height) |]
         |> Array.tryPick (fun offset ->
@@ -1527,6 +1669,71 @@ module MapEditor =
                 TerrainSelection = terrain
                 Validation = None
                 TerrainAnnouncement = terrainName terrain + " terrain selected." }
+        | SetUnitPaletteSearch query ->
+            let count = searchCanonicalUnitPresets query |> List.length
+            { state with
+                UnitPaletteSearch = query
+                UnitAnnouncement =
+                    string count
+                    + " canonical unit "
+                    + (if count = 1 then "preset" else "presets")
+                    + " shown." }
+        | PreviewUnitPlacement address ->
+            match state.Tool with
+            | Place(side, classId, size) ->
+                let unit = placementUnit side classId size address state
+                let command = AddUnits [| unit |]
+                { state with
+                    Gesture = CommandPreviewGesture command
+                    Validation = None
+                    UnitAnnouncement =
+                        unitPreviewMessage
+                            ("Placement preview for "
+                             + unit.ClassId
+                             + ", "
+                             + string unit.Size
+                             + " by "
+                             + string unit.Size
+                             + " cells.")
+                            state.Map
+                            command }
+            | _ -> state
+        | BeginUnitMove address ->
+            let original = selectedUnits state
+            if Array.isEmpty original then
+                { state with Validation = Some "Select at least one unit to move." }
+            else
+                let command = UpdateUnits original
+                { state with
+                    Gesture = UnitMoveGesture(address, address, original, command)
+                    Validation = None
+                    UnitAnnouncement =
+                        "Moving "
+                        + string original.Length
+                        + (if original.Length = 1 then " unit." else " units as one formation.") }
+        | ExtendUnitMove address ->
+            match state.Gesture with
+            | UnitMoveGesture(anchor, _, original, _) ->
+                let columnDelta = address.CellColumn - anchor.CellColumn
+                let rowDelta = address.CellRow - anchor.CellRow
+                let units = translatedSelection columnDelta rowDelta original
+                let command = UpdateUnits units
+                let prefix =
+                    "Movement preview "
+                    + string columnDelta
+                    + " columns, "
+                    + string rowDelta
+                    + " rows."
+                let announcement =
+                    if movementCrossesEdge state.Map columnDelta rowDelta original then
+                        prefix + " Invalid destination: a blocking edge crosses the route."
+                    else
+                        unitPreviewMessage prefix state.Map command
+                { state with
+                    Gesture = UnitMoveGesture(anchor, address, original, command)
+                    UnitAnnouncement = announcement
+                    Validation = None }
+            | _ -> state
         | SetTerrainBrushSize size ->
             let size = max 1 (min 9 size)
             { state with
@@ -1629,6 +1836,18 @@ module MapEditor =
             match state.Gesture with
             | TerrainGesture _ -> update CommitEditorGesture state
             | _ -> update (BeginTerrainGesture state.TerrainCursor) state
+        | ActivateCell(column, row) when
+            match state.Tool with
+            | Place _ -> true
+            | _ -> false
+            ->
+            state
+            |> update (
+                PreviewUnitPlacement
+                    { CellColumn = column
+                      CellRow = row }
+            )
+            |> update CommitEditorGesture
         | ActivateCell(column, row) when isTerrainAuthoringTool state.Tool ->
             state
             |> update (
@@ -1688,6 +1907,27 @@ module MapEditor =
                             LastRow = current.CellRow })
                     state
             | CommandPreviewGesture command -> commit command state
+            | UnitMoveGesture(anchor, current, original, command) ->
+                let columnDelta = current.CellColumn - anchor.CellColumn
+                let rowDelta = current.CellRow - anchor.CellRow
+                if movementCrossesEdge state.Map columnDelta rowDelta original then
+                    { state with
+                        Gesture = IdleGesture
+                        Validation = Some "The formation route crosses a blocking edge."
+                        UnitAnnouncement = "Movement rejected by a blocking edge." }
+                else
+                    let next = commit command state
+                    { next with
+                        UnitAnnouncement =
+                            if next.Validation.IsSome then
+                                "Movement rejected. " + next.Validation.Value
+                            elif next.Revision.Digest = state.Revision.Digest then
+                                "Formation did not move."
+                            else
+                                "Moved "
+                                + string original.Length
+                                + (if original.Length = 1 then " unit" else " units")
+                                + " atomically." }
             | TerrainGesture(tool, anchor, current, visited) ->
                 let command =
                     terrainGestureCommand state tool anchor current visited
@@ -1764,6 +2004,49 @@ module MapEditor =
         | DeleteEditorSelection ->
             if Set.isEmpty state.SelectedUnits then state
             else commit (RemoveUnits(state.SelectedUnits |> Set.toArray)) state
+        | SetSelectedSide side when state.RevisionState <> SimulatedRevision ->
+            selectedUnits state
+            |> Array.map (fun unit -> { unit with Side = side })
+            |> UpdateUnits
+            |> fun command -> commit command state
+        | SetSelectedClass classId when state.RevisionState <> SimulatedRevision ->
+            let classId = classId.Trim()
+            if String.IsNullOrWhiteSpace classId || classId |> Seq.exists Char.IsWhiteSpace then
+                { state with Validation = Some "Class ID must be one non-empty token." }
+            else
+                selectedUnits state
+                |> Array.map (fun unit -> { unit with ClassId = classId })
+                |> UpdateUnits
+                |> fun command -> commit command state
+        | SetSelectedSize size when state.RevisionState <> SimulatedRevision ->
+            selectedUnits state
+            |> Array.map (fun unit -> { unit with Size = size })
+            |> UpdateUnits
+            |> fun command -> commit command state
+        | SetSelectedHealth(remaining, maximum) when state.RevisionState <> SimulatedRevision ->
+            selectedUnits state
+            |> Array.map (fun unit ->
+                { unit with
+                    Health = remaining
+                    HealthMaximum = maximum })
+            |> UpdateUnits
+            |> fun command -> commit command state
+        | SetSelectedController controller when state.RevisionState <> SimulatedRevision ->
+            selectedUnits state
+            |> Array.map (fun unit -> { unit with Controller = controller })
+            |> UpdateUnits
+            |> fun command -> commit command state
+        | SetSelectedScript text when state.RevisionState <> SimulatedRevision ->
+            match parseScript text with
+            | Error error -> { state with Validation = Some error }
+            | Ok script ->
+                selectedUnits state
+                |> Array.map (fun unit ->
+                    { unit with
+                        Script = script
+                        ScriptIndex = 0 })
+                |> UpdateUnits
+                |> fun command -> commit command state
         | UndoEditorCommand ->
             match state.UndoHistory with
             | [] -> state
@@ -1829,8 +2112,33 @@ module MapEditor =
                 Validation = None }
         | RemoveSelectedUnit ->
             update DeleteEditorSelection state
-        | StepEditor
-        | MoveSelected _ ->
+        | MoveSelected direction ->
+            let original = selectedUnits state
+            if Array.isEmpty original then
+                state
+            else
+                let columnDelta, rowDelta = directionDelta direction
+                let command =
+                    original
+                    |> translatedSelection (int32 columnDelta) (int32 rowDelta)
+                    |> UpdateUnits
+                if movementCrossesEdge state.Map (int32 columnDelta) (int32 rowDelta) original then
+                    { state with
+                        Validation = Some "That move is blocked."
+                        UnitAnnouncement = "Keyboard movement rejected by a blocking edge." }
+                else
+                    let next = commit command state
+                    { next with
+                        UnitAnnouncement =
+                            if next.Validation.IsSome then "Keyboard movement rejected."
+                            else
+                                "Moved "
+                                + string original.Length
+                                + (if original.Length = 1 then " unit" else " units")
+                                + " one cell "
+                                + directionCode direction
+                                + "." }
+        | StepEditor ->
             let runtime = legacyUpdate action state
             { runtime with
                 Revision = state.Revision
@@ -1991,6 +2299,30 @@ module MapEditor =
                 Some(terrain, addresses, isValid)
             | _ -> None
         | _ -> None
+
+    let unitPreview state =
+        let command =
+            match state.Gesture with
+            | CommandPreviewGesture(AddUnits units) -> Some(AddUnits units, units)
+            | UnitMoveGesture(_, _, _, UpdateUnits units) -> Some(UpdateUnits units, units)
+            | _ -> None
+
+        command
+        |> Option.map (fun (editorCommand, units) ->
+            units,
+            (match validateCommand state.Map editorCommand with
+             | Ok _ ->
+                 match state.Gesture with
+                 | UnitMoveGesture(anchor, current, original, _) ->
+                     not (
+                         movementCrossesEdge
+                             state.Map
+                             (current.CellColumn - anchor.CellColumn)
+                             (current.CellRow - anchor.CellRow)
+                             original
+                     )
+                 | _ -> true
+             | Error _ -> false))
 
     let controllerLabel controller =
         match controller with

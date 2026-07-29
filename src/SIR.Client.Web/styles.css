@@ -421,6 +421,16 @@
 #sir-replay-app .terrain-brush-controls input {
   width: 100%;
 }
+#sir-replay-app .unit-preset-groups,
+#sir-replay-app .unit-preset-group {
+  display: grid;
+  gap: .35rem;
+}
+#sir-replay-app .unit-preset-group {
+  border-top: 1px solid #43584e;
+  padding-top: .35rem;
+}
+#sir-replay-app .unit-preset-group h4 { margin: .25rem 0; }
 #sir-replay-app .editor-canvas {
   min-width: 0;
   overflow: hidden;
@@ -428,6 +438,15 @@
   border-radius: .6rem;
   background: #0b100f;
 }
+#sir-replay-app .editor-context-hud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  padding: .45rem .55rem;
+  border-bottom: 1px solid #43584e;
+  background: #24322d;
+}
+#sir-replay-app .editor-context-hud.is-hidden { display: none; }
 #sir-replay-app .editor-camera-controls {
   display: flex;
   flex-wrap: wrap;

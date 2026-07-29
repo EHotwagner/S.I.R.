@@ -1,0 +1,5 @@
+Arcane|Assault|orc|orc|orc|Red|2|100|100
+Arcane|Heavy|troll|troll|troll|Red|3|240|240
+Arcane|Skirmisher|goblin|goblin|goblin|Red|1|35|35
+Human|Line infantry|human|rifleman|rifleman|Blue|2|12|12
+Neutral|Reconnaissance|drone|observation-drone|observation-drone|NeutralSide|1|8|8
