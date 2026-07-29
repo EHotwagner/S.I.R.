@@ -84,7 +84,9 @@ for (const control of window.document.querySelectorAll(
   );
 }
 
-window.dispatchEvent(
+window.document
+  .querySelector('[aria-label="SVG tactical map workspace"] svg[role="application"]')
+  ?.dispatchEvent(
   new window.KeyboardEvent("keydown", { key: "t", bubbles: true }),
 );
 await window.happyDOM.waitUntilComplete();

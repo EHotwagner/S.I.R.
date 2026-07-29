@@ -184,7 +184,7 @@ await writeBoard(
   "Signature-validated local raster alignment beneath the grid.",
 );
 
-buttonByText("Simulate this revision")?.click();
+buttonByText("Simulate")?.click();
 await window.happyDOM.waitUntilComplete();
 await writeBoard(
   "simulator-handoff",
@@ -197,8 +197,10 @@ await writeBoard(
 
 buttonByText("Editor")?.click();
 await window.happyDOM.waitUntilComplete();
-buttonByText("Map file")?.click();
-await window.happyDOM.waitUntilComplete();
+if (!window.document.querySelector('input[aria-label="Import SIR map"]')) {
+  buttonByText("Map file")?.click();
+  await window.happyDOM.waitUntilComplete();
+}
 const gapMap = validMap.replace(
   "edge 4 2 east door open",
   "edge 4 4 east door open",

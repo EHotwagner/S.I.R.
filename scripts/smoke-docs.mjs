@@ -147,7 +147,7 @@ if (!application || mount?.querySelector("header, h1")) {
 }
 
 const simulateButton = [...mount.querySelectorAll("button")].find(
-  (button) => button.textContent.trim() === "Simulate this revision",
+  (button) => button.textContent.trim() === "Simulate",
 );
 if (!simulateButton) {
   throw new Error("The generated editor omitted the explicit simulator revision handoff.");

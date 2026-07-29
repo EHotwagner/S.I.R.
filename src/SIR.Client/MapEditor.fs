@@ -134,6 +134,7 @@ type ResizeLossPreview =
 type PendingDestructiveChange =
     | ResizePending of ResizeLossPreview
     | ClearPending
+    | NewMapPending of width: int32 * height: int32 * name: string
 
 type CrashRecoveryDraft =
     { SourceDigest: string
@@ -283,6 +284,7 @@ type MapEditorAction =
     | ExtendTerrainGesture of EditorCellAddress
     | ActivateCell of column: int32 * row: int32
     | Resize of width: int32 * height: int32
+    | RequestNewMap
     | RequestClearMap
     | ConfirmDestructiveChange
     | CancelDestructiveChange
@@ -2390,6 +2392,7 @@ module MapEditor =
         | MoveSelectedRegionVertex _
         | RemoveSelectedRegion -> Some RegionDomain
         | Resize _
+        | RequestNewMap
         | RequestClearMap
         | ClearMap
         | LoadMapText _
@@ -2601,6 +2604,13 @@ module MapEditor =
               Validation =
                   Some
                       "Clearing removes every terrain cell, edge, unit, and region. Confirm to continue." }
+        | RequestNewMap ->
+          { state with
+              PendingDestructiveChange =
+                  Some(NewMapPending(12, 8, "Untitled battlefield"))
+              Validation =
+                  Some
+                      "Creating a new map replaces this draft with an empty 12 by 8 document. Confirm to continue." }
         | ConfirmDestructiveChange ->
           match state.PendingDestructiveChange with
           | Some(ResizePending preview) ->
@@ -2617,6 +2627,24 @@ module MapEditor =
                       emptyMap state.Map.Width state.Map.Height
                   ))
                   state
+          | Some(NewMapPending(width, height, name)) ->
+              let replaced =
+                  commit
+                      (ReplaceDocument(
+                          "confirmed-new-map",
+                          emptyMap width height
+                      ))
+                      state
+              { replaced with
+                  Authoring =
+                      { Name = name
+                        SavedViews = Map.empty
+                        RevisionIdentity = replaced.Revision.Digest
+                        ThumbnailSvg = None }
+                  SelectedUnit = None
+                  SelectedUnits = Set.empty
+                  SelectedRegion = None
+                  Tool = Select }
           | None -> state
         | OfferCrashRecovery text ->
           match tryImport text with

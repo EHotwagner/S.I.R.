@@ -202,11 +202,11 @@ clearMapButton?.click();
 await window.happyDOM.waitUntilComplete();
 require(
   Boolean(
-    [...window.document.querySelectorAll('[role="alert"]')].find((alert) =>
-      alert.textContent.includes("Confirmation required"),
+    [...window.document.querySelectorAll('[role="alertdialog"]')].find((dialog) =>
+      dialog.textContent.includes("Confirmation required"),
     ),
   ),
-  "destructive map changes do not expose an explicit alert confirmation",
+  "destructive map changes do not expose an explicit alert dialog",
 );
 
 if (failures.length > 0) {

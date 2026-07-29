@@ -1445,6 +1445,49 @@ let main _ =
          && released.CapturedPointers.IsEmpty)
         "Editor resize, pointer capture, drag pan, or lost-capture cleanup failed."
 
+    let horizontalLetterboxLeft =
+        MapEditorWorkspace.clientToViewportPoint
+            960.0
+            640.0
+            1600.0
+            800.0
+            200.0
+            0.0
+    let horizontalLetterboxCenter =
+        MapEditorWorkspace.clientToViewportPoint
+            960.0
+            640.0
+            1600.0
+            800.0
+            800.0
+            400.0
+    let verticalLetterboxTop =
+        MapEditorWorkspace.clientToViewportPoint
+            960.0
+            640.0
+            800.0
+            1000.0
+            0.0
+            (700.0 / 3.0)
+    let verticalLetterboxCenter =
+        MapEditorWorkspace.clientToViewportPoint
+            960.0
+            640.0
+            800.0
+            1000.0
+            400.0
+            500.0
+    require
+        (abs (fst horizontalLetterboxLeft) < 0.000_001
+         && abs (snd horizontalLetterboxLeft) < 0.000_001
+         && abs (fst horizontalLetterboxCenter - 480.0) < 0.000_001
+         && abs (snd horizontalLetterboxCenter - 320.0) < 0.000_001
+         && abs (fst verticalLetterboxTop) < 0.000_001
+         && abs (snd verticalLetterboxTop) < 0.000_001
+         && abs (fst verticalLetterboxCenter - 480.0) < 0.000_001
+         && abs (snd verticalLetterboxCenter - 320.0) < 0.000_001)
+        "Aspect-fit SVG letterboxing changed logical pointer coordinates."
+
     let firstTouch =
         { Id = 10
           Kind = TouchPointer
@@ -2347,6 +2390,25 @@ let main _ =
          && clearRequested.PendingDestructiveChange = Some ClearPending
          && clearConfirmed.Map.Units.IsEmpty)
         "Clear did not require confirmation or commit as one revision."
+
+    let newMapRequested =
+        editor |> MapEditor.update RequestNewMap
+    let newMapConfirmed =
+        newMapRequested |> MapEditor.update ConfirmDestructiveChange
+    require
+        (newMapRequested.Map = editor.Map
+         && newMapRequested.PendingDestructiveChange
+            = Some(NewMapPending(12, 8, "Untitled battlefield"))
+         && newMapConfirmed.Map.Width = 12
+         && newMapConfirmed.Map.Height = 8
+         && newMapConfirmed.Map.Terrain.IsEmpty
+         && newMapConfirmed.Map.Edges.IsEmpty
+         && newMapConfirmed.Map.Units.IsEmpty
+         && newMapConfirmed.Map.Regions.IsEmpty
+         && newMapConfirmed.Authoring.Name = "Untitled battlefield"
+         && newMapConfirmed.SelectedUnits.IsEmpty
+         && newMapConfirmed.Tool = Select)
+        "New map did not require confirmation or reset document and authoring state."
 
     let lifecycleFixture =
         String.concat

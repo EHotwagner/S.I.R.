@@ -121,7 +121,7 @@ module MapEditorWorkspace =
               Zoom = 1.0 }
           ViewportWidth = DefaultViewportWidth
           ViewportHeight = DefaultViewportHeight
-          InspectorCollapsed = false
+          InspectorCollapsed = true
           ReducedMotion = reducedMotion
           CapturedPointers = Map.empty
           Background = None
@@ -277,6 +277,31 @@ module MapEditorWorkspace =
         value
         |> finiteOr 1.0
         |> clamp MinimumZoom MaximumZoom
+
+    let clientToViewportPoint
+        viewportWidth
+        viewportHeight
+        renderedWidth
+        renderedHeight
+        localX
+        localY
+        =
+        let viewportWidth = max 1.0 (finiteOr DefaultViewportWidth viewportWidth)
+        let viewportHeight = max 1.0 (finiteOr DefaultViewportHeight viewportHeight)
+        let renderedWidth = max 1.0 (finiteOr viewportWidth renderedWidth)
+        let renderedHeight = max 1.0 (finiteOr viewportHeight renderedHeight)
+        let scale =
+            max
+                0.000_001
+                (min
+                    (renderedWidth / viewportWidth)
+                    (renderedHeight / viewportHeight))
+        let contentWidth = viewportWidth * scale
+        let contentHeight = viewportHeight * scale
+        let offsetX = (renderedWidth - contentWidth) / 2.0
+        let offsetY = (renderedHeight - contentHeight) / 2.0
+        (finiteOr 0.0 localX - offsetX) / scale,
+        (finiteOr 0.0 localY - offsetY) / scale
 
     let screenToBoard camera screenX screenY =
         (screenX - camera.PanX) / camera.Zoom,
