@@ -28,6 +28,13 @@ type Msg =
     | ResetSimulator
     | SimulatorPanelChanged of SimulatorToolPanel
     | ToggleSimulatorToolPanelVisibility
+    | PlanningChanged of PlanningAction
+    | InitializePlanningWorker
+    | ValidatePlanningRevision
+    | PreviewPlanningRevision
+    | CommitPlanningRevision
+    | PlanningWorkerResponded of SimulatorResponseEnvelope
+    | ExportPlanningReview
     | LoadMapSample of string
     | LoadSimulationSample of string
     | LoadReplaySample of string
@@ -49,6 +56,7 @@ type Msg =
 
 and WorkspaceMode =
     | SimulatorWorkspace
+    | PlanningWorkspace
     | EditorWorkspace
     | ReplayWorkspace
     | RulesWorkspace
@@ -70,6 +78,7 @@ type Model =
     { Shell: SIR.Client.Model
       Editor: MapEditorState
       Simulator: SimulatorHandoff option
+      Planning: PlanningWorkspaceState option
       Workspace: WorkspaceMode
       EditorToolPanel: EditorToolPanel
       EditorToolPanelVisible: bool
@@ -167,6 +176,17 @@ let private downloadMap state =
         anchor.click();
         URL.revokeObjectURL(url);
         """
+
+[<Emit("""
+const blob = new Blob([$0], { type: "text/plain;charset=utf-8" });
+const url = URL.createObjectURL(blob);
+const anchor = document.createElement("a");
+anchor.href = url;
+anchor.download = "sir-planning-review.sir-planning-review";
+anchor.click();
+URL.revokeObjectURL(url);
+""")>]
+let private downloadPlanningReview (_content: string) : unit = jsNative
 
 [<Emit("""
 const bundle = {
@@ -404,6 +424,7 @@ let init () =
     { Shell = Shell.init ()
       Editor = editor
       Simulator = None
+      Planning = None
       Workspace = EditorWorkspace
       EditorToolPanel = TerrainTools
       EditorToolPanelVisible = false
@@ -568,12 +589,29 @@ let rec update msg model =
                     (MapEditor.selected model.Editor)
                     CancelEditorPointers
                     model.EditorView
+        let planning, initializePlanning =
+            if workspace = PlanningWorkspace then
+                match model.Planning with
+                | Some current when current.MapRevision = model.Editor.Revision.Digest ->
+                    Some current, false
+                | _ ->
+                    (model.Editor.Map.Units
+                     |> Map.toSeq
+                     |> Seq.map snd
+                     |> PlanningWorkspace.initial model.Editor.Revision.Digest
+                     |> Some),
+                    true
+            else model.Planning, false
+
         { model with
             Editor = editor
+            Planning = planning
             Workspace = workspace
             EditorView = editorView
             EditorSpacePressed = false },
-        Cmd.none
+        if initializePlanning then
+            Cmd.ofEffect (fun dispatch -> dispatch InitializePlanningWorker)
+        else Cmd.none
     | SimulateEditorRevision ->
         match MapEditorSimulator.tryHandoff model.Editor with
         | Error message ->
@@ -635,6 +673,99 @@ let rec update msg model =
             SimulatorToolPanelVisible =
                 not model.SimulatorToolPanelVisible },
         Cmd.none
+    | PlanningChanged action ->
+        match model.Planning with
+        | None -> model, Cmd.none
+        | Some planning ->
+            { model with Planning = Some(PlanningWorkspace.update action planning) }, Cmd.none
+    | InitializePlanningWorker ->
+        match model.Planning with
+        | None -> model, Cmd.none
+        | Some planning ->
+            let correlation = PlanningWorkspace.correlation 0 planning
+            let units =
+                planning.Roster
+                |> Array.map (fun unit ->
+                    { Id = unit.UnitId
+                      Side = unit.Side
+                      Column = unit.Column
+                      Row = unit.Row
+                      Health = 1
+                      HealthMaximum = 1
+                      MovementDirection = None
+                      BodyFacing = 0
+                      AttentionDirection = 0 })
+            let projection: InspectionProjectionTransport =
+                { Tick = 0
+                  BoardMinimumColumn = 0
+                  BoardMinimumRow = 0
+                  BoardMaximumColumn = model.Editor.Map.Width - 1
+                  BoardMaximumRow = model.Editor.Map.Height - 1
+                  Units = units
+                  Edges = [||]
+                  Events = [||]
+                  Checkpoints = [||]
+                  PerspectiveHash = None }
+            let next =
+                { planning with
+                    NextOperation = planning.NextOperation + 1
+                    WorkerStatus = "Connecting to planning worker" }
+            { model with Planning = Some next },
+            Cmd.ofEffect (fun _ ->
+                Runner.postSimulator
+                    correlation
+                    (InitializeSession
+                        { InitialProjection = projection
+                          MaximumHorizonTicks = SimulatorProtocol.MaximumHorizonTicks }))
+    | ValidatePlanningRevision
+    | PreviewPlanningRevision
+    | CommitPlanningRevision as operation ->
+        match model.Planning with
+        | None -> model, Cmd.none
+        | Some planning ->
+            let tick = planning.CommittedTick |> Option.defaultValue 0
+            let correlation = PlanningWorkspace.correlation tick planning
+            let plan = PlanningWorkspace.planTransport planning
+            let request =
+                match operation with
+                | ValidatePlanningRevision -> ValidatePlan plan
+                | PreviewPlanningRevision ->
+                    PreviewPlan(
+                        plan,
+                        tick,
+                        min
+                            SimulatorProtocol.MaximumHorizonTicks
+                            (tick + SimulatorProtocol.MaximumPreviewTicks)
+                    )
+                | CommitPlanningRevision -> CommitPlan plan
+                | _ -> failwith "unreachable planning operation"
+            let next =
+                { planning with
+                    NextOperation = planning.NextOperation + 1
+                    WorkerStatus =
+                        match operation with
+                        | ValidatePlanningRevision -> "Validating authored revision"
+                        | PreviewPlanningRevision -> "Requesting intent-only prediction"
+                        | _ -> "Committing accepted revision" }
+            { model with Planning = Some next },
+            Cmd.ofEffect (fun _ -> Runner.postSimulator correlation request)
+    | PlanningWorkerResponded envelope ->
+        match model.Planning with
+        | None -> model, Cmd.none
+        | Some planning when not (PlanningWorkspace.acceptsResponse envelope planning) ->
+            model, Cmd.none
+        | Some planning ->
+            { model with Planning = Some(PlanningWorkspace.receive envelope planning) },
+            Cmd.none
+    | ExportPlanningReview ->
+        model,
+        (model.Planning
+         |> Option.map (fun planning ->
+             Cmd.ofEffect (fun _ ->
+                 planning
+                 |> PlanningWorkspace.reviewArtifact
+                 |> downloadPlanningReview))
+         |> Option.defaultValue Cmd.none)
     | EditorToolPanelChanged panel ->
         { model with
             EditorToolPanel = panel
@@ -902,6 +1033,47 @@ let rec update msg model =
                     else
                         update (EditorChanged(SelectEditorUnit None)) next
             | _ -> model, Cmd.none
+        elif model.Workspace = PlanningWorkspace then
+            match key, controlOrMeta with
+            | ("z" | "Z"), true ->
+                update
+                    (PlanningChanged(
+                        if shift then RedoPlanning else UndoPlanning
+                    ))
+                    model
+            | ("y" | "Y"), true -> update (PlanningChanged RedoPlanning) model
+            | ("Delete" | "Backspace"), false ->
+                update (PlanningChanged RemoveSelectedPlanningCommand) model
+            | "[", false ->
+                match model.Planning with
+                | Some planning when planning.Issues.Length > 0 ->
+                    let current = planning.FocusedIssue |> Option.defaultValue 0
+                    update
+                        (PlanningChanged(
+                            FocusPlanningIssue(
+                                (current - 1 + planning.Issues.Length) % planning.Issues.Length
+                            )
+                        ))
+                        model
+                | _ -> model, Cmd.none
+            | "]", false ->
+                match model.Planning with
+                | Some planning when planning.Issues.Length > 0 ->
+                    let current = planning.FocusedIssue |> Option.defaultValue -1
+                    update
+                        (PlanningChanged(
+                            FocusPlanningIssue((current + 1) % planning.Issues.Length)
+                        ))
+                        model
+                | _ -> model, Cmd.none
+            | ("r" | "R"), false -> update (PlanningChanged(ChoosePlanningTool RouteTool)) model
+            | ("f" | "F"), false -> update (PlanningChanged(ChoosePlanningTool FacingTool)) model
+            | ("a" | "A"), false -> update (PlanningChanged(ChoosePlanningTool AttentionTool)) model
+            | ("s" | "S"), false -> update (PlanningChanged(ChoosePlanningTool StanceTool)) model
+            | ("h" | "H"), false -> update (PlanningChanged(ChoosePlanningTool HoldTool)) model
+            | ("e" | "E"), false -> update (PlanningChanged(ChoosePlanningTool EngagementTool)) model
+            | ("m" | "M"), false -> update (PlanningChanged(ChoosePlanningTool SynchronizationTool)) model
+            | _ -> model, Cmd.none
         elif model.Workspace = ReplayWorkspace then
             match key with
             | " "
@@ -966,6 +1138,10 @@ let rec update msg model =
 let subscriptions model =
     let runner dispatch =
         Runner.subscribe (fun message -> dispatch (ShellMsg message))
+
+    let planningRunner dispatch =
+        Runner.subscribeSimulator (fun envelope ->
+            dispatch (PlanningWorkerResponded envelope))
 
     let keyboard dispatch =
         let downHandler =
@@ -1035,6 +1211,7 @@ let subscriptions model =
             member _.Dispose() = window.removeEventListener ("resize", handler) }
 
     [ [ "replay-worker-v1" ], runner
+      [ "planning-worker-v1" ], planningRunner
       [ "keyboard" ], keyboard
       if model.Workspace = EditorWorkspace then
           [ "editor-resize" ], editorResize
@@ -6042,6 +6219,305 @@ let private sampleCatalogView (dispatch: Msg -> unit) =
         ]
     ]
 
+let private planningCommandLabel (command: PlanningCommand) =
+    match command.Kind with
+    | PlannedRoute cells -> "Route · " + string cells.Length + " waypoints"
+    | PlannedFacing direction -> "Facing · " + string direction
+    | PlannedAttention direction -> "Attention · " + string direction
+    | PlannedStance stance -> "Stance · " + stance
+    | PlannedHold -> "Hold"
+    | PlannedEngagement(target, capability) ->
+        "Engage unit " + string target + " · " + capability
+    | PlannedSynchronization(marker, deadline) ->
+        "Sync " + marker + " by tick " + string deadline
+
+let private planningWorkspace
+    (editor: MapEditorState)
+    (state: PlanningWorkspaceState)
+    dispatch
+    =
+    let planningButton label action =
+        button label label false (fun _ -> dispatch (PlanningChanged action))
+
+    let directions =
+        [ "N", North
+          "NE", NorthEast
+          "E", East
+          "SE", SouthEast
+          "S", South
+          "SW", SouthWest
+          "W", West
+          "NW", NorthWest ]
+
+    let selected =
+        state.SelectedUnit
+        |> Option.bind (fun id -> state.Roster |> Array.tryFind (fun unit -> unit.UnitId = id))
+
+    Html.div [
+        prop.className "planning-workspace"
+        prop.ariaLabel "Coordinated planning workspace"
+        prop.children [
+            Html.header [
+                prop.className "panel planning-status"
+                prop.children [
+                    Html.div [
+                        Html.p [ prop.className "eyebrow"; prop.text "Authored" ]
+                        Html.strong ("Revision " + string state.Revision)
+                        Html.span (" · " + state.Digest.Substring(0, 12))
+                    ]
+                    Html.div [
+                        Html.p [ prop.className "eyebrow"; prop.text "Predicted" ]
+                        Html.strong (
+                            state.Predicted
+                            |> Option.map (fun value ->
+                                string value.Label + " · revision " + string value.Revision)
+                            |> Option.defaultValue "Not previewed"
+                        )
+                    ]
+                    Html.div [
+                        Html.p [ prop.className "eyebrow"; prop.text "Accepted" ]
+                        Html.strong (
+                            state.AcceptedRevision
+                            |> Option.map (fun value -> "Revision " + string value)
+                            |> Option.defaultValue "Not validated"
+                        )
+                    ]
+                    Html.div [
+                        Html.p [ prop.className "eyebrow"; prop.text "Committed" ]
+                        Html.strong (
+                            match state.CommittedRevision, state.CommittedTick with
+                            | Some revision, Some tick ->
+                                "Revision " + string revision + " · tick " + string tick
+                            | _ -> "Not committed"
+                        )
+                    ]
+                    Html.p [
+                        prop.className "planning-worker-status"
+                        prop.role.status
+                        prop.ariaLive.polite
+                        prop.text state.WorkerStatus
+                    ]
+                ]
+            ]
+            Html.nav [
+                prop.className "panel planning-tools"
+                prop.ariaLabel "Battlefield planning tools"
+                prop.children [
+                    for label, key, tool in
+                        [ "Route", "R", RouteTool
+                          "Facing", "F", FacingTool
+                          "Attention", "A", AttentionTool
+                          "Stance", "S", StanceTool
+                          "Hold", "H", HoldTool
+                          "Engage", "E", EngagementTool
+                          "Sync", "M", SynchronizationTool ] do
+                        Html.button [
+                            prop.type'.button
+                            prop.ariaPressed (state.Tool = tool)
+                            prop.text (label + " · " + key)
+                            prop.onClick (fun _ ->
+                                dispatch (PlanningChanged(ChoosePlanningTool tool)))
+                        ]
+                    button "Undo" "Undo planning edit · Ctrl+Z" (List.isEmpty state.Past) (fun _ ->
+                        dispatch (PlanningChanged UndoPlanning))
+                    button "Redo" "Redo planning edit · Ctrl+Y" (List.isEmpty state.Future) (fun _ ->
+                        dispatch (PlanningChanged RedoPlanning))
+                    button "Validate" "Validate authored revision in worker" false (fun _ ->
+                        dispatch ValidatePlanningRevision)
+                    button "Preview" "Preview authored revision as intent-only prediction" false (fun _ ->
+                        dispatch PreviewPlanningRevision)
+                    button
+                        "Commit"
+                        "Commit accepted authored revision"
+                        (state.AcceptedRevision <> Some state.Revision)
+                        (fun _ -> dispatch CommitPlanningRevision)
+                ]
+            ]
+            Html.aside [
+                prop.className "panel planning-roster"
+                prop.ariaLabel ("Planning roster, " + string state.Roster.Length + " units")
+                prop.children [
+                    Html.h2 "Roster"
+                    Html.div [
+                        prop.className "planning-roster-list"
+                        prop.children [
+                            for unit in state.Roster do
+                                Html.button [
+                                    prop.type'.button
+                                    prop.ariaPressed (state.SelectedUnit = Some unit.UnitId)
+                                    prop.text (
+                                        unit.Name + " · " + unit.Side + " · "
+                                        + string unit.Column + "," + string unit.Row
+                                    )
+                                    prop.onClick (fun _ ->
+                                        dispatch (PlanningChanged(SelectPlanningUnit unit.UnitId)))
+                                ]
+                        ]
+                    ]
+                ]
+            ]
+            Html.section [
+                prop.className "panel planning-battlefield"
+                prop.ariaLabel "Battlefield route authoring"
+                prop.children [
+                    Html.h2 "Battlefield plan"
+                    Html.p (
+                        "Selected tool: " + string state.Tool
+                        + ". Grid cells are native buttons; Enter or Space performs the same edit as pointer activation."
+                    )
+                    Html.div [
+                        prop.className "planning-cell-grid"
+                        prop.children [
+                            for row in 0 .. int editor.Map.Height - 1 do
+                                for column in 0 .. int editor.Map.Width - 1 do
+                                    let occupants =
+                                        state.Roster
+                                        |> Array.filter (fun unit ->
+                                            unit.Column = int32 column && unit.Row = int32 row)
+                                    Html.button [
+                                        prop.type'.button
+                                        prop.custom ("data-planning-column", string column)
+                                        prop.custom ("data-planning-row", string row)
+                                        prop.ariaLabel (
+                                            "Cell " + string column + ", " + string row
+                                            + (if Array.isEmpty occupants then ""
+                                               else
+                                                   "; "
+                                                   + (occupants
+                                                      |> Array.map _.Name
+                                                      |> String.concat ", "))
+                                            + "; add route waypoint"
+                                        )
+                                        prop.text (
+                                            if Array.isEmpty occupants then
+                                                string column + "," + string row
+                                            else
+                                                occupants |> Array.map (fun unit -> string unit.UnitId) |> String.concat ","
+                                        )
+                                        prop.onClick (fun _ ->
+                                            dispatch (
+                                                PlanningChanged(
+                                                    AddRouteWaypoint(int32 column, int32 row)
+                                                )
+                                            ))
+                                    ]
+                        ]
+                    ]
+                ]
+            ]
+            Html.aside [
+                prop.className "panel planning-inspector"
+                prop.ariaLabel "Planning inspector"
+                prop.children [
+                    Html.h2 "Inspector"
+                    match selected with
+                    | None -> Html.p "Select a roster unit."
+                    | Some unit ->
+                        Html.h3 unit.Name
+                        Html.p ("Map position " + string unit.Column + ", " + string unit.Row)
+                        match state.Tool with
+                        | RouteTool ->
+                            Html.p "Choose a battlefield cell, or use these keyboard-operable waypoint controls."
+                            Html.div [
+                                prop.className "planning-direction-grid"
+                                prop.children [
+                                    planningButton "Waypoint west" (AddRouteWaypoint(unit.Column - 1, unit.Row))
+                                    planningButton "Waypoint north" (AddRouteWaypoint(unit.Column, unit.Row - 1))
+                                    planningButton "Waypoint south" (AddRouteWaypoint(unit.Column, unit.Row + 1))
+                                    planningButton "Waypoint east" (AddRouteWaypoint(unit.Column + 1, unit.Row))
+                                ]
+                            ]
+                        | FacingTool
+                        | AttentionTool ->
+                            Html.div [
+                                prop.className "planning-direction-grid"
+                                prop.children [
+                                    for label, direction in directions do
+                                        planningButton
+                                            label
+                                            (if state.Tool = FacingTool then
+                                                 SetPlanningFacing direction
+                                             else SetPlanningAttention direction)
+                                ]
+                            ]
+                        | StanceTool ->
+                            planningButton "Standing" (SetPlanningStance "standing")
+                            planningButton "Crouched" (SetPlanningStance "crouched")
+                            planningButton "Prone" (SetPlanningStance "prone")
+                        | HoldTool -> planningButton "Add hold" AddPlanningHold
+                        | EngagementTool ->
+                            match state.Roster |> Array.tryFind (fun target -> target.UnitId <> unit.UnitId) with
+                            | Some target ->
+                                planningButton
+                                    ("Engage " + target.Name)
+                                    (AddPlanningEngagement(target.UnitId, "rifle"))
+                            | None -> Html.p "No other roster unit is available as a disclosed target."
+                        | SynchronizationTool ->
+                            planningButton
+                                "Add synchronization marker"
+                                (AddPlanningSynchronization("sync-" + string state.NextCommand, 600))
+                    button
+                        "Remove selected command"
+                        "Remove selected planning command · Delete"
+                        state.SelectedCommand.IsNone
+                        (fun _ -> dispatch (PlanningChanged RemoveSelectedPlanningCommand))
+                ]
+            ]
+            Html.section [
+                prop.className "panel planning-timeline"
+                prop.ariaLabel "Planning timeline lanes"
+                prop.children [
+                    Html.h2 "Timeline lanes"
+                    for unit in state.Roster do
+                        let commands: PlanningCommand list =
+                            state.Commands
+                            |> List.filter (fun command -> command.UnitId = unit.UnitId)
+                        Html.div [
+                            prop.className "planning-lane"
+                            prop.custom ("data-planning-unit", string unit.UnitId)
+                            prop.children [
+                                Html.strong unit.Name
+                                if List.isEmpty commands then Html.span "No authored commands"
+                                for command in commands do
+                                    Html.button [
+                                        prop.type'.button
+                                        prop.ariaPressed (state.SelectedCommand = Some command.Id)
+                                        prop.text (planningCommandLabel command)
+                                        prop.onClick (fun _ ->
+                                            dispatch (PlanningChanged(SelectPlanningCommand command.Id)))
+                                    ]
+                            ]
+                        ]
+                ]
+            ]
+            Html.section [
+                prop.className "panel planning-validation"
+                prop.ariaLabel "Planning validation navigation"
+                prop.children [
+                    Html.h2 ("Validation · " + string state.Issues.Length + " issues")
+                    Html.p "Use the issue buttons or bracket keys to move selection to the affected command."
+                    for index, issue in Array.indexed state.Issues do
+                        Html.button [
+                            prop.type'.button
+                            prop.ariaPressed (state.FocusedIssue = Some index)
+                            prop.text (issue.Code + " · " + issue.Detail)
+                            prop.onClick (fun _ ->
+                                dispatch (PlanningChanged(FocusPlanningIssue index)))
+                        ]
+                ]
+            ]
+            Html.details [
+                Html.summary "Deterministic plan, conflict, and execution review artifact"
+                Html.pre (PlanningWorkspace.reviewArtifact state)
+                button
+                    "Export review artifact"
+                    "Export deterministic plan, conflict, and execution evidence"
+                    false
+                    (fun _ -> dispatch ExportPlanningReview)
+            ]
+        ]
+    ]
+
 let private workspaceNavigation (workspace: WorkspaceMode) dispatch =
     let item (label: string) (value: WorkspaceMode) =
         let isCurrent = workspace = value
@@ -6057,6 +6533,7 @@ let private workspaceNavigation (workspace: WorkspaceMode) dispatch =
         prop.ariaLabel "Application sections"
         prop.children [
             item "Simulator" SimulatorWorkspace
+            item "Planner" PlanningWorkspace
             item "Editor" EditorWorkspace
             item "Replay" ReplayWorkspace
             item "Rules and data" RulesWorkspace
@@ -6075,6 +6552,17 @@ let view model dispatch =
         prop.children [
             workspaceNavigation model.Workspace dispatch
             match model.Workspace with
+            | PlanningWorkspace ->
+                match model.Planning with
+                | Some planning -> planningWorkspace model.Editor planning dispatch
+                | None ->
+                    Html.section [
+                        prop.className "panel"
+                        prop.children [
+                            Html.h2 "Planner unavailable"
+                            Html.p "Open the planner again to create an authored revision from the current map."
+                        ]
+                    ]
             | SimulatorWorkspace ->
                 match model.Simulator with
                 | None ->
