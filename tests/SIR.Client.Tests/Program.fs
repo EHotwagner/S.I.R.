@@ -1214,6 +1214,44 @@ let main _ =
          && (Map.find 4 editor.Map.Units).Size = 3)
         "The deterministic canonical footprint preset fixture changed."
 
+    let trollAssault =
+        ExperienceSamples.tryMap "troll-assault"
+        |> Option.defaultWith (fun () ->
+            failwith "The troll-assault sample is missing.")
+    let trollAssaultEditor =
+        ExperienceSamples.editorState trollAssault
+    let trollAssaultFrames =
+        ExperienceSamples.tryReplay "troll-contact"
+        |> Option.map ExperienceSamples.replayFrames
+        |> Option.defaultValue [||]
+    let repeatedTrollAssaultFrames =
+        ExperienceSamples.tryReplay "troll-contact"
+        |> Option.map ExperienceSamples.replayFrames
+        |> Option.defaultValue [||]
+    require
+        (trollAssaultEditor.Map.Width = 16
+         && trollAssaultEditor.Map.Height = 10
+         && trollAssaultEditor.Map.Units.Count = 4
+         && (Map.find 4 trollAssaultEditor.Map.Units).ClassId = "troll"
+         && (Map.find 4 trollAssaultEditor.Map.Units).HealthMaximum = 240
+         && trollAssaultFrames.Length = 13
+         && trollAssaultFrames = repeatedTrollAssaultFrames
+         && trollAssaultFrames[0].Tick = 0
+         && trollAssaultFrames[12].Tick = 12
+         && not trollAssaultFrames[12].Events.IsEmpty)
+        "The curated troll assault map or deterministic replay walkthrough changed."
+
+    let sampleReplayShell =
+        { Shell.init () with
+            Mode = ScenarioSandbox "sample"
+            Inspection = trollAssaultFrames |> Array.tryHead }
+    require
+        (Shell.renderFrame sampleReplayShell
+         |> Option.exists (fun frame ->
+             frame.Disclosure = SandboxDisclosure
+             && frame.Units.Length = 4))
+        "Sandbox replay samples were not projected with sandbox disclosure."
+
     let exportedMap = MapEditor.export editor
     let importedMap =
         MapEditor.tryImport exportedMap

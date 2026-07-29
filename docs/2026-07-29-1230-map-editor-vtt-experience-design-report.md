@@ -643,6 +643,11 @@ should not duplicate the complete runtime control panel.
   frequent actions, and a compact command rail is docked to the map's right
   edge. Contextual panels can be hidden by repeat click or `F2`, and the
   inspector is an optional `F3` overlay.
+- The Simulator now follows the same shell contract: dismissible classical
+  menus, a dense quick-access row, and a persistent labelled right rail for
+  controls, events, and samples. The top-level Samples workspace opens
+  canonical maps, live simulator handoffs, and disclosure-labelled replay
+  walkthroughs, including the three-rifleman versus armored-troll assault.
 - Local editor and simulator work can be downloaded as a version-control
   bundle and imported into `designs/map-editor/` with
   `npm run import:map-design -- <bundle>`. The static host still performs no
