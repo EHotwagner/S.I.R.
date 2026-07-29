@@ -149,3 +149,30 @@ It is not a runtime or build-time dependency: the sibling package emits
 trees are interchangeable. A future dependency requires a separately reviewed
 cross-repository contract that exposes technology-neutral catalog or channel
 data and demonstrably removes duplication without coupling SVG to `Scene`.
+
+## Replay transport
+
+Worker protocol 3 carries one bounded inspection projection at an exact
+committed tick. Full replay projections contain the minimal kernel slice's
+board, one-cell unit occupancy, side, bounded health, semantic edges, disclosed
+input events and checkpoint hashes. The client adapts those facts to
+`RenderFrame` without inventing class, heading, elevation, stance, overlay, or
+event-endpoint data that the projection did not supply.
+
+Perspective replay format 1 supplies only committed ticks and projection
+hashes. Its player therefore seeks and labels those committed frames
+deterministically but draws no units or edges. Rendering a prior full-replay
+unit from that hash-only source would be a disclosure violation.
+
+Every load, advance, seek, event jump, and cancellation carries an operation
+identity. A replacement operation cancels its predecessor; responses with any
+other identity are ignored. Progress preserves the same identity until the
+terminal response, and the shell commits the projection's tick rather than a
+requested or estimated tick.
+
+Reverse/forward step, range seek, previous/next disclosed event, and checkpoint
+markers all use the same correlated seek path. When a projection omits a
+previously disclosed unit or event, the shell removes its inspection selection
+and the battlefield removes its SVG selection and roving focus before render.
+Consequently no unit geometry, accessible name, event control, selection,
+focus, or pointer hit target survives lost contact.

@@ -66,12 +66,28 @@ let rec update msg model =
             (fun (name, bytes) -> ShellMsg(ReplayBytesSelected(name, bytes)))
     | ShellMsg shellMsg ->
         let next, effects = Shell.update shellMsg model.Shell
-        { model with Shell = next }, effectsToCmd effects
+        let battlefield =
+            match Shell.renderFrame next with
+            | Some frame -> Battlefield.reconcile frame model.Battlefield
+            | None when next.Verification = Loading ->
+                { model.Battlefield with
+                    SelectedUnit = None
+                    FocusedUnit = None }
+            | None -> model.Battlefield
+
+        { model with
+            Shell = next
+            Battlefield = battlefield },
+        effectsToCmd effects
     | BattlefieldChanged action ->
+        let frame =
+            Shell.renderFrame model.Shell
+            |> Option.defaultValue Battlefield.representativeFrame
+
         { model with
             Battlefield =
                 Battlefield.update
-                    Battlefield.representativeFrame
+                    frame
                     action
                     model.Battlefield },
         Cmd.none
@@ -83,7 +99,10 @@ let rec update msg model =
         | " "
         | "k"
         | "K" -> update (ShellMsg TogglePlayback) model
+        | "ArrowLeft" -> update (ShellMsg StepBackward) model
         | "ArrowRight" -> update (ShellMsg StepForward) model
+        | "[" -> update (ShellMsg PreviousEvent) model
+        | "]" -> update (ShellMsg NextEvent) model
         | "Escape" -> update (ShellMsg CancelRequested) model
         | _ -> model, Cmd.none
     | ExportExperiment ->
@@ -220,7 +239,15 @@ let private sourcePanel dispatch =
 
 let private controls model dispatch =
     let atEnd = model.Playback.CurrentTick >= model.Playback.FinalTick
+    let atStart = model.Playback.CurrentTick <= 0
     let unavailable = model.Playback.FinalTick <= 0
+    let hasEvents =
+        model.Inspection
+        |> Option.exists (fun inspection -> not (List.isEmpty inspection.Events))
+    let checkpoints =
+        model.Inspection
+        |> Option.map _.Checkpoints
+        |> Option.defaultValue []
 
     Html.section [
         prop.className "panel playback-panel"
@@ -239,10 +266,25 @@ let private controls model dispatch =
                         unavailable
                         (fun _ -> dispatch (ShellMsg TogglePlayback))
                     button
+                        "Previous event"
+                        "Go to previous disclosed replay event"
+                        (unavailable || not hasEvents)
+                        (fun _ -> dispatch (ShellMsg PreviousEvent))
+                    button
+                        "Back"
+                        "Step backward one committed replay tick"
+                        (unavailable || atStart)
+                        (fun _ -> dispatch (ShellMsg StepBackward))
+                    button
                         "Step"
                         "Advance one replay step"
                         (unavailable || atEnd)
                         (fun _ -> dispatch (ShellMsg StepForward))
+                    button
+                        "Next event"
+                        "Go to next disclosed replay event"
+                        (unavailable || not hasEvents)
+                        (fun _ -> dispatch (ShellMsg NextEvent))
                     button
                         "Cancel"
                         "Cancel current replay operation"
@@ -275,6 +317,37 @@ let private controls model dispatch =
                 prop.onChange (fun (value: int) ->
                     dispatch (ShellMsg(SeekRequested(int32 value))))
             ]
+            if not (List.isEmpty checkpoints) then
+                Html.div [
+                    prop.className "checkpoint-markers"
+                    prop.ariaLabel "Replay checkpoint markers"
+                    prop.children [
+                        Html.span "Checkpoints:"
+                        for checkpoint in checkpoints do
+                            button
+                                ("T" + string checkpoint.Tick)
+                                ("Seek to checkpoint at tick " + string checkpoint.Tick)
+                                false
+                                (fun _ ->
+                                    dispatch (ShellMsg(SeekRequested checkpoint.Tick)))
+                    ]
+                ]
+            match model.Worker with
+            | WorkerBusy completed ->
+                Html.progress [
+                    prop.max (max 1 model.Playback.FinalTick)
+                    prop.value model.Playback.CurrentTick
+                    prop.ariaLabel "Replay operation progress"
+                    prop.text (
+                        string model.Playback.CurrentTick
+                        + " of "
+                        + string model.Playback.FinalTick
+                        + "; "
+                        + string completed
+                        + " batches complete"
+                    )
+                ]
+            | _ -> Html.none
             Html.label [
                 prop.htmlFor "playback-speed"
                 prop.text "Playback speed"
@@ -300,7 +373,7 @@ let private controls model dispatch =
             ]
             Html.p [
                 prop.className "keyboard-help"
-                prop.text "Keyboard: Space or K plays/pauses; Right Arrow steps; Escape cancels."
+                prop.text "Keyboard: Space or K plays/pauses; Left/Right Arrow steps; [ and ] navigate events; Escape cancels."
             ]
         ]
     ]
@@ -599,10 +672,12 @@ let private battlefieldInspector (scene: BattlefieldScene) =
     ]
 
 let private battlefieldView
+    (shell: SIR.Client.Model)
     (state: BattlefieldViewState)
     (dispatch: Msg -> unit)
     =
-    let frame = Battlefield.representativeFrame
+    let loadedFrame = Shell.renderFrame shell
+    let frame = loadedFrame |> Option.defaultValue Battlefield.representativeFrame
     let scene = Battlefield.scene frame state
     let transform =
         "translate("
@@ -624,14 +699,32 @@ let private battlefieldView
 
     Html.section [
         prop.className "panel battlefield-panel"
-        prop.ariaLabel "Static SVG battlefield prototype"
+        prop.ariaLabel (
+            if Option.isSome loadedFrame then
+                "Loaded replay SVG battlefield"
+            else
+                "Static SVG battlefield demonstration"
+        )
         prop.children [
             Html.div [
                 prop.className "battlefield-heading"
                 prop.children [
                     Html.div [
-                        Html.p [ prop.className "eyebrow"; prop.text "Committed documentation frame" ]
-                        Html.h2 "Six-by-six SVG battlefield"
+                        Html.p [
+                            prop.className "eyebrow"
+                            prop.text (
+                                if Option.isSome loadedFrame then
+                                    "Loaded bounded worker projection"
+                                else
+                                    "Static demonstration — no replay loaded"
+                            )
+                        ]
+                        Html.h2 (
+                            if Option.isSome loadedFrame then
+                                "Replay battlefield"
+                            else
+                                "Six-by-six SVG battlefield demonstration"
+                        )
                         Html.p (
                             disclosure
                             + " · tick "
@@ -834,6 +927,7 @@ let private inspector model dispatch =
               BoardMaximumColumn = 0
               BoardMaximumRow = 0
               Units = []
+              Edges = []
               Events = []
               Checkpoints = []
               PerspectiveHash = None }
@@ -1415,7 +1509,7 @@ let view model dispatch =
         prop.className "app-shell"
         prop.ariaLabel "Replay and rules laboratory application"
         prop.children [
-            battlefieldView model.Battlefield dispatch
+            battlefieldView shell model.Battlefield dispatch
             scenarioCatalog shell dispatch
             laboratoryResults shell dispatch
             statusView shell

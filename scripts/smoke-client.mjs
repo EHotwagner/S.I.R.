@@ -32,6 +32,83 @@ window.document.body.innerHTML = '<div id="sir-replay-app"></div>';
 
 const workerMessages = [];
 
+const replayProjection = (tick, disclosed) => ({
+  Tick: tick,
+  BoardMinimumColumn: 0,
+  BoardMinimumRow: 0,
+  BoardMaximumColumn: 2,
+  BoardMaximumRow: 1,
+  Units: disclosed
+    ? [
+        {
+          Id: 10,
+          Side: "Red",
+          Column: 0,
+          Row: 0,
+          Health: 100,
+          HealthMaximum: 100,
+        },
+        {
+          Id: 20,
+          Side: "Blue",
+          Column: 2,
+          Row: 0,
+          Health: 75,
+          HealthMaximum: 100,
+        },
+      ]
+    : [],
+  Edges: disclosed
+    ? [
+        {
+          Id: "edge-0",
+          Kind: "wall",
+          State: "solid",
+          StartColumn: 1,
+          StartRow: 0,
+          EndColumn: 2,
+          EndRow: 0,
+        },
+      ]
+    : [],
+  Events: disclosed
+    ? [
+        {
+          Id: 0,
+          Tick: 1,
+          Source: "Accepted WASM output",
+          Summary: "unit 10 attacks unit 20",
+          SourceUnitId: 10,
+          TargetUnitId: 20,
+        },
+      ]
+    : [],
+  Checkpoints: [
+    { Tick: 0, StateHash: "000000000000", EventHash: "000000000000" },
+    { Tick: 2, StateHash: "222222222222", EventHash: "222222222222" },
+  ],
+  PerspectiveHash: undefined,
+});
+
+const loadedReplayResponse = (message) => ({
+  ProtocolVersion: 3,
+  Operation: message.Operation,
+  Response: {
+    tag: 0,
+    fields: [
+      {
+        SourceName: "smoke.sirr",
+        SourceIdentity: "smoke-replay",
+        EngineIdentity: "010203040506",
+        FinalTick: 2,
+        Kind: 0,
+      },
+      { tag: 0 },
+      replayProjection(0, true),
+    ],
+  },
+});
+
 const scenarioDefaults = {
   "adjacent-duel": [25, 4],
   "short-duel": [25, 2],
@@ -94,7 +171,7 @@ const scenarioResponse = (message) => {
   ];
 
   return {
-    ProtocolVersion: 2,
+    ProtocolVersion: 3,
     Operation: message.Operation,
     Response: {
       tag: 4,
@@ -123,6 +200,7 @@ const scenarioResponse = (message) => {
           BoardMaximumColumn: 0,
           BoardMaximumRow: 0,
           Units: [],
+          Edges: [],
           Events: [],
           Checkpoints: [],
           PerspectiveHash: undefined,
@@ -135,7 +213,33 @@ const scenarioResponse = (message) => {
 class SmokeWorker {
   postMessage(message) {
     workerMessages.push(message);
-    if (message.Request?.tag === 4) {
+    if (
+      message.Request?.tag === 0 ||
+      (Array.isArray(message.Request) && message.Request[0] === "LoadPackage")
+    ) {
+      queueMicrotask(() =>
+        this.onmessage?.({ data: structuredClone(loadedReplayResponse(message)) }),
+      );
+    } else if (
+      message.Request?.tag === 2 ||
+      (Array.isArray(message.Request) && message.Request[0] === "Seek")
+    ) {
+      const target = Array.isArray(message.Request)
+        ? message.Request[1]
+        : message.Request.fields[0];
+      queueMicrotask(() =>
+        this.onmessage?.({
+          data: structuredClone({
+            ProtocolVersion: 3,
+            Operation: message.Operation,
+            Response: {
+              tag: 2,
+              fields: [target, replayProjection(target, target < 2)],
+            },
+          }),
+        }),
+      );
+    } else if (message.Request?.tag === 4) {
       queueMicrotask(() =>
         this.onmessage?.({ data: structuredClone(scenarioResponse(message)) }),
       );
@@ -198,7 +302,7 @@ if (!inspector?.textContent.includes("Timeline and events")) {
   throw new Error("The responsive replay inspectors did not mount.");
 }
 
-if (!workerStatus?.textContent.includes("protocol 2")) {
+if (!workerStatus?.textContent.includes("protocol 3")) {
   throw new Error("The worker protocol disclosure is missing.");
 }
 
@@ -284,6 +388,79 @@ palette.dispatchEvent(new window.Event("change", { bubbles: true }));
 await window.happyDOM.waitUntilComplete();
 if (palette.value !== "high-contrast" || battlefieldUnits.length !== 6) {
   throw new Error("Palette selection changed geometry or failed to update.");
+}
+
+const replayFile = new window.File([new Uint8Array([1, 2, 3])], "smoke.sirr", {
+  type: "application/octet-stream",
+});
+Object.defineProperty(fileInput, "files", {
+  configurable: true,
+  value: {
+    0: replayFile,
+    length: 1,
+    item(index) {
+      return index === 0 ? replayFile : null;
+    },
+  },
+});
+fileInput.dispatchEvent(new window.Event("change", { bubbles: true }));
+await new Promise((resolveWait) => setTimeout(resolveWait, 0));
+await window.happyDOM.waitUntilComplete();
+
+const loadedBattlefield = window.document.querySelector(
+  '[aria-label="Loaded replay SVG battlefield"] svg[role="application"]',
+);
+const loadedUnits = loadedBattlefield?.querySelectorAll("[data-unit-id]") ?? [];
+if (
+  !loadedBattlefield ||
+  !loadedBattlefield.getAttribute("aria-label")?.includes("exact tick 0") ||
+  loadedUnits.length !== 2 ||
+  loadedBattlefield.querySelectorAll("[data-authoritative-footprint]").length !== 2 ||
+  !window.document
+    .querySelector('[aria-label="Replay checkpoint markers"]')
+    ?.textContent.includes("T2")
+) {
+  throw new Error(
+    "The loaded bounded worker projection did not replace the static SVG or expose checkpoints. "
+      + `status=${status?.textContent} messages=${JSON.stringify(workerMessages.slice(-2))}`,
+  );
+}
+
+const contact = loadedBattlefield.querySelector('[data-unit-id="10"]');
+contact?.dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
+contact?.focus();
+window.document
+  .querySelector('button[aria-label="Seek to checkpoint at tick 2"]')
+  ?.click();
+await new Promise((resolveWait) => setTimeout(resolveWait, 0));
+await window.happyDOM.waitUntilComplete();
+
+const lostContactBattlefield = window.document.querySelector(
+  '[aria-label="Loaded replay SVG battlefield"] svg[role="application"]',
+);
+const replayInspector = window.document.querySelector(
+  '[aria-label="Replay inspector"]',
+);
+if (
+  !lostContactBattlefield?.getAttribute("aria-label")?.includes("exact tick 2") ||
+  lostContactBattlefield.querySelector("[data-unit-id]") ||
+  lostContactBattlefield.querySelector("[data-authoritative-footprint]") ||
+  lostContactBattlefield.querySelector('[role="button"]') ||
+  [...lostContactBattlefield.querySelectorAll("[aria-label]")].some((node) =>
+    node.getAttribute("aria-label")?.includes("unit 10"),
+  ) ||
+  replayInspector?.querySelector(".unit-token") ||
+  replayInspector?.querySelector(".event-list button") ||
+  !replayInspector?.textContent.includes("UnitNone") ||
+  !replayInspector?.textContent.includes("EventNone") ||
+  contact?.isConnected ||
+  window.document.activeElement === contact
+) {
+  throw new Error(
+    "Lost contact left visual, DOM/accessibility, event-link, selection/focus, or hit-target residue. "
+      + `svg=${lostContactBattlefield?.getAttribute("aria-label")} units=${lostContactBattlefield?.querySelectorAll("[data-unit-id]").length} `
+      + `inspector=${replayInspector?.textContent} connected=${contact?.isConnected} active=${window.document.activeElement?.outerHTML}`,
+  );
 }
 
 const scenarioButtons = [

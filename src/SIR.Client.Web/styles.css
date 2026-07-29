@@ -162,6 +162,15 @@
 #sir-replay-app .scenario-defaults { color: #d8b36a; font-weight: 700; }
 #sir-replay-app .inspector-panel { grid-column: span 2; }
 #sir-replay-app .worker-status { color: #b9c8c0; }
+#sir-replay-app .checkpoint-markers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .45rem;
+  margin-block: .8rem;
+}
+#sir-replay-app .checkpoint-markers button { min-width: 2.75rem; min-height: 2.75rem; }
+#sir-replay-app .playback-panel progress { width: 100%; min-height: 1.25rem; }
 #sir-replay-app .board {
   min-height: 7rem;
   display: grid;

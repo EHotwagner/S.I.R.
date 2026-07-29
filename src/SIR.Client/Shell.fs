@@ -74,13 +74,25 @@ type UnitProjection =
       Side: string
       Column: int32
       Row: int32
-      Health: int32 }
+      Health: int32
+      HealthMaximum: int32 }
 
 type EventProjection =
     { Id: int32
       Tick: int32
       Source: string
-      Summary: string }
+      Summary: string
+      SourceUnitId: int32 option
+      TargetUnitId: int32 option }
+
+type EdgeProjection =
+    { Id: string
+      Kind: string
+      State: string
+      StartColumn: int32
+      StartRow: int32
+      EndColumn: int32
+      EndRow: int32 }
 
 type CheckpointProjection =
     { Tick: int32
@@ -95,6 +107,7 @@ type InspectionProjection =
       BoardMaximumColumn: int32
       BoardMaximumRow: int32
       Units: UnitProjection list
+      Edges: EdgeProjection list
       Events: EventProjection list
       Checkpoints: CheckpointProjection list
       PerspectiveHash: string option }
@@ -106,6 +119,7 @@ type InspectionProjectionTransport =
       BoardMaximumColumn: int32
       BoardMaximumRow: int32
       Units: UnitProjection array
+      Edges: EdgeProjection array
       Events: EventProjection array
       Checkpoints: CheckpointProjection array
       PerspectiveHash: string option }
@@ -169,7 +183,10 @@ type Msg =
     | ReplayBytesSelected of sourceName: string * bytes: byte array
     | RunnerResponded of OperationId * RunnerResponse
     | TogglePlayback
+    | StepBackward
     | StepForward
+    | PreviousEvent
+    | NextEvent
     | SeekRequested of int32
     | SpeedChanged of PlaybackSpeed
     | UnitSelected of int32 option
@@ -195,7 +212,7 @@ type WorkerResponseEnvelope =
 [<RequireQualifiedAccess>]
 module WorkerProtocol =
     [<Literal>]
-    let CurrentVersion = 2
+    let CurrentVersion = 3
 
     [<Literal>]
     let BatchSize = 256
@@ -252,6 +269,7 @@ module WorkerTransport =
           BoardMaximumColumn = inspection.BoardMaximumColumn
           BoardMaximumRow = inspection.BoardMaximumRow
           Units = List.toArray inspection.Units
+          Edges = List.toArray inspection.Edges
           Events = List.toArray inspection.Events
           Checkpoints = List.toArray inspection.Checkpoints
           PerspectiveHash = inspection.PerspectiveHash }
@@ -266,12 +284,97 @@ module WorkerTransport =
           BoardMaximumColumn = inspection.BoardMaximumColumn
           BoardMaximumRow = inspection.BoardMaximumRow
           Units = Array.toList inspection.Units
+          Edges = Array.toList inspection.Edges
           Events = Array.toList inspection.Events
           Checkpoints = Array.toList inspection.Checkpoints
           PerspectiveHash = inspection.PerspectiveHash }
 
 [<RequireQualifiedAccess>]
 module Shell =
+    let private visualExtent =
+        CellExtent.tryCreate 1
+        |> Option.defaultWith (fun () -> failwith "One-cell visual extent is invalid.")
+
+    let private projectedHealth remaining maximum =
+        HealthVisual.tryCreate remaining maximum
+        |> Option.defaultWith (fun () -> failwith "Projected health bounds are invalid.")
+
+    /// Adapts only the worker's currently disclosed bounded projection.
+    /// Missing class, footprint-detail, heading, elevation, and stance facts stay absent.
+    let renderFrame (model: Model) =
+        match model.Mode, model.Inspection with
+        | (VerifiedReplay | PerspectivePlayback), Some inspection ->
+            let disclosure =
+                match model.Mode with
+                | VerifiedReplay -> FullReplayDisclosure
+                | PerspectivePlayback -> PerspectiveDisclosure
+                | _ -> failwith "Unreachable replay disclosure."
+
+            Some
+                { Tick = inspection.Tick
+                  Board =
+                    { MinimumColumn = inspection.BoardMinimumColumn
+                      MinimumRow = inspection.BoardMinimumRow
+                      MaximumColumn = inspection.BoardMaximumColumn
+                      MaximumRow = inspection.BoardMaximumRow }
+                  Units =
+                    inspection.Units
+                    |> List.map (fun unit ->
+                        { Id = unit.Id
+                          AnchorColumn = unit.Column
+                          AnchorRow = unit.Row
+                          FootprintWidth = visualExtent
+                          FootprintDepth = visualExtent
+                          ClassId = UnitClassId.placeholder
+                          Faction =
+                            match unit.Side with
+                            | "Blue" -> Human
+                            | "Red" -> Arcane
+                            | side -> OtherFaction side
+                          Health =
+                            Disclosed(
+                                projectedHealth
+                                    unit.Health
+                                    unit.HealthMaximum
+                            )
+                          Level = NotPresent
+                          StanceId = NotPresent
+                          BodyHeading = NotPresent
+                          SecondaryHeading = NotPresent
+                          ShortLabel = Disclosed(string unit.Id)
+                          StatusIds = [||] })
+                    |> List.toArray
+                  Edges =
+                    inspection.Edges
+                    |> List.map (fun edge ->
+                        ({ Id = edge.Id
+                           Kind = edge.Kind
+                           State = edge.State
+                           StartColumn = edge.StartColumn
+                           StartRow = edge.StartRow
+                           EndColumn = edge.EndColumn
+                           EndRow = edge.EndRow }
+                        : EdgeVisual))
+                    |> List.toArray
+                  Overlays = [||]
+                  Events =
+                    inspection.Events
+                    |> List.map (fun event ->
+                        { Id = event.Id
+                          Kind = event.Source
+                          SourceUnitId =
+                            event.SourceUnitId
+                            |> Option.map Disclosed
+                            |> Option.defaultValue NotPresent
+                          TargetUnitId =
+                            event.TargetUnitId
+                            |> Option.map Disclosed
+                            |> Option.defaultValue NotPresent
+                          Summary = Disclosed event.Summary })
+                    |> List.toArray
+                  Disclosure = disclosure }
+        | _ -> None
+
     let init () =
         { Source = NoSource
           Mode = NoRun
@@ -320,6 +423,17 @@ module Shell =
 
     let private clampTick finalTick tick =
         max 0 (min finalTick tick)
+
+    let private reconcileSelection
+        (inspection: InspectionProjection)
+        (selection: SelectionState)
+        =
+        let disclosedUnits = inspection.Units |> List.map _.Id |> Set.ofList
+        let disclosedEvents = inspection.Events |> List.map _.Id |> Set.ofList
+
+        { selection with
+            Unit = selection.Unit |> Option.filter (fun id -> Set.contains id disclosedUnits)
+            Event = selection.Event |> Option.filter (fun id -> Set.contains id disclosedEvents) }
 
     let private advanceSize speed =
         match speed with
@@ -370,22 +484,27 @@ module Shell =
                 Verification = verification
                 Playback =
                     { model.Playback with
-                        CurrentTick = 0
+                        CurrentTick =
+                            clampTick metadata.FinalTick inspection.Tick
                         FinalTick = metadata.FinalTick
                         IsPlaying = false }
                 Inspection = Some inspection
+                Selection = reconcileSelection inspection model.Selection
                 Worker = WorkerReady
                 Announcement = announcement }
             |> stopOperation
-        | RunnerProgress(tick, completedBatches, inspection) ->
+        | RunnerProgress(_, completedBatches, inspection) ->
             let inspection =
                 WorkerTransport.inspectionFromTransport inspection
 
-            let tick = clampTick model.Playback.FinalTick tick
+            let tick =
+                inspection.Tick
+                |> clampTick model.Playback.FinalTick
 
             { model with
                 Playback = { model.Playback with CurrentTick = tick }
                 Inspection = Some inspection
+                Selection = reconcileSelection inspection model.Selection
                 Worker = WorkerBusy completedBatches
                 Announcement =
                     "Worker completed batch "
@@ -393,11 +512,13 @@ module Shell =
                     + " at tick "
                     + string tick
                     + "." }
-        | Progressed(tick, inspection) ->
+        | Progressed(_, inspection) ->
             let inspection =
                 WorkerTransport.inspectionFromTransport inspection
 
-            let tick = clampTick model.Playback.FinalTick tick
+            let tick =
+                inspection.Tick
+                |> clampTick model.Playback.FinalTick
 
             { model with
                 Playback =
@@ -407,6 +528,7 @@ module Shell =
                             model.Playback.IsPlaying
                             && tick < model.Playback.FinalTick }
                 Inspection = Some inspection
+                Selection = reconcileSelection inspection model.Selection
                 Worker = WorkerReady
                 Announcement = "Playback moved to tick " + string tick + "." }
             |> stopOperation
@@ -500,6 +622,10 @@ module Shell =
                     Mode = NoRun
                     Verification = Loading
                     Inspection = None
+                    Selection =
+                        { Unit = None
+                          Event = None
+                          Formula = None }
                     Patch = Map.empty
                     Lab =
                         { Scenario = None
@@ -539,6 +665,56 @@ module Shell =
                 ))
                 { model with
                     Playback = { model.Playback with IsPlaying = false } }
+        | StepBackward when model.Playback.CurrentTick > 0 ->
+            beginOperation
+                (Seek(
+                    model.Playback.CurrentTick - 1,
+                    model.Playback.FinalTick
+                ))
+                { model with
+                    Playback = { model.Playback with IsPlaying = false }
+                    Announcement = "Stepping backward one committed tick." }
+        | (PreviousEvent | NextEvent) as navigation ->
+            let events =
+                model.Inspection
+                |> Option.map _.Events
+                |> Option.defaultValue []
+                |> List.sortBy (fun event -> event.Tick, event.Id)
+
+            let candidate =
+                match navigation with
+                | PreviousEvent ->
+                    events
+                    |> List.filter (fun event ->
+                        event.Tick < model.Playback.CurrentTick
+                        || (event.Tick = model.Playback.CurrentTick
+                            && model.Selection.Event
+                               |> Option.exists (fun selected -> event.Id < selected)))
+                    |> List.tryLast
+                | NextEvent ->
+                    events
+                    |> List.tryFind (fun event ->
+                        event.Tick > model.Playback.CurrentTick
+                        || (event.Tick = model.Playback.CurrentTick
+                            && match model.Selection.Event with
+                               | Some selected -> event.Id > selected
+                               | None -> true))
+                | _ -> None
+
+            match candidate with
+            | Some event ->
+                beginOperation
+                    (Seek(event.Tick, model.Playback.FinalTick))
+                    { model with
+                        Selection = { model.Selection with Event = Some event.Id }
+                        Playback = { model.Playback with IsPlaying = false }
+                        Announcement =
+                            "Navigating to event "
+                            + string event.Id
+                            + " at tick "
+                            + string event.Tick
+                            + "." }
+            | None -> model, []
         | SeekRequested tick when model.Playback.FinalTick > 0 ->
             beginOperation
                 (Seek(tick, model.Playback.FinalTick))
@@ -565,6 +741,10 @@ module Shell =
                     Mode = NoRun
                     Verification = Loading
                     Inspection = None
+                    Selection =
+                        { Unit = None
+                          Event = None
+                          Formula = None }
                     Patch = Map.empty
                     Lab =
                         { Scenario = None
@@ -671,7 +851,10 @@ module Shell =
                     "Replay worker stopped. Verification has been revoked." },
             []
         | TogglePlayback
+        | StepBackward
         | StepForward
+        | PreviousEvent
+        | NextEvent
         | SeekRequested _
         | ParameterEdited _
         | SweepRequested _ ->

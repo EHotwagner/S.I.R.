@@ -15,6 +15,13 @@ let private operationFrom effects =
         | Run(operation, _) -> Some operation)
     |> List.exactlyOne
 
+let private requestFrom effects =
+    effects
+    |> List.choose (function
+        | Run(_, Cancel) -> None
+        | Run(_, request) -> Some request)
+    |> List.exactlyOne
+
 let private metadata kind : ReplayMetadata =
     { SourceName = "fixture.sirr"
       SourceIdentity = "fixture"
@@ -29,6 +36,7 @@ let private projection tick : InspectionProjection =
       BoardMaximumColumn = 2
       BoardMaximumRow = 1
       Units = []
+      Edges = []
       Events = []
       Checkpoints = []
       PerspectiveHash = None }
@@ -110,6 +118,62 @@ let main _ =
          && verified.Verification = BrowserKernelVerified)
         "Full replay did not become browser-kernel verified."
 
+    let disclosedProjection =
+        { projection 0 with
+            Units =
+                [ { Id = 10
+                    Side = "Red"
+                    Column = 1
+                    Row = 0
+                    Health = 75
+                    HealthMaximum = 100 } ]
+            Edges =
+                [ { Id = "edge-0"
+                    Kind = "wall"
+                    State = "solid"
+                    StartColumn = 1
+                    StartRow = 0
+                    EndColumn = 2
+                    EndRow = 0 } ]
+            Events =
+                [ { Id = 7
+                    Tick = 4
+                    Source = "Accepted WASM output"
+                    Summary = "unit 10 attacks unit 20"
+                    SourceUnitId = Some 10
+                    TargetUnitId = Some 20 } ]
+            Checkpoints =
+                [ { Tick = 0
+                    StateHash = "state"
+                    EventHash = "event" } ] }
+
+    require
+        (disclosedProjection
+         |> WorkerTransport.inspectionToTransport
+         |> WorkerTransport.inspectionFromTransport
+         |> (=) disclosedProjection)
+        "Edges or event links did not survive the bounded worker transport."
+
+    let disclosedModel =
+        { verified with
+            Inspection = Some disclosedProjection
+            Selection =
+                { Unit = Some 10
+                  Event = Some 7
+                  Formula = None } }
+
+    let disclosedFrame =
+        Shell.renderFrame disclosedModel
+        |> Option.defaultWith (fun () -> failwith "Verified projection did not produce a render frame.")
+
+    require
+        (disclosedFrame.Tick = 0
+         && disclosedFrame.Disclosure = FullReplayDisclosure
+         && disclosedFrame.Units.Length = 1
+         && disclosedFrame.Edges.Length = 1
+         && disclosedFrame.Events[0].SourceUnitId = Disclosed 10)
+        "The bounded full-replay projection was not connected to the render contract."
+
     let perspective =
         let pending, pendingEffects =
             Shell.update (ReplayBytesSelected("perspective.sirr", [| 2uy |])) initial
@@ -133,6 +197,100 @@ let main _ =
         (perspective.Mode = PerspectivePlayback
          && perspective.Verification = PerspectiveReady)
         "Perspective package was not kept projection-only."
+
+    let perspectiveFrame =
+        Shell.renderFrame perspective
+        |> Option.defaultWith (fun () -> failwith "Perspective projection did not produce a frame.")
+    require
+        (perspectiveFrame.Disclosure = PerspectiveDisclosure
+         && perspectiveFrame.Units.Length = 0)
+        "Perspective playback invented a unit outside its disclosed source."
+
+    let backward, backwardEffects =
+        Shell.update
+            StepBackward
+            { disclosedModel with
+                Playback =
+                    { disclosedModel.Playback with
+                        CurrentTick = 8 } }
+    require
+        (requestFrom backwardEffects = Seek(7, disclosedModel.Playback.FinalTick)
+         && not backward.Playback.IsPlaying)
+        "Backward stepping did not seek one exact committed tick."
+
+    let eventNavigation, eventEffects =
+        Shell.update
+            NextEvent
+            { disclosedModel with
+                Playback =
+                    { disclosedModel.Playback with
+                        CurrentTick = 0 }
+                Selection = { disclosedModel.Selection with Event = None } }
+    require
+        (requestFrom eventEffects = Seek(4, disclosedModel.Playback.FinalTick)
+         && eventNavigation.Selection.Event = Some 7)
+        "Next-event navigation did not seek and select the disclosed event."
+
+    let seekOperation = operationFrom eventEffects
+    let lostContactProjection =
+        { disclosedProjection with
+            Tick = 4
+            Units = []
+            Events = [] }
+    let mismatchedProgress =
+        Shell.update
+            (RunnerResponded(
+                seekOperation,
+                RunnerProgress(
+                    3,
+                    1,
+                    lostContactProjection
+                    |> WorkerTransport.inspectionToTransport
+                )
+            ))
+            eventNavigation
+        |> fst
+
+    require
+        (mismatchedProgress.Playback.CurrentTick = 4
+         && mismatchedProgress.Inspection = Some lostContactProjection
+         && mismatchedProgress.ActiveOperation = Some seekOperation
+         && mismatchedProgress.Announcement.Contains("tick 4"))
+        "Progress displayed the response tick instead of its projection's committed tick."
+
+    let lostContact =
+        Shell.update
+            (RunnerResponded(
+                seekOperation,
+                Progressed(
+                    9,
+                    lostContactProjection
+                    |> WorkerTransport.inspectionToTransport
+                )
+            ))
+            mismatchedProgress
+        |> fst
+
+    require
+        (lostContact.Playback.CurrentTick = 4
+         && lostContact.Selection.Unit.IsNone
+         && lostContact.Selection.Event.IsNone
+         && (Shell.renderFrame lostContact
+             |> Option.exists (fun frame ->
+                 frame.Tick = 4
+                 && frame.Units.Length = 0
+                 && frame.Events.Length = 0)))
+        "Lost contact retained selection/event residue or accepted a non-projection tick."
+
+    let reconciledView =
+        Battlefield.reconcile
+            (Shell.renderFrame lostContact |> Option.get)
+            { Battlefield.initial with
+                SelectedUnit = Some 10
+                FocusedUnit = Some 10 }
+    require
+        (reconciledView.SelectedUnit.IsNone && reconciledView.FocusedUnit.IsNone)
+        "Lost contact retained SVG selection or roving-focus state."
 
     let sandbox, forkEffects =
         Shell.update (ParameterEdited("attack-power", 30)) verified
