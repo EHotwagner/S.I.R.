@@ -891,11 +891,173 @@ let private runCapabilityQualifications () =
         "Capability roles qualified: 7 descriptors, %d deterministic point/area replay frames, 8 directions, 12 unchanged ABI request kinds."
         expectedReplay.Length
 
+let private runLiveIntegrationQualifications () =
+    let measure action =
+        let timer = Stopwatch.StartNew()
+        let result = action ()
+        timer.Stop()
+        result, timer.Elapsed.TotalMilliseconds
+
+    let qualification, fullTickMs =
+        measure LiveIntegration.qualify
+
+    require
+        (qualification.KernelTicks = 40
+         && qualification.ControllerInvocations = 80
+         && qualification.CapabilityEvents > 0
+         && qualification.Replay.Frames
+            |> Array.mapi (fun index frame ->
+                frame.Tick = index + 1
+                && frame.ServerSequence = int64 (index + 1)
+                && frame.ProjectionRevision = int64 (index + 1))
+            |> Array.forall id)
+        "Live qualification was not canonical continuous per-tick execution."
+    require
+        (LiveIntegration.verify qualification.Replay)
+        "The authoritative live replay did not reproduce through the same path."
+    let firstFrame = qualification.Replay.Frames[0]
+    let firstUnit = firstFrame.VisibleUnits[0]
+    let tamperedFrames = Array.copy qualification.Replay.Frames
+    tamperedFrames[0] <-
+        { firstFrame with
+            VisibleUnits =
+                [| { firstUnit with
+                       DisplayColumn = firstUnit.DisplayColumn + 1 }
+                   yield! firstFrame.VisibleUnits[1..] |] }
+    require
+        (not (
+            LiveIntegration.verify
+                { qualification.Replay with Frames = tamperedFrames }
+        ))
+        "A tampered disclosed replay projection retained authoritative verification."
+
+    let identities = qualification.Replay.Identities
+    require
+        (identities.MapRevision = qualification.Artifact.MapRevision
+         && identities.PlanSemantic = qualification.Artifact.SemanticIdentity
+         && identities.PlanSource = qualification.Artifact.SourceIdentity
+         && identities.Ruleset = qualification.Artifact.Ruleset
+         && identities.DescriptorSet = "sir.human-weapons@1"
+         && identities.ControllerArtifact.Length = 32
+         && identities.Engine.Length = 32
+         && identities.Replay.Length = 32
+         && identities.MatchLock = qualification.Artifact.MatchLock)
+        "Replay and diagnostics did not pin every live identity."
+
+    let session =
+        LiveIntegration.admit
+            "session-qualification"
+            "blue-player"
+            qualification.Artifact
+            qualification.Artifact
+        |> Result.defaultWith failwith
+
+    match LiveIntegration.reconnect session qualification.Replay 36L 36L with
+    | Ok(ResumeWith frames) ->
+        require
+            (frames.Length = 4 && frames[0].Tick = 37)
+            "Reconnect did not resume from retained projection envelopes."
+    | result -> failwithf "Valid reconnect was rejected: %A" result
+
+    match LiveIntegration.reconnect session qualification.Replay 0L 0L with
+    | Ok(ReplaceWithSnapshot frame) ->
+        require
+            (frame.Tick = 40)
+            "Long reconnect gap did not replace state with the latest snapshot."
+    | result -> failwithf "Snapshot reconnect was rejected: %A" result
+
+    let forgedLock = Array.copy qualification.Artifact.MatchLock
+    forgedLock[0] <- forgedLock[0] ^^^ 1uy
+    let forged = { qualification.Artifact with MatchLock = forgedLock }
+    let forgedAdmission =
+        LiveIntegration.admit
+            "session-forged"
+            "blue-player"
+            forged
+            qualification.Artifact
+    require
+        (forgedAdmission = Error "SIR.LIVE.ADMISSION.ARTIFACT_MISMATCH")
+        "Session admission accepted a plan outside the match lock."
+    let inconsistentReconnect =
+        LiveIntegration.reconnect session qualification.Replay 39L 38L
+    require
+        (inconsistentReconnect = Error "SIR.LIVE.RECONNECT.PROJECTION_GAP")
+        "Reconnect accepted inconsistent server/projection cursors."
+
+    let projectionBytes =
+        qualification.Replay.Frames
+        |> Array.map LiveIntegration.serializeProjection
+    let emptyDisclosureIdentity = CanonicalHash.sha256 [||]
+    require
+        (qualification.Replay.Frames
+         |> Array.forall (fun frame ->
+             frame.VisibleUnits
+             |> Array.forall (fun unit -> unit.UnitId <> 20)))
+        "The player projection disclosed the opposing unit."
+    require
+        (qualification.Replay.JournalIdentity
+         <> qualification.Replay.ProjectionIdentity
+         && qualification.Replay.Frames
+            |> Array.forall (fun frame ->
+                let visibleIdentity =
+                    frame.VisibleUnits
+                    |> Array.collect (fun unit ->
+                        CanonicalEncoding.concatenate
+                            [ CanonicalEncoding.int32LittleEndian unit.UnitId
+                              CanonicalEncoding.int32LittleEndian unit.DisplayColumn
+                              CanonicalEncoding.int32LittleEndian unit.DisplayRow
+                              CanonicalEncoding.int32LittleEndian unit.Health ])
+                    |> CanonicalHash.sha256
+                frame.StateIdentity = visibleIdentity
+                && frame.EventIdentity = emptyDisclosureIdentity))
+        "The browser projection carried an identity derived from undisclosed authoritative state."
+    require
+        (projectionBytes
+         |> Array.forall (fun bytes ->
+             not (containsSubsequence (StandardController.artifactBytes ()) bytes)))
+        "The player projection disclosed the controller artifact."
+
+    let _, previewMs =
+        measure (fun () ->
+            qualification.Replay.Frames
+            |> Array.take 20
+            |> Array.map (fun frame -> frame.Tick, frame.VisibleUnits))
+    let serialized, serializationMs =
+        measure (fun () -> projectionBytes |> Array.collect id)
+    let _, workerMs =
+        measure (fun () -> serialized |> Array.copy)
+    let _, renderingMs =
+        measure (fun () ->
+            qualification.Replay.Frames
+            |> Array.sumBy (fun frame ->
+                frame.VisibleUnits
+                |> Array.sumBy (fun unit ->
+                    unit.DisplayColumn + unit.DisplayRow + unit.Health)))
+
+    require
+        (fullTickMs < 5_000.0
+         && previewMs < 100.0
+         && serializationMs < 100.0
+         && workerMs < 100.0
+         && renderingMs < 100.0)
+        "Live vertical-slice performance exceeded its qualification budgets."
+
+    printfn
+        "Live integration qualified: 40 continuous ticks in %.3f ms; preview %.3f ms; serialization %.3f ms; worker transfer %.3f ms; rendering projection %.3f ms; %d projection bytes; replay %s."
+        fullTickMs
+        previewMs
+        serializationMs
+        workerMs
+        renderingMs
+        serialized.Length
+        (Convert.ToHexString(identities.Replay).ToLowerInvariant())
+
 [<EntryPoint>]
 let main _ =
     let controllerTickMs = runControlHostQualifications ()
     runPlanQualifications ()
     runCapabilityQualifications ()
+    runLiveIntegrationQualifications ()
     let expectedControlOutput = controlAbiOutput ()
     let referenceControlOutput =
         executeReferenceControlModule expectedControlOutput

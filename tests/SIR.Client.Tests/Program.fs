@@ -542,7 +542,17 @@ let main _ =
            Step 1
            RunTo SimulatorProtocol.MaximumHorizonTicks
            Reset
-           CancelOperation simulatorCorrelation.Operation |]
+           CancelOperation simulatorCorrelation.Operation
+           LoadAuthoritativeRun(
+               "match-lock",
+               "replay",
+               [| { Tick = 1
+                    ServerSequence = 1L
+                    ProjectionRevision = 1L
+                    VisibleUnits = [||]
+                    StateIdentity = Array.zeroCreate 32
+                    EventIdentity = Array.zeroCreate 32 } |]
+           ) |]
 
     let simulatorResponses: SimulatorResponse array =
         let update =
@@ -559,10 +569,11 @@ let main _ =
            SimulatorRunCompleted update
            SimulatorReset update
            SimulatorOperationCancelled simulatorCorrelation.Operation
-           SimulatorRequestRejected("SIR.SIMULATOR.TEST", "test") |]
+           SimulatorRequestRejected("SIR.SIMULATOR.TEST", "test")
+           AuthoritativeRunLoaded("match-lock", "replay", 1) |]
 
     require
-        (simulatorRequests.Length = 8 && simulatorResponses.Length = 10)
+        (simulatorRequests.Length = 9 && simulatorResponses.Length = 11)
         "The simulator protocol operation matrix is incomplete."
 
     let intendedPlanningRoster =

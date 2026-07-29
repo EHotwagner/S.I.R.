@@ -6,8 +6,8 @@ index: 9
 status: accepted
 decision-status: canonical
 document-type: living-architecture
-version: "0.3"
-last-updated: 2026-07-28
+version: "0.4"
+last-updated: 2026-07-29
 related:
   - docs/game-vision.md
   - docs/technology-stack.md
@@ -385,6 +385,14 @@ retain an unbounded history for a disconnected or stalled client.
 
 Client disconnection never pauses the match. HQ and field-unit modules continue
 under their current code, orders, and communication state.
+
+The in-process live qualification accepts this contract for the representative
+vertical slice: admission is bound to the immutable planning artifact and match
+lock; equal server/projection cursors resume a retained gap; a longer valid gap
+receives the latest knowledge-filtered snapshot; forged locks and inconsistent
+cursors are rejected. Network authentication, token persistence, active-writer
+takeover, and distributed resume storage remain proposed until exercised over
+the real transport.
 
 ## Backpressure and slow clients
 

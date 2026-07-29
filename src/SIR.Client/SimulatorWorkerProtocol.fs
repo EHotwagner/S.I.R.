@@ -55,6 +55,10 @@ type SimulatorRequest =
     | RunTo of targetTick: int32
     | Reset
     | CancelOperation of targetOperation: int32
+    | LoadAuthoritativeRun of
+        matchLock: string *
+        replayIdentity: string *
+        projections: SIR.Domain.AuthoritativeProjectionFrame array
 
 type SimulatorResponse =
     | SessionInitialized of SimulatorProjectionUpdateTransport
@@ -74,6 +78,10 @@ type SimulatorResponse =
     | SimulatorReset of SimulatorProjectionUpdateTransport
     | SimulatorOperationCancelled of targetOperation: int32
     | SimulatorRequestRejected of code: string * detail: string
+    | AuthoritativeRunLoaded of
+        matchLock: string *
+        replayIdentity: string *
+        finalTick: int32
 
 type SimulatorRequestEnvelope =
     { Kind: string
@@ -114,6 +122,9 @@ module SimulatorProtocol =
 
     [<Literal>]
     let MaximumProjectionMessages = 24
+
+    [<Literal>]
+    let MaximumProjectionUnits = 256
 
     let batchEnds startTick targetTick =
         [| let mutable tick = startTick

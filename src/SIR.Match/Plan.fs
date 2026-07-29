@@ -646,9 +646,12 @@ module SirPlan =
                 | EngageUnit(target, capability) ->
                     if not (Map.containsKey target context.Map.Units) then
                         add (issue PlanDiagnosticLayer.Map "SIR.PLAN.MAP.UNKNOWN_TARGET" (Some unit.UnitId) commandId [])
-                    if capability <> "rifle" then
+                    if capability <> "rifle"
+                       && (HumanCapabilities.tryFind capability |> Option.isNone) then
                         add (issue PlanDiagnosticLayer.Ruleset "SIR.PLAN.RULESET.UNKNOWN_CAPABILITY" (Some unit.UnitId) commandId [ "capability", capability ])
-                | EngageArea(_, capability) when capability <> "rifle" ->
+                | EngageArea(_, capability)
+                    when capability <> "rifle"
+                         && (HumanCapabilities.tryFind capability |> Option.isNone) ->
                     add (issue PlanDiagnosticLayer.Ruleset "SIR.PLAN.RULESET.UNKNOWN_CAPABILITY" (Some unit.UnitId) commandId [ "capability", capability ])
                 | Synchronize synchronization ->
                     if String.IsNullOrWhiteSpace synchronization.MarkerId

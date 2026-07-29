@@ -390,6 +390,54 @@ if (resetAfterCancellation.Response?.tag !== 7) {
   throw new Error("Simulator reset after cancellation failed.");
 }
 
+const authoritativeUpdates = [];
+for (let tick = 256; tick < 6_000; tick += 256) {
+  authoritativeUpdates.push({
+    Tick: tick,
+    ServerSequence: BigInt(tick),
+    ProjectionRevision: BigInt(tick),
+    VisibleUnits: [{ UnitId: 10, DisplayColumn: (tick / 256) % 3, DisplayRow: 1, Health: 100 }],
+    StateIdentity: new Uint8Array(32).fill(tick % 251),
+    EventIdentity: new Uint8Array(32).fill((tick + 1) % 251),
+  });
+}
+authoritativeUpdates.push({
+  Tick: 6_000,
+  ServerSequence: 6_000n,
+  ProjectionRevision: 6_000n,
+  VisibleUnits: [{ UnitId: 10, DisplayColumn: 2, DisplayRow: 1, Health: 100 }],
+  StateIdentity: new Uint8Array(32).fill(17),
+  EventIdentity: new Uint8Array(32).fill(18),
+});
+const malformedAuthoritative = structuredClone(authoritativeUpdates);
+malformedAuthoritative[0].StateIdentity = new Uint8Array(31);
+const malformedAuthoritativeResult = await postSimulator(113, 8, [
+  "match-lock-qualified",
+  "replay-qualified",
+  malformedAuthoritative,
+]);
+if (
+  malformedAuthoritativeResult.Response?.tag !== 9 ||
+  malformedAuthoritativeResult.Response.fields[0] !==
+    "SIR.SIMULATOR.AUTHORITATIVE_RUN.INVALID"
+) {
+  throw new Error("Malformed authoritative projection input crossed the worker boundary.");
+}
+
+const authoritativeLoaded = await postSimulator(114, 8, [
+  "match-lock-qualified",
+  "replay-qualified",
+  authoritativeUpdates,
+]);
+if (
+  authoritativeLoaded.Response?.tag !== 10 ||
+  authoritativeLoaded.Response.fields[0] !== "match-lock-qualified" ||
+  authoritativeLoaded.Response.fields[1] !== "replay-qualified" ||
+  authoritativeLoaded.Response.fields[2] !== 6_000
+) {
+  throw new Error("Qualified authoritative projections did not cross the worker boundary.");
+}
+
 const runStarted = performance.now();
 worker.postMessage(
   simulatorEnvelope(
@@ -464,5 +512,5 @@ if (
 await worker.terminate();
 
 console.log(
-  `Worker round-trip smoke passed: replay/lab and all simulator session requests/responses crossed structured clone; cancellation stopped run-to, stale revisions were rejected, intent-only disclosure was empty, and 6,000 ticks used ${runMessages.length} projection messages in ${runElapsedMilliseconds.toFixed(3)} ms.`,
+  `Worker round-trip smoke passed: replay/lab and all simulator session requests/responses crossed structured clone; a pinned authoritative run loaded, cancellation stopped run-to, stale revisions were rejected, intent-only disclosure was empty, and 6,000 ticks used ${runMessages.length} projection messages in ${runElapsedMilliseconds.toFixed(3)} ms.`,
 );

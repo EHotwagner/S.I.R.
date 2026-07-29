@@ -6,6 +6,7 @@
     <Compile Include="BoundedInt32.fs" />
     <Compile Include="FixedPoint.fs" />
     <Compile Include="Orientation.fs" />
+    <Compile Include="AuthoritativeProjection.fs" />
     <Compile Include="ControlAbiV1.Generated.fs" />
     <Compile Include="ControlAbiV1.fs" />
     <Compile Include="HumanCapabilities.fs" />

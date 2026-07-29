@@ -3,7 +3,7 @@ title: Simulator Worker Protocol
 category: Engineering
 categoryindex: 6
 index: 13
-status: proposed
+status: accepted
 decision-status: implemented
 document-type: living-architecture
 version: "1.0"
@@ -20,11 +20,12 @@ The browser simulator uses the `sir-simulator-session` protocol. It is distinct
 from replay inspection even though both protocols share the same retained
 engine worker. The simulator protocol version starts at `1`.
 
-This milestone implements and qualifies the browser boundary and session state
-machine. Worker-side validation currently covers the canonical plan envelope,
-bounds, horizon, and preview classification. Milestone 9 connects the worker
-operation to the native `SirPlan` map/ruleset/controller compiler and replaces
-empty bounded tick deltas with authoritative shared-kernel execution.
+The browser boundary and session state machine are qualified. Workspace-only
+validation covers the canonical plan envelope, bounds, horizon, and preview
+classification. Authoritative validation is owned by the native `SirPlan`
+map/ruleset/controller compiler. It supplies pinned projections through
+`LoadAuthoritativeRun`; step and run-to then select those exact shared-kernel
+results instead of interpreting plan commands in the browser.
 
 Every request and response carries a correlation tuple:
 
@@ -47,6 +48,7 @@ The bounded operation set is:
 - validate a canonical plan document;
 - preview at most 1,200 ticks;
 - commit an accepted plan revision;
+- load a match-lock- and replay-pinned authoritative projection journal;
 - step 1–256 ticks;
 - run to a tick within the committed 6,000-tick planning horizon;
 - reset to the initialized map projection; and
@@ -55,6 +57,13 @@ The bounded operation set is:
 Run-to yields cooperatively at 256-tick boundaries. A full 6,000-tick planning
 horizon therefore produces 23 progress deltas and one completion delta: 24
 projection messages, rather than one message per tick.
+
+Empty deltas remain available only to the intent-only workspace rehearsal.
+They are not authoritative simulation. A loaded authoritative run is strict:
+missing requested ticks are rejected instead of synthesized. The worker also
+rejects non-monotonic sequence/projection revisions, non-32-byte identities,
+duplicate or invalid unit IDs, out-of-board positions, negative health, and
+projection frames above the 256-unit disclosure bound.
 
 ## Projection and disclosure
 
@@ -78,6 +87,7 @@ worker state contains it.
 
 `scripts/smoke-worker-roundtrip.mjs` sends every request and observes every
 response variant through the built browser worker and Node's structured-clone
-boundary. It checks cancellation, stale correlation, preview disclosure, and
-the projection-message and elapsed-time budgets. `SIR.Client.Tests` checks
+boundary, including a match-lock/replay-pinned authoritative run. It checks
+cancellation, stale correlation, preview disclosure, and the
+projection-message and elapsed-time budgets. `SIR.Client.Tests` checks
 diagnostic classification and the browser workspace guard independently.
