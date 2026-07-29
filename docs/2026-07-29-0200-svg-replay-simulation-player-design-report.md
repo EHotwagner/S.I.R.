@@ -778,55 +778,59 @@ Run replay conformance tests independently. Pixel equality cannot replace
 state/event hash verification, and a correct state hash cannot replace visual
 inspection.
 
-## Delivery plan
+## Roadmap
+
+Roadmap items remain unchecked until their implementation and phase exit
+evidence are complete.
 
 ### Phase 0 — contract and catalog
 
-- Accept this report or extract its durable decisions into living design docs.
-- Define `UnitVisual`, `RenderFrame`, disclosure-safe optional fields, and
+- [ ] Accept this report or extract its durable decisions into living design
+  docs.
+- [ ] Define `UnitVisual`, `RenderFrame`, disclosure-safe optional fields, and
   structured-clone transport.
-- Inventory unit and overlay elements.
-- Author the first role-glyph catalog and accessibility descriptions.
-- Record whether the sibling symbology package is a semantic reference only or
-  a future build-time dependency.
+- [ ] Inventory unit and overlay elements.
+- [ ] Author the first role-glyph catalog and accessibility descriptions.
+- [ ] Record whether the sibling symbology package is a semantic reference
+  only or a future build-time dependency.
 
 **Exit:** typed contract review, complete initial coverage inventory, and no
 ambiguous disclosure defaults.
 
 ### Phase 1 — static SVG battlefield
 
-- Implement projection, grid, terrain, semantic edges, prism units, upper-face
-  glyphs, health, and facing.
-- Add pan, zoom, selection, focus, inspector, legend, and palettes.
-- Render exact committed frames without interpolation.
+- [ ] Implement projection, grid, terrain, semantic edges, prism units,
+  upper-face glyphs, health, and facing.
+- [ ] Add pan, zoom, selection, focus, inspector, legend, and palettes.
+- [ ] Render exact committed frames without interpolation.
 
 **Exit:** representative static frames pass mapping tests, accessibility tests,
 legibility review, and the 200-unit performance target.
 
 ### Phase 2 — replay transport
 
-- Connect current worker projections to the SVG.
-- Add seek, step backward/forward, event navigation, checkpoint markers,
+- [ ] Connect current worker projections to the SVG.
+- [ ] Add seek, step backward/forward, event navigation, checkpoint markers,
   cancellation, and progress.
-- Preserve all verification and divergence states.
+- [ ] Preserve all verification and divergence states.
 
 **Exit:** full and perspective fixtures seek deterministically; disclosure
 tests prove lost contact leaves no visual or accessible residue.
 
 ### Phase 3 — overlays and playback polish
 
-- Add exact selected overlays, semantic timeline lanes, deterministic
+- [ ] Add exact selected overlays, semantic timeline lanes, deterministic
   interpolation, action traces, and reduced motion.
-- Add the optional second heading only with an accepted gameplay source.
+- [ ] Add the optional second heading only with an accepted gameplay source.
 
 **Exit:** exact-tick and interpolated modes converge on every committed frame;
 two-heading and exact-overlay visual reviews pass.
 
 ### Phase 4 — simulation comparison and export
 
-- Add fork workflow, linked baseline/fork comparison, divergence inspection,
-  bookmarks, and safe SVG evidence export.
-- Capture end-to-end performance and visual-review provenance.
+- [ ] Add fork workflow, linked baseline/fork comparison, divergence
+  inspection, bookmarks, and safe SVG evidence export.
+- [ ] Capture end-to-end performance and visual-review provenance.
 
 **Exit:** a derived simulation cannot be mistaken for verified replay, exports
 carry complete provenance, and all normal/stress budgets have measured results.
