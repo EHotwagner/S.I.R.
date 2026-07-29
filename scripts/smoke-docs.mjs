@@ -147,13 +147,29 @@ if (!application || mount?.querySelector("header, h1")) {
 }
 
 if (
-  mount?.querySelectorAll('[aria-label="Editable map grid"] [data-map-column]').length !==
-    96 ||
   !mount?.textContent.includes("Manual") ||
   !mount?.textContent.includes("Scripted AI") ||
-  !mount?.textContent.includes("General AI")
+  !mount?.textContent.includes("General AI") ||
+  !mount?.querySelector('[aria-label="Editable simulation SVG battlefield"]')
 ) {
-  throw new Error("The generated site did not open on the map editor.");
+  throw new Error("The generated site did not open on the full-width simulator.");
+}
+
+const editorButton = [...mount.querySelectorAll("button")].find(
+  (button) => button.textContent.trim() === "Editor",
+);
+editorButton?.click();
+await window.happyDOM.waitUntilComplete();
+
+const editorGrid = mount?.querySelector('[aria-label="Editable map grid"]');
+if (
+  editorGrid?.querySelectorAll("[data-map-column]").length !== 96 ||
+  editorGrid?.querySelectorAll("[data-editor-unit-id]").length !== 4 ||
+  [...(editorGrid?.querySelectorAll("[data-editor-unit-id]") ?? [])].some(
+    (unit) => unit.querySelectorAll("[data-class-id]").length !== 1,
+  )
+) {
+  throw new Error("The Editor tab did not render canonical unit symbols.");
 }
 
 const rulesButton = [...mount.querySelectorAll("button")].find(
@@ -201,7 +217,7 @@ if (
 }
 
 console.log(
-  "Documentation browser smoke passed: the application opens on the 12×8 map editor, exposes three controller modes, and retains six rules scenarios and seven data tables.",
+  "Documentation browser smoke passed: separate Simulator and Editor tabs use the available width, the editor exposes canonical unit symbols, and the rules workspace retains six scenarios and seven data tables.",
 );
 
 window.happyDOM.close();

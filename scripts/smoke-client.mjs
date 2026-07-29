@@ -277,7 +277,6 @@ const buttonByText = (text) =>
     (button) => button.textContent.trim() === text,
   );
 
-const mapGrid = window.document.querySelector('[aria-label="Editable map grid"]');
 const controllerPanel = window.document.querySelector(
   '[aria-label="Simulation controllers"]',
 );
@@ -285,26 +284,53 @@ const editorBattlefield = window.document.querySelector(
   '[aria-label="Editable simulation SVG battlefield"] svg[role="application"]',
 );
 if (
-  !mapGrid ||
-  mapGrid.querySelectorAll("[data-map-column]").length !== 96 ||
   !controllerPanel?.textContent.includes("Manual") ||
   !controllerPanel.textContent.includes("Scripted AI") ||
   !controllerPanel.textContent.includes("General AI") ||
   editorBattlefield?.querySelectorAll("[data-unit-id]").length !== 4 ||
   editorBattlefield?.querySelectorAll('[data-terrain="objective"]').length !== 2 ||
-  editorBattlefield?.querySelectorAll('[data-terrain="rough"]').length !== 4 ||
-  !window.document.querySelector('input[aria-label="Import SIR map"]') ||
-  !buttonByText("Export map")
+  editorBattlefield?.querySelectorAll('[data-terrain="rough"]').length !== 4
 ) {
-  throw new Error("The map editor or its three controller modes did not mount.");
+  throw new Error("The full-width simulator or its controller modes did not mount.");
 }
 
 controllerPanel
   .querySelector('button[aria-label="Advance the map simulation one tick"]')
   ?.click();
 await window.happyDOM.waitUntilComplete();
-if (!mapGrid.textContent.includes("tick 1")) {
-  throw new Error("The map editor did not advance one deterministic tick.");
+if (
+  !window.document
+    .querySelector('[aria-label="Editable simulation SVG battlefield"] svg')
+    ?.getAttribute("aria-label")
+    ?.includes("exact tick 1")
+) {
+  throw new Error("The simulator did not advance one deterministic tick.");
+}
+
+buttonByText("Editor")?.click();
+await window.happyDOM.waitUntilComplete();
+
+const mapGrid = window.document.querySelector('[aria-label="Editable map grid"]');
+const editorSymbols = mapGrid?.querySelectorAll("[data-editor-unit-id]") ?? [];
+if (
+  !mapGrid ||
+  mapGrid.querySelectorAll("[data-map-column]").length !== 96 ||
+  editorSymbols.length !== 4 ||
+  [...editorSymbols].some(
+    (unit) => unit.querySelectorAll("[data-class-id]").length !== 1,
+  ) ||
+  window.document.querySelector('[aria-label="Simulation controllers"]')
+) {
+  throw new Error("The editor tab did not use one canonical symbol per square unit.");
+}
+
+buttonByText("Map file")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document.querySelector('input[aria-label="Import SIR map"]') ||
+  !buttonByText("Export map")
+) {
+  throw new Error("The editor Map file sub-tab did not expose import and export.");
 }
 
 buttonByText("Replay")?.click();
@@ -683,7 +709,7 @@ if (
 }
 
 console.log(
-  `Browser smoke passed: the map editor rendered exact terrain and four square units, all controller modes executed, replay inspection remained intact, and ${scenarioButtons.length} rules scenarios with ${rulesTables.length} data tables completed.`,
+  `Browser smoke passed: separate full-width Simulator and Editor tabs rendered four canonical square-unit symbols, all controller modes executed, replay inspection remained intact, and ${scenarioButtons.length} rules scenarios with ${rulesTables.length} data tables completed.`,
 );
 
 window.happyDOM.close();

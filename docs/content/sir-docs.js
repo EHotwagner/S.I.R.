@@ -77,5 +77,8 @@ const simplifyBrand = () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   simplifyBrand();
+  if (document.getElementById("sir-replay-app")) {
+    document.body.classList.add("sir-application-page");
+  }
   document.querySelectorAll("[data-svg-explainer]").forEach(enhanceExplainer);
 });
