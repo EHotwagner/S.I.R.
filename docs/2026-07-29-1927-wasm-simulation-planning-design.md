@@ -6,7 +6,7 @@ document-type: architecture-and-roadmap
 category: Engineering
 categoryindex: 6
 index: 15
-version: "0.1"
+version: "0.2"
 created: 2026-07-29T19:27:00+02:00
 last-updated: 2026-07-29
 description: Design and milestone roadmap for converging the simulator, planning interface, control ABI, and authoritative deterministic kernel.
@@ -38,8 +38,9 @@ browser projection, and replay verification.
 
 This is a proposed subsystem design and implementation roadmap for contributors
 working on the simulation, WASM host, map-editor simulator, replay system, and
-browser client. It records the direction agreed on 2026-07-29 but does not make
-the exact ABI encoding, timing values, or a live WEGO turn structure canonical.
+browser client. It records the direction agreed on 2026-07-29, including the
+initial ABI, timing, planning, and live-execution decisions. These proposed
+decisions become canonical only after their milestone exit gates pass.
 
 ## Current baseline
 
@@ -151,10 +152,21 @@ through ordinary action rules. A unit can therefore:
 - withdraw north while facing and attending south; or
 - strafe north while facing and attending east.
 
+The initial ordinary-human descriptor turns body facing at 90 degrees per
+second and attention at 180 degrees per second. At the authoritative 20 Hz rate,
+a 45-degree change therefore takes ten body-facing ticks or five attention
+ticks. These are versioned prototype content values rather than ABI constants.
+
 The angle between movement, body, and attention affects movement rate,
 readiness, acquisition, reaction, and capability legality through versioned
 content descriptors. Exact modifiers remain balance parameters rather than ABI
 constants.
+
+All eight attention directions are legal for ordinary humans. Side and rear
+attention incur descriptor-defined acquisition and reaction penalties, and
+capabilities may impose stricter body-to-attention limits. Ordinary weapon
+legality is therefore capability-specific rather than a universal attention
+restriction.
 
 ### Orientation intent
 
@@ -180,7 +192,9 @@ type AttentionIntent =
 `AttendRelativeToBody` uses the same eight-value type as a relative octant:
 north means forward, west means left, east means right, and south means rear.
 The plan compiler and control module resolve the relative octant against current
-body facing each tick.
+body facing each tick. The standard controller emits an absolute
+`SetAttention` request; relative attention is not a separate Control ABI v1
+request.
 
 Known-unit and known-area intents never grant knowledge. If their referent is
 lost, stale, invalid, or unavailable, the standard controller applies its
@@ -243,6 +257,13 @@ type UnitPlan =
 Canonical encoding sorts unit plans by unit ID and commands by stable command
 ID. The plan digest covers all semantic fields but excludes presentation state
 such as selection, expanded panels, timeline zoom, and camera position.
+Player-authored annotations are also excluded from the semantic digest and
+compiled controller configuration. A separate source-document digest includes
+semantic fields and annotations so annotation-only edits participate in save
+and conflict detection without changing execution identity.
+
+The portable `SIR-PLAN 1` interchange is a strict, bounded, canonical UTF-8 line
+grammar. Compiled per-unit controller configuration remains opaque binary.
 
 ### Commands
 
@@ -283,6 +304,10 @@ instantaneous global knowledge. Two forms must remain visibly distinct:
   locally preloaded predecessor commands complete; and
 - **acknowledged synchronization** waits for messages that have traversed the
   simulated communications system.
+
+Every synchronization marker has a bounded absolute deadline. Its timeout
+transition is one of `Continue`, `Hold`, `JumpTo` a stable command ID, or
+`AbortUnitPlan`. Fallback jumps participate in dependency and cycle validation.
 
 The first is suitable for a plan locked before execution. The second models
 coordination issued or revised during a match. The UI must never present a sent
@@ -362,11 +387,40 @@ layout. Unknown optional tags can be skipped within the same ABI major version;
 unknown required tags reject the invocation. All offsets, counts, strings, and
 payloads are independently bounded before allocation.
 
+ABI v1 uses one 16-bit section-tag registry. Required versus optional is a
+separate section flag:
+
+| Tag | Section |
+|---|---|
+| `0x0001` | own state |
+| `0x0002` | resolved orientation |
+| `0x0003` | action and recovery |
+| `0x0004` | observations and stimuli |
+| `0x0005` | events |
+| `0x0006` | messages and reports |
+| `0x0007` | capability descriptors |
+| `0x0008` | service results |
+| `0x0009` | request status |
+| `0x1001` | output requests |
+
+Minor versions may append bounded optional sections. A required semantic change
+requires a new ABI major version.
+
+The initial execution profile limits each invocation to 64 KiB of input, 16 KiB
+of output, 32 sections, 256 elements per section, 255 UTF-8 bytes per string,
+and 4 KiB per opaque payload. Increasing a limit requires a new qualified
+execution profile.
+
 Output contains an ordered list of requests from the existing control
 vocabulary: movement intent, facing, attention, stance, engagement,
 capability, cancellation, messages, services, emission, formation, and sleep.
 Every request has a module-local ID so acceptance and later outcome events can
 be correlated.
+
+Control ABI v1 exposes all path searches through metered asynchronous
+`RequestService` operations whose results arrive on a later tick. Immutable
+input contains the cheap local occupancy and simple geometry needed for local
+decisions; there is no synchronous pathfinding host import.
 
 ### Instance state
 
@@ -520,6 +574,9 @@ planning window → lock plans → execute N ticks → disclose results → repe
 Choosing that loop for live play is a separate game-design decision. It would
 change interruption, communications, input deadlines, and multiplayer pacing
 and should not be smuggled in as a simulator UI implementation detail.
+Continuous per-tick execution is canonical for the planned live integration.
+Any WEGO variant is a separate optional mode requiring its own design and
+qualification evidence.
 
 ## Validation and diagnostics
 
@@ -562,13 +619,19 @@ bound:
 - validation issue count; and
 - retained plan revisions.
 
-Plan annotations are untrusted text. They do not enter WASM configuration unless
-an explicit semantic field includes them, and they are escaped in HTML/SVG
-exports.
+An editable plan is limited to 6,000 ticks, or five minutes at 20 Hz. One
+preview request is limited to 1,200 ticks, or 60 seconds. Longer rehearsals use
+bounded committed or chunked continuation rather than an oversized request.
+
+Plan annotations are untrusted text. They never enter WASM configuration, and
+they are escaped in HTML/SVG exports.
 
 ## Roadmap
 
-### Milestone 0 — presentation and roster baseline
+Milestone status uses `[x] 🟩` for implemented work with evidence and `[ ] ⬜`
+for planned work whose exit gate has not yet passed.
+
+### [x] 🟩 Milestone 0 — presentation and roster baseline
 
 Status: implemented with this design report.
 
@@ -583,7 +646,7 @@ Exit gate:
 - native/Fable conformance, browser smoke, accessibility, map-editor
   qualification, replay, and WASM qualification all pass.
 
-### Milestone 1 — shared orientation domain
+### [ ] ⬜ Milestone 1 — shared orientation domain
 
 - introduce `Direction8`, `ResolvedOrientation`, `FacingIntent`, and
   `AttentionIntent` in the shared domain;
@@ -602,7 +665,7 @@ Exit gate:
 - old map documents import deterministically with documented defaults; and
 - no weapon-heading state is introduced.
 
-### Milestone 2 — shared map-scale kernel
+### [ ] ⬜ Milestone 2 — shared map-scale kernel
 
 - move fixed-timestep movement, square-footprint collision, terrain cost, and
   semantic-edge traversal from `MapEditorSimulator` into `SIR.Simulation`;
@@ -618,9 +681,10 @@ Exit gate:
 - simultaneous destination and crossing conflicts have canonical fixtures; and
 - no authoritative numeric or rules logic remains in the web project.
 
-### Milestone 3 — Control ABI v1 codec
+### [ ] ⬜ Milestone 3 — Control ABI v1 codec
 
-- assign ABI tags, integer codes, bounds, and stable failure codes;
+- implement the assigned ABI tags and bounds and assign the remaining integer
+  codes and stable failure codes;
 - implement canonical input/output codecs in a runtime-neutral project;
 - publish generated constants and bindings;
 - add malformed, unknown-tag, maximum-size, and canonical-order vectors; and
@@ -633,7 +697,7 @@ Exit gate:
 - fuzz/property tests cannot escape declared bounds; and
 - the ABI specification contains no editor-only types.
 
-### Milestone 4 — reusable Wasmtime control host
+### [ ] ⬜ Milestone 4 — reusable Wasmtime control host
 
 - extract the qualification host into a reusable match subsystem;
 - compile artifacts once and instantiate isolated per-unit stores;
@@ -649,7 +713,7 @@ Exit gate:
 - snapshot/resume reproduces outputs and hashes; and
 - ambient WASI and memory-growth limits are explicitly qualified.
 
-### Milestone 5 — `SIR-PLAN 1` and standard controller
+### [ ] ⬜ Milestone 5 — `SIR-PLAN 1` and standard controller
 
 - implement plan domain types, canonical encoding, digest, validation, and
   dependency scheduling;
@@ -666,7 +730,7 @@ Exit gate:
 - invalid and cyclic plans produce stable command-scoped diagnostics; and
 - the standard controller uses only the public ABI.
 
-### Milestone 6 — simulator worker protocol
+### [ ] ⬜ Milestone 6 — simulator worker protocol
 
 - add session initialization, plan validation, preview, commit, step, run-to,
   reset, progress, and cancellation;
@@ -683,7 +747,7 @@ Exit gate:
   budgets; and
 - preview disclosure tests receive no hidden state.
 
-### Milestone 7 — planning workspace
+### [ ] ⬜ Milestone 7 — planning workspace
 
 - add roster, battlefield planning tools, timeline lanes, inspector, and
   validation navigation;
@@ -703,7 +767,7 @@ Exit gate:
 - accessibility and performance qualification pass at the intended roster
   size.
 
-### Milestone 8 — capability and roster integration
+### [ ] ⬜ Milestone 8 — capability and roster integration
 
 - attach explicit loadouts and capability descriptors to authored units;
 - execute the seven prototype human weapon roles through generic capability
@@ -719,15 +783,14 @@ Exit gate:
 - no weapon requires a new ABI request kind or fourth direction; and
 - point and area engagements reproduce across replay verification.
 
-### Milestone 9 — end-to-end qualification and live integration
+### [ ] ⬜ Milestone 9 — end-to-end qualification and live integration
 
 - run one map and plan through editor handoff, plan compiler, standard WASM,
   native host, shared kernel, projection, browser playback, and authoritative
   replay verification;
 - measure full tick, preview, serialization, worker, and rendering budgets;
 - connect accepted planning artifacts to match lock and session admission; and
-- decide separately whether any live mode uses explicit WEGO plan/execute
-  windows.
+- keep WEGO outside this integration unless a separate mode design is accepted.
 
 Exit gate:
 
@@ -777,28 +840,33 @@ content catalog.
 | Migration breaks maps and replays | Version formats and provide explicit deterministic adapters |
 | Hundreds of animated indicators create noise | Use static high-contrast orientation and bounded transient emphasis |
 
-## Open decisions
+## Resolved decisions
 
-The following require evidence or a separate design decision:
+The initial decisions are:
 
-- exact body/attention transition durations and legal angular limits;
-- whether rear attention is impossible or merely penalized for ordinary humans;
-- whether relative attention is encoded directly in ABI requests or resolved by
-  the standard controller into absolute requests;
-- exact `SIR-PLAN 1` binary versus text interchange representation;
-- ABI section tags, bounds, and minor-version compatibility policy;
-- which pathfinding operations are synchronous snapshot queries versus
-  asynchronous services;
-- exact synchronization timeout and fallback vocabulary;
-- whether plan annotations belong in the semantic digest;
-- maximum editable and preview horizon; and
-- whether a future live mode adopts explicit WEGO execution windows.
+- versioned ordinary-human descriptors use 90-degree-per-second body turning
+  and 180-degree-per-second attention turning;
+- rear attention is legal but penalized, while capability descriptors own
+  stricter angular limits;
+- the standard controller resolves relative attention to absolute ABI requests;
+- `SIR-PLAN 1` uses canonical bounded UTF-8 text and compiles to opaque binary
+  unit configuration;
+- ABI v1 uses the assigned 16-bit tag registry, compact invocation bounds, and
+  append-only optional minor-version evolution;
+- pathfinding is an asynchronous metered service;
+- synchronization uses an absolute deadline and the four declared timeout
+  transitions;
+- annotations affect a source-document digest but not the semantic plan digest;
+- editable and preview horizons are limited to 6,000 and 1,200 ticks
+  respectively; and
+- continuous execution is canonical, with WEGO reserved for a separately
+  designed optional mode.
 
 ## Decision checkpoints
 
-Before Milestone 3 starts, approve the ABI memory and encoding shape. Before
-Milestone 5 starts, approve the plan command and fallback vocabulary. Before
-Milestone 7 starts, review an inert interaction prototype and the real worker
-responses together. Before Milestone 9 connects to live sessions, decide
-whether continuous execution alone is canonical or whether a separate WEGO mode
-is warranted.
+Before Milestone 3 starts, confirm the selected ABI memory and encoding shape
+against conformance vectors. Before Milestone 5 starts, confirm the plan command
+and fallback vocabulary against adversarial fixtures. Before Milestone 7
+starts, review an inert interaction prototype and the real worker responses
+together. Before Milestone 9 connects to live sessions, qualify continuous
+execution; a separate WEGO mode requires a new design decision.
