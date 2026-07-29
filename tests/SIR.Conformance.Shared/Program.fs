@@ -41,10 +41,12 @@ let main arguments =
             | None ->
                 let replay = ReplayFixtures.evaluate ()
                 let orientation = OrientationFixtures.evaluate ()
+                let controlAbi = ControlAbiFixtures.evaluate ()
                 let mapScale = SimulationFixtures.mapScaleEvidence ()
 
                 [ NumericFixtures.canonicalBytes numeric
                   orientation
+                  controlAbi
                   SimulationFixtures.canonicalBytes simulation
                   mapScale
                   replay ]

@@ -94,7 +94,9 @@ Owns stable game vocabulary and rules-facing values:
 - action and effect descriptions;
 - resources, equipment, and objective definitions;
 - public error and validation types; and
-- deterministic keys, including random-sample purposes.
+- deterministic keys, including random-sample purposes; and
+- runtime-neutral Control ABI framing, bounds, integer registries, and
+  canonical codecs.
 
 It contains no sockets, database access, rendering, process clock, concrete
 WASM runtime, or server framework. It should be inexpensive to reference from
@@ -132,7 +134,7 @@ Owns the concrete control-module execution adapter:
 - module validation and artifact identity;
 - compilation and compiled-artifact reuse;
 - isolated per-unit instance state;
-- ABI encoding and decoding;
+- ABI memory transfer, semantic translation, and codec integration;
 - fuel, memory, and host-call limits;
 - deterministic host imports;
 - wake scheduling;
