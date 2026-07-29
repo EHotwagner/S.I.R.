@@ -161,15 +161,27 @@ const editorButton = [...mount.querySelectorAll("button")].find(
 editorButton?.click();
 await window.happyDOM.waitUntilComplete();
 
-const editorGrid = mount?.querySelector('[aria-label="Editable map grid"]');
+const editorWorkspace = mount?.querySelector(
+  '[aria-label="SVG tactical map workspace"] svg[role="application"]',
+);
+const objectList = mount?.querySelector(
+  '[aria-label="Map object list fallback"]',
+);
+const editorSymbols =
+  editorWorkspace?.querySelectorAll("[data-editor-unit-id]") ?? [];
 if (
-  editorGrid?.querySelectorAll("[data-map-column]").length !== 96 ||
-  editorGrid?.querySelectorAll("[data-editor-unit-id]").length !== 4 ||
-  [...(editorGrid?.querySelectorAll("[data-editor-unit-id]") ?? [])].some(
+  !editorWorkspace ||
+  !objectList ||
+  objectList.querySelectorAll("[data-map-column]").length !== 96 ||
+  editorSymbols.length !== 4 ||
+  [...editorSymbols].some(
     (unit) => unit.querySelectorAll("[data-class-id]").length !== 1,
-  )
+  ) ||
+  mount?.querySelector('[aria-label="Editable map grid"]')
 ) {
-  throw new Error("The Editor tab did not render canonical unit symbols.");
+  throw new Error(
+    "The generated Editor tab did not use the SVG workspace, canonical square-unit symbols, and object-list fallback.",
+  );
 }
 
 const rulesButton = [...mount.querySelectorAll("button")].find(

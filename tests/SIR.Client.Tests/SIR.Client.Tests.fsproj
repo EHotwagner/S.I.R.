@@ -11,5 +11,6 @@
   <ItemGroup>
     <Content Include="fixtures/*.sir-lab" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="fixtures/map-editor-milestone-0-footprints.txt" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="fixtures/map-editor-milestone-1-camera.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

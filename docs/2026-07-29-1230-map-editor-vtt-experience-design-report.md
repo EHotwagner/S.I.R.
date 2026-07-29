@@ -5,7 +5,7 @@ categoryindex: 5
 index: 10
 status: in-progress
 document-type: timestamped-design-report
-version: "1.2"
+version: "1.3"
 created-at: 2026-07-29T12:30:56+02:00
 last-updated: 2026-07-29
 related:
@@ -20,7 +20,7 @@ related:
 
 **Report timestamp:** 2026-07-29 12:30:56 CEST (UTC+02:00)
 
-**Status:** implementation in progress; Milestone 0 complete
+**Status:** implementation in progress; Milestones 0–1 complete
 
 ## Executive decision
 
@@ -738,17 +738,17 @@ within it is checked.
 
 ### Milestone 1 — SVG workspace and camera
 
-- [ ] Replace the HTML cell-button board with the shared SVG tactical
+- [x] Replace the HTML cell-button board with the shared SVG tactical
   battlefield in the Editor tab.
-- [ ] Add pointer-centered zoom, pan, fit-board, frame-selection, and reset
+- [x] Add pointer-centered zoom, pan, fit-board, frame-selection, and reset
   camera controls.
-- [ ] Add screen-to-cell and screen-to-edge hit testing with zoom-independent
+- [x] Add screen-to-cell and screen-to-edge hit testing with zoom-independent
   tolerances.
-- [ ] Add the compact tool rail, contextual palette, status row, and collapsible
+- [x] Add the compact tool rail, contextual palette, status row, and collapsible
   inspector.
-- [ ] Preserve a non-SVG object-list fallback for keyboard and assistive
+- [x] Preserve a non-SVG object-list fallback for keyboard and assistive
   technology.
-- [ ] Add camera, resize, pointer-capture, touch, and reduced-motion tests.
+- [x] Add camera, resize, pointer-capture, touch, and reduced-motion tests.
 
 ### Milestone 2 — Command history and selection
 

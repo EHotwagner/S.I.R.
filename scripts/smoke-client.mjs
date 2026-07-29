@@ -310,18 +310,28 @@ if (
 buttonByText("Editor")?.click();
 await window.happyDOM.waitUntilComplete();
 
-const mapGrid = window.document.querySelector('[aria-label="Editable map grid"]');
-const editorSymbols = mapGrid?.querySelectorAll("[data-editor-unit-id]") ?? [];
+const editorWorkspace = window.document.querySelector(
+  '[aria-label="SVG tactical map workspace"] svg[role="application"]',
+);
+const objectList = window.document.querySelector(
+  '[aria-label="Map object list fallback"]',
+);
+const editorSymbols =
+  editorWorkspace?.querySelectorAll("[data-editor-unit-id]") ?? [];
 if (
-  !mapGrid ||
-  mapGrid.querySelectorAll("[data-map-column]").length !== 96 ||
+  !editorWorkspace ||
+  !objectList ||
+  objectList.querySelectorAll("[data-map-column]").length !== 96 ||
   editorSymbols.length !== 4 ||
   [...editorSymbols].some(
     (unit) => unit.querySelectorAll("[data-class-id]").length !== 1,
   ) ||
+  window.document.querySelector('[aria-label="Editable map grid"]') ||
   window.document.querySelector('[aria-label="Simulation controllers"]')
 ) {
-  throw new Error("The editor tab did not use one canonical symbol per square unit.");
+  throw new Error(
+    "The editor tab did not use the SVG workspace, canonical square-unit symbols, and object-list fallback.",
+  );
 }
 
 buttonByText("Map file")?.click();
