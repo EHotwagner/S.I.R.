@@ -696,8 +696,7 @@ module Battlefield =
         id
         column
         row
-        width
-        depth
+        baseSize
         classId
         faction
         remaining
@@ -710,8 +709,8 @@ module Battlefield =
         { Id = id
           AnchorColumn = column
           AnchorRow = row
-          FootprintWidth = extent width
-          FootprintDepth = extent depth
+          FootprintWidth = extent baseSize
+          FootprintDepth = extent baseSize
           ClassId = UnitClassId.resolve classId
           Faction = faction
           Health = Disclosed(health remaining)
@@ -738,14 +737,14 @@ module Battlefield =
               MaximumColumn = 5
               MaximumRow = 5 }
           Units =
-            [| sampleUnit 1 0 0 1 1 "rifleman" Human 12 0 (Some "standing") 0.0 "Bravo 6"
+            [| sampleUnit 1 0 0 1 "rifleman" Human 12 0 (Some "standing") 0.0 "Bravo 6"
                |> withSecondary WeaponHeading (Math.PI / 4.0)
-               sampleUnit 2 2 0 1 1 "medic" Human 9 2 (Some "kneeling") (Math.PI / 4.0) "Mercy"
+               sampleUnit 2 2 0 1 "medic" Human 9 2 (Some "kneeling") (Math.PI / 4.0) "Mercy"
                |> withSecondary SensorHeading (Math.PI * 1.25)
-               sampleUnit 3 0 3 2 1 "gunner" Human 6 4 (Some "prone") (Math.PI * 1.5) "Anvil"
-               sampleUnit 4 4 1 1 2 "observation-drone" Neutral 11 1 None Math.PI "Kite"
-               sampleUnit 5 4 4 1 1 "goblin" Arcane 8 0 (Some "crouched") Math.PI "Needle"
-               sampleUnit 6 2 4 2 2 "troll" Arcane 3 7 (Some "braced") (Math.PI * 1.25) "Stone" |]
+               sampleUnit 3 0 3 2 "gunner" Human 6 4 (Some "prone") (Math.PI * 1.5) "Anvil"
+               sampleUnit 4 4 1 1 "observation-drone" Neutral 11 1 None Math.PI "Kite"
+               sampleUnit 5 4 4 1 "goblin" Arcane 8 0 (Some "crouched") Math.PI "Needle"
+               sampleUnit 6 2 4 2 "troll" Arcane 3 7 (Some "braced") (Math.PI * 1.25) "Stone" |]
           Edges =
             [| { Id = "wall-north"
                  Kind = "wall"
@@ -815,7 +814,6 @@ module Battlefield =
                     (int32 (index + 1))
                     (int32 (index % columns))
                     (int32 (index / columns))
-                    1
                     1
                     (if index % 2 = 0 then "rifleman" else "goblin")
                     faction

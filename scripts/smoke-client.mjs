@@ -332,11 +332,18 @@ const healthPositions =
 const exactOverlay = battlefield?.querySelector(
   '[data-overlay-id="selected-los-1"][data-overlay-disposition="exact"][data-path-segments="3"]',
 );
+const squareFootprints = [
+  ...(battlefield?.querySelectorAll("[data-authoritative-footprint]") ?? []),
+].every(
+  (footprint) =>
+    footprint.getAttribute("width") === footprint.getAttribute("height"),
+);
 
 if (
   !battlefield ||
   battlefieldUnits.length !== 6 ||
   battlefield.querySelectorAll("[data-authoritative-footprint]").length !== 6 ||
+  !squareFootprints ||
   battlefield.querySelectorAll("[data-facing-wedge]").length !== 6 ||
   healthPositions.length !== 72 ||
   battlefield.querySelectorAll("[data-elevation-label]").length !== 2 ||
