@@ -408,6 +408,163 @@ let main _ =
         (List.length batchEnds < 24_000)
         "A normal-length replay still requires one render per tick."
 
+    let simulatorCorrelation =
+        { Operation = 101
+          Session = "session-a"
+          MapRevision = "map-a"
+          PlanRevision = 7L
+          Tick = 0 }
+
+    let simulatorPlan =
+        { EncodedDocument =
+            Text.Encoding.UTF8.GetBytes(
+                "SIR-PLAN 1\n"
+                + "plan|00000000000000000000000000000001|7|-|"
+                + String.replicate 64 "0"
+                + "|72756c6573|0|6000\n"
+            )
+          HorizonTicks = SimulatorProtocol.MaximumHorizonTicks
+          PreviewLabel = IntentOnlyPreview
+          Assumptions = [||]
+          Intents = [| "unit 10 moves east" |] }
+
+    require
+        (SimulatorProtocol.diagnostics
+             SimulatorProtocol.MaximumHorizonTicks
+             simulatorPlan
+         |> Array.isEmpty)
+        "A bounded intent-only simulator plan did not validate."
+
+    let deterministicWithAssumption =
+        { simulatorPlan with
+            PreviewLabel = DeterministicPreview
+            Assumptions = [| "enemy holds" |]
+            Intents = [||] }
+
+    require
+        (SimulatorProtocol.diagnostics
+             SimulatorProtocol.MaximumHorizonTicks
+             deterministicWithAssumption
+         |> Array.exists (fun issue ->
+             issue.Code = "SIR.SIMULATOR.PREVIEW.DETERMINISTIC_ASSUMPTIONS"))
+        "A deterministic preview accepted undisclosed assumptions."
+
+    let simulatorGuard =
+        SimulatorProtocol.activate simulatorCorrelation
+
+    let simulatorEnvelope response correlation =
+        { Kind = SimulatorProtocol.Kind
+          ProtocolVersion = SimulatorProtocol.CurrentVersion
+          Correlation = correlation
+          CurrentTick = correlation.Tick
+          Response = response }
+
+    require
+        (SimulatorProtocol.accepts
+             (simulatorEnvelope
+                 (PlanCommitted simulatorCorrelation.PlanRevision)
+                 simulatorCorrelation)
+             simulatorGuard)
+        "The active simulator response was rejected by the workspace guard."
+
+    let staleMapEnvelope =
+        simulatorEnvelope
+            (PlanCommitted simulatorCorrelation.PlanRevision)
+            { simulatorCorrelation with MapRevision = "map-b" }
+
+    let stalePlanEnvelope =
+        simulatorEnvelope
+            (PlanCommitted simulatorCorrelation.PlanRevision)
+            { simulatorCorrelation with PlanRevision = 8L }
+
+    let staleTickEnvelope =
+        simulatorEnvelope
+            (PlanCommitted simulatorCorrelation.PlanRevision)
+            { simulatorCorrelation with Tick = 1 }
+
+    let supersededGuard =
+        SimulatorProtocol.beginOperation
+            { simulatorCorrelation with Operation = 102 }
+            simulatorGuard
+
+    require
+        (not (SimulatorProtocol.accepts staleMapEnvelope simulatorGuard)
+         && not (SimulatorProtocol.accepts stalePlanEnvelope simulatorGuard)
+         && not (SimulatorProtocol.accepts staleTickEnvelope simulatorGuard)
+         && not (
+             SimulatorProtocol.accepts
+                 (simulatorEnvelope
+                     (PlanCommitted simulatorCorrelation.PlanRevision)
+                     simulatorCorrelation)
+                 supersededGuard
+         ))
+        "A stale operation, map, plan revision, or tick response could enter the active workspace."
+
+    let completedGuard =
+        SimulatorProtocol.completeOperation
+            simulatorCorrelation.Operation
+            simulatorGuard
+
+    require
+        (not (
+            SimulatorProtocol.accepts
+                (simulatorEnvelope
+                    (PlanCommitted simulatorCorrelation.PlanRevision)
+                    simulatorCorrelation)
+                completedGuard
+        ))
+        "A completed simulator operation remained applicable."
+
+    let horizonBatches =
+        SimulatorProtocol.batchEnds
+            0
+            SimulatorProtocol.MaximumHorizonTicks
+
+    require
+        (horizonBatches.Length = SimulatorProtocol.MaximumProjectionMessages
+         && Array.last horizonBatches = SimulatorProtocol.MaximumHorizonTicks)
+        "The normal simulator horizon exceeded its projection-message budget."
+
+    let simulatorRequests: SimulatorRequest array =
+        [| InitializeSession
+               { InitialProjection =
+                   projection 0
+                   |> WorkerTransport.inspectionToTransport
+                 MaximumHorizonTicks = SimulatorProtocol.MaximumHorizonTicks }
+           ValidatePlan simulatorPlan
+           PreviewPlan(
+               simulatorPlan,
+               simulatorCorrelation.Tick,
+               simulatorCorrelation.Tick
+               + SimulatorProtocol.MaximumPreviewTicks
+           )
+           CommitPlan simulatorPlan
+           Step 1
+           RunTo SimulatorProtocol.MaximumHorizonTicks
+           Reset
+           CancelOperation simulatorCorrelation.Operation |]
+
+    let simulatorResponses: SimulatorResponse array =
+        let update =
+            { IsSnapshot = true
+              Projection =
+                projection 0
+                |> WorkerTransport.inspectionToTransport }
+        [| SessionInitialized update
+           PlanValidated(Some simulatorCorrelation.PlanRevision, [||])
+           PlanPreviewed(IntentOnlyPreview, [| "Intent only: unit 10 moves east" |], [| update |])
+           PlanCommitted simulatorCorrelation.PlanRevision
+           SimulatorStepped update
+           SimulatorProgress(1, update)
+           SimulatorRunCompleted update
+           SimulatorReset update
+           SimulatorOperationCancelled simulatorCorrelation.Operation
+           SimulatorRequestRejected("SIR.SIMULATOR.TEST", "test") |]
+
+    require
+        (simulatorRequests.Length = 8 && simulatorResponses.Length = 10)
+        "The simulator protocol operation matrix is incomplete."
+
     let workerStopped = Shell.update (WorkerTerminated "test crash") verified |> fst
     require
         (workerStopped.Verification = Failed "worker stopped: test crash"

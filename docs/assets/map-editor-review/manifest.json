@@ -1,7 +1,7 @@
 {
   "format": "sir-map-editor-review-v1",
   "generatedFrom": "production Fable/React SVG workspaces",
-  "productionBundleSha256": "a04d42961d53b188ef96f9d70c99f20c22d3a23cacd1216ac79fdcf799d0e8b5",
+  "productionBundleSha256": "c05c518891ff213c2f57379ce2e70c9cd43c3d86d8da84ed6177214410a0fa53",
   "rasterizer": "rsvg-convert 2.62.3",
   "width": 960,
   "height": 640,

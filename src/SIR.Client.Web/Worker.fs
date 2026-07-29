@@ -266,6 +266,18 @@ let private metadata sourceName package : ReplayMetadata =
 let mutable private loadedPackage: ReplayPackage option = None
 let mutable private cancelled: Set<int32> = Set.empty
 
+type private SimulatorSessionState =
+    { Session: string
+      MapRevision: string
+      PlanRevision: int64
+      InitialProjection: InspectionProjectionTransport
+      CurrentProjection: InspectionProjectionTransport
+      MaximumHorizonTicks: int32
+      CommittedPlan: SimulatorPlanTransport option }
+
+let mutable private simulatorSession: SimulatorSessionState option = None
+let mutable private cancelledSimulatorOperations: Set<int32> = Set.empty
+
 let private post operation response =
     let envelope: WorkerResponseEnvelope =
         { ProtocolVersion = int32 WorkerProtocol.CurrentVersion
@@ -276,6 +288,351 @@ let private post operation response =
 
 let private isCancelled operation =
     cancelled |> Set.contains (OperationId.value operation)
+
+let private postSimulator
+    (correlation: SimulatorCorrelation)
+    (response: SimulatorResponse)
+    =
+    let currentTick =
+        simulatorSession
+        |> Option.map (fun session -> session.CurrentProjection.Tick)
+        |> Option.defaultValue correlation.Tick
+
+    let envelope: SimulatorResponseEnvelope =
+        { Kind = SimulatorProtocol.Kind
+          ProtocolVersion = int32 SimulatorProtocol.CurrentVersion
+          Correlation = correlation
+          CurrentTick = currentTick
+          Response = response }
+
+    scope?postMessage (envelope)
+
+let private simulatorUpdate isSnapshot projection =
+    { IsSnapshot = isSnapshot
+      Projection = projection }
+
+let private simulatorDisclosure (plan: SimulatorPlanTransport) =
+    match plan.PreviewLabel with
+    | DeterministicPreview ->
+        [| "Deterministic from committed, disclosed session inputs." |]
+    | AssumptionBasedPreview ->
+        plan.Assumptions
+        |> Array.map (fun assumption -> "Assumption: " + assumption)
+    | IntentOnlyPreview ->
+        plan.Intents
+        |> Array.map (fun intent -> "Intent only: " + intent)
+
+let private validateSimulatorCorrelation
+    (correlation: SimulatorCorrelation)
+    (session: SimulatorSessionState)
+    =
+    correlation.Session = session.Session
+    && correlation.MapRevision = session.MapRevision
+    && correlation.Tick = session.CurrentProjection.Tick
+
+let private simulatorDelta tick (projection: InspectionProjectionTransport) =
+    { projection with
+        Tick = tick
+        Units = [||]
+        Edges = [||]
+        Events = [||]
+        Checkpoints = [||] }
+
+let private executeSimulator
+    (correlation: SimulatorCorrelation)
+    (request: SimulatorRequest)
+    =
+    async {
+        match request with
+        | InitializeSession initialization ->
+            if
+                System.String.IsNullOrWhiteSpace correlation.Session
+                || System.String.IsNullOrWhiteSpace correlation.MapRevision
+                || initialization.InitialProjection.Tick <> correlation.Tick
+                || initialization.MaximumHorizonTicks <= 0
+                || initialization.MaximumHorizonTicks > SimulatorProtocol.MaximumHorizonTicks
+            then
+                postSimulator
+                    correlation
+                    (SimulatorRequestRejected(
+                        "SIR.SIMULATOR.SESSION.INVALID",
+                        "Session, map revision, tick, and horizon must form a valid initialization."
+                    ))
+            else
+                let session =
+                    { Session = correlation.Session
+                      MapRevision = correlation.MapRevision
+                      PlanRevision = correlation.PlanRevision
+                      InitialProjection = initialization.InitialProjection
+                      CurrentProjection = initialization.InitialProjection
+                      MaximumHorizonTicks = initialization.MaximumHorizonTicks
+                      CommittedPlan = None }
+
+                simulatorSession <- Some session
+                cancelledSimulatorOperations <- Set.empty
+                postSimulator
+                    correlation
+                    (SessionInitialized(
+                        simulatorUpdate true initialization.InitialProjection
+                    ))
+        | CancelOperation targetOperation ->
+            match simulatorSession with
+            | Some session
+                when validateSimulatorCorrelation correlation session
+                     && correlation.PlanRevision = session.PlanRevision ->
+                cancelledSimulatorOperations <-
+                    Set.add targetOperation cancelledSimulatorOperations
+
+                postSimulator
+                    correlation
+                    (SimulatorOperationCancelled targetOperation)
+            | _ ->
+                postSimulator
+                    correlation
+                    (SimulatorRequestRejected(
+                        "SIR.SIMULATOR.CORRELATION.STALE",
+                        "Cancellation does not match the active simulator workspace."
+                    ))
+        | _ ->
+            match simulatorSession with
+            | None ->
+                postSimulator
+                    correlation
+                    (SimulatorRequestRejected(
+                        "SIR.SIMULATOR.SESSION.MISSING",
+                        "Initialize the simulator session before sending operations."
+                    ))
+            | Some session when not (validateSimulatorCorrelation correlation session) ->
+                postSimulator
+                    correlation
+                    (SimulatorRequestRejected(
+                        "SIR.SIMULATOR.CORRELATION.STALE",
+                        "The session, map revision, or tick is stale."
+                    ))
+            | Some session ->
+                match request with
+                | ValidatePlan plan ->
+                    if correlation.PlanRevision < session.PlanRevision then
+                        postSimulator
+                            correlation
+                            (SimulatorRequestRejected(
+                                "SIR.SIMULATOR.PLAN.STALE",
+                                "The plan revision is stale."
+                            ))
+                    else
+                        let diagnostics =
+                            SimulatorProtocol.diagnostics
+                                session.MaximumHorizonTicks
+                                plan
+
+                        postSimulator
+                            correlation
+                            (PlanValidated(
+                                (if diagnostics.Length = 0 then
+                                     Some correlation.PlanRevision
+                                 else
+                                     None),
+                                diagnostics
+                            ))
+                | PreviewPlan(plan, fromTick, toTick) ->
+                    let diagnostics =
+                        SimulatorProtocol.diagnostics
+                            session.MaximumHorizonTicks
+                            plan
+
+                    if correlation.PlanRevision < session.PlanRevision then
+                        postSimulator
+                            correlation
+                            (SimulatorRequestRejected(
+                                "SIR.SIMULATOR.PLAN.STALE",
+                                "The plan revision is stale."
+                            ))
+                    elif
+                        fromTick <> correlation.Tick
+                        || toTick < fromTick
+                        || toTick - fromTick > SimulatorProtocol.MaximumPreviewTicks
+                    then
+                        postSimulator
+                            correlation
+                            (SimulatorRequestRejected(
+                                "SIR.SIMULATOR.PREVIEW.HORIZON",
+                                "A preview must start at the expected tick and span at most 1,200 ticks."
+                            ))
+                    elif diagnostics.Length <> 0 then
+                        postSimulator
+                            correlation
+                            (PlanValidated(None, diagnostics))
+                    else
+                        // Intent-only previews deliberately contain no entity state.
+                        let projection =
+                            match plan.PreviewLabel with
+                            | IntentOnlyPreview ->
+                                simulatorDelta
+                                    session.CurrentProjection.Tick
+                                    session.CurrentProjection
+                            | _ -> session.CurrentProjection
+
+                        postSimulator
+                            correlation
+                            (PlanPreviewed(
+                                plan.PreviewLabel,
+                                simulatorDisclosure plan,
+                                [| simulatorUpdate true projection |]
+                            ))
+                | CommitPlan plan ->
+                    let diagnostics =
+                        SimulatorProtocol.diagnostics
+                            session.MaximumHorizonTicks
+                            plan
+
+                    if correlation.PlanRevision < session.PlanRevision then
+                        postSimulator
+                            correlation
+                            (SimulatorRequestRejected(
+                                "SIR.SIMULATOR.PLAN.STALE",
+                                "The plan revision is older than the active plan."
+                            ))
+                    elif diagnostics.Length <> 0 then
+                        postSimulator
+                            correlation
+                            (PlanValidated(None, diagnostics))
+                    else
+                        simulatorSession <-
+                            Some
+                                { session with
+                                    PlanRevision = correlation.PlanRevision
+                                    CommittedPlan = Some plan }
+
+                        postSimulator
+                            correlation
+                            (PlanCommitted correlation.PlanRevision)
+                | Step tickCount ->
+                    match session.CommittedPlan with
+                    | _ when correlation.PlanRevision <> session.PlanRevision ->
+                        postSimulator
+                            correlation
+                            (SimulatorRequestRejected(
+                                "SIR.SIMULATOR.PLAN.STALE",
+                                "Step does not match the committed plan revision."
+                            ))
+                    | None ->
+                        postSimulator
+                            correlation
+                            (SimulatorRequestRejected(
+                                "SIR.SIMULATOR.PLAN.NOT_COMMITTED",
+                                "Commit a valid plan before stepping."
+                            ))
+                    | Some _ when tickCount <= 0 || tickCount > SimulatorProtocol.BatchSize ->
+                        postSimulator
+                            correlation
+                            (SimulatorRequestRejected(
+                                "SIR.SIMULATOR.STEP.COUNT",
+                                "A step must advance between 1 and 256 ticks."
+                            ))
+                    | Some _ ->
+                        let tick = session.CurrentProjection.Tick + tickCount
+                        let delta = simulatorDelta tick session.CurrentProjection
+                        simulatorSession <-
+                            Some { session with CurrentProjection = { session.CurrentProjection with Tick = tick } }
+                        postSimulator correlation (SimulatorStepped(simulatorUpdate false delta))
+                | RunTo targetTick ->
+                    match session.CommittedPlan with
+                    | _ when correlation.PlanRevision <> session.PlanRevision ->
+                        postSimulator
+                            correlation
+                            (SimulatorRequestRejected(
+                                "SIR.SIMULATOR.PLAN.STALE",
+                                "Run-to does not match the committed plan revision."
+                            ))
+                    | None ->
+                        postSimulator
+                            correlation
+                            (SimulatorRequestRejected(
+                                "SIR.SIMULATOR.PLAN.NOT_COMMITTED",
+                                "Commit a valid plan before running."
+                            ))
+                    | Some plan
+                        when targetTick < session.CurrentProjection.Tick
+                             || targetTick
+                                > session.InitialProjection.Tick
+                                  + plan.HorizonTicks ->
+                        postSimulator
+                            correlation
+                            (SimulatorRequestRejected(
+                                "SIR.SIMULATOR.RUN.TARGET",
+                                "The target tick is outside the committed planning horizon."
+                            ))
+                    | Some _ ->
+                        let batchEnds =
+                            SimulatorProtocol.batchEnds
+                                session.CurrentProjection.Tick
+                                targetTick
+
+                        let mutable current = session
+                        let mutable completed = 0
+                        let mutable stopped = false
+
+                        for batchEnd in batchEnds do
+                            if not stopped then
+                                do! Async.Sleep 0
+                                if
+                                    Set.contains
+                                        correlation.Operation
+                                        cancelledSimulatorOperations
+                                then
+                                    stopped <- true
+                                    postSimulator
+                                        correlation
+                                        (SimulatorOperationCancelled correlation.Operation)
+                                else
+                                    completed <- completed + 1
+                                    let delta =
+                                        simulatorDelta
+                                            batchEnd
+                                            current.CurrentProjection
+
+                                    current <-
+                                        { current with
+                                            CurrentProjection =
+                                                { current.CurrentProjection with
+                                                    Tick = batchEnd } }
+
+                                    simulatorSession <- Some current
+
+                                    if batchEnd = targetTick then
+                                        postSimulator
+                                            correlation
+                                            (SimulatorRunCompleted(
+                                                simulatorUpdate false delta
+                                            ))
+                                    else
+                                        postSimulator
+                                            correlation
+                                            (SimulatorProgress(
+                                                completed,
+                                                simulatorUpdate false delta
+                                            ))
+                | Reset ->
+                    if correlation.PlanRevision <> session.PlanRevision then
+                        postSimulator
+                            correlation
+                            (SimulatorRequestRejected(
+                                "SIR.SIMULATOR.PLAN.STALE",
+                                "Reset does not match the committed plan revision."
+                            ))
+                    else
+                        let reset =
+                            { session with
+                                CurrentProjection = session.InitialProjection }
+                        simulatorSession <- Some reset
+                        postSimulator
+                            correlation
+                            (SimulatorReset(
+                                simulatorUpdate true reset.InitialProjection
+                            ))
+                | InitializeSession _
+                | CancelOperation _ -> ()
+    }
 
 let private execute operation request =
     async {
@@ -420,18 +777,34 @@ let private execute operation request =
     }
 
 let private receive (event: MessageEvent) =
-    let envelope = unbox<WorkerRequestEnvelope> event.data
-    let operation = OperationId.create envelope.Operation
+    let kind: string = event.data?Kind
 
-    if envelope.ProtocolVersion <> int32 WorkerProtocol.CurrentVersion then
-        post operation (
-            RunnerFailed(
-                "worker protocol "
-                + string envelope.ProtocolVersion
-                + " is not supported"
-            )
-        )
+    if kind = SimulatorProtocol.Kind then
+        let envelope = unbox<SimulatorRequestEnvelope> event.data
+
+        if envelope.ProtocolVersion <> int32 SimulatorProtocol.CurrentVersion then
+            postSimulator
+                envelope.Correlation
+                (SimulatorRequestRejected(
+                    "SIR.SIMULATOR.PROTOCOL.VERSION",
+                    "The simulator worker protocol version is not supported."
+                ))
+        else
+            executeSimulator envelope.Correlation envelope.Request
+            |> Async.StartImmediate
     else
-        execute operation envelope.Request |> Async.StartImmediate
+        let envelope = unbox<WorkerRequestEnvelope> event.data
+        let operation = OperationId.create envelope.Operation
+
+        if envelope.ProtocolVersion <> int32 WorkerProtocol.CurrentVersion then
+            post operation (
+                RunnerFailed(
+                    "worker protocol "
+                    + string envelope.ProtocolVersion
+                    + " is not supported"
+                )
+            )
+        else
+            execute operation envelope.Request |> Async.StartImmediate
 
 scope?onmessage <- receive

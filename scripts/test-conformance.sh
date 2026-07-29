@@ -218,4 +218,4 @@ printf 'Numeric authority gate passed: Domain, Simulation, and Match contain no 
 printf '%s\n' "$match_output"
 printf '%s\n' "$browser_wasm_output"
 printf 'Elmish and rules-lab gate passed: modes, immutable baseline/fork comparison, typed validation, deterministic sweep, reproducible fixture export, stale operations, cancellation, Fable compilation, production bundle, and browser mount agree.\n'
-printf 'Worker gate passed: clone-safe scenario/experiment round trips; %s\n' "$worker_measurement"
+printf 'Worker gate passed: clone-safe replay/lab and simulator-session round trips, stale/cancellation/disclosure guards, bounded planning progress; %s\n' "$worker_measurement"

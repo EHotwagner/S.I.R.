@@ -12,6 +12,7 @@
     <Compile Include="EvidenceExport.fs" />
     <Compile Include="EngineCatalog.fs" />
     <Compile Include="Shell.fs" />
+    <Compile Include="SimulatorWorkerProtocol.fs" />
     <Compile Include="ExperienceSamples.fs" />
     <Compile Include="Comparison.fs" />
   </ItemGroup>
