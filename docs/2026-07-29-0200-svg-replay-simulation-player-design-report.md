@@ -5,7 +5,7 @@ categoryindex: 4
 index: 44
 status: proposed
 document-type: timestamped-design-report
-version: "1.0"
+version: "1.1"
 created-at: 2026-07-29T02:00:41+02:00
 last-updated: 2026-07-29
 related:
@@ -21,29 +21,36 @@ related:
 
 **Report timestamp:** 2026-07-29 02:00:41 CEST (UTC+02:00)
 
-**Scope:** a canonical SVG presentation for verified replays, perspective
-playback, and non-authoritative simulations in the browser.
+**Scope:** a top-down, documentation-only SVG presentation for verified
+replays, perspective playback, and non-authoritative simulations in the
+browser; the Babylon.js production client remains separate.
 
 ## Executive decision
 
-Build the player as an SVG tactical table driven by bounded inspection
-projections from the existing replay worker. The battlefield is an isometric
-square grid. Each unit is a shallow square or rectangular prism whose base is
-its authoritative footprint and whose upper face is an information surface,
-like a deliberately designed die.
+Build the player as a documentation-only SVG tactical table driven by bounded
+inspection projections from the existing replay worker. The battlefield is a
+flat, top-down square grid. This deliberately avoids introducing simulated 3D
+into explanations and lets the same symbol catalog serve interactive playback,
+static diagrams, and exported documentation evidence. The production game
+client is a separate Babylon.js surface and is not constrained to reproduce
+this renderer.
 
-The upper face carries the unit's informative glyph and its primary direction:
+Every unit uses a square symbol even when its authoritative footprint covers a
+different shape or area. The footprint remains a separate ground outline; the
+symbol never stretches to impersonate occupancy. The square carries a fixed
+information grammar:
 
-- the central glyph identifies role or class;
-- the top-face border carries faction;
-- a forward wedge cut into the top face shows body facing;
-- a compact health rail shows condition;
-- optional inspection marks show selected secondary state; and
+- the central glyph identifies the exact class;
+- an outer outline identifies faction;
+- twelve inset perimeter dashes show normalized remaining health;
+- a wedge or notch on the square perimeter shows body facing;
+- a small corner elevation stack gives non-color height information;
+- a close-zoom mark may show stance; and
 - a distinct centre-out pointer may show a genuine second heading, such as a
   weapon or sensor axis.
 
-Facing and attention remain different facts. Facing belongs to the unit's
-upper face. Attention, observation, and line of sight belong on the ground as
+Facing and attention remain different facts. Facing belongs to the square's
+perimeter. Attention, observation, and line of sight belong on the ground as
 exact sectors or polygons and appear primarily for selected units. The same
 shape must never mean both.
 
@@ -57,9 +64,10 @@ ticks.
 This design reconciles four existing bodies of work:
 
 1. [Visual direction](visual-direction.md) establishes authoritative square
-   footprints, box-shaped units, top faces as information surfaces, isometric
-   terrain, exact selected-unit overlays, and no ghost for lost hostile
-   contact.
+   footprints, box-shaped units, information-bearing unit surfaces, exact
+   selected-unit overlays, and no ghost for lost hostile contact. This report
+   narrows the documentation renderer to top-down 2D; its square glyphs are an
+   explanatory projection rather than the production client's 3D geometry.
 2. [Fable client and documentation architecture](fable-client-and-documentation.md)
    separates verified replay, perspective playback, and sandbox-derived runs;
    keeps complete replay state in a worker; and treats interpolation as
@@ -75,7 +83,7 @@ This design reconciles four existing bodies of work:
 The sibling symbology package emits `FS.GG.UI.Scene`, not browser SVG. This
 proposal therefore adopts its information-design doctrine and channel
 semantics without making an SVG host pretend that a `Scene` is an SVG DOM.
-S.I.R. owns the game-specific state-to-glyph mapping and the prism grammar.
+S.I.R. owns the game-specific state-to-glyph mapping and square-symbol grammar.
 Reusable channel meanings remain aligned with the sibling project.
 
 ## Product goals
@@ -84,11 +92,13 @@ The player must:
 
 - display verified full replays, knowledge-filtered perspective playback, and
   derived design simulations through one coherent surface;
+- embed the same flat glyphs in narrative documentation and interactive
+  explanations;
 - make 50–100 units per side scannable without replacing spatial reasoning
   with a detached dashboard;
 - preserve authoritative grid footprints, semantic edges, levels, and
   committed tick state;
-- make role, faction, condition, facing, selection, and disclosure mode
+- make exact class, faction, condition, facing, selection, and disclosure mode
   recognizable at normal tactical zoom;
 - support precise seeking, stepping, event inspection, and deterministic
   comparison;
@@ -101,11 +111,11 @@ The player must:
 It is not intended to:
 
 - become the live match authority;
+- replace or visually constrain the Babylon.js production client;
 - execute player WASM in the browser and call the result authoritative;
 - reconstruct undisclosed state from events, interpolation, or previous
   frames;
-- show conventional animated character or vehicle models in place of the
-  box-based unit language;
+- simulate 3D camera elevation, model height, lighting, or occlusion;
 - make every stat permanently visible; or
 - invent new symbology geometry whenever a new gameplay field appears.
 
@@ -172,48 +182,51 @@ The renderer uses four explicit coordinate spaces:
 
 1. **simulation space** — integer cells, levels, edge identities, absolute
    headings, and committed ticks;
-2. **world presentation space** — floating-point cell corners and prism
-   heights derived from simulation values;
-3. **SVG view space** — isometric projected coordinates inside the `viewBox`;
+2. **world presentation space** — floating-point top-down cell corners and
+   footprint polygons derived from simulation values;
+3. **SVG view space** — orthographic coordinates inside the `viewBox`;
 4. **screen space** — CSS pixels used only for input tolerances, focus rings,
    and readable minimum sizes.
 
 For a cell corner `(column, row, level)`, the default projection is:
 
 ```text
-screenX = originX + (column - row) × halfCellWidth
-screenY = originY + (column + row) × halfCellHeight - level × levelHeight
+screenX = originX + column × cellSize
+screenY = originY + row × cellSize
 ```
 
-The inverse mapping used for pointer hit tests resolves the projected ground
-plane, then validates the candidate against actual footprint polygons. It does
-not round a pointer position and assume that the nearest cell was clicked.
+`level` does not offset the cell or unit geometry. It is presented through
+explicit elevation marks and optional overlays. The inverse mapping used for
+pointer hit tests resolves the top-down grid cell, then validates the candidate
+against actual footprint polygons and interactive features.
 
-The default camera is a fixed isometric projection with pan and bounded zoom.
-Optional 90-degree rotation changes presentation only. North and the current
-camera rotation are always shown. The player never rotates authoritative
-headings in stored data; it rotates only their projected drawing.
+The default camera is a fixed top-down orthographic projection with pan and
+bounded zoom. Optional 90-degree rotation changes presentation only. North and
+the current camera rotation are always shown. The player never rotates
+authoritative headings in stored data; it rotates only their projected
+drawing. There is no camera elevation control.
 
 ### Terrain layers
 
 Back-to-front SVG paint order is deterministic:
 
 1. background and out-of-board mask;
-2. terrain fills and level faces;
+2. terrain fills and level-area contours;
 3. square grid;
 4. ground decals and objective areas;
 5. exact perception, command, route, and area overlays;
 6. semantic edge features;
-7. unit shadows and footprint halos;
-8. unit prism side faces;
-9. unit top faces and glyphs;
+7. authoritative unit footprint outlines and selection halos;
+8. square unit symbol backgrounds and faction outlines;
+9. health dashes, class glyphs, facing, elevation, stance, and status marks;
 10. transient actions, traces, and effects;
 11. selection, hover, focus, and inspection annotations;
 12. screen-aligned labels.
 
-Within a layer, stable ordering uses projected depth, level, footprint anchor,
-and stable entity identity as a final presentation tie-break. That tie-break
-must not be reused for gameplay priority.
+Within a layer, stable ordering uses row, column, level, footprint anchor, and
+stable entity identity as a final presentation tie-break. That tie-break must
+not be reused for gameplay priority. Elevation does not create painter's-order
+occlusion in this documentation projection.
 
 Thin authoritative features sit on cell boundaries. Doors, windows, fences,
 walls, rails, and low walls use distinct state geometry rather than a color
@@ -221,98 +234,99 @@ swap alone. Open doors visibly break or rotate away from the blocking edge.
 
 ### Zoom levels
 
-The player uses semantic zoom, not uniform shrinking:
+The player uses semantic zoom, not uniform shrinking. Thresholds refer to the
+projected width of a unit square:
 
 | Scale | Kept | Suppressed or aggregated |
 |---|---|---|
-| Strategic | footprint, faction border, role glyph, facing wedge, selection | text, minor status, fine edge material |
-| Tactical | all strategic channels, health, stance height, significant status | long identity text |
-| Inspection | full approved top-face detail, labels, exact overlays, edge state | nothing approved for disclosure |
+| Overview, below 24 px | footprint, faction outline, class glyph, facing notch, selection | health detail, stance, text, minor status, fine edge material |
+| Standard, 24–48 px | all overview channels, 12-segment health track, elevation stack, significant status | long identity text and stance when illegible |
+| Detailed, above 48 px | full approved symbol detail, stance, labels, exact height text, exact overlays, edge state | nothing approved for disclosure |
 
-Transitions occur at declared zoom thresholds with hysteresis, so glyph detail
-does not flicker when the user rests on a boundary. Selection may retain one
-additional detail tier but may not reveal a field absent from the projection.
+Transitions use approximately 10% hysteresis, so glyph detail does not flicker
+when the user rests on a boundary. Selection may retain one additional detail
+tier but may not reveal a field absent from the projection.
 
-## Unit prism grammar
+## Square unit-symbol grammar
 
 ### Geometry
 
-Every unit visual begins with its authoritative square or rectangular
-footprint. The prism is extruded upward by a presentation height:
+Every unit visual combines two independent geometries:
 
-- footprint width and depth come only from authoritative occupancy;
-- height may encode stance or profile when that mapping is accepted;
-- the top face is inset enough to preserve a continuous faction frame;
-- side faces use restrained shading derived from the faction-neutral material
-  palette; and
-- a selected unit receives an outside footprint halo, never a footprint size
-  change.
+- an authoritative ground outline whose width and depth come only from
+  occupancy; and
+- one square information symbol centred on the footprint's canonical anchor.
 
-Large units use the same grammar over a larger authoritative base. A two-by-two
-monster is not four repeated one-cell glyphs; it is one prism with one
-information face and an unambiguous four-cell base.
+The information symbol remains square for one-cell, rectangular, and large
+units. A two-by-two monster therefore has one square class symbol over one
+unambiguous four-cell footprint, not four repeated glyphs or a stretched
+symbol. A selected unit receives an outside footprint halo, never a footprint
+or symbol size change.
 
-### Upper-face information hierarchy
+### Square information hierarchy
 
-The upper face is read in this order:
+The square is read from outside inward:
 
-1. **faction frame** — high-salience saturated outline;
-2. **role/class glyph** — central vector mark;
-3. **facing wedge** — a triangular forward cut or chevron touching the
-   appropriate top-face edge;
-4. **condition rail** — a compact screen-aligned health segment along the
-   rear top edge;
-5. **significant status mounts** — at most two approved corner marks;
-6. **identity text** — optional inspection detail at sufficient zoom.
+1. **faction outline** — a high-salience outer frame;
+2. **facing wedge** — a filled wedge or notch interrupting the appropriate
+   outer edge;
+3. **health track** — twelve inset perimeter dashes;
+4. **class glyph** — one central vector mark for the exact class;
+5. **elevation stack** — a small screen-aligned stepped mark in one reserved
+   corner;
+6. **stance and significant status marks** — close-zoom secondary marks in
+   declared mounts; and
+7. **identity text** — optional detailed-zoom content.
 
-The facing wedge is part of the upper face, satisfying the dice-like visual
-direction: the piece itself points. It does not rotate the class glyph or
-health rail. Keeping those screen-aligned preserves scan speed while the
-asymmetric wedge makes heading readable.
-
-At very small sizes, the wedge becomes a high-contrast edge notch. It must
-remain distinguishable for all eight gameplay directions and for continuous
-heading values if those are later exposed.
+The class glyph, health dashes, elevation stack, and text remain screen-aligned
+while the facing wedge moves around the perimeter. At very small sizes, the
+wedge becomes a high-contrast edge notch. It must remain distinguishable for
+all eight gameplay directions and for continuous heading values if those are
+later exposed.
 
 ### Fixed channel map
 
 S.I.R. should define one pure `UnitVisualState -> UnitGlyph` mapping. SVG
 grammars consume the result; they do not read raw simulation records.
 
-| Game fact | SVG prism channel | Symbology analogue | Capacity guidance |
+| Game fact | SVG square channel | Symbology analogue | Capacity guidance |
 |---|---|---|---|
-| faction/affiliation | top frame and base halo hue | `Faction` stroke hue | no more than 7 simultaneous categories |
-| role/class | central vector glyph | `Klass` silhouette + `Sigil` | prefer no more than 6 primary classes per view |
-| stable identity | optional short label or secondary mark | `Sigil` / `Label` | inspection detail; never replaces role glyph |
+| faction/affiliation | outer outline and footprint halo hue | `Faction` stroke hue | no more than 7 simultaneous categories |
+| exact class | central vector glyph | `Klass` silhouette + `Sigil` | one catalog glyph per exact class |
+| stable identity | optional short label or secondary mark | `Sigil` / `Label` | detailed view; never replaces class glyph |
 | confirmed/suspected | only if S.I.R. later adopts certainty | stroke treatment | not currently part of canonical presentation |
 | shield/armor state | corner mount | `Shield` | binary or ternary inspection channel |
 | speed/readiness tier | small pips only if tactically required | `Speed` beads | at most 4 ranked levels |
-| magnitude/footprint | authoritative base size | `R` | not a cosmetic rank |
+| magnitude/footprint | separate authoritative ground outline | `R` | never inferred from symbol size |
 | threat | do not expose by default | `Threat` stroke width | only from legitimate projection data |
 | charge/progress | inset fill or arc when selected | `Charge` gradient | at most 4 ranked levels |
-| health/condition | rear top-face rail | `Health` arc | continuous, but show meaningful thresholds |
-| body facing | top-face forward wedge | `Heading` | continuous or 8-way |
+| health/condition | 12 inset perimeter dashes | `Health` arc | fixed normalized segments |
+| body facing | outer-edge wedge or notch | `Heading` | continuous or 8-way |
 | weapon/sensor heading | centre-out pointer with tip | `SecondaryHeading` | opt-in, visually distinct |
+| elevation/height | reserved-corner stepped stack | none | 1–3 bars, then capped stack plus `+N` |
+| stance | close-zoom interior mark | none | disclosed values only; inspector fallback |
 | activity | one board-wide animation rhythm at a time | `Motion` | budget 1 active rhythm per view |
 
 This is a mapping policy, not a promise that every channel is always populated.
 Hidden information stays absent. A stat does not earn a glyph merely because
 it exists.
 
-### Role glyphs
+### Class glyphs
 
-Role glyphs are simple filled or stroked SVG paths designed on a normalized
-24-by-24 grid. They avoid letters as the primary mark. A first prototype set
-should cover the accepted human classes and representative arcane, drone,
-vehicle, support, objective, and large-creature categories without assuming
-that the current proposed catalogs are final.
+Class glyphs are simple filled or stroked SVG paths designed on a normalized
+24-by-24 grid. They avoid letters as the primary mark. Every exact class
+receives its own primary glyph; related classes may share construction rules
+but not a catalog identifier. A first prototype set should cover the accepted
+human classes and representative arcane, drone, vehicle, support, objective,
+and large-creature categories without assuming that the current proposed
+catalogs are final.
 
 Each glyph requires:
 
 - a stable semantic identifier independent of path data;
 - a human-readable name and description;
 - a monochrome path that works in any permitted faction palette;
-- recognition at the strategic minimum size;
+- recognition at the overview minimum size;
 - a non-color distinction from every other primary glyph in its review set;
 - a text alternative; and
 - a mapping-table entry or an explicit reasoned decision not to render.
@@ -327,26 +341,28 @@ The three directional concepts have intentionally different forms:
 
 | Fact | Placement | Form |
 |---|---|---|
-| body facing | top-face perimeter | filled wedge/notch touching the forward edge |
-| optional weapon or sensor heading | top-face centre | thin centre-out pointer ending in a dot |
+| body facing | square perimeter | filled wedge/notch touching the forward edge |
+| optional weapon or sensor heading | square centre | thin centre-out pointer ending in a dot |
 | attention/observation | ground | translucent exact sector or polygon with boundary |
 
 When body and secondary headings align, the centre-out pointer stops before
 the facing wedge so both remain visible. When they oppose, neither crosses the
-central role glyph; the pointer begins outside the glyph's clear zone.
+central class glyph; the pointer begins outside the glyph's clear zone.
 
 Attention is not automatically mapped to `SecondaryHeading`. Attention may be
 a sector, multi-lobed field, or exact visible polygon rather than a ray.
 
 ### Health, damage, and death
 
-Health uses a top-face rail because current hit points are required at normal
-gameplay zoom. The rail:
+Health uses twelve fixed dashes distributed around the inside of the square
+perimeter. The outer faction outline remains visually separate. The track:
 
-- decreases monotonically in length;
-- uses palette tokens rather than raw red/green assumptions;
-- adds threshold notches at accepted rule boundaries;
-- exposes exact numbers only in the inspector or at inspection zoom; and
+- lights zero dashes at zero health and otherwise
+  `ceil(12 × Health01)` dashes in a stable clockwise order;
+- uses a health token that defaults to red, with contrast and pattern
+  equivalents in accessible palettes;
+- distinguishes active and depleted dashes by form or value, not hue alone;
+- exposes exact numbers only in the inspector or at detailed zoom; and
 - updates only on committed ticks.
 
 Damage may produce a short presentation flash keyed to a committed damage
@@ -356,6 +372,19 @@ and is never needed to discover that health changed.
 A defeated unit follows the authoritative event and persistence rules. The
 renderer does not decide whether a body, marker, wreck, or nothing remains.
 
+### Elevation and stance
+
+Elevation is useful context but not a dominant demonstration channel. Ground
+level has no mark. Levels one through three use one through three short,
+screen-aligned stepped bars in a reserved corner inside the square. Higher
+levels use the capped three-bar stack and add an exact `+N` label at detailed
+zoom. Exact elevation is always available in the inspector.
+
+The elevation stack uses geometry and line count rather than color. It does not
+offset the symbol, imply a 3D camera, or change painter's order. Stance is
+separate: it may appear as a disclosed interior symbol at detailed zoom and
+otherwise remains in the inspector or an explanatory label.
+
 ### Selection and status
 
 Selection is drawn outside the authoritative footprint with a double-corner
@@ -363,10 +392,11 @@ bracket and a screen-reader announcement. Hover uses a lighter single bracket.
 Keyboard focus uses the platform focus color and remains visible independently
 of hover.
 
-Status mounts are a scarce resource. The default top face displays no more
-than two corner marks. Surplus statuses move to the inspector and an optional
-selected-unit callout. A generic “more” dot may announce additional disclosed
-statuses, but it may not merge statuses into an ambiguous color.
+Status mounts are a scarce resource. One corner is reserved for elevation; the
+remaining declared mounts display no more than two status marks. Surplus
+statuses move to the inspector and an optional selected-unit callout. A
+generic “more” dot may announce additional disclosed statuses, but it may not
+merge statuses into an ambiguous color.
 
 ## Overlays
 
@@ -472,7 +502,7 @@ timers are not sources of replay state.
 Selecting a unit opens a structured inspector:
 
 - identity and disclosure source;
-- role, faction, footprint, cell, level, facing, and condition;
+- exact class, faction, footprint, cell, level, stance, facing, and condition;
 - current disclosed action and target;
 - disclosed communication, referent, formation, and objective facts;
 - the event history available in this replay mode; and
@@ -484,7 +514,8 @@ unknown values in its view model.
 
 Simulation comparison supports a baseline and one fork:
 
-- linked camera, selection, tick, and overlay state by default;
+- a linked, persistently labeled split view by default;
+- linked camera, selection, tick, and overlay state;
 - split, swipe, and difference-overlay views;
 - metric deltas in the lower drawer;
 - first divergent event and first differing disclosed field;
@@ -522,7 +553,7 @@ type UnitVisual =
       Level: int32
       FootprintWidth: int32
       FootprintDepth: int32
-      ProfileHeight: float
+      StanceId: string option
       Glyph: UnitGlyph }
 
 type RenderFrame =
@@ -559,8 +590,8 @@ Add fields only when the underlying replay or perspective schema can disclose
 them correctly:
 
 - footprint width and depth;
-- level and presentation profile/stance;
-- role/class visual identifier;
+- level and optional stance;
+- exact-class visual identifier;
 - body facing;
 - optional second heading;
 - short identity label;
@@ -615,16 +646,17 @@ Retain stable unit groups by entity ID. On a frame:
 Do not leave hidden hostile groups in the DOM with `display:none`; remove them
 from the rendered and accessible trees.
 
-For very large static terrain, one SVG path may combine same-style cell faces.
+For very large static terrain, one SVG path may combine same-style cell fills.
 Interactive edges and units remain separate hit targets. If profiling shows
 that the unit DOM exceeds budget, simplify semantic detail before replacing
 the SVG unit layer with an inaccessible bitmap.
 
 ## Legibility and coverage process
 
-The sibling symbology workflow should be mirrored for S.I.R.'s prism grammar:
+The sibling symbology workflow should be mirrored for S.I.R.'s square-symbol
+grammar:
 
-1. inventory every production-visible unit and tactical element;
+1. inventory every documentation-visible unit and tactical element;
 2. map each element to a shown glyph or a reasoned hidden decision;
 3. render representative rosters in all semantic zoom tiers;
 4. lint channel use against declared capacities;
@@ -639,18 +671,20 @@ timestamp.
 
 At minimum, review boards include:
 
-- 100 versus 100 at strategic zoom;
+- 100 versus 100 at overview zoom;
 - eight headings for every primary glyph;
 - aligned and opposed primary/secondary headings;
-- minimum, threshold, and maximum health;
+- zero through twelve normalized health segments;
 - every supported faction palette;
+- ground, one-bar, three-bar, and capped-plus-label elevation;
+- stance absent at standard zoom and present at detailed zoom;
 - selected exact line of sight over dense semantic edges;
 - perspective contact disappearing between consecutive frames;
 - high status density;
 - large footprints and mixed levels; and
 - reduced-motion and high-contrast modes.
 
-If the fixed prism grammar cannot express a new essential fact, file a
+If the fixed square-symbol grammar cannot express a new essential fact, file a
 cross-repository request against the owning symbology contract or record a
 S.I.R. design decision. Do not smuggle a second meaning into an existing
 channel merely because it fits the linter's numeric capacity.
@@ -668,9 +702,10 @@ The battlefield supports a roving focus model:
   interaction.
 
 Every focusable unit has a concise label such as “Blue rifleman Bravo 6, cell
-C4, 75 health, facing north-east.” Labels contain only disclosed data. The SVG
-root describes mode, tick, selection, and visible-unit count. Event and tick
-changes use a throttled live region; playback does not announce every frame.
+C4, elevation 2, 75 health, facing north-east.” Labels contain only disclosed
+data. The SVG root describes mode, tick, selection, and visible-unit count.
+Event and tick changes use a throttled live region; playback does not announce
+every frame.
 
 Accessibility settings include:
 
@@ -682,9 +717,10 @@ Accessibility settings include:
 - keyboard shortcut help; and
 - optional direction text in the inspector.
 
-Although current visual direction permits color as a standalone category, role
-glyphs, focus, selection, direction, edge state, and verification mode remain
-non-color-readable because they already have meaningful geometry or text.
+Although current visual direction permits color as a standalone category,
+class glyphs, health state, elevation, focus, selection, direction, edge state,
+and verification mode remain non-color-readable because they already have
+meaningful geometry, value, pattern, or text.
 
 ## Performance budgets
 
@@ -700,6 +736,7 @@ Initial browser targets, to be replaced by measurement:
 | seek response feedback | visible within 100 ms |
 | pointer/keyboard response | visible within 100 ms |
 | exact selected overlay | under 2,000 path segments before simplification warning |
+| whole-force overlays | at most 8,000 path segments before aggregation or refusal |
 
 Measure worker execution, projection transfer, projection mapping, SVG
 reconciliation, layout/style, and paint separately. A fast worker does not
@@ -733,10 +770,12 @@ Replay packages are untrusted input. Before SVG rendering:
 - sanitize exported annotations separately from replay content; and
 - preserve Content Security Policy compatibility.
 
-Exported SVG is an evidence artifact, not an authoritative replay. It includes
-source identity, tick, mode, engine identity, ruleset identity when available,
-projection hash when applicable, palette identity, and renderer version in
-metadata. It excludes undisclosed state and executable script.
+Exported SVG and PNG files are evidence artifacts, not authoritative replays.
+Both carry or accompany source identity, tick, mode, engine identity, ruleset
+identity when available, projection hash when applicable, palette identity,
+and renderer version. Sanitized SVG excludes undisclosed state, executable
+script, and external references. PNG provides the stable preview and fallback
+for documentation systems that do not admit inline SVG.
 
 ## Testing strategy
 
@@ -744,13 +783,16 @@ metadata. It excludes undisclosed state and executable script.
 
 - projection-to-visual mapping is deterministic;
 - identical `RenderFrame` plus options yields identical canonical SVG;
-- isometric projection and inverse hit testing agree at cell corners and
+- orthographic projection and inverse hit testing agree at cell corners and
   footprint interiors;
-- stable depth order does not depend on map iteration;
+- stable paint order does not depend on map iteration;
 - every catalog entry has a name, path, text alternative, and mapping;
-- every production element is shown or has a reasoned hidden decision;
+- every documented element is shown or has a reasoned hidden decision;
 - heading wedges wrap angles and reject non-finite input;
-- health geometry is monotone;
+- health geometry is monotone and contains exactly twelve normalized segments;
+- elevation stacks cap at three bars and exact high-level labels appear only
+  at detailed zoom;
+- stance marks obey the 48 px threshold and disclosure rules;
 - contact removal removes the unit from render and accessibility models;
 - semantic zoom thresholds have hysteresis; and
 - perspective mappings cannot populate full-replay-only fields.
@@ -763,10 +805,12 @@ metadata. It excludes undisclosed state and executable script.
 - no stale DOM node after lost contact;
 - reduced-motion behavior;
 - responsive panel layouts;
-- custom palettes and high contrast;
+- accessible default, high-contrast, and monochrome/pattern palettes;
 - large-board frame budget;
+- whole-force overlay aggregation or refusal above 8,000 segments;
 - safe handling of hostile labels and unknown catalog IDs; and
-- SVG export metadata and absence of scripts/external references.
+- SVG and PNG export provenance, plus absence of scripts and external
+  references from SVG.
 
 ### Visual evidence
 
@@ -787,25 +831,37 @@ evidence are complete.
 
 - [ ] Accept this report or extract its durable decisions into living design
   docs.
+- [ ] Record the boundary between the top-down documentation renderer and the
+  Babylon.js production client.
 - [ ] Define `UnitVisual`, `RenderFrame`, disclosure-safe optional fields, and
   structured-clone transport.
 - [ ] Inventory unit and overlay elements.
-- [ ] Author the first role-glyph catalog and accessibility descriptions.
+- [ ] Author one primary glyph for every exact class, with accessibility
+  descriptions and a visible safe placeholder.
+- [ ] Define the accessible default, high-contrast, and monochrome/pattern
+  palette tokens.
 - [ ] Record whether the sibling symbology package is a semantic reference
   only or a future build-time dependency.
 
 **Exit:** typed contract review, complete initial coverage inventory, and no
-ambiguous disclosure defaults.
+ambiguous disclosure defaults; every initial class has a catalog entry.
 
 ### Phase 1 — static SVG battlefield
 
-- [ ] Implement projection, grid, terrain, semantic edges, prism units,
-  upper-face glyphs, health, and facing.
+- [ ] Implement the orthographic top-down projection, square grid, terrain,
+  semantic edges, and authoritative footprint outlines.
+- [ ] Implement the fixed square symbol with faction outline, exact-class
+  glyph, 12-segment health track, and perimeter facing wedge.
+- [ ] Implement the corner elevation stack, capped `+N` detailed label, and
+  detailed-zoom stance mark.
+- [ ] Apply the 24 px and 48 px semantic-zoom thresholds with approximately
+  10% hysteresis.
 - [ ] Add pan, zoom, selection, focus, inspector, legend, and palettes.
 - [ ] Render exact committed frames without interpolation.
 
 **Exit:** representative static frames pass mapping tests, accessibility tests,
-legibility review, and the 200-unit performance target.
+legibility review, all three palette reviews, and the 200-unit performance
+target.
 
 ### Phase 2 — replay transport
 
@@ -821,6 +877,8 @@ tests prove lost contact leaves no visual or accessible residue.
 
 - [ ] Add exact selected overlays, semantic timeline lanes, deterministic
   interpolation, action traces, and reduced motion.
+- [ ] Aggregate or decline whole-force overlays above the 8,000-path-segment
+  limit while preserving precise selected-unit overlays.
 - [ ] Add the optional second heading only with an accepted gameplay source.
 
 **Exit:** exact-tick and interpolated modes converge on every committed frame;
@@ -828,8 +886,10 @@ two-heading and exact-overlay visual reviews pass.
 
 ### Phase 4 — simulation comparison and export
 
-- [ ] Add fork workflow, linked baseline/fork comparison, divergence
-  inspection, bookmarks, and safe SVG evidence export.
+- [ ] Add fork workflow, linked split-view baseline/fork comparison,
+  divergence inspection, and bookmarks.
+- [ ] Export sanitized SVG and PNG evidence with source, replay, projection,
+  palette, and renderer provenance.
 - [ ] Capture end-to-end performance and visual-review provenance.
 
 **Exit:** a derived simulation cannot be mistaken for verified replay, exports
@@ -837,63 +897,89 @@ carry complete provenance, and all normal/stress budgets have measured results.
 
 ## Acceptance criteria
 
-The first production-ready player is acceptable when:
+The first documentation-ready player is acceptable when:
 
-1. A unit's rendered base matches its authoritative footprint at every camera
-   rotation.
-2. Role, faction, health, and body facing remain readable at normal tactical
-   zoom.
-3. The upper-face facing wedge is unambiguous for the supported heading model.
-4. Attention and optional secondary heading cannot be mistaken for facing.
-5. A selected unit's exact visible geometry matches its disclosed projection.
-6. Full, perspective, and sandbox modes remain explicitly labeled.
-7. A lost hostile contact leaves no visual, DOM, accessibility, event-link, or
-   hit-target residue beyond legitimately disclosed history.
-8. Paused and stepped frames show exact committed ticks.
-9. Interpolation never changes committed state or verification outcomes.
-10. Seeking uses checkpoints and operation correlation without stale-response
+1. The battlefield remains flat and top-down at every supported camera
+   rotation, without simulated camera elevation or 3D unit geometry.
+2. Every unit uses a square information symbol, while a separate ground
+   outline matches its authoritative footprint.
+3. Exact class, faction, normalized health, and body facing remain readable at
+   standard zoom.
+4. The perimeter facing wedge is unambiguous for the supported heading model
+   while the exact-class glyph remains upright.
+5. The health track always has twelve positions, decreases monotonically, and
+   remains distinguishable in all three palette presets.
+6. Elevation zero has no mark; levels one through three have matching stepped
+   bars; higher levels use a capped stack and detailed `+N` label.
+7. Stance appears on the symbol only when disclosed and sufficiently close,
+   with inspector access at other zoom levels.
+8. Attention and optional secondary heading cannot be mistaken for facing.
+9. A selected unit's exact visible geometry matches its disclosed projection.
+10. Full, perspective, and sandbox modes remain explicitly labeled.
+11. A lost hostile contact leaves no visual, DOM, accessibility, event-link,
+    or hit-target residue beyond legitimately disclosed history.
+12. Paused and stepped frames show exact committed ticks.
+13. Interpolation never changes committed state or verification outcomes.
+14. Seeking uses checkpoints and operation correlation without stale-response
     races.
-11. Keyboard and pointer users can reach the same selection and inspection
+15. Keyboard and pointer users can reach the same selection and inspection
     information.
-12. The production element inventory has no unexplained visual gaps.
-13. Channel-capacity and target-size reviews are clean for representative
-    rosters.
-14. The 200-unit normal view meets measured responsiveness targets.
-15. Exported SVG contains provenance and no executable or external replay-
-    supplied content.
+16. The documented element inventory has no unexplained visual gaps.
+17. Channel-capacity and target-size reviews are clean for representative
+    rosters at the 24 px and 48 px thresholds.
+18. Whole-force overlays aggregate or refuse rendering above 8,000 path
+    segments without degrading precise selected-unit overlays.
+19. Linked comparison opens in a persistently labeled split view.
+20. The 200-unit normal view meets measured responsiveness targets.
+21. Exported SVG and PNG carry provenance; SVG contains no executable or
+    external replay-supplied content.
 
-## Decisions still requiring prototypes
+## Resolved design decisions
 
-- the exact isometric cell ratio and default camera elevation;
-- final role/class catalog and which roles share a primary glyph;
-- whether stance height is readable enough to serve as a reliable channel;
-- the health rail's normal-zoom numeric threshold;
-- the accepted faction and overlay palette presets;
-- whether a selected unit repeats facing at its base for dense occluded scenes;
-- the exact tactical and strategic semantic-zoom thresholds;
-- comparison default: split, swipe, or difference overlay;
-- permitted whole-force overlay complexity; and
-- whether SVG evidence export is needed in the first release or only PNG
-  capture plus replay identity.
+The prototype must validate these accepted choices rather than reopen them
+without new evidence:
 
-These are prototype questions, not reasons to leave replay authority,
-disclosure, direction semantics, or channel ownership ambiguous.
+1. The SVG battlefield is flat, top-down, and documentation-only. Babylon.js
+   owns the production 3D client.
+2. Every exact class has its own primary glyph.
+3. Height is secondary information. A corner elevation stack provides a
+   compact non-color cue, while exact values remain in detailed labels and the
+   inspector.
+4. Stance may appear inside the square at detailed zoom; it does not alter
+   footprint or simulated height.
+5. Health uses twelve normalized inset perimeter dashes. Exact hit points
+   appear at detailed zoom or in the inspector.
+6. The initial palette set is accessible default, high contrast, and
+   monochrome/pattern.
+7. Body facing uses a perimeter wedge or notch while the class glyph remains
+   upright.
+8. Semantic zoom changes at projected symbol widths of 24 px and 48 px, with
+   approximately 10% hysteresis.
+9. Baseline/fork comparison defaults to a linked split view.
+10. Whole-force overlays are capped at 8,000 path segments before aggregation
+    or refusal.
+11. The first release exports sanitized SVG and PNG evidence with provenance.
+
+Prototype measurements may tune dimensions, stroke weights, dash spacing, and
+the exact elevation-stack drawing without changing these channel assignments.
 
 ## Recommendation
 
 Proceed with Phase 0 and a small Phase 1 prototype containing:
 
-- one six-by-six isometric board;
+- one six-by-six top-down board;
 - blocking and open semantic edges;
-- eight units spanning factions, roles, health, footprints, and all eight
-  facings;
+- eight square unit symbols spanning factions, exact classes, health,
+  footprints, elevations, stances, and all eight facings;
 - one selected exact attention/visibility polygon;
 - one optional second heading;
-- strategic, tactical, and inspection zoom tiers; and
+- overview, standard, and detailed zoom tiers at the accepted thresholds;
+- all three accepted palette presets; and
 - keyboard selection plus the structured inspector.
 
-Render that prototype at the smallest intended tactical size, run a coverage
-and channel-capacity review, and tune only the S.I.R. state-to-glyph mapping.
-That will test the decisive visual proposition—the informative upper face of
-the unit die—before replay transport and comparison features increase the
-surface area.
+Render that prototype at 23 px, 24 px, 47 px, 48 px, and a representative
+detailed size. Run coverage, channel-capacity, accessibility, SVG-sanitization,
+and PNG-fallback reviews, then tune only the S.I.R. state-to-glyph mapping and
+declared visual tokens. That will test the decisive visual proposition—a flat,
+reusable square symbol that explains authoritative replay state—before replay
+transport and comparison features increase the surface area.
