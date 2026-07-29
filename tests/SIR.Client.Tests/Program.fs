@@ -1228,6 +1228,40 @@ let main _ =
         ExperienceSamples.tryReplay "troll-contact"
         |> Option.map ExperienceSamples.replayFrames
         |> Option.defaultValue [||]
+    let trollAssaultSimulator =
+        ExperienceSamples.simulator trollAssault
+        |> Option.defaultWith (fun () ->
+            failwith "The troll-assault simulator handoff is invalid.")
+    let rangedExchange =
+        [ 1 .. 3 ]
+        |> List.fold (fun handoff _ ->
+            MapEditorSimulator.update StepSimulator None handoff) trollAssaultSimulator
+    let rangedFrame =
+        MapEditorSimulator.frame None rangedExchange
+    let rangedScene =
+        Battlefield.scene rangedFrame Battlefield.initial
+    let rifleProfile =
+        trollAssaultEditor.Map.Units
+        |> Map.find 1
+        |> MapEditorSimulator.attackProfileFor
+    let trollProfile =
+        trollAssaultEditor.Map.Units
+        |> Map.find 4
+        |> MapEditorSimulator.attackProfileFor
+    let futureAreaShapes =
+        [ BurstArea 2
+          ConeArea(6, 60)
+          RayArea(8, 1)
+          RectangleArea(3, 5) ]
+    let breachStalemate =
+        ExperienceSamples.tryMap "breach-corridor"
+        |> Option.bind ExperienceSamples.simulator
+        |> Option.map (fun initial ->
+            [ 1 .. 8 ]
+            |> List.fold (fun handoff _ ->
+                MapEditorSimulator.update StepSimulator None handoff) initial)
+        |> Option.defaultWith (fun () ->
+            failwith "The breach-corridor simulator handoff is invalid.")
     require
         (trollAssaultEditor.Map.Width = 16
          && trollAssaultEditor.Map.Height = 10
@@ -1238,7 +1272,28 @@ let main _ =
          && trollAssaultFrames = repeatedTrollAssaultFrames
          && trollAssaultFrames[0].Tick = 0
          && trollAssaultFrames[12].Tick = 12
-         && not trollAssaultFrames[12].Events.IsEmpty)
+         && not trollAssaultFrames[12].Events.IsEmpty
+         && rifleProfile.Delivery = ProjectileDelivery
+         && rifleProfile.Range = 8
+         && rifleProfile.Damage = 12
+         && trollProfile.Delivery = MeleeDelivery
+         && futureAreaShapes.Length = 4
+         && (rangedExchange.LastCombatEvents
+             |> List.exists (fun event ->
+                 event.SourceUnitId = 1
+                 && event.Delivery = ProjectileDelivery))
+         && (Map.find 4 rangedExchange.RuntimeMap.Units).Health < 240
+         && (rangedScene.ActionTraces
+             |> Array.exists (fun trace ->
+                 trace.Kind = "combat-projectile"))
+         && (trollAssaultFrames
+             |> Array.collect (fun frame -> List.toArray frame.Events)
+             |> Array.exists (fun event ->
+                 event.Source = "combat-projectile"
+                 && event.SourceUnitId.IsSome
+                 && event.TargetUnitId = Some 4))
+         && breachStalemate.LastCombatEvents.IsEmpty
+         && (Map.find 3 breachStalemate.RuntimeMap.Units).Health = 12)
         "The curated troll assault map or deterministic replay walkthrough changed."
 
     let sampleReplayShell =

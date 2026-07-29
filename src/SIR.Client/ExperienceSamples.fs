@@ -137,7 +137,45 @@ unit 4 red orc 7 8 2 35 35 general -
         |> MapEditorSimulator.tryHandoff
         |> Result.toOption
 
-    let private inspection tick (map: MapDefinition) events : InspectionProjection =
+    let private combatSource delivery =
+        match delivery with
+        | MeleeDelivery -> "combat-melee"
+        | ProjectileDelivery -> "combat-projectile"
+        | LobbedAreaDelivery -> "combat-lobbed-area"
+        | SpellAreaDelivery -> "combat-spell-area"
+
+    let private inspection
+        tick
+        (map: MapDefinition)
+        events
+        (combatEvents: SimulatorCombatEvent list)
+        : InspectionProjection
+        =
+        let combatSummaries =
+            combatEvents |> List.map _.Summary |> Set.ofList
+        let narrativeEvents =
+            events
+            |> List.filter (fun summary ->
+                not (Set.contains summary combatSummaries))
+            |> List.mapi (fun index summary ->
+                { Id = tick * 100 + int32 index
+                  Tick = tick
+                  Source = "sample-simulation"
+                  Summary = summary
+                  SourceUnitId = None
+                  TargetUnitId = None })
+        let projectedCombatEvents =
+            combatEvents
+            |> List.mapi (fun index combat ->
+                { Id = tick * 100 + 50 + int32 index
+                  Tick = tick
+                  Source = combatSource combat.Delivery
+                  Summary = combat.Summary
+                  SourceUnitId = Some combat.SourceUnitId
+                  TargetUnitId =
+                    match combat.Target with
+                    | UnitCombatTarget unitId -> Some unitId
+                    | AreaCombatTarget _ -> None })
         { Tick = tick
           BoardMinimumColumn = 0
           BoardMinimumRow = 0
@@ -172,15 +210,7 @@ unit 4 red orc 7 8 2 35 35 general -
                   EndRow =
                     row
                     + if direction = SouthEdge then 0 else 1 })
-          Events =
-            events
-            |> List.mapi (fun index summary ->
-                { Id = tick * 100 + int32 index
-                  Tick = tick
-                  Source = "sample-simulation"
-                  Summary = summary
-                  SourceUnitId = None
-                  TargetUnitId = None })
+          Events = List.append narrativeEvents projectedCombatEvents
           Checkpoints =
             [ { Tick = tick
                 StateHash = "sample-" + string tick
@@ -193,7 +223,7 @@ unit 4 red orc 7 8 2 35 35 general -
         | Some initial ->
             let frames = ResizeArray<InspectionProjection>()
             let mutable handoff = initial
-            frames.Add(inspection 0 handoff.RuntimeMap [])
+            frames.Add(inspection 0 handoff.RuntimeMap [] [])
             for _ in 1 .. replay.Ticks do
                 handoff <-
                     MapEditorSimulator.update
@@ -205,5 +235,6 @@ unit 4 red orc 7 8 2 35 35 general -
                         handoff.Tick
                         handoff.RuntimeMap
                         handoff.LastEvents
+                        handoff.LastCombatEvents
                 )
             frames.ToArray()

@@ -25,12 +25,42 @@ type VisibilityOverlayAvailability =
     | VisibilityOverlaysUnavailable of reason: string
     | SharedKernelVisibilityAvailable
 
+type SimulatorCombatDelivery =
+    | MeleeDelivery
+    | ProjectileDelivery
+    | LobbedAreaDelivery
+    | SpellAreaDelivery
+
+type SimulatorAreaShape =
+    | BurstArea of radius: int32
+    | ConeArea of range: int32 * angleDegrees: int32
+    | RayArea of length: int32 * width: int32
+    | RectangleArea of width: int32 * depth: int32
+
+type SimulatorCombatTarget =
+    | UnitCombatTarget of unitId: int32
+    | AreaCombatTarget of origin: EditorCellAddress * shape: SimulatorAreaShape
+
+type SimulatorAttackProfile =
+    { Delivery: SimulatorCombatDelivery
+      Range: int32
+      Damage: int32
+      AreaShape: SimulatorAreaShape option }
+
+type SimulatorCombatEvent =
+    { SourceUnitId: int32
+      Target: SimulatorCombatTarget
+      Delivery: SimulatorCombatDelivery
+      Damage: int32
+      Summary: string }
+
 type SimulatorHandoff =
     { Revision: MapRevision
       RuntimeMap: MapDefinition
       Tick: int32
       IsRunning: bool
       LastEvents: string list
+      LastCombatEvents: SimulatorCombatEvent list
       PreviewDestination: EditorCellAddress option }
 
 type SimulatorAction =
@@ -246,6 +276,7 @@ module MapEditorSimulator =
                   Tick = 0
                   IsRunning = false
                   LastEvents = []
+                  LastCombatEvents = []
                   PreviewDestination = None }
         else
             issues
@@ -287,7 +318,9 @@ module MapEditorSimulator =
         |> Map.toSeq
         |> Seq.map snd
         |> Seq.filter (fun (other: EditorUnit) ->
-            other.Id <> unit.Id && other.Side <> unit.Side)
+            other.Id <> unit.Id
+            && other.Side <> unit.Side
+            && other.Health > 0)
         |> Seq.sortBy (fun (other: EditorUnit) ->
             max
                 (abs (other.Column - unit.Column))
@@ -295,9 +328,98 @@ module MapEditorSimulator =
             other.Id)
         |> Seq.tryHead
 
+    let attackProfileFor (unit: EditorUnit) =
+        match unit.ClassId.Trim().ToLowerInvariant() with
+        | "rifleman" ->
+            { Delivery = ProjectileDelivery
+              Range = 8
+              Damage = 12
+              AreaShape = None }
+        | "troll" ->
+            { Delivery = MeleeDelivery
+              Range = 1
+              Damage = 18
+              AreaShape = None }
+        | "orc" ->
+            { Delivery = MeleeDelivery
+              Range = 1
+              Damage = 5
+              AreaShape = None }
+        | "goblin" ->
+            { Delivery = MeleeDelivery
+              Range = 1
+              Damage = 2
+              AreaShape = None }
+        | _ ->
+            { Delivery = MeleeDelivery
+              Range = 1
+              Damage = 1
+              AreaShape = None }
+
+    let private axisGap firstStart firstSize secondStart secondSize =
+        let firstEnd = firstStart + firstSize - 1
+        let secondEnd = secondStart + secondSize - 1
+        if firstEnd < secondStart then secondStart - firstEnd
+        elif secondEnd < firstStart then firstStart - secondEnd
+        else 0
+
+    let private footprintDistance (first: EditorUnit) (second: EditorUnit) =
+        max
+            (axisGap first.Column first.Size second.Column second.Size)
+            (axisGap first.Row first.Size second.Row second.Size)
+
+    let private deliveryLabel delivery =
+        match delivery with
+        | MeleeDelivery -> "melee"
+        | ProjectileDelivery -> "ranged"
+        | LobbedAreaDelivery -> "lobbed area"
+        | SpellAreaDelivery -> "spell area"
+
+    let private projectilePathClear
+        (attacker: EditorUnit)
+        (target: EditorUnit)
+        (map: MapDefinition)
+        =
+        let origin =
+            { CellColumn = attacker.Column + attacker.Size / 2
+              CellRow = attacker.Row + attacker.Size / 2 }
+        let destination =
+            { CellColumn = target.Column + target.Size / 2
+              CellRow = target.Row + target.Size / 2 }
+        let mutable previous = origin
+        let mutable clear = true
+        for cell in route origin destination do
+            if clear then
+                let columnDelta = cell.CellColumn - previous.CellColumn
+                let rowDelta = cell.CellRow - previous.CellRow
+                let horizontalEdge =
+                    if columnDelta > 0 then
+                        Some(previous.CellColumn, previous.CellRow, EastEdge)
+                    elif columnDelta < 0 then
+                        Some(cell.CellColumn, previous.CellRow, EastEdge)
+                    else
+                        None
+                let verticalEdge =
+                    if rowDelta > 0 then
+                        Some(previous.CellColumn, previous.CellRow, SouthEdge)
+                    elif rowDelta < 0 then
+                        Some(previous.CellColumn, cell.CellRow, SouthEdge)
+                    else
+                        None
+                let blockedEdge =
+                    [ horizontalEdge; verticalEdge ]
+                    |> List.choose id
+                    |> List.exists (edgeBlocks map)
+                let blockedTerrain =
+                    Map.tryFind (cell.CellColumn, cell.CellRow) map.Terrain = Some Blocked
+                clear <- not blockedEdge && not blockedTerrain
+                previous <- cell
+        clear
+
     let private step handoff =
         let mutable map = handoff.RuntimeMap
         let events = ResizeArray<string>()
+        let combatEvents = ResizeArray<SimulatorCombatEvent>()
         for id in handoff.RuntimeMap.Units |> Map.toSeq |> Seq.map fst |> Seq.sort do
             match Map.tryFind id map.Units with
             | Some unit when unit.Health > 0 ->
@@ -327,19 +449,36 @@ module MapEditorSimulator =
                     | Some target ->
                         let columnDelta = target.Column - unit.Column
                         let rowDelta = target.Row - unit.Row
-                        if
-                            max (abs columnDelta) (abs rowDelta)
-                            <= max unit.Size target.Size
-                        then
+                        let profile = attackProfileFor unit
+                        let inRange =
+                            footprintDistance unit target <= profile.Range
+                        let deliveryClear =
+                            match profile.Delivery with
+                            | ProjectileDelivery ->
+                                projectilePathClear unit target map
+                            | _ -> true
+                        if inRange && deliveryClear then
                             let damaged =
-                                { target with Health = max 0 (target.Health - 1) }
+                                { target with
+                                    Health = max 0 (target.Health - profile.Damage) }
                             map <- { map with Units = Map.add target.Id damaged map.Units }
-                            events.Add(
+                            let summary =
                                 "Unit "
                                 + string id
-                                + " attacks unit "
+                                + " makes a "
+                                + deliveryLabel profile.Delivery
+                                + " attack against unit "
                                 + string target.Id
-                                + " for 1 damage."
+                                + " for "
+                                + string profile.Damage
+                                + " damage."
+                            events.Add summary
+                            combatEvents.Add(
+                                { SourceUnitId = id
+                                  Target = UnitCombatTarget target.Id
+                                  Delivery = profile.Delivery
+                                  Damage = profile.Damage
+                                  Summary = summary }
                             )
                         else
                             match directionForDelta columnDelta rowDelta with
@@ -359,6 +498,7 @@ module MapEditorSimulator =
             RuntimeMap = map
             Tick = handoff.Tick + 1
             LastEvents = List.ofSeq events
+            LastCombatEvents = List.ofSeq combatEvents
             PreviewDestination = None }
 
     let update action selectedUnitId handoff =
@@ -390,6 +530,7 @@ module MapEditorSimulator =
                           + (if changed then " moves " else " is blocked moving ")
                           + directionCode direction
                           + "." ]
+                    LastCombatEvents = []
                     PreviewDestination = None })
             |> Option.defaultValue handoff
         | SetSimulatorController controller ->
@@ -399,7 +540,10 @@ module MapEditorSimulator =
             | Ok script ->
                 updateSelected (fun unit ->
                     { unit with Script = script; ScriptIndex = 0 })
-            | Error error -> { handoff with LastEvents = [ error ] }
+            | Error error ->
+                { handoff with
+                    LastEvents = [ error ]
+                    LastCombatEvents = [] }
         | MoveSimulatorPreview(columnDelta, rowDelta) ->
             let origin =
                 handoff.PreviewDestination
@@ -440,11 +584,13 @@ module MapEditorSimulator =
                               + " moves "
                               + string routePreview.Distance
                               + " cells along the accepted preview route." ]
+                        LastCombatEvents = []
                         PreviewDestination = None }
                 | Some routePreview ->
                     { handoff with
                         LastEvents =
-                            [ "Preview route rejected: " + string routePreview.Collision + "." ] }
+                            [ "Preview route rejected: " + string routePreview.Collision + "." ]
+                        LastCombatEvents = [] }
                 | None -> handoff
 
     let frame selectedUnitId handoff =
@@ -490,8 +636,37 @@ module MapEditorSimulator =
                            else
                                "collision: " + string routePreview.Collision)
                     ) })
+        let combatEvents =
+            handoff.LastCombatEvents
+            |> List.mapi (fun index combat ->
+                { Id = handoff.Tick * 1000 + 500 + int32 index
+                  Tick = handoff.Tick
+                  Kind =
+                    match combat.Delivery with
+                    | MeleeDelivery -> "combat-melee"
+                    | ProjectileDelivery -> "combat-projectile"
+                    | LobbedAreaDelivery -> "combat-lobbed-area"
+                    | SpellAreaDelivery -> "combat-spell-area"
+                  SourceUnitId = Disclosed combat.SourceUnitId
+                  TargetUnitId =
+                    match combat.Target with
+                    | UnitCombatTarget unitId -> Disclosed unitId
+                    | AreaCombatTarget _ -> NotApplicable
+                  Summary = Disclosed combat.Summary })
+            |> List.toArray
+        let combatSummaries =
+            handoff.LastCombatEvents
+            |> List.map _.Summary
+            |> Set.ofList
+        let narrativeEvents =
+            baseFrame.Events
+            |> Array.filter (fun event ->
+                match event.Summary with
+                | Disclosed summary -> not (Set.contains summary combatSummaries)
+                | _ -> true)
         { baseFrame with
-            Overlays = overlay |> Option.toArray }
+            Overlays = overlay |> Option.toArray
+            Events = Array.append narrativeEvents combatEvents }
 
     let viewState selectedUnitId handoff =
         { MapEditor.initial with

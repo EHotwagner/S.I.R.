@@ -6,7 +6,7 @@ index: 2
 status: accepted
 decision-status: implemented
 document-type: reference
-version: "1.8"
+version: "1.9"
 last-updated: 2026-07-29
 description: Map records, terrain, semantic edges, square unit footprints, controller modes, and deterministic execution.
 related:
@@ -368,11 +368,28 @@ Simulator sandbox. Replay cards open locally navigable projections in Replay.
 They are explicitly labelled deterministic sandbox evidence and are not
 cryptographically verified match replay packages.
 
-The current General controller attacks only when adjacent; accepted ranged
-weapon resolution is not yet part of this map-simulator kernel. The troll
-assault therefore makes that limitation observable: the riflemen cannot shoot
-the troll before contact under the current rules. The sample must evolve with
-the shared combat kernel rather than inventing browser-only rifle mechanics.
+The General controller now uses a small typed attack profile for each unit
+class. Riflemen fire 12-damage projectiles at up to eight cells; trolls, orcs,
+goblins, and unrecognized classes retain class-specific or fallback melee
+profiles. The troll assault therefore answers its intended question visibly:
+projectile lines, moving shot marks, and impact rings show every rifle volley,
+while solid strike lines and crossed impact marks distinguish melee attacks.
+Projectile paths are deterministically intercepted by blocked terrain, walls,
+windows, and closed doors, so the breach sample remains a true stalemate.
+
+Combat events carry typed delivery values rather than relying on their display
+text. `MeleeDelivery` and `ProjectileDelivery` are implemented.
+`LobbedAreaDelivery` and `SpellAreaDelivery`, together with unit or area
+targets, reserve the presentation contract needed by future grenades and
+spells. Area targets are typed as burst, cone, ray, or rectangle templates
+rather than an ambiguous point and radius. Those future deliveries still
+require accepted trajectory, area-of-effect, line-of-sight, resistance, and
+friendly-fire rules before they can resolve damage.
+
+Samples are presented as compact expandable lists rather than a card grid.
+The collapsed row keeps type, name, and summary scannable; expanding a row
+reveals its mechanics and the commands to open the map, run the simulation, or
+inspect the replay.
 
 The deterministic
 `tests/SIR.Client.Tests/fixtures/map-editor-milestone-9-simulator.txt` review
@@ -618,7 +635,9 @@ The current reference controller is deterministic:
 
 1. Select the nearest hostile by Chebyshev distance between square footprints.
 2. Break equal-distance ties by unit identifier.
-3. Attack for one damage when adjacent.
+3. Use the unit's typed attack profile when the target is in range and the
+   delivery path is clear. Riflemen currently fire an eight-cell, twelve-damage
+   projectile; trolls, orcs, and goblins use one-cell melee attacks.
 4. Otherwise move one step toward the target.
 5. Hold if no valid move or hostile exists.
 

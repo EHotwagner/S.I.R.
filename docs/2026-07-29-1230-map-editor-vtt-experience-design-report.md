@@ -648,6 +648,10 @@ should not duplicate the complete runtime control panel.
   controls, events, and samples. The top-level Samples workspace opens
   canonical maps, live simulator handoffs, and disclosure-labelled replay
   walkthroughs, including the three-rifleman versus armored-troll assault.
+- Sample discovery now uses compact expandable lists. Simulator combat events
+  carry typed melee, projectile, lobbed-area, or spell-area delivery metadata;
+  riflemen resolve visible ranged volleys while melee attacks use a distinct
+  strike and impact treatment.
 - Local editor and simulator work can be downloaded as a version-control
   bundle and imported into `designs/map-editor/` with
   `npm run import:map-design -- <bundle>`. The static host still performs no
