@@ -132,6 +132,40 @@ cache locality. Player code never receives the batch or another instance's
 context. Shared code is not shared state, shared knowledge, or a communication
 channel.
 
+### Qualified reusable host
+
+`SIR.Match.ControlHost` is the reusable native Control ABI v1 host. It compiles
+an immutable core-WASM artifact once, then creates one Wasmtime store, instance,
+memory, fuel account, configuration record, wake schedule, and fault count per
+controlled unit. The linker defines no imports, and artifact qualification
+rejects every import, including every WASI namespace; ambient files, clocks,
+randomness, environment variables, and sockets are therefore unavailable by
+construction.
+
+The initial qualified profile uses 10,000 fuel per invocation and 131,072 bytes
+of linear memory. `Store.SetLimits` enforces the memory ceiling even when a
+module declares no maximum. The host resets fuel before each decision, performs
+one canonical input copy and one bounded output read, then validates the whole
+envelope and every kernel-facing request before anything can enter
+`MapScale`. Traps, fuel exhaustion, bad lengths, malformed output, and forbidden
+requests produce a stable failure journal with an empty accepted-request list.
+
+Ordinary invocation journals retain input/output hashes, accepted requests or
+the stable failure, fuel and memory accounting, and a module-state hash.
+Replay checkpoint ticks additionally retain the complete linear memory,
+exported mutable integer globals, wake tick, and fault count. Artifact
+qualification rejects a module with an unexported mutable global, so resumable
+state cannot hide outside the checkpoint surface. Resuming re-instantiates from
+the already compiled artifact and restores this state; compiled native code
+remains derived cache state.
+
+The native qualification fixture runs 200 isolated instances of one compiled
+reference controller inside the 50 ms authoritative tick budget in Release
+configuration. The same fixture verifies isolated mutable globals,
+snapshot/resume output and state-hash equality, atomic malformed-output and
+fuel failures, sleep, MapScale handoff, rejected WASI imports, rejected hidden
+mutable globals, and denied growth beyond the 128 KiB memory limit.
+
 ## Instance configuration
 
 An artifact is immutable and shared by every unit assigned to it. Configuration

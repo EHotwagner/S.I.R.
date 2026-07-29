@@ -3,6 +3,7 @@ namespace SIR.Match
 open System
 open Wasmtime
 open SIR.Domain
+open SIR.ControlAbi
 open SIR.Simulation
 
 /// Immutable player module and the pinned execution profile used to run it.
@@ -31,76 +32,85 @@ module MatchReplay =
             )
         )
 
-    let private executionProfileHash =
-        CanonicalHash.sha256 (
-            Text.Encoding.UTF8.GetBytes(
-                "wasmtime=44.0.0;core-only=true;fuel=10000;wasi=false"
-            )
+    let private executionProfileHash = ControlHost.defaultProfile.Identity
+
+    let private controllerArtifact =
+        let output =
+            V1Codec.encodeOutput
+                0
+                0
+                0u
+                0u
+                [ { Kind = RequestKind.SetEngagement
+                    ModuleRequestId = 1u
+                    Payload = [||] } ]
+                []
+            |> Result.defaultWith (fun error ->
+                failwithf "Could not build qualification controller: %A" error)
+
+        let data =
+            output
+            |> Array.map (fun value -> sprintf "\\%02x" value)
+            |> String.concat ""
+
+        Module.ConvertText(
+            $"""(module
+              (memory (export "memory") 2 2)
+              (data (i32.const 65536) "{data}")
+              (func (export "sir_abi_version") (result i32) i32.const 65536)
+              (func (export "sir_input_ptr") (result i32) i32.const 0)
+              (func (export "sir_input_capacity") (result i32) i32.const 65536)
+              (func (export "sir_output_ptr") (result i32) i32.const 65536)
+              (func (export "sir_output_capacity") (result i32) i32.const 16384)
+              (func (export "sir_decide") (param i32) (result i32)
+                i32.const 65548 i32.const 12 i32.load i32.store
+                i32.const 65552 i32.const 16 i32.load i32.store
+                i32.const {output.Length}))"""
         )
 
-    // Binary WebAssembly for:
-    // (module (func (export "decide") (param i32) (result i32) i32.const 1))
-    // Action code 1 requests an attack against the only disclosed opponent.
-    let private controllerArtifact =
-        [| 0x00uy; 0x61uy; 0x73uy; 0x6duy; 0x01uy; 0x00uy; 0x00uy; 0x00uy
-           0x01uy; 0x06uy; 0x01uy; 0x60uy; 0x01uy; 0x7fuy; 0x01uy; 0x7fuy
-           0x03uy; 0x02uy; 0x01uy; 0x00uy
-           0x07uy; 0x0auy; 0x01uy; 0x06uy; 0x64uy; 0x65uy; 0x63uy; 0x69uy
-           0x64uy; 0x65uy; 0x00uy; 0x00uy
-           0x0auy; 0x06uy; 0x01uy; 0x04uy; 0x00uy; 0x41uy; 0x01uy; 0x0buy |]
+    let private controlInput tick unitId =
+        { Kind = MessageKind.Input
+          MinorVersion = V1Constants.Minor
+          Tick = tick
+          UnitId = unitId
+          Flags = 0u
+          Budget = uint32 ControlHost.defaultProfile.FuelPerInvocation
+          Sections =
+            [ { Tag = V1Constants.OwnStateTag
+                Required = true
+                ElementCount = 1
+                Payload = [| 1uy |] } ] }
+        |> V1Codec.encode
+        |> Result.defaultWith (fun error ->
+            failwithf "Could not encode qualification input: %A" error)
 
-    let private createEngine () =
-        let config = new Config()
-        config.WithFuelConsumption(true) |> ignore
-        config.WithReferenceTypes(false) |> ignore
-        config.WithBulkMemory(false) |> ignore
-        config.WithSIMD(false) |> ignore
-        config.WithRelaxedSIMD(false, false) |> ignore
-        config.WithMultiValue(false) |> ignore
-        config.WithMultiMemory(false) |> ignore
-        config.WithWasmThreads(false) |> ignore
-        config.WithTailCalls(false) |> ignore
-        config.WithComponentModel(false) |> ignore
-        new Engine(config)
-
-    let private executeArtifact (artifact: WasmArtifactEvidence) finalTick =
+    let private executeArtifact
+        (artifact: WasmArtifactEvidence)
+        (compiled: CompiledControlArtifact)
+        finalTick
+        =
         if CanonicalHash.sha256 artifact.ArtifactBytes <> artifact.ArtifactHash then
             invalidArg (nameof artifact) "The control artifact identity does not match its bytes."
 
         if artifact.ExecutionProfileHash <> executionProfileHash then
             invalidArg (nameof artifact) "The execution profile is not the qualification profile."
 
-        use engine = createEngine ()
-        use compiled =
-            Module.FromBytes(engine, "qualification-controller", artifact.ArtifactBytes)
-        use linker = new Linker(engine)
-        use store = new Store(engine)
-        store.Fuel <- 10_000UL
-        let instance = linker.Instantiate(store, compiled)
-        let decide =
-            match instance.GetFunction("decide") with
-            | null -> failwith "The qualification artifact does not export decide."
-            | value -> value
+        let unitId = UnitId.value artifact.ControlledUnit
+        use instance = ControlHost.instantiate compiled unitId [||]
 
         [ for tick in 1 .. finalTick do
-              store.Fuel <- 10_000UL
-
-              let actionCode =
-                  match decide.Invoke(tick) with
-                  | :? int as value -> value
-                  | value -> failwithf "Unexpected WASM decision value %A." value
-
-              if actionCode <> 1 then
-                  failwithf "Unsupported qualification action code %d." actionCode
-
-              yield
-                  { Tick = tick
-                    Sequence = tick
-                    Input =
-                        Attack(
-                            artifact.ControlledUnit,
-                            Simulation.unitId 20
-                        ) } ]
+              match ControlHost.invoke tick (controlInput tick unitId) instance with
+              | Accepted(output, _) when not (List.isEmpty output.Requests) ->
+                  yield
+                      { Tick = tick
+                        Sequence = tick
+                        Input =
+                            Attack(
+                                artifact.ControlledUnit,
+                                Simulation.unitId 20
+                            ) }
+              | result ->
+                  failwithf "Qualification control invocation failed: %A" result ]
 
     let private checkpoint tick state events : ReplayCheckpoint =
         { Tick = tick
@@ -154,7 +164,13 @@ module MatchReplay =
               ExecutionProfileHash = executionProfileHash
               ControlledUnit = Simulation.unitId 10 }
 
-        let acceptedOutputs = executeArtifact artifact 4
+        use compiled =
+            ControlHost.compile
+                ControlHost.defaultProfile
+                "qualification-controller"
+                artifact.ArtifactBytes
+
+        let acceptedOutputs = executeArtifact artifact compiled 4
         let finalState, finalEvents, checkpoints, perspectives =
             runKernel acceptedOutputs
 
@@ -184,7 +200,7 @@ module MatchReplay =
               FullReplayAuthorized = false
               Content = PerspectivePlayback perspectives }
 
-        let reexecuted = executeArtifact artifact 4
+        let reexecuted = executeArtifact artifact compiled 4
 
         { FullPackage = full
           PerspectivePackage = perspective
