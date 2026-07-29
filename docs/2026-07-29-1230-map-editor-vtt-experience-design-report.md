@@ -26,12 +26,13 @@ automated qualification complete, human qualification pending
 ## Executive decision
 
 Replace the current form-and-grid editor with an SVG-first tactical map
-authoring application inspired by Roll20, Battlegrounds: RPG Edition, Fantasy
-Grounds Unity, and Foundry Virtual Tabletop. The battlefield occupies the
-available application area. A compact left tool rail selects an editing
-domain, a contextual palette exposes the tools for that domain, and a
-collapsible right inspector edits the current selection. Persistent application
-tabs continue to separate **Simulator**, **Editor**, **Replay**, and **Rules and
+authoring application inspired by virtual tabletops and the compact command
+organization of VS Code, 3ds Max, and Word. The battlefield occupies the
+available application area. A conventional menu bar holds the complete command
+surface, a quick-access toolbar holds frequent actions, and a compact rail on
+the right selects one optional contextual panel at a time. A separate
+collapsible inspector edits the current selection. Persistent application tabs
+continue to separate **Simulator**, **Editor**, **Replay**, and **Rules and
 data**.
 
 The design adopts the interaction strengths of virtual tabletops without
@@ -315,21 +316,26 @@ preserves editor selection, camera, and unsaved draft state.
 ### Desktop editor
 
 ```text
-┌─ top bar: map name · revision · undo/redo · validate · save · simulate ──────┐
-├──────┬──────────────────────────────────────────────────────────┬─────────────┤
-│ tool │                                                          │ inspector   │
-│ rail │                 tactical SVG workspace                   │ selection   │
-│      │                                                          │ properties  │
-│      │                                                          │ validation  │
-├──────┴──────────────────────────────────────────────────────────┴─────────────┤
-│ contextual palette / assets / layers                            status · zoom │
+┌─ document: map name · revision · save state · simulator state ───────────────┐
+├─ File  Edit  View  Map ──────────────────────────────────────────────────────┤
+├─ New Open Save │ Undo Redo │ Select Pencil Units Fit − + Simulate ──────────┤
+│                                                        ┌─────── right rail ┐│
+│                 tactical SVG workspace                 │Terrain / context  ││
+│                                                        │Units   / context  ││
+│                                                        │Edges   / context  ││
+│                                                        │Zones   / context  ││
+│                                                        │Map file / context ││
+│                                                        └───────────────────┘│
 └───────────────────────────────────────────────────────────────────────────────┘
 ```
 
-The tool rail is icon-and-label, not icon-only. Selecting a domain opens its
-contextual palette. The inspector is resizable and collapsible. The lower
-palette may become a left drawer after usability testing; its contract matters
-more than its exact edge.
+The menu bar is the scalable inventory of commands. The quick-access toolbar
+is deliberately short and may contain only high-frequency actions. The right
+rail remains icon-and-label rather than icon-only; selecting its active domain
+again hides the contextual panel. The inspector is independently collapsible.
+This follows the common desktop separation between a complete menu/ribbon,
+frequent commands, and a single docked context panel without permanently
+shrinking the canvas.
 
 ### Narrow editor
 
@@ -609,7 +615,7 @@ The top bar displays:
 - last simulated revision; and
 - whether the simulator is stale.
 
-Selecting **Simulate this revision** validates, creates an immutable revision,
+Selecting **Simulate** validates, creates an immutable revision,
 switches to the Simulator tab, and resets the sandbox to that revision.
 Returning to the Editor preserves later draft changes. The simulator never
 pulls uncommitted pointer previews or rewrites editor history.
@@ -626,11 +632,22 @@ should not duplicate the complete runtime control panel.
 - Loading a newer local draft requires an explicit recovery choice.
 - Import parses into a temporary value, reports all bounded errors, then
   replaces the current draft atomically.
-- Clearing, resizing with loss, and importing over a dirty draft require
+- Creating a new map, clearing, resizing with loss, and importing over a dirty
+  draft require
   confirmation.
 - The history budget is bounded by command count and approximate serialized
   bytes.
 - No user-provided map or asset is uploaded by the static GitHub Pages host.
+- The implemented desktop-authoring shell keeps the map as the primary surface:
+  classical menus contain the growing command set, a dense toolbar exposes
+  frequent actions, and a compact command rail is docked to the map's right
+  edge. Contextual panels can be hidden by repeat click or `F2`, and the
+  inspector is an optional `F3` overlay.
+- Local editor and simulator work can be downloaded as a version-control
+  bundle and imported into `designs/map-editor/` with
+  `npm run import:map-design -- <bundle>`. The static host still performs no
+  authenticated repository write; direct GitHub commits require an authorized
+  GitHub App or OAuth service.
 
 ## Accessibility
 
@@ -831,7 +848,7 @@ within it is checked.
 
 ### Milestone 9 — Simulator handoff and perspective preview
 
-- [x] Add **Simulate this revision** with immutable revision handoff.
+- [x] Add **Simulate** with immutable revision handoff.
 - [x] Display when the simulator is behind the editor draft.
 - [x] Keep runtime ticks and controller effects out of authored history.
 - [x] Add deterministic route, distance, and collision preview.
@@ -912,6 +929,12 @@ All sources were accessed 2026-07-29.
 - [Scene regions](https://foundryvtt.com/article/scene-regions/)
 - [Map notes](https://foundryvtt.com/article/map-notes/)
 - [Game controls](https://foundryvtt.com/article/controls/)
+
+### Desktop command organization
+
+- [Visual Studio Code user interface](https://code.visualstudio.com/docs/editing/userinterface)
+- [3ds Max command panel](https://help.autodesk.com/view/3DSMAX/2025/ENU/?guid=GUID-E3CB809D-94ED-4C30-892B-1D12B8721EA5)
+- [Customize the ribbon in Word](https://support.microsoft.com/en-us/office/customize-the-ribbon-in-word-00f24ca7-6021-48d3-9514-a31a460ecb31)
 
 ## Related S.I.R. documents
 

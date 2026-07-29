@@ -1,7 +1,7 @@
 {
   "format": "sir-map-editor-review-v1",
   "generatedFrom": "production Fable/React SVG workspaces",
-  "productionBundleSha256": "9bf1f2e7ec4817f824f1aaf4948bb112983a2ee28d572a2392665231cbf2e97b",
+  "productionBundleSha256": "27b26c80515d4426fdfec4c542f8f4242c8f99acb8dc67b36f9ff9e5ea2af9ba",
   "rasterizer": "rsvg-convert 2.62.3",
   "width": 960,
   "height": 640,
@@ -28,7 +28,7 @@
       "svg": "units.svg",
       "png": "units.png",
       "svgSha256": "fdcc8a8311532e02d21922a2ca47af5943ce6d27370e1e0b3b4a190618aa3b48",
-      "pngSha256": "b9859b259d3a605085532cc0f64b99a895508878dd154cee9700e4a9343e44ef"
+      "pngSha256": "bd726d369e3f87929e12ed0c58e151ddf585bb86545e61598c77ab7daf272700"
     },
     {
       "domain": "zones",
@@ -60,7 +60,7 @@
       "svg": "validation.svg",
       "png": "validation.png",
       "svgSha256": "132d9934dee023a559e0f7eaaacda5b9843ab731766636a4170bbed0bfb185e2",
-      "pngSha256": "18e86fa85ebd61195a97695110f3f3f720f4049de44cb4c27c59550ad3bbde4e"
+      "pngSha256": "f583462a86894a954530c653344ff1317d45d58ddebb8158b260e06b11f9dd55"
     }
   ]
 }

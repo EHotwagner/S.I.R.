@@ -6,7 +6,7 @@ index: 2
 status: accepted
 decision-status: implemented
 document-type: reference
-version: "1.6"
+version: "1.7"
 last-updated: 2026-07-29
 description: Map records, terrain, semantic edges, square unit footprints, controller modes, and deterministic execution.
 related:
@@ -41,6 +41,9 @@ authority boundaries:
   become a second source of map rules.
 - The static GitHub Pages client reads local inputs and exports local evidence.
   It is not an authoritative match host and does not upload maps or assets.
+- `Repository bundle` exports editor and simulator design state for explicit
+  import into a version-controlled checkout. The static client never stores a
+  repository credential.
 - `SIR-MAP 2` is the canonical portable format because typed deployment zones
   and polygon geometry cannot be represented in version 1. Version 1 remains
   readable and is migrated in memory before canonical version 2 export.
@@ -107,11 +110,58 @@ not inherit a preset by name or image: it must be assigned deliberately.
 
 ## Initial input contract
 
+The editor uses a compact, map-first desktop-authoring shell patterned after
+established document and modelling applications:
+
+- A `File`, `Edit`, `View`, and `Map` menu bar provides a stable home for the
+  complete and growing command set.
+- A dense quick-access toolbar keeps New, Open, Save, history, primary tools,
+  camera controls, and simulation handoff one click away.
+- The `Terrain`, `Units`, `Edges`, `Zones`, and `Map file` command rail is
+  docked to the map's right border. Only one contextual panel is shown at a
+  time, preserving canvas width as more tools are added.
+
+Activating a command-rail group opens its contextual panel in place; choosing
+it again hides the panel. `F2` toggles the current panel, and `F3` toggles the
+selected-object inspector overlay. The `T`, `U`, `E`, `Z`, and `M` shortcuts
+open or hide their corresponding tool groups. The contextual panel and
+inspector start hidden so the remaining workspace is the map.
+
+`File > New map` and the quick-toolbar `New` command request confirmation
+before replacing the draft with a named, empty 12×8 map. This is distinct from
+`Clear`, which preserves the current document dimensions and authoring
+identity. `Open / Import…` reads a local map file; `Save map file` downloads
+the canonical portable map; and `Repository bundle` downloads editor and
+simulator design work for explicit import into a version-controlled checkout.
+
+`Rules and data` is a separate application workspace. It shares canonical
+domain types and rendering infrastructure with the rest of the client, but its
+scenario laboratory does not mutate the editor draft or simulator handoff.
+
 The SVG workspace uses application-level keys only while it has focus.
 Otherwise browser and documentation-page keys retain their normal behavior.
 `Tab` reaches tools, the inspector, and a parallel object list; it does not
 visit every empty cell. A keyboard map cursor and the object list provide the
 non-pointer path for canvas commands.
+
+### Version-controlled design transfer
+
+`Repository bundle` downloads a `*.sir-design.json` file containing the
+canonical editor map, revision identity, and—when one exists—the simulator's
+immutable runtime map and tick. A browser cannot write into a checkout merely
+because the site was opened from that checkout.
+
+Import a downloaded bundle from the repository root:
+
+```console
+npm run import:map-design -- ~/Downloads/<name>.sir-design.json
+```
+
+The importer validates the format and writes reviewable files under
+`designs/map-editor/<map-name>/`. Those files then follow the normal branch,
+commit, review, and pull-request workflow. Direct browser-to-GitHub saving
+requires a GitHub App or OAuth service with explicit repository contents
+permission; credentials must not be embedded in the static client.
 
 ### Pointer and touch gestures
 
@@ -128,6 +178,10 @@ non-pointer path for canvas commands.
 | Flood fill or eyedrop | Primary click | Tap | Commits one fill or selects one terrain value |
 | Draw edge polyline | Primary click/drag across snapped edges | Tap successive snapped edges | Double-click/**Finish** commits; `Escape` removes the last segment, then cancels |
 | Move selection | Primary drag selected unit(s) | Tap **Move**, reposition cursor, tap **Apply** | Full route and footprint preview; `Escape` cancels |
+
+Pointer coordinates are mapped through the SVG's centered aspect-fit viewport.
+Horizontal or vertical letterboxing therefore remains non-interactive padding
+and cannot shift a click into a neighboring logical cell.
 | Open object actions | Secondary click or context button | Long-press or context button | Opens the same linear action menu used by keyboard |
 
 Pointer capture belongs to an active drag and must be released on commit,
@@ -244,7 +298,7 @@ the same digests and object counts.
 
 ## Simulator handoff and previews
 
-**Simulate this revision** validates the current authored document and creates
+**Simulate** validates the current authored document and creates
 a `SimulatorHandoff` containing that exact immutable `MapRevision` plus a
 separate runtime map, tick, event list, run state, and disposable route
 preview. Opening the Simulator tab alone never creates or refreshes a handoff.
@@ -254,7 +308,7 @@ behind editor draft** until the author explicitly hands off another revision.
 Runtime controller assignment, scripts, movement, damage, ticks, and route
 previews update only the handoff. They do not change `MapDefinition`,
 `MapRevision`, the draft digest, undo/redo entries, saved state, or autosave.
-Re-running **Simulate this revision** deliberately resets the sandbox to a new
+Re-running **Simulate** deliberately resets the sandbox to a new
 copy of the selected revision.
 
 The route preview takes deterministic diagonal-first Chebyshev steps and

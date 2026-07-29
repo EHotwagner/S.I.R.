@@ -277,12 +277,26 @@ const buttonByText = (text) =>
     (button) => button.textContent.trim() === text,
   );
 
-const handoffButton = buttonByText("Simulate this revision");
+const newMapButton = buttonByText("New");
+newMapButton?.click();
+await window.happyDOM.waitUntilComplete();
+const newMapDialog = window.document.querySelector(
+  '[role="alertdialog"][aria-label="Confirm destructive map command"]',
+);
+if (
+  !newMapDialog?.textContent.includes("Create “Untitled battlefield” at 12×8")
+) {
+  throw new Error("The File/New Map workflow did not request destructive confirmation.");
+}
+buttonByText("Cancel")?.click();
+await window.happyDOM.waitUntilComplete();
+
+const handoffButton = buttonByText("Simulate");
 if (
   !handoffButton ||
   !window.document
-    .querySelector('[aria-label="Simulator revision handoff"]')
-    ?.textContent.includes("No editor revision has been handed")
+    .querySelector('[aria-label="Map editor menu and toolbar"]')
+    ?.textContent.includes("Not in Simulator")
 ) {
   throw new Error("The editor did not expose the explicit immutable simulator handoff.");
 }
@@ -541,8 +555,11 @@ if (editorCanvas?.getAttribute("data-editor-revision") === regionDigest) {
 buttonByText("Map file")?.click();
 await window.happyDOM.waitUntilComplete();
 if (
-  !window.document.querySelector('input[aria-label="Import SIR map"]') ||
+  !window.document.querySelector(
+    '.editor-context-palette input[aria-label="Import SIR map"]',
+  ) ||
   !buttonByText("Export map") ||
+  !buttonByText("Repository bundle") ||
   !window.document.querySelector(
     'input[aria-label="Choose local raster map background"]',
   )
@@ -551,6 +568,56 @@ if (
     "The editor Map file sub-tab did not expose import, export, and accessible local-background controls.",
   );
 }
+
+window.document
+  .querySelector('[aria-label="SVG tactical map workspace"] svg[role="application"]')
+  ?.dispatchEvent(
+  new window.KeyboardEvent("keydown", { key: "F2", bubbles: true }),
+);
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document.querySelector(
+    '.editor-context-palette input[aria-label="Import SIR map"]',
+  )
+) {
+  throw new Error("F2 did not hide the active contextual ribbon.");
+}
+window.document
+  .querySelector('[aria-label="SVG tactical map workspace"] svg[role="application"]')
+  ?.dispatchEvent(
+  new window.KeyboardEvent("keydown", { key: "F2", bubbles: true }),
+);
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document.querySelector(
+    '.editor-context-palette input[aria-label="Import SIR map"]',
+  )
+) {
+  throw new Error("F2 did not restore the active contextual ribbon.");
+}
+
+const inspectorBeforeF3 = window.document.querySelector(
+  '[aria-label="Map editor inspector"]',
+);
+window.document
+  .querySelector('[aria-label="SVG tactical map workspace"] svg[role="application"]')
+  ?.dispatchEvent(
+  new window.KeyboardEvent("keydown", { key: "F3", bubbles: true }),
+);
+await window.happyDOM.waitUntilComplete();
+if (
+  Boolean(
+    window.document.querySelector('[aria-label="Map editor inspector"]'),
+  ) === Boolean(inspectorBeforeF3)
+) {
+  throw new Error("F3 did not toggle the map editor inspector overlay.");
+}
+window.document
+  .querySelector('[aria-label="SVG tactical map workspace"] svg[role="application"]')
+  ?.dispatchEvent(
+  new window.KeyboardEvent("keydown", { key: "F3", bubbles: true }),
+);
+await window.happyDOM.waitUntilComplete();
 
 const digestBeforeBackground = editorCanvas?.getAttribute("data-editor-revision");
 const backgroundInput = window.document.querySelector(

@@ -46,7 +46,7 @@
   max-width: none;
   min-width: 0;
   margin: auto;
-  padding: 1.25rem;
+  padding: .4rem;
   background: #101715;
   min-height: inherit;
 }
@@ -61,19 +61,19 @@
   z-index: 5;
   display: flex;
   flex-wrap: wrap;
-  gap: .35rem;
-  margin-bottom: 1rem;
-  padding: .55rem;
+  gap: .2rem;
+  margin-bottom: .35rem;
+  padding: .25rem;
   border: 1px solid #43584e;
   border-radius: .55rem;
   background: rgba(16, 23, 21, .96);
 }
 #sir-replay-app .editor-tool-navigation {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .35rem;
-  margin: .75rem 0;
-  padding-bottom: .55rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .2rem;
+  margin: .3rem 0;
+  padding-bottom: .3rem;
   border-bottom: 1px solid #43584e;
 }
 #sir-replay-app .editor-tool-panel {
@@ -357,29 +357,161 @@
 
 #sir-replay-app .editor-workspace {
   display: grid;
-  grid-template-columns: minmax(12rem, 15rem) minmax(28rem, 1fr) minmax(15rem, 19rem);
-  gap: 1rem;
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr);
+  gap: .35rem;
+  min-height: calc(100vh - 4.5rem);
 }
-#sir-replay-app .editor-tool-rail {
-  position: sticky;
-  top: 4.75rem;
-  max-height: calc(100vh - 6rem);
+#sir-replay-app .editor-desktop-chrome {
+  position: relative;
+  z-index: 10;
+  border: 1px solid #43584e;
+  border-radius: .25rem;
+  background: #111a17;
+}
+#sir-replay-app .editor-document-strip {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  min-height: 1.55rem;
+  padding: .12rem .4rem;
+  color: #b9c8c0;
+  font: .72rem/1.2 ui-monospace, monospace;
+}
+#sir-replay-app .editor-document-strip strong {
+  margin-right: auto;
+  color: #f5f1e8;
+}
+#sir-replay-app .editor-menu-bar {
+  display: flex;
+  align-items: center;
+  gap: .05rem;
+  min-height: 1.7rem;
+  padding: 0 .15rem;
+  border-top: 1px solid #2e4038;
+  border-bottom: 1px solid #43584e;
+  background: #17211e;
+}
+#sir-replay-app .editor-menu {
+  position: relative;
+}
+#sir-replay-app .editor-menu > summary {
+  list-style: none;
+  padding: .22rem .5rem;
+  border-radius: .2rem;
+  cursor: default;
+  user-select: none;
+}
+#sir-replay-app .editor-menu > summary::-webkit-details-marker { display: none; }
+#sir-replay-app .editor-menu[open] > summary,
+#sir-replay-app .editor-menu > summary:hover { background: #2a3b34; }
+#sir-replay-app .editor-menu-popover {
+  position: absolute;
+  top: calc(100% + .1rem);
+  left: 0;
+  z-index: 20;
+  display: grid;
+  min-width: 14rem;
+  padding: .25rem;
+  border: 1px solid #6d8077;
+  border-radius: .25rem;
+  background: #17211e;
+  box-shadow: 0 .7rem 1.5rem rgba(0, 0, 0, .55);
+}
+#sir-replay-app .editor-menu-popover button,
+#sir-replay-app .editor-menu-popover .editor-file-command {
+  width: 100%;
+  min-height: 1.85rem;
+  padding: .28rem .45rem;
+  border-color: transparent;
+  border-radius: .15rem;
+  text-align: left;
+}
+#sir-replay-app .editor-file-command {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #8fae9e;
+  border-radius: .2rem;
+  background: #18241f;
+  cursor: pointer;
+}
+#sir-replay-app .editor-file-command:hover { background: #263b32; }
+#sir-replay-app .editor-file-command input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+#sir-replay-app .editor-quick-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .15rem;
+  min-height: 2.1rem;
+  padding: .18rem .3rem;
+}
+#sir-replay-app .editor-quick-toolbar button,
+#sir-replay-app .editor-quick-toolbar .editor-file-command {
+  min-height: 1.75rem;
+  padding: .22rem .42rem;
+  border-radius: .18rem;
+}
+#sir-replay-app .toolbar-separator {
+  width: 1px;
+  height: 1.35rem;
+  margin: 0 .15rem;
+  background: #52665c;
+}
+#sir-replay-app .editor-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(3, 7, 6, .72);
+}
+#sir-replay-app .editor-modal {
+  width: min(30rem, 100%);
+  padding: 1rem;
+  box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, .7);
+}
+#sir-replay-app .editor-ribbon {
+  position: absolute;
+  top: .35rem;
+  right: .35rem;
+  z-index: 8;
+  width: min(19rem, calc(100% - .7rem));
+  max-height: calc(100% - .7rem);
   overflow: auto;
-  padding: .75rem;
+  padding: .4rem;
+  background: rgba(23, 33, 30, .97);
+  box-shadow: 0 .6rem 1.5rem rgba(0, 0, 0, .4);
+}
+#sir-replay-app .editor-ribbon.is-collapsed { width: 6rem; }
+#sir-replay-app .editor-ribbon.is-collapsed .editor-section-heading { display: none; }
+#sir-replay-app .editor-ribbon.is-collapsed .editor-tool-navigation {
+  grid-template-columns: 1fr;
+  margin: 0;
+  padding: 0;
+  border-bottom: 0;
 }
 #sir-replay-app .compact-tool-rail {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .2rem;
 }
 #sir-replay-app .compact-tool-rail button,
 #sir-replay-app .editor-context-palette button {
-  min-height: 2.75rem;
-  padding: .4rem .5rem;
+  min-height: 2rem;
+  padding: .28rem .38rem;
 }
 #sir-replay-app .editor-context-palette {
   border-top: 1px solid #43584e;
-  padding-top: .35rem;
+  margin-top: .25rem;
+  padding-top: .3rem;
 }
 #sir-replay-app .terrain-tool-choices,
 #sir-replay-app .terrain-palette {
@@ -388,7 +520,7 @@
   gap: .35rem;
 }
 #sir-replay-app .terrain-palette {
-  margin-top: .75rem;
+  margin-top: .35rem;
 }
 #sir-replay-app .terrain-palette-choice {
   border-left-width: .45rem;
@@ -416,7 +548,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: .35rem;
-  margin-top: .75rem;
+  margin-top: .35rem;
 }
 #sir-replay-app .terrain-brush-controls input {
   width: 100%;
@@ -433,6 +565,7 @@
 #sir-replay-app .unit-preset-group h4 { margin: .25rem 0; }
 #sir-replay-app .editor-canvas {
   min-width: 0;
+  width: 100%;
   overflow: hidden;
   border: 1px solid #43584e;
   border-radius: .6rem;
@@ -441,8 +574,8 @@
 #sir-replay-app .editor-context-hud {
   display: flex;
   flex-wrap: wrap;
-  gap: .35rem;
-  padding: .45rem .55rem;
+  gap: .2rem;
+  padding: .25rem .35rem;
   border-bottom: 1px solid #43584e;
   background: #24322d;
 }
@@ -450,16 +583,16 @@
 #sir-replay-app .editor-camera-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: .35rem;
-  padding: .55rem;
+  gap: .2rem;
+  padding: .3rem;
   border-bottom: 1px solid #43584e;
   background: #17211e;
 }
 #sir-replay-app .editor-battlefield-svg {
   display: block;
   width: 100%;
-  min-height: 28rem;
-  max-height: 76vh;
+  min-height: max(28rem, calc(100vh - 11rem));
+  max-height: calc(100vh - 7rem);
   background: #0b100f;
   cursor: crosshair;
   touch-action: none;
@@ -482,17 +615,30 @@
   font: .82rem/1.4 ui-monospace, monospace;
 }
 #sir-replay-app .editor-inspector {
-  position: sticky;
-  top: 4.75rem;
+  position: absolute;
+  top: .35rem;
+  right: 6.7rem;
+  z-index: 7;
+  width: min(18rem, calc(100% - 7.4rem));
+  max-height: calc(100% - .7rem);
+  overflow: auto;
   min-width: 0;
+  border: 1px solid #6d8077;
+  border-radius: .4rem;
+  background: rgba(23, 33, 30, .97);
+  box-shadow: 0 .75rem 2rem rgba(0, 0, 0, .45);
+}
+#sir-replay-app .editor-ribbon:not(.is-collapsed) + .editor-inspector {
+  right: 19.7rem;
+  width: min(18rem, calc(100% - 20.4rem));
 }
 #sir-replay-app .editor-inspector > button { width: 100%; margin-bottom: .5rem; }
 #sir-replay-app .editor-inspector .unit-editor-panel { padding: .75rem; }
-#sir-replay-app .editor-inspector.is-collapsed {
-  width: min-content;
-  justify-self: end;
+#sir-replay-app .editor-map-stage {
+  position: relative;
+  min-width: 0;
 }
-#sir-replay-app .editor-object-list { grid-column: 1 / -1; }
+#sir-replay-app .editor-object-list { padding: .55rem .75rem; }
 #sir-replay-app .editor-object-list summary {
   color: #ffd166;
   cursor: pointer;
@@ -709,7 +855,7 @@
   #sir-replay-app button,
   #sir-replay-app input,
   #sir-replay-app select,
-  #sir-replay-app .editor-tool-rail,
+  #sir-replay-app .editor-ribbon,
   #sir-replay-app .editor-inspector,
   #sir-replay-app .editor-object-list {
     border: 1px solid ButtonText;
@@ -726,7 +872,7 @@
 }
 
 @media (max-width: 48rem) {
-  #sir-replay-app .app-shell { padding: 1rem; }
+  #sir-replay-app .app-shell { padding: .25rem; }
   #sir-replay-app .inspector-panel,
   #sir-replay-app .lab-results { grid-column: span 1; }
   #sir-replay-app .battlefield-heading { display: block; }
@@ -734,10 +880,22 @@
   #sir-replay-app .battlefield-layout { grid-template-columns: 1fr; }
   #sir-replay-app .comparison-viewport { grid-template-columns: 1fr; }
   #sir-replay-app .editor-workspace { grid-template-columns: 1fr; }
-  #sir-replay-app .editor-tool-rail,
+  #sir-replay-app .editor-ribbon {
+    position: absolute;
+    max-height: calc(100% - .7rem);
+  }
+  #sir-replay-app .editor-document-strip { flex-wrap: wrap; }
+  #sir-replay-app .editor-document-strip strong { flex-basis: 100%; }
+  #sir-replay-app .editor-menu-bar { overflow-x: auto; }
   #sir-replay-app .editor-inspector {
-    position: static;
-    max-height: none;
+    top: .5rem;
+    right: 6.7rem;
+    width: calc(100% - 7.4rem);
+    max-height: calc(100% - 1rem);
+  }
+  #sir-replay-app .editor-ribbon:not(.is-collapsed) + .editor-inspector {
+    right: .5rem;
+    width: calc(100% - 1rem);
   }
   #sir-replay-app .editor-battlefield-svg { min-height: 22rem; }
   #sir-replay-app .editor-object-list { grid-column: 1; }

@@ -28,10 +28,12 @@ type Msg =
     | KeyReleased of string
     | WorkspaceChanged of WorkspaceMode
     | EditorToolPanelChanged of EditorToolPanel
+    | ToggleEditorToolPanelVisibility
     | EditorWorkspaceChanged of EditorWorkspaceAction
     | RecallEditorView of string
     | EditorChanged of MapEditorAction
     | ExportMap
+    | ExportDesignBundle
     | ExportExperiment
     | AddComparisonBookmark
     | ComparisonViewChanged of ComparisonView
@@ -57,6 +59,7 @@ type Model =
       Simulator: SimulatorHandoff option
       Workspace: WorkspaceMode
       EditorToolPanel: EditorToolPanel
+      EditorToolPanelVisible: bool
       EditorView: EditorWorkspaceState
       EditorSpacePressed: bool
       PendingInterchangeReview: InterchangeReview option
@@ -127,6 +130,64 @@ let private downloadMap state =
         anchor.click();
         URL.revokeObjectURL(url);
         """
+
+[<Emit("""
+const bundle = {
+  format: "sir-map-editor-design",
+  version: 1,
+  name: $0,
+  editor: { digest: $1, revision: $2, map: $3 },
+  simulator: $4 == null ? null : { digest: $5, tick: $6, map: $4 }
+};
+const content = JSON.stringify(bundle, null, 2) + "\n";
+const slug = String($0 || "battlefield")
+  .trim()
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, "-")
+  .replace(/^-+|-+$/g, "") || "battlefield";
+const blob = new Blob([content], { type: "application/json;charset=utf-8" });
+const url = URL.createObjectURL(blob);
+const anchor = document.createElement("a");
+anchor.href = url;
+anchor.download = `${slug}.sir-design.json`;
+anchor.click();
+URL.revokeObjectURL(url);
+""")>]
+let private downloadDesignBundleContent
+    (name: string)
+    (digest: string)
+    (revision: int64)
+    (editorMap: string)
+    (simulatorMap: string)
+    (simulatorDigest: string)
+    (simulatorTick: int32)
+    : unit =
+    jsNative
+
+let private downloadDesignBundle (state: MapEditorState) (simulator: SimulatorHandoff option) =
+    let editorMap = MapEditor.export state
+    let simulatorMap =
+        simulator
+        |> Option.map (fun handoff ->
+            MapEditor.export { state with Map = handoff.RuntimeMap })
+        |> Option.toObj
+    let simulatorDigest =
+        simulator
+        |> Option.map _.Revision.Digest
+        |> Option.toObj
+    let simulatorTick =
+        simulator
+        |> Option.map _.Tick
+        |> Option.defaultValue -1
+
+    downloadDesignBundleContent
+        state.Authoring.Name
+        state.Revision.Digest
+        state.Revision.Number
+        editorMap
+        simulatorMap
+        simulatorDigest
+        simulatorTick
 
 [<Emit("window.localStorage.getItem('sir.map-editor.autosave.v1')")>]
 let private readMapAutosave () : string = jsNative
@@ -262,6 +323,7 @@ let init () =
       Simulator = None
       Workspace = EditorWorkspace
       EditorToolPanel = TerrainTools
+      EditorToolPanelVisible = false
       EditorView = editorView
       EditorSpacePressed = false
       PendingInterchangeReview = None
@@ -381,7 +443,18 @@ let rec update msg model =
                 PresentationAlpha = 1.0 },
             Cmd.none
     | EditorToolPanelChanged panel ->
-        { model with EditorToolPanel = panel }, Cmd.none
+        { model with
+            EditorToolPanel = panel
+            EditorToolPanelVisible =
+                not (
+                    model.EditorToolPanelVisible
+                    && Object.Equals(model.EditorToolPanel, panel)
+                ) },
+        Cmd.none
+    | ToggleEditorToolPanelVisibility ->
+        { model with
+            EditorToolPanelVisible = not model.EditorToolPanelVisible },
+        Cmd.none
     | EditorWorkspaceChanged action ->
         let editorView =
             MapEditorWorkspace.update
@@ -523,10 +596,12 @@ let rec update msg model =
             | "1", false, _ -> update (EditorWorkspaceChanged ResetEditorCamera) model
             | ("f" | "F"), false, _ -> update (EditorWorkspaceChanged FrameEditorSelection) model
             | ("v" | "V"), false, _ ->
-                model
-                |> update (EditorChanged(ChooseTool Select))
-                |> fst
-                |> fun next -> update (EditorToolPanelChanged TerrainTools) next
+                let next, command =
+                    update (EditorChanged(ChooseTool Select)) model
+                { next with
+                    EditorToolPanel = TerrainTools
+                    EditorToolPanelVisible = true },
+                command
             | ("t" | "T"), false, _ -> update (EditorToolPanelChanged TerrainTools) model
             | ("p" | "P"), false, _ -> update (EditorChanged(ChooseTool(Terrain PencilTool))) model
             | ("r" | "R"), false, _ -> update (EditorChanged(ChooseTool(Terrain RectangleTool))) model
@@ -537,6 +612,11 @@ let rec update msg model =
             | ("u" | "U"), false, _ -> update (EditorToolPanelChanged UnitTools) model
             | ("e" | "E"), false, _ -> update (EditorToolPanelChanged EdgeTools) model
             | ("z" | "Z"), false, _ -> update (EditorToolPanelChanged ZoneTools) model
+            | ("m" | "M"), false, _ -> update (EditorToolPanelChanged DocumentTools) model
+            | "F2", false, _ ->
+                update ToggleEditorToolPanelVisibility model
+            | "F3", false, _ ->
+                update (EditorWorkspaceChanged ToggleEditorInspector) model
             | "Escape", false, _ ->
                 model
                 |> update (EditorWorkspaceChanged CancelEditorPointers)
@@ -582,6 +662,10 @@ let rec update msg model =
         (model.Shell.Lab.Report
          |> Option.map (fun report -> Cmd.ofEffect (fun _ -> downloadExperiment report))
          |> Option.defaultValue Cmd.none)
+    | ExportDesignBundle ->
+        model,
+        Cmd.ofEffect (fun _ ->
+            downloadDesignBundle model.Editor model.Simulator)
     | AddComparisonBookmark ->
         let tick = model.Shell.Playback.CurrentTick
         let bookmark =
@@ -2727,8 +2811,13 @@ let private editorScreenPoint
     let bounds = element.getBoundingClientRect ()
     let width = max 1.0 bounds.width
     let height = max 1.0 bounds.height
-    (clientX - bounds.left) * view.ViewportWidth / width,
-    (clientY - bounds.top) * view.ViewportHeight / height
+    MapEditorWorkspace.clientToViewportPoint
+        view.ViewportWidth
+        view.ViewportHeight
+        width
+        height
+        (clientX - bounds.left)
+        (clientY - bounds.top)
 
 let private editorUnitSvg
     (state: MapEditorState)
@@ -2903,51 +2992,6 @@ let private editorBattlefield
         prop.custom ("data-editor-revision", state.Revision.Digest)
         prop.custom ("data-editor-revision-state", string state.RevisionState)
         prop.children [
-            Html.div [
-                prop.className "editor-camera-controls"
-                prop.children [
-                    button "Undo" "Undo last editor command (Ctrl or Command Z)" state.UndoHistory.IsEmpty (fun _ ->
-                        dispatch (EditorChanged UndoEditorCommand))
-                    button "Redo" "Redo last editor command (Ctrl or Command Shift Z)" state.RedoHistory.IsEmpty (fun _ ->
-                        dispatch (EditorChanged RedoEditorCommand))
-                    button "Copy" "Copy selected units (Ctrl or Command C)" state.SelectedUnits.IsEmpty (fun _ ->
-                        dispatch (EditorChanged CopyEditorSelection))
-                    button "Paste" "Paste copied units (Ctrl or Command V)" state.Clipboard.IsNone (fun _ ->
-                        dispatch (EditorChanged PasteEditorClipboard))
-                    button "Duplicate" "Duplicate selected units (Ctrl or Command D)" state.SelectedUnits.IsEmpty (fun _ ->
-                        dispatch (EditorChanged DuplicateEditorSelection))
-                    button "Delete" "Delete selected units" state.SelectedUnits.IsEmpty (fun _ ->
-                        dispatch (EditorChanged DeleteEditorSelection))
-                    button "Select all" "Select every unit in the active domain" state.Map.Units.IsEmpty (fun _ ->
-                        dispatch (EditorChanged SelectAllInActiveDomain))
-                    button "Fit" "Fit board to workspace (0)" false (fun _ ->
-                        dispatch (EditorWorkspaceChanged FitEditorBoard))
-                    button "100%" "Reset camera to one hundred percent (1)" false (fun _ ->
-                        dispatch (EditorWorkspaceChanged ResetEditorCamera))
-                    button "Frame" "Frame selected unit (F)" state.SelectedUnit.IsNone (fun _ ->
-                        dispatch (EditorWorkspaceChanged FrameEditorSelection))
-                    button "−" "Zoom out around workspace center" false (fun _ ->
-                        dispatch (
-                            EditorWorkspaceChanged(
-                                ZoomEditorAt(
-                                    view.ViewportWidth / 2.0,
-                                    view.ViewportHeight / 2.0,
-                                    0.8
-                                )
-                            )
-                        ))
-                    button "+" "Zoom in around workspace center" false (fun _ ->
-                        dispatch (
-                            EditorWorkspaceChanged(
-                                ZoomEditorAt(
-                                    view.ViewportWidth / 2.0,
-                                    view.ViewportHeight / 2.0,
-                                    1.25
-                                )
-                            )
-                        ))
-                ]
-            ]
             Html.p [
                 prop.className "sr-only"
                 prop.ariaLive.polite
@@ -3019,7 +3063,42 @@ let private editorBattlefield
                 )
                 svg.onContextMenu (fun event -> event.preventDefault ())
                 svg.onKeyDown (fun event ->
-                    if event.ctrlKey || event.metaKey then
+                    let panelShortcut =
+                        match event.key with
+                        | "t"
+                        | "T" -> Some TerrainTools
+                        | "u"
+                        | "U" -> Some UnitTools
+                        | "e"
+                        | "E" -> Some EdgeTools
+                        | "z"
+                        | "Z" -> Some ZoneTools
+                        | "m"
+                        | "M" -> Some DocumentTools
+                        | _ -> None
+                    if
+                        panelShortcut.IsSome
+                        && not event.ctrlKey
+                        && not event.metaKey
+                        && not event.altKey
+                    then
+                        event.preventDefault ()
+                        event.stopPropagation ()
+                        dispatch (
+                            EditorToolPanelChanged panelShortcut.Value
+                        )
+                    elif event.key = "F2" then
+                        event.preventDefault ()
+                        event.stopPropagation ()
+                        dispatch ToggleEditorToolPanelVisibility
+                    elif event.key = "F3" then
+                        event.preventDefault ()
+                        event.stopPropagation ()
+                        dispatch (
+                            EditorWorkspaceChanged
+                                ToggleEditorInspector
+                        )
+                    elif event.ctrlKey || event.metaKey then
                         let action =
                             match event.key, event.shiftKey with
                             | ("z" | "Z"), true -> Some RedoEditorCommand
@@ -3796,6 +3875,7 @@ let private editorToolbar
     (state: MapEditorState)
     (view: EditorWorkspaceState)
     (activePanel: EditorToolPanel)
+    panelVisible
     dispatch
     =
     let choose (label: string) (tool: MapEditorTool) =
@@ -3843,13 +3923,18 @@ let private editorToolbar
         Html.button [
             prop.type'.button
             prop.text label
-            prop.ariaPressed (Object.Equals(activePanel, panel))
+            prop.ariaPressed (
+                panelVisible && Object.Equals(activePanel, panel)
+            )
             prop.onClick (fun _ ->
                 dispatch (EditorToolPanelChanged panel))
         ]
 
     Html.section [
-        prop.className "panel editor-tools editor-tool-rail"
+        prop.className (
+            "panel editor-tools editor-ribbon"
+            + if panelVisible then "" else " is-collapsed"
+        )
         prop.ariaLabel "Map editing tools"
         prop.children [
             Html.div [
@@ -3861,7 +3946,10 @@ let private editorToolbar
                     ]
                     Html.p [
                         prop.className "active-tool"
-                        prop.text ("Active tool: " + toolLabel state.Tool)
+                        prop.text (
+                            "Active tool: " + toolLabel state.Tool
+                            + " · F2 tools · F3 inspector"
+                        )
                     ]
                 ]
             ]
@@ -3874,9 +3962,21 @@ let private editorToolbar
                     choosePanel "Edges" EdgeTools
                     choosePanel "Zones" ZoneTools
                     choosePanel "Map file" DocumentTools
+                    button
+                        (if view.InspectorCollapsed then
+                             "Show inspector · F3"
+                         else
+                             "Hide inspector · F3")
+                        "Toggle selected-object inspector"
+                        false
+                        (fun _ ->
+                            dispatch (
+                                EditorWorkspaceChanged
+                                    ToggleEditorInspector
+                            ))
                 ]
             ]
-            Html.div [
+            if panelVisible then Html.div [
                 prop.className "editor-tool-panel editor-context-palette"
                 prop.children [
                     match activePanel with
@@ -4464,6 +4564,11 @@ let private editorToolbar
                                     dispatch (EditorChanged RequestClearMap))
                                 button "Export map" "Export the current map document" false (fun _ ->
                                     dispatch ExportMap)
+                                button
+                                    "Repository bundle"
+                                    "Download editor and simulator design work for version-controlled import"
+                                    false
+                                    (fun _ -> dispatch ExportDesignBundle)
                                 Html.label [
                                     prop.className "map-import"
                                     prop.children [
@@ -4482,31 +4587,15 @@ let private editorToolbar
                                 ]
                             ]
                         ]
-                        match state.PendingDestructiveChange with
-                        | Some pending ->
-                            Html.div [
-                                prop.className "editor-confirmation"
-                                prop.role.alert
-                                prop.children [
-                                    Html.strong "Confirmation required"
-                                    Html.span (
-                                        match pending with
-                                        | ClearPending -> "Clear the complete canonical map?"
-                                        | ResizePending loss ->
-                                            "Resize to "
-                                            + string loss.TargetWidth + "×" + string loss.TargetHeight
-                                            + "; remove " + string loss.LostTerrainCells
-                                            + " terrain cells, " + string loss.LostEdges
-                                            + " edges, " + string loss.LostUnits + " units, and "
-                                            + string loss.LostRegions + " regions?"
-                                    )
-                                    button "Confirm" "Confirm destructive map change" false (fun _ ->
-                                        dispatch (EditorChanged ConfirmDestructiveChange))
-                                    button "Cancel" "Cancel destructive map change" false (fun _ ->
-                                        dispatch (EditorChanged CancelDestructiveChange))
-                                ]
+                        Html.p [
+                            prop.className "repository-transfer-help"
+                            prop.children [
+                                Html.strong "Version-control transfer: "
+                                Html.span "download the repository bundle, then from this checkout run "
+                                Html.code "npm run import:map-design -- ~/Downloads/<name>.sir-design.json"
+                                Html.span ". Review the resulting designs/map-editor files and commit them through the normal pull-request workflow."
                             ]
-                        | None -> Html.none
+                        ]
                         match state.PendingRecovery with
                         | Some draft ->
                             Html.div [
@@ -4546,7 +4635,7 @@ let private editorToolbar
                             ]
                         ]
                 ]
-            ]
+            ] else Html.none
         ]
     ]
 
@@ -4985,6 +5074,236 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
         ]
     ]
 
+let private editorDestructiveConfirmation state dispatch =
+    match state.PendingDestructiveChange with
+    | None -> Html.none
+    | Some pending ->
+        let message =
+            match pending with
+            | ClearPending -> "Clear every object from the current map?"
+            | NewMapPending(width, height, name) ->
+                "Create “"
+                + name
+                + "” at "
+                + string width
+                + "×"
+                + string height
+                + " and replace the current draft?"
+            | ResizePending loss ->
+                "Resize to "
+                + string loss.TargetWidth
+                + "×"
+                + string loss.TargetHeight
+                + "; remove "
+                + string loss.LostTerrainCells
+                + " terrain cells, "
+                + string loss.LostEdges
+                + " edges, "
+                + string loss.LostUnits
+                + " units, and "
+                + string loss.LostRegions
+                + " regions?"
+        Html.div [
+            prop.className "editor-modal-backdrop"
+            prop.children [
+                Html.section [
+                    prop.className "panel editor-confirmation editor-modal"
+                    prop.custom ("role", "alertdialog")
+                    prop.ariaLabel "Confirm destructive map command"
+                    prop.children [
+                        Html.h2 "Confirmation required"
+                        Html.p message
+                        Html.div [
+                            prop.className "control-row"
+                            prop.children [
+                                button
+                                    "Confirm"
+                                    "Confirm destructive map command"
+                                    false
+                                    (fun _ ->
+                                        dispatch (
+                                            EditorChanged
+                                                ConfirmDestructiveChange
+                                        ))
+                                button
+                                    "Cancel"
+                                    "Cancel destructive map command"
+                                    false
+                                    (fun _ ->
+                                        dispatch (
+                                            EditorChanged
+                                                CancelDestructiveChange
+                                        ))
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+
+let private editorDesktopChrome
+    (state: MapEditorState)
+    (view: EditorWorkspaceState)
+    (simulator: SimulatorHandoff option)
+    dispatch
+    =
+    let menu
+        (label: string)
+        (children: Fable.React.ReactElement list)
+        =
+        Html.details [
+            prop.className "editor-menu"
+            prop.children [
+                Html.summary label
+                Html.div [
+                    prop.className "editor-menu-popover"
+                    prop.children children
+                ]
+            ]
+        ]
+    let importMapControl (label: string) =
+        Html.label [
+            prop.className "editor-file-command"
+            prop.children [
+                Html.span label
+                Html.input [
+                    prop.type'.file
+                    prop.accept ".sir-map,.dd2vtt,.uvtt,.json,.xml,text/plain,application/json"
+                    prop.ariaLabel "Import SIR map"
+                    prop.title "Import SIR-MAP directly or review a Universal VTT, Foundry, or Fantasy Grounds export"
+                    prop.onChange (fun (files: File list) ->
+                        files
+                        |> List.tryHead
+                        |> Option.iter (MapFileSelected >> dispatch))
+                ]
+            ]
+        ]
+    let command label aria disabled message =
+        button label aria disabled (fun _ -> dispatch message)
+
+    Html.section [
+        prop.className "editor-desktop-chrome"
+        prop.ariaLabel "Map editor menu and toolbar"
+        prop.children [
+            Html.div [
+                prop.className "editor-document-strip"
+                prop.children [
+                    Html.strong state.Authoring.Name
+                    Html.span (
+                        (match state.RevisionState with
+                         | DirtyRevision -> "Modified"
+                         | SavedRevision -> "Saved"
+                         | SimulatedRevision -> "Simulated"
+                         | RecoveredRevision -> "Recovered")
+                        + " · r"
+                        + string state.Revision.Number
+                    )
+                    Html.span (
+                        match simulator with
+                        | None -> "Not in Simulator"
+                        | Some value when
+                            MapEditorSimulator.isBehindDraft state value ->
+                            "Simulator behind"
+                        | Some _ -> "Simulator current"
+                    )
+                ]
+            ]
+            Html.nav [
+                prop.className "editor-menu-bar"
+                prop.ariaLabel "Map editor menus"
+                prop.children [
+                    menu
+                        "File"
+                        [ command
+                              "New map"
+                              "Create a new empty map"
+                              false
+                              (EditorChanged RequestNewMap)
+                          importMapControl "Open / Import…"
+                          command
+                              "Save map file"
+                              "Export the current map document"
+                              false
+                              ExportMap
+                          command
+                              "Repository bundle"
+                              "Download editor and simulator design work for version-controlled import"
+                              false
+                              ExportDesignBundle ]
+                    menu
+                        "Edit"
+                        [ command "Undo" "Undo last editor command" state.UndoHistory.IsEmpty (EditorChanged UndoEditorCommand)
+                          command "Redo" "Redo last editor command" state.RedoHistory.IsEmpty (EditorChanged RedoEditorCommand)
+                          command "Copy" "Copy selected units" state.SelectedUnits.IsEmpty (EditorChanged CopyEditorSelection)
+                          command "Paste" "Paste copied units" state.Clipboard.IsNone (EditorChanged PasteEditorClipboard)
+                          command "Duplicate" "Duplicate selected units" state.SelectedUnits.IsEmpty (EditorChanged DuplicateEditorSelection)
+                          command "Delete" "Delete selected objects" (state.SelectedUnits.IsEmpty && state.SelectedRegion.IsNone) (EditorChanged DeleteEditorSelection)
+                          command "Select all" "Select all objects in the active domain" false (EditorChanged SelectAllInActiveDomain) ]
+                    menu
+                        "View"
+                        [ command "Fit map" "Fit the complete map" false (EditorWorkspaceChanged FitEditorBoard)
+                          command "Actual size" "Reset map camera to one hundred percent" false (EditorWorkspaceChanged ResetEditorCamera)
+                          command "Frame selection" "Frame selected map objects" state.SelectedUnits.IsEmpty (EditorWorkspaceChanged FrameEditorSelection)
+                          command "Toggle command panel · F2" "Show or hide the active command panel" false ToggleEditorToolPanelVisibility
+                          command
+                              (if view.InspectorCollapsed then "Show inspector · F3" else "Hide inspector · F3")
+                              "Show or hide the selected-object inspector"
+                              false
+                              (EditorWorkspaceChanged ToggleEditorInspector) ]
+                    menu
+                        "Map"
+                        [ command "Terrain tools" "Show terrain command panel" false (EditorToolPanelChanged TerrainTools)
+                          command "Unit tools" "Show unit command panel" false (EditorToolPanelChanged UnitTools)
+                          command "Edge tools" "Show edge command panel" false (EditorToolPanelChanged EdgeTools)
+                          command "Zone tools" "Show zone command panel" false (EditorToolPanelChanged ZoneTools)
+                          command "Map properties" "Show map document command panel" false (EditorToolPanelChanged DocumentTools)
+                          command "Simulate revision" "Validate and send this revision to Simulator" false SimulateEditorRevision ]
+                ]
+            ]
+            Html.div [
+                prop.className "editor-quick-toolbar"
+                prop.role.toolbar
+                prop.ariaLabel "Map editor quick access"
+                prop.children [
+                    command "New" "Create a new empty map" false (EditorChanged RequestNewMap)
+                    importMapControl "Open"
+                    command "Save" "Export the current map document" false ExportMap
+                    Html.span [ prop.className "toolbar-separator"; prop.ariaHidden true ]
+                    command "Undo" "Undo last editor command" state.UndoHistory.IsEmpty (EditorChanged UndoEditorCommand)
+                    command "Redo" "Redo last editor command" state.RedoHistory.IsEmpty (EditorChanged RedoEditorCommand)
+                    Html.span [ prop.className "toolbar-separator"; prop.ariaHidden true ]
+                    command "Select" "Activate selection tool" false (EditorChanged(ChooseTool Select))
+                    command "Pencil" "Activate terrain pencil" false (EditorChanged(ChooseTool(Terrain PencilTool)))
+                    command "Units" "Toggle unit command panel" false (EditorToolPanelChanged UnitTools)
+                    command "Fit" "Fit the complete map" false (EditorWorkspaceChanged FitEditorBoard)
+                    command
+                        "−"
+                        "Zoom out around workspace center"
+                        false
+                        (EditorWorkspaceChanged(
+                            ZoomEditorAt(
+                                view.ViewportWidth / 2.0,
+                                view.ViewportHeight / 2.0,
+                                0.8
+                            )
+                        ))
+                    command
+                        "+"
+                        "Zoom in around workspace center"
+                        false
+                        (EditorWorkspaceChanged(
+                            ZoomEditorAt(
+                                view.ViewportWidth / 2.0,
+                                view.ViewportHeight / 2.0,
+                                1.25
+                            )
+                        ))
+                    command "Simulate" "Validate and send this revision to Simulator" false SimulateEditorRevision
+                ]
+            ]
+        ]
+    ]
+
 let private workspaceNavigation (workspace: WorkspaceMode) dispatch =
     let item (label: string) (value: WorkspaceMode) =
         let isCurrent = workspace = value
@@ -5023,7 +5342,7 @@ let view model dispatch =
                         prop.ariaLabel "Simulator revision handoff"
                         prop.children [
                             Html.h2 "No simulated revision"
-                            Html.p "Return to the editor and choose Simulate this revision to create an immutable sandbox handoff."
+                            Html.p "Return to the editor and choose Simulate to create an immutable sandbox handoff."
                             button "Open Editor" "Open the map editor" false (fun _ ->
                                 dispatch (WorkspaceChanged EditorWorkspace))
                         ]
@@ -5056,7 +5375,7 @@ let view model dispatch =
                                         + simulator.Revision.Digest.Substring(0, 12)
                                     )
                                     if stale then
-                                        Html.p "Editor changes are preserved separately. Choose Simulate this revision in Editor to reset this sandbox."
+                                        Html.p "Editor changes are preserved separately. Choose Simulate in Editor to reset this sandbox."
                                 ]
                             ]
                             controllerPanel simulator simulatorState dispatch
@@ -5078,30 +5397,13 @@ let view model dispatch =
                 Html.div [
                     prop.className "editor-workspace"
                     prop.children [
-                        Html.section [
-                            prop.className "panel editor-simulation-handoff"
-                            prop.ariaLabel "Simulator revision handoff"
-                            prop.children [
-                                Html.h2 "Simulator handoff"
-                                Html.p (
-                                    match model.Simulator with
-                                    | None -> "No editor revision has been handed to the simulator."
-                                    | Some simulator when
-                                        MapEditorSimulator.isBehindDraft model.Editor simulator ->
-                                        "Simulator is behind this editor draft. Its immutable sandbox remains available."
-                                    | Some _ -> "Simulator matches this exact editor revision."
-                                )
-                                button
-                                    "Simulate this revision"
-                                    "Validate and hand this exact immutable revision to the simulator"
-                                    false
-                                    (fun _ -> dispatch SimulateEditorRevision)
-                            ]
-                        ]
-                        editorToolbar
+                        editorDesktopChrome
                             model.Editor
                             model.EditorView
-                            model.EditorToolPanel
+                            model.Simulator
+                            dispatch
+                        editorDestructiveConfirmation
+                            model.Editor
                             dispatch
                         match model.PendingInterchangeReview with
                         | Some review ->
@@ -5157,38 +5459,40 @@ let view model dispatch =
                                 ]
                             ]
                         | None -> Html.none
-                        editorBattlefield
-                            model.Editor
-                            model.EditorView
-                            model.EditorSpacePressed
-                            dispatch
-                        editorGrid model.Editor dispatch
-                        Html.aside [
-                            prop.className (
-                                "editor-inspector"
-                                + if model.EditorView.InspectorCollapsed then
-                                    " is-collapsed"
-                                  else
-                                    ""
-                            )
-                            prop.ariaLabel "Map editor inspector"
+                        Html.div [
+                            prop.className "editor-map-stage"
                             prop.children [
-                                button
-                                    (if model.EditorView.InspectorCollapsed then
-                                         "Show inspector"
-                                     else
-                                         "Hide inspector")
-                                    "Toggle selected-object inspector"
-                                    false
-                                    (fun _ ->
-                                        dispatch (
-                                            EditorWorkspaceChanged
-                                                ToggleEditorInspector
-                                        ))
+                                editorBattlefield
+                                    model.Editor
+                                    model.EditorView
+                                    model.EditorSpacePressed
+                                    dispatch
+                                editorToolbar
+                                    model.Editor
+                                    model.EditorView
+                                    model.EditorToolPanel
+                                    model.EditorToolPanelVisible
+                                    dispatch
                                 if not model.EditorView.InspectorCollapsed then
-                                    editorUnitPanel model.Editor dispatch
+                                    Html.aside [
+                                        prop.className "editor-inspector"
+                                        prop.ariaLabel "Map editor inspector"
+                                        prop.children [
+                                            button
+                                                "Hide inspector · F3"
+                                                "Toggle selected-object inspector"
+                                                false
+                                                (fun _ ->
+                                                    dispatch (
+                                                        EditorWorkspaceChanged
+                                                            ToggleEditorInspector
+                                                    ))
+                                            editorUnitPanel model.Editor dispatch
+                                        ]
+                                    ]
                             ]
                         ]
+                        editorGrid model.Editor dispatch
                     ]
                 ]
             | ReplayWorkspace ->
