@@ -515,6 +515,31 @@ module Battlefield =
             + (overlays |> Array.sumBy (fun overlay -> max 1 overlay.PathSegments))
             + frame.Events.Length }
 
+    /// Applies simulator-only fractional cell offsets after authoritative frame
+    /// projection. These values never enter a RenderFrame, replay, collision
+    /// check, or authored map revision.
+    let withUnitOffsets
+        (offsets: Map<int32, float * float>)
+        (scene: BattlefieldScene)
+        =
+        if Map.isEmpty offsets then
+            scene
+        else
+            { scene with
+                Units =
+                    scene.Units
+                    |> Array.map (fun unit ->
+                        match Map.tryFind unit.Unit.Id offsets with
+                        | None -> unit
+                        | Some(columnOffset, rowOffset) ->
+                            let x = columnOffset * CellSize
+                            let y = rowOffset * CellSize
+                            { unit with
+                                FootprintX = unit.FootprintX + x
+                                FootprintY = unit.FootprintY + y
+                                SymbolCenterX = unit.SymbolCenterX + x
+                                SymbolCenterY = unit.SymbolCenterY + y }) }
+
     /// Deterministic presentation-only translation. Non-position facts stay
     /// on the earlier committed frame until alpha one. Spawn, disappearance,
     /// footprint change, level change, or a move longer than one adjacent cell
@@ -543,27 +568,51 @@ module Battlefield =
                     | "fence", "closed" -> true
                     | _ -> false
 
+                let overlaps firstStart firstEnd secondStart secondEnd =
+                    max firstStart secondStart < min firstEnd secondEnd
+
                 let crosses (edge: EdgeVisual) =
                     let fromColumn = fromUnit.AnchorColumn
                     let fromRow = fromUnit.AnchorRow
                     let toColumn = toUnit.AnchorColumn
                     let toRow = toUnit.AnchorRow
-                    if fromRow = toRow && abs (toColumn - fromColumn) = 1 then
-                        let boundaryColumn = max fromColumn toColumn
-                        edge.StartColumn = boundaryColumn
-                        && edge.EndColumn = boundaryColumn
-                        && min edge.StartRow edge.EndRow <= fromRow
-                        && max edge.StartRow edge.EndRow >= fromRow + 1
-                    elif fromColumn = toColumn && abs (toRow - fromRow) = 1 then
-                        let boundaryRow = max fromRow toRow
-                        edge.StartRow = boundaryRow
-                        && edge.EndRow = boundaryRow
-                        && min edge.StartColumn edge.EndColumn <= fromColumn
-                        && max edge.StartColumn edge.EndColumn >= fromColumn + 1
-                    else
-                        // Diagonal movement is not interpolated because an
-                        // unambiguous semantic-edge traversal is unavailable.
-                        fromColumn <> toColumn && fromRow <> toRow
+                    let columnDelta = toColumn - fromColumn
+                    let rowDelta = toRow - fromRow
+                    let width = CellExtent.value fromUnit.FootprintWidth
+                    let depth = CellExtent.value fromUnit.FootprintDepth
+                    let crossesVertical =
+                        if columnDelta = 0 then
+                            false
+                        else
+                            let boundaryColumn =
+                                if columnDelta > 0 then
+                                    fromColumn + width
+                                else
+                                    fromColumn
+                            edge.StartColumn = boundaryColumn
+                            && edge.EndColumn = boundaryColumn
+                            && overlaps
+                                (min edge.StartRow edge.EndRow)
+                                (max edge.StartRow edge.EndRow)
+                                fromRow
+                                (fromRow + depth)
+                    let crossesHorizontal =
+                        if rowDelta = 0 then
+                            false
+                        else
+                            let boundaryRow =
+                                if rowDelta > 0 then
+                                    fromRow + depth
+                                else
+                                    fromRow
+                            edge.StartRow = boundaryRow
+                            && edge.EndRow = boundaryRow
+                            && overlaps
+                                (min edge.StartColumn edge.EndColumn)
+                                (max edge.StartColumn edge.EndColumn)
+                                fromColumn
+                                (fromColumn + width)
+                    crossesVertical || crossesHorizontal
 
                 Array.append previous.Edges next.Edges
                 |> Array.exists (fun edge -> blocked edge && crosses edge)
@@ -582,8 +631,9 @@ module Battlefield =
                         when unit.Unit.Level = targetRaw.Level
                              && unit.Unit.FootprintWidth = targetRaw.FootprintWidth
                              && unit.Unit.FootprintDepth = targetRaw.FootprintDepth
-                             && abs (targetRaw.AnchorColumn - unit.Unit.AnchorColumn)
-                                + abs (targetRaw.AnchorRow - unit.Unit.AnchorRow)
+                             && max
+                                    (abs (targetRaw.AnchorColumn - unit.Unit.AnchorColumn))
+                                    (abs (targetRaw.AnchorRow - unit.Unit.AnchorRow))
                                 <= 1
                              && not (blockedMove unit.Unit targetRaw) ->
                         let lerp start finish = start + (finish - start) * alpha

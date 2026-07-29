@@ -595,9 +595,9 @@ let rec update msg model =
     | SimulatorChanged action ->
         match model.Simulator with
         | None -> model, Cmd.none
-        | Some simulator ->
+        | Some current ->
             let simulator =
-                MapEditorSimulator.update action model.Editor.SelectedUnit simulator
+                MapEditorSimulator.update action model.Editor.SelectedUnit current
             let frame = MapEditorSimulator.frame model.Editor.SelectedUnit simulator
             { model with
                 Simulator = Some simulator
@@ -1011,7 +1011,7 @@ let subscriptions model =
 
     let editorTimer dispatch =
         let identifier =
-            window.setInterval ((fun () -> dispatch EditorPulse), 500)
+            window.setInterval ((fun () -> dispatch EditorPulse), 50)
 
         { new IDisposable with
             member _.Dispose() = window.clearInterval identifier }
@@ -1668,6 +1668,7 @@ let private battlefieldView
     (state: BattlefieldViewState)
     (previousFrame: RenderFrame option)
     presentationAlpha
+    movementOffsets
     (dispatch: Msg -> unit)
     =
     let loadedFrame =
@@ -1676,11 +1677,13 @@ let private battlefieldView
     let frame =
         loadedFrame
         |> Option.defaultValue Battlefield.representativeFrame
-    let scene =
+    let baseScene =
         match previousFrame with
         | Some previous when presentationAlpha < 1.0 ->
             Battlefield.interpolatedScene presentationAlpha previous frame state
         | _ -> Battlefield.scene frame state
+    let scene =
+        Battlefield.withUnitOffsets movementOffsets baseScene
     let presentationMode, presentationDescription =
         if previousFrame.IsSome && presentationAlpha < 1.0 then
             "interpolated", "interpolated presentation"
@@ -5343,6 +5346,21 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                 Html.p "Select a unit on the map to configure its controller."
             | Some unit ->
                 Html.h3 ("Unit " + string unit.Id + " · " + unit.ClassId)
+                let movementProfile =
+                    MapEditorSimulator.movementProfileFor unit
+                let movementCredit =
+                    Map.tryFind unit.Id handoff.MovementCreditsMillimeters
+                    |> Option.defaultValue 0
+                Html.p [
+                    prop.className "movement-readout"
+                    prop.text (
+                        "Movement "
+                        + string movementProfile.SpeedMillimetersPerSecond
+                        + " mm/s · credit "
+                        + string movementCredit
+                        + " mm · 500 mm cells · 50 ms ticks · Run preview 1×"
+                    )
+                ]
                 Html.label [ prop.htmlFor "unit-controller"; prop.text "Controller" ]
                 Html.select [
                     prop.id "unit-controller"
@@ -5378,8 +5396,8 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                                 dispatch (SimulatorChanged(MoveSimulatorUnit direction)))
                     ]
                 ]
-                Html.h3 "Route preview"
-                Html.p "Arrow keys move the deterministic preview destination. Enter commits a clear route; Escape cancels."
+                Html.h3 "Route planner"
+                Html.p "Arrow keys choose a destination. The planner routes around terrain, blocking edges, and occupied footprints; Enter queues the accepted route."
                 Html.div [
                     prop.className "manual-movement"
                     prop.children [
@@ -5407,7 +5425,11 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                             prop.text (
                                 "Distance "
                                 + string preview.Distance
-                                + " cells · "
+                                + " steps / "
+                                + string preview.DistanceMillimeters
+                                + " mm · cost "
+                                + string preview.MovementCostMillimeters
+                                + " mm credit · "
                                 + (if preview.Collision = RouteClear then
                                        "route clear"
                                    else
@@ -5865,6 +5887,20 @@ let private simulatorDock
                                             Html.li event
                                     ]
                                 ]
+                            if not (List.isEmpty handoff.LastCombatEvents) then
+                                Html.h3 "Recent combat"
+                                Html.ol [
+                                    prop.ariaLabel "Recent combat events"
+                                    prop.children [
+                                        for combat in handoff.LastCombatEvents do
+                                            Html.li (
+                                                "Tick "
+                                                + string combat.Tick
+                                                + " · "
+                                                + combat.Summary
+                                            )
+                                    ]
+                                ]
                             Html.h3 "Runtime roster"
                             Html.ul [
                                 prop.ariaLabel "Simulation unit health"
@@ -5879,7 +5915,12 @@ let private simulatorDock
                                             + string unit.Health
                                             + "/"
                                             + string unit.HealthMaximum
-                                            + " HP"
+                                            + " HP · "
+                                            + string (
+                                                (MapEditorSimulator.movementProfileFor unit)
+                                                    .SpeedMillimetersPerSecond
+                                            )
+                                            + " mm/s"
                                         )
                                 ]
                             ]
@@ -6091,6 +6132,13 @@ let view model dispatch =
                                         model.Battlefield
                                         None
                                         1.0
+                                        (if
+                                             model.Battlefield.ExactTicks
+                                             || model.Battlefield.ReducedMotion
+                                         then
+                                             Map.empty
+                                         else
+                                             MapEditorSimulator.presentationOffsets simulator)
                                         dispatch
                                     simulatorDock
                                         simulator
@@ -6223,6 +6271,7 @@ let view model dispatch =
                         model.Battlefield
                         model.PreviousFrame
                         model.PresentationAlpha
+                        Map.empty
                         dispatch
                 ]
             | RulesWorkspace ->

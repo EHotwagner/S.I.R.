@@ -105,7 +105,7 @@ unit 4 red orc 7 8 2 35 35 general -
             Title = "Troll reaches the line"
             Summary = "Follow the troll assault from deployment through first contact and early attrition."
             MapSampleId = "troll-assault"
-            Ticks = 12 };
+            Ticks = 20 };
           { Id = "breach-stalemate"
             Title = "Closed-door stalemate"
             Summary = "Inspect controller events as both sides discover that the closed breach blocks advance."
@@ -166,6 +166,7 @@ unit 4 red orc 7 8 2 35 35 general -
                   TargetUnitId = None })
         let projectedCombatEvents =
             combatEvents
+            |> List.filter (fun combat -> combat.Tick = tick)
             |> List.mapi (fun index combat ->
                 { Id = tick * 100 + 50 + int32 index
                   Tick = tick

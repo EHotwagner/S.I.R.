@@ -652,6 +652,17 @@ should not duplicate the complete runtime control panel.
   carry typed melee, projectile, lobbed-area, or spell-area delivery metadata;
   riflemen resolve visible ranged volleys while melee attacks use a distinct
   strike and impact treatment.
+- Simulator movement now uses 50 ms fixed ticks, 500 mm cells, class-specific
+  fixed-point speed credits, rough-ground costs, and deterministic weighted
+  A* routing across complete footprints. Accepted routes execute over time
+  while the browser projects per-tick fractional movement progress without
+  feeding presentation coordinates back into simulation state. Typed attack
+  profiles include recovery ticks so ranged volleys and melee strikes cannot
+  resolve at the full 20 Hz simulation rate. In-progress adjacent movement
+  segments remain locked until commit or collision so presentation does not
+  change direction mid-cell. When a complete attack route is blocked, general
+  controllers move to the closest reachable approach, allowing the breach
+  corridor forces to advance to the closed door and hold there.
 - Local editor and simulator work can be downloaded as a version-control
   bundle and imported into `designs/map-editor/` with
   `npm run import:map-design -- <bundle>`. The static host still performs no
