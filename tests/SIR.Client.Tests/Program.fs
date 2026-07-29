@@ -1188,6 +1188,32 @@ let main _ =
         "Deterministic evidence export leaked hostile markup/URLs or omitted provenance and the derived label."
 
     let editor = MapEditor.initial
+    let footprintPresetFixture =
+        MapEditor.canonicalFootprintPresets
+        |> List.map (fun preset ->
+            String.concat
+                "|"
+                [ preset.Id
+                  preset.ClassId
+                  string preset.FootprintSize
+                  string preset.FootprintSize ])
+        |> String.concat "\n"
+    let expectedFootprintPresetFixture =
+        Path.Combine(
+            AppContext.BaseDirectory,
+            "fixtures",
+            "map-editor-milestone-0-footprints.txt"
+        )
+        |> File.ReadAllText
+        |> fun value -> value.TrimEnd('\r', '\n')
+    require
+        (footprintPresetFixture = expectedFootprintPresetFixture
+         && MapEditor.tryCanonicalFootprintPreset "Goblin" = None
+         && (Map.find 1 editor.Map.Units).Size = 2
+         && (Map.find 3 editor.Map.Units).Size = 1
+         && (Map.find 4 editor.Map.Units).Size = 3)
+        "The deterministic canonical footprint preset fixture changed."
+
     let exportedMap = MapEditor.export editor
     let importedMap =
         MapEditor.tryImport exportedMap

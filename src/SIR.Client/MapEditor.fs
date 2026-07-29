@@ -64,6 +64,11 @@ type MapEditorTool =
     | Place of MapSide * classId: string * size: int32
     | Edge of MapEdgeDirection * MapEdgeKind
 
+type MapUnitFootprintPreset =
+    { Id: string
+      ClassId: string
+      FootprintSize: int32 }
+
 type MapEditorState =
     { Map: MapDefinition
       Tool: MapEditorTool
@@ -95,6 +100,34 @@ type MapEditorAction =
 module MapEditor =
     [<Literal>]
     let FormatVersion = 1
+
+    let canonicalFootprintPresets =
+        [ { Id = "goblin"
+            ClassId = "goblin"
+            FootprintSize = 1 }
+          { Id = "orc"
+            ClassId = "orc"
+            FootprintSize = 2 }
+          { Id = "troll"
+            ClassId = "troll"
+            FootprintSize = 3 }
+          { Id = "human"
+            ClassId = "rifleman"
+            FootprintSize = 2 }
+          { Id = "drone"
+            ClassId = "observation-drone"
+            FootprintSize = 1 } ]
+
+    let tryCanonicalFootprintPreset id =
+        canonicalFootprintPresets
+        |> List.tryFind (fun preset ->
+            String.Equals(preset.Id, id, StringComparison.Ordinal))
+
+    let private canonicalFootprintSize id =
+        tryCanonicalFootprintPreset id
+        |> Option.map _.FootprintSize
+        |> Option.defaultWith (fun () ->
+            invalidArg "id" ("Unknown canonical footprint preset: " + id))
 
     let private extent value =
         CellExtent.tryCreate value
@@ -204,7 +237,7 @@ module MapEditor =
                 ClassId = "rifleman"
                 Column = 1
                 Row = 1
-                Size = 2
+                Size = canonicalFootprintSize "human"
                 Health = 12
                 HealthMaximum = 12
                 Controller = Manual
@@ -215,7 +248,7 @@ module MapEditor =
                 ClassId = "medic"
                 Column = 1
                 Row = 5
-                Size = 2
+                Size = canonicalFootprintSize "human"
                 Health = 12
                 HealthMaximum = 12
                 Controller = Scripted
@@ -226,7 +259,7 @@ module MapEditor =
                 ClassId = "goblin"
                 Column = 9
                 Row = 1
-                Size = 1
+                Size = canonicalFootprintSize "goblin"
                 Health = 12
                 HealthMaximum = 12
                 Controller = General
@@ -237,7 +270,7 @@ module MapEditor =
                 ClassId = "troll"
                 Column = 8
                 Row = 5
-                Size = 2
+                Size = canonicalFootprintSize "troll"
                 Health = 12
                 HealthMaximum = 12
                 Controller = General

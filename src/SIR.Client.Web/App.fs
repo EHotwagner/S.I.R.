@@ -2423,6 +2423,13 @@ let private editorToolbar
             prop.onClick (fun _ -> dispatch (EditorChanged(ChooseTool tool)))
         ]
 
+    let placePreset side presetId =
+        MapEditor.tryCanonicalFootprintPreset presetId
+        |> Option.map (fun preset ->
+            Place(side, preset.ClassId, preset.FootprintSize))
+        |> Option.defaultWith (fun () ->
+            failwith ("Unknown canonical footprint preset: " + presetId))
+
     let choosePanel (label: string) (panel: EditorToolPanel) =
         Html.button [
             prop.type'.button
@@ -2480,11 +2487,12 @@ let private editorToolbar
                         Html.div [
                             prop.className "control-row"
                             prop.children [
-                                choose "Blue rifleman" (Place(Blue, "rifleman", 2))
+                                choose "Blue rifleman" (placePreset Blue "human")
                                 choose "Blue medic" (Place(Blue, "medic", 2))
-                                choose "Red goblin" (Place(Red, "goblin", 1))
-                                choose "Red troll" (Place(Red, "troll", 2))
-                                choose "Neutral drone" (Place(NeutralSide, "observation-drone", 1))
+                                choose "Red goblin" (placePreset Red "goblin")
+                                choose "Red orc" (placePreset Red "orc")
+                                choose "Red troll" (placePreset Red "troll")
+                                choose "Neutral drone" (placePreset NeutralSide "drone")
                             ]
                         ]
                     | EdgeTools ->
