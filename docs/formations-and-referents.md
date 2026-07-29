@@ -5,8 +5,8 @@ categoryindex: 4
 index: 3
 status: proposed
 document-type: living-design
-version: "0.2"
-last-updated: 2026-07-27
+version: "0.3"
+last-updated: 2026-07-29
 related:
   - docs/game-vision.md
   - docs/control-abi.md
@@ -18,12 +18,12 @@ related:
 
 ## Purpose
 
-Doctrine must be able to talk about space without naming absolute cells. A rule
-that says *withdraw to grid 214,88* is tied to one map, does not survive that
-cell being destroyed or overrun, and expresses a coordinate rather than an
-intent.
+Orders, control modules, and standard-module postures must be able to talk
+about space without naming absolute cells. An instruction that says *withdraw
+to grid 214,88* is tied to one map, does not survive that cell being destroyed
+or overrun, and expresses a coordinate rather than an intent.
 
-This document defines the two mechanisms that let doctrine refer to space:
+This document defines the two mechanisms that let control behavior refer to space:
 **positional referents**, which name a place by its role, and **formations**,
 which describe how a squad arranges itself relative to something. It also
 resolves what a unit may know about mission objectives, because an objective is
@@ -43,9 +43,9 @@ referent = role tag + location + scope + validity
 ```
 
 The location may be a cell or a bounded area. The role tag is what makes it
-usable by doctrine: a rule withdraws to *the rally point*, not to a coordinate,
-so the same doctrine works on every map and survives the designated place
-changing.
+portable: a module or posture withdraws to *the rally point*, not to a
+coordinate, so the same control behavior works on every map and survives the
+designated place changing.
 
 Candidate roles:
 
@@ -61,7 +61,8 @@ Candidate roles:
 ### Designation and propagation
 
 A referent is designated by the player through headquarters, or by a module for
-its own squad where doctrine permits it.
+its own squad where its disclosed capabilities and ordinary request validation
+permit it.
 
 **Designation travels the communications topology like any other command, and
 each unit holds its own belief about it.** The server holds the authoritative
@@ -79,9 +80,9 @@ unit acting on it may not know.
 A squad that withdraws to a rally point that has since been taken is not
 suffering a bug. It is suffering the consequence the knowledge architecture
 exists to produce, and it is the same consequence a real force suffers when a
-report does not arrive. Doctrine that withdraws blindly is worse than doctrine
-that withdraws toward a position it has recent reporting on, which gives module
-authors something real to be good at.
+report does not arrive. A module that withdraws blindly is worse than one that
+considers recent reports about the destination, which gives module authors
+something real to be good at.
 
 The server does not silently redirect a unit away from a referent that has
 become dangerous, for the same reason it does not silently redirect a dangerous
@@ -162,14 +163,13 @@ change.
 ### Integrity
 
 Formation integrity is a **derived measure** of how well members currently
-occupy their stations. It is not authoritative state that must be maintained; it
-is an observation about the squad that doctrine can test and a leader effect can
-influence.
+occupy their stations. It is not authoritative state that must be maintained;
+it is a derived fact a module can inspect and a leader effect can influence.
 
 Integrity degrades through terrain constriction, casualties, suppression,
 contact, and communication loss, and it recovers as members return to station.
-This gives doctrine a legible condition — *reform before advancing* — without
-requiring a formation to be a hard constraint.
+This gives a module or standard-module posture a legible input — *reform before
+advancing* — without requiring a formation to be a hard constraint.
 
 ### Terrain, edges, and levels
 
@@ -194,9 +194,11 @@ disturbance already described applies to formation reorganization as well.
 
 ### Cost
 
-Formation is doctrine-level state that the server maintains. Holding, degrading,
-and reforming a formation does not invoke control modules and therefore does not
-spend command bandwidth.
+The selected formation template, station assignments, and resulting movement
+goals are authoritative state handled by the cooperative movement system.
+Every unit's module is still invoked on every tick, but preserving an existing
+formation does not require the server to evaluate module conditions or carry a
+new network message. It therefore does not spend command bandwidth.
 
 This is deliberate. Formation keeping is exactly the kind of continuous, precise
 coordination that the delegated-execution thesis exists to provide, and it would
@@ -245,8 +247,8 @@ changes, and station changes become events a module is told about.
   place.
 - The formation template catalog and their station layouts.
 - The station assignment algorithm, and how much of it is player-configurable.
-- The integrity measure, and the threshold at which doctrine should consider a
-  formation broken.
+- The integrity measure, and how the standard module's postures interpret a
+  broken formation.
 - Whether templates may span levels, and how stations project across them.
 - Station reoccupation behavior after casualties: hold gaps, or close up.
 - Whether a formation constrains movement speed to its slowest member, and

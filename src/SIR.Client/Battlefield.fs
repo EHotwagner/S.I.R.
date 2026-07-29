@@ -728,23 +728,23 @@ module Battlefield =
                     { Radians = heading radians
                       Source = source } }
 
-    /// A committed six-by-six documentation frame. It is never interpolated.
+    /// A committed eight-by-eight documentation frame. It is never interpolated.
     let representativeFrame =
         { Tick = 24
           Board =
             { MinimumColumn = 0
               MinimumRow = 0
-              MaximumColumn = 5
-              MaximumRow = 5 }
+              MaximumColumn = 7
+              MaximumRow = 7 }
           Units =
-            [| sampleUnit 1 0 0 1 "rifleman" Human 12 0 (Some "standing") 0.0 "Bravo 6"
+            [| sampleUnit 1 0 0 2 "rifleman" Human 12 0 (Some "standing") 0.0 "Bravo 6"
                |> withSecondary WeaponHeading (Math.PI / 4.0)
-               sampleUnit 2 2 0 1 "medic" Human 9 2 (Some "kneeling") (Math.PI / 4.0) "Mercy"
+               sampleUnit 2 3 0 2 "medic" Human 9 2 (Some "kneeling") (Math.PI / 4.0) "Mercy"
                |> withSecondary SensorHeading (Math.PI * 1.25)
                sampleUnit 3 0 3 2 "gunner" Human 6 4 (Some "prone") (Math.PI * 1.5) "Anvil"
-               sampleUnit 4 4 1 1 "observation-drone" Neutral 11 1 None Math.PI "Kite"
-               sampleUnit 5 4 4 1 "goblin" Arcane 8 0 (Some "crouched") Math.PI "Needle"
-               sampleUnit 6 2 4 2 "troll" Arcane 3 7 (Some "braced") (Math.PI * 1.25) "Stone" |]
+               sampleUnit 4 6 2 1 "observation-drone" Neutral 11 1 None Math.PI "Kite"
+               sampleUnit 5 6 6 1 "goblin" Arcane 8 0 (Some "crouched") Math.PI "Needle"
+               sampleUnit 6 3 5 2 "troll" Arcane 3 7 (Some "braced") (Math.PI * 1.25) "Stone" |]
           Edges =
             [| { Id = "wall-north"
                  Kind = "wall"
@@ -773,10 +773,10 @@ module Battlefield =
                  Scope = SelectedUnitOverlay 1
                  GeometryRevision = 1
                  Points =
-                    [| 24.0; 24.0
-                       72.0; 40.0
+                    [| 48.0; 48.0
                        120.0; 72.0
-                       176.0; 104.0 |]
+                       216.0; 168.0
+                       312.0; 312.0 |]
                  Label = Disclosed "Exact selected line of sight" }
                { Id = "whole-command-1"
                  Kind = "command"
@@ -784,9 +784,9 @@ module Battlefield =
                  GeometryRevision = 1
                  Points =
                     [| 12.0; 12.0
-                       276.0; 12.0
-                       276.0; 132.0
-                       12.0; 132.0
+                       372.0; 12.0
+                       372.0; 180.0
+                       12.0; 180.0
                        12.0; 12.0 |]
                  Label = Disclosed "Whole-force command area" } |]
           Events =

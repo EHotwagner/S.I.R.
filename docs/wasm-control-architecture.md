@@ -34,7 +34,7 @@ S.I.R. separates:
    machine-readable, versioned ruleset data.
 
 Players can invent their own command vocabulary, reports, compression,
-acknowledgements, doctrine, and higher-level protocol. They cannot redefine how
+acknowledgements, control policies, and higher-level protocol. They cannot redefine how
 a module receives authoritative observations, consumes server resources, or
 requests game actions.
 
@@ -307,7 +307,7 @@ Player modules have no unrestricted access to:
 - unrestricted WASI facilities.
 
 Permitted inputs are authoritative and replayable. If control logic needs
-randomness for doctrine, the ABI can expose a separately scoped deterministic
+randomness for module decisions, the ABI can expose a separately scoped deterministic
 module stream. That stream cannot reveal or consume the authoritative combat
 random context.
 
@@ -629,25 +629,20 @@ the module fails.
 
 Rehearsal runs the same deterministic kernel, ABI, execution profile, and
 knowledge filtering as a live match. It is not a simplified simulator, because
-doctrine validated against a simplified model would be worthless.
+control behavior validated against a simplified model would be worthless.
 
 Rehearsal must not become a covert intelligence channel. It uses scripted or
 player-authored opposition and published content only. It cannot replay another
-player's module, reconstruct an opponent's doctrine from a competitive replay,
+player's module, reconstruct an opponent's control policy from a competitive replay,
 or consult campaign state the player is not entitled to see.
 
 ## Open parameters
 
 The architecture does not yet fix:
 
-- the contents of the condition and action vocabularies;
-- rule-count, condition-count, and doctrine-size bounds by host class;
-- subscription count and complexity bounds;
-- how far static unreachability analysis is taken at validation;
-- the delegation-policy category set;
+- the exact event and action catalogs supplied by each ruleset;
 - whether a starved unit's missed wakes are counted, summarized, or merely
   indicated;
-- whether doctrine persists across an amendment or is always replaced whole;
 - exact validated version of the
   [canonical Wasmtime runtime](research/wasm-runtime-selection.md);
 - binary encoding and schema-evolution mechanism;

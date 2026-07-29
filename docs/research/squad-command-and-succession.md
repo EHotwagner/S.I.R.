@@ -2,8 +2,8 @@
 title: Squad Command, Identity, and Succession
 status: proposed
 document-type: research
-version: "0.4"
-last-updated: 2026-07-25
+version: "0.5"
+last-updated: 2026-07-29
 related:
   - docs/game-vision.md
   - docs/research/progression-systems.md
@@ -138,9 +138,9 @@ S.I.R. should separate three sources of identity:
 2. **Leader-dependent identity:** command style, reactions, formation rules,
    coordination, communications, combined actions, and logistics behavior
    provided by the acting leader.
-3. **Squad identity:** doctrine, cohesion, shared history, traditions, and
-   rehearsed behaviors that persist independently of one leader, if this layer
-   is adopted.
+3. **Squad identity:** shared tactical practice, cohesion, history, traditions,
+   and rehearsed behaviors that persist independently of one leader, if this
+   layer is adopted.
 
 Leader effects should generally change relationships and behavior rather than
 apply universal percentage bonuses. Examples include:
@@ -151,7 +151,7 @@ apply universal percentage bonuses. Examples include:
 - how reports are summarized and forwarded;
 - how logistics priorities are resolved under scarcity;
 - how quickly formations reorganize after disruption; and
-- what doctrine is used when contact with HQ is lost.
+- what configured behavior is used when contact with HQ is lost.
 
 This creates reasons to assemble different squads without reducing construction
 to placing the highest-stat individuals together.
@@ -193,10 +193,10 @@ cohesion, traditions, and squad-level traits should provisionally emerge through
 shared training, missions, successes, failures, casualties, and command
 transitions.
 
-This does not mean a new squad begins without doctrine. The player can assign a
-functional baseline doctrine immediately. Emergent identity represents how the
-squad becomes distinctive in practice, not whether it can perform its basic
-role.
+This does not mean a new squad begins without competent control behavior. The
+player can assign a functional standard-module posture immediately. Emergent
+identity represents how the squad becomes distinctive in practice, not whether
+it can perform its basic role.
 
 Potential outputs include:
 
@@ -214,8 +214,8 @@ policy can explain squad behavior.
 
 The prototype therefore needs the following guardrails:
 
-- core squad competence comes from class, members, equipment, doctrine, and
-  command roles rather than accumulated identity;
+- core squad competence comes from class, members, equipment, module
+  configuration, and command roles rather than accumulated identity;
 - emergent traits are few, visible, and behaviorally meaningful;
 - every change has an inspectable cause and machine-readable effect;
 - farming the same safe action cannot generate unlimited identity progression;
@@ -224,14 +224,14 @@ The prototype therefore needs the following guardrails:
 
 Acceptance should depend on whether emergent identity creates memorable,
 strategically different squads more effectively than a simpler selected
-doctrine and leader-effect system.
+posture/configuration and leader-effect system.
 
 ## Succession consequences
 
 When command changes:
 
 - basic individual capabilities remain available;
-- persistent squad history and unlocked doctrine remain with the squad;
+- persistent squad history and unlocked capabilities remain with the squad;
 - leader-dependent capabilities resolve against the new acting leader;
 - incomplete coordination may be cancelled, delayed, or degraded;
 - the squad's control modules receive an authoritative leadership-change event;

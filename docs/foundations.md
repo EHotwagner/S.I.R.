@@ -93,7 +93,7 @@ client cannot fill a missing value from an earlier frame.
     <g class="sir-attribute-node" tabindex="0" data-svg-tip="Position, footprint, elevation, body facing, and attention are separate geometry facts.">
       <rect x="28" y="214" width="190" height="70" rx="14"/>
       <text x="48" y="244" class="sir-attribute-label">GEOMETRY</text>
-      <text x="48" y="266" class="sir-attribute-value">B4 · 1×1 · level 0</text>
+      <text x="48" y="266" class="sir-attribute-value">B4 · 2×2 · level 0</text>
     </g>
     <g class="sir-attribute-node" tabindex="0" data-svg-tip="Health, wounds, suppression, readiness, stance, and action phase.">
       <rect x="28" y="386" width="190" height="70" rx="14"/>

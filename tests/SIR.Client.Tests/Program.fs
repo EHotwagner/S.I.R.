@@ -752,10 +752,18 @@ let main _ =
 
     require
         (staticScene.Tick = Battlefield.representativeFrame.Tick
-         && staticScene.Width = 288.0
-         && staticScene.Height = 288.0
+         && staticScene.Width = 384.0
+         && staticScene.Height = 384.0
          && staticScene.SemanticZoom = Detailed)
         "The representative committed frame was changed or interpolated."
+
+    require
+        (staticScene.Units
+         |> Array.filter (fun unit -> unit.Unit.Faction = Human)
+         |> Array.forall (fun unit ->
+             CellExtent.value unit.Unit.FootprintWidth = 2
+             && CellExtent.value unit.Unit.FootprintDepth = 2))
+        "The representative human units no longer use the canonical 2x2 footprint."
 
     require
         (staticScene.Units

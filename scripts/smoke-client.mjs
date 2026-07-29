@@ -338,12 +338,40 @@ const squareFootprints = [
   (footprint) =>
     footprint.getAttribute("width") === footprint.getAttribute("height"),
 );
+const fittedSquareSymbols = [...battlefieldUnits].every((unit) => {
+  const footprint = unit.querySelector("[data-authoritative-footprint]");
+  const symbol = unit.querySelector("[data-unit-symbol]");
+  if (!footprint || !symbol) return false;
+
+  const footprintWidth = Number(footprint.getAttribute("width"));
+  const footprintHeight = Number(footprint.getAttribute("height"));
+  const symbolWidth = Number(symbol.getAttribute("width"));
+  const symbolHeight = Number(symbol.getAttribute("height"));
+
+  return (
+    symbolWidth === symbolHeight &&
+    footprintWidth === footprintHeight &&
+    symbolWidth === footprintWidth - 8
+  );
+});
+const representativeHumanFootprints = ["1", "2", "3"].every((unitId) => {
+  const footprint = battlefield?.querySelector(
+    `[data-unit-id="${unitId}"] [data-authoritative-footprint]`,
+  );
+
+  return (
+    footprint?.getAttribute("width") === "92" &&
+    footprint?.getAttribute("height") === "92"
+  );
+});
 
 if (
   !battlefield ||
   battlefieldUnits.length !== 6 ||
   battlefield.querySelectorAll("[data-authoritative-footprint]").length !== 6 ||
   !squareFootprints ||
+  !fittedSquareSymbols ||
+  !representativeHumanFootprints ||
   battlefield.querySelectorAll("[data-facing-wedge]").length !== 6 ||
   healthPositions.length !== 72 ||
   battlefield.querySelectorAll("[data-elevation-label]").length !== 2 ||

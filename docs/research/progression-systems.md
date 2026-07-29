@@ -2,8 +2,8 @@
 title: Attribute, Skill, and Progression Systems
 status: proposed
 document-type: research
-version: "0.27"
-last-updated: 2026-07-27
+version: "0.28"
+last-updated: 2026-07-29
 related:
   - docs/game-vision.md
 research-scope:
@@ -33,6 +33,12 @@ automatic-progression decision is recorded in
 [Game Vision](../game-vision.md); the recommendation below supplies its
 research context and provisional scale.
 
+References below to “doctrine” describe broad military practice or the
+historical option evaluated by this research. They do not restore the removed
+standing-doctrine engine. Current executable behavior comes from per-unit
+control modules; non-programming players configure the standard module through
+named postures and bounded overrides.
+
 ## Executive conclusion
 
 Every S.I.R. unit is a persistent individual. The progression architecture does
@@ -59,8 +65,9 @@ system**:
    choices.
 7. Squad leaders use the same personnel foundation but have access to
    leadership, communications, coordination, and logistics specializations.
-8. Squads have a configurable doctrine layer that affects control behavior and
-   tactical capabilities.
+8. Squads have configurable standard-module postures or custom-module
+   configuration that affects control behavior without creating an engine rule
+   vocabulary.
 9. Equipment, magic, implants, and support assets provide reversible active
    capabilities.
 10. Research and organizational progression unlock options rather than applying
@@ -217,9 +224,9 @@ and strength
 #### S.I.R. lesson
 
 If S.I.R. uses shared progression resources, they should probably purchase
-**training opportunities, certifications, or doctrine access**, not be freely
+**training opportunities, certifications, or behavior-profile access**, not be freely
 convertible into every attribute and perk. Cross-role access should have an
-explicit cost such as a doctrine slot, equipment dependency, or mutually
+explicit cost such as a configuration tradeoff, equipment dependency, or mutually
 exclusive specialization.
 
 ### Gears Tactics: readable trees with deeper subclasses
@@ -248,7 +255,7 @@ respec in its veteran mode
 
 #### S.I.R. lesson
 
-Named branches are useful for squad leaders or doctrine packages. If used,
+Named branches are useful for squad leaders or posture families. If used,
 trees should be shallow enough that every node changes behavior rather than
 serving as a small numerical travel tax.
 
@@ -389,7 +396,7 @@ do not miss
 #### S.I.R. lesson
 
 The useful idea is the **limited capability loadout**, not card draw. A unit,
-squad, leader, or WASM doctrine can know many unlocked behaviors but equip only
+squad, leader, or module configuration can know many unlocked behaviors but equip only
 a small number for a mission. This preserves builds, balance, API simplicity,
 and pre-mission planning without randomly disabling expected actions during a
 real-time engagement.
@@ -423,14 +430,14 @@ several advanced effects, improving local freedom and readability
 
 #### S.I.R. lesson
 
-A Path of Exile-style web is plausible only for a **force-wide doctrine,
+A Path of Exile-style web is plausible only for a **force-wide policy,
 research, faction, or control-program architecture**. Useful elements to borrow
 are:
 
 - themed clusters;
 - visible major destinations;
 - a small number of rule-changing keystones with explicit tradeoffs;
-- different starting positions for factions or doctrines; and
+- different starting positions for factions or organizational policies; and
 - mastery choices inside reached clusters.
 
 Avoid hundreds of small numerical travel nodes. A S.I.R. organizational web
@@ -505,7 +512,7 @@ combination. The meaningful allocation questions instead concern:
 
 S.I.R. cannot copy this directly because every S.I.R. unit is an individually
 persistent person. It can nevertheless adapt the stronger idea: a leader should
-give the assembled squad conditional doctrine, reaction, coordination,
+give the assembled squad configurable reaction, coordination,
 communication, formation, or logistics characteristics that are not reducible
 to selecting the members with the highest independent statistics.
 
@@ -579,7 +586,7 @@ against permanently ruining a long campaign before the player understands the
 system.
 
 For S.I.R., permanent history can remain in injuries, experience, and
-relationships while doctrine and loadouts remain more reversible.
+relationships while module configuration and loadouts remain more reversible.
 
 ### 5. Progression attached to teams and relationships
 
@@ -592,7 +599,7 @@ natural.
 
 ### 6. Horizontal options protected by budgets
 
-Loadout slots, card-deck sizes, supply budgets, memory slots, and doctrine slots
+Loadout slots, card-deck sizes, supply budgets, memory limits, and configuration tradeoffs
 let the game unlock more content without unlimited power accumulation. MENACE's
 supply system explicitly exists to keep lower-cost equipment viable rather than
 allowing best-in-slot gear everywhere.
@@ -622,7 +629,7 @@ to unreadable character state even when resolution is automatic.
 A useful division is:
 
 - **persistent:** aptitude, history, injuries, experience, signature traits;
-- **retrainable:** learned specialization and doctrine;
+- **retrainable:** learned specialization and standard-module configuration;
 - **swappable:** equipment, prepared magic, software behavior packages;
 - **temporary:** mission effects, morale, suppression, supply, intelligence.
 
@@ -659,7 +666,7 @@ At 100 units, even four manual promotions per unit create 400 interruptions.
 S.I.R. accepts the underlying individual depth but must not require 400 manual
 modal interactions. Batch policies, auto-development templates, AI
 recommendations, scripted allocation, exception queues, and audit logs are
-necessary. Automation should apply the player's doctrine consistently while
+necessary. Automation should apply the player's development policy consistently while
 allowing inspection and override.
 
 ### Automation farming
@@ -694,7 +701,7 @@ Offer choice, guarantees, server-visible seeds, and limited correction.
 ### Individual progression eclipses force design
 
 If veteran units become overwhelmingly powerful, logistics, replacement,
-formation, and doctrine become secondary to protecting a small set of
+formation, and control behavior become secondary to protecting a small set of
 super-soldiers. That would work against the intended 50–100-unit scale.
 
 ## Design choices for S.I.R.
@@ -736,7 +743,7 @@ role-, history-, and behavior-tagged pools.
 **Disadvantages**
 
 - Fairness concerns in competitive play.
-- Desired doctrines cannot be guaranteed.
+- Desired behavior configurations cannot be guaranteed.
 - Requires careful offer-generation rules.
 - Still produces many decisions at 100 units.
 
@@ -764,7 +771,7 @@ Starting aptitude or role determines the initial region.
 - Easy to create ineffective builds.
 
 **Fit:** Possible per individual through automation, but difficult for humans to
-understand and audit at force scale; stronger for squad doctrine or force-wide
+understand and audit at force scale; stronger for squad configuration or force-wide
 research.
 
 ### Choice D: Equipment-led horizontal progression
@@ -791,7 +798,7 @@ software packages, and support assets provide most active capabilities.
 ### Choice E: Leader-centered progression
 
 Ordinary units develop mostly automatically. Squad leaders receive XCOM-sized
-trees, and squads select a compact doctrine/loadout that defines behaviors,
+trees, and squads select a compact posture/loadout that defines behaviors,
 communication, reactions, and tactical specialties.
 
 **Advantages**
@@ -807,7 +814,7 @@ communication, reactions, and tactical specialties.
   individual with meaningful handling.
 - Ordinary members may lack sufficient development and identity.
 - Leader loss can create a severe capability cliff.
-- Requires rules for succession and doctrine retention.
+- Requires rules for succession and configuration retention.
 - A leader tree can become mandatory if its bonuses affect too many members.
 
 **Fit:** Useful as a supplementary command layer, but not sufficient as the
@@ -822,9 +829,9 @@ Combine:
 - four to six automatic qualitative progression milestones for every unit;
 - persistent bulk policies influencing development eligibility and weighting;
 - leader-specific command specializations;
-- squad doctrine loadouts;
+- squad posture and module-configuration loadouts;
 - equipment-provided active capabilities; and
-- a compact force-wide research/doctrine web.
+- a compact force-wide research/policy web.
 
 **Advantages**
 
@@ -921,7 +928,7 @@ and magic rules rather than precede them.
 
 - Every progression operation is available through a stable, versioned API.
 - Policies can filter units by role, attributes, existing perks, squad,
-  doctrine, equipment, history, and eligible outcome tags.
+  module configuration, equipment, history, and eligible outcome tags.
 - Scripts can preview policy influence and validate or apply policy changes in
   batches; they do not select routine milestone results.
 - The standard client provides official policy templates and reports material
@@ -934,15 +941,17 @@ and magic rules rather than precede them.
   inputs, policy, random purpose, and resulting change.
 - Hidden information is never exposed to personnel-management automation.
 
-### Squad doctrine
+### Squad control configuration
 
-- A doctrine family establishes the broad role.
-- 3–5 doctrine slots equip unlocked behaviors or tactical rules.
-- Doctrine packages define capabilities visible to the WASM module.
-- Changing doctrine requires preparation, training time, or logistics, but does
-  not destroy prior unlocks.
-- The standard control module ships with behavior profiles for every supported
-  doctrine.
+- A named standard-module posture establishes the squad's broad behavior.
+- A short set of named overrides refines risk, engagement, reporting,
+  ammunition, withdrawal, communication-loss, and formation preferences.
+- Custom modules may publish a different configuration schema; the engine
+  treats it as opaque per-instance data.
+- Progression and equipment may unlock authoritative capabilities visible to
+  every compatible module, but do not create engine-evaluated behavior slots.
+- Changing configuration before deployment is preparation. Changing it during
+  a match is an order carried through the communications topology.
 
 ### Equipment and magic
 
@@ -968,7 +977,7 @@ and magic rules rather than precede them.
 ### Organization
 
 - A compact web or clustered tree of approximately 30–60 meaningful nodes.
-- Nodes unlock training, equipment, doctrine, logistics, sensor, electronic
+- Nodes unlock training, equipment, posture options, logistics, sensor, electronic
   warfare, communications, and magical options.
 - A few keystone-style nodes change organizational rules with explicit
   tradeoffs.
@@ -1050,7 +1059,7 @@ differences legible rather than implying that persistent forces are equal.
 Point-based duels and skirmishes provide the controlled competitive context.
 Players construct forces from a standardized competitive catalog at defined
 progression levels rather than bringing persistent personnel. Units, attributes,
-perks, equipment, magic, doctrines, eligibility rules, and point costs must be
+perks, equipment, magic, module configurations, eligibility rules, and point costs must be
 versioned and available through the public API.
 
 This is easier to balance and reproduce than pricing arbitrary persistent
@@ -1108,7 +1117,7 @@ Every mode should provide an authoritative ruleset manifest containing at least:
 
 Custom clients and WASM modules create additional requirements:
 
-- Every attribute, proficiency, perk, and doctrine effect needs a stable
+- Every attribute, proficiency, perk, and configuration effect needs a stable
   machine-readable identifier.
 - The server remains authoritative over eligibility and outcomes.
 - Modules receive only capabilities and information their unit or squad is
@@ -1124,7 +1133,7 @@ Custom clients and WASM modules create additional requirements:
 - Catalog entries must resolve to complete authoritative unit definitions so
   canonical and alternative clients can validate and reproduce a force.
 - The server does not disclose an opponent's selected personnel build, perks,
-  abilities, doctrine, or loadout before a match.
+  abilities, module configuration, or loadout before a match.
 - During PvP, opponent build information is available only through battlefield
   observation and the player's resulting knowledge state.
 - A public catalog defines possible content but does not reveal which content an
@@ -1159,7 +1168,7 @@ With the automatic, policy-influenced progression shape accepted, determine:
    intended progression arc, population level, and recovery from a poor start.
 3. Whether one account may participate in both overlapping campaign cohorts.
 4. The exact boundary between progression-unlocked active abilities and actions
-   granted or enabled by equipment, doctrine, magic, and control software.
+   granted or enabled by equipment, posture/configuration, magic, and control software.
 5. The cost and limits of any later retraining or respec policy, without
    permitting historical automatic outcomes to be rerolled.
 

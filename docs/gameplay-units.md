@@ -5,8 +5,8 @@ document-type: reference
 category: Forces & Equipment
 categoryindex: 3
 index: 3
-version: "0.2"
-last-updated: 2026-07-28
+version: "0.3"
+last-updated: 2026-07-29
 related:
   - docs/gameplay-reference.md
   - docs/human-forces.md
@@ -44,6 +44,15 @@ Return to the [Gameplay Reference](gameplay-reference.md).
 
 A drone, caster, goblin, or troll is a unit under these same rules. No faction
 receives a privileged squad-wide controller or hidden world truth.
+
+### Canonical base and symbol rule
+
+🟩 Every unit occupies one axis-aligned `N×N` square base and is represented by
+one square information symbol fitted to that base with the standard inset. The
+symbol and its class glyph scale uniformly with the base. Large units do not
+use a one-cell symbol, a rectangular or stretched symbol, or repeated symbols.
+The footprint remains authoritative for occupancy; the fitted symbol is its
+visual expression.
 
 ## 🟦 Human force
 

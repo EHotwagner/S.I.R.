@@ -3,10 +3,11 @@ title: Observation Reports
 category: Battlefield Systems
 categoryindex: 4
 index: 13
-status: proposed
+status: accepted
+decision-status: canonical
 document-type: living-design
-version: "0.3"
-last-updated: 2026-07-28
+version: "1.0"
+last-updated: 2026-07-29
 related:
   - docs/game-vision.md
   - docs/communications-network.md
@@ -19,15 +20,15 @@ related:
 
 ## Purpose
 
-Every link in the knowledge chain is now settled except this one. Perception
-produces local observations, communications carry them, electronic warfare
-attacks the carriage, and command bandwidth prices the enrichment. What has
-remained provisional since the initial vision is the rule deciding **which
-observations become reports at all** — and therefore what information exists to
-flow.
+This document closes the last structural gap in the knowledge chain. Perception
+produces local observations, this model decides **which observations become
+reports at all**, communications carry them, electronic warfare attacks the
+carriage, and command bandwidth prices the enrichment.
 
-This is the vision's third open question, and it is the last authoritative gap
-in the information model.
+The reporting structure is canonical. The event significance assignments,
+threshold values, aggregation windows, and other values listed under
+[Open parameters](#open-parameters) remain prototype work rather than
+authoritative rules.
 
 ## Why fixed reports exist when players can already send anything
 

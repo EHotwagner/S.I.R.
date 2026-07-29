@@ -51,6 +51,7 @@ const palettes = [
   "monochrome-pattern",
 ];
 const files = [];
+let boardCellDimensions;
 
 for (const paletteId of palettes) {
   const select = window.document.querySelector("#battlefield-palette");
@@ -64,6 +65,34 @@ for (const paletteId of palettes) {
   if (!svg || select.value !== paletteId) {
     throw new Error(`The ${paletteId} production battlefield did not render.`);
   }
+
+  const viewBox = svg
+    .getAttribute("viewBox")
+    ?.split(/\s+/)
+    .map(Number);
+  if (
+    !viewBox ||
+    viewBox.length !== 4 ||
+    viewBox[0] !== 0 ||
+    viewBox[1] !== 0 ||
+    viewBox[2] % 48 !== 0 ||
+    viewBox[3] % 48 !== 0
+  ) {
+    throw new Error(`The ${paletteId} battlefield has an invalid review viewBox.`);
+  }
+
+  const dimensions = {
+    columns: viewBox[2] / 48,
+    rows: viewBox[3] / 48,
+  };
+  if (
+    boardCellDimensions &&
+    (boardCellDimensions.columns !== dimensions.columns ||
+      boardCellDimensions.rows !== dimensions.rows)
+  ) {
+    throw new Error("The palette review boards do not share one board geometry.");
+  }
+  boardCellDimensions = dimensions;
 
   svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
   svg.setAttribute("width", "768");
@@ -104,8 +133,8 @@ const manifest = {
   board: {
     minimumColumn: 0,
     minimumRow: 0,
-    maximumColumn: 5,
-    maximumRow: 5,
+    maximumColumn: boardCellDimensions.columns - 1,
+    maximumRow: boardCellDimensions.rows - 1,
   },
   viewport: { width: 768, height: 768 },
   projectedCellPixels: 48,
