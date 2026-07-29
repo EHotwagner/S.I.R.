@@ -5,7 +5,7 @@ categoryindex: 5
 index: 10
 status: in-progress
 document-type: timestamped-design-report
-version: "1.9"
+version: "1.10"
 created-at: 2026-07-29T12:30:56+02:00
 last-updated: 2026-07-29
 related:
@@ -20,7 +20,7 @@ related:
 
 **Report timestamp:** 2026-07-29 12:30:56 CEST (UTC+02:00)
 
-**Status:** implementation in progress; Milestones 0–7 complete
+**Status:** implementation in progress; Milestones 0–8 complete
 
 ## Executive decision
 
@@ -819,14 +819,14 @@ within it is checked.
 
 ### Milestone 8 — Background references and interchange
 
-- [ ] Add local raster background references with type, dimension, and size
+- [x] Add local raster background references with type, dimension, and size
   limits.
-- [ ] Add lock, opacity, fit, crop, grid offset, and grid-alignment tools.
-- [ ] Store background and camera facts outside authoritative map state.
-- [ ] Evaluate Universal VTT and selected Foundry/Fantasy Grounds exports
+- [x] Add lock, opacity, fit, crop, grid offset, and grid-alignment tools.
+- [x] Store background and camera facts outside authoritative map state.
+- [x] Evaluate Universal VTT and selected Foundry/Fantasy Grounds exports
   against explicit semantic mappings.
-- [ ] Implement import only for mappings that are deterministic and reviewable.
-- [ ] Report every ignored or lossy field before accepting an imported map.
+- [x] Implement import only for mappings that are deterministic and reviewable.
+- [x] Report every ignored or lossy field before accepting an imported map.
 
 ### Milestone 9 — Simulator handoff and perspective preview
 

@@ -530,9 +530,106 @@ buttonByText("Map file")?.click();
 await window.happyDOM.waitUntilComplete();
 if (
   !window.document.querySelector('input[aria-label="Import SIR map"]') ||
-  !buttonByText("Export map")
+  !buttonByText("Export map") ||
+  !window.document.querySelector(
+    'input[aria-label="Choose local raster map background"]',
+  )
 ) {
-  throw new Error("The editor Map file sub-tab did not expose import and export.");
+  throw new Error(
+    "The editor Map file sub-tab did not expose import, export, and accessible local-background controls.",
+  );
+}
+
+const digestBeforeBackground = editorCanvas?.getAttribute("data-editor-revision");
+const backgroundInput = window.document.querySelector(
+  'input[aria-label="Choose local raster map background"]',
+);
+const pngHeader = new Uint8Array([
+  137, 80, 78, 71, 13, 10, 26, 10,
+  0, 0, 0, 13, 73, 72, 68, 82,
+  0, 0, 4, 0, 0, 0, 2, 0,
+]);
+const backgroundFile = new window.File([pngHeader], "review.png", {
+  type: "image/png",
+});
+Object.defineProperty(backgroundInput, "files", {
+  configurable: true,
+  value: {
+    0: backgroundFile,
+    length: 1,
+    item(index) {
+      return index === 0 ? backgroundFile : null;
+    },
+  },
+});
+backgroundInput.dispatchEvent(new window.Event("change", { bubbles: true }));
+await new Promise((resolveWait) => setTimeout(resolveWait, 0));
+await window.happyDOM.waitUntilComplete();
+if (
+  !editorWorkspace?.querySelector('[data-layer="local-raster-background"]') ||
+  !buttonByText("Unlock") ||
+  editorCanvas?.getAttribute("data-editor-revision") !== digestBeforeBackground
+) {
+  throw new Error(
+    "A validated local raster did not render as locked presentation-only state.",
+  );
+}
+
+const importInput = window.document.querySelector(
+  'input[aria-label="Import SIR map"]',
+);
+const uvttFile = new window.File(
+  [
+    JSON.stringify({
+      format: 0.3,
+      resolution: {
+        map_size: { x: 6, y: 4 },
+        pixels_per_grid: 100,
+        map_origin: { x: 0, y: 0 },
+      },
+      line_of_sight: [[{ x: 100, y: 0 }, { x: 100, y: 100 }]],
+      portals: [],
+      lights: [{ color: "#fff" }],
+    }),
+  ],
+  "review.dd2vtt",
+  { type: "application/json" },
+);
+Object.defineProperty(importInput, "files", {
+  configurable: true,
+  value: {
+    0: uvttFile,
+    length: 1,
+    item(index) {
+      return index === 0 ? uvttFile : null;
+    },
+  },
+});
+importInput.dispatchEvent(new window.Event("change", { bubbles: true }));
+await new Promise((resolveWait) => setTimeout(resolveWait, 0));
+await window.happyDOM.waitUntilComplete();
+const review = window.document.querySelector(
+  '[aria-label="Interchange import review"]',
+);
+if (
+  !review?.textContent.includes("lights[0].color") ||
+  !review?.textContent.includes("Ignored") ||
+  buttonByText("Accept reviewed import")?.disabled ||
+  editorCanvas?.getAttribute("data-editor-revision") !== digestBeforeBackground
+) {
+  throw new Error(
+    "Universal VTT selection did not present every ignored field before preserving the current map.",
+  );
+}
+buttonByText("Cancel import")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document.querySelector('[aria-label="Interchange import review"]') ||
+  editorCanvas?.getAttribute("data-editor-revision") !== digestBeforeBackground
+) {
+  throw new Error(
+    "Cancelling the reviewed interchange import changed the authoritative map.",
+  );
 }
 
 buttonByText("Replay")?.click();
