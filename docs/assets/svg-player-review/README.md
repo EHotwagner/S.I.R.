@@ -1,9 +1,13 @@
 # Static SVG battlefield review evidence
 
 These boards are deterministic presentation evidence for the Phase 1 SVG
-battlefield. They are not simulation authority. Each board comes from the
-production Fable bundle's exact committed tick 24 frame; no interpolation,
-replay reconstruction, or replay-supplied SVG is involved.
+battlefield and the Phase 3 two-heading/exact-overlay review. They are not
+simulation authority. Each board comes from an explicit sandbox review fixture
+in the production Fable bundle at exact committed tick 24; no interpolation,
+replay reconstruction, inferred attention heading, or replay-supplied SVG is
+involved. Production replay adaptation continues to omit overlays and second
+headings because the current worker projection does not legitimately disclose
+either source.
 
 Regenerate from the repository root:
 
@@ -27,7 +31,11 @@ Review targets:
 - twelve health positions, elevation stacks, detailed `+N`, and stance remain
   distinguishable;
 - wall, open-door, and window geometry remains non-color-readable; and
-- faction outlines remain distinguishable in the monochrome/pattern board.
+- faction outlines remain distinguishable in the monochrome/pattern board;
+- the selected three-segment line-of-sight overlay remains exact and distinct
+  across all palettes; and
+- the weapon and sensor centre-out pointers remain distinct from their units'
+  perimeter body-facing wedges and from ground attention/overlay geometry.
 
 Generated SVG and PNG files are committed so review does not depend on a local
 browser or rasterizer. Re-running the generator should reproduce the hashes in
@@ -53,7 +61,21 @@ The three 768 × 768 PNGs were inspected at native size:
   black; and
 - the high-contrast white grid is the busiest presentation, but thicker symbol
   outlines, health values, facing wedges, and class silhouettes remain
-  separable at native size.
+  separable at native size;
+- the selected exact line-of-sight polyline remains legible over the grid and
+  does not obscure the body-facing or class channels;
+- unit 1's disclosed weapon pointer and unit 2's disclosed sensor pointer end
+  in dots inside the square, while body facing stays a perimeter wedge; aligned,
+  offset, and opposed forms therefore cannot be mistaken for one another; and
+- the two action traces use transient-layer dashed lines and remain subordinate
+  to both the exact ground overlay and unit symbols.
+
+The manifest pins the exact-overlay identity, revision, three measured path
+segments, typed second-heading sources, trace count, lane count, and the
+2,000/8,000 segment policies. Pure tests independently prove the selected
+overlay stays exact at 1,999 segments while an 8,001-segment whole-force
+overlay aggregates to four segments, and that interpolation at alpha 1 is
+identical to the exact committed scene.
 
 These boards validate the representative detailed frame, not every target
 size. The pure tests separately exercise threshold hysteresis and suppression

@@ -605,7 +605,10 @@ let main _ =
                  Level = NotPresent
                  StanceId = NotApplicable
                  BodyHeading = Disclosed heading
-                 SecondaryHeading = ExplicitlyUnknown
+                 SecondaryHeading =
+                    Disclosed
+                        { Radians = heading
+                          Source = WeaponHeading }
                  ShortLabel = Disclosed "Bravo 6"
                  StatusIds = [| "suppressed" |] } |]
           Edges =
@@ -619,11 +622,13 @@ let main _ =
           Overlays =
             [| { Id = "overlay-1"
                  Kind = "visible-polygon"
+                 Scope = SelectedUnitOverlay 42
                  GeometryRevision = 2
                  Points = [| 1.0; 2.0; 3.0; 4.0 |]
                  Label = NotPresent } |]
           Events =
             [| { Id = 9
+                 Tick = 7
                  Kind = "observation"
                  SourceUnitId = Disclosed 42
                  TargetUnitId = ExplicitlyUnknown
@@ -635,6 +640,19 @@ let main _ =
     require
         (renderRoundTrip = renderFrame)
         "The render frame did not survive its structured-clone transport."
+
+    let missingSecondarySource =
+        { renderTransport with
+            Units =
+                [| { renderTransport.Units[0] with
+                         SecondaryHeadingSource = None } |] }
+    require
+        (try
+             RenderFrameTransport.fromTransport missingSecondarySource |> ignore
+             false
+         with :? ArgumentException ->
+             true)
+        "A second heading without an explicitly accepted gameplay source was rendered."
 
     let malformedDisclosure =
         { renderTransport with
@@ -877,6 +895,153 @@ let main _ =
          && evidenceLeft.Contains("unit=3@0,144:96x48")
          && evidenceLeft.Contains("health=12"))
         "Static SVG review evidence is not deterministic."
+
+    require
+        (staticScene.Overlays
+         |> Array.exists (fun overlay ->
+             overlay.Overlay.Id = "selected-los-1"
+             && overlay.Disposition = ExactOverlay
+             && overlay.PathSegments = 3)
+         && staticScene.ActionTraces.Length = 2
+         && staticScene.Timeline
+            |> Array.map _.Lane
+            |> Set.ofArray
+            |> Set.isSubset (Set.ofList [ UnitActions; Communications ])
+         && staticScene.Units
+            |> Array.filter (fun unit ->
+                match unit.Unit.SecondaryHeading with
+                | Disclosed _ -> true
+                | _ -> false)
+            |> Array.length
+            |> (=) 2)
+        "The exact selected overlay, action traces, semantic lanes, or typed two-heading review fixture is incomplete."
+
+    let pointsForSegments segments =
+        Array.init ((segments + 1) * 2) (fun coordinate ->
+            float (coordinate / 2 % 200))
+
+    let overlayStressFrame =
+        { Battlefield.representativeFrame with
+            Overlays =
+                [| { Id = "selected-exact"
+                     Kind = "perception"
+                     Scope = SelectedUnitOverlay 1
+                     GeometryRevision = 1
+                     Points = pointsForSegments 1_999
+                     Label = NotPresent }
+                   { Id = "whole-force-over-budget"
+                     Kind = "command"
+                     Scope = WholeForceOverlay
+                     GeometryRevision = 1
+                     Points = pointsForSegments 8_001
+                     Label = NotPresent } |] }
+    let overlayStressScene =
+        Battlefield.scene overlayStressFrame Battlefield.initial
+    let selectedStress =
+        overlayStressScene.Overlays
+        |> Array.find (fun overlay -> overlay.Overlay.Id = "selected-exact")
+    let wholeStress =
+        overlayStressScene.Overlays
+        |> Array.find (fun overlay ->
+            overlay.Overlay.Id = "whole-force-over-budget")
+    require
+        (selectedStress.Disposition = ExactOverlay
+         && selectedStress.PathSegments = 1_999
+         && wholeStress.PathSegments = 4
+         && wholeStress.Disposition
+            = AggregatedWholeForceOverlay 8_001
+         && overlayStressScene.WholeForceOverlaySegments = 8_001)
+        "Whole-force aggregation above 8,000 segments degraded the precise selected overlay."
+
+    let selectedWarningFrame =
+        { overlayStressFrame with
+            Overlays =
+                [| { overlayStressFrame.Overlays[0] with
+                         Points = pointsForSegments 2_001 } |] }
+    let selectedWarning =
+        Battlefield.scene selectedWarningFrame Battlefield.initial
+        |> _.Overlays[0]
+    require
+        (selectedWarning.PathSegments = Battlefield.SelectedOverlaySegmentLimit
+         && selectedWarning.Disposition = SimplifiedSelectedOverlay 2_001)
+        "The selected overlay did not apply its independent 2,000-segment warning/simplification policy."
+
+    let invalidOverlayFrame =
+        { overlayStressFrame with
+            Overlays =
+                [| { overlayStressFrame.Overlays[0] with
+                         Points = [| 0.0; 0.0; Double.NaN; 1.0 |] } |] }
+    require
+        (match
+            (Battlefield.scene invalidOverlayFrame Battlefield.initial).Overlays[0].Disposition
+         with
+         | DeclinedUnsafeOverlay _ -> true
+         | _ -> false)
+        "Non-finite hostile overlay geometry crossed the renderer boundary."
+
+    let movedFrame =
+        let units =
+            Battlefield.representativeFrame.Units
+            |> Array.map (fun unit ->
+                if unit.Id = 1 then
+                    { unit with AnchorColumn = unit.AnchorColumn + 1 }
+                else
+                    unit)
+        { Battlefield.representativeFrame with
+            Tick = Battlefield.representativeFrame.Tick + 1
+            Units = units }
+    let halfway =
+        Battlefield.interpolatedScene
+            0.5
+            Battlefield.representativeFrame
+            movedFrame
+            Battlefield.initial
+    let committedFromInterpolation =
+        Battlefield.interpolatedScene
+            1.0
+            Battlefield.representativeFrame
+            movedFrame
+            Battlefield.initial
+    let exactCommitted = Battlefield.scene movedFrame Battlefield.initial
+    require
+        (halfway.Units[0].FootprintX = 24.0
+         && committedFromInterpolation = exactCommitted
+         && Battlefield.deterministicEvidence committedFromInterpolation
+            = Battlefield.deterministicEvidence exactCommitted)
+        "Deterministic interpolation failed to converge exactly on the committed frame."
+
+    let blockedSource =
+        { Battlefield.representativeFrame with
+            Edges =
+                [| { Id = "blocking-wall"
+                     Kind = "wall"
+                     State = "solid"
+                     StartColumn = 1
+                     StartRow = 0
+                     EndColumn = 1
+                     EndRow = 1 } |] }
+    let blockedTarget =
+        { movedFrame with Edges = blockedSource.Edges }
+    let blockedHalfway =
+        Battlefield.interpolatedScene
+            0.5
+            blockedSource
+            blockedTarget
+            Battlefield.initial
+    let reducedState =
+        Battlefield.update
+            Battlefield.representativeFrame
+            (ChooseReducedMotion true)
+            Battlefield.initial
+    require
+        (blockedHalfway.Units[0].FootprintX = 0.0
+         && reducedState.ReducedMotion
+         && not reducedState.ExactTicks
+         && (Battlefield.update
+                 Battlefield.representativeFrame
+                 (ChooseExactTicks true)
+                 reducedState).ExactTicks)
+        "Blocked-edge or explicit reduced-motion/exact-tick behavior regressed."
 
     let performanceScene =
         Battlefield.performanceFrame 200

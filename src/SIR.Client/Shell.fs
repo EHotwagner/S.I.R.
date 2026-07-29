@@ -361,6 +361,7 @@ module Shell =
                     inspection.Events
                     |> List.map (fun event ->
                         { Id = event.Id
+                          Tick = event.Tick
                           Kind = event.Source
                           SourceUnitId =
                             event.SourceUnitId

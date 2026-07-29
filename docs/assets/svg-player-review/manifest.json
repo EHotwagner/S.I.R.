@@ -24,27 +24,51 @@
     "note": "The initial detailed tier is retained at exactly 48 px by the hysteresis dead band."
   },
   "interpolation": false,
+  "phase3Review": {
+    "selectedExactOverlay": {
+      "id": "selected-los-1",
+      "geometryRevision": 1,
+      "pathSegments": 3,
+      "disposition": "exact"
+    },
+    "secondaryHeadings": [
+      {
+        "unitId": 1,
+        "source": "weapon",
+        "relationship": "offset from body facing"
+      },
+      {
+        "unitId": 2,
+        "source": "sensor",
+        "relationship": "opposed to body facing"
+      }
+    ],
+    "actionTraceCount": 2,
+    "semanticTimelineLanes": 3,
+    "wholeForceSegmentLimit": 8000,
+    "selectedOverlayWarningSegmentLimit": 2000
+  },
   "files": [
     {
       "palette": "accessible-default",
       "svg": "accessible-default.svg",
       "png": "accessible-default.png",
-      "svgSha256": "81ce9a08b844760028e8352fd7648c10d28373853c64072fe89c5a9aa3596ebe",
-      "pngSha256": "542f79bb7eb74c56f617581719287ec624035e82a351983f560581ee1b92a2d1"
+      "svgSha256": "d46a441f4258b98a216397489c692ddd3b5fe9b057824a663f9271f1190ed608",
+      "pngSha256": "16a31c65b7865c80777ab36f68a20e18003cf0e88f5b13ed4b035141aa55de69"
     },
     {
       "palette": "high-contrast",
       "svg": "high-contrast.svg",
       "png": "high-contrast.png",
-      "svgSha256": "e9bfa854dcf8675610faf856fb48290273bf4080d7c9e37b2adc7887599eb3d9",
-      "pngSha256": "805e79e8f75dedf3843f5a0c372d208bf3093fe14649555367c0ad1465c9761a"
+      "svgSha256": "dc1525054d7ffc6d11278e03b765ba387fe9a9b8690e7e5aa8083726ee09d20b",
+      "pngSha256": "27c33007de990d1b70e833ebbd02517e93572e77a2eb0c87096c59d68dbe1dc0"
     },
     {
       "palette": "monochrome-pattern",
       "svg": "monochrome-pattern.svg",
       "png": "monochrome-pattern.png",
-      "svgSha256": "6c64a7291e43e6627c549d858b1df8b8625334040cc405a8872f6093da74a636",
-      "pngSha256": "ae4f9c6216263fc8ddd0148f3c6875258deec44acf4c5c50e46067c514b42cf1"
+      "svgSha256": "7fba77125d869ed6a85e4f4444d00cea3d91251fb7c0bb09361d45bee8d6f070",
+      "pngSha256": "33d58a8ce5202bed9cba54aa83269b9a00aaaaef185354c3c697eeab41b360fd"
     }
   ]
 }

@@ -329,6 +329,9 @@ const battlefield = window.document.querySelector(
 const battlefieldUnits = battlefield?.querySelectorAll("[data-unit-id]") ?? [];
 const healthPositions =
   battlefield?.querySelectorAll("[data-health-position]") ?? [];
+const exactOverlay = battlefield?.querySelector(
+  '[data-overlay-id="selected-los-1"][data-overlay-disposition="exact"][data-path-segments="3"]',
+);
 
 if (
   !battlefield ||
@@ -337,11 +340,32 @@ if (
   battlefield.querySelectorAll("[data-facing-wedge]").length !== 6 ||
   healthPositions.length !== 72 ||
   battlefield.querySelectorAll("[data-elevation-label]").length !== 2 ||
-  battlefield.querySelectorAll("[data-stance-mark]").length !== 5
+  battlefield.querySelectorAll("[data-stance-mark]").length !== 5 ||
+  battlefield.querySelectorAll("[data-secondary-heading]").length !== 2 ||
+  battlefield.querySelectorAll("[data-action-trace]").length !== 2 ||
+  !exactOverlay ||
+  window.document.querySelectorAll("[data-timeline-lane]").length !== 3
 ) {
   throw new Error(
-    "The detailed static SVG omitted square symbols, exact footprints, facing, health, elevation, or stance.",
+    "The detailed static SVG omitted symbols, exact overlays, typed second headings, action traces, or semantic timeline lanes.",
   );
+}
+
+const motionSettings = [
+  ...window.document.querySelectorAll(
+    '.battlefield-sidecar input[type="checkbox"]',
+  ),
+];
+if (
+  motionSettings.length !== 2 ||
+  motionSettings.some((setting) => setting.checked)
+) {
+  throw new Error("Exact-tick and reduced-motion browser controls are incomplete.");
+}
+motionSettings[1].click();
+await window.happyDOM.waitUntilComplete();
+if (!motionSettings[1].checked) {
+  throw new Error("Reduced-motion mode did not become active.");
 }
 
 const selectedTroll = battlefield.querySelector('[data-unit-id="6"]');

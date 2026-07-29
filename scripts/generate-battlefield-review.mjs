@@ -112,6 +112,22 @@ const manifest = {
     note: "The initial detailed tier is retained at exactly 48 px by the hysteresis dead band.",
   },
   interpolation: false,
+  phase3Review: {
+    selectedExactOverlay: {
+      id: "selected-los-1",
+      geometryRevision: 1,
+      pathSegments: 3,
+      disposition: "exact",
+    },
+    secondaryHeadings: [
+      { unitId: 1, source: "weapon", relationship: "offset from body facing" },
+      { unitId: 2, source: "sensor", relationship: "opposed to body facing" },
+    ],
+    actionTraceCount: 2,
+    semanticTimelineLanes: 3,
+    wholeForceSegmentLimit: 8000,
+    selectedOverlayWarningSegmentLimit: 2000,
+  },
   files,
 };
 
