@@ -1,7 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <Compile Include="ControlHost.fs" />
+    <Compile Include="Plan.fs" />
     <Compile Include="MatchReplay.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="StandardController.wat" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../SIR.Domain/SIR.Domain.fsproj" />
