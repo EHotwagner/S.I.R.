@@ -8,6 +8,8 @@
     "dev:client": "vite --config src/SIR.Client.Web/vite.config.js",
     "measure:worker": "node scripts/measure-worker.mjs",
     "review:battlefield": "node scripts/generate-battlefield-review.mjs",
+    "review:map-editor": "node scripts/generate-map-editor-review.mjs",
+    "test:map-editor-qualification": "node scripts/test-map-editor-qualification.mjs",
     "test": "./scripts/test-conformance.sh",
     "verify:baseline": "node scripts/verify-fable-client-baseline.mjs"
   },

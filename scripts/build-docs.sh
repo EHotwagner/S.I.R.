@@ -13,6 +13,7 @@ dotnet tool restore
 dotnet restore SIR.slnx --locked-mode
 dotnet build SIR.slnx -c Release --no-restore
 ./scripts/build-client.sh
+node scripts/test-map-editor-qualification.mjs "$client_output"
 node scripts/smoke-worker-roundtrip.mjs
 
 if [[ -d "$repo_root/.fsdocs" ]]; then

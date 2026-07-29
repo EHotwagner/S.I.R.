@@ -344,6 +344,21 @@ module MapEditor =
     [<Literal>]
     let MaximumUnitFootprint = 8
 
+    [<Literal>]
+    let MaximumImportBytes = 2_000_000
+
+    [<Literal>]
+    let MaximumClipboardUnits = 256
+
+    [<Literal>]
+    let MaximumRegionCount = 1_600
+
+    [<Literal>]
+    let MaximumRegionVertices = 256
+
+    [<Literal>]
+    let MaximumClassIdLength = 128
+
     let canonicalFootprintPresets =
         [ { Id = "goblin"
             Name = "Goblin skirmisher"
@@ -1448,6 +1463,16 @@ module MapEditor =
     and export state = canonicalMapText state.Map
 
     and tryImport text =
+        if (Encoding.UTF8.GetBytes text).Length > MaximumImportBytes then
+            Error(
+                "Map input exceeds the "
+                + string MaximumImportBytes
+                + "-byte qualification limit."
+            )
+        else
+            tryImportWithinLimit text
+
+    and private tryImportWithinLimit text =
         let fail line message =
             Error("Map line " + string line + ": " + message)
 
@@ -1632,7 +1657,9 @@ module MapEditor =
                                 | _, Error error, _, _
                                 | _, _, Error error, _
                                 | _, _, _, Error error -> Error error
-                            | "polygon" :: vertices when vertices.Length >= 3 ->
+                            | "polygon" :: vertices
+                                when vertices.Length >= 3
+                                     && vertices.Length <= MaximumRegionVertices ->
                                 vertices
                                 |> List.map (parsePoint line)
                                 |> List.fold
@@ -1646,7 +1673,9 @@ module MapEditor =
                             | _ -> fail line "invalid or unsupported zone geometry."
                         match parseInt line id, purpose, geometry with
                         | Ok id, Some purpose, Ok geometry
-                            when id > 0 && not (Map.containsKey id map.Regions) ->
+                            when id > 0
+                                 && map.Regions.Count < MaximumRegionCount
+                                 && not (Map.containsKey id map.Regions) ->
                             let region =
                                 { Id = id
                                   Geometry = geometry
@@ -1676,6 +1705,7 @@ module MapEditor =
                         | Ok id, Some side, Ok column, Ok row, Ok size, Ok remaining, Ok maximum, Some controller, Ok script
                             when id > 0
                                  && not (Map.containsKey id map.Units)
+                                 && classId.Length <= MaximumClassIdLength
                                  && size > 0
                                  && maximum > 0
                                  && remaining >= 0
@@ -1725,12 +1755,28 @@ module MapEditor =
                     |> Map.toList
                     |> List.tryFind (fun (_, (kind, isOpen)) ->
                         isOpen && kind <> Door)
+                let occupiedCellCounts =
+                    map.Units
+                    |> Map.toSeq
+                    |> Seq.collect (fun (_, unit) ->
+                        cells unit unit.Column unit.Row)
+                    |> Seq.countBy id
+                    |> Map.ofSeq
                 let invalid =
                     map.Units
                     |> Map.toList
                     |> List.map snd
                     |> List.tryFind (fun unit ->
-                        not (validPlacement map (Some unit.Id) unit unit.Column unit.Row))
+                        cells unit unit.Column unit.Row
+                        |> List.exists (fun (column, row) ->
+                            column < 0
+                            || row < 0
+                            || column >= map.Width
+                            || row >= map.Height
+                            || Map.tryFind (column, row) map.Terrain = Some Blocked
+                            || Map.tryFind (column, row) occupiedCellCounts
+                               |> Option.defaultValue 0
+                               |> fun count -> count > 1))
                 match invalidTerrain, invalidEdge, invalidEdgeState, invalid with
                 | Some((column, row), _), _, _, _ ->
                     Error("Terrain cell " + string column + "," + string row + " is outside the map.")
@@ -1866,9 +1912,16 @@ module MapEditor =
 
     /// Validates authoritative geometry independently from its semantic purpose.
     let regionIssues (map: MapDefinition) =
-        map.Regions
-        |> Map.toList
-        |> List.collect (fun (id, region) ->
+        [ if map.Regions.Count > MaximumRegionCount then
+              issue
+                  "REGION-LIMIT"
+                  ("Maps support at most "
+                   + string MaximumRegionCount
+                   + " authoritative regions.")
+          yield!
+              map.Regions
+              |> Map.toList
+              |> List.collect (fun (id, region) ->
             [ if id <= 0 || id <> region.Id then
                   issue "REGION-IDENTITY" "Region keys and positive identifiers must agree."
               match region.Purpose with
@@ -1889,6 +1942,12 @@ module MapEditor =
               | RegionPolygon vertices ->
                   if vertices.Length < 3 then
                       issue "REGION-POLYGON-VERTICES" "Region polygons require at least three vertices."
+                  if vertices.Length > MaximumRegionVertices then
+                      issue
+                          "REGION-POLYGON-LIMIT"
+                          ("Region polygons support at most "
+                           + string MaximumRegionVertices
+                           + " vertices.")
                   if vertices |> Array.distinct |> Array.length <> vertices.Length then
                       issue "REGION-POLYGON-DUPLICATE" "Region polygon vertices must be unique."
                   if
@@ -1903,7 +1962,7 @@ module MapEditor =
                   if vertices.Length >= 3 && polygonTwiceArea vertices = 0L then
                       issue "REGION-POLYGON-AREA" "Region polygons must enclose non-zero area."
                   if vertices.Length >= 4 && polygonSelfIntersects vertices then
-                      issue "REGION-POLYGON-SELF-INTERSECTION" "Region polygons cannot self-intersect." ])
+                      issue "REGION-POLYGON-SELF-INTERSECTION" "Region polygons cannot self-intersect." ]) ]
 
     let private validateDocument map =
         let dimensions =
@@ -1930,13 +1989,25 @@ module MapEditor =
                 else
                     None)
 
+        let occupiedCellCounts =
+            map.Units
+            |> Map.toSeq
+            |> Seq.collect (fun (_, unit) ->
+                cells unit unit.Column unit.Row)
+            |> Seq.countBy id
+            |> Map.ofSeq
+
         let units =
             map.Units
             |> Map.toList
             |> List.choose (fun (id, unit) ->
                 if id <> unit.Id || id <= 0 then
                     Some(issue "UNIT-IDENTITY" "Unit keys and positive identifiers must agree.")
-                elif String.IsNullOrWhiteSpace unit.ClassId || unit.ClassId |> Seq.exists Char.IsWhiteSpace then
+                elif
+                    String.IsNullOrWhiteSpace unit.ClassId
+                    || unit.ClassId.Length > MaximumClassIdLength
+                    || unit.ClassId |> Seq.exists Char.IsWhiteSpace
+                then
                     Some(issue "UNIT-CLASS" "A unit class ID must be one non-empty token.")
                 elif unit.HealthMaximum <= 0 || unit.Health < 0 || unit.Health > unit.HealthMaximum then
                     Some(issue "UNIT-HEALTH" "Unit health is outside its accepted range.")
@@ -1948,24 +2019,29 @@ module MapEditor =
                              + string MaximumUnitFootprint
                              + " cells square.")
                     )
-                elif not (validPlacement map (Some id) unit unit.Column unit.Row) then
+                elif
+                    cells unit unit.Column unit.Row
+                    |> List.exists (fun (column, row) ->
+                        column < 0
+                        || row < 0
+                        || column >= map.Width
+                        || row >= map.Height
+                        || Map.tryFind (column, row) map.Terrain = Some Blocked
+                        || Map.tryFind (column, row) occupiedCellCounts
+                           |> Option.defaultValue 0
+                           |> fun count -> count > 1)
+                then
                     Some(issue "UNIT-PLACEMENT" ("Unit " + string id + " does not fit."))
                 else
                     None)
 
-        let semanticEdgeState =
-            edgeIssues map
-            |> List.filter (fun edgeIssue -> edgeIssue.Code <> "EDGE-GAP")
-
-        dimensions @ terrain @ edges @ semanticEdgeState @ units @ regionIssues map
+        dimensions @ terrain @ edges @ units @ regionIssues map
 
     /// Runs validation against the authoritative document only. Layer
     /// visibility and locks are deliberately ignored, so hidden content keeps
     /// participating in validation and simulation.
     let validationIssues map =
-        (validateDocument map
-         @ (edgeIssues map
-            |> List.filter (fun candidate -> candidate.Code = "EDGE-GAP")))
+        (validateDocument map @ edgeIssues map)
         |> List.sortBy (fun candidate -> candidate.Code, candidate.Message)
         |> List.toArray
 
@@ -3159,6 +3235,15 @@ module MapEditor =
                 |> Array.choose (fun id -> Map.tryFind id state.Map.Units)
                 |> Array.sortBy _.Id
             if Array.isEmpty units then state
+            elif units.Length > MaximumClipboardUnits then
+                { state with
+                    Clipboard = None
+                    Validation =
+                        Some(
+                            "Clipboard selections are limited to "
+                            + string MaximumClipboardUnits
+                            + " units."
+                        ) }
             else
                 { state with
                     Clipboard = Some { SourceDigest = state.Revision.Digest; UnitFragment = units }
@@ -3187,8 +3272,18 @@ module MapEditor =
             |> fun command -> commit command state
         | SetSelectedClass classId when state.RevisionState <> SimulatedRevision ->
             let classId = classId.Trim()
-            if String.IsNullOrWhiteSpace classId || classId |> Seq.exists Char.IsWhiteSpace then
-                { state with Validation = Some "Class ID must be one non-empty token." }
+            if
+                String.IsNullOrWhiteSpace classId
+                || classId.Length > MaximumClassIdLength
+                || classId |> Seq.exists Char.IsWhiteSpace
+            then
+                { state with
+                    Validation =
+                        Some(
+                            "Class ID must be one non-empty token no longer than "
+                            + string MaximumClassIdLength
+                            + " characters."
+                        ) }
             else
                 selectedUnits state
                 |> Array.map (fun unit -> { unit with ClassId = classId })

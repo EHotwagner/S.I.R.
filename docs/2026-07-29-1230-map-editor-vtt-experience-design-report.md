@@ -5,7 +5,7 @@ categoryindex: 5
 index: 10
 status: in-progress
 document-type: timestamped-design-report
-version: "1.11"
+version: "1.12"
 created-at: 2026-07-29T12:30:56+02:00
 last-updated: 2026-07-29
 related:
@@ -20,7 +20,8 @@ related:
 
 **Report timestamp:** 2026-07-29 12:30:56 CEST (UTC+02:00)
 
-**Status:** implementation in progress; Milestones 0–9 complete
+**Status:** implementation in progress; Milestones 0–9 complete; Milestone 10
+automated qualification complete, human qualification pending
 
 ## Executive decision
 
@@ -843,11 +844,11 @@ within it is checked.
 
 - [ ] Run task-based usability tests for first map, unit deployment, walling,
   correction, import, and simulation handoff.
-- [ ] Meet the performance budgets on maximum supported maps.
+- [x] Meet the performance budgets on maximum supported maps.
 - [ ] Pass keyboard-only, screen-reader, touch, high-contrast, 400% zoom, and
   reduced-motion audits.
-- [ ] Add deterministic SVG/PNG review artifacts for all editor domains.
-- [ ] Add migration, recovery, malformed-input, clipboard, and hostile-asset
+- [x] Add deterministic SVG/PNG review artifacts for all editor domains.
+- [x] Add migration, recovery, malformed-input, clipboard, and hostile-asset
   tests.
 - [ ] Update the living map-editor reference and mark this report implemented.
 

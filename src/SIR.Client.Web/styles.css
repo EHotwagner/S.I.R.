@@ -705,6 +705,26 @@
   }
 }
 
+@media (forced-colors: active) {
+  #sir-replay-app button,
+  #sir-replay-app input,
+  #sir-replay-app select,
+  #sir-replay-app .editor-tool-rail,
+  #sir-replay-app .editor-inspector,
+  #sir-replay-app .editor-object-list {
+    border: 1px solid ButtonText;
+    forced-color-adjust: auto;
+  }
+
+  #sir-replay-app .editor-battlefield-svg [data-layer="grid"],
+  #sir-replay-app .editor-battlefield-svg [data-layer="edges"],
+  #sir-replay-app .editor-battlefield-svg [data-editor-unit-id],
+  #sir-replay-app .editor-battlefield-svg [data-region-id],
+  #sir-replay-app .editor-battlefield-svg [data-layer="validation-overlay"] {
+    forced-color-adjust: auto;
+  }
+}
+
 @media (max-width: 48rem) {
   #sir-replay-app .app-shell { padding: 1rem; }
   #sir-replay-app .inspector-panel,

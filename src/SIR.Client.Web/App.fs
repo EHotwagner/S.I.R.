@@ -3001,6 +3001,7 @@ let private editorBattlefield
                     + if view.ReducedMotion then " reduced-motion" else ""
                 )
                 svg.custom ("role", "application")
+                svg.tabIndex 0
                 svg.custom ("aria-label", (
                     "Editable SVG battlefield, "
                     + string state.Map.Width
