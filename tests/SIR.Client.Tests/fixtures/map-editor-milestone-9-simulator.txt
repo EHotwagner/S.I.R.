@@ -1,0 +1,9 @@
+revision=eab8b1c053454ed4d944c3b73f30e84c7025d13664d88f52e27d68e92c046608
+stale=True
+runtime=1:4
+clear=2:2,1;3,1
+occupied=occupied:9,1:3
+edge=edge:2,1-3,1
+outside=outside:-1,1
+perspective=Player perspective is unavailable: no accepted disclosure-filtered projection exists for editor drafts.
+visibility=Visibility overlays are unavailable until shared-kernel perception rules are accepted.

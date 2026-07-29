@@ -277,6 +277,18 @@ const buttonByText = (text) =>
     (button) => button.textContent.trim() === text,
   );
 
+const handoffButton = buttonByText("Simulate this revision");
+if (
+  !handoffButton ||
+  !window.document
+    .querySelector('[aria-label="Simulator revision handoff"]')
+    ?.textContent.includes("No editor revision has been handed")
+) {
+  throw new Error("The editor did not expose the explicit immutable simulator handoff.");
+}
+handoffButton.click();
+await window.happyDOM.waitUntilComplete();
+
 const controllerPanel = window.document.querySelector(
   '[aria-label="Simulation controllers"]',
 );

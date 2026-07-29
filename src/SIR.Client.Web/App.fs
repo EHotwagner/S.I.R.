@@ -22,6 +22,8 @@ type Msg =
     | RejectInterchangeReview
     | PlaybackPulse
     | EditorPulse
+    | SimulateEditorRevision
+    | SimulatorChanged of SimulatorAction
     | KeyPressed of key: string * controlOrMeta: bool * shift: bool
     | KeyReleased of string
     | WorkspaceChanged of WorkspaceMode
@@ -52,6 +54,7 @@ and EditorToolPanel =
 type Model =
     { Shell: SIR.Client.Model
       Editor: MapEditorState
+      Simulator: SimulatorHandoff option
       Workspace: WorkspaceMode
       EditorToolPanel: EditorToolPanel
       EditorView: EditorWorkspaceState
@@ -256,7 +259,8 @@ let init () =
 
     { Shell = Shell.init ()
       Editor = editor
-      Workspace = SimulatorWorkspace
+      Simulator = None
+      Workspace = EditorWorkspace
       EditorToolPanel = TerrainTools
       EditorView = editorView
       EditorSpacePressed = false
@@ -325,12 +329,10 @@ let rec update msg model =
         | None -> model, Cmd.none
     | WorkspaceChanged workspace ->
         let editor =
-            if workspace = SimulatorWorkspace then
-                MapEditor.update MarkEditorSimulated model.Editor
-            elif workspace = EditorWorkspace then
-                MapEditor.update RestoreEditorDraft model.Editor
-            else
+            if workspace = ReplayWorkspace || workspace = RulesWorkspace then
                 MapEditor.update CancelEditorGesture model.Editor
+            else
+                model.Editor
         let editorView =
             if workspace = EditorWorkspace then
                 model.EditorView
@@ -346,6 +348,38 @@ let rec update msg model =
             EditorView = editorView
             EditorSpacePressed = false },
         Cmd.none
+    | SimulateEditorRevision ->
+        match MapEditorSimulator.tryHandoff model.Editor with
+        | Error message ->
+            { model with
+                Editor = { model.Editor with Validation = Some message } },
+            Cmd.none
+        | Ok simulator ->
+            let frame = MapEditorSimulator.frame model.Editor.SelectedUnit simulator
+            { model with
+                Editor =
+                    { model.Editor with
+                        SimulatedDigest = Some simulator.Revision.Digest
+                        Validation = None }
+                Simulator = Some simulator
+                Workspace = SimulatorWorkspace
+                Battlefield = Battlefield.reconcile frame model.Battlefield
+                PreviousFrame = None
+                PresentationAlpha = 1.0 },
+            Cmd.none
+    | SimulatorChanged action ->
+        match model.Simulator with
+        | None -> model, Cmd.none
+        | Some simulator ->
+            let simulator =
+                MapEditorSimulator.update action model.Editor.SelectedUnit simulator
+            let frame = MapEditorSimulator.frame model.Editor.SelectedUnit simulator
+            { model with
+                Simulator = Some simulator
+                Battlefield = Battlefield.reconcile frame model.Battlefield
+                PreviousFrame = None
+                PresentationAlpha = 1.0 },
+            Cmd.none
     | EditorToolPanelChanged panel ->
         { model with EditorToolPanel = panel }, Cmd.none
     | EditorWorkspaceChanged action ->
@@ -375,7 +409,13 @@ let rec update msg model =
                     model.EditorView
             | _ -> model.EditorView
         let battlefield =
-            Battlefield.reconcile (MapEditor.frame editor) model.Battlefield
+            match model.Workspace, model.Simulator with
+            | SimulatorWorkspace, Some simulator ->
+                Battlefield.reconcile
+                    (MapEditorSimulator.frame editor.SelectedUnit simulator)
+                    model.Battlefield
+            | _ ->
+                Battlefield.reconcile (MapEditor.frame editor) model.Battlefield
         { model with
             Editor = editor
             EditorView = editorView
@@ -385,10 +425,10 @@ let rec update msg model =
         Cmd.ofEffect (fun _ ->
             scheduleMapAutosave (MapEditor.autosaveText editor))
     | EditorPulse ->
-        if model.Editor.IsRunning then
-            update (EditorChanged StepEditor) model
-        else
-            model, Cmd.none
+        match model.Simulator with
+        | Some simulator when simulator.IsRunning ->
+            update (SimulatorChanged StepSimulator) model
+        | _ -> model, Cmd.none
     | ExportMap ->
         let editor = MapEditor.update MarkEditorSaved model.Editor
         { model with Editor = editor }, Cmd.ofEffect (fun _ -> downloadMap editor)
@@ -518,6 +558,18 @@ let rec update msg model =
             | "]" -> update (ShellMsg NextEvent) model
             | "Escape" -> update (ShellMsg CancelRequested) model
             | _ -> model, Cmd.none
+        elif model.Workspace = SimulatorWorkspace then
+            match key with
+            | "ArrowLeft" -> update (SimulatorChanged(MoveSimulatorPreview(-1, 0))) model
+            | "ArrowRight" -> update (SimulatorChanged(MoveSimulatorPreview(1, 0))) model
+            | "ArrowUp" -> update (SimulatorChanged(MoveSimulatorPreview(0, -1))) model
+            | "ArrowDown" -> update (SimulatorChanged(MoveSimulatorPreview(0, 1))) model
+            | "Enter" -> update (SimulatorChanged CommitSimulatorPreview) model
+            | "Escape" -> update (SimulatorChanged ResetSimulatorPreview) model
+            | " "
+            | "k"
+            | "K" -> update (SimulatorChanged ToggleSimulatorRun) model
+            | _ -> model, Cmd.none
         else
             model, Cmd.none
     | KeyReleased key ->
@@ -635,7 +687,10 @@ let subscriptions model =
               | Maximum -> "maximum"
 
           [ "playback-pulse"; speedKey ], timer
-      if model.Editor.IsRunning && model.Workspace = SimulatorWorkspace then
+      if
+          model.Workspace = SimulatorWorkspace
+          && (model.Simulator |> Option.exists _.IsRunning)
+      then
           [ "editor-pulse" ], editorTimer ]
 
 let private speedText speed =
@@ -4786,7 +4841,7 @@ let private editorUnitPanel state dispatch =
         ]
     ]
 
-let private controllerPanel state dispatch =
+let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
     let selected = MapEditor.selected state
     let movement =
         [ "NW", NorthWest; "N", North; "NE", NorthEast
@@ -4812,78 +4867,6 @@ let private controllerPanel state dispatch =
                 Html.p "Select a unit on the map to configure its controller."
             | Some unit ->
                 Html.h3 ("Unit " + string unit.Id + " · " + unit.ClassId)
-                Html.div [
-                    prop.className "unit-properties"
-                    prop.children [
-                        Html.label [ prop.htmlFor "unit-side"; prop.text "Side" ]
-                        Html.select [
-                            prop.id "unit-side"
-                            prop.value (
-                                match unit.Side with
-                                | Blue -> "Blue"
-                                | Red -> "Red"
-                                | NeutralSide -> "Neutral"
-                            )
-                            prop.onChange (fun value ->
-                                let side =
-                                    match value with
-                                    | "Red" -> Red
-                                    | "Neutral" -> NeutralSide
-                                    | _ -> Blue
-                                dispatch (EditorChanged(SetSelectedSide side)))
-                            prop.children [
-                                Html.option [ prop.value "Blue"; prop.text "Blue" ]
-                                Html.option [ prop.value "Red"; prop.text "Red" ]
-                                Html.option [ prop.value "Neutral"; prop.text "Neutral" ]
-                            ]
-                        ]
-                        Html.label [ prop.htmlFor "unit-class"; prop.text "Class ID" ]
-                        Html.input [
-                            prop.id "unit-class"
-                            prop.type'.text
-                            prop.value unit.ClassId
-                            prop.onChange (fun value ->
-                                dispatch (EditorChanged(SetSelectedClass value)))
-                        ]
-                        Html.label [ prop.htmlFor "unit-size"; prop.text "Square size" ]
-                        Html.input [
-                            prop.id "unit-size"
-                            prop.type'.number
-                            prop.min 1
-                            prop.max 8
-                            prop.value unit.Size
-                            prop.onChange (fun (value: int) ->
-                                dispatch (EditorChanged(SetSelectedSize(int32 value))))
-                        ]
-                        Html.label [ prop.htmlFor "unit-health"; prop.text "Current HP" ]
-                        Html.input [
-                            prop.id "unit-health"
-                            prop.type'.number
-                            prop.min 0
-                            prop.max unit.HealthMaximum
-                            prop.value unit.Health
-                            prop.onChange (fun (value: int) ->
-                                dispatch (
-                                    EditorChanged(
-                                        SetSelectedHealth(int32 value, unit.HealthMaximum)
-                                    )
-                                ))
-                        ]
-                        Html.label [ prop.htmlFor "unit-health-max"; prop.text "Maximum HP" ]
-                        Html.input [
-                            prop.id "unit-health-max"
-                            prop.type'.number
-                            prop.min 1
-                            prop.value unit.HealthMaximum
-                            prop.onChange (fun (value: int) ->
-                                dispatch (
-                                    EditorChanged(
-                                        SetSelectedHealth(unit.Health, int32 value)
-                                    )
-                                ))
-                        ]
-                    ]
-                ]
                 Html.label [ prop.htmlFor "unit-controller"; prop.text "Controller" ]
                 Html.select [
                     prop.id "unit-controller"
@@ -4894,7 +4877,7 @@ let private controllerPanel state dispatch =
                             | "Scripted AI" -> Scripted
                             | "General AI" -> General
                             | _ -> Manual
-                        dispatch (EditorChanged(SetSelectedController controller)))
+                        dispatch (SimulatorChanged(SetSimulatorController controller)))
                     prop.children [
                         Html.option [ prop.value "Manual"; prop.text "Manual" ]
                         Html.option [ prop.value "Scripted AI"; prop.text "Scripted AI" ]
@@ -4909,18 +4892,54 @@ let private controllerPanel state dispatch =
                     prop.defaultValue (MapEditor.scriptText unit.Script)
                     prop.placeholder "N,E,E,S"
                     prop.onChange (fun value ->
-                        dispatch (EditorChanged(SetSelectedScript value)))
+                        dispatch (SimulatorChanged(SetSimulatorScript value)))
                 ]
                 Html.div [
                     prop.className "manual-movement"
                     prop.children [
                         for label, direction in movement do
                             button label ("Move unit " + label) false (fun _ ->
-                                dispatch (EditorChanged(MoveSelected direction)))
+                                dispatch (SimulatorChanged(MoveSimulatorUnit direction)))
                     ]
                 ]
-                button "Remove unit" "Remove selected unit" false (fun _ ->
-                    dispatch (EditorChanged RemoveSelectedUnit))
+                Html.h3 "Route preview"
+                Html.p "Arrow keys move the deterministic preview destination. Enter commits a clear route; Escape cancels."
+                Html.div [
+                    prop.className "manual-movement"
+                    prop.children [
+                        button "←" "Move route preview left" false (fun _ ->
+                            dispatch (SimulatorChanged(MoveSimulatorPreview(-1, 0))))
+                        button "↑" "Move route preview up" false (fun _ ->
+                            dispatch (SimulatorChanged(MoveSimulatorPreview(0, -1))))
+                        button "↓" "Move route preview down" false (fun _ ->
+                            dispatch (SimulatorChanged(MoveSimulatorPreview(0, 1))))
+                        button "→" "Move route preview right" false (fun _ ->
+                            dispatch (SimulatorChanged(MoveSimulatorPreview(1, 0))))
+                        button "Commit route" "Commit clear route preview (Enter)" handoff.PreviewDestination.IsNone (fun _ ->
+                            dispatch (SimulatorChanged CommitSimulatorPreview))
+                        button "Cancel route" "Cancel route preview (Escape)" handoff.PreviewDestination.IsNone (fun _ ->
+                            dispatch (SimulatorChanged ResetSimulatorPreview))
+                    ]
+                ]
+                match handoff.PreviewDestination with
+                | Some destination ->
+                    match MapEditorSimulator.preview state.SelectedUnit destination handoff with
+                    | Some preview ->
+                        Html.p [
+                            prop.role.status
+                            prop.ariaLive.polite
+                            prop.text (
+                                "Distance "
+                                + string preview.Distance
+                                + " cells · "
+                                + (if preview.Collision = RouteClear then
+                                       "route clear"
+                                   else
+                                       "collision: " + string preview.Collision)
+                            )
+                        ]
+                    | None -> Html.none
+                | None -> Html.p "No route preview."
             Html.div [
                 prop.className "control-row simulation-controls"
                 prop.children [
@@ -4928,9 +4947,9 @@ let private controllerPanel state dispatch =
                         (if state.IsRunning then "Pause" else "Run")
                         (if state.IsRunning then "Pause map simulation" else "Run map simulation")
                         false
-                        (fun _ -> dispatch (EditorChanged ToggleEditorRun))
+                        (fun _ -> dispatch (SimulatorChanged ToggleSimulatorRun))
                     button "Step" "Advance the map simulation one tick" false (fun _ ->
-                        dispatch (EditorChanged StepEditor))
+                        dispatch (SimulatorChanged StepSimulator))
                 ]
             ]
             state.Validation
@@ -4941,6 +4960,19 @@ let private controllerPanel state dispatch =
                     prop.text error
                 ])
             |> Option.defaultValue Html.none
+            Html.h3 "Perspective and visibility"
+            Html.p [
+                prop.className "validation-error"
+                prop.role.status
+                prop.text MapEditorSimulator.PerspectiveUnavailableReason
+            ]
+            button "Player perspective unavailable" MapEditorSimulator.PerspectiveUnavailableReason true ignore
+            Html.p [
+                prop.className "validation-error"
+                prop.role.status
+                prop.text MapEditorSimulator.VisibilityUnavailableReason
+            ]
+            button "Visibility overlays unavailable" MapEditorSimulator.VisibilityUnavailableReason true ignore
             Html.h3 "Latest tick"
             if List.isEmpty state.LastEvents then
                 Html.p "No actions resolved."
@@ -4983,24 +5015,88 @@ let view model dispatch =
             workspaceNavigation model.Workspace dispatch
             match model.Workspace with
             | SimulatorWorkspace ->
-                Html.div [
-                    prop.className "simulator-workspace"
-                    prop.children [
-                        controllerPanel model.Editor dispatch
-                        battlefieldView
-                            shell
-                            (Some(MapEditor.frame model.Editor))
-                            (Some model.Editor)
-                            model.Battlefield
-                            None
-                            1.0
-                            dispatch
+                match model.Simulator with
+                | None ->
+                    Html.section [
+                        prop.className "panel simulator-workspace"
+                        prop.ariaLabel "Simulator revision handoff"
+                        prop.children [
+                            Html.h2 "No simulated revision"
+                            Html.p "Return to the editor and choose Simulate this revision to create an immutable sandbox handoff."
+                            button "Open Editor" "Open the map editor" false (fun _ ->
+                                dispatch (WorkspaceChanged EditorWorkspace))
+                        ]
                     ]
-                ]
+                | Some simulator ->
+                    let simulatorState =
+                        MapEditorSimulator.viewState
+                            model.Editor.SelectedUnit
+                            simulator
+                    let stale =
+                        MapEditorSimulator.isBehindDraft model.Editor simulator
+                    Html.div [
+                        prop.className "simulator-workspace"
+                        prop.children [
+                            Html.section [
+                                prop.className "panel simulator-revision-status"
+                                prop.role.status
+                                prop.ariaLive.polite
+                                prop.children [
+                                    Html.h2 (
+                                        if stale then
+                                            "Simulator behind editor draft"
+                                        else
+                                            "Simulator matches editor draft"
+                                    )
+                                    Html.p (
+                                        "Simulating immutable revision "
+                                        + string simulator.Revision.Number
+                                        + " · "
+                                        + simulator.Revision.Digest.Substring(0, 12)
+                                    )
+                                    if stale then
+                                        Html.p "Editor changes are preserved separately. Choose Simulate this revision in Editor to reset this sandbox."
+                                ]
+                            ]
+                            controllerPanel simulator simulatorState dispatch
+                            battlefieldView
+                                shell
+                                (Some(
+                                    MapEditorSimulator.frame
+                                        model.Editor.SelectedUnit
+                                        simulator
+                                ))
+                                (Some simulatorState)
+                                model.Battlefield
+                                None
+                                1.0
+                                dispatch
+                        ]
+                    ]
             | EditorWorkspace ->
                 Html.div [
                     prop.className "editor-workspace"
                     prop.children [
+                        Html.section [
+                            prop.className "panel editor-simulation-handoff"
+                            prop.ariaLabel "Simulator revision handoff"
+                            prop.children [
+                                Html.h2 "Simulator handoff"
+                                Html.p (
+                                    match model.Simulator with
+                                    | None -> "No editor revision has been handed to the simulator."
+                                    | Some simulator when
+                                        MapEditorSimulator.isBehindDraft model.Editor simulator ->
+                                        "Simulator is behind this editor draft. Its immutable sandbox remains available."
+                                    | Some _ -> "Simulator matches this exact editor revision."
+                                )
+                                button
+                                    "Simulate this revision"
+                                    "Validate and hand this exact immutable revision to the simulator"
+                                    false
+                                    (fun _ -> dispatch SimulateEditorRevision)
+                            ]
+                        ]
                         editorToolbar
                             model.Editor
                             model.EditorView

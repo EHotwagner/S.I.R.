@@ -5,6 +5,7 @@
     <Compile Include="UnitGlyphCatalog.fs" />
     <Compile Include="Battlefield.fs" />
     <Compile Include="MapEditor.fs" />
+    <Compile Include="MapEditorSimulator.fs" />
     <Compile Include="MapEditorInterchange.fs" />
     <Compile Include="MapEditorWorkspace.fs" />
     <Compile Include="Lab.fs" />
