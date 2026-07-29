@@ -110,7 +110,7 @@ module SimulationFixtures =
               Phase = phase
               Expected = fromHex expected })
 
-    let private resultBytes result checkpoint =
+    let private resultBytes (result: TickResult) (checkpoint: PhaseCheckpoint) =
         let encodedCheckpoint = Simulation.checkpointBytes checkpoint
 
         if checkpoint.Phase = SimulationPhase.CommitPhase then

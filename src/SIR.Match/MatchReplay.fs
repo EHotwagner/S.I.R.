@@ -41,9 +41,10 @@ module MatchReplay =
                 0
                 0u
                 0u
-                [ { Kind = RequestKind.SetEngagement
-                    ModuleRequestId = 1u
-                    Payload = [||] } ]
+                [ CapabilityExecution.engagementRequest
+                      1u
+                      (PointCapabilityTarget 20)
+                      "human.weapon.rifle" ]
                 []
             |> Result.defaultWith (fun error ->
                 failwithf "Could not build qualification controller: %A" error)

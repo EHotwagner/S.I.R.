@@ -601,7 +601,8 @@ let main _ =
         |> PlanningWorkspace.update (SetPlanningAttention NorthEast)
         |> PlanningWorkspace.update (SetPlanningStance "crouched")
         |> PlanningWorkspace.update AddPlanningHold
-        |> PlanningWorkspace.update (AddPlanningEngagement(2, "rifle"))
+        |> PlanningWorkspace.update
+            (AddPlanningEngagement(2, "human.weapon.rifle"))
         |> PlanningWorkspace.update
             (AddPlanningSynchronization("support-ready", 600))
 
@@ -618,6 +619,32 @@ let main _ =
          && planning.Commands.Length = PlanningWorkspace.IntendedRosterSize + 6
          && planningTimer.ElapsedMilliseconds < 5_000L)
         "The intended 200-unit planning roster did not author a representative plan within budget."
+
+    let firstPlanningUnit = planning.Roster[0]
+    let invalidEquipmentPlan =
+        PlanningWorkspace.initial
+            (String.replicate 64 "b")
+            intendedPlanningRoster
+        |> PlanningWorkspace.update
+            (AddPlanningEngagement(2, "human.weapon.support"))
+
+    require
+        (firstPlanningUnit.Role = "planning-unit"
+         && firstPlanningUnit.Equipment = [| "Rifle" |]
+         && firstPlanningUnit.CapabilityIds = [| "human.weapon.rifle" |]
+         && invalidEquipmentPlan.Issues
+            |> Array.exists (fun issue ->
+                issue.Code = "SIR.PLAN.CAPABILITY.NOT_IN_LOADOUT"
+                && issue.UnitId = Some 1))
+        "Planning diagnostics did not expose explicit role, equipment, and loadout legality."
+
+    let planningReview = PlanningWorkspace.reviewArtifact planning
+    require
+        (planningReview.Contains(
+            "loadout|1|planning-unit|Rifle|human.weapon.rifle",
+            StringComparison.Ordinal
+        ))
+        "The deterministic planning artifact omitted explicit authored loadouts."
 
     let authoredRevision = planning.Revision
     let authoredDigest = planning.Digest

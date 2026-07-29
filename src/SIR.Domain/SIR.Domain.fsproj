@@ -8,6 +8,7 @@
     <Compile Include="Orientation.fs" />
     <Compile Include="ControlAbiV1.Generated.fs" />
     <Compile Include="ControlAbiV1.fs" />
+    <Compile Include="HumanCapabilities.fs" />
     <Compile Include="CanonicalEncoding.fs" />
     <Compile Include="CanonicalHash.fs" />
   </ItemGroup>

@@ -660,10 +660,242 @@ let private runPlanQualifications () =
                     kind = RequestKind.SetEngagement)))
         "Repeated coordinated native runs did not produce identical movement and engagement requests."
 
+let private runCapabilityQualifications () =
+    let descriptorIds =
+        HumanCapabilities.descriptors |> Array.map _.CapabilityId
+
+    require
+        (HumanCapabilities.descriptors.Length = 7
+         && descriptorIds |> Array.distinct |> Array.length = 7
+         && HumanCapabilities.descriptors
+            |> Array.map _.PlanningDecision
+            |> Array.distinct
+            |> Array.length = 7)
+        "The seven human weapon roles did not each retain a distinct planning decision."
+
+    require
+        (Direction8.all.Length = 8
+         && Enum.GetValues<RequestKind>()
+            = [| RequestKind.SetMovementIntent
+                 RequestKind.SetFacing
+                 RequestKind.SetAttention
+                 RequestKind.SetStance
+                 RequestKind.SetEngagement
+                 RequestKind.StartCapability
+                 RequestKind.CancelAction
+                 RequestKind.SendMessage
+                 RequestKind.RequestService
+                 RequestKind.SetEmissionPolicy
+                 RequestKind.SetFormationIntent
+                 RequestKind.Sleep |])
+        "Capability integration added an ABI request kind or a fourth direction authority."
+
+    let loadout unitId (descriptor: HumanWeaponCapabilityDescriptor) =
+        HumanCapabilities.createLoadout unitId descriptor.Role [| descriptor.CapabilityId |]
+        |> Result.defaultWith failwith
+
+    let targetLoadout =
+        HumanCapabilities.createLoadout 100 "target" [| "human.weapon.rifle" |]
+        |> Result.defaultWith failwith
+
+    let attackers =
+        HumanCapabilities.descriptors
+        |> Array.mapi (fun index descriptor ->
+            let unitId = index + 1
+            unitId,
+            { Loadout = loadout unitId descriptor
+              Cell = 0, index
+              Attention = North
+              Ammunition = Map.ofList [ descriptor.CapabilityId, 20 ]
+              PreservedPreparation = Map.empty
+              Engagement = None })
+        |> Map.ofArray
+
+    let target =
+        { Loadout = targetLoadout
+          Cell = 2, 3
+          Attention = West
+          Ammunition = Map.ofList [ "human.weapon.rifle", 20 ]
+          PreservedPreparation = Map.empty
+          Engagement = None }
+
+    let initial =
+        { Tick = 0
+          Units = Map.add 100 target attackers
+          Areas = Map.ofList [ 900, (2, 4) ] }
+
+    let journal =
+        HumanCapabilities.descriptors
+        |> Array.mapi (fun index descriptor ->
+            let target =
+                match descriptor.TargetContract with
+                | CapabilityTargetContract.PointTarget -> PointCapabilityTarget 100
+                | CapabilityTargetContract.AreaTarget -> AreaCapabilityTarget 900
+            { Tick = 0
+              UnitId = index + 1
+              Request =
+                CapabilityExecution.engagementRequest
+                    (uint32 (index + 1))
+                    target
+                    descriptor.CapabilityId })
+        |> Array.toList
+
+    let mutable state = initial
+    let mutable events = []
+    for tick in 0 .. 31 do
+        let requests =
+            journal
+            |> List.choose (fun entry ->
+                if entry.Tick = tick then Some(entry.UnitId, [ entry.Request ])
+                else None)
+        let result = ControlHost.applyToCapabilities state requests
+        state <- result.State
+        events <- result.Events @ events
+
+    for index, descriptor in HumanCapabilities.descriptors |> Array.indexed do
+        let unit = Map.find (index + 1) state.Units
+        let expected = 20 - descriptor.AmmunitionPerResolution
+        let targetCell =
+            match descriptor.TargetContract with
+            | CapabilityTargetContract.PointTarget -> target.Cell
+            | CapabilityTargetContract.AreaTarget -> Map.find 900 initial.Areas
+        let expectedAttention =
+            Direction8.tryFromDelta
+                (compare (fst targetCell) (fst unit.Cell) |> int32)
+                (compare (snd targetCell) (snd unit.Cell) |> int32)
+            |> Option.defaultWith (fun () ->
+                failwith "Capability qualification target had no direction.")
+        require
+            (Map.find descriptor.CapabilityId unit.Ammunition = expected
+             && unit.Attention = expectedAttention)
+            ("Ammunition semantics did not execute for " + descriptor.CapabilityId)
+
+        require
+            (events
+             |> List.exists (function
+                 | PointEngagementResolved(unitId, _, capabilityId, _)
+                     when descriptor.TargetContract = CapabilityTargetContract.PointTarget ->
+                     unitId = index + 1 && capabilityId = descriptor.CapabilityId
+                 | AreaEngagementResolved(unitId, _, capabilityId, _)
+                     when descriptor.TargetContract = CapabilityTargetContract.AreaTarget ->
+                     unitId = index + 1 && capabilityId = descriptor.CapabilityId
+                 | _ -> false))
+            ("Target-shape execution did not resolve for " + descriptor.CapabilityId)
+
+    require
+        (events
+         |> List.exists (function CapabilityTraversing(_, _, ticks) -> ticks > 0 | _ -> false))
+        "Attention alignment did not produce descriptor-owned traverse time."
+    require
+        (events |> List.exists (function CapabilityPrepared _ -> true | _ -> false))
+        "Capability preparation never completed."
+
+    let pointAndAreaJournal =
+        journal
+        |> List.filter (fun entry -> entry.UnitId = 2 || entry.UnitId = 5)
+    let expectedReplay =
+        CapabilityExecution.replay initial 32 pointAndAreaJournal
+    match
+        CapabilityExecution.verifyReplay
+            initial
+            32
+            pointAndAreaJournal
+            expectedReplay
+    with
+    | Ok verified ->
+        require
+            (verified.Length = 32)
+            "Capability replay omitted deterministic point/area frames."
+    | Error tick ->
+        failwithf "Point/area capability replay diverged at tick %d." tick
+
+    let alternateTarget =
+        { initial with
+            Units =
+                initial.Units
+                |> Map.add 101 { target with Cell = 3, 3 } }
+    let firstPointRequest = pointAndAreaJournal |> List.find (fun entry -> entry.UnitId = 2)
+    let alternateJournal =
+        [ { firstPointRequest with
+              Request =
+                CapabilityExecution.engagementRequest
+                    2u
+                    (PointCapabilityTarget 101)
+                    "human.weapon.rifle" } ]
+    let originalTargetState =
+        CapabilityExecution.runTick initial [ 2, firstPointRequest.Request ]
+    let alternateTargetState =
+        CapabilityExecution.runTick alternateTarget [ 2, alternateJournal.Head.Request ]
+    require
+        (CapabilityExecution.stateDigest originalTargetState.State
+         <> CapabilityExecution.stateDigest alternateTargetState.State)
+        "Capability replay state identity omitted the engagement target."
+
+    match
+        CapabilityExecution.verifyReplay
+            initial
+            32
+            pointAndAreaJournal
+            (expectedReplay |> List.take 31)
+    with
+    | Error 32 -> ()
+    | other ->
+        failwithf "Truncated capability replay did not report frame 32: %A" other
+
+    let interruptedInitial =
+        { initial with
+            Units =
+                initial.Units
+                |> Map.add 1 { (Map.find 1 initial.Units) with Attention = East }
+                |> Map.add 4 { (Map.find 4 initial.Units) with Attention = East } }
+    let start (descriptor: HumanWeaponCapabilityDescriptor) unitId =
+        unitId,
+        CapabilityExecution.engagementRequest
+            (uint32 unitId)
+            (PointCapabilityTarget 100)
+            descriptor.CapabilityId
+    let started =
+        CapabilityExecution.runTick
+            interruptedInitial
+            [ start HumanCapabilities.descriptors[0] 1
+              start HumanCapabilities.descriptors[3] 4 ]
+    let cancelled =
+        CapabilityExecution.runTick
+            started.State
+            [ 1, CapabilityExecution.cancelRequest 101u
+              4, CapabilityExecution.cancelRequest 104u ]
+    require
+        (cancelled.Events
+         |> List.contains
+             (CapabilityInterrupted(
+                 1,
+                 HumanCapabilities.descriptors[0].CapabilityId,
+                 false
+             ))
+         && cancelled.Events
+            |> List.contains
+                (CapabilityInterrupted(
+                    4,
+                    HumanCapabilities.descriptors[3].CapabilityId,
+                    true
+                ))
+         && (Map.find 1 cancelled.State.Units).PreservedPreparation.IsEmpty
+         && Map.find
+                HumanCapabilities.descriptors[3].CapabilityId
+                (Map.find 4 cancelled.State.Units).PreservedPreparation
+            = 1
+         && (Map.find 4 cancelled.State.Units).Engagement.IsNone)
+        "Descriptor-owned interruption rules did not distinguish lost and preserved preparation."
+
+    printfn
+        "Capability roles qualified: 7 descriptors, %d deterministic point/area replay frames, 8 directions, 12 unchanged ABI request kinds."
+        expectedReplay.Length
+
 [<EntryPoint>]
 let main _ =
     let controllerTickMs = runControlHostQualifications ()
     runPlanQualifications ()
+    runCapabilityQualifications ()
     let expectedControlOutput = controlAbiOutput ()
     let referenceControlOutput =
         executeReferenceControlModule expectedControlOutput

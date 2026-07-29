@@ -6347,6 +6347,8 @@ let private planningWorkspace
                                     prop.ariaPressed (state.SelectedUnit = Some unit.UnitId)
                                     prop.text (
                                         unit.Name + " · " + unit.Side + " · "
+                                        + unit.Role + " · "
+                                        + String.concat ", " unit.Equipment + " · "
                                         + string unit.Column + "," + string unit.Row
                                     )
                                     prop.onClick (fun _ ->
@@ -6415,6 +6417,12 @@ let private planningWorkspace
                     | Some unit ->
                         Html.h3 unit.Name
                         Html.p ("Map position " + string unit.Column + ", " + string unit.Row)
+                        Html.p ("Role: " + unit.Role)
+                        Html.p ("Equipment: " + String.concat ", " unit.Equipment)
+                        Html.p (
+                            "Capability descriptors: "
+                            + String.concat ", " unit.CapabilityIds
+                        )
                         match state.Tool with
                         | RouteTool ->
                             Html.p "Choose a battlefield cell, or use these keyboard-operable waypoint controls."
@@ -6446,12 +6454,19 @@ let private planningWorkspace
                             planningButton "Prone" (SetPlanningStance "prone")
                         | HoldTool -> planningButton "Add hold" AddPlanningHold
                         | EngagementTool ->
-                            match state.Roster |> Array.tryFind (fun target -> target.UnitId <> unit.UnitId) with
-                            | Some target ->
+                            match
+                                state.Roster
+                                |> Array.tryFind (fun target -> target.UnitId <> unit.UnitId),
+                                unit.CapabilityIds |> Array.tryHead
+                            with
+                            | Some target, Some capability ->
                                 planningButton
-                                    ("Engage " + target.Name)
-                                    (AddPlanningEngagement(target.UnitId, "rifle"))
-                            | None -> Html.p "No other roster unit is available as a disclosed target."
+                                    ("Engage " + target.Name + " with " + capability)
+                                    (AddPlanningEngagement(target.UnitId, capability))
+                            | None, _ ->
+                                Html.p "No other roster unit is available as a disclosed target."
+                            | _, None ->
+                                Html.p "This authored loadout has no accepted engagement capability."
                         | SynchronizationTool ->
                             planningButton
                                 "Add synchronization marker"
