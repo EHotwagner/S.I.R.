@@ -6,7 +6,7 @@ index: 2
 status: accepted
 decision-status: implemented
 document-type: reference
-version: "1.9"
+version: "1.10"
 last-updated: 2026-07-29
 description: Map records, terrain, semantic edges, square unit footprints, controller modes, and deterministic execution.
 related:
@@ -328,15 +328,57 @@ The Simulator uses the same desktop-authoring structure as the Editor:
 - `F2` shows or hides the active simulator panel. Reset restores the immutable
   handed-off revision rather than rewriting the Editor draft.
 
-The route preview takes deterministic diagonal-first Chebyshev steps and
-reports its cell distance. Every step checks the complete square footprint
-against the board, blocked terrain, semantic walls and closed doors, and other
-unit footprints in stable unit-ID order. The accepted prefix is rendered as a
-presentation-only overlay; collision reason and distance are also exposed as
-live text. Arrow keys or the labelled arrow buttons move the destination,
-`Enter` or **Commit route** commits a clear route, and `Escape` or **Cancel
-route** discards it. `Space`/`K`, **Run/Pause**, and **Step** provide equivalent
-keyboard and visible simulator controls without entering authored history.
+The route planner uses deterministic weighted A* over eight directions. It
+routes around blocked terrain, semantic walls, windows, closed doors, and
+occupied square footprints. Diagonal traversal cannot cut across a blocked
+orthogonal corner. Open-ground cardinal and diagonal steps cost 500 mm and
+707 mm respectively; entering rough ground costs 1.5 times as much movement
+credit. Stable direction, row, column, and unit-ID ordering resolve equal-cost
+choices.
+
+The planned route reports step count, physical distance, and movement-credit
+cost. Its presentation-only overlay remains visible after acceptance while
+steps remain queued. Arrow keys or labelled arrow buttons move the destination;
+`Enter` or **Commit route** queues a clear route, and `Escape` or **Cancel
+route** discards the preview. A committed route never teleports the unit.
+Once a unit starts accumulating credit toward an adjacent cell, that segment
+remains locked until it commits or a new collision invalidates it. Controllers
+therefore replan only at cell boundaries instead of changing the projected
+direction between ticks.
+`Space`/`K`, **Run/Pause**, and **Step** advance the same deterministic
+sandbox without entering authored history.
+
+### Fixed-timestep movement
+
+The sandbox uses the canonical 20 Hz simulation rate: one tick is 50 ms and
+one map cell represents 500 mm. Movement stays in fixed-point integer
+millimetres:
+
+```text
+earned credit per tick = speed millimetres per second / 20
+cardinal cell cost     = 500 mm
+diagonal cell cost     = 707 mm
+rough-ground cost      = base cost × 1.5
+```
+
+The reference movement profiles are 2.0 m/s for goblins, 1.5 m/s for
+riflemen and fallback units, 1.2 m/s for orcs, 1.0 m/s for trolls, and
+3.0 m/s for observation drones. These are explicit sandbox values pending the
+shared gameplay movement catalogue. Credits are capped at 1,060 mm, preventing
+unbounded stored movement while still permitting a rough diagonal step.
+
+A 1.5 m/s rifleman earns 75 mm per tick. It therefore commits its first 500 mm
+open-ground cardinal step on tick seven and retains 25 mm. Runtime state never
+contains fractional cells. During movement, the browser projects the unit
+between its committed origin and intended adjacent destination according to
+the accumulated credit fraction. At 20 updates per second this produces
+continuous open-ground motion before the cell boundary is committed, instead
+of a delayed post-commit slide. Reduced-motion and exact-tick modes suppress
+the fractional projection. Presentation coordinates never feed back into
+collision or simulation state.
+
+The **Run** preview schedules one authoritative tick every 50 ms, matching
+simulated real time. **Step** advances exactly one 50 ms tick.
 
 Player-perspective preview accepts only a `RenderFrame` explicitly labelled
 `PerspectiveDisclosure`. The editor has no accepted disclosure-filtered
@@ -363,8 +405,9 @@ The top-level **Samples** workspace groups reviewable examples by use:
 - **Replay walkthroughs:** precomputed tick-by-tick versions of the troll
   contact and closed-door stalemate scenarios.
 
-Each map card can replace the current draft in Editor or start a new immutable
-Simulator sandbox. Replay cards open locally navigable projections in Replay.
+Each expandable map entry can replace the current draft in Editor or start a
+new immutable Simulator sandbox. Replay entries open locally navigable
+projections in Replay.
 They are explicitly labelled deterministic sandbox evidence and are not
 cryptographically verified match replay packages.
 
@@ -376,6 +419,11 @@ projectile lines, moving shot marks, and impact rings show every rifle volley,
 while solid strike lines and crossed impact marks distinguish melee attacks.
 Projectile paths are deterministically intercepted by blocked terrain, walls,
 windows, and closed doors, so the breach sample remains a true stalemate.
+Attack profiles also define deterministic recovery. Riflemen recover for ten
+ticks between shots, trolls and orcs for twenty ticks between strikes, and
+goblins for sixteen ticks. A unit in recovery cannot attack again every 50 ms;
+this lets movement and engagement geometry remain visible in the assault
+sample.
 
 Combat events carry typed delivery values rather than relying on their display
 text. `MeleeDelivery` and `ProjectileDelivery` are implemented.
@@ -601,14 +649,19 @@ of macro/behavior records.
 
 ### Manual
 
-A manual unit changes state only after an explicit direction:
+A direction button queues a movement intent. A route commitment queues its
+path. The unit accumulates movement credit on subsequent ticks and commits the
+next step only when it can pay that step's terrain-adjusted cost:
 
 ```fsharp
-nextPosition = currentPosition + directionDelta
+credit = min maximumCredit (credit + speed / ticksPerSecond)
+if credit >= stepCost && collision = RouteClear then
+    position = nextPosition
+    credit = credit - stepCost
 ```
 
-The move is rejected if the destination is outside the map, blocked terrain,
-occupied, or separated by a blocking edge.
+An invalidated queued step is rejected and the route is cleared rather than
+allowing a unit to overlap, leave the map, or cross a blocking edge.
 
 ### Scripted AI
 
@@ -618,16 +671,16 @@ A script is a comma-separated sequence from:
 N, NE, E, SE, S, SW, W, NW
 ```
 
-On each automatic tick:
+The current script direction remains active while movement credit accumulates:
 
 ```fsharp
 direction = script[scriptIndex % scriptLength]
-scriptIndex = scriptIndex + 1
+if movement attempt resolves then
+    scriptIndex = scriptIndex + 1
 ```
 
-The index advances even when movement is blocked. This keeps execution
-deterministic and prevents an obstruction from changing the subsequent script
-phase.
+The index advances after either a committed move or a collision rejection, but
+not on ticks spent accumulating credit.
 
 ### General AI
 
@@ -638,8 +691,15 @@ The current reference controller is deterministic:
 3. Use the unit's typed attack profile when the target is in range and the
    delivery path is clear. Riflemen currently fire an eight-cell, twelve-damage
    projectile; trolls, orcs, and goblins use one-cell melee attacks.
-4. Otherwise move one step toward the target.
-5. Hold if no valid move or hostile exists.
+4. Otherwise plan a minimum-cost collision-free path to a position from which
+   the attack can resolve.
+5. If no complete attack route exists, choose the reachable position that
+   minimizes distance to the target. This makes units approach a closed breach
+   or other obstruction and stop at its near side instead of remaining at
+   their spawn point.
+6. Accumulate movement credit and commit at most the next adjacent path step,
+   keeping that segment stable until it resolves.
+7. Hold if no reachable approach or hostile exists.
 
 This is a bundled test policy. It is not an external service, a language model,
 or the final player-AI contract.

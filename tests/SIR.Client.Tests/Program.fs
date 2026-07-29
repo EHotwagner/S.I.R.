@@ -1013,8 +1013,32 @@ let main _ =
             movedFrame
             Battlefield.initial
     let exactCommitted = Battlefield.scene movedFrame Battlefield.initial
+    let diagonalFrame =
+        { movedFrame with
+            Units =
+                movedFrame.Units
+                |> Array.map (fun unit ->
+                    if unit.Id = 1 then
+                        { unit with AnchorRow = unit.AnchorRow + 1 }
+                    else
+                        unit) }
+    let diagonalHalfway =
+        Battlefield.interpolatedScene
+            0.5
+            Battlefield.representativeFrame
+            diagonalFrame
+            Battlefield.initial
+    let creditOffsetScene =
+        Battlefield.scene
+            Battlefield.representativeFrame
+            Battlefield.initial
+        |> Battlefield.withUnitOffsets (Map.ofList [ 1, (0.5, 0.25) ])
     require
         (halfway.Units[0].FootprintX = 24.0
+         && diagonalHalfway.Units[0].FootprintX = 24.0
+         && diagonalHalfway.Units[0].FootprintY = 24.0
+         && creditOffsetScene.Units[0].FootprintX = 24.0
+         && creditOffsetScene.Units[0].FootprintY = 12.0
          && committedFromInterpolation = exactCommitted
          && Battlefield.deterministicEvidence committedFromInterpolation
             = Battlefield.deterministicEvidence exactCommitted)
@@ -1026,10 +1050,10 @@ let main _ =
                 [| { Id = "blocking-wall"
                      Kind = "wall"
                      State = "solid"
-                     StartColumn = 1
+                     StartColumn = 2
                      StartRow = 0
-                     EndColumn = 1
-                     EndRow = 1 } |] }
+                     EndColumn = 2
+                     EndRow = 2 } |] }
     let blockedTarget =
         { movedFrame with Edges = blockedSource.Edges }
     let blockedHalfway =
@@ -1233,13 +1257,19 @@ let main _ =
         |> Option.defaultWith (fun () ->
             failwith "The troll-assault simulator handoff is invalid.")
     let rangedExchange =
-        [ 1 .. 3 ]
+        [ 1 .. 20 ]
         |> List.fold (fun handoff _ ->
             MapEditorSimulator.update StepSimulator None handoff) trollAssaultSimulator
     let rangedFrame =
         MapEditorSimulator.frame None rangedExchange
     let rangedScene =
         Battlefield.scene rangedFrame Battlefield.initial
+    let resolvedTrollAssault =
+        [ 1 .. 80 ]
+        |> List.fold (fun handoff _ ->
+            MapEditorSimulator.update StepSimulator None handoff) trollAssaultSimulator
+    let resolvedTroll =
+        Map.find 4 resolvedTrollAssault.RuntimeMap.Units
     let rifleProfile =
         trollAssaultEditor.Map.Units
         |> Map.find 1
@@ -1253,36 +1283,65 @@ let main _ =
           ConeArea(6, 60)
           RayArea(8, 1)
           RectangleArea(3, 5) ]
-    let breachStalemate =
+    let breachInitial =
         ExperienceSamples.tryMap "breach-corridor"
         |> Option.bind ExperienceSamples.simulator
-        |> Option.map (fun initial ->
-            [ 1 .. 8 ]
-            |> List.fold (fun handoff _ ->
-                MapEditorSimulator.update StepSimulator None handoff) initial)
         |> Option.defaultWith (fun () ->
             failwith "The breach-corridor simulator handoff is invalid.")
+    let breachStalemate =
+        [ 1 .. 8 ]
+        |> List.fold (fun handoff _ ->
+            MapEditorSimulator.update StepSimulator None handoff) breachInitial
+    let objectiveInitial =
+        ExperienceSamples.tryMap "objective-crossing"
+        |> Option.bind ExperienceSamples.simulator
+        |> Option.defaultWith (fun () ->
+            failwith "The objective-crossing simulator handoff is invalid.")
+    let objectiveFrames =
+        [ 1 .. 40 ]
+        |> List.scan (fun handoff _ ->
+            MapEditorSimulator.update StepSimulator None handoff) objectiveInitial
+    let projectedPosition unitId handoff =
+        let unit = Map.find unitId handoff.RuntimeMap.Units
+        let columnOffset, rowOffset =
+            Map.tryFind
+                unitId
+                (MapEditorSimulator.presentationOffsets handoff)
+            |> Option.defaultValue (0.0, 0.0)
+        float unit.Column + columnOffset,
+        float unit.Row + rowOffset
+    let largestProjectedJump unitId =
+        objectiveFrames
+        |> List.map (projectedPosition unitId)
+        |> List.pairwise
+        |> List.map (fun ((firstColumn, firstRow), (secondColumn, secondRow)) ->
+            max
+                (abs (secondColumn - firstColumn))
+                (abs (secondRow - firstRow)))
+        |> List.max
     require
         (trollAssaultEditor.Map.Width = 16
          && trollAssaultEditor.Map.Height = 10
          && trollAssaultEditor.Map.Units.Count = 4
          && (Map.find 4 trollAssaultEditor.Map.Units).ClassId = "troll"
          && (Map.find 4 trollAssaultEditor.Map.Units).HealthMaximum = 240
-         && trollAssaultFrames.Length = 13
+         && trollAssaultFrames.Length = 21
          && trollAssaultFrames = repeatedTrollAssaultFrames
          && trollAssaultFrames[0].Tick = 0
-         && trollAssaultFrames[12].Tick = 12
-         && not trollAssaultFrames[12].Events.IsEmpty
+         && trollAssaultFrames[20].Tick = 20
+         && not trollAssaultFrames[20].Events.IsEmpty
          && rifleProfile.Delivery = ProjectileDelivery
          && rifleProfile.Range = 8
          && rifleProfile.Damage = 12
+         && rifleProfile.RecoveryTicks = 10
          && trollProfile.Delivery = MeleeDelivery
          && futureAreaShapes.Length = 4
          && (rangedExchange.LastCombatEvents
              |> List.exists (fun event ->
-                 event.SourceUnitId = 1
-                 && event.Delivery = ProjectileDelivery))
+                 event.Delivery = ProjectileDelivery))
          && (Map.find 4 rangedExchange.RuntimeMap.Units).Health < 240
+         && (Map.find 4 rangedExchange.RuntimeMap.Units).Health >= 144
+         && resolvedTroll.Column <= 10
          && (rangedScene.ActionTraces
              |> Array.exists (fun trace ->
                  trace.Kind = "combat-projectile"))
@@ -1293,8 +1352,43 @@ let main _ =
                  && event.SourceUnitId.IsSome
                  && event.TargetUnitId = Some 4))
          && breachStalemate.LastCombatEvents.IsEmpty
-         && (Map.find 3 breachStalemate.RuntimeMap.Units).Health = 12)
-        "The curated troll assault map or deterministic replay walkthrough changed."
+         && (Map.find 3 breachStalemate.RuntimeMap.Units).Health = 12
+         && (Map.find 1 breachStalemate.RuntimeMap.Units).Column
+            > (Map.find 1 breachInitial.RuntimeMap.Units).Column
+         && (Map.find 3 breachStalemate.RuntimeMap.Units).Column
+            < (Map.find 3 breachInitial.RuntimeMap.Units).Column
+         && largestProjectedJump 1 <= 0.31
+         && largestProjectedJump 3 <= 0.31)
+        ("The curated simulator samples changed: breach blue "
+         + string (Map.find 1 breachStalemate.RuntimeMap.Units).Column
+         + ", breach red "
+         + string (Map.find 3 breachStalemate.RuntimeMap.Units).Column
+         + ", objective jumps "
+         + string (largestProjectedJump 1)
+         + "/"
+         + string (largestProjectedJump 3)
+         + ", ranged health "
+         + string (Map.find 4 rangedExchange.RuntimeMap.Units).Health
+         + ", resolved column "
+         + string resolvedTroll.Column
+         + ", recent combat "
+         + string (not rangedExchange.LastCombatEvents.IsEmpty)
+         + ", traces "
+         + string (not (Array.isEmpty rangedScene.ActionTraces))
+         + ", breach combat "
+         + string (not breachStalemate.LastCombatEvents.IsEmpty)
+         + ", breach health "
+         + string (Map.find 3 breachStalemate.RuntimeMap.Units).Health
+         + ", replay projectile "
+         + string (
+             trollAssaultFrames
+             |> Array.collect (fun frame -> List.toArray frame.Events)
+             |> Array.exists (fun event ->
+                 event.Source = "combat-projectile"
+                 && event.SourceUnitId.IsSome
+                 && event.TargetUnitId = Some 4)
+         )
+         + ".")
 
     let sampleReplayShell =
         { Shell.init () with
@@ -1794,8 +1888,41 @@ let main _ =
                 ) }
         |> MapEditor.update CommitEditorGesture
     let steppedSimulator =
+        [ 1 .. 10 ]
+        |> List.fold (fun handoff _ ->
+            MapEditorSimulator.update
+                StepSimulator
+                editor.SelectedUnit
+                handoff) simulator
+    let queuedManualMove =
         simulator
-        |> MapEditorSimulator.update StepSimulator editor.SelectedUnit
+        |> MapEditorSimulator.update
+            (MoveSimulatorUnit East)
+            editor.SelectedUnit
+    let manualBeforeTimedMove =
+        Map.find (Option.get editor.SelectedUnit) simulator.RuntimeMap.Units
+    let beforeMovementThreshold =
+        [ 1 .. 6 ]
+        |> List.fold (fun handoff _ ->
+            MapEditorSimulator.update
+                StepSimulator
+                editor.SelectedUnit
+                handoff) queuedManualMove
+    let afterMovementThreshold =
+        MapEditorSimulator.update
+            StepSimulator
+            editor.SelectedUnit
+            beforeMovementThreshold
+    let manualAfterSixTicks =
+        Map.find
+            manualBeforeTimedMove.Id
+            beforeMovementThreshold.RuntimeMap.Units
+    let manualAfterSevenTicks =
+        Map.find
+            manualBeforeTimedMove.Id
+            afterMovementThreshold.RuntimeMap.Units
+    let movementOffsets =
+        MapEditorSimulator.presentationOffsets beforeMovementThreshold
     let clearPreview =
         MapEditorSimulator.preview
             editor.SelectedUnit
@@ -1803,6 +1930,32 @@ let main _ =
               CellRow = 1 }
             simulator
         |> Option.defaultWith (fun () -> failwith "Expected a clear simulator route preview.")
+    let roughPreview =
+        let roughHandoff =
+            { simulator with
+                RuntimeMap =
+                    { simulator.RuntimeMap with
+                        Terrain =
+                            simulator.RuntimeMap.Terrain
+                            |> Map.add (3, 1) Rough } }
+        MapEditorSimulator.preview
+            editor.SelectedUnit
+            { CellColumn = 3
+              CellRow = 1 }
+            roughHandoff
+        |> Option.defaultWith (fun () ->
+            failwith "Expected a rough-ground simulator route preview.")
+    let queuedPath =
+        { simulator with
+            PreviewDestination =
+                Some
+                    { CellColumn = 3
+                      CellRow = 1 } }
+        |> MapEditorSimulator.update
+            CommitSimulatorPreview
+            editor.SelectedUnit
+    let queuedPathFrame =
+        MapEditorSimulator.frame editor.SelectedUnit queuedPath
     let occupiedPreview =
         MapEditorSimulator.preview
             editor.SelectedUnit
@@ -1842,17 +1995,35 @@ let main _ =
          && MapEditorSimulator.isBehindDraft editedAfterHandoff simulator
          && steppedSimulator.Revision = simulator.Revision
          && steppedSimulator.RuntimeMap <> simulator.RuntimeMap
+         && (MapEditorSimulator.movementProfileFor manualBeforeTimedMove)
+                .SpeedMillimetersPerSecond = 1500
+         && manualAfterSixTicks.Column = manualBeforeTimedMove.Column
+         && manualAfterSevenTicks.Column = manualBeforeTimedMove.Column + 1
+         && Map.find manualBeforeTimedMove.Id movementOffsets = (0.9, 0.0)
+         && Map.find
+                manualBeforeTimedMove.Id
+                afterMovementThreshold.MovementCreditsMillimeters = 25
          && editedAfterHandoff.Map <> steppedSimulator.RuntimeMap
          && editedAfterHandoff.UndoHistory.Length = 1
          && clearPreview.Distance = 2
+         && clearPreview.DistanceMillimeters = 1000
+         && clearPreview.MovementCostMillimeters = 1000
          && clearPreview.Route.Length = 2
          && clearPreview.Collision = RouteClear
+         && roughPreview.MovementCostMillimeters
+            > roughPreview.DistanceMillimeters
+         && queuedPath.RuntimeMap = simulator.RuntimeMap
+         && (Map.find
+                 (Option.get editor.SelectedUnit)
+                 queuedPath.PlannedRoutes).Length = 2
+         && (queuedPathFrame.Overlays
+             |> Array.exists (fun overlay ->
+                 overlay.Kind = "route-planned"))
          && (match occupiedPreview.Collision with
              | OccupiedAt(_, 3) -> true
              | _ -> false)
-         && (match edgePreview.Collision with
-             | BlockingEdgeAt _ -> true
-             | _ -> false)
+         && edgePreview.Collision = RouteClear
+         && edgePreview.Route.Length > clearPreview.Route.Length
          && (match outsidePreview.Collision with
              | OutsideMap _ -> true
              | _ -> false)
@@ -1883,6 +2054,10 @@ let main _ =
                 + string address.CellColumn + "," + string address.CellRow
                 + ":"
                 + string id
+            | NoPathTo address ->
+                "no-path:"
+                + string address.CellColumn + ","
+                + string address.CellRow
         String.concat
             "\n"
             [ "revision=" + simulator.Revision.Digest

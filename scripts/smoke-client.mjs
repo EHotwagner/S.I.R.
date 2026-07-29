@@ -1139,9 +1139,46 @@ if (
 ) {
   throw new Error("The troll assault sample did not open in the compact simulator.");
 }
+buttonByText("Controls")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document
+    .querySelector('[aria-label="Simulator command panel"]')
+    ?.textContent.includes("Movement 1500 mm/s") ||
+  !window.document
+    .querySelector('[aria-label="Simulator command panel"]')
+    ?.textContent.includes("Route planner")
+) {
+  throw new Error("The simulator did not expose timed movement and path planning.");
+}
+const rifleFootprint = () =>
+  window.document.querySelector(
+    '[aria-label="Editable simulation SVG battlefield"] [data-unit-id="1"] [data-authoritative-footprint="true"]',
+  );
+for (const label of ["Use exact-tick playback", "Use reduced motion"]) {
+  const option = window.document.querySelector(`input[aria-label="${label}"]`);
+  if (option?.checked) {
+    option.click();
+    await window.happyDOM.waitUntilComplete();
+  }
+}
+const initialRifleX = Number(rifleFootprint()?.getAttribute("x"));
 buttonByText("Step")?.click();
-buttonByText("Step")?.click();
-buttonByText("Step")?.click();
+await window.happyDOM.waitUntilComplete();
+const progressingRifleX = Number(rifleFootprint()?.getAttribute("x"));
+if (
+  !Number.isFinite(initialRifleX) ||
+  !Number.isFinite(progressingRifleX) ||
+  progressingRifleX <= initialRifleX ||
+  progressingRifleX >= initialRifleX + 48
+) {
+  throw new Error(
+    `Movement credit did not produce fractional open-ground motion (${initialRifleX} -> ${progressingRifleX}).`,
+  );
+}
+for (let tick = 1; tick < 20; tick += 1) {
+  buttonByText("Step")?.click();
+}
 await window.happyDOM.waitUntilComplete();
 buttonByText("Events")?.click();
 await window.happyDOM.waitUntilComplete();
@@ -1157,6 +1194,73 @@ if (
     ?.textContent.includes("ranged attack")
 ) {
   throw new Error("Riflemen did not resolve and display typed ranged attacks.");
+}
+buttonByText("Samples")?.click();
+await window.happyDOM.waitUntilComplete();
+const objectiveSample = [...window.document.querySelectorAll(".sample-card")]
+  .find((card) => card.textContent.includes("Objective crossing"));
+objectiveSample?.querySelector("summary")?.click();
+await window.happyDOM.waitUntilComplete();
+objectiveSample
+  ?.querySelector('button[aria-label*="Run Objective crossing"]')
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+const unitPosition = (unitId) => {
+  const footprint = window.document.querySelector(
+    `[aria-label="Editable simulation SVG battlefield"] [data-unit-id="${unitId}"] [data-authoritative-footprint="true"]`,
+  );
+  return [
+    Number(footprint?.getAttribute("x")),
+    Number(footprint?.getAttribute("y")),
+  ];
+};
+const objectivePositions = new Map([
+  [1, [unitPosition(1)]],
+  [3, [unitPosition(3)]],
+]);
+for (let tick = 0; tick < 40; tick += 1) {
+  buttonByText("Step")?.click();
+  await window.happyDOM.waitUntilComplete();
+  objectivePositions.get(1).push(unitPosition(1));
+  objectivePositions.get(3).push(unitPosition(3));
+}
+for (const unitId of [1, 3]) {
+  const positions = objectivePositions.get(unitId);
+  const largestJump = positions.slice(1).reduce((largest, position, index) => {
+    const previous = positions[index];
+    return Math.max(
+      largest,
+      Math.abs(position[0] - previous[0]),
+      Math.abs(position[1] - previous[1]),
+    );
+  }, 0);
+  if (!Number.isFinite(largestJump) || largestJump > 15) {
+    throw new Error(
+      `Objective-crossing unit ${unitId} changed movement segment discontinuously (${largestJump}px).`,
+    );
+  }
+}
+buttonByText("Samples")?.click();
+await window.happyDOM.waitUntilComplete();
+const breachSample = [...window.document.querySelectorAll(".sample-card")]
+  .find((card) => card.textContent.includes("Breach corridor"));
+breachSample?.querySelector("summary")?.click();
+await window.happyDOM.waitUntilComplete();
+breachSample
+  ?.querySelector('button[aria-label*="Run Breach corridor"]')
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+const breachBlueStart = unitPosition(1)[0];
+const breachRedStart = unitPosition(3)[0];
+for (let tick = 0; tick < 8; tick += 1) {
+  buttonByText("Step")?.click();
+}
+await window.happyDOM.waitUntilComplete();
+if (
+  unitPosition(1)[0] <= breachBlueStart ||
+  unitPosition(3)[0] >= breachRedStart
+) {
+  throw new Error("Breach units did not approach the nearest reachable side of the closed door.");
 }
 buttonByText("Samples")?.click();
 await window.happyDOM.waitUntilComplete();

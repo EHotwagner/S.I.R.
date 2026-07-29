@@ -8,12 +8,15 @@ type SimulatorCollision =
     | BlockedTerrainAt of EditorCellAddress
     | BlockingEdgeAt of EditorCellAddress * EditorCellAddress
     | OccupiedAt of EditorCellAddress * unitId: int32
+    | NoPathTo of EditorCellAddress
 
 type SimulatorRoutePreview =
     { UnitId: int32
       Origin: EditorCellAddress
       Destination: EditorCellAddress
       Distance: int32
+      DistanceMillimeters: int32
+      MovementCostMillimeters: int32
       Route: EditorCellAddress array
       Collision: SimulatorCollision }
 
@@ -45,14 +48,26 @@ type SimulatorAttackProfile =
     { Delivery: SimulatorCombatDelivery
       Range: int32
       Damage: int32
+      RecoveryTicks: int32
       AreaShape: SimulatorAreaShape option }
 
 type SimulatorCombatEvent =
-    { SourceUnitId: int32
+    { Tick: int32
+      SourceUnitId: int32
       Target: SimulatorCombatTarget
       Delivery: SimulatorCombatDelivery
       Damage: int32
       Summary: string }
+
+type SimulatorMovementProfile =
+    { SpeedMillimetersPerSecond: int32
+      CellMillimeters: int32 }
+
+type SimulatorMovementProgress =
+    { Origin: EditorCellAddress
+      Destination: EditorCellAddress
+      ProgressMillimeters: int32
+      CostMillimeters: int32 }
 
 type SimulatorHandoff =
     { Revision: MapRevision
@@ -61,6 +76,11 @@ type SimulatorHandoff =
       IsRunning: bool
       LastEvents: string list
       LastCombatEvents: SimulatorCombatEvent list
+      AttackRecoveryTicks: Map<int32, int32>
+      MovementCreditsMillimeters: Map<int32, int32>
+      MovementProgress: Map<int32, SimulatorMovementProgress>
+      MovementIntents: Map<int32, MapDirection>
+      PlannedRoutes: Map<int32, EditorCellAddress list>
       PreviewDestination: EditorCellAddress option }
 
 type SimulatorAction =
@@ -75,6 +95,18 @@ type SimulatorAction =
 
 [<RequireQualifiedAccess>]
 module MapEditorSimulator =
+    [<Literal>]
+    let TicksPerSecond = 20
+
+    [<Literal>]
+    let CellMillimeters = 500
+
+    [<Literal>]
+    let DiagonalCellMillimeters = 707
+
+    [<Literal>]
+    let MaximumMovementCreditMillimeters = 1060
+
     [<Literal>]
     let PerspectiveUnavailableReason =
         "Player perspective is unavailable: no accepted disclosure-filtered projection exists for editor drafts."
@@ -109,18 +141,6 @@ module MapEditorSimulator =
         | SouthWest -> "SW"
         | West -> "W"
         | NorthWest -> "NW"
-
-    let private directionForDelta columnDelta rowDelta =
-        match sign columnDelta, sign rowDelta with
-        | 0, -1 -> Some North
-        | 1, -1 -> Some NorthEast
-        | 1, 0 -> Some East
-        | 1, 1 -> Some SouthEast
-        | 0, 1 -> Some South
-        | -1, 1 -> Some SouthWest
-        | -1, 0 -> Some West
-        | -1, -1 -> Some NorthWest
-        | _ -> None
 
     let private edgeBlocks map key =
         map.Edges
@@ -220,7 +240,33 @@ module MapEditorSimulator =
                     | Some collision -> collision
                     | None -> RouteClear
 
-    let private route origin destination =
+    let private movementCollision map unit destination =
+        let columnDelta = destination.CellColumn - unit.Column
+        let rowDelta = destination.CellRow - unit.Row
+        let direct = collisionForStep map unit destination
+        if
+            direct = RouteClear
+            && columnDelta <> 0
+            && rowDelta <> 0
+        then
+            let horizontal =
+                { CellColumn = destination.CellColumn
+                  CellRow = unit.Row }
+            let vertical =
+                { CellColumn = unit.Column
+                  CellRow = destination.CellRow }
+            match
+                collisionForStep map unit horizontal,
+                collisionForStep map unit vertical
+            with
+            | RouteClear, RouteClear -> RouteClear
+            | collision, RouteClear
+            | RouteClear, collision -> collision
+            | first, _ -> first
+        else
+            direct
+
+    let private directRoute origin destination =
         let mutable column = origin.CellColumn
         let mutable row = origin.CellRow
         [| while column <> destination.CellColumn || row <> destination.CellRow do
@@ -229,6 +275,174 @@ module MapEditorSimulator =
                yield
                    { CellColumn = column
                      CellRow = row } |]
+
+    let private stepDistance origin destination =
+        if
+            origin.CellColumn <> destination.CellColumn
+            && origin.CellRow <> destination.CellRow
+        then
+            DiagonalCellMillimeters
+        else
+            CellMillimeters
+
+    let private movementCost
+        (map: MapDefinition)
+        (unit: EditorUnit)
+        origin
+        destination
+        =
+        let distance = stepDistance origin destination
+        let entersRoughGround =
+            footprint unit destination.CellColumn destination.CellRow
+            |> Array.exists (fun address ->
+                Map.tryFind address map.Terrain = Some Rough)
+        if entersRoughGround then
+            distance * 3 / 2
+        else
+            distance
+
+    let private pathNeighbors =
+        [| 0, -1
+           1, 0
+           0, 1
+           -1, 0
+           1, -1
+           1, 1
+           -1, 1
+           -1, -1 |]
+
+    let private heuristic origin destination =
+        let column = abs (destination.CellColumn - origin.CellColumn)
+        let row = abs (destination.CellRow - origin.CellRow)
+        let diagonal = min column row
+        diagonal * DiagonalCellMillimeters
+        + (max column row - diagonal) * CellMillimeters
+
+    let private findPathTo
+        (map: MapDefinition)
+        (unit: EditorUnit)
+        (goal: EditorUnit -> bool)
+        (heuristicToGoal: EditorCellAddress -> int32)
+        =
+        let origin =
+            { CellColumn = unit.Column
+              CellRow = unit.Row }
+        let mutable frontier =
+            [ 0, 0, origin.CellRow, origin.CellColumn, origin ]
+        let mutable costs = Map.ofList [ origin, 0 ]
+        let mutable previous = Map.empty<EditorCellAddress, EditorCellAddress>
+        let mutable result = None
+        while result.IsNone && not (List.isEmpty frontier) do
+            let _, cost, _, _, current = List.min frontier
+            frontier <-
+                frontier
+                |> List.filter (fun (_, _, _, _, address) -> address <> current)
+            let currentUnit =
+                { unit with
+                    Column = current.CellColumn
+                    Row = current.CellRow }
+            if goal currentUnit then
+                let mutable cursor = current
+                let mutable reversed = []
+                while cursor <> origin do
+                    reversed <- cursor :: reversed
+                    cursor <- Map.find cursor previous
+                result <- Some reversed
+            else
+                for columnDelta, rowDelta in pathNeighbors do
+                    let destination =
+                        { CellColumn = current.CellColumn + int32 columnDelta
+                          CellRow = current.CellRow + int32 rowDelta }
+                    let probe =
+                        { currentUnit with
+                            Column = current.CellColumn
+                            Row = current.CellRow }
+                    if movementCollision map probe destination = RouteClear then
+                        let nextCost =
+                            cost
+                            + movementCost map currentUnit current destination
+                        let known =
+                            Map.tryFind destination costs
+                            |> Option.defaultValue Int32.MaxValue
+                        if nextCost < known then
+                            costs <- Map.add destination nextCost costs
+                            previous <- Map.add destination current previous
+                            frontier <-
+                                (nextCost + heuristicToGoal destination,
+                                 nextCost,
+                                 destination.CellRow,
+                                 destination.CellColumn,
+                                 destination)
+                                :: frontier
+        result
+
+    let private findClosestPath
+        (map: MapDefinition)
+        (unit: EditorUnit)
+        (score: EditorUnit -> int32)
+        =
+        let origin =
+            { CellColumn = unit.Column
+              CellRow = unit.Row }
+        let mutable frontier =
+            [ 0, origin.CellRow, origin.CellColumn, origin ]
+        let mutable costs = Map.ofList [ origin, 0 ]
+        let mutable previous = Map.empty<EditorCellAddress, EditorCellAddress>
+        let mutable best =
+            score unit, 0, origin.CellRow, origin.CellColumn, origin
+        while not (List.isEmpty frontier) do
+            let cost, _, _, current = List.min frontier
+            frontier <-
+                frontier
+                |> List.filter (fun (_, _, _, address) -> address <> current)
+            let currentUnit =
+                { unit with
+                    Column = current.CellColumn
+                    Row = current.CellRow }
+            let candidate =
+                score currentUnit,
+                cost,
+                current.CellRow,
+                current.CellColumn,
+                current
+            if candidate < best then
+                best <- candidate
+            for columnDelta, rowDelta in pathNeighbors do
+                let destination =
+                    { CellColumn = current.CellColumn + int32 columnDelta
+                      CellRow = current.CellRow + int32 rowDelta }
+                if movementCollision map currentUnit destination = RouteClear then
+                    let nextCost =
+                        cost
+                        + movementCost map currentUnit current destination
+                    let known =
+                        Map.tryFind destination costs
+                        |> Option.defaultValue Int32.MaxValue
+                    if nextCost < known then
+                        costs <- Map.add destination nextCost costs
+                        previous <- Map.add destination current previous
+                        frontier <-
+                            (nextCost,
+                             destination.CellRow,
+                             destination.CellColumn,
+                             destination)
+                            :: frontier
+        let _, _, _, _, destination = best
+        let mutable cursor = destination
+        let mutable path = []
+        while cursor <> origin do
+            path <- cursor :: path
+            cursor <- Map.find cursor previous
+        path
+
+    let pathfind destination (unit: EditorUnit) (map: MapDefinition) =
+        findPathTo
+            map
+            unit
+            (fun candidate ->
+                candidate.Column = destination.CellColumn
+                && candidate.Row = destination.CellRow)
+            (fun address -> heuristic address destination)
 
     let preview selectedUnitId destination handoff =
         selectedUnitId
@@ -239,30 +453,44 @@ module MapEditorSimulator =
                 let origin =
                     { CellColumn = unit.Column
                       CellRow = unit.Row }
-                let path = route origin destination
-                let mutable probe = unit
-                let mutable collision = RouteClear
-                let mutable accepted = ResizeArray<EditorCellAddress>()
-                for step in path do
-                    if collision = RouteClear then
-                        let nextCollision =
-                            collisionForStep handoff.RuntimeMap probe step
-                        if nextCollision = RouteClear then
-                            accepted.Add step
-                            probe <-
-                                { probe with
-                                    Column = step.CellColumn
-                                    Row = step.CellRow }
+                let path =
+                    pathfind destination unit handoff.RuntimeMap
+                let collision =
+                    match path with
+                    | Some _ -> RouteClear
+                    | None ->
+                        let destinationCollision =
+                            collisionForStep handoff.RuntimeMap unit destination
+                        if destinationCollision = RouteClear then
+                            NoPathTo destination
                         else
-                            collision <- nextCollision
+                            destinationCollision
+                let accepted = path |> Option.defaultValue []
                 { UnitId = id
                   Origin = origin
                   Destination = destination
-                  Distance =
-                    max
-                        (abs (destination.CellColumn - origin.CellColumn))
-                        (abs (destination.CellRow - origin.CellRow))
-                  Route = accepted.ToArray()
+                  Distance = int32 accepted.Length
+                  DistanceMillimeters =
+                    accepted
+                    |> List.fold (fun (total, previous) address ->
+                        total + stepDistance previous address, address) (0, origin)
+                    |> fst
+                  MovementCostMillimeters =
+                    accepted
+                    |> List.fold (fun (total, previous) address ->
+                        let probe =
+                            { unit with
+                                Column = previous.CellColumn
+                                Row = previous.CellRow }
+                        total
+                        + movementCost
+                            handoff.RuntimeMap
+                            probe
+                            previous
+                            address,
+                        address) (0, origin)
+                    |> fst
+                  Route = List.toArray accepted
                   Collision = collision }))
 
     let tryHandoff (state: MapEditorState) =
@@ -277,6 +505,11 @@ module MapEditorSimulator =
                   IsRunning = false
                   LastEvents = []
                   LastCombatEvents = []
+                  AttackRecoveryTicks = Map.empty
+                  MovementCreditsMillimeters = Map.empty
+                  MovementProgress = Map.empty
+                  MovementIntents = Map.empty
+                  PlannedRoutes = Map.empty
                   PreviewDestination = None }
         else
             issues
@@ -295,65 +528,37 @@ module MapEditorSimulator =
 
     let visibilityOverlays = VisibilityOverlaysUnavailable VisibilityUnavailableReason
 
-    let private moveUnit direction (unit: EditorUnit) (map: MapDefinition) =
-        let columnDelta, rowDelta = directionDelta direction
-        let destination =
-            { CellColumn = unit.Column + int32 columnDelta
-              CellRow = unit.Row + int32 rowDelta }
-        if collisionForStep map unit destination = RouteClear then
-            { map with
-                Units =
-                    Map.add
-                        unit.Id
-                        { unit with
-                            Column = destination.CellColumn
-                            Row = destination.CellRow }
-                        map.Units },
-            true
-        else
-            map, false
-
-    let private nearestHostile (unit: EditorUnit) (map: MapDefinition) =
-        map.Units
-        |> Map.toSeq
-        |> Seq.map snd
-        |> Seq.filter (fun (other: EditorUnit) ->
-            other.Id <> unit.Id
-            && other.Side <> unit.Side
-            && other.Health > 0)
-        |> Seq.sortBy (fun (other: EditorUnit) ->
-            max
-                (abs (other.Column - unit.Column))
-                (abs (other.Row - unit.Row)),
-            other.Id)
-        |> Seq.tryHead
-
     let attackProfileFor (unit: EditorUnit) =
         match unit.ClassId.Trim().ToLowerInvariant() with
         | "rifleman" ->
             { Delivery = ProjectileDelivery
               Range = 8
               Damage = 12
+              RecoveryTicks = 10
               AreaShape = None }
         | "troll" ->
             { Delivery = MeleeDelivery
               Range = 1
               Damage = 18
+              RecoveryTicks = 20
               AreaShape = None }
         | "orc" ->
             { Delivery = MeleeDelivery
               Range = 1
               Damage = 5
+              RecoveryTicks = 20
               AreaShape = None }
         | "goblin" ->
             { Delivery = MeleeDelivery
               Range = 1
               Damage = 2
+              RecoveryTicks = 16
               AreaShape = None }
         | _ ->
             { Delivery = MeleeDelivery
               Range = 1
               Damage = 1
+              RecoveryTicks = 20
               AreaShape = None }
 
     let private axisGap firstStart firstSize secondStart secondSize =
@@ -367,6 +572,18 @@ module MapEditorSimulator =
         max
             (axisGap first.Column first.Size second.Column second.Size)
             (axisGap first.Row first.Size second.Row second.Size)
+
+    let private nearestHostile (unit: EditorUnit) (map: MapDefinition) =
+        map.Units
+        |> Map.toSeq
+        |> Seq.map snd
+        |> Seq.filter (fun (other: EditorUnit) ->
+            other.Id <> unit.Id
+            && other.Side <> unit.Side
+            && other.Health > 0)
+        |> Seq.sortBy (fun (other: EditorUnit) ->
+            footprintDistance unit other, other.Id)
+        |> Seq.tryHead
 
     let private deliveryLabel delivery =
         match delivery with
@@ -388,7 +605,7 @@ module MapEditorSimulator =
               CellRow = target.Row + target.Size / 2 }
         let mutable previous = origin
         let mutable clear = true
-        for cell in route origin destination do
+        for cell in directRoute origin destination do
             if clear then
                 let columnDelta = cell.CellColumn - previous.CellColumn
                 let rowDelta = cell.CellRow - previous.CellRow
@@ -416,89 +633,289 @@ module MapEditorSimulator =
                 previous <- cell
         clear
 
+    let movementProfileFor (unit: EditorUnit) =
+        let speed =
+            match unit.ClassId.Trim().ToLowerInvariant() with
+            | "goblin" -> 2000
+            | "rifleman" -> 1500
+            | "orc" -> 1200
+            | "troll" -> 1000
+            | "observation-drone" -> 3000
+            | _ -> 1500
+        { SpeedMillimetersPerSecond = speed
+          CellMillimeters = CellMillimeters }
+
+    let private canAttack
+        (attacker: EditorUnit)
+        (target: EditorUnit)
+        profile
+        map
+        =
+        footprintDistance attacker target <= profile.Range
+        &&
+        match profile.Delivery with
+        | ProjectileDelivery -> projectilePathClear attacker target map
+        | _ -> true
+
+    let private routeToAttackPosition
+        (unit: EditorUnit)
+        (target: EditorUnit)
+        profile
+        map
+        =
+        match
+            findPathTo
+                map
+                unit
+                (fun candidate -> canAttack candidate target profile map)
+                (fun _ -> 0)
+        with
+        | Some route -> Some route
+        | None ->
+            findClosestPath
+                map
+                unit
+                (fun candidate -> footprintDistance candidate target)
+            |> function
+                | [] -> None
+                | route -> Some route
+
     let private step handoff =
         let mutable map = handoff.RuntimeMap
+        let mutable credits = handoff.MovementCreditsMillimeters
+        let mutable movementProgress = handoff.MovementProgress
+        let mutable intents = handoff.MovementIntents
+        let mutable plannedRoutes = handoff.PlannedRoutes
+        let mutable attackRecovery = handoff.AttackRecoveryTicks
         let events = ResizeArray<string>()
         let combatEvents = ResizeArray<SimulatorCombatEvent>()
+
+        let availableCredit unit =
+            let profile = movementProfileFor unit
+            let earned = profile.SpeedMillimetersPerSecond / TicksPerSecond
+            let current =
+                Map.tryFind unit.Id credits |> Option.defaultValue 0
+            let available =
+                min MaximumMovementCreditMillimeters (current + earned)
+            credits <- Map.add unit.Id available credits
+            available
+
+        let attemptMove unit destination verb =
+            let origin =
+                { CellColumn = unit.Column
+                  CellRow = unit.Row }
+            let required = movementCost map unit origin destination
+            let available =
+                Map.tryFind unit.Id credits |> Option.defaultValue 0
+            match movementCollision map unit destination with
+            | RouteClear when available < required ->
+                movementProgress <-
+                    Map.add
+                        unit.Id
+                        { Origin = origin
+                          Destination = destination
+                          ProgressMillimeters = available
+                          CostMillimeters = required }
+                        movementProgress
+                events.Add(
+                    "Unit "
+                    + string unit.Id
+                    + " prepares to move "
+                    + verb
+                    + " ("
+                    + string available
+                    + "/"
+                    + string required
+                    + " mm)."
+                )
+                false, false
+            | RouteClear ->
+                    let moved =
+                        { unit with
+                            Column = destination.CellColumn
+                            Row = destination.CellRow }
+                    map <- { map with Units = Map.add unit.Id moved map.Units }
+                    credits <- Map.add unit.Id (available - required) credits
+                    movementProgress <- Map.remove unit.Id movementProgress
+                    events.Add(
+                        "Unit "
+                        + string unit.Id
+                        + " moves "
+                        + verb
+                        + " by "
+                        + string (stepDistance origin destination)
+                        + " mm, spending "
+                        + string required
+                        + " mm of movement credit."
+                    )
+                    true, true
+            | collision ->
+                movementProgress <- Map.remove unit.Id movementProgress
+                events.Add(
+                    "Unit "
+                    + string unit.Id
+                    + " cannot move "
+                    + verb
+                    + ": "
+                    + string collision
+                    + "."
+                )
+                false, true
+
         for id in handoff.RuntimeMap.Units |> Map.toSeq |> Seq.map fst |> Seq.sort do
             match Map.tryFind id map.Units with
             | Some unit when unit.Health > 0 ->
+                availableCredit unit |> ignore
+                let recovery =
+                    Map.tryFind id attackRecovery
+                    |> Option.defaultValue 0
+                    |> fun ticks -> max 0 (ticks - 1)
+                attackRecovery <-
+                    if recovery = 0 then
+                        Map.remove id attackRecovery
+                    else
+                        Map.add id recovery attackRecovery
                 match unit.Controller with
                 | Manual ->
-                    events.Add("Unit " + string id + " awaits manual input.")
+                    match Map.tryFind id plannedRoutes with
+                    | Some(next :: remaining) ->
+                        let moved, resolved =
+                            attemptMove unit next "along its planned route"
+                        if resolved then
+                            plannedRoutes <-
+                                if moved && not (List.isEmpty remaining) then
+                                    Map.add id remaining plannedRoutes
+                                else
+                                    Map.remove id plannedRoutes
+                    | _ ->
+                        plannedRoutes <- Map.remove id plannedRoutes
+                        match Map.tryFind id intents with
+                        | Some direction ->
+                            let columnDelta, rowDelta = directionDelta direction
+                            let destination =
+                                { CellColumn = unit.Column + int32 columnDelta
+                                  CellRow = unit.Row + int32 rowDelta }
+                            let _, resolved =
+                                attemptMove unit destination (directionCode direction)
+                            if resolved then
+                                intents <- Map.remove id intents
+                        | None ->
+                            movementProgress <- Map.remove id movementProgress
+                            events.Add("Unit " + string id + " awaits manual input.")
                 | Scripted when List.isEmpty unit.Script ->
+                    movementProgress <- Map.remove id movementProgress
                     events.Add("Unit " + string id + " has no script.")
                 | Scripted ->
                     let direction = unit.Script[unit.ScriptIndex % unit.Script.Length]
-                    let nextMap, changed = moveUnit direction unit map
-                    let advanced =
-                        Map.find id nextMap.Units
-                        |> fun moved ->
-                            { moved with ScriptIndex = unit.ScriptIndex + 1 }
-                    map <- { nextMap with Units = Map.add id advanced nextMap.Units }
-                    events.Add(
-                        "Unit "
-                        + string id
-                        + (if changed then " follows " else " is blocked moving ")
-                        + directionCode direction
-                        + "."
-                    )
+                    let columnDelta, rowDelta = directionDelta direction
+                    let destination =
+                        { CellColumn = unit.Column + int32 columnDelta
+                          CellRow = unit.Row + int32 rowDelta }
+                    let _, resolved =
+                        attemptMove unit destination ("script " + directionCode direction)
+                    if resolved then
+                        let current = Map.find id map.Units
+                        map <-
+                            { map with
+                                Units =
+                                    Map.add
+                                        id
+                                        { current with
+                                            ScriptIndex = unit.ScriptIndex + 1 }
+                                        map.Units }
                 | General ->
-                    match nearestHostile unit map with
-                    | None -> events.Add("Unit " + string id + " holds; no hostile is present.")
-                    | Some target ->
-                        let columnDelta = target.Column - unit.Column
-                        let rowDelta = target.Row - unit.Row
-                        let profile = attackProfileFor unit
-                        let inRange =
-                            footprintDistance unit target <= profile.Range
-                        let deliveryClear =
-                            match profile.Delivery with
-                            | ProjectileDelivery ->
-                                projectilePathClear unit target map
-                            | _ -> true
-                        if inRange && deliveryClear then
-                            let damaged =
-                                { target with
-                                    Health = max 0 (target.Health - profile.Damage) }
-                            map <- { map with Units = Map.add target.Id damaged map.Units }
-                            let summary =
-                                "Unit "
-                                + string id
-                                + " makes a "
-                                + deliveryLabel profile.Delivery
-                                + " attack against unit "
-                                + string target.Id
-                                + " for "
-                                + string profile.Damage
-                                + " damage."
-                            events.Add summary
-                            combatEvents.Add(
-                                { SourceUnitId = id
-                                  Target = UnitCombatTarget target.Id
-                                  Delivery = profile.Delivery
-                                  Damage = profile.Damage
-                                  Summary = summary }
-                            )
-                        else
-                            match directionForDelta columnDelta rowDelta with
-                            | None -> events.Add("Unit " + string id + " holds.")
-                            | Some direction ->
-                                let nextMap, changed = moveUnit direction unit map
-                                map <- nextMap
-                                events.Add(
-                                    "Unit "
-                                    + string id
-                                    + (if changed then " advances " else " cannot advance ")
-                                    + directionCode direction
-                                    + "."
-                                )
+                    let lockedDestination =
+                        Map.tryFind id movementProgress
+                        |> Option.bind (fun progress ->
+                            if
+                                progress.Origin.CellColumn = unit.Column
+                                && progress.Origin.CellRow = unit.Row
+                            then
+                                Some progress.Destination
+                            else
+                                None)
+                    match lockedDestination with
+                    | Some destination ->
+                        attemptMove
+                            unit
+                            destination
+                            "along its locked approach segment"
+                        |> ignore
+                    | None ->
+                        match nearestHostile unit map with
+                        | None ->
+                            movementProgress <- Map.remove id movementProgress
+                            events.Add("Unit " + string id + " holds; no hostile is present.")
+                        | Some target ->
+                            let profile = attackProfileFor unit
+                            if canAttack unit target profile map then
+                                movementProgress <- Map.remove id movementProgress
+                                if recovery > 0 then
+                                    events.Add(
+                                        "Unit "
+                                        + string id
+                                        + " recovers from its attack for "
+                                        + string recovery
+                                        + " more ticks."
+                                    )
+                                else
+                                    let damaged =
+                                        { target with
+                                            Health = max 0 (target.Health - profile.Damage) }
+                                    map <- { map with Units = Map.add target.Id damaged map.Units }
+                                    attackRecovery <-
+                                        Map.add id profile.RecoveryTicks attackRecovery
+                                    let summary =
+                                        "Unit "
+                                        + string id
+                                        + " makes a "
+                                        + deliveryLabel profile.Delivery
+                                        + " attack against unit "
+                                        + string target.Id
+                                        + " for "
+                                        + string profile.Damage
+                                        + " damage."
+                                    events.Add summary
+                                    combatEvents.Add(
+                                        { Tick = handoff.Tick + 1
+                                          SourceUnitId = id
+                                          Target = UnitCombatTarget target.Id
+                                          Delivery = profile.Delivery
+                                          Damage = profile.Damage
+                                          Summary = summary }
+                                    )
+                            else
+                                match routeToAttackPosition unit target profile map with
+                                | Some(next :: _) ->
+                                    attemptMove unit next "toward its attack position"
+                                    |> ignore
+                                | _ ->
+                                    movementProgress <- Map.remove id movementProgress
+                                    events.Add(
+                                        "Unit "
+                                        + string id
+                                        + " holds; no collision-free approach exists toward unit "
+                                        + string target.Id
+                                        + "."
+                                    )
             | _ -> ()
+        let nextTick = handoff.Tick + 1
+        let recentCombatEvents =
+            handoff.LastCombatEvents
+            |> List.filter (fun combat ->
+                nextTick - combat.Tick <= 5)
+            |> fun retained ->
+                List.append retained (List.ofSeq combatEvents)
         { handoff with
             RuntimeMap = map
-            Tick = handoff.Tick + 1
+            Tick = nextTick
             LastEvents = List.ofSeq events
-            LastCombatEvents = List.ofSeq combatEvents
+            LastCombatEvents = recentCombatEvents
+            AttackRecoveryTicks = attackRecovery
+            MovementCreditsMillimeters = credits
+            MovementProgress = movementProgress
+            MovementIntents = intents
+            PlannedRoutes = plannedRoutes
             PreviewDestination = None }
 
     let update action selectedUnitId handoff =
@@ -521,15 +938,18 @@ module MapEditorSimulator =
             selectedUnitId
             |> Option.bind (fun id -> Map.tryFind id handoff.RuntimeMap.Units)
             |> Option.map (fun unit ->
-                let map, changed = moveUnit direction unit handoff.RuntimeMap
                 { handoff with
-                    RuntimeMap = map
+                    MovementIntents =
+                        Map.add unit.Id direction handoff.MovementIntents
+                    MovementProgress =
+                        Map.remove unit.Id handoff.MovementProgress
+                    PlannedRoutes = Map.remove unit.Id handoff.PlannedRoutes
                     LastEvents =
                         [ "Unit "
                           + string unit.Id
-                          + (if changed then " moves " else " is blocked moving ")
+                          + " receives movement intent "
                           + directionCode direction
-                          + "." ]
+                          + "; advance simulation time to resolve it." ]
                     LastCombatEvents = []
                     PreviewDestination = None })
             |> Option.defaultValue handoff
@@ -568,22 +988,26 @@ module MapEditorSimulator =
                 | Some routePreview
                     when routePreview.Collision = RouteClear
                          && routePreview.Route.Length > 0 ->
-                    let unit = Map.find routePreview.UnitId handoff.RuntimeMap.Units
-                    let moved =
-                        { unit with
-                            Column = destination.CellColumn
-                            Row = destination.CellRow }
                     { handoff with
-                        RuntimeMap =
-                            { handoff.RuntimeMap with
-                                Units =
-                                    Map.add moved.Id moved handoff.RuntimeMap.Units }
+                        PlannedRoutes =
+                            Map.add
+                                routePreview.UnitId
+                                (Array.toList routePreview.Route)
+                                handoff.PlannedRoutes
+                        MovementIntents =
+                            Map.remove routePreview.UnitId handoff.MovementIntents
+                        MovementProgress =
+                            Map.remove routePreview.UnitId handoff.MovementProgress
                         LastEvents =
                             [ "Unit "
-                              + string moved.Id
-                              + " moves "
+                              + string routePreview.UnitId
+                              + " accepts a "
                               + string routePreview.Distance
-                              + " cells along the accepted preview route." ]
+                              + "-step, "
+                              + string routePreview.DistanceMillimeters
+                              + " mm path costing "
+                              + string routePreview.MovementCostMillimeters
+                              + " mm of movement credit; advance simulation time to move." ]
                         LastCombatEvents = []
                         PreviewDestination = None }
                 | Some routePreview ->
@@ -592,6 +1016,24 @@ module MapEditorSimulator =
                             [ "Preview route rejected: " + string routePreview.Collision + "." ]
                         LastCombatEvents = [] }
                 | None -> handoff
+
+    let presentationOffsets handoff =
+        handoff.MovementProgress
+        |> Map.map (fun _ progress ->
+            let fraction =
+                float progress.ProgressMillimeters
+                / float (max 1 progress.CostMillimeters)
+                |> min 1.0
+            float (
+                progress.Destination.CellColumn
+                - progress.Origin.CellColumn
+            )
+            * fraction,
+            float (
+                progress.Destination.CellRow
+                - progress.Origin.CellRow
+            )
+            * fraction)
 
     let frame selectedUnitId handoff =
         let state =
@@ -606,41 +1048,64 @@ module MapEditorSimulator =
                 IsRunning = handoff.IsRunning
                 LastEvents = handoff.LastEvents }
         let baseFrame = MapEditor.frame state
-        let overlay =
+        let routeOverlay kind unitId origin route label =
+            { Id = "simulator-route-preview"
+              Kind = kind
+              Scope = SelectedUnitOverlay unitId
+              GeometryRevision = int32 (handoff.Revision.Number % int64 Int32.MaxValue)
+              Points =
+                Array.append
+                    [| float origin.CellColumn + 0.5
+                       float origin.CellRow + 0.5 |]
+                    (route
+                     |> Array.collect (fun address ->
+                         [| float address.CellColumn + 0.5
+                            float address.CellRow + 0.5 |]))
+              Label = Disclosed label }
+        let previewOverlay =
             handoff.PreviewDestination
             |> Option.bind (fun destination -> preview selectedUnitId destination handoff)
             |> Option.map (fun routePreview ->
-                { Id = "simulator-route-preview"
-                  Kind =
+                let kind =
                     if routePreview.Collision = RouteClear then
                         "route-preview-clear"
                     else
                         "route-preview-collision"
-                  Scope = SelectedUnitOverlay routePreview.UnitId
-                  GeometryRevision = int32 (handoff.Revision.Number % int64 Int32.MaxValue)
-                  Points =
-                    Array.append
-                        [| float routePreview.Origin.CellColumn + 0.5
-                           float routePreview.Origin.CellRow + 0.5 |]
-                        (routePreview.Route
-                         |> Array.collect (fun address ->
-                             [| float address.CellColumn + 0.5
-                                float address.CellRow + 0.5 |]))
-                  Label =
-                    Disclosed(
-                        "Route "
-                        + string routePreview.Distance
-                        + " cells; "
-                        + (if routePreview.Collision = RouteClear then
-                               "clear"
-                           else
-                               "collision: " + string routePreview.Collision)
-                    ) })
+                routeOverlay
+                    kind
+                    routePreview.UnitId
+                    routePreview.Origin
+                    routePreview.Route
+                    ("Route "
+                     + string routePreview.Distance
+                     + " steps; "
+                     + (if routePreview.Collision = RouteClear then
+                            "clear"
+                        else
+                            "collision: " + string routePreview.Collision)))
+        let plannedOverlay =
+            selectedUnitId
+            |> Option.bind (fun unitId ->
+                Map.tryFind unitId handoff.PlannedRoutes
+                |> Option.bind (fun route ->
+                    Map.tryFind unitId handoff.RuntimeMap.Units
+                    |> Option.map (fun unit ->
+                        let origin =
+                            { CellColumn = unit.Column
+                              CellRow = unit.Row }
+                        routeOverlay
+                            "route-planned"
+                            unitId
+                            origin
+                            (List.toArray route)
+                            ("Queued path with "
+                             + string route.Length
+                             + " remaining steps."))))
         let combatEvents =
             handoff.LastCombatEvents
             |> List.mapi (fun index combat ->
-                { Id = handoff.Tick * 1000 + 500 + int32 index
-                  Tick = handoff.Tick
+                { Id = combat.Tick * 1000 + 500 + int32 index
+                  Tick = combat.Tick
                   Kind =
                     match combat.Delivery with
                     | MeleeDelivery -> "combat-melee"
@@ -665,7 +1130,10 @@ module MapEditorSimulator =
                 | Disclosed summary -> not (Set.contains summary combatSummaries)
                 | _ -> true)
         { baseFrame with
-            Overlays = overlay |> Option.toArray
+            Overlays =
+                previewOverlay
+                |> Option.orElse plannedOverlay
+                |> Option.toArray
             Events = Array.append narrativeEvents combatEvents }
 
     let viewState selectedUnitId handoff =
