@@ -32,6 +32,9 @@ type PlanningRosterMember =
     { UnitId: int32
       Name: string
       Side: string
+      Role: string
+      Equipment: string array
+      CapabilityIds: string array
       Column: int32
       Row: int32 }
 
@@ -188,9 +191,15 @@ module PlanningWorkspace =
             units
             |> Seq.sortBy _.Id
             |> Seq.map (fun unit ->
+                let loadout =
+                    HumanCapabilities.defaultLoadout unit.Id unit.ClassId
+
                 { UnitId = unit.Id
                   Name = unit.ClassId + " " + string unit.Id
                   Side = string unit.Side
+                  Role = loadout.Role
+                  Equipment = loadout.Equipment
+                  CapabilityIds = loadout.CapabilityIds
                   Column = unit.Column
                   Row = unit.Row })
             |> Seq.toArray
@@ -254,7 +263,26 @@ module PlanningWorkspace =
         | SetPlanningStance value -> append (PlannedStance value) state
         | AddPlanningHold -> append PlannedHold state
         | AddPlanningEngagement(target, capability) ->
-            append (PlannedEngagement(target, capability)) state
+            let updated = append (PlannedEngagement(target, capability)) state
+            match
+                state.SelectedUnit
+                |> Option.bind (fun unitId ->
+                    state.Roster
+                    |> Array.tryFind (fun unit -> unit.UnitId = unitId))
+            with
+            | Some unit when not (Array.contains capability unit.CapabilityIds) ->
+                { updated with
+                    Issues =
+                        [| { Code = "SIR.PLAN.CAPABILITY.NOT_IN_LOADOUT"
+                             CommandId = updated.SelectedCommand
+                             UnitId = Some unit.UnitId
+                             Detail =
+                                 capability
+                                 + " is not present in "
+                                 + unit.Name
+                                 + "'s explicit loadout." } |]
+                    FocusedIssue = Some 0 }
+            | _ -> updated
         | AddPlanningSynchronization(marker, deadline) ->
             append (PlannedSynchronization(marker, deadline)) state
         | RemoveSelectedPlanningCommand ->
@@ -304,6 +332,20 @@ module PlanningWorkspace =
           Tick = tick }
 
     let planTransport (state: PlanningWorkspaceState) =
+        let loadouts =
+            state.Roster
+            |> Array.sortBy _.UnitId
+            |> Array.map (fun unit ->
+                "loadout|"
+                + string unit.UnitId
+                + "|"
+                + unit.Role
+                + "|"
+                + String.concat "," unit.Equipment
+                + "|"
+                + String.concat "," unit.CapabilityIds)
+            |> String.concat "\n"
+
         let document =
             "SIR-PLAN 1\n"
             + "workspace|"
@@ -311,6 +353,8 @@ module PlanningWorkspace =
             + "|"
             + string state.Revision
             + "\n"
+            + loadouts
+            + (if String.IsNullOrEmpty loadouts then "" else "\n")
             + canonicalText state.Commands
 
         { EncodedDocument = Encoding.UTF8.GetBytes document
@@ -380,20 +424,34 @@ module PlanningWorkspace =
         && envelope.Correlation.PlanRevision = state.Revision
 
     let reviewArtifact (state: PlanningWorkspaceState) =
+        let loadouts =
+            state.Roster
+            |> Array.sortBy _.UnitId
+            |> Array.map (fun unit ->
+                "loadout|"
+                + string unit.UnitId
+                + "|"
+                + unit.Role
+                + "|"
+                + String.concat "," unit.Equipment
+                + "|"
+                + String.concat "," unit.CapabilityIds)
+
         String.concat
             "\n"
-            [ "SIR-PLANNING-REVIEW 1"
-              "map|" + state.MapRevision
-              "authored|" + string state.Revision + "|" + state.Digest
-              "predicted|"
-              + (state.Predicted
-                 |> Option.map (fun value -> string value.Revision + "|" + string value.Label)
-                 |> Option.defaultValue "-")
-              "accepted|" + (state.AcceptedRevision |> Option.map string |> Option.defaultValue "-")
-              "committed|"
-              + (match state.CommittedRevision, state.CommittedTick with
-                 | Some revision, Some tick -> string revision + "|" + string tick
-                 | _ -> "-")
-              "conflicts|" + string state.Issues.Length
-              canonicalText state.Commands ]
+            ([ "SIR-PLANNING-REVIEW 1"
+               ("map|" + state.MapRevision)
+               ("authored|" + string state.Revision + "|" + state.Digest)
+               ("predicted|"
+                + (state.Predicted
+                   |> Option.map (fun value -> string value.Revision + "|" + string value.Label)
+                   |> Option.defaultValue "-"))
+               ("accepted|" + (state.AcceptedRevision |> Option.map string |> Option.defaultValue "-"))
+               ("committed|"
+                + (match state.CommittedRevision, state.CommittedTick with
+                   | Some revision, Some tick -> string revision + "|" + string tick
+                   | _ -> "-"))
+               ("conflicts|" + string state.Issues.Length) ]
+             @ Array.toList loadouts
+             @ [ canonicalText state.Commands ])
         + "\n"

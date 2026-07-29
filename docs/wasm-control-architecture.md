@@ -228,6 +228,13 @@ a new privileged ABI function for every content item.
 A unit instance can inspect only capabilities currently available to that unit.
 Capability presence does not bypass server validation.
 
+The first implemented descriptor set is the seven-role ordinary-human weapon
+contract documented in
+[Human capability descriptors](human-capability-descriptors.md). Authored
+loadouts carry exact descriptor IDs; the shared executor applies targeting,
+traverse, preparation, ammunition, and interruption behind the existing
+generic requests. Arcane descriptors remain outside the accepted registry.
+
 ## Invocation cadence
 
 Every unit's instance is invoked **on every simulation tick** by default.

@@ -3,6 +3,7 @@
     <Compile Include="Substrate.fs" />
     <Compile Include="Simulation.fs" />
     <Compile Include="MapScale.fs" />
+    <Compile Include="CapabilityExecution.fs" />
     <Compile Include="Replay.fs" />
   </ItemGroup>
   <ItemGroup>

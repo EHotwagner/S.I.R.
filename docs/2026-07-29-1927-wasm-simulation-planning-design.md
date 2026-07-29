@@ -6,7 +6,7 @@ document-type: architecture-and-roadmap
 category: Engineering
 categoryindex: 6
 index: 15
-version: "0.9"
+version: "1.0"
 created: 2026-07-29T19:27:00+02:00
 last-updated: 2026-07-29
 description: Design and milestone roadmap for converging the simulator, planning interface, control ABI, and authoritative deterministic kernel.
@@ -902,7 +902,9 @@ Evidence:
   `SIR-PLAN 1` compilation and authoritative kernel prediction remain the
   Milestone 9 integration boundary.
 
-### [ ] ⬜ Milestone 8 — capability and roster integration
+### [x] 🟩 Milestone 8 — capability and roster integration
+
+Status: implemented on 2026-07-29.
 
 - attach explicit loadouts and capability descriptors to authored units;
 - execute the seven prototype human weapon roles through generic capability
@@ -917,6 +919,26 @@ Exit gate:
 - each weapon role changes a planning or positional decision;
 - no weapon requires a new ABI request kind or fourth direction; and
 - point and area engagements reproduce across replay verification.
+
+Evidence:
+
+- descriptor set `sir.human-weapons` version 1 defines exactly seven explicit
+  ordinary-human loadouts with distinct point/area target contracts,
+  preparation, traverse, range, ammunition, interruption, and planning
+  decisions; no implicit human weapon is assigned to unknown or arcane units;
+- planner transport, diagnostics, inspector, roster, and the deterministic
+  review artifact expose exact role, equipment, and capability identities, and
+  reject engagement capabilities absent from the authored loadout;
+- the shared capability executor aligns the existing eight-way attention
+  authority, advances traverse and preparation, consumes descriptor-owned
+  ammunition, and applies lost or preserved preparation on interruption;
+- all seven roles resolve through generic `SetEngagement`, `SetAttention`, and
+  `CancelAction` requests; Control ABI v1 remains twelve request kinds and
+  retains only movement, body-facing, and attention direction authorities; and
+- native qualification reproduces 32 point/area replay frames with target-aware
+  state identities. The 200-unit planner authors 206 commands in 79.091 ms and
+  emits a repeatable 16,306-byte review artifact. The complete live vertical
+  slice remains Milestone 9.
 
 ### [ ] ⬜ Milestone 9 — end-to-end qualification and live integration
 

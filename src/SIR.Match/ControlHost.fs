@@ -586,6 +586,11 @@ module ControlHost =
                     Ok()
                 else
                     Error ControlFailure.MalformedOutput
+            | RequestKind.SetEngagement
+            | RequestKind.CancelAction ->
+                match CapabilityExecution.validateRequest request with
+                | Ok() -> Ok()
+                | Error _ -> Error ControlFailure.MalformedOutput
             | _ -> Ok()
 
     let private journal
@@ -760,3 +765,14 @@ module ControlHost =
                 { state with
                     Units = Map.add unitId updatedUnit state.Units
                     MovementIntents = movementIntents }
+
+    /// Applies atomically validated generic capability requests for one kernel tick.
+    let applyToCapabilities
+        (state: CapabilityExecutionState)
+        (outputs: (int32 * Request list) list)
+        =
+        outputs
+        |> List.collect (fun (unitId, requests) ->
+            requests
+            |> List.map (fun request -> unitId, request))
+        |> CapabilityExecution.runTick state
