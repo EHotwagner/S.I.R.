@@ -408,5 +408,166 @@ let main _ =
             = SandboxDerived forkReport.Comparison.Fork.ResultIdentity)
         "The worker experiment did not replace the comparison with a derived result."
 
-    printfn "Elmish and laboratory tests passed: deterministic update, modes, bounded worker batches, compact progress, failure revocation, immutable baseline, typed validation, deterministic sweep, reproducible fixture export, sandbox, stale responses, and cancellation."
+    let extent =
+        CellExtent.tryCreate 1
+        |> Option.defaultWith (fun () -> failwith "A one-cell extent was rejected.")
+
+    let heading =
+        HeadingRadians.tryCreate (-Math.PI / 2.0)
+        |> Option.defaultWith (fun () -> failwith "A finite heading was rejected.")
+
+    let health =
+        HealthVisual.tryCreate 75 100
+        |> Option.defaultWith (fun () -> failwith "Valid health was rejected.")
+
+    require
+        (HeadingRadians.value heading >= 0.0
+         && HeadingRadians.value heading < Math.PI * 2.0
+         && HeadingRadians.tryCreate Double.NaN = None
+         && CellExtent.tryCreate 0 = None
+         && HealthVisual.tryCreate 101 100 = None)
+        "Presentation contract constraints accepted invalid values."
+
+    let renderFrame: RenderFrame =
+        { Tick = 7
+          Board =
+            { MinimumColumn = 0
+              MinimumRow = 0
+              MaximumColumn = 10
+              MaximumRow = 8 }
+          Units =
+            [| { Id = 42
+                 AnchorColumn = 3
+                 AnchorRow = 4
+                 FootprintWidth = extent
+                 FootprintDepth = extent
+                 ClassId = UnitClassId.resolve "rifleman"
+                 Faction = Human
+                 Health = Disclosed health
+                 Level = NotPresent
+                 StanceId = NotApplicable
+                 BodyHeading = Disclosed heading
+                 SecondaryHeading = ExplicitlyUnknown
+                 ShortLabel = Disclosed "Bravo 6"
+                 StatusIds = [| "suppressed" |] } |]
+          Edges =
+            [| { Id = "edge-1"
+                 Kind = "door"
+                 State = "open"
+                 StartColumn = 2
+                 StartRow = 2
+                 EndColumn = 3
+                 EndRow = 2 } |]
+          Overlays =
+            [| { Id = "overlay-1"
+                 Kind = "visible-polygon"
+                 GeometryRevision = 2
+                 Points = [| 1.0; 2.0; 3.0; 4.0 |]
+                 Label = NotPresent } |]
+          Events =
+            [| { Id = 9
+                 Kind = "observation"
+                 SourceUnitId = Disclosed 42
+                 TargetUnitId = ExplicitlyUnknown
+                 Summary = NotPresent } |]
+          Disclosure = PerspectiveDisclosure }
+
+    let renderTransport = RenderFrameTransport.toTransport renderFrame
+    let renderRoundTrip = RenderFrameTransport.fromTransport renderTransport
+    require
+        (renderRoundTrip = renderFrame)
+        "The render frame did not survive its structured-clone transport."
+
+    let malformedDisclosure =
+        { renderTransport with
+            Units =
+                [| { renderTransport.Units[0] with
+                         LevelKind = 0
+                         Level = Some 0 } |] }
+
+    require
+        (try
+             RenderFrameTransport.fromTransport malformedDisclosure |> ignore
+             false
+         with :? ArgumentException ->
+             true)
+        "An ambiguous disclosure tag/value pair was silently defaulted."
+
+    let expectedCatalogIds =
+        [| "rifleman"
+           "gunner"
+           "marksman"
+           "engineer"
+           "medic"
+           "signaller"
+           "observation-drone"
+           "relay-drone"
+           "goblin"
+           "orc"
+           "troll"
+           "senior-caster"
+           "magical-assistant"
+           "ambient-critter" |]
+
+    let actualCatalogIds =
+        UnitGlyphCatalog.all
+        |> Array.map (fun glyph -> UnitClassId.value glyph.Id)
+
+    require
+        (Set.ofArray actualCatalogIds = Set.ofArray expectedCatalogIds
+         && actualCatalogIds.Length = (Set.ofArray actualCatalogIds).Count)
+        "The initial exact-class inventory is missing or has duplicate glyphs."
+    require
+        (UnitGlyphCatalog.all
+         |> Array.forall (fun glyph ->
+             not (String.IsNullOrWhiteSpace glyph.Description)
+             && not (String.IsNullOrWhiteSpace glyph.TextAlternative)
+             && not (Array.isEmpty glyph.Primitives)))
+        "A catalog glyph lacks geometry or an accessibility description."
+    require
+        (UnitClassId.resolve "replay-supplied-markup" = UnitClassId.placeholder
+         && UnitGlyphCatalog.resolve (UnitClassId.resolve "replay-supplied-markup")
+            = UnitGlyphCatalog.placeholder
+         && not (Array.contains "unknown-unit" actualCatalogIds))
+        "Unknown class input did not resolve to the distinct safe placeholder."
+
+    let documentedRoleCatalogIds =
+        RulesCatalog.unitRoles
+        |> List.map (fun role ->
+            match role.Name with
+            | "Senior caster" -> "senior-caster"
+            | "Magical assistant" -> "magical-assistant"
+            | name -> name.ToLowerInvariant())
+        |> Set.ofList
+
+    require
+        (Set.isSubset documentedRoleCatalogIds (Set.ofArray actualCatalogIds))
+        "A documented unit role has no exact-class catalog entry."
+
+    let paletteIds =
+        ReplayPalettes.all
+        |> Array.map _.Id
+        |> Set.ofArray
+
+    let expectedPaletteIds =
+        Set.ofArray
+            [| "accessible-default"
+               "high-contrast"
+               "monochrome-pattern" |]
+
+    let palettesAreComplete =
+        ReplayPalettes.all
+        |> Array.forall (fun palette ->
+            palette.UsesPatterns
+            && palette.OverlayPatterns.Length >= 4
+            && not (String.IsNullOrWhiteSpace palette.Focus))
+
+    require
+        (paletteIds = expectedPaletteIds
+         && palettesAreComplete
+         && ReplayPalettes.monochromePattern.HumanFaction
+            = ReplayPalettes.monochromePattern.ArcaneFaction)
+        "The required accessible palette token sets are incomplete."
+
+    printfn "Elmish, laboratory, render-contract, glyph-catalog, and palette tests passed: deterministic update, modes, bounded worker batches, compact progress, failure revocation, immutable baseline, typed validation, deterministic sweep, reproducible fixture export, sandbox, stale responses, cancellation, disclosure-safe transport, complete initial class coverage, safe placeholder, and three accessible palette modes."
     0
