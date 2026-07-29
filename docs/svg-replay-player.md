@@ -27,8 +27,9 @@ a committed, bounded, disclosure-preserving `RenderFrame`; it does not read
 authoritative simulation records, infer state from pixels, retain a lost
 contact, or treat interpolation as evidence.
 
-An authoritative footprint and a square information symbol remain separate
-geometries. The square's fixed channels are faction outline, exact-class
+An authoritative footprint and a fitted square information symbol remain
+separate geometries. The symbol follows the base's square size with a
+consistent inset. Its fixed channels are faction outline, exact-class
 glyph, health track, body-facing perimeter mark, optional centre-out secondary
 heading, elevation stack, and disclosed close-zoom details. Attention and
 line-of-sight geometry remain ground overlays and never reuse a heading mark.
@@ -38,11 +39,12 @@ line-of-sight geometry remain ground overlays and never reuse a heading mark.
 The SVG renderer belongs only to generated documentation, interactive
 explanations, replay inspection, and non-authoritative simulation evidence.
 The production game client remains a separate Babylon.js renderer. It shares
-game facts and disclosure rules, but it is not required to use SVG, a top-down
-camera, the square-symbol geometry, DOM structure, semantic zoom thresholds,
-or documentation palette tokens. Conversely, the documentation renderer may
-not import Babylon scene state or become a compatibility test for production
-pixels.
+game facts, disclosure rules, and the canonical relationship between an
+`N×N` square base and its uniformly scaled, base-fitted square information
+symbol. It is not required to use SVG, a top-down camera, DOM structure,
+semantic zoom thresholds, or documentation palette tokens. Conversely, the
+documentation renderer may not import Babylon scene state or become a
+compatibility test for production pixels.
 
 The shared contract stops at typed, legitimately disclosed presentation facts:
 entity identity, footprint, exact class, faction, condition, headings, level,
@@ -53,7 +55,7 @@ its own safe mapping from those facts to its presentation technology.
 
 The executable contract lives in `SIR.Client`:
 
-- `UnitVisual` separates footprint from the fixed square glyph facts.
+- `UnitVisual` separates the square footprint from its fitted square glyph facts.
 - `RenderFrame` is independently drawable at one committed tick.
 - `Disclosure<'T>` distinguishes `NotPresent`, `NotApplicable`,
   `ExplicitlyUnknown`, and `Disclosed value`. No optional presentation field
@@ -108,7 +110,7 @@ built into the client and replay input can select only a known ID.
 | Objectives | objective area, location, disclosed state/progress | ground decal/area and inspector; absent when not communicated |
 | Semantic edges | wall, low wall, door, window, fence, rail | edge geometry with state-specific form; no color-only state |
 | Unit ground facts | occupied footprint, selection, hover, focus | exact outline and outside brackets/halo |
-| Unit symbol | faction, class, health, body facing, secondary heading, elevation, stance, status, identity | fixed square channels; only disclosed fields |
+| Unit symbol | faction, class, health, body facing, secondary heading, elevation, stance, status, identity | base-fitted square with fixed channels; only disclosed fields |
 | Movement | route, reservation, destination, formation station | toggleable ground overlays |
 | Perception | exact visible polygon, attention sector/polygon, sensor coverage | selected-unit default; exact supplied geometry only |
 | Command | communication link, delivery delay, referent, objective belief | toggleable links/areas; knowledge-filtered |

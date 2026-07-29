@@ -32,13 +32,14 @@ inspection projections from the existing replay worker. The battlefield is a
 flat, top-down square grid. This deliberately avoids introducing simulated 3D
 into explanations and lets the same symbol catalog serve interactive playback,
 static diagrams, and exported documentation evidence. The production game
-client is a separate Babylon.js surface and is not constrained to reproduce
-this renderer.
+client is a separate Babylon.js surface: it need not reproduce this renderer's
+technology or pixels, but it shares the canonical base-fitted square-symbol
+relationship.
 
-Every unit uses a square symbol even when its authoritative footprint covers a
-different shape or area. The footprint remains a separate ground outline; the
-symbol never stretches to impersonate occupancy. The square carries a fixed
-information grammar:
+Every unit uses a square symbol fitted to its authoritative `N×N` square base
+with a consistent inset. The footprint remains a separate authoritative ground
+outline; the symbol scales uniformly to communicate its size without replacing
+occupancy. The square carries a fixed information grammar:
 
 - the central glyph identifies the exact class;
 - an outer outline identifies faction;
@@ -255,13 +256,14 @@ Every unit visual combines two independent geometries:
 
 - an authoritative ground outline whose width and depth come only from
   occupancy; and
-- one square information symbol centred on the footprint's canonical anchor.
+- one square information symbol fitted inside that base with a consistent
+  inset.
 
-The information symbol remains square for one-cell, rectangular, and large
-units. A two-by-two monster therefore has one square class symbol over one
-unambiguous four-cell footprint, not four repeated glyphs or a stretched
-symbol. A selected unit receives an outside footprint halo, never a footprint
-or symbol size change.
+The information symbol remains square and scales uniformly with one-cell and
+large square bases. A two-by-two monster therefore has one larger square class
+symbol fitted to one unambiguous four-cell footprint, not four repeated glyphs.
+A selected unit receives an outside footprint halo, never a footprint or
+symbol size change.
 
 ### Square information hierarchy
 
@@ -297,7 +299,7 @@ grammars consume the result; they do not read raw simulation records.
 | confirmed/suspected | only if S.I.R. later adopts certainty | stroke treatment | not currently part of canonical presentation |
 | shield/armor state | corner mount | `Shield` | binary or ternary inspection channel |
 | speed/readiness tier | small pips only if tactically required | `Speed` beads | at most 4 ranked levels |
-| magnitude/footprint | separate authoritative ground outline | `R` | never inferred from symbol size |
+| magnitude/footprint | authoritative ground outline and fitted symbol size | `R` | footprint remains the source of truth |
 | threat | do not expose by default | `Threat` stroke width | only from legitimate projection data |
 | charge/progress | inset fill or arc when selected | `Charge` gradient | at most 4 ranked levels |
 | health/condition | 12 inset perimeter dashes | `Health` arc | fixed normalized segments |
@@ -684,7 +686,7 @@ At minimum, review boards include:
 - large footprints and mixed levels; and
 - reduced-motion and high-contrast modes.
 
-If the fixed square-symbol grammar cannot express a new essential fact, file a
+If the base-fitted square-symbol grammar cannot express a new essential fact, file a
 cross-repository request against the owning symbology contract or record a
 S.I.R. design decision. Do not smuggle a second meaning into an existing
 channel merely because it fits the linter's numeric capacity.
@@ -861,7 +863,7 @@ browser smoke, and accessibility gates passed.
 
 - [x] Implement the orthographic top-down projection, square grid, terrain,
   semantic edges, and authoritative footprint outlines.
-- [x] Implement the fixed square symbol with faction outline, exact-class
+- [x] Implement the base-fitted square symbol with faction outline, exact-class
   glyph, 12-segment health track, and perimeter facing wedge.
 - [x] Implement the corner elevation stack, capped `+N` detailed label, and
   detailed-zoom stance mark.
@@ -875,7 +877,7 @@ legibility review, all three palette reviews, and the 200-unit performance
 target.
 
 **Completed 2026-07-29:** the Fable documentation client renders a committed
-six-by-six tick-24 frame through the pure `Battlefield` projection and an
+eight-by-eight tick-24 frame through the pure `Battlefield` projection and an
 accessible Feliz SVG view. Pure and browser-DOM tests cover board-relative
 projection, semantic edges, independent footprints, all symbol channels,
 disclosure omission, semantic-zoom hysteresis, pointer/keyboard parity,
@@ -979,8 +981,8 @@ The first documentation-ready player is acceptable when:
 
 1. The battlefield remains flat and top-down at every supported camera
    rotation, without simulated camera elevation or 3D unit geometry.
-2. Every unit uses a square information symbol, while a separate ground
-   outline matches its authoritative footprint.
+2. Every unit uses a uniformly scaled square information symbol fitted to its
+   square base, while a separate ground outline remains authoritative.
 3. Exact class, faction, normalized health, and body facing remain readable at
    standard zoom.
 4. The perimeter facing wedge is unambiguous for the supported heading model
@@ -1045,7 +1047,7 @@ the exact elevation-stack drawing without changing these channel assignments.
 
 Proceed with Phase 0 and a small Phase 1 prototype containing:
 
-- one six-by-six top-down board;
+- one eight-by-eight top-down board;
 - blocking and open semantic edges;
 - eight square unit symbols spanning factions, exact classes, health,
   footprints, elevations, stances, and all eight facings;

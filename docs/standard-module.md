@@ -5,8 +5,8 @@ categoryindex: 6
 index: 15
 status: proposed
 document-type: living-design
-version: "0.2"
-last-updated: 2026-07-27
+version: "0.3"
+last-updated: 2026-07-29
 related:
   - docs/game-vision.md
   - docs/wasm-control-architecture.md
@@ -24,24 +24,24 @@ removed from the engine, that requirement moved onto the **standard module being
 configurable**, and it has since accumulated three further roles: the balance
 baseline, competence while disconnected, and continuous emission discipline.
 
-It is referenced in five documents and specified in none. This document defines
-how a player who writes no code commands a force.
+Several architecture documents rely on that baseline. This document centralizes
+the contract for how a player who writes no code commands a force.
 
 ## The constraint
 
 The accepted guardrail is explicit: an unrestricted visual-programming language
-in the canonical client "could turn pre-match preparation into programming
-homework," and what is wanted instead is "strong defaults, concise doctrine
-controls, and progressive disclosure."
+in the canonical client could turn pre-match preparation into programming
+homework. What is wanted instead is strong defaults, concise tactical controls,
+and progressive disclosure.
 
 So the target is not a friendlier way to write rules. It is a way to command
 that never looks like authoring rules at all.
 
 ## The unit of intent is a posture, assigned to a squad
 
-A player does not configure units, and does not write conditions. They assign
-each squad a **posture**: a named, coherent bundle of behaviour that reads as an
-order rather than a configuration.
+A player does not configure every unit independently, and does not write
+conditions. They assign each squad a **posture**: a named, coherent bundle of
+behaviour that reads as an order rather than a configuration.
 
 ```text
 2nd Squad     ADVANCE TO CONTACT      emission restricted

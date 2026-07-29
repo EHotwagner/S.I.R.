@@ -26,7 +26,7 @@ tier, and interpolation state.
 Review targets:
 
 - the one-cell and multi-cell square authoritative bases remain separate from
-  the fixed square information symbols;
+  square information symbols fitted with the same inset;
 - exact-class glyphs stay upright while the facing wedge moves around the
   perimeter;
 - twelve health positions, elevation stacks, detailed `+N`, and stance remain
@@ -47,7 +47,7 @@ the manifest for the same source state and toolchain.
 The three 768 × 768 PNGs were inspected at native size:
 
 - one-cell and 2 × 2 square base outlines remain visibly independent of their
-  fixed-size square information symbols;
+  base-fitted square information symbols;
 - all six class silhouettes remain recognizable and upright, including when
   their perimeter wedges point in different directions;
 - all twelve health positions can be counted. Active/depleted positions remain

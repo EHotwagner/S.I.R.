@@ -5,8 +5,8 @@ categoryindex: 1
 index: 3
 status: proposed
 document-type: living-vision
-version: "1.17"
-last-updated: 2026-07-28
+version: "1.18"
+last-updated: 2026-07-29
 ---
 
 # S.I.R. Game Vision
@@ -44,6 +44,11 @@ manual input from a human player. This permits tactical rules with sharper,
 more consequential outcomes than a conventional RTS can support through direct
 human control alone.
 
+In this document, **doctrine** in its ordinary military sense means a force's
+learned practice and tactical philosophy. It never names an engine subsystem.
+The retired standing-doctrine rule engine has been replaced by per-unit control
+modules and configurable standard-module postures.
+
 The game translates turn-based tactical micro-decisions into continuous
 real-time doctrine and execution. The human commander chooses purpose,
 priority, acceptable risk, commitment, and doctrine. HQ, leader, and unit
@@ -76,7 +81,7 @@ rather than the player's ability to perform enough rapid interface actions.
   decision-making with an opaque general-purpose AI.
 - Consequences may be stronger and more context-sensitive than in a conventional
   RTS because units can reliably handle precise reactions and coordination.
-- The value of a control module should come from doctrine and decision quality,
+- The value of a control module should come from control-policy and decision quality,
   within a fair execution budget, rather than mechanical action speed.
 
 ### Established principles
@@ -100,7 +105,7 @@ rather than the player's ability to perform enough rapid interface actions.
 - Automation is part of the core game model, not merely an accessibility
   feature or optional convenience.
 - The player's primary skill is likely to combine force organization, planning,
-  doctrine design, intelligence interpretation, and intervention at decisive
+  control-policy design, intelligence interpretation, and intervention at decisive
   moments.
 - Strong positional effects require sufficiently predictable rules and clear
   feedback so that victories feel planned rather than arbitrary.
@@ -352,7 +357,7 @@ design framework and campaign implications.
   should preserve squad function rather than impose a severe capability
   collapse; the exact short-lived handover effect remains subject to testing.
 - Member abilities remain personal, while the acting leader can give the squad
-  distinctive doctrine, reaction, formation, coordination, communications, and
+  distinctive control behavior, reaction, formation, coordination, communications, and
   logistics characteristics. These should be conditional behavioral effects
   rather than broad, stackable stat auras.
 - Command-qualified individuals can define primary and secondary leadership
@@ -368,9 +373,9 @@ design framework and campaign implications.
 - A squad has an identity record from creation, but its cohesion, traditions,
   and distinctive squad-level traits should provisionally emerge through shared
   training, missions, and history rather than arrive fully formed.
-- A usable doctrine can still be assigned immediately so a new squad is
-  functional. Emergent identity modifies or specializes that foundation; it
-  must not be required for baseline competence.
+- A usable standard-module posture can still be assigned immediately so a new
+  squad is functional. Emergent identity modifies or specializes that
+  foundation; it must not be required for baseline competence.
 - Emergent squad identity is a bounded prototype hypothesis because it carries
   substantial readability, balance, content, and implementation risk. The core
   command and combat architecture must remain viable if this layer is reduced
@@ -382,7 +387,7 @@ design framework and campaign implications.
 - Recovering a fallen leader's device creates a physical tactical objective and
   exposes the recovery unit to positional risk.
 - Units outside contact may continue operating according to previously supplied
-  orders and control doctrine, but cannot necessarily receive new information
+  orders and their module configuration, but cannot necessarily receive new information
   or direction.
 - Communication equipment, range, relays, terrain effects, jamming, and magical
   interference are potential sources of tactical differentiation.
@@ -393,7 +398,8 @@ design framework and campaign implications.
 See [Squad Command, Identity, and Succession](research/squad-command-and-succession.md)
 for the reference structures and proposed S.I.R. model.
 See [Formations and Positional Referents](formations-and-referents.md) for how
-squads arrange themselves and how doctrine refers to places by role.
+squads arrange themselves and how orders and control logic refer to places by
+role.
 
 ## Personnel progression
 
@@ -698,7 +704,7 @@ through a binary moving/stationary flag.
   Holding a weapon up and an attention direction fixed while advancing is
   slower than moving without that readiness.
 
-Together these make speed and readiness a continuous doctrinal choice. Moving
+Together these make speed and readiness a continuous tactical choice. Moving
 fast without readiness, moving slowly while ready, and holding a prepared
 position are three points on one curve rather than separate modes, and a control
 module can choose among them according to the risk its commander has accepted.
@@ -742,6 +748,12 @@ during the consequence stage.
 - Units have square footprints.
 - Every unit footprint is an axis-aligned `N×N` square in grid cells. Units do
   not use elongated or rectangular authoritative bases.
+- Every unit has one square information symbol fitted inside its authoritative
+  square base with a consistent inset. The symbol scales uniformly with `N`;
+  a larger base does not retain a one-cell symbol, stretch a glyph along one
+  axis, or repeat the glyph per occupied cell.
+- The authoritative footprint remains the source of spatial truth. The fitted
+  symbol communicates that footprint but never defines or replaces occupancy.
 - A typical human unit occupies a contiguous 2×2-cell footprint.
 - A unit can face any of the eight compass directions: north, northeast, east,
   southeast, south, southwest, west, or northwest.
@@ -787,6 +799,8 @@ axis displacement is the same.
 - A unit's occupied cells are invariant under its eight possible facing
   directions. Turning changes orientation-dependent rules but does not rotate,
   expand, shrink, or otherwise replace the authoritative square footprint.
+- Renderers may choose technology-specific strokes, materials, and detail
+  suppression, but must preserve the canonical base-fitted square relationship.
 - A typical human's 2×2-cell footprint represents 1×1 metre of occupied tactical
   space, including body, equipment, stance, and clearance rather than literal
   body dimensions.
@@ -908,7 +922,7 @@ together, is a prototype parameter.
 - Cover evaluation reads both layers. A unit can be covered by a cell-occupying
   volume, by an edge feature, or by both from different directions.
 - Control modules require machine-readable access to the locally known
-  permeability of nearby edges so doctrine can reason about doors, windows,
+  permeability of nearby edges so they can reason about doors, windows,
   firing lines, and breach opportunities.
 - The canonical client must render edge features and their state legibly at
   normal gameplay zoom, because a closed door and an open door are a tactically
@@ -1191,7 +1205,7 @@ pathfinding error.
 ### Role of control modules
 
 Control modules are part of the player's command capability. They allow units
-to carry out doctrine, react to local conditions, coordinate detailed actions,
+to carry out configured behavior, react to local conditions, coordinate detailed actions,
 and exploit short-lived tactical opportunities without waiting for a
 round-trip command from a remote client. This capability is also a design
 prerequisite for the intended tactical depth: rules can demand reactions,
@@ -1210,9 +1224,8 @@ They should support the intended distinction between:
 The effect of communication loss on previously received orders is not yet
 determined. A leading option is for the server to preserve still-valid order
 state and let the disconnected unit's WebAssembly module decide whether to
-continue, suspend, reinterpret, or abandon that order according to
-player-authored doctrine. The server would continue to enforce action validity
-and world rules.
+continue, suspend, reinterpret, or abandon that order according to its own
+policy. The server would continue to enforce action validity and world rules.
 
 ### Derived implications
 
@@ -1222,7 +1235,7 @@ and world rules.
 - Runtime state is isolated per unit even when many units use the same module
   binary and configuration.
 - A module can directly issue actions only for its own unit.
-- Multi-unit coordination must use player orders, common doctrine, or
+- Multi-unit coordination must use player orders, compatible module policies, or
   communication paths permitted by the simulation; it cannot rely on shared
   process memory or a privileged squad-level controller.
 - The HQ instance is a communications endpoint and participant, not a
@@ -1295,7 +1308,7 @@ and world rules.
   contract, it can evolve without versioning the ABI.
 - The event catalog determines whether a module can react competently. A missing
   event is a capability a player cannot write, however good their code.
-- Custom control logic creates a player-authored doctrine layer that may become
+- Custom control logic creates a player-authored tactical-behavior layer that may become
   one of the game's defining forms of mastery.
 
 See [WebAssembly Control Architecture](wasm-control-architecture.md) for the
@@ -1461,8 +1474,8 @@ attention direction for its duration, accelerating acquisition within that
 sector at the cost of tempo and of awareness elsewhere.
 
 Much of this is emergent — a stationary, attending unit already acquires faster
-than a moving one. Making it an explicit action matters because it lets doctrine
-express a deliberate intent that emergent behavior cannot: *clear this corner
+than a moving one. Making it an explicit action matters because it lets a
+control module express a deliberate intent that emergent behavior cannot: *clear this corner
 before advancing through it*. Without it, cautious movement is only the absence
 of hurry rather than a positive decision a module can commit to and a commander
 can order.
@@ -1544,7 +1557,7 @@ The following are intentionally not yet canonical:
 - The player is not omniscient.
 - Units may exist without the player having current knowledge of them.
 - In PvP, a player receives no privileged pre-match inspection of opposing
-  personnel, progression, perks, abilities, doctrine, or loadouts.
+  personnel, progression, perks, abilities, module configuration, or loadouts.
 - Information about an opposing build is available only when it can be observed
   or inferred from the battlefield information available to the player.
 - A unit or squad can operate beyond communication range.
@@ -1618,7 +1631,7 @@ are known only when acknowledgements return through the delayed network.
 See [Observation Reporting Model](reporting-model.md).
 
 Fixed observation reports are distinct from the player-defined command and
-message protocol. Modules may use custom messages for doctrine and coordination,
+message protocol. Modules may use custom messages for policy and coordination,
 but they cannot suppress, invent, or modify authoritative report facts. The
 client remains responsible for presenting and interpreting delivered reports;
 fixed report rules do not imply fixed certainty categories in the interface.
@@ -1758,7 +1771,7 @@ squad can re-establish its equipment path to headquarters.
 - Awareness progresses through stimulus, detection, classification,
   identification, acquisition, and reporting rather than granting immediate
   target ownership.
-- Conditional doctrine and standing operating procedures let modules handle
+- Module policies and standing operating procedures let modules handle
   hold-fire rules, engagement priorities, reserves, withdrawal conditions, and
   communication-loss behavior.
 - The action system supports synchronized suppression and movement, breaching,
@@ -1872,7 +1885,7 @@ counterplay, and lethality require prototyping.
 - Tactical effects must be discoverable by control modules through the official
   API and understandable to players through the canonical client.
 - The combat model should avoid detail that does not materially change a
-  player's decisions, control doctrine, or interpretation of the battle.
+  player's decisions, control policy, or interpretation of the battle.
 
 ## Logistics
 
@@ -2050,7 +2063,7 @@ support, uptime, federation, or migration guarantee is implied.
 Dedicated PvP duels and skirmishes are an intended direction. These modes should
 use point-based force construction from a standardized unit catalog. Persistent
 main-mode personnel are not used to construct these forces. The catalog provides
-defined unit, progression, equipment, magic, and doctrine options with public
+defined unit, progression, equipment, magic, and module-configuration options with public
 point costs, allowing bounded and reproducible competitive forces. Match results
 are completely isolated from the persistent main campaign: they do not
 grant campaign rewards or progression and do not write injuries, losses,
@@ -2196,7 +2209,7 @@ interpretation is maintained in [the visual-direction document](visual-direction
 ## Core experience
 
 The intended battle is not a contest of raw click speed. A player prepares
-forces and control doctrine, organizes squads, establishes reconnaissance and
+forces and control policies, organizes squads, establishes reconnaissance and
 communications, maintains supply, and issues tactical intent. Units then
 execute that intent locally through server-hosted control modules.
 

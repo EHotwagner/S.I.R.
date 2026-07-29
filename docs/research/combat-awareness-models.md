@@ -2,8 +2,8 @@
 title: Combat, Environment, and Command Reference Models
 status: proposed
 document-type: research
-version: "0.4"
-last-updated: 2026-07-27
+version: "0.5"
+last-updated: 2026-07-29
 related:
   - docs/game-vision.md
   - docs/tactical-environment-architecture.md
@@ -33,6 +33,10 @@ A reference identifies useful relationships. It does not imply that S.I.R.
 copies the referenced game's interface, time control, spatial model, resolution
 mathematics, or scale.
 
+The former visual “doctrine layer” evaluated below is superseded. S.I.R. now
+uses per-unit control modules and named standard-module postures; the engine
+publishes events and actions, not conditions or ordered behavior rules.
+
 S.I.R. deliberately has **no single primary reference**. Its combination of
 continuous real time, 50–100 persistent units per side, server-hosted
 player-authored control, and simulated command topology does not exist in one
@@ -50,7 +54,7 @@ sources.
 | Suppression | Xenonauts 2 | Close Combat |
 | Reaction, facing, and awareness | S.I.R.-owned | Xenonauts 2, Door Kickers 2 |
 | Engagement timing and precedence | Frozen Synapse | — |
-| Doctrine and order vocabulary | Frozen Synapse | Gladiabots |
+| Posture and order vocabulary | Frozen Synapse | S.I.R. standard module |
 | Breaching and room clearing | Door Kickers 2 | — |
 | Command topology and delegated execution | Combat Mission | Full Spectrum Warrior |
 | Local knowledge and relative spotting | Combat Mission | — |
@@ -200,7 +204,7 @@ consultation specifically to preserve those behaviors under indirect command.
 
 **Relevant lesson.** Order vocabulary is a design surface in its own right. The
 cursor that snaps to cover and communicates the resulting posture is an
-information-design solution to the problem S.I.R. faces in exposing doctrine to
+information-design solution to the problem S.I.R. faces in exposing behavior to
 a human commander.
 
 ### Frozen Synapse
@@ -280,10 +284,10 @@ Frozen Synapse separates persistent state orders from discrete action orders:
 | State (persistent policy) | `Aim`, `Focus`, `Engage on Sight`, `Continue on Sight`, `Ignore`, `Duck` |
 | Action (discrete) | `Move`, `Wait`, `Check`, `Fire` |
 
-This is the working answer to the open question of the smallest doctrine
-vocabulary that makes a standard module competent without configuration. The
-split maps directly onto S.I.R.: state orders are doctrine and reaction intent,
-action orders are action requests.
+This informs the standard module's distinction between persistent posture
+fields and discrete orders. It does not become an engine vocabulary: the
+standard module interprets its own named configuration, while action orders
+become ordinary ABI requests.
 
 Three primitives are worth carrying over specifically:
 
@@ -291,10 +295,10 @@ Three primitives are worth carrying over specifically:
   expression of spending reaction readiness to buy movement.
 - **Engage and Stop on Sight** — does not improve engagement timing at all. It
   exists only to stop a unit walking away from a target it would otherwise have
-  killed. Precisely the class of primitive a doctrine layer should express, and
-  one unlikely to be derived from first principles.
-- **Ignore** — move from A to B without stopping to engage. The doctrine-level
-  counterpart to the commander deciding acceptable risk.
+  killed. This is a useful standard-module posture field and is unlikely to be
+  derived from first principles.
+- **Ignore** — move from A to B without stopping to engage. This is a
+  standard-module expression of the commander deciding acceptable risk.
 
 **Rejected.** Frozen Synapse's dark mode retains a foe's last known position and
 time since last seen. S.I.R.'s canonical client shows nothing for a hostile it
@@ -310,14 +314,12 @@ states, and abstract geometry.
 
 ### Gladiabots
 
-**Adopted.** A visual node-based editor of conditions and actions through which
-a player builds squad behavior and then observes it execute, requiring no
-programming skill. This is the model for S.I.R.'s doctrine layer, which
-`realtime-turnbased-tactical-features.md` requires not become programming
-homework.
-
-**Boundary.** S.I.R.'s standard module and doctrine controls must be competent
-by default. Authoring is an option for depth, not an entry requirement.
+**Rejected as the canonical non-programming interface.** A general visual
+condition/action language recreates programming homework and the removed
+engine condition vocabulary. Gladiabots remains useful evidence for readable
+behavior visualization and debugging, but S.I.R.'s standard module exposes
+named postures and bounded overrides instead. Advanced authors supply custom
+module code directly.
 
 ### Echoes of the Architects
 
@@ -372,8 +374,8 @@ detection mathematics.
 - What cover density at 0.5-metre cell scale reproduces the intended
   cover-anchored grammar without becoming visual noise at 100 units per side?
 - How many discrete levels can be presented legibly at full force scale?
-- What is the smallest doctrine vocabulary that makes the standard module
-  competent without configuration?
+- What is the smallest named posture-and-override surface that makes the
+  standard module competent without turning preparation into programming?
 
 ## Sources
 

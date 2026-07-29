@@ -106,7 +106,8 @@ Development begins with exact scenario forces so tests can pin:
 
 Player-facing force construction follows after foundational combat
 relationships are stable. Catalog entries resolve to complete immutable unit,
-progression, equipment, supply, doctrine, and point-cost definitions.
+progression, equipment, supply, standard-module posture, module-configuration,
+and point-cost definitions.
 
 Technical tests begin with mirrored human forces to isolate core mechanics from
 faction asymmetry. Early PvE content then introduces a bounded arcane force to

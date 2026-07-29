@@ -3,8 +3,8 @@ title: Turn-Based Tactical Depth in Real-Time S.I.R.
 status: accepted
 decision-status: canonical-direction
 document-type: research-and-options
-version: "0.2"
-last-updated: 2026-07-25
+version: "0.3"
+last-updated: 2026-07-29
 related:
   - docs/game-vision.md
   - docs/combat-resolution.md
@@ -35,7 +35,7 @@ S.I.R. can retain that depth by dividing responsibility:
 
 ```text
 human commander
-  chooses purpose, priority, acceptable risk, doctrine, and commitment
+  chooses purpose, priority, acceptable risk, posture/policy, and commitment
                          ↓
 HQ, leaders, and unit modules
   execute timing, reactions, coordination, and routine contingencies
@@ -106,7 +106,7 @@ policies:
 - continue, rally, hide, or return when communication is lost; and
 - wake or request help on declared events.
 
-The official modules provide usable doctrines. Player-provided modules can
+The standard module provides usable named postures. Player-provided modules can
 implement more sophisticated policies without gaining extra information or
 capabilities.
 
@@ -148,8 +148,8 @@ Units can continuously manage:
 - turn-before-action requirements.
 
 These details are usually exhausting in real time. Modules can execute them
-from doctrine while the human chooses the watched approach, assault direction,
-formation, or risk posture.
+from their configuration and local policy while the human chooses the watched
+approach, assault direction, formation, or risk posture.
 
 ### 6. Action commitment instead of abstract turns
 
@@ -269,7 +269,7 @@ Persistent individuals make consequences beyond zero HP meaningful:
 - equipment or communications recovered from a casualty.
 
 Modules handle triage, safe approach, covering fire, pickup position, and route
-selection according to player doctrine. The player decides how much mission
+selection according to player policy. The player decides how much mission
 risk a recovery is worth.
 
 ## Information and command features
@@ -283,7 +283,7 @@ Every unit reasons from its own observations, reports, and memory. This permits:
 - squads fighting while disconnected from HQ;
 - a leader knowing something the player does not yet know;
 - reports arriving after their tactical value has changed;
-- local initiative based on doctrine; and
+- local initiative based on module policy; and
 - recovery of information when communication returns.
 
 The system produces much of the uncertainty found in tabletop and turn-based
@@ -294,7 +294,7 @@ tactics without artificial global fog rules.
 Leader, second-in-command, and NCO succession can affect:
 
 - which module coordinates the squad;
-- what doctrine survives;
+- what configured behavior survives;
 - communication equipment access;
 - formation and objective memory;
 - rally and reaction behavior; and
@@ -310,7 +310,7 @@ Detailed automated control makes several effects manageable:
 - delayed, corrupted, intercepted, or suppressed reports;
 - false contacts with provenance;
 - direction finding against transmitters;
-- emission-control doctrine;
+- emission-control policy;
 - relay placement and destruction;
 - spoofed identifiers;
 - decoy sensors or magical signatures; and
@@ -376,14 +376,14 @@ decisions.
 
 Suppression, shock, leadership, and isolation are tactically valuable. A dense
 personality simulation that frequently overrides orders risks making outcomes
-feel arbitrary. Prefer legible state transitions and doctrine-dependent
+feel arbitrary. Prefer legible state transitions and policy-dependent
 responses.
 
 ### Excessive conditional scripting
 
 An unrestricted visual-programming language in the canonical client could turn
 pre-match preparation into programming homework. The standard modules need
-strong defaults, concise doctrine controls, and progressive disclosure.
+strong defaults, concise posture controls, and progressive disclosure.
 Advanced players can supply code directly.
 
 ### Perfect automated optimization
@@ -398,7 +398,7 @@ command. Preserve:
 - uncertain enemy intent;
 - action commitment;
 - competing objectives; and
-- player-selected doctrine and risk.
+- player-selected posture/policy and risk.
 
 ### Too many invisible modifiers
 
@@ -413,7 +413,7 @@ The strongest initial combination is:
 
 1. continuous reaction and interruption;
 2. progressive awareness and acquisition;
-3. conditional doctrine and communication-loss behavior;
+3. configurable module policy and communication-loss behavior;
 4. synchronized suppression, movement, breach, and withdrawal;
 5. facing, attention, stance, and action commitment;
 6. physical firing lanes and friendly-fire risk;

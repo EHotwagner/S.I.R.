@@ -114,8 +114,9 @@ than an optimization to be solved once.
 ### Evacuate
 
 Handing a casualty off at a casualty collection point, an evacuation asset, or
-an extraction zone. This uses the referent model, so doctrine expresses
-evacuation as movement toward a role-tagged place rather than a coordinate.
+an extraction zone. This uses the referent model, so an order, module, or
+standard-module posture expresses evacuation as movement toward a role-tagged
+place rather than a coordinate.
 
 Evacuation frees the carrier and fixes the casualty's disposition for
 mission-end resolution.

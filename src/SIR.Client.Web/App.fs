@@ -568,15 +568,18 @@ let private glyphView
     (palette: PaletteTokens)
     (centerX: float)
     (centerY: float)
+    (scale: float)
     (classId: UnitClassId)
     =
     let glyph = UnitGlyphCatalog.resolve classId
     let transform =
         "translate("
-        + string (centerX - 12.0)
+        + string centerX
         + " "
-        + string (centerY - 12.0)
-        + ")"
+        + string centerY
+        + ") scale("
+        + string scale
+        + ") translate(-12 -12)"
 
     Svg.g [
         svg.custom ("transform", transform)
@@ -619,11 +622,9 @@ let private unitView
     let selected = scene.SelectedUnit = Some unit.Id
     let focused = scene.FocusedUnit = Some unit.Id
     let symbolSize =
-        match scene.SemanticZoom with
-        | Overview -> 24.0
-        | Standard
-        | Detailed -> 36.0
+        min projected.FootprintWidth projected.FootprintDepth - 12.0
     let half = symbolSize / 2.0
+    let glyphScale = symbolSize / 36.0
 
     let wedge =
         match unit.BodyHeading with
@@ -697,6 +698,7 @@ let private unitView
                 svg.custom ("strokeDasharray", dash)
             ]
             Svg.rect [
+                svg.custom ("data-unit-symbol", "true")
                 svg.x (projected.SymbolCenterX - half)
                 svg.y (projected.SymbolCenterY - half)
                 svg.width symbolSize
@@ -707,15 +709,25 @@ let private unitView
                 svg.strokeWidth 3
                 svg.custom ("strokeDasharray", dash)
             ]
-            glyphView palette projected.SymbolCenterX projected.SymbolCenterY unit.ClassId
+            glyphView
+                palette
+                projected.SymbolCenterX
+                projected.SymbolCenterY
+                glyphScale
+                unit.ClassId
             if scene.SemanticZoom <> Overview && projected.HealthSegments.IsSome then
                 let healthSegments = Option.get projected.HealthSegments
+                let healthSegmentWidth = (symbolSize - 11.0) / 12.0
                 for index in 0 .. 11 do
                     Svg.rect [
                         svg.custom ("data-health-position", string index)
-                        svg.x (projected.SymbolCenterX - 18.0 + float index * 3.0)
+                        svg.x (
+                            projected.SymbolCenterX
+                            - half
+                            + float index * (healthSegmentWidth + 1.0)
+                        )
                         svg.y (projected.SymbolCenterY + half + 3.0)
-                        svg.width 2.0
+                        svg.width healthSegmentWidth
                         svg.height 4.0
                         svg.fill (
                             if index < healthSegments then
@@ -971,7 +983,7 @@ let private battlefieldView
                             if Option.isSome loadedFrame then
                                 "Replay battlefield"
                             else
-                                "Six-by-six SVG battlefield demonstration"
+                                "SVG battlefield demonstration"
                         )
                         Html.p (
                             disclosure
@@ -1013,10 +1025,10 @@ let private battlefieldView
                             + " visible units; selected unit "
                             + (scene.SelectedUnit |> Option.map string |> Option.defaultValue "none")
                         ))
-                        svg.viewBox (0, 0, 360, 360)
+                        svg.viewBox (0, 0, max 1 (int scene.Width), max 1 (int scene.Height))
                         svg.children [
                             Svg.title ("Replay battlefield at tick " + string scene.Tick)
-                            Svg.desc "Flat orthographic six-by-six battlefield. Arrow keys move unit focus; Enter selects; Escape clears selection."
+                            Svg.desc "Flat orthographic battlefield sized from the disclosed board. Arrow keys move unit focus; Enter selects; Escape clears selection."
                             Svg.g [
                                 svg.custom ("transform", transform)
                                 svg.children [

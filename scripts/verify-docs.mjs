@@ -120,6 +120,22 @@ const interactive = await readFile(
 );
 const foundations = await readFile(resolve(site, "foundations.html"), "utf8");
 const formulas = await readFile(resolve(site, "combat-formulas.html"), "utf8");
+const gameVision = await readFile(resolve(site, "game-vision.html"), "utf8");
+const units = await readFile(resolve(site, "gameplay-units.html"), "utf8");
+const svgPlayer = await readFile(resolve(site, "svg-replay-player.html"), "utf8");
+const reportingSource = await readFile(
+  resolve("docs/reporting-model.md"),
+  "utf8",
+);
+const foundationsSource = await readFile(resolve("docs/foundations.md"), "utf8");
+const formationsSource = await readFile(
+  resolve("docs/formations-and-referents.md"),
+  "utf8",
+);
+const wasmControlSource = await readFile(
+  resolve("docs/wasm-control-architecture.md"),
+  "utf8",
+);
 const example = await readFile(
   resolve(site, "deterministic-simulation.html"),
   "utf8",
@@ -171,6 +187,40 @@ if (
   /<svg[\s\S]*?<pre class="fssnip/.test(foundations)
 ) {
   throw new Error("The accessible SVG explainers were omitted or rendered as code.");
+}
+
+if (
+  !gameVision.includes("one square information symbol fitted inside") ||
+  !gameVision.includes("canonical base-fitted square relationship") ||
+  !units.includes("Canonical base and symbol rule") ||
+  !svgPlayer.includes("base-fitted square information")
+) {
+  throw new Error("The canonical base-fitted square-symbol rule is missing.");
+}
+
+if (
+  !/^status: accepted$/m.test(reportingSource) ||
+  !/^decision-status: canonical$/m.test(reportingSource) ||
+  !reportingSource.includes("The reporting structure is canonical")
+) {
+  throw new Error("The settled observation-reporting model regressed to proposal status.");
+}
+
+if (!foundationsSource.includes("B4 · 2×2 · level 0")) {
+  throw new Error("The unit-anatomy explainer no longer uses the canonical human footprint.");
+}
+
+for (const [name, source] of [
+  ["formations", formationsSource],
+  ["WASM control", wasmControlSource],
+]) {
+  if (
+    /doctrine-level state|where doctrine permits|doctrine can test|doctrine slots?|doctrine packages?/i.test(
+      source,
+    )
+  ) {
+    throw new Error(`${name} documentation reintroduced retired doctrine-engine mechanics.`);
+  }
 }
 
 for (const curatedPage of [
