@@ -133,6 +133,8 @@ cancel, lost capture, tool switch, or unmount. Hover is never required.
 | Global editor | `Delete` or `Backspace` | Delete selection through an undoable command |
 | Global editor | `Escape` | Cancel active preview first, otherwise clear selection |
 | Tools | `V`, `T`, `U`, `E` | Select the Select, Terrain, Units, or Edges domain |
+| Terrain tools | `P`, `R`, `L`, `G`, `I`, `X` | Pencil, rectangle, line, flood fill, eyedropper, or erase |
+| Terrain values | `Shift+1` through `Shift+4` | Open, rough, blocked, or objective |
 | Camera | `0`, `1`, `F` | Fit board, reset to 100%, or frame selection |
 | Camera | `Space` + pointer drag | Temporarily pan without changing the active tool |
 | Object list | Arrow keys, `Home`, `End` | Move list focus without moving map objects |
@@ -230,6 +232,41 @@ revision-state labels. Generated command tests prove `.NET` undo/redo
 round-trips over 64 cell choices. The Fable/Node browser smoke test checks the
 same initial digest, commits a copied unit, and proves undo and redo return to
 the same digests and object counts.
+
+## Terrain authoring
+
+Terrain authoring uses pencil, rectangle, line, flood-fill, eyedropper, and
+erase tools. Pencil, line, and rectangle expand their exact cell geometry by a
+configurable integer square brush from `1×1` through `9×9`; even-sized brushes
+bias the additional cell toward increasing columns and rows. Previews are
+deduplicated and sorted by row then column, so identical gestures produce the
+same `PaintCells` payload across runtimes. Line geometry uses an integer
+Bresenham walk. Flood fill visits the four orthogonal neighbors of contiguous
+source terrain.
+
+Pointer release or **Apply preview** validates and commits the whole gesture as
+one `PaintCells` command and one immutable revision. Undo therefore removes a
+complete stroke, not its individual pointer samples. Blocked previews that
+intersect any occupied square footprint fail document validation before the
+map, revision, or history changes. Erase removes explicit terrain records and
+restores canonical open terrain. Eyedropper changes only the selected palette
+value.
+
+Every terrain value has a text label and non-color pattern: open/plain,
+rough/diagonal hatch, blocked/cross hatch, and objective/inset ring. The SVG
+preview uses a dashed outline, changes to a short red dash for invalid
+geometry, and mirrors its cell count, sample, commit, or rejection through a
+polite live region. Arrow keys move the terrain cursor; `Shift`+Arrow extends
+an active preview; `Enter` or standalone `Space` starts or commits it. All
+shortcuts have visible palette or tool buttons.
+
+The deterministic
+`tests/SIR.Client.Tests/fixtures/map-editor-milestone-3-terrain.txt` fixture
+freezes tool order, shortcuts, patterns, row-major pencil and line geometry,
+boundary clipping, and the maximum `40×40` map contract. The client test suite
+alternates 80 flood-fill and diagonal-line preview-plus-validation gestures on
+a `40×40` map and enforces a 50 ms p95 guardrail. On the 2026-07-29 .NET 10
+conformance run in the repository environment, the measured p95 was 26.123 ms.
 
 ## Semantic edges
 

@@ -5,7 +5,7 @@ categoryindex: 5
 index: 10
 status: in-progress
 document-type: timestamped-design-report
-version: "1.4"
+version: "1.5"
 created-at: 2026-07-29T12:30:56+02:00
 last-updated: 2026-07-29
 related:
@@ -20,7 +20,7 @@ related:
 
 **Report timestamp:** 2026-07-29 12:30:56 CEST (UTC+02:00)
 
-**Status:** implementation in progress; Milestones 0–2 complete
+**Status:** implementation in progress; Milestones 0–3 complete
 
 ## Executive decision
 
@@ -763,13 +763,13 @@ within it is checked.
 
 ### Milestone 3 — Terrain authoring
 
-- [ ] Implement pencil, rectangle, line, flood fill, eyedropper, and erase.
-- [ ] Add configurable integer brush size and deterministic cell previews.
-- [ ] Treat a complete stroke as one atomic command.
-- [ ] Reject blocked terrain over occupied footprints before commit.
-- [ ] Add terrain palette labels, patterns, shortcuts, and screen-reader
+- [x] Implement pencil, rectangle, line, flood fill, eyedropper, and erase.
+- [x] Add configurable integer brush size and deterministic cell previews.
+- [x] Treat a complete stroke as one atomic command.
+- [x] Reject blocked terrain over occupied footprints before commit.
+- [x] Add terrain palette labels, patterns, shortcuts, and screen-reader
   announcements.
-- [ ] Add maximum-map gesture and validation performance evidence.
+- [x] Add maximum-map gesture and validation performance evidence.
 
 ### Milestone 4 — Unit palette and direct manipulation
 

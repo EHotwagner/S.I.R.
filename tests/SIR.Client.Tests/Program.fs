@@ -1643,6 +1643,169 @@ let main _ =
          && restoredDraft.Revision.Digest = initialRevisionDigest)
         "Simulator runtime state entered authored history or changed revision identity."
 
+    let address column row =
+        { CellColumn = int32 column
+          CellRow = int32 row }
+    let previewCells state =
+        MapEditor.terrainPreview state
+        |> Option.map (fun (_, addresses, isValid) -> addresses, isValid)
+        |> Option.defaultWith (fun () -> failwith "Expected a terrain preview.")
+    let terrainPreview tool terrain brush first last =
+        editor
+        |> MapEditor.update (ChooseTerrain terrain)
+        |> MapEditor.update (SetTerrainBrushSize(int32 brush))
+        |> MapEditor.update (ChooseTool(Terrain tool))
+        |> MapEditor.update (BeginTerrainGesture first)
+        |> MapEditor.update (ExtendTerrainGesture last)
+
+    let pencilPreview =
+        editor
+        |> MapEditor.update (ChooseTerrain Rough)
+        |> MapEditor.update (SetTerrainBrushSize 1)
+        |> MapEditor.update (ChooseTool(Terrain PencilTool))
+        |> MapEditor.update (BeginTerrainGesture(address 0 7))
+        |> MapEditor.update (ExtendTerrainGesture(address 2 7))
+        |> MapEditor.update (ExtendTerrainGesture(address 2 5))
+    let pencilCells, pencilValid = previewCells pencilPreview
+    let pencilCommitted = pencilPreview |> MapEditor.update CommitEditorGesture
+    let pencilUndone = pencilCommitted |> MapEditor.update UndoEditorCommand
+    let linePreview =
+        terrainPreview LineTool Objective 1 (address 7 0) (address 11 4)
+    let lineCells, lineValid = previewCells linePreview
+    let rectanglePreview =
+        terrainPreview RectangleTool Rough 1 (address 7 0) (address 9 2)
+    let rectangleCells, rectangleValid = previewCells rectanglePreview
+    let boundaryBrushPreview =
+        terrainPreview PencilTool Rough 3 (address 0 0) (address 0 0)
+    let boundaryBrushCells, boundaryBrushValid = previewCells boundaryBrushPreview
+    let floodPreview =
+        terrainPreview FloodFillTool Objective 1 (address 0 0) (address 0 0)
+    let floodCells, floodValid = previewCells floodPreview
+    let sampled =
+        editor
+        |> MapEditor.update (ChooseTool(Terrain EyedropperTool))
+        |> MapEditor.update (BeginTerrainGesture(address 5 3))
+    let erased =
+        editor
+        |> MapEditor.update (ChooseTool(Terrain EraseTool))
+        |> MapEditor.update (BeginTerrainGesture(address 4 3))
+        |> MapEditor.update CommitEditorGesture
+    let blockedPreview =
+        terrainPreview RectangleTool Blocked 1 (address 1 1) (address 2 2)
+    let _, blockedValid = previewCells blockedPreview
+    let blockedRejected = blockedPreview |> MapEditor.update CommitEditorGesture
+    let fallbackPainted =
+        editor
+        |> MapEditor.update (ChooseTerrain Rough)
+        |> MapEditor.update (ChooseTool(Terrain PencilTool))
+        |> MapEditor.update (ActivateCell(0, 0))
+
+    require
+        (pencilValid
+         && pencilCells = [| address 2 5; address 2 6; address 0 7; address 1 7; address 2 7 |]
+         && pencilCommitted.UndoHistory.Length = editor.UndoHistory.Length + 1
+         && pencilCommitted.Revision.Number = editor.Revision.Number + 1L
+         && pencilUndone.Map = editor.Map
+         && lineValid
+         && lineCells = [| address 7 0; address 8 1; address 9 2; address 10 3; address 11 4 |]
+         && rectangleValid
+         && rectangleCells.Length = 9
+         && boundaryBrushValid
+         && boundaryBrushCells = [| address 0 0; address 1 0; address 0 1; address 1 1 |]
+         && floodValid
+         && floodCells.Length = 90
+         && sampled.TerrainSelection = Objective
+         && MapEditor.terrainAt 4 3 erased = Open
+         && not blockedValid
+         && blockedRejected.Map = editor.Map
+         && blockedRejected.Revision = editor.Revision
+         && blockedRejected.UndoHistory = editor.UndoHistory
+         && blockedRejected.Validation.IsSome
+         && MapEditor.terrainAt 0 0 fallbackPainted = Rough
+         && fallbackPainted.Revision.Number = editor.Revision.Number + 1L)
+        "Terrain tools, deterministic previews, atomic history, eyedropper, erase, or occupied-footprint rejection failed."
+
+    let terrainFixture =
+        [ "tools="
+          + ([ PencilTool; RectangleTool; LineTool; FloodFillTool; EyedropperTool; EraseTool ]
+             |> List.map MapEditor.terrainToolLabel
+             |> String.concat ",")
+          "shortcuts="
+          + ([ PencilTool; RectangleTool; LineTool; FloodFillTool; EyedropperTool; EraseTool ]
+             |> List.map MapEditor.terrainToolShortcut
+             |> String.concat ",")
+          "patterns="
+          + ([ Open; Rough; Blocked; Objective ]
+             |> List.map MapEditor.terrainPattern
+             |> String.concat ",")
+          "pencil="
+          + (pencilCells
+             |> Array.map (fun cell -> string cell.CellColumn + "," + string cell.CellRow)
+             |> String.concat ";")
+          "line="
+          + (lineCells
+             |> Array.map (fun cell -> string cell.CellColumn + "," + string cell.CellRow)
+             |> String.concat ";")
+          "rectangle-count=" + string rectangleCells.Length
+          "boundary-brush="
+          + (boundaryBrushCells
+             |> Array.map (fun cell -> string cell.CellColumn + "," + string cell.CellRow)
+             |> String.concat ";")
+          "maximum-map=40x40" ]
+        |> String.concat "\n"
+    let expectedTerrainFixture =
+        Path.Combine(
+            AppContext.BaseDirectory,
+            "fixtures",
+            "map-editor-milestone-3-terrain.txt"
+        )
+        |> File.ReadAllText
+        |> fun value -> value.TrimEnd('\r', '\n')
+    require
+        (terrainFixture = expectedTerrainFixture)
+        "The deterministic Milestone 3 terrain review fixture changed."
+
+    let maximumMap =
+        { editor.Map with
+            Width = 40
+            Height = 40
+            Terrain = Map.empty
+            Edges = Map.empty
+            Units = Map.empty
+            NextUnitId = 1 }
+    let maximumState =
+        { editor with
+            Gesture =
+                CommandPreviewGesture(
+                    ReplaceDocument("maximum-map-performance", maximumMap)
+                ) }
+        |> MapEditor.update CommitEditorGesture
+    let maximumGestureTimings =
+        Array.init 80 (fun index ->
+            let tool = if index % 2 = 0 then FloodFillTool else LineTool
+            let started = Diagnostics.Stopwatch.GetTimestamp()
+            maximumState
+            |> MapEditor.update (ChooseTerrain Rough)
+            |> MapEditor.update (ChooseTool(Terrain tool))
+            |> MapEditor.update (BeginTerrainGesture(address 0 0))
+            |> MapEditor.update (ExtendTerrainGesture(address 39 39))
+            |> MapEditor.terrainPreview
+            |> ignore
+            let elapsed = Diagnostics.Stopwatch.GetTimestamp() - started
+            float elapsed * 1000.0 / float Diagnostics.Stopwatch.Frequency)
+        |> Array.sort
+    let maximumGestureP95 =
+        maximumGestureTimings[int (float maximumGestureTimings.Length * 0.95)]
+    require
+        (maximumState.Map.Width = 40
+         && maximumState.Map.Height = 40
+         && maximumGestureP95 < 50.0)
+        "Maximum-map terrain preview and command validation exceeded the 50 ms p95 guardrail."
+    printfn
+        "Maximum-map terrain evidence: 40x40 cells, flood-fill/line preview plus validation p95 %.3f ms over %d alternating gestures."
+        maximumGestureP95
+        maximumGestureTimings.Length
+
     let performanceFrame = Battlefield.performanceFrame 200
     for _ in 1 .. 20 do
         Battlefield.scene performanceFrame Battlefield.initial |> ignore
