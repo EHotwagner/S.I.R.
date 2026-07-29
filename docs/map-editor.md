@@ -6,7 +6,7 @@ index: 2
 status: accepted
 decision-status: implemented
 document-type: reference
-version: "1.1"
+version: "1.2"
 last-updated: 2026-07-29
 description: Map records, terrain, semantic edges, square unit footprints, controller modes, and deterministic execution.
 related:
@@ -148,6 +148,45 @@ Platform menu bindings win when focus is in a text field. Repeated movement keys
 produce separate deterministic one-cell commands. No shortcut depends on
 keyboard focus being inside a floating window, and every shortcut also has a
 visible button or inspector/object-list equivalent.
+
+## SVG workspace and camera
+
+The Editor tab renders the authoritative map through the shared tactical SVG
+grammar: the same `Battlefield.CellSize`, accessible replay palette, canonical
+unit glyph catalog, square footprint geometry, terrain semantics, and
+east/south edge normalization used by the simulator and replay surfaces. The
+former HTML cell-button board is retained only as a collapsible object-list
+fallback. It is not visible map presentation and does not create a second map
+model.
+
+Camera and panel state live in `EditorWorkspaceState`, outside
+`MapDefinition`. The camera supports:
+
+- pointer-centered wheel and trackpad zoom between `0.25×` and `6×`;
+- middle-drag, right-drag, and `Space` + primary-drag panning;
+- two-pointer touch pan and pinch around the touch midpoint;
+- board fit (`0`), 100% reset (`1`), and selected-unit framing (`F`);
+- viewport resize without changing board coordinates; and
+- immediate camera updates under reduced-motion preferences.
+
+Screen coordinates are transformed through the inverse camera before map
+activation. Cell hits use the transformed cell coordinate. Edge hits compare
+their distance in screen pixels against a nine-pixel tolerance, so the target
+does not become harder to acquire as zoom changes. Every accepted edge hit is
+normalized to an east or south `MapEdgeDirection` record before dispatch.
+
+An active drag owns pointer capture. Commit, pointer release, lost capture,
+`Escape`, reset, and workspace disposal all clear captured pointer state.
+The SVG itself exposes only semantic units as keyboard stops. A collapsible
+linear object list exposes every unit and cell with conventional buttons for
+keyboard and assistive technology. Tool groups, the contextual palette, camera
+buttons, status row, and collapsible inspector remain ordinary HTML controls.
+
+The deterministic
+`tests/SIR.Client.Tests/fixtures/map-editor-milestone-1-camera.txt` review
+fixture records fit, zoom, frame-selection, cell-hit, and low/high-zoom
+edge-hit results. Pure tests also cover resize, pointer capture and loss,
+mouse drag, touch pinch, release cleanup, and reduced-motion state.
 
 ## Semantic edges
 

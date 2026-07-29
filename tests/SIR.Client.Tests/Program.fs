@@ -1317,6 +1317,180 @@ let main _ =
                 unit.FootprintWidth = unit.FootprintDepth))
         "The editor frame lost sandbox disclosure or square footprints."
 
+    let formatCamera label (camera: BattlefieldCamera) =
+        String.Format(
+            Globalization.CultureInfo.InvariantCulture,
+            "{0}={1:F3}|{2:F3}|{3:F3}",
+            label,
+            camera.PanX,
+            camera.PanY,
+            camera.Zoom
+        )
+    let fitCamera =
+        MapEditorWorkspace.fitBoard 960.0 640.0 editor.Map.Width editor.Map.Height
+    let pointerBoardBefore =
+        MapEditorWorkspace.screenToBoard fitCamera 480.0 320.0
+    let zoomCamera =
+        MapEditorWorkspace.zoomAt 480.0 320.0 1.25 fitCamera
+    let pointerBoardAfter =
+        MapEditorWorkspace.screenToBoard zoomCamera 480.0 320.0
+    let frameCamera =
+        MapEditorWorkspace.frameSelection
+            960.0
+            640.0
+            (MapEditor.selected editor)
+            fitCamera
+    let hitCell =
+        MapEditorWorkspace.tryHitCell
+            editor.Map.Width
+            editor.Map.Height
+            fitCamera
+            (fitCamera.PanX + 2.5 * Battlefield.CellSize * fitCamera.Zoom)
+            (fitCamera.PanY + 1.5 * Battlefield.CellSize * fitCamera.Zoom)
+        |> Option.defaultWith (fun () -> failwith "Expected editor cell hit.")
+    let lowZoomCamera =
+        { PanX = 0.0
+          PanY = 0.0
+          Zoom = 0.5 }
+    let highZoomCamera =
+        { PanX = 0.0
+          PanY = 0.0
+          Zoom = 3.0 }
+    let lowZoomEdge =
+        MapEditorWorkspace.tryHitEdge
+            editor.Map.Width
+            editor.Map.Height
+            lowZoomCamera
+            MapEditorWorkspace.EdgeTolerancePixels
+            56.0
+            36.0
+        |> Option.defaultWith (fun () -> failwith "Expected low-zoom editor edge hit.")
+    let highZoomEdge =
+        MapEditorWorkspace.tryHitEdge
+            editor.Map.Width
+            editor.Map.Height
+            highZoomCamera
+            MapEditorWorkspace.EdgeTolerancePixels
+            296.0
+            216.0
+        |> Option.defaultWith (fun () -> failwith "Expected high-zoom editor edge hit.")
+    let formatEdge label (edge: MapEdgeHit) =
+        String.Format(
+            Globalization.CultureInfo.InvariantCulture,
+            "{0}={1}|{2}|{3}|{4:F3}",
+            label,
+            edge.Column,
+            edge.Row,
+            edge.Direction,
+            edge.DistancePixels
+        )
+    let cameraFixture =
+        [ formatCamera "fit" fitCamera
+          formatCamera "zoom" zoomCamera
+          formatCamera "frame" frameCamera
+          "cell=" + string hitCell.Column + "|" + string hitCell.Row
+          formatEdge "edge-low" lowZoomEdge
+          formatEdge "edge-high" highZoomEdge ]
+        |> String.concat "\n"
+    let expectedCameraFixture =
+        Path.Combine(
+            AppContext.BaseDirectory,
+            "fixtures",
+            "map-editor-milestone-1-camera.txt"
+        )
+        |> File.ReadAllText
+        |> fun value -> value.TrimEnd('\r', '\n')
+    require
+        (cameraFixture = expectedCameraFixture
+         && abs (fst pointerBoardBefore - fst pointerBoardAfter) < 0.000_001
+         && abs (snd pointerBoardBefore - snd pointerBoardAfter) < 0.000_001)
+        "Pointer-centered editor zoom, camera framing, or deterministic camera evidence changed."
+
+    let resized =
+        MapEditorWorkspace.initial false
+        |> MapEditorWorkspace.update
+            editor.Map
+            (MapEditor.selected editor)
+            (ResizeViewport(720.0, 480.0))
+    let mousePointer =
+        { Id = 7
+          Kind = MousePointer
+          X = 100.0
+          Y = 90.0
+          RequestsPan = true }
+    let captured =
+        resized
+        |> MapEditorWorkspace.update
+            editor.Map
+            (MapEditor.selected editor)
+            (StartEditorPointer mousePointer)
+    let mousePanned =
+        captured
+        |> MapEditorWorkspace.update
+            editor.Map
+            (MapEditor.selected editor)
+            (MoveEditorPointer { mousePointer with X = 130.0; Y = 110.0 })
+    let released =
+        mousePanned
+        |> MapEditorWorkspace.update
+            editor.Map
+            (MapEditor.selected editor)
+            (LoseEditorPointerCapture mousePointer.Id)
+    require
+        (resized.ViewportWidth = 720.0
+         && resized.ViewportHeight = 480.0
+         && Map.containsKey mousePointer.Id captured.CapturedPointers
+         && mousePanned.Camera.PanX = captured.Camera.PanX + 30.0
+         && mousePanned.Camera.PanY = captured.Camera.PanY + 20.0
+         && released.CapturedPointers.IsEmpty)
+        "Editor resize, pointer capture, drag pan, or lost-capture cleanup failed."
+
+    let firstTouch =
+        { Id = 10
+          Kind = TouchPointer
+          X = 100.0
+          Y = 100.0
+          RequestsPan = true }
+    let secondTouch =
+        { Id = 11
+          Kind = TouchPointer
+          X = 200.0
+          Y = 100.0
+          RequestsPan = true }
+    let touched =
+        MapEditorWorkspace.initial false
+        |> MapEditorWorkspace.update
+            editor.Map
+            None
+            (StartEditorPointer firstTouch)
+        |> MapEditorWorkspace.update
+            editor.Map
+            None
+            (StartEditorPointer secondTouch)
+    let pinched =
+        touched
+        |> MapEditorWorkspace.update
+            editor.Map
+            None
+            (MoveEditorPointer { secondTouch with X = 220.0 })
+        |> MapEditorWorkspace.update
+            editor.Map
+            None
+            (EndEditorPointer firstTouch.Id)
+        |> MapEditorWorkspace.update
+            editor.Map
+            None
+            (EndEditorPointer secondTouch.Id)
+        |> MapEditorWorkspace.update
+            editor.Map
+            None
+            (SetEditorReducedMotion true)
+    require
+        (pinched.Camera.Zoom > touched.Camera.Zoom
+         && pinched.CapturedPointers.IsEmpty
+         && pinched.ReducedMotion)
+        "Two-pointer touch camera behavior, release cleanup, or reduced-motion state failed."
+
     let performanceFrame = Battlefield.performanceFrame 200
     for _ in 1 .. 20 do
         Battlefield.scene performanceFrame Battlefield.initial |> ignore

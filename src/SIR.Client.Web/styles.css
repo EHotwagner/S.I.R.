@@ -357,9 +357,98 @@
 
 #sir-replay-app .editor-workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(12rem, 15rem) minmax(28rem, 1fr) minmax(15rem, 19rem);
   gap: 1rem;
   align-items: start;
+}
+#sir-replay-app .editor-tool-rail {
+  position: sticky;
+  top: 4.75rem;
+  max-height: calc(100vh - 6rem);
+  overflow: auto;
+  padding: .75rem;
+}
+#sir-replay-app .compact-tool-rail {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+#sir-replay-app .compact-tool-rail button,
+#sir-replay-app .editor-context-palette button {
+  min-height: 2.75rem;
+  padding: .4rem .5rem;
+}
+#sir-replay-app .editor-context-palette {
+  border-top: 1px solid #43584e;
+  padding-top: .35rem;
+}
+#sir-replay-app .editor-canvas {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #43584e;
+  border-radius: .6rem;
+  background: #0b100f;
+}
+#sir-replay-app .editor-camera-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  padding: .55rem;
+  border-bottom: 1px solid #43584e;
+  background: #17211e;
+}
+#sir-replay-app .editor-battlefield-svg {
+  display: block;
+  width: 100%;
+  min-height: 28rem;
+  max-height: 76vh;
+  background: #0b100f;
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+}
+#sir-replay-app .editor-battlefield-svg [data-editor-object="unit"] { cursor: pointer; }
+#sir-replay-app .editor-battlefield-svg [data-editor-object="unit"]:focus-visible rect {
+  stroke: #ffd166;
+  stroke-width: 6;
+}
+#sir-replay-app .editor-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .5rem 1rem;
+  padding: .5rem .7rem;
+  border-top: 1px solid #43584e;
+  color: #b9c8c0;
+  background: #17211e;
+  font: .82rem/1.4 ui-monospace, monospace;
+}
+#sir-replay-app .editor-inspector {
+  position: sticky;
+  top: 4.75rem;
+  min-width: 0;
+}
+#sir-replay-app .editor-inspector > button { width: 100%; margin-bottom: .5rem; }
+#sir-replay-app .editor-inspector .unit-editor-panel { padding: .75rem; }
+#sir-replay-app .editor-inspector.is-collapsed {
+  width: min-content;
+  justify-self: end;
+}
+#sir-replay-app .editor-object-list { grid-column: 1 / -1; }
+#sir-replay-app .editor-object-list summary {
+  color: #ffd166;
+  cursor: pointer;
+  font-weight: 700;
+}
+#sir-replay-app .editor-cell-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(2.75rem, 1fr));
+  gap: .2rem;
+  max-height: 16rem;
+  overflow: auto;
+}
+#sir-replay-app .editor-cell-list .map-cell {
+  width: 100%;
+  min-width: 2.75rem;
 }
 #sir-replay-app .simulator-workspace {
   display: grid;
@@ -538,6 +627,13 @@
   #sir-replay-app .battlefield-layout { grid-template-columns: 1fr; }
   #sir-replay-app .comparison-viewport { grid-template-columns: 1fr; }
   #sir-replay-app .editor-workspace { grid-template-columns: 1fr; }
+  #sir-replay-app .editor-tool-rail,
+  #sir-replay-app .editor-inspector {
+    position: static;
+    max-height: none;
+  }
+  #sir-replay-app .editor-battlefield-svg { min-height: 22rem; }
+  #sir-replay-app .editor-object-list { grid-column: 1; }
   #sir-replay-app .map-size-row { grid-template-columns: 1fr 1fr; }
   #sir-replay-app .editor-section-heading { display: block; }
 }
