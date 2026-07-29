@@ -6,7 +6,7 @@ index: 2
 status: accepted
 decision-status: implemented
 document-type: reference
-version: "1.7"
+version: "1.8"
 last-updated: 2026-07-29
 description: Map records, terrain, semantic edges, square unit footprints, controller modes, and deterministic execution.
 related:
@@ -126,6 +126,11 @@ it again hides the panel. `F2` toggles the current panel, and `F3` toggles the
 selected-object inspector overlay. The `T`, `U`, `E`, `Z`, and `M` shortcuts
 open or hide their corresponding tool groups. The contextual panel and
 inspector start hidden so the remaining workspace is the map.
+
+`File`, `Edit`, `View`, and `Map` menus close when focus moves to another menu
+or the user clicks outside the menu. The right-edge group labels remain visible
+when a contextual panel opens, so the active label can close the same panel
+without searching for a separate dismiss control.
 
 `File > New map` and the quick-toolbar `New` command request confirmation
 before replacing the draft with a named, empty 12×8 map. This is distinct from
@@ -311,6 +316,18 @@ previews update only the handoff. They do not change `MapDefinition`,
 Re-running **Simulate** deliberately resets the sandbox to a new
 copy of the selected revision.
 
+The Simulator uses the same desktop-authoring structure as the Editor:
+
+- `File`, `View`, `Simulation`, and `Samples` menus hold the complete command
+  set.
+- Run/Pause, Step, Reset, panel selection, zoom, and camera reset remain in a
+  dense quick-access toolbar.
+- The battlefield is the primary surface. `Controls`, `Events`, and `Samples`
+  form a labeled right-edge rail; the active panel opens to the rail's left,
+  and the labels remain available to close or switch it.
+- `F2` shows or hides the active simulator panel. Reset restores the immutable
+  handed-off revision rather than rewriting the Editor draft.
+
 The route preview takes deterministic diagonal-first Chebyshev steps and
 reports its cell distance. Every step checks the complete square footprint
 against the board, blocked terrain, semantic walls and closed doors, and other
@@ -333,6 +350,29 @@ disabled with an explicit unavailable status. The editor does not invent
 line-of-sight, fog, or retention behavior from the perception spike. Those
 overlays may be enabled only when an accepted shared-kernel result can supply
 their geometry and disclosure.
+
+## Curated samples
+
+The top-level **Samples** workspace groups reviewable examples by use:
+
+- **Troll assault:** three General-controller riflemen face a 240 HP, 3×3
+  armored troll across open and rough ground.
+- **Breach corridor:** humans and goblins converge on a closed semantic door.
+- **Objective crossing:** mixed footprints contest typed objective and
+  deployment regions through rough and blocked terrain.
+- **Replay walkthroughs:** precomputed tick-by-tick versions of the troll
+  contact and closed-door stalemate scenarios.
+
+Each map card can replace the current draft in Editor or start a new immutable
+Simulator sandbox. Replay cards open locally navigable projections in Replay.
+They are explicitly labelled deterministic sandbox evidence and are not
+cryptographically verified match replay packages.
+
+The current General controller attacks only when adjacent; accepted ranged
+weapon resolution is not yet part of this map-simulator kernel. The troll
+assault therefore makes that limitation observable: the riflemen cannot shoot
+the troll before contact under the current rules. The sample must evolve with
+the shared combat kernel rather than inventing browser-only rifle mechanics.
 
 The deterministic
 `tests/SIR.Client.Tests/fixtures/map-editor-milestone-9-simulator.txt` review

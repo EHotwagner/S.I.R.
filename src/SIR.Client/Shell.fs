@@ -303,11 +303,16 @@ module Shell =
     /// Missing class, footprint-detail, heading, elevation, and stance facts stay absent.
     let renderFrame (model: Model) =
         match model.Mode, model.Inspection with
-        | (VerifiedReplay | PerspectivePlayback), Some inspection ->
+        | (VerifiedReplay
+          | PerspectivePlayback
+          | SandboxFork _
+          | ScenarioSandbox _), Some inspection ->
             let disclosure =
                 match model.Mode with
                 | VerifiedReplay -> FullReplayDisclosure
                 | PerspectivePlayback -> PerspectiveDisclosure
+                | SandboxFork _
+                | ScenarioSandbox _ -> SandboxDisclosure
                 | _ -> failwith "Unreachable replay disclosure."
 
             Some

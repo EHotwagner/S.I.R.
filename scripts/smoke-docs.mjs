@@ -155,13 +155,21 @@ if (!simulateButton) {
 simulateButton.click();
 await window.happyDOM.waitUntilComplete();
 
+const controlsButton = [...mount.querySelectorAll("button")].find(
+  (button) => button.textContent.trim() === "Controls",
+);
+controlsButton?.click();
+await window.happyDOM.waitUntilComplete();
+
 if (
+  !mount?.querySelector('[aria-label="Simulator menu and toolbar"]') ||
+  !mount?.querySelector('[aria-label="Simulator command panel"]') ||
   !mount?.textContent.includes("Manual") ||
   !mount?.textContent.includes("Scripted AI") ||
   !mount?.textContent.includes("General AI") ||
   !mount?.querySelector('[aria-label="Editable simulation SVG battlefield"]')
 ) {
-  throw new Error("The generated site did not hand the immutable revision to the full-width simulator.");
+  throw new Error("The generated site did not hand the immutable revision to the desktop simulator.");
 }
 
 const editorButton = [...mount.querySelectorAll("button")].find(

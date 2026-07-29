@@ -24,6 +24,12 @@ type Msg =
     | EditorPulse
     | SimulateEditorRevision
     | SimulatorChanged of SimulatorAction
+    | ResetSimulator
+    | SimulatorPanelChanged of SimulatorToolPanel
+    | ToggleSimulatorToolPanelVisibility
+    | LoadMapSample of string
+    | LoadSimulationSample of string
+    | LoadReplaySample of string
     | KeyPressed of key: string * controlOrMeta: bool * shift: bool
     | KeyReleased of string
     | WorkspaceChanged of WorkspaceMode
@@ -45,6 +51,7 @@ and WorkspaceMode =
     | EditorWorkspace
     | ReplayWorkspace
     | RulesWorkspace
+    | SamplesWorkspace
 
 and EditorToolPanel =
     | TerrainTools
@@ -53,6 +60,11 @@ and EditorToolPanel =
     | ZoneTools
     | DocumentTools
 
+and SimulatorToolPanel =
+    | ControllerTools
+    | EventTools
+    | SimulatorSampleTools
+
 type Model =
     { Shell: SIR.Client.Model
       Editor: MapEditorState
@@ -60,6 +72,9 @@ type Model =
       Workspace: WorkspaceMode
       EditorToolPanel: EditorToolPanel
       EditorToolPanelVisible: bool
+      SimulatorToolPanel: SimulatorToolPanel
+      SimulatorToolPanelVisible: bool
+      SampleReplayFrames: InspectionProjection array option
       EditorView: EditorWorkspaceState
       EditorSpacePressed: bool
       PendingInterchangeReview: InterchangeReview option
@@ -74,6 +89,27 @@ let private prefersReducedMotion: bool = jsNative
 
 [<Emit("$0 instanceof HTMLInputElement || $0 instanceof HTMLTextAreaElement || $0 instanceof HTMLSelectElement")>]
 let private isTextEntryTarget (target: EventTarget) : bool = jsNative
+
+[<Emit("""
+const target = $0;
+if (!(target instanceof Element) || !target.closest("details.desktop-menu")) {
+  document.querySelectorAll("details.desktop-menu[open]").forEach(menu => menu.removeAttribute("open"));
+}
+""")>]
+let private dismissDesktopMenus (target: EventTarget) : unit = jsNative
+
+[<Emit("""
+const current = $0.closest("details.desktop-menu");
+document.querySelectorAll("details.desktop-menu[open]").forEach(menu => {
+  if (menu !== current) menu.removeAttribute("open");
+});
+""")>]
+let private closeSiblingDesktopMenus (summary: EventTarget) : unit = jsNative
+
+[<Emit("""
+document.querySelectorAll("details.desktop-menu[open]").forEach(menu => menu.removeAttribute("open"));
+""")>]
+let private closeDesktopMenus () : unit = jsNative
 
 let private fileBytes (file: File) =
     async {
@@ -305,6 +341,52 @@ let private evidenceFor model =
         (Some "Presentation-only evidence; undisclosed and replay-supplied markup omitted.")
         frame
 
+let private sampleReplayShell
+    (sample: ExperienceReplaySample)
+    (frames: InspectionProjection array)
+    =
+    let first = Array.head frames
+    let identity = "sample-replay-" + sample.Id
+    { Shell.init () with
+        Source =
+            Loaded
+                { SourceName = sample.Title
+                  SourceIdentity = identity
+                  EngineIdentity = "map-editor-sample-simulator-v1"
+                  FinalTick = Array.last frames |> _.Tick
+                  Kind = DesignScenario }
+        Mode = ScenarioSandbox identity
+        Verification = SandboxDerived identity
+        Playback =
+            { CurrentTick = first.Tick
+              FinalTick = Array.last frames |> _.Tick
+              IsPlaying = false
+              Speed = Normal }
+        Inspection = Some first
+        Worker = WorkerReady
+        Announcement = "Loaded curated replay walkthrough “" + sample.Title + "”." }
+
+let private sampleReplayFrameAt tick (frames: InspectionProjection array) =
+    frames
+    |> Array.filter (fun frame -> frame.Tick <= tick)
+    |> Array.tryLast
+    |> Option.orElseWith (fun () -> Array.tryHead frames)
+
+let private setSampleReplayTick tick frames shell =
+    let tick = max 0 (min shell.Playback.FinalTick tick)
+    match sampleReplayFrameAt tick frames with
+    | None -> shell
+    | Some frame ->
+        { shell with
+            Playback =
+                { shell.Playback with
+                    CurrentTick = frame.Tick
+                    IsPlaying =
+                        shell.Playback.IsPlaying
+                        && frame.Tick < shell.Playback.FinalTick }
+            Inspection = Some frame
+            Announcement = "Sample replay at tick " + string frame.Tick + "." }
+
 let init () =
     let editor =
         let initial = MapEditor.initial
@@ -324,6 +406,9 @@ let init () =
       Workspace = EditorWorkspace
       EditorToolPanel = TerrainTools
       EditorToolPanelVisible = false
+      SimulatorToolPanel = ControllerTools
+      SimulatorToolPanelVisible = false
+      SampleReplayFrames = None
       EditorView = editorView
       EditorSpacePressed = false
       PendingInterchangeReview = None
@@ -340,7 +425,7 @@ let init () =
 let rec update msg model =
     match msg with
     | FileSelected file ->
-        model,
+        { model with SampleReplayFrames = None },
         Cmd.OfAsync.perform
             fileBytes
             file
@@ -389,9 +474,87 @@ let rec update msg model =
                 { next with PendingInterchangeReview = None }, command
             | Error _ -> model, Cmd.none
         | None -> model, Cmd.none
+    | LoadMapSample sampleId ->
+        match ExperienceSamples.tryMap sampleId with
+        | None -> model, Cmd.none
+        | Some sample ->
+            let editor = ExperienceSamples.editorState sample
+            let editorView =
+                MapEditorWorkspace.initial model.EditorView.ReducedMotion
+                |> MapEditorWorkspace.update
+                    editor.Map
+                    (MapEditor.selected editor)
+                    FitEditorBoard
+            { model with
+                Editor = editor
+                Simulator = None
+                Workspace = EditorWorkspace
+                EditorToolPanel = TerrainTools
+                EditorToolPanelVisible = false
+                EditorView = editorView
+                SampleReplayFrames = None
+                Battlefield =
+                    Battlefield.reconcile
+                        (MapEditor.frame editor)
+                        model.Battlefield },
+            Cmd.none
+    | LoadSimulationSample sampleId ->
+        match ExperienceSamples.tryMap sampleId with
+        | None -> model, Cmd.none
+        | Some sample ->
+            let editor = ExperienceSamples.editorState sample
+            match ExperienceSamples.simulator sample with
+            | None ->
+                { model with
+                    Editor =
+                        { editor with
+                            Validation = Some "The curated simulation sample could not be validated." } },
+                Cmd.none
+            | Some simulator ->
+                let frame =
+                    MapEditorSimulator.frame editor.SelectedUnit simulator
+                { model with
+                    Editor =
+                        { editor with
+                            SimulatedDigest = Some simulator.Revision.Digest }
+                    Simulator = Some simulator
+                    Workspace = SimulatorWorkspace
+                    SimulatorToolPanel = ControllerTools
+                    SimulatorToolPanelVisible = false
+                    SampleReplayFrames = None
+                    Battlefield =
+                        Battlefield.reconcile frame model.Battlefield
+                    PreviousFrame = None
+                    PresentationAlpha = 1.0 },
+                Cmd.none
+    | LoadReplaySample sampleId ->
+        match ExperienceSamples.tryReplay sampleId with
+        | None -> model, Cmd.none
+        | Some sample ->
+            let frames = ExperienceSamples.replayFrames sample
+            if Array.isEmpty frames then
+                model, Cmd.none
+            else
+                let shell = sampleReplayShell sample frames
+                let frame =
+                    Shell.renderFrame shell
+                    |> Option.defaultValue Battlefield.representativeFrame
+                { model with
+                    Shell = shell
+                    Workspace = ReplayWorkspace
+                    SampleReplayFrames = Some frames
+                    Battlefield =
+                        Battlefield.reconcile frame model.Battlefield
+                    PreviousFrame = None
+                    PresentationAlpha = 1.0 },
+                Cmd.none
     | WorkspaceChanged workspace ->
         let editor =
-            if workspace = ReplayWorkspace || workspace = RulesWorkspace then
+            if
+                workspace = ReplayWorkspace
+                || workspace = RulesWorkspace
+                || workspace = SamplesWorkspace
+            then
                 MapEditor.update CancelEditorGesture model.Editor
             else
                 model.Editor
@@ -442,6 +605,35 @@ let rec update msg model =
                 PreviousFrame = None
                 PresentationAlpha = 1.0 },
             Cmd.none
+    | ResetSimulator ->
+        match MapEditorSimulator.tryHandoff model.Editor with
+        | Error message ->
+            { model with
+                Editor = { model.Editor with Validation = Some message } },
+            Cmd.none
+        | Ok simulator ->
+            let frame =
+                MapEditorSimulator.frame model.Editor.SelectedUnit simulator
+            { model with
+                Simulator = Some simulator
+                Battlefield = Battlefield.reconcile frame model.Battlefield
+                PreviousFrame = None
+                PresentationAlpha = 1.0 },
+            Cmd.none
+    | SimulatorPanelChanged panel ->
+        { model with
+            SimulatorToolPanel = panel
+            SimulatorToolPanelVisible =
+                not (
+                    model.SimulatorToolPanelVisible
+                    && Object.Equals(model.SimulatorToolPanel, panel)
+                ) },
+        Cmd.none
+    | ToggleSimulatorToolPanelVisibility ->
+        { model with
+            SimulatorToolPanelVisible =
+                not model.SimulatorToolPanelVisible },
+        Cmd.none
     | EditorToolPanelChanged panel ->
         { model with
             EditorToolPanel = panel
@@ -506,37 +698,103 @@ let rec update msg model =
         let editor = MapEditor.update MarkEditorSaved model.Editor
         { model with Editor = editor }, Cmd.ofEffect (fun _ -> downloadMap editor)
     | ShellMsg shellMsg ->
-        let previousFrame = Shell.renderFrame model.Shell
-        let next, effects = Shell.update shellMsg model.Shell
-        let nextFrame = Shell.renderFrame next
-        let battlefield =
-            match nextFrame with
-            | Some frame -> Battlefield.reconcile frame model.Battlefield
-            | None when next.Verification = Loading ->
-                { model.Battlefield with
-                    SelectedUnit = None
-                    FocusedUnit = None }
-            | None -> model.Battlefield
+        match model.SampleReplayFrames, shellMsg with
+        | Some _, ReplayBytesSelected _ ->
+            let next, effects = Shell.update shellMsg model.Shell
+            { model with
+                Shell = next
+                SampleReplayFrames = None
+                Battlefield =
+                    { model.Battlefield with
+                        SelectedUnit = None
+                        FocusedUnit = None }
+                PreviousFrame = None
+                PresentationAlpha = 1.0 },
+            effectsToCmd effects
+        | Some frames, _ ->
+            let current = model.Shell.Playback.CurrentTick
+            let local =
+                match shellMsg with
+                | StepForward ->
+                    setSampleReplayTick (current + 1) frames model.Shell
+                | StepBackward ->
+                    setSampleReplayTick (current - 1) frames model.Shell
+                | SeekRequested tick ->
+                    setSampleReplayTick tick frames model.Shell
+                | PreviousEvent ->
+                    frames
+                    |> Array.filter (fun frame ->
+                        frame.Tick < current && not (List.isEmpty frame.Events))
+                    |> Array.tryLast
+                    |> Option.map (fun frame ->
+                        setSampleReplayTick frame.Tick frames model.Shell)
+                    |> Option.defaultValue model.Shell
+                | NextEvent ->
+                    frames
+                    |> Array.tryFind (fun frame ->
+                        frame.Tick > current && not (List.isEmpty frame.Events))
+                    |> Option.map (fun frame ->
+                        setSampleReplayTick frame.Tick frames model.Shell)
+                    |> Option.defaultValue model.Shell
+                | TogglePlayback ->
+                    { model.Shell with
+                        Playback =
+                            { model.Shell.Playback with
+                                IsPlaying = model.Shell.Playback.CurrentTick < model.Shell.Playback.FinalTick && not model.Shell.Playback.IsPlaying }
+                        Announcement =
+                            if model.Shell.Playback.IsPlaying then
+                                "Sample replay paused."
+                            else
+                                "Sample replay started." }
+                | CancelRequested ->
+                    { model.Shell with
+                        Playback =
+                            { model.Shell.Playback with IsPlaying = false }
+                        Announcement = "Sample replay paused." }
+                | _ ->
+                    Shell.update shellMsg model.Shell |> fst
+            let frame =
+                Shell.renderFrame local
+                |> Option.defaultValue Battlefield.representativeFrame
+            { model with
+                Shell = local
+                Battlefield =
+                    Battlefield.reconcile frame model.Battlefield
+                PreviousFrame = None
+                PresentationAlpha = 1.0 },
+            Cmd.none
+        | None, _ ->
+            let previousFrame = Shell.renderFrame model.Shell
+            let next, effects = Shell.update shellMsg model.Shell
+            let nextFrame = Shell.renderFrame next
+            let battlefield =
+                match nextFrame with
+                | Some frame -> Battlefield.reconcile frame model.Battlefield
+                | None when next.Verification = Loading ->
+                    { model.Battlefield with
+                        SelectedUnit = None
+                        FocusedUnit = None }
+                | None -> model.Battlefield
 
-        let interpolation =
-            match previousFrame, nextFrame with
-            | Some before, Some after
-                when before.Tick <> after.Tick
-                     && next.Playback.IsPlaying
-                     && not battlefield.ExactTicks
-                     && not battlefield.ReducedMotion
-                     && before.Disclosure = after.Disclosure
-                     && (before.Units |> Array.map _.Id |> Set.ofArray)
-                        = (after.Units |> Array.map _.Id |> Set.ofArray) ->
-                Some before, 0.0
-            | _ -> model.PreviousFrame, model.PresentationAlpha
+            let interpolation =
+                match previousFrame, nextFrame with
+                | Some before, Some after
+                    when before.Tick <> after.Tick
+                         && next.Playback.IsPlaying
+                         && not battlefield.ExactTicks
+                         && not battlefield.ReducedMotion
+                         && before.Disclosure = after.Disclosure
+                         && (before.Units |> Array.map _.Id |> Set.ofArray)
+                            = (after.Units |> Array.map _.Id |> Set.ofArray) ->
+                    Some before, 0.0
+                | _ -> model.PreviousFrame, model.PresentationAlpha
 
-        { model with
-            Shell = next
-            Battlefield = battlefield
-            PreviousFrame = fst interpolation
-            PresentationAlpha = snd interpolation },
-        effectsToCmd effects
+            { model with
+                Shell = next
+                Battlefield = battlefield
+                PreviousFrame = fst interpolation
+                PresentationAlpha = snd interpolation },
+            effectsToCmd effects
     | BattlefieldChanged action ->
         let frame =
             Shell.renderFrame model.Shell
@@ -555,7 +813,23 @@ let rec update msg model =
                 else model.PresentationAlpha },
         Cmd.none
     | PlaybackPulse ->
-        if
+        if model.SampleReplayFrames.IsSome && model.Shell.Playback.IsPlaying then
+            let frames = Option.get model.SampleReplayFrames
+            let shell =
+                setSampleReplayTick
+                    (model.Shell.Playback.CurrentTick + 1)
+                    frames
+                    model.Shell
+            let frame =
+                Shell.renderFrame shell
+                |> Option.defaultValue Battlefield.representativeFrame
+            { model with
+                Shell = shell
+                Battlefield = Battlefield.reconcile frame model.Battlefield
+                PreviousFrame = None
+                PresentationAlpha = 1.0 },
+            Cmd.none
+        elif
             model.PreviousFrame.IsSome
             && model.PresentationAlpha < 1.0
             && not model.Battlefield.ExactTicks
@@ -640,6 +914,7 @@ let rec update msg model =
             | _ -> model, Cmd.none
         elif model.Workspace = SimulatorWorkspace then
             match key with
+            | "F2" -> update ToggleSimulatorToolPanelVisibility model
             | "ArrowLeft" -> update (SimulatorChanged(MoveSimulatorPreview(-1, 0))) model
             | "ArrowRight" -> update (SimulatorChanged(MoveSimulatorPreview(1, 0))) model
             | "ArrowUp" -> update (SimulatorChanged(MoveSimulatorPreview(0, -1))) model
@@ -819,8 +1094,15 @@ let private button
         prop.onClick onClick
     ]
 
-let private statusView model =
+let private statusView (model: SIR.Client.Model) =
     let text, className = status model
+    let details =
+        match model.Verification with
+        | SandboxDerived _ ->
+            [ " Curated sandbox projections are explanatory examples, not verified replay evidence." ]
+        | _ ->
+            [ " Browser verification replays accepted kernel inputs; it does not re-run player WASM."
+              " Authoritative verification is available only from .NET exact-artifact WASM re-execution." ]
 
     Html.section [
         prop.className ("verification-banner " + className)
@@ -829,24 +1111,34 @@ let private statusView model =
         prop.ariaLive.polite
         prop.children [
             Html.strong text
-            Html.span [
-                prop.className "status-detail"
-                prop.text " Browser verification replays accepted kernel inputs; it does not re-run player WASM."
-            ]
-            Html.span [
-                prop.className "status-detail"
-                prop.text " Authoritative verification is available only from .NET exact-artifact WASM re-execution."
-            ]
+            for detail in details do
+                Html.span [
+                    prop.className "status-detail"
+                    prop.text detail
+                ]
         ]
     ]
 
-let private sourcePanel dispatch =
+let private sourcePanel (model: SIR.Client.Model) dispatch =
     Html.section [
         prop.className "panel source-panel"
         prop.ariaLabel "Replay source"
         prop.children [
             Html.h2 "Replay package"
-            Html.p "Load a bounded .sirr package. Files stay in this browser session."
+            Html.p (
+                match model.Source with
+                | Loaded metadata ->
+                    "Loaded "
+                    + metadata.SourceName
+                    + " · "
+                    + string metadata.Kind
+                    + " · "
+                    + string metadata.FinalTick
+                    + " ticks."
+                | Reading name -> "Loading " + name + "."
+                | Rejected(name, reason) -> name + " rejected: " + reason
+                | NoSource -> "Load a bounded .sirr package. Files stay in this browser session."
+            )
             Html.input [
                 prop.type'.file
                 prop.accept ".sirr,application/octet-stream"
@@ -5152,9 +5444,13 @@ let private editorDesktopChrome
         (children: Fable.React.ReactElement list)
         =
         Html.details [
-            prop.className "editor-menu"
+            prop.className "editor-menu desktop-menu"
             prop.children [
-                Html.summary label
+                Html.summary [
+                    prop.text label
+                    prop.onClick (fun event ->
+                        closeSiblingDesktopMenus event.currentTarget)
+                ]
                 Html.div [
                     prop.className "editor-menu-popover"
                     prop.children children
@@ -5172,6 +5468,7 @@ let private editorDesktopChrome
                     prop.ariaLabel "Import SIR map"
                     prop.title "Import SIR-MAP directly or review a Universal VTT, Foundry, or Fantasy Grounds export"
                     prop.onChange (fun (files: File list) ->
+                        closeDesktopMenus ()
                         files
                         |> List.tryHead
                         |> Option.iter (MapFileSelected >> dispatch))
@@ -5179,7 +5476,9 @@ let private editorDesktopChrome
             ]
         ]
     let command label aria disabled message =
-        button label aria disabled (fun _ -> dispatch message)
+        button label aria disabled (fun _ ->
+            closeDesktopMenus ()
+            dispatch message)
 
     Html.section [
         prop.className "editor-desktop-chrome"
@@ -5304,6 +5603,287 @@ let private editorDesktopChrome
         ]
     ]
 
+let private simulatorDesktopChrome
+    (editor: MapEditorState)
+    (state: MapEditorState)
+    (handoff: SimulatorHandoff)
+    panelVisible
+    (dispatch: Msg -> unit)
+    =
+    let menu (label: string) (children: Fable.React.ReactElement list) =
+        Html.details [
+            prop.className "editor-menu desktop-menu"
+            prop.children [
+                Html.summary [
+                    prop.text label
+                    prop.onClick (fun event ->
+                        closeSiblingDesktopMenus event.currentTarget)
+                ]
+                Html.div [
+                    prop.className "editor-menu-popover"
+                    prop.children children
+                ]
+            ]
+        ]
+    let command (label: string) (aria: string) disabled message =
+        button label aria disabled (fun _ ->
+            closeDesktopMenus ()
+            dispatch message)
+
+    Html.section [
+        prop.className "editor-desktop-chrome simulator-desktop-chrome"
+        prop.ariaLabel "Simulator menu and toolbar"
+        prop.children [
+            Html.div [
+                prop.className "editor-document-strip"
+                prop.children [
+                    Html.strong editor.Authoring.Name
+                    Html.span (
+                        "Simulation tick "
+                        + string handoff.Tick
+                        + " · "
+                        + if state.IsRunning then "Running" else "Paused"
+                    )
+                    Html.span (
+                        "Revision "
+                        + string handoff.Revision.Number
+                        + " · "
+                        + handoff.Revision.Digest.Substring(0, 12)
+                    )
+                ]
+            ]
+            Html.nav [
+                prop.className "editor-menu-bar"
+                prop.ariaLabel "Simulator menus"
+                prop.children [
+                    menu
+                        "File"
+                        [ command "Open map in Editor" "Open the simulated map in Editor" false (WorkspaceChanged EditorWorkspace)
+                          command "Repository bundle" "Download editor and simulator design work" false ExportDesignBundle ]
+                    menu
+                        "View"
+                        [ command "Reset camera" "Reset battlefield camera" false (BattlefieldChanged ResetCamera)
+                          command "Zoom in" "Zoom battlefield in" false (BattlefieldChanged(ZoomBy 1.25))
+                          command "Zoom out" "Zoom battlefield out" false (BattlefieldChanged(ZoomBy 0.8))
+                          command
+                              (if panelVisible then "Hide command panel · F2" else "Show command panel · F2")
+                              "Show or hide the active simulator command panel"
+                              false
+                              ToggleSimulatorToolPanelVisibility ]
+                    menu
+                        "Simulation"
+                        [ command
+                              (if state.IsRunning then "Pause" else "Run")
+                              "Run or pause deterministic simulation"
+                              false
+                              (SimulatorChanged ToggleSimulatorRun)
+                          command "Step" "Advance simulation one tick" false (SimulatorChanged StepSimulator)
+                          command "Reset simulation" "Reset runtime state to the immutable editor revision" false ResetSimulator ]
+                    menu
+                        "Samples"
+                        [ for sample in ExperienceSamples.maps do
+                              command
+                                  sample.Title
+                                  ("Load simulation sample: " + sample.Summary)
+                                  false
+                                  (LoadSimulationSample sample.Id) ]
+                ]
+            ]
+            Html.div [
+                prop.className "editor-quick-toolbar"
+                prop.role.toolbar
+                prop.ariaLabel "Simulator quick access"
+                prop.children [
+                    command
+                        (if state.IsRunning then "Pause" else "Run")
+                        "Run or pause deterministic simulation"
+                        false
+                        (SimulatorChanged ToggleSimulatorRun)
+                    command "Step" "Advance simulation one tick" false (SimulatorChanged StepSimulator)
+                    command "Reset" "Reset simulation to its immutable revision" false ResetSimulator
+                    Html.span [ prop.className "toolbar-separator"; prop.ariaHidden true ]
+                    command "Controls" "Toggle simulator controls panel" false (SimulatorPanelChanged ControllerTools)
+                    command "Events" "Toggle simulator events panel" false (SimulatorPanelChanged EventTools)
+                    command "Samples" "Toggle simulator samples panel" false (SimulatorPanelChanged SimulatorSampleTools)
+                    Html.span [ prop.className "toolbar-separator"; prop.ariaHidden true ]
+                    command "−" "Zoom battlefield out" false (BattlefieldChanged(ZoomBy 0.8))
+                    command "+" "Zoom battlefield in" false (BattlefieldChanged(ZoomBy 1.25))
+                    command "Fit" "Reset battlefield camera" false (BattlefieldChanged ResetCamera)
+                ]
+            ]
+        ]
+    ]
+
+let private simulatorDock
+    (handoff: SimulatorHandoff)
+    (state: MapEditorState)
+    (activePanel: SimulatorToolPanel)
+    panelVisible
+    (dispatch: Msg -> unit)
+    =
+    let choose (label: string) (panel: SimulatorToolPanel) =
+        Html.button [
+            prop.type'.button
+            prop.text label
+            prop.ariaPressed (
+                panelVisible && Object.Equals(activePanel, panel)
+            )
+            prop.onClick (fun _ ->
+                dispatch (SimulatorPanelChanged panel))
+        ]
+    Html.section [
+        prop.className (
+            "panel editor-tools editor-ribbon simulator-ribbon"
+            + if panelVisible then "" else " is-collapsed"
+        )
+        prop.ariaLabel "Simulator command panel"
+        prop.children [
+            Html.nav [
+                prop.className "editor-tool-navigation compact-tool-rail"
+                prop.ariaLabel "Simulator command groups"
+                prop.children [
+                    choose "Controls" ControllerTools
+                    choose "Events" EventTools
+                    choose "Samples" SimulatorSampleTools
+                    button
+                        (if panelVisible then "Close · F2" else "Open · F2")
+                        "Show or hide the active simulator command panel"
+                        false
+                        (fun _ -> dispatch ToggleSimulatorToolPanelVisibility)
+                ]
+            ]
+            if panelVisible then
+                Html.div [
+                    prop.className "editor-tool-panel editor-context-palette simulator-context-palette"
+                    prop.children [
+                        match activePanel with
+                        | ControllerTools ->
+                            controllerPanel handoff state dispatch
+                        | EventTools ->
+                            Html.h3 ("Tick " + string handoff.Tick + " events")
+                            if List.isEmpty state.LastEvents then
+                                Html.p "No actions resolved on the latest tick."
+                            else
+                                Html.ol [
+                                    prop.ariaLabel "Latest deterministic simulation events"
+                                    prop.children [
+                                        for event in state.LastEvents do
+                                            Html.li event
+                                    ]
+                                ]
+                            Html.h3 "Runtime roster"
+                            Html.ul [
+                                prop.ariaLabel "Simulation unit health"
+                                prop.children [
+                                    for _, unit in state.Map.Units |> Map.toList do
+                                        Html.li (
+                                            "Unit "
+                                            + string unit.Id
+                                            + " · "
+                                            + unit.ClassId
+                                            + " · "
+                                            + string unit.Health
+                                            + "/"
+                                            + string unit.HealthMaximum
+                                            + " HP"
+                                        )
+                                ]
+                            ]
+                        | SimulatorSampleTools ->
+                            Html.h3 "Simulation samples"
+                            Html.p "Loading a sample replaces the current editor draft and simulator sandbox."
+                            for sample in ExperienceSamples.maps do
+                                Html.article [
+                                    prop.className "sample-compact-card"
+                                    prop.children [
+                                        Html.h4 sample.Title
+                                        Html.p sample.Summary
+                                        button
+                                            "Load"
+                                            ("Load simulation sample " + sample.Title)
+                                            false
+                                            (fun _ ->
+                                                dispatch (LoadSimulationSample sample.Id))
+                                    ]
+                                ]
+                    ]
+                ]
+        ]
+    ]
+
+let private sampleCatalogView (dispatch: Msg -> unit) =
+    let mapCard (sample: ExperienceMapSample) =
+        Html.article [
+            prop.className "panel sample-card"
+            prop.children [
+                Html.p [ prop.className "eyebrow"; prop.text "Map and simulation" ]
+                Html.h3 sample.Title
+                Html.p sample.Summary
+                Html.ul [
+                    for highlight in sample.Highlights do
+                        Html.li highlight
+                ]
+                Html.div [
+                    prop.className "control-row"
+                    prop.children [
+                        button "Open map" ("Open " + sample.Title + " in Editor") false (fun _ ->
+                            dispatch (LoadMapSample sample.Id))
+                        button "Run simulation" ("Run " + sample.Title + " in Simulator") false (fun _ ->
+                            dispatch (LoadSimulationSample sample.Id))
+                    ]
+                ]
+            ]
+        ]
+    let replayCard (sample: ExperienceReplaySample) =
+        Html.article [
+            prop.className "panel sample-card"
+            prop.children [
+                Html.p [ prop.className "eyebrow"; prop.text "Replay walkthrough" ]
+                Html.h3 sample.Title
+                Html.p sample.Summary
+                Html.p (
+                    string sample.Ticks
+                    + " deterministic sample ticks · locally navigable · sandbox evidence"
+                )
+                button "Open replay" ("Open replay walkthrough " + sample.Title) false (fun _ ->
+                    dispatch (LoadReplaySample sample.Id))
+            ]
+        ]
+    Html.section [
+        prop.className "samples-workspace"
+        prop.ariaLabel "Curated maps simulations and replays"
+        prop.children [
+            Html.div [
+                prop.className "samples-heading"
+                prop.children [
+                    Html.p [ prop.className "eyebrow"; prop.text "Explore mechanics" ]
+                    Html.h2 "Curated samples"
+                    Html.p "Open a canonical map for editing, run its deterministic controller sandbox, or inspect a precomputed replay walkthrough."
+                ]
+            ]
+            Html.h3 "Maps and simulations"
+            Html.div [
+                prop.className "sample-card-grid"
+                prop.children [
+                    for sample in ExperienceSamples.maps do
+                        mapCard sample
+                ]
+            ]
+            Html.h3 "Replay walkthroughs"
+            Html.div [
+                prop.className "sample-card-grid"
+                prop.children [
+                    for sample in ExperienceSamples.replays do
+                        replayCard sample
+                ]
+            ]
+            Html.p [
+                prop.className "sample-disclosure"
+                prop.text "Curated walkthroughs are deterministic sandbox evidence, not cryptographically verified match replays."
+            ]
+        ]
+    ]
+
 let private workspaceNavigation (workspace: WorkspaceMode) dispatch =
     let item (label: string) (value: WorkspaceMode) =
         let isCurrent = workspace = value
@@ -5322,6 +5902,7 @@ let private workspaceNavigation (workspace: WorkspaceMode) dispatch =
             item "Editor" EditorWorkspace
             item "Replay" ReplayWorkspace
             item "Rules and data" RulesWorkspace
+            item "Samples" SamplesWorkspace
         ]
     ]
 
@@ -5331,6 +5912,8 @@ let view model dispatch =
     Html.main [
         prop.className "app-shell"
         prop.ariaLabel "S.I.R. simulator and editor"
+        prop.onClick (fun event ->
+            dismissDesktopMenus event.target)
         prop.children [
             workspaceNavigation model.Workspace dispatch
             match model.Workspace with
@@ -5345,6 +5928,8 @@ let view model dispatch =
                             Html.p "Return to the editor and choose Simulate to create an immutable sandbox handoff."
                             button "Open Editor" "Open the map editor" false (fun _ ->
                                 dispatch (WorkspaceChanged EditorWorkspace))
+                            button "Browse samples" "Open curated map and simulation samples" false (fun _ ->
+                                dispatch (WorkspaceChanged SamplesWorkspace))
                         ]
                     ]
                 | Some simulator ->
@@ -5357,6 +5942,12 @@ let view model dispatch =
                     Html.div [
                         prop.className "simulator-workspace"
                         prop.children [
+                            simulatorDesktopChrome
+                                model.Editor
+                                simulatorState
+                                simulator
+                                model.SimulatorToolPanelVisible
+                                dispatch
                             Html.section [
                                 prop.className "panel simulator-revision-status"
                                 prop.role.status
@@ -5378,19 +5969,29 @@ let view model dispatch =
                                         Html.p "Editor changes are preserved separately. Choose Simulate in Editor to reset this sandbox."
                                 ]
                             ]
-                            controllerPanel simulator simulatorState dispatch
-                            battlefieldView
-                                shell
-                                (Some(
-                                    MapEditorSimulator.frame
-                                        model.Editor.SelectedUnit
+                            Html.div [
+                                prop.className "simulator-map-stage"
+                                prop.children [
+                                    battlefieldView
+                                        shell
+                                        (Some(
+                                            MapEditorSimulator.frame
+                                                model.Editor.SelectedUnit
+                                                simulator
+                                        ))
+                                        (Some simulatorState)
+                                        model.Battlefield
+                                        None
+                                        1.0
+                                        dispatch
+                                    simulatorDock
                                         simulator
-                                ))
-                                (Some simulatorState)
-                                model.Battlefield
-                                None
-                                1.0
-                                dispatch
+                                        simulatorState
+                                        model.SimulatorToolPanel
+                                        model.SimulatorToolPanelVisible
+                                        dispatch
+                                ]
+                            ]
                         ]
                     ]
             | EditorWorkspace ->
@@ -5502,7 +6103,7 @@ let view model dispatch =
                     Html.div [
                         prop.className "dashboard"
                         prop.children [
-                            sourcePanel dispatch
+                            sourcePanel shell dispatch
                             controls shell dispatch
                             inspector shell dispatch
                         ]
@@ -5530,6 +6131,8 @@ let view model dispatch =
                     ]
                     rulesDataCatalog
                 ]
+            | SamplesWorkspace ->
+                sampleCatalogView dispatch
             Html.p [
                 prop.className "sr-only"
                 prop.role.status

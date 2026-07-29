@@ -277,6 +277,22 @@ const buttonByText = (text) =>
     (button) => button.textContent.trim() === text,
   );
 
+const viewMenu = [...window.document.querySelectorAll(
+  '[aria-label="Map editor menus"] summary',
+)].find((summary) => summary.textContent.trim() === "View");
+viewMenu?.click();
+await window.happyDOM.waitUntilComplete();
+if (!viewMenu?.closest("details")?.open) {
+  throw new Error("The classical View menu did not open.");
+}
+window.document
+  .querySelector('[aria-label="SVG tactical map workspace"]')
+  ?.dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
+await window.happyDOM.waitUntilComplete();
+if (viewMenu.closest("details")?.open) {
+  throw new Error("The classical editor menu did not close after clicking elsewhere.");
+}
+
 const newMapButton = buttonByText("New");
 newMapButton?.click();
 await window.happyDOM.waitUntilComplete();
@@ -303,6 +319,8 @@ if (
 handoffButton.click();
 await window.happyDOM.waitUntilComplete();
 
+buttonByText("Controls")?.click();
+await window.happyDOM.waitUntilComplete();
 const controllerPanel = window.document.querySelector(
   '[aria-label="Simulation controllers"]',
 );
@@ -310,6 +328,8 @@ const editorBattlefield = window.document.querySelector(
   '[aria-label="Editable simulation SVG battlefield"] svg[role="application"]',
 );
 if (
+  !window.document.querySelector('[aria-label="Simulator menu and toolbar"]') ||
+  !window.document.querySelector('[aria-label="Simulator command panel"]') ||
   !controllerPanel?.textContent.includes("Manual") ||
   !controllerPanel.textContent.includes("Scripted AI") ||
   !controllerPanel.textContent.includes("General AI") ||
@@ -1086,8 +1106,69 @@ if (
   throw new Error("The unit, perk, weapon, armor, and equipment catalog is incomplete.");
 }
 
+buttonByText("Samples")?.click();
+await window.happyDOM.waitUntilComplete();
+const samplesWorkspace = window.document.querySelector(
+  '[aria-label="Curated maps simulations and replays"]',
+);
+const trollSampleCard = [...(samplesWorkspace?.querySelectorAll(".sample-card") ?? [])]
+  .find((card) => card.textContent.includes("Troll assault"));
+if (
+  !samplesWorkspace ||
+  !trollSampleCard?.textContent.includes("240 HP armored troll") ||
+  !samplesWorkspace.textContent.includes("Troll reaches the line") ||
+  !samplesWorkspace.textContent.includes("Closed-door stalemate")
+) {
+  throw new Error("The curated map, simulation, and replay samples did not mount.");
+}
+trollSampleCard
+  .querySelector('button[aria-label*="Run Troll assault"]')
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document
+    .querySelector('[aria-label="Simulator menu and toolbar"]')
+    ?.textContent.includes("Troll assault") ||
+  window.document
+    .querySelectorAll(
+      '[aria-label="Editable simulation SVG battlefield"] [data-unit-id]',
+    ).length !== 4
+) {
+  throw new Error("The troll assault sample did not open in the compact simulator.");
+}
+buttonByText("Samples")?.click();
+await window.happyDOM.waitUntilComplete();
+const trollReplayCard = [...window.document.querySelectorAll(".sample-card")]
+  .find((card) => card.textContent.includes("Troll reaches the line"));
+trollReplayCard
+  ?.querySelector('button[aria-label*="Troll reaches the line"]')
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+const sampleReplayStatus = window.document.querySelector(
+  '[aria-label="Replay verification status"]',
+);
+if (
+  !sampleReplayStatus?.textContent.includes("not authoritative") ||
+  !window.document
+    .querySelector('[aria-label="Replay source"]')
+    ?.textContent.includes("Troll reaches the line") ||
+  !window.document
+    .querySelector('[aria-label="Loaded replay SVG battlefield"]')
+) {
+  throw new Error("The curated replay walkthrough did not open as sandbox evidence.");
+}
+buttonByText("Step")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document
+    .querySelector('[aria-label="Replay controls"]')
+    ?.textContent.includes("Tick 1")
+) {
+  throw new Error("The curated replay walkthrough did not navigate locally.");
+}
+
 console.log(
-  `Browser smoke passed: separate full-width Simulator and Editor tabs rendered four canonical square-unit symbols, all controller modes executed, replay inspection remained intact, and ${scenarioButtons.length} rules scenarios with ${rulesTables.length} data tables completed.`,
+  `Browser smoke passed: dismissible desktop menus, compact Editor and Simulator shells, curated maps/simulations/replays, four canonical square-unit symbols, all controller modes, replay inspection, ${scenarioButtons.length} rules scenarios, and ${rulesTables.length} data tables completed.`,
 );
 
 window.happyDOM.close();
