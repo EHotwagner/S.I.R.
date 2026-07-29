@@ -219,6 +219,73 @@ if (
   throw new Error("The laboratory comparison surface did not mount.");
 }
 
+const battlefield = window.document.querySelector(
+  'svg[role="application"][aria-label*="exact tick 24"]',
+);
+const battlefieldUnits = battlefield?.querySelectorAll("[data-unit-id]") ?? [];
+const healthPositions =
+  battlefield?.querySelectorAll("[data-health-position]") ?? [];
+
+if (
+  !battlefield ||
+  battlefieldUnits.length !== 6 ||
+  battlefield.querySelectorAll("[data-authoritative-footprint]").length !== 6 ||
+  battlefield.querySelectorAll("[data-facing-wedge]").length !== 6 ||
+  healthPositions.length !== 72 ||
+  battlefield.querySelectorAll("[data-elevation-label]").length !== 2 ||
+  battlefield.querySelectorAll("[data-stance-mark]").length !== 5
+) {
+  throw new Error(
+    "The detailed static SVG omitted square symbols, exact footprints, facing, health, elevation, or stance.",
+  );
+}
+
+const selectedTroll = battlefield.querySelector('[data-unit-id="6"]');
+selectedTroll?.dispatchEvent(
+  new window.MouseEvent("click", { bubbles: true }),
+);
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document
+    .querySelector('[aria-label="Battlefield unit inspector"]')
+    ?.textContent.includes("Arcane troll Stone")
+) {
+  throw new Error("SVG selection did not update the equivalent HTML inspector.");
+}
+
+const firstUnit = battlefield.querySelector('[data-unit-id="1"]');
+firstUnit?.dispatchEvent(new window.Event("focus", { bubbles: true }));
+firstUnit?.dispatchEvent(
+  new window.KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }),
+);
+await window.happyDOM.waitUntilComplete();
+if (
+  battlefield.querySelector('[data-unit-id="2"]')?.getAttribute("tabindex") !== "0"
+) {
+  throw new Error("Arrow-key roving focus did not move to the nearest unit.");
+}
+
+const zoomOut = window.document.querySelector(
+  'button[aria-label="Zoom battlefield out"]',
+);
+zoomOut?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document.querySelector(".semantic-zoom")?.textContent.includes("Standard") ||
+  battlefield.querySelector("[data-elevation-label]") ||
+  battlefield.querySelector("[data-stance-mark]")
+) {
+  throw new Error("Semantic zoom did not remove detailed-only labels and stance.");
+}
+
+const palette = window.document.querySelector("#battlefield-palette");
+palette.value = "high-contrast";
+palette.dispatchEvent(new window.Event("change", { bubbles: true }));
+await window.happyDOM.waitUntilComplete();
+if (palette.value !== "high-contrast" || battlefieldUnits.length !== 6) {
+  throw new Error("Palette selection changed geometry or failed to update.");
+}
+
 const scenarioButtons = [
   ...catalog.querySelectorAll('button[aria-label^="Simulate design scenario"]'),
 ];
@@ -268,7 +335,7 @@ if (
 }
 
 console.log(
-  `Browser smoke passed: React mounted without the duplicate masthead, exposed ${scenarioButtons.length} explicit simulation actions and an immediate-result panel, rendered ${rulesTables.length} rules-data tables, and sent the selected scenario to the worker.`,
+  `Browser smoke passed: React mounted the six-unit exact SVG with 72 health positions, selection/inspector, roving focus, semantic zoom, palette switching, ${scenarioButtons.length} simulation actions, ${rulesTables.length} rules-data tables, and worker messaging.`,
 );
 
 window.happyDOM.close();

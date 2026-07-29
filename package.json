@@ -7,6 +7,7 @@
     "build:docs": "./scripts/build-docs.sh",
     "dev:client": "vite --config src/SIR.Client.Web/vite.config.js",
     "measure:worker": "node scripts/measure-worker.mjs",
+    "review:battlefield": "node scripts/generate-battlefield-review.mjs",
     "test": "./scripts/test-conformance.sh",
     "verify:baseline": "node scripts/verify-fable-client-baseline.mjs"
   },

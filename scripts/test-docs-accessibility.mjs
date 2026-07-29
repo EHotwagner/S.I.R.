@@ -77,11 +77,45 @@ for (const section of window.document.querySelectorAll("#sir-replay-app section"
   );
 }
 
+const battlefield = window.document.querySelector(
+  '#sir-replay-app svg[role="application"]',
+);
+const units = [...(battlefield?.querySelectorAll("[data-unit-id]") ?? [])];
+require(Boolean(battlefield?.querySelector("title")), "the battlefield has no title");
+require(Boolean(battlefield?.querySelector("desc")), "the battlefield has no description");
+require(
+  battlefield?.getAttribute("aria-label")?.includes("exact tick 24"),
+  "the battlefield accessible name omits its exact committed tick",
+);
+require(units.length === 6, "the representative battlefield does not expose six units");
+require(
+  units.every(
+    (unit) =>
+      unit.getAttribute("role") === "button" &&
+      Boolean(unit.getAttribute("aria-label")),
+  ),
+  "a disclosed SVG unit has no interactive role or accessible name",
+);
+require(
+  units.filter((unit) => unit.getAttribute("tabindex") === "0").length === 1,
+  "the battlefield does not have exactly one roving tab stop",
+);
+require(
+  window.document.querySelector(
+    '[aria-label="Battlefield unit inspector"]',
+  ),
+  "the SVG unit information has no equivalent HTML inspector",
+);
+require(
+  window.document.querySelector('[aria-label="Battlefield legend"]'),
+  "the battlefield channel legend is missing",
+);
+
 if (failures.length > 0) {
   throw new Error(`Accessibility gate failed: ${failures.join("; ")}.`);
 }
 
 console.log(
-  "Documentation accessibility passed: language, title, fallback, live status, controls, and application regions are named.",
+  "Documentation accessibility passed: language, title, fallback, live status, controls, application regions, SVG title/description, six named units, roving focus, HTML inspector, and legend.",
 );
 window.happyDOM.close();

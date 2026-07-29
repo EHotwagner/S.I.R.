@@ -3,6 +3,7 @@
     <Compile Include="RulesCatalog.fs" />
     <Compile Include="ReplayPresentation.fs" />
     <Compile Include="UnitGlyphCatalog.fs" />
+    <Compile Include="Battlefield.fs" />
     <Compile Include="Lab.fs" />
     <Compile Include="EngineCatalog.fs" />
     <Compile Include="Shell.fs" />

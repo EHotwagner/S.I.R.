@@ -569,5 +569,191 @@ let main _ =
             = ReplayPalettes.monochromePattern.ArcaneFaction)
         "The required accessible palette token sets are incomplete."
 
-    printfn "Elmish, laboratory, render-contract, glyph-catalog, and palette tests passed: deterministic update, modes, bounded worker batches, compact progress, failure revocation, immutable baseline, typed validation, deterministic sweep, reproducible fixture export, sandbox, stale responses, cancellation, disclosure-safe transport, complete initial class coverage, safe placeholder, and three accessible palette modes."
+    let staticScene =
+        Battlefield.scene
+            Battlefield.representativeFrame
+            Battlefield.initial
+
+    require
+        (staticScene.Tick = Battlefield.representativeFrame.Tick
+         && staticScene.Width = 288.0
+         && staticScene.Height = 288.0
+         && staticScene.SemanticZoom = Detailed)
+        "The representative committed frame was changed or interpolated."
+
+    require
+        (staticScene.Units
+         |> Array.forall (fun unit ->
+             unit.FootprintX = float unit.Unit.AnchorColumn * Battlefield.CellSize
+             && unit.FootprintY = float unit.Unit.AnchorRow * Battlefield.CellSize
+             && unit.FootprintWidth
+                = float (CellExtent.value unit.Unit.FootprintWidth)
+                  * Battlefield.CellSize
+             && unit.FootprintDepth
+                = float (CellExtent.value unit.Unit.FootprintDepth)
+                  * Battlefield.CellSize))
+        "The top-down projection did not preserve authoritative footprint cells."
+
+    let offsetFrame =
+        let source = Battlefield.representativeFrame.Units[0]
+        { Battlefield.representativeFrame with
+            Board =
+                { MinimumColumn = 10
+                  MinimumRow = 20
+                  MaximumColumn = 12
+                  MaximumRow = 21 }
+            Units =
+                [| { source with
+                       AnchorColumn = 10
+                       AnchorRow = 20 } |]
+            Edges =
+                [| { Id = "offset-edge"
+                     Kind = "wall"
+                     State = "solid"
+                     StartColumn = 10
+                     StartRow = 20
+                     EndColumn = 12
+                     EndRow = 20 } |] }
+    let offsetScene = Battlefield.scene offsetFrame Battlefield.initial
+    require
+        (offsetScene.Width = 144.0
+         && offsetScene.Height = 96.0
+         && offsetScene.Units[0].FootprintX = 0.0
+         && offsetScene.Units[0].FootprintY = 0.0
+         && offsetScene.Edges[0].StartColumn = 10)
+        "A board with non-zero minimum coordinates was not projected relative to its origin."
+
+    let healthSegments =
+        staticScene.Units |> Array.map _.HealthSegments
+
+    require
+        (healthSegments = [| Some 12; Some 9; Some 6; Some 11; Some 8; Some 3 |]
+         && healthSegments
+            |> Array.forall (Option.forall (fun value -> value >= 0 && value <= 12)))
+        "The twelve-position health mapping changed or exceeded its bounds."
+
+    let omittedHealthFrame =
+        { Battlefield.representativeFrame with
+            Units =
+                Battlefield.representativeFrame.Units
+                |> Array.mapi (fun index unit ->
+                    if index = 0 then { unit with Health = NotPresent } else unit) }
+    let omittedHealthScene =
+        Battlefield.scene omittedHealthFrame Battlefield.initial
+    require
+        (omittedHealthScene.Units[0].HealthSegments = None
+         && omittedHealthScene.Units[0].AccessibleLabel.Contains(
+             "health not present in this projection"
+         ))
+        "Undisclosed health was rendered as a constructed zero."
+
+    let elevated =
+        staticScene.Units
+        |> Array.find (fun unit -> unit.Unit.Id = 6)
+
+    require
+        (elevated.ElevationBars = 3
+         && elevated.ElevationLabel = Some "+7"
+         && elevated.ShowStance)
+        "Capped elevation or detailed stance disclosure was not projected."
+
+    require
+        (Battlefield.semanticZoom Overview 26.39 = Overview
+         && Battlefield.semanticZoom Overview 26.41 = Standard
+         && Battlefield.semanticZoom Standard 21.6 = Standard
+         && Battlefield.semanticZoom Standard 21.59 = Overview
+         && Battlefield.semanticZoom Standard 52.81 = Detailed
+         && Battlefield.semanticZoom Detailed 43.2 = Detailed
+         && Battlefield.semanticZoom Detailed 43.19 = Standard)
+        "The 24/48 px semantic thresholds lost their ten-percent hysteresis."
+
+    let standardState =
+        Battlefield.update
+            Battlefield.representativeFrame
+            (ZoomBy 0.8)
+            Battlefield.initial
+    let standardScene =
+        Battlefield.scene Battlefield.representativeFrame standardState
+
+    require
+        (standardScene.SemanticZoom = Standard
+         && standardScene.Units |> Array.forall (fun unit -> not unit.ShowStance)
+         && standardScene.Units
+            |> Array.forall (fun unit -> Option.isNone unit.ElevationLabel))
+        "Standard zoom retained detailed-only stance or elevation labels."
+
+    let focusedRight =
+        Battlefield.initial
+        |> Battlefield.update Battlefield.representativeFrame (FocusUnit(Some 1))
+        |> Battlefield.update Battlefield.representativeFrame (FocusDirection(1, 0))
+
+    require
+        (focusedRight.FocusedUnit = Some 2)
+        "Roving directional focus did not choose the nearest disclosed unit."
+
+    let paletteScenes =
+        ReplayPalettes.all
+        |> Array.map (fun palette ->
+            Battlefield.initial
+            |> Battlefield.update
+                Battlefield.representativeFrame
+                (ChoosePalette palette.Id)
+            |> Battlefield.scene Battlefield.representativeFrame)
+
+    require
+        (paletteScenes |> Array.map _.Palette.Id |> Set.ofArray = expectedPaletteIds
+         && paletteScenes
+            |> Array.forall (fun scene ->
+                scene.Units.Length = staticScene.Units.Length
+                && scene.Tick = staticScene.Tick))
+        "A palette changed committed geometry or failed to render."
+
+    let evidenceLeft = Battlefield.deterministicEvidence staticScene
+    let evidenceRight =
+        Battlefield.scene Battlefield.representativeFrame Battlefield.initial
+        |> Battlefield.deterministicEvidence
+
+    require
+        (evidenceLeft = evidenceRight
+         && evidenceLeft.Contains("tick=24")
+         && evidenceLeft.Contains("unit=3@0,144:96x48")
+         && evidenceLeft.Contains("health=12"))
+        "Static SVG review evidence is not deterministic."
+
+    let performanceScene =
+        Battlefield.performanceFrame 200
+        |> fun frame -> Battlefield.scene frame Battlefield.initial
+
+    require
+        (performanceScene.Units.Length = 200
+         && performanceScene.InteractiveNodeEstimate < 8_000
+         && performanceScene.Units[0..12]
+            |> Array.map _.HealthSegments
+            |> (=) ([| 0 .. 12 |] |> Array.map Some))
+        "The normal 200-unit view exceeds the 8,000 interactive-node budget."
+
+    let performanceFrame = Battlefield.performanceFrame 200
+    for _ in 1 .. 20 do
+        Battlefield.scene performanceFrame Battlefield.initial |> ignore
+
+    let sceneTimings =
+        Array.init 240 (fun _ ->
+            let started = Diagnostics.Stopwatch.GetTimestamp()
+            Battlefield.scene performanceFrame Battlefield.initial |> ignore
+            let elapsed = Diagnostics.Stopwatch.GetTimestamp() - started
+            float elapsed * 1000.0 / float Diagnostics.Stopwatch.Frequency)
+        |> Array.sort
+
+    let p95SceneMilliseconds = sceneTimings[int (float sceneTimings.Length * 0.95)]
+    require
+        (p95SceneMilliseconds < 8.0)
+        "The 200-unit pure scene projection exceeded the 8 ms p95 frame-work budget."
+
+    printfn
+        "Static battlefield performance: 200 units, %d estimated interactive nodes, pure scene projection p95 %.3f ms over %d measured runs."
+        performanceScene.InteractiveNodeEstimate
+        p95SceneMilliseconds
+        sceneTimings.Length
+
+    printfn "Elmish, laboratory, render-contract, glyph-catalog, palette, and static-battlefield tests passed: deterministic update, modes, bounded worker batches, compact progress, failure revocation, immutable baseline, typed validation, deterministic sweep, reproducible fixture export, sandbox, stale responses, cancellation, disclosure-safe transport, complete initial class coverage, safe placeholder, three accessible palette modes, orthographic footprints, twelve-segment health, elevation, stance, semantic-zoom hysteresis, roving focus, exact committed evidence, and a 200-unit view under the node budget."
     0
