@@ -69,7 +69,7 @@ Fast projectiles resolve as physical traces on the resolution tick. Slow
 rockets, grenades, arrows, and comparable effects occupy authoritative state
 across ticks and use swept paths.
 
-### Why no weapon dominates
+### Weapon trade-offs
 
 - A carbine prepares faster than a rifle at close range but degrades much more
   sharply.
@@ -164,8 +164,8 @@ concentrates that power along a bearing but must be pointed.
 - observation drone.
 
 The magical-signature detector is narrow rather than universal. Its canonical
-uses are evidence of meditating casters, unstable anchors, ritual preparation,
-and active critter attunement.
+uses are evidence from unstable anchors, ritual preparation, and active critter
+attunement. Detecting Strain recovery depends on the unresolved recovery rule.
 
 ### Electronic warfare
 

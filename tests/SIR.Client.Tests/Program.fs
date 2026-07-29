@@ -1187,6 +1187,110 @@ let main _ =
          && evidence.Provenance.RendererVersion = EvidenceExport.RendererVersion)
         "Deterministic evidence export leaked hostile markup/URLs or omitted provenance and the derived label."
 
+    let editor = MapEditor.initial
+    let exportedMap = MapEditor.export editor
+    let importedMap =
+        MapEditor.tryImport exportedMap
+        |> Result.defaultWith failwith
+    require
+        (importedMap = editor.Map
+         && exportedMap = MapEditor.export { editor with Map = importedMap })
+        "The versioned map document did not round-trip deterministically."
+
+    let editorStep = MapEditor.step editor
+    let manualBefore = Map.find 1 editor.Map.Units
+    let manualAfter = Map.find 1 editorStep.Map.Units
+    let scriptedBefore = Map.find 2 editor.Map.Units
+    let scriptedAfter = Map.find 2 editorStep.Map.Units
+    let generalBefore = Map.find 3 editor.Map.Units
+    let generalAfter = Map.find 3 editorStep.Map.Units
+    require
+        (manualAfter.Column = manualBefore.Column
+         && manualAfter.Row = manualBefore.Row
+         && scriptedAfter.Column = scriptedBefore.Column + 1
+         && scriptedAfter.ScriptIndex = 1
+         && (generalAfter.Column <> generalBefore.Column
+             || generalAfter.Row <> generalBefore.Row)
+         && editorStep.Tick = 1)
+        "Manual, scripted, and general editor controllers did not resolve deterministically."
+
+    let blockedEditor =
+        editor
+        |> MapEditor.update (ChooseTool(Paint Blocked))
+        |> MapEditor.update (ActivateCell(3, 3))
+        |> MapEditor.update (ChooseTool(Place(Blue, "rifleman", 2)))
+        |> MapEditor.update (ActivateCell(3, 3))
+    require
+        (blockedEditor.Map.Units.Count = editor.Map.Units.Count
+         && blockedEditor.Validation.IsSome)
+        "The editor placed a unit across blocked terrain."
+
+    let occupiedPaint =
+        editor
+        |> MapEditor.update (ChooseTool(Paint Blocked))
+        |> MapEditor.update (ActivateCell(1, 1))
+    require
+        (MapEditor.terrainAt 1 1 occupiedPaint = Open
+         && occupiedPaint.Validation.IsSome)
+        "The editor painted blocked terrain under an existing unit."
+
+    let clearedEditor = MapEditor.update ClearMap editor
+    require
+        (clearedEditor.Map.Units.IsEmpty
+         && clearedEditor.SelectedUnit.IsNone)
+        "Clearing the map left a stale selected unit."
+
+    let editedUnit =
+        editor
+        |> MapEditor.update (SetSelectedSide Red)
+        |> MapEditor.update (SetSelectedClass "engineer")
+        |> MapEditor.update (SetSelectedHealth(8, 16))
+    let editedUnitValue = Map.find 1 editedUnit.Map.Units
+    require
+        (editedUnitValue.Side = Red
+         && editedUnitValue.ClassId = "engineer"
+         && editedUnitValue.Health = 8
+         && editedUnitValue.HealthMaximum = 16)
+        "The editor did not apply selected-unit properties."
+
+    let invalidResize = MapEditor.update (SetSelectedSize 40) editor
+    require
+        ((Map.find 1 invalidResize.Map.Units).Size = 2
+         && invalidResize.Validation.IsSome)
+        "The editor accepted a selected-unit square that does not fit."
+
+    let wideEdgeMap =
+        String.concat
+            "\n"
+            [ "SIR-MAP 1"
+              "size 8 8"
+              "edge 2 2 south wall closed"
+              "unit 1 blue rifleman 1 1 2 12 12 manual -" ]
+        + "\n"
+    let edgeBlockedEditor =
+        editor
+        |> MapEditor.update (LoadMapText wideEdgeMap)
+        |> MapEditor.update (SelectEditorUnit(Some 1))
+        |> MapEditor.update (MoveSelected South)
+    require
+        ((Map.find 1 edgeBlockedEditor.Map.Units).Row = 1
+         && edgeBlockedEditor.Validation = Some "That move is blocked.")
+        "A square unit crossed a blocking edge along part of its leading side."
+
+    let invalidTerrainMap =
+        "SIR-MAP 1\nsize 4 4\nterrain 4 0 rough\n"
+    require
+        (MapEditor.tryImport invalidTerrainMap |> Result.isError)
+        "The editor imported terrain outside the map."
+
+    let editorFrame = MapEditor.frame editorStep
+    require
+        (editorFrame.Disclosure = SandboxDisclosure
+         && editorFrame.Units
+            |> Array.forall (fun unit ->
+                unit.FootprintWidth = unit.FootprintDepth))
+        "The editor frame lost sandbox disclosure or square footprints."
+
     let performanceFrame = Battlefield.performanceFrame 200
     for _ in 1 .. 20 do
         Battlefield.scene performanceFrame Battlefield.initial |> ignore
@@ -1255,5 +1359,5 @@ let main _ =
         p95NormalExport
         p95StressExport
 
-    printfn "Elmish, laboratory, render-contract, glyph-catalog, palette, and static-battlefield tests passed: deterministic update, modes, bounded worker batches, compact progress, failure revocation, immutable baseline, typed validation, deterministic sweep, reproducible fixture export, sandbox, stale responses, cancellation, disclosure-safe transport, complete initial class coverage, safe placeholder, three accessible palette modes, orthographic footprints, twelve-segment health, elevation, stance, semantic-zoom hysteresis, roving focus, exact committed evidence, and a 200-unit view under the node budget."
+    printfn "Elmish, map-editor, laboratory, render-contract, glyph-catalog, palette, and static-battlefield tests passed: deterministic map import/export, manual/scripted/general controllers, placement validation, deterministic update, modes, bounded worker batches, compact progress, failure revocation, immutable baseline, typed validation, deterministic sweep, reproducible fixture export, sandbox, stale responses, cancellation, disclosure-safe transport, complete initial class coverage, safe placeholder, three accessible palette modes, orthographic footprints, twelve-segment health, elevation, stance, semantic-zoom hysteresis, roving focus, exact committed evidence, and a 200-unit view under the node budget."
     0

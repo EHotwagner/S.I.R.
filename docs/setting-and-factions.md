@@ -12,7 +12,7 @@ related:
   - docs/research/squad-command-and-succession.md
 ---
 
-# S.I.R. Setting and Faction Architecture
+# Setting and Faction Architecture
 
 ## Purpose
 

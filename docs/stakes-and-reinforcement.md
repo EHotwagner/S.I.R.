@@ -16,7 +16,7 @@ related:
 last-updated: 2026-07-27
 ---
 
-# S.I.R. Stakes and Reinforcement
+# Stakes and Reinforcement
 
 ## The proposal
 
@@ -27,7 +27,7 @@ winner takes it.**
 Committing more therefore raises what the match is worth and what losing it
 costs, simultaneously and for everyone involved.
 
-## Why this is worth taking seriously
+## Design objective
 
 ### It wagers under fog
 
@@ -116,7 +116,7 @@ brought more currency. That is invariant 13 failing outright.
 
 Two costs have to bite for the decision to survive, and neither is optional.
 
-### The pot is not fully returned
+### Partial stake return
 
 A share of every pot is taken by whoever administers portal access — the
 authority that licenses mercenary companies, publishes opportunities, and
@@ -131,7 +131,7 @@ supplies a reason for the answer to exist: the administrator's cut is what the
 administrator is *for*, and it explains why such an institution tolerates
 mercenary companies fighting over its portals.
 
-### The force is the real stake, and it does not come back
+### Force loss
 
 The stronger constraint, and the one that makes declining genuinely correct
 sometimes.
@@ -195,7 +195,7 @@ rather than the player's — was considered and rejected. Uncontrolled units sti
 fight for you, so it is not a cost, and it would special-case an architecture in
 which every unit has its own control instance.
 
-### An honest consequence, and a declared fallback
+### Consequence and fallback
 
 Both fixes point the same way: **the currency is the secondary stake and the
 force is the primary one.** That is worth stating plainly, because it means the
@@ -214,7 +214,7 @@ the performance budget already applies: know in advance what you would do if the
 evidence goes the other way, so that a measurement becomes a decision rather
 than an argument.
 
-### The exploit is a feature
+### Permitted information inference
 
 An opponent who jams a squad *specifically* to make its commander believe it
 destroyed, so that they commit capital and stake they did not need to, is
@@ -228,7 +228,7 @@ against other humans.
 The counterplay is the ordinary one: do not panic, look before committing, and
 find the jammer, which is the loudest object on the battlefield.
 
-## What it must not do
+## Failure constraints
 
 ### It must not buy people
 

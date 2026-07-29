@@ -13,7 +13,7 @@ related:
   - docs/magic-system.md
 ---
 
-# S.I.R. Combat Resolution Architecture
+# Combat Resolution Architecture
 
 ## Purpose
 

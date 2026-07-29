@@ -14,7 +14,7 @@ related:
   - docs/setting-and-factions.md
 ---
 
-# S.I.R. Logistics Architecture
+# Logistics Architecture
 
 ## Purpose
 

@@ -30,6 +30,12 @@ Object.assign(globalThis, {
 await import(pathToFileURL(resolve(site, "content/sir-client/v1/app.js")));
 await window.happyDOM.waitUntilComplete();
 
+const replayButton = [...window.document.querySelectorAll(
+  "#sir-replay-app button",
+)].find((button) => button.textContent.trim() === "Replay");
+replayButton?.click();
+await window.happyDOM.waitUntilComplete();
+
 const failures = [];
 const require = (condition, message) => {
   if (!condition) failures.push(message);

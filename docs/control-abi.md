@@ -15,7 +15,7 @@ related:
   - docs/logistics-architecture.md
 ---
 
-# S.I.R. Control ABI Surface
+# Control ABI Surface
 
 ## Purpose
 

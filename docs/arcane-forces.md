@@ -6,8 +6,8 @@ index: 7
 status: accepted
 decision-status: canonical
 document-type: living-content
-version: "1.4"
-last-updated: 2026-07-28
+version: "1.5"
+last-updated: 2026-07-29
 related:
   - docs/setting-and-factions.md
   - docs/human-forces.md
@@ -17,7 +17,7 @@ related:
   - docs/research/arcane-horde-progression-and-equipment.md
 ---
 
-# S.I.R. Arcane Civilization Forces
+# Arcane Forces
 
 ## Purpose
 
@@ -163,22 +163,17 @@ The arcane are limited by **accumulation**. A caster spends health to empower
 and gathers strain, becoming progressively more dangerous to themselves — see
 [Risk-Based Magic System](magic-system.md).
 
-Meditation sheds the settling portion of that strain, so casters recover
-*within* a match. What does not recover is the residual, which every cast
-leaves behind and which raises a caster's floor permanently. The faction
-therefore has a rhythm rather than a countdown: casters cycle back to recover
-and forward to work, while the floor beneath them rises all match.
+Strain persistence and recovery are unresolved. No faction-tempo claim may
+depend on meditation, residual Strain, or an automatically rising match-long
+floor until that rule is accepted and tested.
 
-The consequence is a completely different tempo:
+The confirmed asymmetry is:
 
-- **humans sustain and degrade slowly**, provided the supply line holds;
-- **the arcane surge, recover, and surge again**, on a floor that rises with
-  every cast until recovering no longer restores enough margin to matter.
+- **humans spend replenishable physical supply** through a supply network;
+- **arcane casters accumulate Strain and may spend HP** for immediate effects.
 
-An arcane force is therefore most dangerous early and becomes volatile as a
-match progresses, while a human force is most dangerous while its network and
-supply hold and becomes ordinary when they do not. Two clocks running in
-opposite directions is a better basis for a match than two health bars.
+The recovery decision will determine whether arcane tempo is sustained,
+cyclical, or primarily front-loaded.
 
 The faction's logistical economy — components, catalysts, prepared sites — is
 real but serves preparation rather than sustainment. It is spent to *establish*
@@ -412,7 +407,7 @@ This is a setting statement rather than an imbalance. Humans built their
 apparatus to fight humans, and *difficulty understanding new supernatural rules*
 is already a listed human vulnerability.
 
-### The arcane answer is physical
+### Physical countermeasure
 
 The arcane cannot attack a human network electronically, so they attack it the
 way they attack everything else: by reaching it.
@@ -435,14 +430,11 @@ Until humans build one they observe *effects* and not *sensing*: they see a ward
 take a shot and a caster gesture, and they cannot tell they are being perceived
 through a wall.
 
-Such an instrument has several narrow, high-value purposes. Releasing strain emits
-a signature that terrain does not attenuate, so a meditating caster can be
-located at exactly the moment they are stationary, inattentive, and
-irreplaceable. An overloaded anchor likewise becomes magically conspicuous
-before it discharges or breaches, giving reconnaissance evidence of both the
-anchor's position and the force's unstable commitment. Ritual preparation and
-active critter attunement provide further evidence without turning the detector
-into a general-purpose magic finder.
+Such an instrument has several narrow, high-value purposes. An overloaded
+anchor becomes magically conspicuous before it discharges or breaches, giving
+reconnaissance evidence of its position and unstable load. Ritual preparation
+and active critter attunement provide further evidence. Detecting Strain
+recovery remains conditional on the unresolved recovery rule.
 
 Fielding such a detector is therefore a natural research objective, and the
 eventual answer to the guardrail requiring every capability to leave evidence.
@@ -531,7 +523,7 @@ is sometimes right. Stronger or additional anchors must likewise create enough
 expense and observable battlefield exposure that capacity is a force-design
 choice rather than an automatic upgrade.
 
-## What this tests in the architecture
+## Architectural tests
 
 - whether **strain and breach** produce interesting decisions at 20 ticks per
   second, or resolve too fast to reason about;

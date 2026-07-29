@@ -260,7 +260,7 @@ mind-control the surviving horde into passivity.
 | 🟪 **Goblins** | 🟧 Proposal | Numerous scouts, skirmishers, sappers, trap layers, handlers, attendants, carriers, and crews |
 | 🟪 **Orcs** | 🟧 Proposal | Disciplined shield and spear formations, assault troops, archers, bodyguards, captains, and anchor defenders |
 | 🟪 **Trolls** | 🟧 Proposal | Living heavy assets providing assault, mobile cover, obstacle destruction, transport, recovery, and short-ranged siege action |
-| 🟪 **Senior casters** | 🟩 Canonical shape | Few leaders and decisive magical specialists whose strain career and ritual commitment shape the force |
+| 🟪 **Senior casters** | 🟩 Canonical shape | Few leaders and decisive magical specialists whose Strain risk and ritual commitments shape the force |
 | 🟪 **Magical assistants** | 🟩 Canonical shape | Two or three persistent juniors per senior caster, providing lesser spells, ritual contribution, preparation, maintenance, and continuity |
 
 Organized goblin soldiers are distinct from unaffiliated goblins emerging from a

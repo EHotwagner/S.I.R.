@@ -14,7 +14,7 @@ related:
   - docs/research/wasm-runtime-selection.md
 ---
 
-# S.I.R. WebAssembly Control Architecture
+# WebAssembly Control Architecture
 
 ## Purpose
 
@@ -213,7 +213,7 @@ Because the module is present every tick, it holds its own state, computes its
 own predicates, and decides for itself. The server does not evaluate conditions
 on a unit's behalf and there is no published condition vocabulary.
 
-### What this replaces
+### Replaced mechanisms
 
 An earlier revision specified standing doctrine as ordered condition-to-action
 rule lists evaluated server-side, with wake subscriptions and a delegation
@@ -371,7 +371,7 @@ competitive budgets to particular accounts.
 
 ## Command bandwidth
 
-### Why information must cost something
+### Information cost
 
 Control modules are player-authored, and any capability that is free will be
 maximised. If a module can request every known contact at full fidelity at no
@@ -381,7 +381,7 @@ detail nobody needed.
 Invocation *frequency* is no longer priced, because measurement showed it is
 affordable for every unit on every tick. Invocation *richness* still is.
 
-### What it meters
+### Metered operations
 
 Command bandwidth prices **networked** information only:
 
@@ -408,7 +408,7 @@ This is also the better constraint. Emission is a bound that cannot be purchased
 around, and it is tactically interesting because reporting reveals the reporter.
 An administrative allowance on how much a unit may say would be neither.
 
-### What it does not price
+### Excluded operations
 
 **A unit's own perception is never gated.** What it sees, hears, and detects for
 itself arrives through the local floor, is unaffected by allocation, and

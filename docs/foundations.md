@@ -140,7 +140,7 @@ client cannot fill a missing value from an earlier frame.
 5. [Command and information](gameplay-command-information.md) explains how
    intent and observations move between them.
 
-## Invariants worth carrying forward
+## Invariants
 
 - Body facing, attention, and a weapon or sensor heading are different facts.
 - Class is permanent competence; equipment is a reversible capability.

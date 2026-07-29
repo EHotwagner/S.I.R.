@@ -14,7 +14,7 @@ related:
   - docs/research/squad-command-and-succession.md
 ---
 
-# S.I.R. Formations and Positional Referents
+# Formations and Positional Referents
 
 ## Purpose
 
@@ -72,7 +72,7 @@ This is the important rule and it follows directly from the established
 knowledge model. A squad out of contact keeps the rally point it was last told
 about. A new designation issued while that squad is jammed does not reach it.
 
-### Staleness is the point
+### Stale referents
 
 A referent can be overrun, destroyed, cut off, or rendered unreachable, and the
 unit acting on it may not know.
@@ -231,7 +231,7 @@ holds a stale rally point, and may continue securing an objective that
 headquarters already knows is lost. This is consistent with every other part of
 the knowledge model and requires no special case.
 
-## What this unblocks
+## Dependent work
 
 Movement intent and engagement can target a referent rather than a coordinate,
 which is what keeps control logic portable across maps. Formation intent becomes

@@ -1,22 +1,22 @@
 ---
-title: Field Manual
+title: Simulation and Field Manual
 category: Start
 categoryindex: 1
 index: 1
-description: Learn the tactical model from its smallest facts to complete forces, battles, and verified replays.
+description: Edit maps, run deterministic simulations, inspect replays, and read the rules from attributes through complete units.
 ---
 
-# Understand the battlefield from the inside out
+# Simulate the battlefield
 
-S.I.R. is a deterministic tactical skirmish game. This manual starts with the
-smallest authoritative facts—attributes, position, facing, health, and
-knowledge—then composes them into equipment, units, formations, forces, and
-missions. Architecture and verification material come afterwards, when the
-game objects they protect are already familiar.
+The simulation workspace is the documentation hub. Use it to build a map,
+assign manual, scripted, or general controllers, execute ticks, and inspect the
+result as SVG. The reference then defines the model in dependency order:
+attributes and state first, followed by equipment, units, formations, forces,
+and missions.
 
 <div class="sir-hero-actions">
-  <a class="sir-action sir-action-primary" href="foundations.html">Start with attributes</a>
-  <a class="sir-action" href="interactive-rules-lab.html">Open the replay lab</a>
+  <a class="sir-action sir-action-primary" href="interactive-rules-lab.html">Open the simulation workspace</a>
+  <a class="sir-action" href="foundations.html">Read from attributes</a>
 </div>
 
 <figure class="sir-explainer sir-system-map" data-svg-explainer>
@@ -86,33 +86,33 @@ game objects they protect are already familiar.
   <figcaption>Focus or hover any stage for its role. The moving pulse is explanatory only; authoritative time advances in discrete ticks.</figcaption>
 </figure>
 
-## Read in layers
+## Documentation sequence
 
 <div class="sir-card-grid">
+  <a class="sir-card" href="interactive-rules-lab.html">
+    <span class="sir-card-index">Workspace</span>
+    <strong>Edit and simulate</strong>
+    <span>Build maps, assign controllers, run ticks, and inspect SVG output.</span>
+  </a>
   <a class="sir-card" href="foundations.html">
     <span class="sir-card-index">01 · Foundations</span>
     <strong>Attributes and state</strong>
-    <span>Learn the atomic facts before meeting a unit.</span>
+    <span>Define the atomic facts used by every object.</span>
   </a>
   <a class="sir-card" href="gameplay-weapons-equipment.html">
     <span class="sir-card-index">02 · Composition</span>
     <strong>Capabilities and equipment</strong>
-    <span>See how tools turn facts into possible actions.</span>
+    <span>Define the capabilities added by each item.</span>
   </a>
   <a class="sir-card" href="gameplay-units.html">
     <span class="sir-card-index">03 · Actors</span>
     <strong>Units and forces</strong>
-    <span>Compose state, loadout, knowledge, and control.</span>
+    <span>Compose state, loadout, knowledge, footprint, and controller.</span>
   </a>
   <a class="sir-card" href="combat-resolution.html">
     <span class="sir-card-index">04 · Systems</span>
     <strong>Battlefield interactions</strong>
-    <span>Follow perception, command, combat, and logistics.</span>
-  </a>
-  <a class="sir-card" href="interactive-rules-lab.html">
-    <span class="sir-card-index">05 · Evidence</span>
-    <strong>Replay and experiment</strong>
-    <span>Inspect exact ticks and clearly labeled simulations.</span>
+    <span>Resolve perception, command, combat, and logistics.</span>
   </a>
   <a class="sir-card" href="simulation-core-architecture.html">
     <span class="sir-card-index">06 · Engineering</span>
@@ -121,7 +121,7 @@ game objects they protect are already familiar.
   </a>
 </div>
 
-## One battlefield, four evidence levels
+## Evidence levels
 
 | Surface | What it can establish | Authority |
 |---|---|---|
@@ -130,8 +130,8 @@ game objects they protect are already familiar.
 | Verified replay | What the accepted engine committed | Verifiable evidence |
 | Match host | What actually changes authoritative state | Authoritative |
 
-The interface keeps these levels visibly separate. Animation helps explain a
-relationship; it never claims that an interpolated pixel is game state.
+The interface labels each level. SVG animation explains transitions; only
+discrete simulation ticks represent game state.
 
 ## For contributors
 

@@ -72,7 +72,7 @@ without color vision or emoji rendering.
 | [Executable Combat Formulas](combat-formulas.fsx) | Evaluated F# formula implementations and outputs checked against the rules laboratory |
 | [Weapons and Equipment](gameplay-weapons-equipment.md) | Weapon roles, prototype weapon statistics, armor packages, sensors, communications, EW, engineering, medical, sustainment, and proposed arcane equipment |
 | [Units, Classes, and Progression](gameplay-units.md) | Human squad structure, six classes, perks, leadership, arcane force shape, goblins, orcs, trolls, casters, drones, and progression |
-| [Magic, Anchors, Rituals, and Portals](gameplay-magic.md) | HP empowerment, Strain, meditation, breaches, anchor capacity, overload, spells, rituals, portals, and borrowed critter observations |
+| [Magic, Anchors, Rituals, and Portals](gameplay-magic.md) | HP empowerment, Strain and its unresolved recovery, breaches, anchor capacity, overload, spells, rituals, portals, and borrowed critter observations |
 | [Command, Information, and Mission Rules](gameplay-command-information.md) | Tick lifecycle, perception, acquisition, communications, electronic warfare, logistics, casualties, reinforcement, and knowledge limits |
 | [Testing and Balance Evidence](gameplay-testing.md) | Testing setting, work completed before the rules lab, complete exposition of the current run, results, invariant checks, limitations, and reproduction |
 

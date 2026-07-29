@@ -1,5 +1,5 @@
 ---
-title: S.I.R. Public Transport Selection
+title: Public Transport Selection
 status: accepted
 decision-status: canonical
 document-type: research-and-options
@@ -12,7 +12,7 @@ related:
   - docs/skirmish-development-plan.md
 ---
 
-# S.I.R. Public Transport Selection
+# Public Transport Selection
 
 ## Current direction
 

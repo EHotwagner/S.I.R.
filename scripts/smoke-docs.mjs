@@ -138,19 +138,31 @@ await window.happyDOM.waitUntilComplete();
 
 const mount = window.document.getElementById("sir-replay-app");
 const application = mount?.querySelector(
-  'main[aria-label="Replay and rules laboratory application"]',
+  'main[aria-label="Simulation workspace"]',
 );
 const status = mount?.querySelector('[role="status"]');
-const catalog = mount?.querySelector('[aria-label="Design scenario catalog"]');
 
 if (!application || mount?.querySelector("header, h1")) {
   throw new Error("The Fable application did not mount inside the fsdocs page.");
 }
 
-if (!status?.textContent.includes("Ready — choose a scenario or load a replay")) {
-  throw new Error("The mounted documentation application has no scenario call to action.");
+if (
+  mount?.querySelectorAll('[aria-label="Editable map grid"] [data-map-column]').length !==
+    96 ||
+  !mount?.textContent.includes("Manual") ||
+  !mount?.textContent.includes("Scripted AI") ||
+  !mount?.textContent.includes("General AI")
+) {
+  throw new Error("The generated site did not open on the map editor.");
 }
 
+const rulesButton = [...mount.querySelectorAll("button")].find(
+  (button) => button.textContent.trim() === "Rules and data",
+);
+rulesButton?.click();
+await window.happyDOM.waitUntilComplete();
+
+const catalog = mount?.querySelector('[aria-label="Design scenario catalog"]');
 const scenarioButtons = [
   ...catalog?.querySelectorAll('button[aria-label^="Simulate design scenario"]') ?? [],
 ];
@@ -189,7 +201,7 @@ if (
 }
 
 console.log(
-  "Documentation browser smoke passed: the Fable application has no duplicate masthead, exposes six explicit simulation actions and an immediate-result panel, and includes seven unit/perk/weapon/equipment tables.",
+  "Documentation browser smoke passed: the application opens on the 12×8 map editor, exposes three controller modes, and retains six rules scenarios and seven data tables.",
 );
 
 window.happyDOM.close();
