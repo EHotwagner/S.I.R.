@@ -19,7 +19,7 @@ related:
   - docs/fable-client-and-documentation.md
 ---
 
-# S.I.R. Technology Stack and FS.GG Integration
+# Technology Stack and FS.GG Integration
 
 ## Canonical decision
 

@@ -88,7 +88,8 @@ faction; progression changes how those capabilities create decisions.
 - **Many as One** prepares a coordinated group action among several subordinate
   formations.
 - **Last Injunction** establishes a final contingency before the caster
-  meditates, withdraws, or becomes incapacitated.
+  withdraws or becomes incapacitated. It may also apply to a future recovery
+  action if one is accepted.
 - **Cruel Priority** declares which formations an overloaded anchor abandons
   first, making load shedding controlled but politically and tactically costly.
 
@@ -110,10 +111,10 @@ percentage increases to anchor capacity.
 
 ### Strain and casting outcomes
 
-- **Quiet Meditation** releases strain more slowly with a weaker magical
-  signature.
-- **Violent Meditation** releases it quickly and conspicuously, potentially
-  disturbing nearby units or terrain.
+- **Quiet Recovery** is a conditional proposal: if the final Strain rule permits
+  recovery, it trades rate for a weaker magical signature.
+- **Violent Recovery** is the corresponding fast, conspicuous proposal and may
+  disturb nearby units or terrain.
 - **Blood Geometry** allows HP empowerment to alter a different spell aspect,
   such as shape rather than intensity.
 - **Scarred Channel** changes a caster's future breach possibilities after
@@ -155,7 +156,8 @@ identification or expose authoritative facts that no observer acquired.
 ## The non-caster horde
 
 The horde is not disposable filler. It allows the faction to remain functional
-while casters accumulate strain, meditate, conduct rituals, or die. Species
+while casters accumulate Strain, recover under any future rule, conduct
+rituals, or die. Species
 should create different tactical bodies and forms of cooperation rather than a
 linear light-medium-heavy upgrade sequence.
 

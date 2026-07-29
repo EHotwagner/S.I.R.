@@ -16,7 +16,7 @@ related:
   - docs/control-abi.md
 ---
 
-# S.I.R. Observation Reporting Model
+# Observation Reporting Model
 
 ## Purpose
 
@@ -30,7 +30,7 @@ threshold values, aggregation windows, and other values listed under
 [Open parameters](#open-parameters) remain prototype work rather than
 authoritative rules.
 
-## Why fixed reports exist when players can already send anything
+## Fixed-report purpose
 
 The obvious objection first, because it determines the shape of everything else.
 

@@ -6,7 +6,7 @@ document-type: living-architecture
 category: Engineering
 categoryindex: 6
 index: 11
-version: "3.0"
+version: "3.1"
 last-updated: 2026-07-29
 description: Shared .NET/Fable simulation, upstream FS.GG.Game compatibility, deterministic numerics, Elmish MVU browser tooling, replay verification, and delivery roadmap.
 related:
@@ -17,7 +17,7 @@ related:
   - docs/game-vision.md
 ---
 
-# S.I.R. Fable Client and Interactive Documentation Architecture
+# Browser Client and Documentation Architecture
 
 ## Executive summary
 
@@ -29,10 +29,13 @@ upstream in `FS.GG.Game`, not through copied algorithms or a permanent
 S.I.R.-specific fork.
 
 The generated FSharp.Formatting site is the explanatory and publication shell.
-A separately built Elmish MVU application provides interactive rules-lab and
-replay behavior inside that static site. Verified replay and editable sandbox
-runs are visibly different modes: modifying a parameter creates a fork and
-ends any claim that the run reproduces the authoritative match.
+A separately built Elmish MVU application provides map editing, deterministic
+sandbox execution, replay inspection, and rules experiments inside that static
+site. The map editor supports semantic terrain and edges, square footprints,
+manual control, repeatable scripts, and a bundled general controller. Verified
+replay and editable sandbox runs remain visibly different: modifying replay
+state or parameters ends any claim that the run reproduces an authoritative
+match.
 
 Exact cross-runtime behavior applies only to authoritative state, inputs,
 events, and hashes. Rendering, interpolation, browser timing, charts, and
@@ -98,6 +101,7 @@ contract.
 | Fable support for reusable `FS.GG.Game` surfaces is implemented upstream | 🟩 **Canonical** | S.I.R. consumes a published, versioned artifact |
 | Authoritative values use bounded integers and explicit fixed-point arithmetic | 🟩 **Canonical** | Floats cannot affect authoritative outcomes or hashes |
 | The browser application uses Elmish MVU from its first implementation | 🟩 **Canonical** | Replay and laboratory state do not begin as ad-hoc DOM state |
+| The documentation opens on a map and simulation workspace | 🟩 **Implemented** | Maps, controllers, ticks, and SVG output form the primary interactive path |
 | FSharp.Formatting builds the documentation corpus | 🟩 **Canonical** | Literate build-time evaluation and browser execution remain separate |
 | Verified replay and editable sandbox are distinct modes | 🟩 **Canonical** | Parameter editing produces a derived run, never a verified replay |
 
@@ -112,6 +116,8 @@ design remain implementation parameters until their milestones accept them.
 - Detect and localize runtime divergence at the first tick and logical phase.
 - Support interactive parameter sweeps without confusing experiments with
   canonical results.
+- Author deterministic maps and compare manual, scripted, and general
+  controllers in one sandbox.
 - Reuse appropriate `FS.GG.Game` capabilities through published upstream
   contracts.
 - Preserve a static GitHub Pages deployment with no privileged server
@@ -126,7 +132,8 @@ design remain implementation parameters until their milestones accept them.
 - FSharp.Formatting is not the browser application framework.
 - Build-time `.fsx` evaluation is not browser execution.
 - The first browser host does not re-execute player WASM.
-- The browser application is not the canonical live game client.
+- The browser application and map editor are not the canonical live game
+  client or match host.
 - The feature does not require every floating-point `FS.GG.Game` facility to
   become lockstep deterministic.
 - The design does not choose final balance values before interactive testing.
@@ -494,7 +501,7 @@ Fixtures include:
 
 ## Elmish MVU browser architecture
 
-### Why Elmish is foundational
+### Elmish state architecture
 
 Replay loading, timeline control, board inspection, selection, comparisons,
 parameter editing, verification, worker communication, errors, and routing form

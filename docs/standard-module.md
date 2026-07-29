@@ -15,7 +15,7 @@ related:
   - docs/formations-and-referents.md
 ---
 
-# S.I.R. Standard Module and Commanding Without Code
+# Standard Module and Commanding Without Code
 
 ## Purpose
 
@@ -37,7 +37,7 @@ and progressive disclosure.
 So the target is not a friendlier way to write rules. It is a way to command
 that never looks like authoring rules at all.
 
-## The unit of intent is a posture, assigned to a squad
+## Squad postures
 
 A player does not configure every unit independently, and does not write
 conditions. They assign each squad a **posture**: a named, coherent bundle of

@@ -14,7 +14,7 @@ related:
   - docs/setting-and-factions.md
 ---
 
-# S.I.R. Mission Lifecycle and Delivery Sequence
+# Mission Lifecycle and Delivery Sequence
 
 ## Purpose
 

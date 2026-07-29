@@ -15,7 +15,7 @@ related:
   - docs/formations-and-referents.md
 ---
 
-# S.I.R. Casualty and Medical Architecture
+# Casualty and Medical Architecture
 
 ## Purpose
 
@@ -201,7 +201,7 @@ what the campaign receives, and it is already specified in mission lifecycle.
 
 Skirmish modes resolve dispositions without campaign write-back.
 
-## What this unblocks
+## Dependent work
 
 Medicine becomes expressible in the control ABI: aid, stabilization, taking up,
 setting down, and evacuating to a referent become capability descriptors, and

@@ -265,62 +265,72 @@ await import(pathToFileURL(bundle));
 await window.happyDOM.waitUntilComplete();
 
 const application = window.document.querySelector(
-  'main[aria-label="Replay and rules laboratory application"]',
-);
-const status = window.document.querySelector('[role="status"]');
-const fileInput = window.document.querySelector('input[type="file"]');
-const labelledButtons = [...window.document.querySelectorAll("button")].filter(
-  (button) => button.getAttribute("aria-label"),
+  'main[aria-label="Simulation workspace"]',
 );
 
 if (!application || application.querySelector("header, h1")) {
-  throw new Error("The React replay shell did not mount.");
+  throw new Error("The React simulation workspace did not mount.");
 }
 
-if (!status?.textContent.includes("Ready — choose a scenario or load a replay")) {
-  throw new Error("The initial scenario/replay call to action is missing.");
+const buttonByText = (text) =>
+  [...window.document.querySelectorAll("button")].find(
+    (button) => button.textContent.trim() === text,
+  );
+
+const mapGrid = window.document.querySelector('[aria-label="Editable map grid"]');
+const controllerPanel = window.document.querySelector(
+  '[aria-label="Simulation controllers"]',
+);
+const editorBattlefield = window.document.querySelector(
+  '[aria-label="Editable simulation SVG battlefield"] svg[role="application"]',
+);
+if (
+  !mapGrid ||
+  mapGrid.querySelectorAll("[data-map-column]").length !== 96 ||
+  !controllerPanel?.textContent.includes("Manual") ||
+  !controllerPanel.textContent.includes("Scripted AI") ||
+  !controllerPanel.textContent.includes("General AI") ||
+  editorBattlefield?.querySelectorAll("[data-unit-id]").length !== 4 ||
+  editorBattlefield?.querySelectorAll('[data-terrain="objective"]').length !== 2 ||
+  editorBattlefield?.querySelectorAll('[data-terrain="rough"]').length !== 4 ||
+  !window.document.querySelector('input[aria-label="Import SIR map"]') ||
+  !buttonByText("Export map")
+) {
+  throw new Error("The map editor or its three controller modes did not mount.");
 }
 
-if (!status?.textContent.includes("Authoritative verification is available only from .NET exact-artifact WASM re-execution.")) {
-  throw new Error("The authoritative verification boundary is missing.");
+controllerPanel
+  .querySelector('button[aria-label="Advance the map simulation one tick"]')
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+if (!mapGrid.textContent.includes("tick 1")) {
+  throw new Error("The map editor did not advance one deterministic tick.");
 }
 
-if (fileInput?.getAttribute("aria-label") !== "Choose replay package") {
-  throw new Error("The replay file control has no accessible name.");
-}
+buttonByText("Replay")?.click();
+await window.happyDOM.waitUntilComplete();
 
-if (labelledButtons.length < 4) {
-  throw new Error("Primary replay controls are missing accessible names.");
-}
-
+const status = window.document.querySelector('[role="status"]');
+const fileInput = window.document.querySelector(
+  'input[aria-label="Choose replay package"]',
+);
+const labelledButtons = [...window.document.querySelectorAll("button")].filter(
+  (button) => button.getAttribute("aria-label"),
+);
 const inspector = window.document.querySelector('[aria-label="Replay inspector"]');
 const workerStatus = window.document.querySelector(".worker-status");
-const catalog = window.document.querySelector('[aria-label="Design scenario catalog"]');
-const labResults = window.document.querySelector('[aria-label="Laboratory results"]');
-
-if (!inspector?.textContent.includes("Timeline and events")) {
-  throw new Error("The responsive replay inspectors did not mount.");
-}
-
-if (!workerStatus?.textContent.includes("protocol 3")) {
-  throw new Error("The worker protocol disclosure is missing.");
-}
 
 if (
-  !catalog?.textContent.includes("Four-hit baseline") ||
-  !catalog?.textContent.includes("Single heavy strike") ||
-  !catalog?.textContent.includes("Near-threshold survivor")
+  !status?.textContent.includes("Ready — choose a scenario or load a replay") ||
+  !status.textContent.includes(
+    "Authoritative verification is available only from .NET exact-artifact WASM re-execution.",
+  ) ||
+  !fileInput ||
+  labelledButtons.length < 4 ||
+  !inspector?.textContent.includes("Timeline and events") ||
+  !workerStatus?.textContent.includes("protocol 3")
 ) {
-  throw new Error("The interactive design-scenario gallery did not mount.");
-}
-
-if (
-  !labResults?.textContent.includes("Simulation result") ||
-  !labResults?.textContent.includes(
-    "Click “Simulate now” on any scenario above.",
-  )
-) {
-  throw new Error("The laboratory comparison surface did not mount.");
+  throw new Error("The replay workspace or its verification boundary is incomplete.");
 }
 
 const battlefield = window.document.querySelector(
@@ -522,6 +532,21 @@ if (
   );
 }
 
+buttonByText("Rules and data")?.click();
+await window.happyDOM.waitUntilComplete();
+
+const catalog = window.document.querySelector('[aria-label="Design scenario catalog"]');
+const labResults = window.document.querySelector('[aria-label="Laboratory results"]');
+if (
+  !catalog?.textContent.includes("Four-hit baseline") ||
+  !catalog.textContent.includes("Single heavy strike") ||
+  !catalog.textContent.includes("Near-threshold survivor") ||
+  !labResults?.textContent.includes("Simulation result") ||
+  !labResults.textContent.includes("Click “Simulate now” on any scenario above.")
+) {
+  throw new Error("The rules workspace did not mount.");
+}
+
 const scenarioButtons = [
   ...catalog.querySelectorAll('button[aria-label^="Simulate design scenario"]'),
 ];
@@ -658,7 +683,7 @@ if (
 }
 
 console.log(
-  `Browser smoke passed: React mounted the six-unit exact SVG with 72 health positions, selection/inspector, roving focus, semantic zoom, palette switching, ${scenarioButtons.length} simulation actions, ${rulesTables.length} rules-data tables, and worker messaging.`,
+  `Browser smoke passed: the map editor rendered exact terrain and four square units, all controller modes executed, replay inspection remained intact, and ${scenarioButtons.length} rules scenarios with ${rulesTables.length} data tables completed.`,
 );
 
 window.happyDOM.close();

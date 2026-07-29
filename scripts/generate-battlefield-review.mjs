@@ -45,6 +45,15 @@ await import(pathToFileURL(bundle));
 await window.happyDOM.waitUntilComplete();
 await mkdir(reviewOutput, { recursive: true });
 
+const replayTab = [...window.document.querySelectorAll("button")].find(
+  (button) => button.textContent.trim() === "Replay",
+);
+if (!replayTab) {
+  throw new Error("The replay workspace control did not render.");
+}
+replayTab.click();
+await window.happyDOM.waitUntilComplete();
+
 const palettes = [
   "accessible-default",
   "high-contrast",

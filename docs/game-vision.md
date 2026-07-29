@@ -9,7 +9,7 @@ version: "1.18"
 last-updated: 2026-07-29
 ---
 
-# S.I.R. Game Vision
+# Game Vision
 
 ## Document purpose
 

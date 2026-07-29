@@ -15,7 +15,7 @@ related:
   - docs/tactical-environment-architecture.md
 ---
 
-# S.I.R. Performance Budget
+# Performance Budget
 
 ## Purpose
 
@@ -119,7 +119,7 @@ movement's conflict resolution by far more than either because its allocation
 was aimed at the wrong half of the problem. These shares should be treated as
 placeholders rather than predictions.
 
-## What this session made more expensive
+## Revised cost estimates
 
 Recorded honestly, because these were chosen for tactical merit without cost
 accounting:
@@ -147,7 +147,7 @@ never been considered together, which is what this document exists to fix.
 Three properties protect the budget and should be treated as design
 constraints rather than optimisations.
 
-### Replanning must be staggered, and the cadence is about one second
+### Staggered replanning cadence
 
 Measured: replanning every unit every tick costs **150 ms**, four times the
 entire tick budget. Every four ticks still does not fit at 36 ms. A cadence of

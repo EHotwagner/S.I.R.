@@ -15,7 +15,7 @@ related:
   - docs/research/combat-awareness-models.md
 ---
 
-# S.I.R. Tactical Environment Architecture
+# Tactical Environment Architecture
 
 ## Purpose
 

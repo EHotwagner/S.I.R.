@@ -16,7 +16,7 @@ related:
   - docs/combat-resolution.md
 ---
 
-# S.I.R. Deterministic Simulation Core
+# Deterministic Simulation Core
 
 ## Purpose
 

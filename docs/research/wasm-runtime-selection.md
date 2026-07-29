@@ -1,5 +1,5 @@
 ---
-title: S.I.R. .NET WebAssembly Runtime Selection
+title: .NET WebAssembly Runtime Selection
 status: accepted
 decision-status: canonical
 document-type: research-and-options
@@ -12,7 +12,7 @@ related:
   - docs/simulation-core-architecture.md
 ---
 
-# S.I.R. .NET WebAssembly Runtime Selection
+# .NET WebAssembly Runtime Selection
 
 ## Decision status
 

@@ -16,7 +16,7 @@ related:
   - docs/casualty-and-medical-architecture.md
 ---
 
-# S.I.R. Human Forces
+# Human Forces
 
 ## Purpose
 
@@ -277,7 +277,7 @@ Slow projectiles occupy authoritative state across ticks and use swept paths, so
 a launcher's round is a visible, dodgeable, interruptible object rather than an
 instant result.
 
-### Why none of these dominates
+### Role trade-offs
 
 - the **marksman rifle** is the strongest weapon at range and the worst against
   anything that peeks, because a long build time gives a target every chance to
@@ -433,7 +433,7 @@ always better and the costs are diffuse. Carrying capacity, battery consumption,
 and aggregate signature all need to bite hard enough to make loadout a real
 decision, and that is the first thing to check once anything runs.
 
-## What this tests in the architecture
+## Architectural tests
 
 Writing content is also how architecture gets validated, and this set is
 deliberately chosen to exercise claims that are currently only asserted:

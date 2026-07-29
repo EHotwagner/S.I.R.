@@ -6,8 +6,8 @@ index: 11
 status: accepted
 decision-status: canonical
 document-type: living-content
-version: "1.3"
-last-updated: 2026-07-28
+version: "1.4"
+last-updated: 2026-07-29
 related:
   - docs/magic-system.md
   - docs/arcane-forces.md
@@ -15,7 +15,7 @@ related:
   - docs/game-vision.md
 ---
 
-# S.I.R. Arcane Spells
+# Arcane Spells
 
 ## Purpose
 
@@ -39,7 +39,7 @@ complete catalog, decisive senior spells, major ritual authority, or
 unrestricted anchor control. The exact assistant-eligible spell list remains
 content data.
 
-## Utility first, and why
+## Capability scope
 
 Magic should not do what guns already do. Humans are better at delivering damage
 at range than anything the arcane can field, and a caster who is artillery is
@@ -55,26 +55,20 @@ focusing fire on, and focusing casters is what the strain and breach mechanics
 exist to reward. So the set is utility-dominant with a small number of
 expensive, decisive options that make an unattended caster a mistake.
 
-## The strain career
+## Cost model
 
-Strain accumulates as a caster works, and meditation sheds only part of it. What
-remains is residual, and it rises with every cast.
+Casting adds Strain and empowerment spends HP. Both reduce the margin before a
+breach. Strain recovery and persistence are unresolved, so this catalog does
+not assume meditation, residual Strain, or a permanent cost for every cast.
 
-So a caster has a **career** rather than a rotation. They can recover enough to
-work again, repeatedly, but never back to where they started, and every cast
-spends a little of the match's remaining safety permanently.
-
-That shapes the whole set. The interesting decision is rarely *which* spell —
-the situation usually decides that — but **when to spend, and how hard**.
-Empowerment sharpens it further, since each cast is also a question of how much
-health to pay for a better version of it now.
-
-The cost gradient below is therefore the most important design axis in the
-document.
+Each spell still needs a distinct immediate cost in HP, Strain, and cast time.
+The final frequency of use depends on the recovery rule and must be established
+by simulation.
 
 ## Denying the human picture
 
-The sharpest lever, because human capability is information capability.
+Human capability depends strongly on information, so denial targets that
+dependency.
 
 ### Dampening field
 
@@ -88,7 +82,7 @@ What it removes is precisely the apparatus humans built and nothing else.
 - **Cost:** high, and it is stationary once placed.
 - **Counterplay:** it is a *place*, so it can be walked around, and everything
   inside it can still see and shoot.
-- **The catch worth designing for:** casting one announces that something here
+- **Disclosure:** casting one announces that something here
   matters. A dampening field is a flag planted over whatever it conceals, and a
   competent opponent reads it as one.
 
@@ -145,8 +139,7 @@ does as decisively. Rupture collapses structures, destroys cover, and opens
 routes, with casualties as a consequence of the collapse rather than the point
 of it.
 
-- **Cost:** high in both health and strain. This is a caster spending part of
-  their career.
+- **Cost:** high in both health and strain.
 - **Counterplay:** fight in the open where there is nothing to collapse, or
   reach the caster during the cast, which is slow and interruptible.
 
@@ -208,8 +201,7 @@ does not create healing where none exists; it makes an existing recovery faster.
 This is the faction's answer to attrition, and it is why arcane forces recover
 during a match while humans stabilise and evacuate.
 
-- **Cost:** low per application, but it competes for the caster's career with
-  everything else.
+- **Cost:** low per application.
 - **Counterplay:** damage faster than it mends, or kill the caster, or use
   effects regeneration does not answer.
 
@@ -225,9 +217,8 @@ during a match while humans stabilise and evacuate.
 | Dampening field | high | high | long | once or twice |
 | Rupture | high | very high | long | once, decisively |
 
-The shape matters more than the values: a caster can sustain the top of this
-table indefinitely and the bottom of it almost not at all, so the decisive
-spells are decisions about the whole match rather than the current moment.
+The entries are provisional ordering constraints, not usage guarantees.
+Recovery rules and simulation results determine the final frequency column.
 
 ## What is deliberately excluded
 
@@ -248,10 +239,10 @@ spells are decisions about the whole match rather than the current moment.
 ## What canonical status covers
 
 Settled: a utility-dominant set with a small number of expensive decisive
-options, and the reasoning that a caster who is artillery is a worse gun than a
-gun while a purely supportive caster is not worth focusing; the strain career as
-the axis the set is built on, so that the cost gradient's shape matters more
-than its values; barrier as a created semantic edge expressed through
+options, and the reasoning that a caster who is artillery duplicates an
+existing weapon role while a purely supportive caster presents too little
+threat; the immediate HP, Strain, and cast-time gradient; barrier as a created
+semantic edge expressed through
 per-modality permeability; rupture aimed at terrain rather than people; the
 dampening field attacking electronics only and announcing its own importance;
 translocation requiring an observed destination; scrying as a snapshot returning
@@ -263,10 +254,9 @@ the arcane faction contract rather than additions to this individual spell list.
 Not settled: every number, which aspects each spell permits empowering, and the
 open parameters at the end.
 
-**What would force a revision of the shape:** the decisive spells proving
-correct as opening moves rather than as commitments, which would mean the cost
-gradient is not steep enough to make a career meaningful; or the dampening field
-proving an unconditional answer to the human faction despite announcing itself.
+**Revision criteria:** decisive spells become routine opening moves, or the
+dampening field becomes an unconditional answer despite disclosing its
+location.
 
 ## Checking against invariant 13
 
@@ -276,22 +266,19 @@ The risk concentrates in two places.
 it were cheap or mobile. It is neither, and it announces its own importance,
 which is what keeps casting one a decision rather than an opening move.
 
-**Rupture** could dominate if cover removal were always correct. It is bounded
-by being a large fraction of a caster's career: using it early means not having
-it later, and a caster who has spent it is a much less frightening object for
-the rest of the match.
+**Rupture** could dominate if cover removal were always correct. Its high HP,
+Strain, and cast-time costs must make alternatives preferable in some states.
 
 Everything above the middle of the cost gradient is cheap enough to be
 situational rather than decisive, which is the intended shape.
 
 ## Open parameters
 
-- All values, as ever.
+- All numeric values.
 - Which aspects each spell permits empowering, and at what rates.
 - Dampening field radius, duration, and whether it degrades or hard-cuts.
 - Whether a ward is one-directional, which is powerful and may be too much.
 - Translocation range, and whether a squad can be moved or only a caster.
 - Scrying range, and whether it requires an anchor at the destination.
-- Whether mending works on casters. Meditation is now the intended route back
-  to safety, which makes healing-as-margin-restoration less necessary and the
-  laundering loop easier to close.
+- Whether mending works on casters.
+- How the unresolved Strain recovery model changes expected spell frequency.

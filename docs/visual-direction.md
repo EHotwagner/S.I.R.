@@ -13,7 +13,7 @@ reference-assets:
   - docs/assets/concept-art/unit-footprints-and-information-faces.png
 ---
 
-# S.I.R. Visual Direction
+# Visual Direction
 
 ## Purpose
 

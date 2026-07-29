@@ -5,8 +5,8 @@ document-type: reference
 category: Battlefield Systems
 categoryindex: 4
 index: 18
-version: "0.2"
-last-updated: 2026-07-28
+version: "0.3"
+last-updated: 2026-07-29
 related:
   - docs/gameplay-reference.md
   - docs/magic-system.md
@@ -50,38 +50,21 @@ HP. The casting check and failure-damage formula remain open.
 
 ## Strain
 
-**Strain** is persistent magical instability accumulated through casting.
+**Strain** is magical instability accumulated through casting. Current Strain
+counts against the breach threshold. Its reduction, persistence, and recovery
+rules are not settled.
 
-```text
-accumulated strain = settling strain + residual strain
-```
+The rules must define:
 
-- **Settling Strain** can be shed through meditation.
-- **Residual Strain** persists for the rest of the match.
-- Both count against the breach threshold.
-- Every cast leaves some residual component, so a caster's safe floor rises
-  across the match.
+- whether Strain can decrease during a match;
+- which action or condition decreases it;
+- whether any component persists for the complete match;
+- how recovery is interrupted or detected; and
+- whether healing changes Strain or only restores HP.
 
-🟩 This produces a strain career rather than a repeating cooldown. Casters can
-surge, withdraw, recover partway, and return, but cannot reset completely.
-
-### Meditation
-
-Meditation is an ordinary timed action:
-
-- the caster cannot cast;
-- the caster is stationary;
-- the caster is inattentive and has degraded
-  [Acquisition](gameplay-command-information.md#acquisition) and reaction;
-- damage, displacement, or Suppression can interrupt it; and
-- released Strain produces a magical signature that terrain does not attenuate.
-
-The magical-signature detector can therefore locate a caster precisely when
-they are stationary and vulnerable. Distance, rather than a wall, is the
-caster's protection while meditating.
-
-Meditating below the breach threshold can prevent a future breach. It does not
-cancel a breach already due.
+Meditation is a candidate recovery action, not a canonical rule. Current
+documentation and simulations must not assume a residual component or a
+permanent increase after every cast.
 
 ## Breach threshold and resolution
 
@@ -128,9 +111,9 @@ breach risk
 backlash or shattering
 ```
 
-Healing can restore HP and breach margin, but may not erase residual Strain.
-The final rules must prevent ordinary healing supplies from becoming unlimited
-safe spellcasting.
+Healing restores HP and therefore breach margin. Whether it changes Strain is
+unresolved. The final recovery rule must prevent ordinary healing supplies from
+creating unlimited safe spellcasting.
 
 ## Anchor Capacity
 
@@ -349,8 +332,8 @@ The initial arcane spell set excludes:
 - casting checks and failure damage;
 - HP empowerment exchange rates;
 - per-spell empowerable aspects;
-- Strain gain and settling/residual proportions;
-- meditation rate and signature range;
+- Strain gain, persistence, and recovery;
+- whether meditation exists and, if so, its rate and signature;
 - breach probability, severity, discharge, and outcome tables;
 - healing limits;
 - anchor capacity, formation load, warning, and failure probabilities;

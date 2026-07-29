@@ -17,7 +17,7 @@ related:
   - docs/logistics-architecture.md
 ---
 
-# S.I.R. Robust Skirmish Development Plan
+# Robust Skirmish Development Plan
 
 ## Objective
 

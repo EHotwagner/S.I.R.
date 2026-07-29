@@ -6,8 +6,8 @@ index: 17
 status: accepted
 decision-status: canonical
 document-type: living-design
-version: "1.4"
-last-updated: 2026-07-28
+version: "1.5"
+last-updated: 2026-07-29
 related:
   - docs/game-vision.md
   - docs/setting-and-factions.md
@@ -17,7 +17,7 @@ references:
   - Warcrow
 ---
 
-# S.I.R. Risk-Based Magic System
+# Risk-Based Magic System
 
 ## Purpose
 
@@ -92,93 +92,23 @@ The exact strain gain, reduction, persistence, and recovery rules remain open.
 Spell definition, selected empowerment, casting result, environmental
 conditions, injuries, equipment, and status effects are possible inputs.
 
-### Strain recovery: meditation
+### Strain recovery is unresolved
 
-Strain has **two components**, and only one of them comes back.
+The recovery model has not been selected. No canonical rule currently divides
+Strain into settling and residual components, requires meditation, or makes
+part of every cast permanent.
 
-```text
-accumulated strain = settling strain  +  residual strain
-                     recovers by       persists for the
-                     meditating        rest of the match
-```
+A recovery proposal must specify:
 
-**Settling strain** is the immediate turbulence of recent casting. A caster who
-stops, stills themselves, and concentrates sheds it over time.
+- whether Strain decreases during a match;
+- the action, rate, and conditions for any decrease;
+- interruption and detection rules;
+- interaction with HP healing and regeneration; and
+- whether a breach can discharge Strain before another threshold check.
 
-**Residual strain** is what does not settle. Every cast leaves some, so a
-caster's total floor rises across a match no matter how carefully they pace
-themselves.
-
-Both count toward the breach threshold. A caster carrying residual strain is
-permanently closer to the edge than a fresh one, which is why a veteran of a
-long engagement is more fragile than their health alone suggests.
-
-#### What meditating costs
-
-Meditation is an ordinary timed action and it is expensive in the currency that
-matters most in a firefight:
-
-- the caster **cannot cast**;
-- the caster is **stationary**;
-- the caster is **inattentive**, with degraded acquisition and reaction under
-  the ordinary awareness rules; and
-- damage, suppression, or displacement **interrupts it**, so meditating within
-  reach of a fight is meditating badly.
-
-#### Why this is better than no recovery at all
-
-Without recovery, a caster is a countdown rather than a decision. Once spent
-they are dead weight, and the only question was how fast to spend them.
-
-With it, the faction acquires a **rhythm**. Strained casters are pulled back,
-fresh ones step forward, and the screening mass exists partly to protect
-whoever is currently stationary and unaware. Casters cycle rather than simply
-depleting, and a commander who never rotates them is doing it wrong.
-
-It also creates a specific, valuable target. **A meditating caster is the most
-vulnerable high-value unit on the battlefield** — stationary, inattentive, and
-irreplaceable. Finding one is a windfall, which gives a human force's
-reconnaissance apparatus a concrete objective against this faction beyond
-locating anchors.
-
-#### Releasing strain is detectable
-
-Shedding strain is not a quiet act. It produces a **magical signature**, which
-is already a stimulus modality in the perception model, so a caster releasing
-strain announces themselves to anything equipped to perceive it.
-
-This gives a human magical-signature detector one of its narrow purposes:
-it is not a general magic-finder, but it can locate casters at **precisely the
-moment they are stationary, inattentive, and irreplaceable**. Its other
-canonical purposes include detecting an overloaded anchor before indiscriminate
-discharge or daemon breach, growing ritual preparation, and active critter
-attunement as defined in [Arcane Civilization Forces](arcane-forces.md).
-
-It also makes the recovery decision genuinely risky rather than a safe pause. A
-caster who withdraws to meditate has traded one exposure for another: they are
-out of the fight, but they are lit up while they are.
-
-**Concealment works differently from the human equivalent.** Radio emission is
-attenuated by terrain, so a human hides a transmission by putting mass between
-themselves and the listener. A strain signature is not, so a caster can only
-hide it with **distance**. There is no wall to meditate behind.
-
-#### Both factions are loudest when they recover
-
-The symmetry is worth stating because neither faction was designed to produce
-it.
-
-A human squad regaining contact transmits a conspicuous reconnection burst — the
-most legible event available to traffic analysis. An arcane caster recovering
-from strain emits a signature that a suitably equipped opponent can locate.
-
-**The moment either force restores itself is the moment it is most visible.**
-That is a good property for a game about contested information, and it arrived
-from two unrelated mechanics rather than being imposed on them.
-
-Meditating below the breach threshold is a legitimate emergency measure, but a
-slow one. It does not rescue a caster from a breach already due; it prevents the
-next one.
+Until that decision is accepted, implementations and content must treat
+recovery as ruleset data and must not infer a permanent match-long cost from
+casting.
 
 ### Breach threshold
 
@@ -401,13 +331,11 @@ HP.
 
 Settled, and later work should build against it: health as survivability,
 empowerment currency, and breach threshold simultaneously; casting that can fail
-and cost health; strain that accumulates from casting and persists; the breach
+and cost health; Strain that accumulates from casting and remains in state until
+an explicit rule changes it; the breach
 check whenever strain exceeds current health, re-evaluated on any health change;
 severity depending on both the check and the excess; breaches discharging some
-strain rather than resetting; strain splitting into a settling component
-recovered by meditation and a residual one that does not recover; meditation
-costing stillness, inattention, and interruptibility; and releasing strain
-emitting a signature that terrain does not attenuate. Rituals are distinct from
+strain rather than necessarily resetting it. Rituals are distinct from
 individual spells: they require a caster quorum at a prepared site, commit to a
 geographical target or trigger, and use the culmination, prepared-trap, and
 portal shapes defined by the arcane faction contract. Controlled transit,
@@ -417,8 +345,8 @@ assistants with lesser spells and ritual-support abilities. Minor workings may
 use one caster cell, but major rituals and portals still require multiple senior
 casters; assistants cannot erase the system's ordinary costs or risks.
 
-Not settled: every numeric value, the resolution ordering noted above, and the
-prototype questions below.
+Not settled: every numeric value, Strain persistence and recovery, the
+resolution ordering noted above, and the prototype questions below.
 
 ## Balance and failure modes
 
@@ -457,9 +385,8 @@ rituals. Their exact effects and values remain prototype questions.
    second?
 2. When is HP paid relative to casting success?
 3. How much strain does a cast generate, and what modifies it?
-4. What are the settling and residual proportions, how fast does meditation
-   shed settling strain, and does the residual fraction rise as total strain
-   does? *The recovery mechanism itself is settled: meditation, above.*
+4. Can Strain decrease during a match? If so, what action, rate, interruption,
+   and detection rules govern recovery?
 5. After a breach partially discharges strain, when is another breach check
    required if the caster remains above the threshold?
 6. What inputs determine breach severity?
@@ -472,8 +399,8 @@ rituals. Their exact effects and values remain prototype questions.
     threshold?
 13. Which spell aspects are universal, and which are spell-specific?
 14. How is the amount of strain discharged by a breach determined?
-15. How far does a strain signature carry, does its strength scale with the
-    amount being shed, and can a caster meditate slowly to stay quiet?
+15. If recovery emits a magical signature, how far does it carry and how does
+    signal strength scale with the amount recovered?
 16. What caster quorum, preparation time, positioning, interruption, and
     contribution rules make rituals cooperative without making one casualty
     erase excessive progress?

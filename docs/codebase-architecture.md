@@ -18,7 +18,7 @@ related:
   - docs/fable-client-and-documentation.md
 ---
 
-# S.I.R. F# Codebase Architecture
+# F# Codebase Architecture
 
 ## Decision status
 

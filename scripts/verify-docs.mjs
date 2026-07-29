@@ -100,6 +100,7 @@ for (const required of [
   "combat-formulas.html",
   "deterministic-simulation.html",
   "interactive-rules-lab.html",
+  "map-editor.html",
   "research/rules-lab-prototype.html",
   "reference/index.html",
   "reference/sir-match-matchreplay.html",
@@ -123,6 +124,7 @@ const formulas = await readFile(resolve(site, "combat-formulas.html"), "utf8");
 const gameVision = await readFile(resolve(site, "game-vision.html"), "utf8");
 const units = await readFile(resolve(site, "gameplay-units.html"), "utf8");
 const svgPlayer = await readFile(resolve(site, "svg-replay-player.html"), "utf8");
+const mapEditor = await readFile(resolve(site, "map-editor.html"), "utf8");
 const reportingSource = await readFile(
   resolve("docs/reporting-model.md"),
   "utf8",
@@ -136,6 +138,13 @@ const wasmControlSource = await readFile(
   resolve("docs/wasm-control-architecture.md"),
   "utf8",
 );
+const authoredDocs = (
+  await Promise.all(
+    (await filesUnder(resolve("docs")))
+      .filter((path) => /\.(?:md|fsx)$/i.test(path))
+      .map((path) => readFile(path, "utf8")),
+  )
+).join("\n");
 const example = await readFile(
   resolve(site, "deterministic-simulation.html"),
   "utf8",
@@ -175,6 +184,28 @@ if (
 ) {
   throw new Error(
     "The sidebar labels or primitive-to-composed reading order regressed.",
+  );
+}
+
+if (
+  !home.includes("Open the simulation workspace") ||
+  !interactive.includes("Map and simulation") ||
+  !interactive.includes("Scripted AI") ||
+  !interactive.includes("General AI") ||
+  !mapEditor.includes("Square unit geometry") ||
+  !mapEditor.includes("SIR-MAP 1")
+) {
+  throw new Error("The simulation-centered map-editor documentation is incomplete.");
+}
+
+if (
+  /# S\.I\.R\./.test(authoredDocs) ||
+  /strain career|settling strain|meditation sheds|recovery mechanism itself is settled/i.test(
+    authoredDocs,
+  )
+) {
+  throw new Error(
+    "Documentation reintroduced redundant S.I.R. headings or the retired Strain-recovery model.",
   );
 }
 

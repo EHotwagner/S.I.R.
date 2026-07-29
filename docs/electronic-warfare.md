@@ -16,7 +16,7 @@ related:
   - docs/setting-and-factions.md
 ---
 
-# S.I.R. Electronic Warfare Architecture
+# Electronic Warfare Architecture
 
 ## Purpose
 
@@ -60,7 +60,7 @@ communications topology, degrading a link degrades what a unit is told and what
 analysis it can commission — see
 [WebAssembly Control Architecture](wasm-control-architecture.md).
 
-## Why there is no content layer
+## Content-layer boundary
 
 Reading and forging enemy traffic are not modelled. Both were considered and
 both are rejected, for two independent reasons.

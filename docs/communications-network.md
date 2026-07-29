@@ -15,7 +15,7 @@ related:
   - docs/research/squad-command-and-succession.md
 ---
 
-# S.I.R. Communications Network Architecture
+# Communications Network Architecture
 
 ## Purpose
 
@@ -245,7 +245,7 @@ traffic is distributed, and where it concentrates.
 Adding emitters therefore costs twice — each is individually findable, and
 together they describe the force.
 
-## Why neither network shape dominates
+## Network trade-offs
 
 The two previous sections would, alone, make hierarchy unconditionally correct.
 It is not, and the reason matters.
@@ -298,7 +298,7 @@ told.** Rationing how much a subordinate element may report would be strange in
 the fiction and hostile in play, and it would replace an interesting constraint
 with an administrative one.
 
-### Why the asymmetry is correct rather than merely kind
+### Asymmetry constraints
 
 A unit that receives less still fights. Its own perception is its floor, it
 runs its control logic every tick, and its reactions are unaffected. Degrading
@@ -382,7 +382,7 @@ The sender knows immediately that it submitted traffic. It knows that a
 recipient received, accepted, executed, or completed an order only when the
 corresponding acknowledgement returns through the same delayed network.
 
-## The network is not a puppet string
+## Local unit autonomy
 
 A client is unregulated compute. Nothing prevents a player from running an
 external optimiser and issuing per-unit orders down the communications chain,
@@ -427,7 +427,7 @@ coordination is possible but slow, local reaction is fast.** Which is what
 command actually looks like, and why real orders describe intent rather than
 keystrokes.
 
-### The point is that it is priced, not that it is banned
+### Priced behavior
 
 Micromanagement is not the failure. *Unlimited* micromanagement is. A commander
 who spends attention directing the decisive element and leaves the rest on their

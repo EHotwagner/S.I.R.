@@ -187,7 +187,7 @@ tree—is the appropriate complexity target.
 - Repeating the promotion interaction for 50–100 active units would create
   administrative overload.
 
-#### S.I.R. lesson
+#### Application
 
 Use XCOM's **decision cadence and role clarity**, not necessarily its
 one-tree-per-unit implementation. Progression rewards should not be granted for
@@ -221,7 +221,7 @@ and strength
   classes, weakening identity.
 - Shared points invite concentration into a few favored units.
 
-#### S.I.R. lesson
+#### Application
 
 If S.I.R. uses shared progression resources, they should probably purchase
 **training opportunities, certifications, or behavior-profile access**, not be freely
@@ -253,7 +253,7 @@ respec in its veteran mode
 - Deep trees encourage external build planning and can punish early ignorance.
 - This scale is suitable for a small squad, not 100 separately managed units.
 
-#### S.I.R. lesson
+#### Application
 
 Named branches are useful for squad leaders or posture families. If used,
 trees should be shallow enough that every node changes behavior rather than
@@ -286,7 +286,7 @@ good perks should require skill to exploit
 - Open perk pools tend to generate solved builds and benchmark-driven hiring.
 - Bad random potential can make a character feel invalid before they have acted.
 
-#### S.I.R. lesson
+#### Application
 
 Random starting variation is valuable, but it should be **bounded and
 legible**. The player or control module should be able to understand a unit's
@@ -320,7 +320,7 @@ while skills can also improve through relevant activity and training
   complex than XCOM.
 - A large roster magnifies training and inspection overhead.
 
-#### S.I.R. lesson
+#### Application
 
 Requirements can be useful, but prefer **broad eligibility bands** or tags over
 precise breakpoints. Learn-by-doing should use capped mission-level evidence,
@@ -351,7 +351,7 @@ applicable, an upgrade to something the hero already knows
 - Players may hoard rerolls or restart to manipulate results.
 - Large content pools make synergies harder to communicate and balance.
 
-#### S.I.R. lesson
+#### Application
 
 Bounded-random progression is viable if eligibility and weighting protect role
 coherence before the server resolves an automatic outcome. Every outcome pool
@@ -393,7 +393,7 @@ do not miss
 - Deck construction and card improvement add collection-management overhead.
 - The system is designed for three heroes, not a large real-time force.
 
-#### S.I.R. lesson
+#### Application
 
 The useful idea is the **limited capability loadout**, not card draw. A unit,
 squad, leader, or module configuration can know many unlocked behaviors but equip only
@@ -428,7 +428,7 @@ several advanced effects, improving local freedom and readability
 - Balance changes can invalidate substantial prior planning.
 - Replicating it for every S.I.R. unit would be untenable.
 
-#### S.I.R. lesson
+#### Application
 
 A Path of Exile-style web is plausible only for a **force-wide policy,
 research, faction, or control-program architecture**. Useful elements to borrow

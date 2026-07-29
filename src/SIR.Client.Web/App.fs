@@ -14,16 +14,28 @@ type Msg =
     | ShellMsg of SIR.Client.Msg
     | BattlefieldChanged of BattlefieldAction
     | FileSelected of File
+    | MapFileSelected of File
     | PlaybackPulse
+    | EditorPulse
     | KeyPressed of string
+    | WorkspaceChanged of WorkspaceMode
+    | EditorChanged of MapEditorAction
+    | ExportMap
     | ExportExperiment
     | AddComparisonBookmark
     | ComparisonViewChanged of ComparisonView
     | ExportEvidenceSvg
     | ExportEvidencePng
 
+and WorkspaceMode =
+    | SimulationWorkspace
+    | ReplayWorkspace
+    | RulesWorkspace
+
 type Model =
     { Shell: SIR.Client.Model
+      Editor: MapEditorState
+      Workspace: WorkspaceMode
       Battlefield: BattlefieldViewState
       PreviousFrame: RenderFrame option
       PresentationAlpha: float
@@ -38,6 +50,12 @@ let private fileBytes (file: File) =
         let! buffer = file.arrayBuffer () |> Async.AwaitPromise
         let typed = JS.Constructors.Uint8Array.Create(buffer)
         return file.name, Array.init typed.length (fun index -> typed[index])
+    }
+
+let private fileText (file: File) =
+    async {
+        let! text = file.text () |> Async.AwaitPromise
+        return text
     }
 
 let private runEffect effect =
@@ -58,6 +76,20 @@ let private downloadExperiment report =
         const anchor = document.createElement("a");
         anchor.href = url;
         anchor.download = "sir-lab-experiment.sir-lab";
+        anchor.click();
+        URL.revokeObjectURL(url);
+        """
+
+let private downloadMap state =
+    let content = MapEditor.export state
+    emitJsStatement
+        content
+        """
+        const blob = new Blob([$0], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = "battlefield.sir-map";
         anchor.click();
         URL.revokeObjectURL(url);
         """
@@ -124,11 +156,14 @@ let private evidenceFor model =
           Events = [||]
           Disclosure = SandboxDisclosure }
     let frame =
-        Shell.renderFrame model.Shell
-        |> Option.orElseWith (fun () ->
-            model.Shell.Lab.Report
-            |> Option.map (fun report -> Lab.renderFrame report.Comparison.Fork))
-        |> Option.defaultValue emptySandboxFrame
+        if model.Workspace = SimulationWorkspace then
+            MapEditor.frame model.Editor
+        else
+            Shell.renderFrame model.Shell
+            |> Option.orElseWith (fun () ->
+                model.Shell.Lab.Report
+                |> Option.map (fun report -> Lab.renderFrame report.Comparison.Fork))
+            |> Option.defaultValue emptySandboxFrame
     let sourceIdentity, replayIdentity, engineIdentity =
         match model.Shell.Source with
         | Loaded metadata ->
@@ -164,6 +199,8 @@ let private evidenceFor model =
 
 let init () =
     { Shell = Shell.init ()
+      Editor = MapEditor.initial
+      Workspace = SimulationWorkspace
       Battlefield =
         { Battlefield.initial with
             ReducedMotion =
@@ -182,6 +219,31 @@ let rec update msg model =
             fileBytes
             file
             (fun (name, bytes) -> ShellMsg(ReplayBytesSelected(name, bytes)))
+    | MapFileSelected file ->
+        model,
+        Cmd.OfAsync.perform
+            fileText
+            file
+            (fun text -> EditorChanged(LoadMapText text))
+    | WorkspaceChanged workspace ->
+        { model with Workspace = workspace }, Cmd.none
+    | EditorChanged action ->
+        let editor = MapEditor.update action model.Editor
+        let battlefield =
+            Battlefield.reconcile (MapEditor.frame editor) model.Battlefield
+        { model with
+            Editor = editor
+            Battlefield = battlefield
+            PreviousFrame = None
+            PresentationAlpha = 1.0 },
+        Cmd.none
+    | EditorPulse ->
+        if model.Editor.IsRunning then
+            update (EditorChanged StepEditor) model
+        else
+            model, Cmd.none
+    | ExportMap ->
+        model, Cmd.ofEffect (fun _ -> downloadMap model.Editor)
     | ShellMsg shellMsg ->
         let previousFrame = Shell.renderFrame model.Shell
         let next, effects = Shell.update shellMsg model.Shell
@@ -316,6 +378,13 @@ let subscriptions model =
         { new IDisposable with
             member _.Dispose() = window.clearInterval identifier }
 
+    let editorTimer dispatch =
+        let identifier =
+            window.setInterval ((fun () -> dispatch EditorPulse), 500)
+
+        { new IDisposable with
+            member _.Dispose() = window.clearInterval identifier }
+
     [ [ "replay-worker-v1" ], runner
       [ "keyboard" ], keyboard
       if model.Shell.Playback.IsPlaying then
@@ -326,7 +395,9 @@ let subscriptions model =
               | Double -> "two"
               | Maximum -> "maximum"
 
-          [ "playback-pulse"; speedKey ], timer ]
+          [ "playback-pulse"; speedKey ], timer
+      if model.Editor.IsRunning then
+          [ "editor-pulse" ], editorTimer ]
 
 let private speedText speed =
     match speed with
@@ -922,13 +993,19 @@ let private battlefieldInspector (scene: BattlefieldScene) =
 
 let private battlefieldView
     (shell: SIR.Client.Model)
+    (frameOverride: RenderFrame option)
+    (terrainOverride: MapEditorState option)
     (state: BattlefieldViewState)
     (previousFrame: RenderFrame option)
     presentationAlpha
     (dispatch: Msg -> unit)
     =
-    let loadedFrame = Shell.renderFrame shell
-    let frame = loadedFrame |> Option.defaultValue Battlefield.representativeFrame
+    let loadedFrame =
+        frameOverride
+        |> Option.orElseWith (fun () -> Shell.renderFrame shell)
+    let frame =
+        loadedFrame
+        |> Option.defaultValue Battlefield.representativeFrame
     let scene =
         match previousFrame with
         | Some previous when presentationAlpha < 1.0 ->
@@ -960,7 +1037,9 @@ let private battlefieldView
     Html.section [
         prop.className "panel battlefield-panel"
         prop.ariaLabel (
-            if Option.isSome loadedFrame then
+            if Option.isSome frameOverride then
+                "Editable simulation SVG battlefield"
+            elif Option.isSome loadedFrame then
                 "Loaded replay SVG battlefield"
             else
                 "Static SVG battlefield demonstration"
@@ -973,14 +1052,18 @@ let private battlefieldView
                         Html.p [
                             prop.className "eyebrow"
                             prop.text (
-                                if Option.isSome loadedFrame then
+                                if Option.isSome frameOverride then
+                                    "Editable sandbox projection"
+                                elif Option.isSome loadedFrame then
                                     "Loaded bounded worker projection"
                                 else
                                     "Static demonstration — no replay loaded"
                             )
                         ]
                         Html.h2 (
-                            if Option.isSome loadedFrame then
+                            if Option.isSome frameOverride then
+                                "Simulation battlefield"
+                            elif Option.isSome loadedFrame then
                                 "Replay battlefield"
                             else
                                 "SVG battlefield demonstration"
@@ -1040,18 +1123,47 @@ let private battlefieldView
                                         svg.height scene.Height
                                         svg.fill scene.Palette.Terrain
                                     ]
-                                    for row in 0 .. rows - 1 do
-                                        for column in 0 .. columns - 1 do
-                                            if (row + column) % 3 = 0 then
-                                                Svg.rect [
-                                                    svg.custom ("data-terrain", "rough")
-                                                    svg.x (float column * scene.CellSize)
-                                                    svg.y (float row * scene.CellSize)
-                                                    svg.width scene.CellSize
-                                                    svg.height scene.CellSize
-                                                    svg.fill scene.Palette.Canvas
-                                                    svg.custom ("opacity", 0.22)
-                                                ]
+                                    match terrainOverride with
+                                    | Some editor ->
+                                        for row in 0 .. rows - 1 do
+                                            for column in 0 .. columns - 1 do
+                                                let terrain =
+                                                    MapEditor.terrainAt
+                                                        (int32 column)
+                                                        (int32 row)
+                                                        editor
+                                                if terrain <> Open then
+                                                    let fill, opacity =
+                                                        match terrain with
+                                                        | Rough -> scene.Palette.Canvas, 0.48
+                                                        | Blocked -> scene.Palette.Text, 0.34
+                                                        | Objective -> scene.Palette.NeutralFaction, 0.38
+                                                        | Open -> scene.Palette.Terrain, 0.0
+                                                    Svg.rect [
+                                                        svg.custom (
+                                                            "data-terrain",
+                                                            MapEditor.terrainLabel terrain
+                                                        )
+                                                        svg.x (float column * scene.CellSize)
+                                                        svg.y (float row * scene.CellSize)
+                                                        svg.width scene.CellSize
+                                                        svg.height scene.CellSize
+                                                        svg.fill fill
+                                                        svg.custom ("opacity", opacity)
+                                                    ]
+                                    | None ->
+                                        for row in 0 .. rows - 1 do
+                                            for column in 0 .. columns - 1 do
+                                                if (row + column) % 3 = 0 then
+                                                    Svg.rect [
+                                                        svg.custom ("data-terrain", "rough")
+                                                        svg.x (float column * scene.CellSize)
+                                                        svg.y (float row * scene.CellSize)
+                                                        svg.width scene.CellSize
+                                                        svg.height scene.CellSize
+                                                        svg.fill scene.Palette.Canvas
+                                                        svg.custom ("opacity", 0.22)
+                                                    ]
                                     Svg.g [
                                         svg.custom ("data-layer", "grid")
                                         svg.children [
@@ -2150,34 +2262,520 @@ let private laboratoryResults model dispatch =
         ]
     ]
 
+let private toolLabel tool =
+    match tool with
+    | Select -> "Select"
+    | Paint terrain -> "Paint " + MapEditor.terrainLabel terrain
+    | Place(side, classId, size) ->
+        let sideName =
+            match side with
+            | Blue -> "Blue"
+            | Red -> "Red"
+            | NeutralSide -> "Neutral"
+        "Place " + sideName + " " + classId + " " + string size + "×" + string size
+    | Edge(direction, kind) ->
+        let directionName =
+            match direction with
+            | EastEdge -> "east"
+            | SouthEdge -> "south"
+        let kindName =
+            match kind with
+            | Wall -> "wall"
+            | Door -> "door"
+            | Window -> "window"
+        "Place " + directionName + " " + kindName
+
+let private edgeClass state column row direction =
+    state.Map.Edges
+    |> Map.tryFind (column, row, direction)
+    |> Option.map (fun (kind, isOpen) ->
+        let kindName =
+            match kind with
+            | Wall -> "wall"
+            | Door -> if isOpen then "door-open" else "door"
+            | Window -> "window"
+        " edge-"
+        + (match direction with
+           | EastEdge -> "east-"
+           | SouthEdge -> "south-")
+        + kindName)
+    |> Option.defaultValue ""
+
+let private mapCell state dispatch column row =
+    let terrain = MapEditor.terrainAt column row state
+    let unit = MapEditor.unitAt column row state
+    let selected =
+        unit
+        |> Option.exists (fun value -> state.SelectedUnit = Some value.Id)
+    let label =
+        "Cell "
+        + string column
+        + ","
+        + string row
+        + "; "
+        + MapEditor.terrainLabel terrain
+        + (unit
+           |> Option.map (fun value ->
+               "; unit "
+               + string value.Id
+               + ", "
+               + value.ClassId
+               + ", "
+               + MapEditor.controllerLabel value.Controller)
+           |> Option.defaultValue "")
+
+    Html.button [
+        prop.type'.button
+        prop.className (
+            "map-cell terrain-"
+            + MapEditor.terrainLabel terrain
+            + edgeClass state column row EastEdge
+            + edgeClass state column row SouthEdge
+            + (if selected then " map-cell-selected" else "")
+        )
+        prop.custom ("data-map-column", string column)
+        prop.custom ("data-map-row", string row)
+        prop.ariaLabel label
+        prop.text (
+            unit
+            |> Option.map (fun value -> string value.Id)
+            |> Option.defaultValue ""
+        )
+        prop.onClick (fun _ ->
+            dispatch (EditorChanged(ActivateCell(column, row))))
+    ]
+
+let private editorToolbar (state: MapEditorState) dispatch =
+    let choose (label: string) (tool: MapEditorTool) =
+        Html.button [
+            prop.type'.button
+            prop.text label
+            prop.ariaPressed (state.Tool = tool)
+            prop.onClick (fun _ -> dispatch (EditorChanged(ChooseTool tool)))
+        ]
+
+    Html.section [
+        prop.className "panel editor-tools"
+        prop.ariaLabel "Map editing tools"
+        prop.children [
+            Html.div [
+                prop.className "editor-section-heading"
+                prop.children [
+                    Html.div [
+                        Html.p [ prop.className "eyebrow"; prop.text "Author" ]
+                        Html.h2 "Map editor"
+                    ]
+                    Html.p [
+                        prop.className "active-tool"
+                        prop.text ("Active tool: " + toolLabel state.Tool)
+                    ]
+                ]
+            ]
+            Html.div [
+                prop.className "tool-groups"
+                prop.children [
+                    Html.div [
+                        Html.h3 "Select and terrain"
+                        Html.div [
+                            prop.className "control-row"
+                            prop.children [
+                                choose "Select" Select
+                                choose "Open" (Paint Open)
+                                choose "Rough" (Paint Rough)
+                                choose "Blocked" (Paint Blocked)
+                                choose "Objective" (Paint Objective)
+                            ]
+                        ]
+                    ]
+                    Html.div [
+                        Html.h3 "Units"
+                        Html.div [
+                            prop.className "control-row"
+                            prop.children [
+                                choose "Blue rifleman" (Place(Blue, "rifleman", 2))
+                                choose "Blue medic" (Place(Blue, "medic", 2))
+                                choose "Red goblin" (Place(Red, "goblin", 1))
+                                choose "Red troll" (Place(Red, "troll", 2))
+                                choose "Neutral drone" (Place(NeutralSide, "observation-drone", 1))
+                            ]
+                        ]
+                    ]
+                    Html.div [
+                        Html.h3 "Edges"
+                        Html.div [
+                            prop.className "control-row"
+                            prop.children [
+                                choose "East wall" (Edge(EastEdge, Wall))
+                                choose "South wall" (Edge(SouthEdge, Wall))
+                                choose "East door" (Edge(EastEdge, Door))
+                                choose "South door" (Edge(SouthEdge, Door))
+                                choose "East window" (Edge(EastEdge, Window))
+                                choose "South window" (Edge(SouthEdge, Window))
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+            Html.div [
+                prop.className "map-size-row"
+                prop.children [
+                    Html.label [ prop.htmlFor "map-width"; prop.text "Width" ]
+                    Html.input [
+                        prop.id "map-width"
+                        prop.type'.number
+                        prop.min 4
+                        prop.max 40
+                        prop.value state.Map.Width
+                        prop.onChange (fun (value: int) ->
+                            dispatch (EditorChanged(Resize(int32 value, state.Map.Height))))
+                    ]
+                    Html.label [ prop.htmlFor "map-height"; prop.text "Height" ]
+                    Html.input [
+                        prop.id "map-height"
+                        prop.type'.number
+                        prop.min 4
+                        prop.max 40
+                        prop.value state.Map.Height
+                        prop.onChange (fun (value: int) ->
+                            dispatch (EditorChanged(Resize(state.Map.Width, int32 value))))
+                    ]
+                    button "Clear" "Clear the current map" false (fun _ ->
+                        dispatch (EditorChanged ClearMap))
+                    button "Export map" "Export the current map document" false (fun _ ->
+                        dispatch ExportMap)
+                    Html.label [
+                        prop.className "map-import"
+                        prop.children [
+                            Html.span "Import map"
+                            Html.input [
+                                prop.type'.file
+                                prop.accept ".sir-map,text/plain"
+                                prop.ariaLabel "Import SIR map"
+                                prop.onChange (fun (files: File list) ->
+                                    files
+                                    |> List.tryHead
+                                    |> Option.iter (MapFileSelected >> dispatch))
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+
+let private editorGrid state dispatch =
+    Html.section [
+        prop.className "panel map-grid-panel"
+        prop.ariaLabel "Editable map grid"
+        prop.children [
+            Html.div [
+                prop.className "editor-section-heading"
+                prop.children [
+                    Html.div [
+                        Html.p [ prop.className "eyebrow"; prop.text "Map" ]
+                        Html.h2 (string state.Map.Width + " × " + string state.Map.Height + " cells")
+                    ]
+                    Html.p [
+                        prop.className "identity"
+                        prop.text (
+                            string state.Map.Units.Count
+                            + " units · "
+                            + string state.Map.Edges.Count
+                            + " edges · tick "
+                            + string state.Tick
+                        )
+                    ]
+                ]
+            ]
+            Html.div [
+                prop.className "map-grid-scroll"
+                prop.children [
+                    Html.div [
+                        prop.className "map-grid"
+                        prop.style [
+                            style.custom (
+                                "gridTemplateColumns",
+                                "repeat("
+                            + string state.Map.Width
+                            + ",minmax(2.25rem,1fr))"
+                            )
+                        ]
+                        prop.children [
+                            for row in 0 .. int state.Map.Height - 1 do
+                                for column in 0 .. int state.Map.Width - 1 do
+                                    mapCell state dispatch (int32 column) (int32 row)
+                        ]
+                    ]
+                ]
+            ]
+            Html.div [
+                prop.className "map-legend"
+                prop.children [
+                    Html.span "Open"
+                    Html.span "Rough"
+                    Html.span "Blocked"
+                    Html.span "Objective"
+                    Html.span "Number = unit ID"
+                ]
+            ]
+        ]
+    ]
+
+let private controllerPanel state dispatch =
+    let selected = MapEditor.selected state
+    let movement =
+        [ "NW", NorthWest; "N", North; "NE", NorthEast
+          "W", West; "E", East
+          "SW", SouthWest; "S", South; "SE", SouthEast ]
+
+    Html.section [
+        prop.className "panel controller-panel"
+        prop.ariaLabel "Simulation controllers"
+        prop.children [
+            Html.p [ prop.className "eyebrow"; prop.text "Execute" ]
+            Html.h2 "Controllers"
+            Html.div [
+                prop.className "controller-modes"
+                prop.children [
+                    Html.article [ Html.h3 "Manual"; Html.p "Issue explicit movement commands." ]
+                    Html.article [ Html.h3 "Scripted AI"; Html.p "Repeat a deterministic direction script." ]
+                    Html.article [ Html.h3 "General AI"; Html.p "Approach the nearest hostile and attack when adjacent." ]
+                ]
+            ]
+            match selected with
+            | None ->
+                Html.p "Select a unit on the map to configure its controller."
+            | Some unit ->
+                Html.h3 ("Unit " + string unit.Id + " · " + unit.ClassId)
+                Html.div [
+                    prop.className "unit-properties"
+                    prop.children [
+                        Html.label [ prop.htmlFor "unit-side"; prop.text "Side" ]
+                        Html.select [
+                            prop.id "unit-side"
+                            prop.value (
+                                match unit.Side with
+                                | Blue -> "Blue"
+                                | Red -> "Red"
+                                | NeutralSide -> "Neutral"
+                            )
+                            prop.onChange (fun value ->
+                                let side =
+                                    match value with
+                                    | "Red" -> Red
+                                    | "Neutral" -> NeutralSide
+                                    | _ -> Blue
+                                dispatch (EditorChanged(SetSelectedSide side)))
+                            prop.children [
+                                Html.option [ prop.value "Blue"; prop.text "Blue" ]
+                                Html.option [ prop.value "Red"; prop.text "Red" ]
+                                Html.option [ prop.value "Neutral"; prop.text "Neutral" ]
+                            ]
+                        ]
+                        Html.label [ prop.htmlFor "unit-class"; prop.text "Class ID" ]
+                        Html.input [
+                            prop.id "unit-class"
+                            prop.type'.text
+                            prop.value unit.ClassId
+                            prop.onChange (fun value ->
+                                dispatch (EditorChanged(SetSelectedClass value)))
+                        ]
+                        Html.label [ prop.htmlFor "unit-size"; prop.text "Square size" ]
+                        Html.input [
+                            prop.id "unit-size"
+                            prop.type'.number
+                            prop.min 1
+                            prop.max 8
+                            prop.value unit.Size
+                            prop.onChange (fun (value: int) ->
+                                dispatch (EditorChanged(SetSelectedSize(int32 value))))
+                        ]
+                        Html.label [ prop.htmlFor "unit-health"; prop.text "Current HP" ]
+                        Html.input [
+                            prop.id "unit-health"
+                            prop.type'.number
+                            prop.min 0
+                            prop.max unit.HealthMaximum
+                            prop.value unit.Health
+                            prop.onChange (fun (value: int) ->
+                                dispatch (
+                                    EditorChanged(
+                                        SetSelectedHealth(int32 value, unit.HealthMaximum)
+                                    )
+                                ))
+                        ]
+                        Html.label [ prop.htmlFor "unit-health-max"; prop.text "Maximum HP" ]
+                        Html.input [
+                            prop.id "unit-health-max"
+                            prop.type'.number
+                            prop.min 1
+                            prop.value unit.HealthMaximum
+                            prop.onChange (fun (value: int) ->
+                                dispatch (
+                                    EditorChanged(
+                                        SetSelectedHealth(unit.Health, int32 value)
+                                    )
+                                ))
+                        ]
+                    ]
+                ]
+                Html.label [ prop.htmlFor "unit-controller"; prop.text "Controller" ]
+                Html.select [
+                    prop.id "unit-controller"
+                    prop.value (MapEditor.controllerLabel unit.Controller)
+                    prop.onChange (fun value ->
+                        let controller =
+                            match value with
+                            | "Scripted AI" -> Scripted
+                            | "General AI" -> General
+                            | _ -> Manual
+                        dispatch (EditorChanged(SetSelectedController controller)))
+                    prop.children [
+                        Html.option [ prop.value "Manual"; prop.text "Manual" ]
+                        Html.option [ prop.value "Scripted AI"; prop.text "Scripted AI" ]
+                        Html.option [ prop.value "General AI"; prop.text "General AI" ]
+                    ]
+                ]
+                Html.label [ prop.htmlFor "unit-script"; prop.text "Direction script" ]
+                Html.input [
+                    prop.id "unit-script"
+                    prop.key ("unit-script-" + string unit.Id)
+                    prop.type'.text
+                    prop.defaultValue (MapEditor.scriptText unit.Script)
+                    prop.placeholder "N,E,E,S"
+                    prop.onChange (fun value ->
+                        dispatch (EditorChanged(SetSelectedScript value)))
+                ]
+                Html.div [
+                    prop.className "manual-movement"
+                    prop.children [
+                        for label, direction in movement do
+                            button label ("Move unit " + label) false (fun _ ->
+                                dispatch (EditorChanged(MoveSelected direction)))
+                    ]
+                ]
+                button "Remove unit" "Remove selected unit" false (fun _ ->
+                    dispatch (EditorChanged RemoveSelectedUnit))
+            Html.div [
+                prop.className "control-row simulation-controls"
+                prop.children [
+                    button
+                        (if state.IsRunning then "Pause" else "Run")
+                        (if state.IsRunning then "Pause map simulation" else "Run map simulation")
+                        false
+                        (fun _ -> dispatch (EditorChanged ToggleEditorRun))
+                    button "Step" "Advance the map simulation one tick" false (fun _ ->
+                        dispatch (EditorChanged StepEditor))
+                ]
+            ]
+            state.Validation
+            |> Option.map (fun error ->
+                Html.p [
+                    prop.className "validation-error"
+                    prop.role.alert
+                    prop.text error
+                ])
+            |> Option.defaultValue Html.none
+            Html.h3 "Latest tick"
+            if List.isEmpty state.LastEvents then
+                Html.p "No actions resolved."
+            else
+                Html.ul [
+                    for event in state.LastEvents do
+                        Html.li event
+                ]
+        ]
+    ]
+
+let private workspaceNavigation (workspace: WorkspaceMode) dispatch =
+    let item (label: string) (value: WorkspaceMode) =
+        let isCurrent = workspace = value
+        Html.button [
+            prop.type'.button
+            prop.text label
+            prop.ariaPressed isCurrent
+            prop.onClick (fun _ -> dispatch (WorkspaceChanged value))
+        ]
+
+    Html.nav [
+        prop.className "workspace-navigation"
+        prop.ariaLabel "Simulation workspace sections"
+        prop.children [
+            item "Map and simulation" SimulationWorkspace
+            item "Replay" ReplayWorkspace
+            item "Rules and data" RulesWorkspace
+        ]
+    ]
+
 let view model dispatch =
     let shell = model.Shell
 
     Html.main [
         prop.className "app-shell"
-        prop.ariaLabel "Replay and rules laboratory application"
+        prop.ariaLabel "Simulation workspace"
         prop.children [
-            battlefieldView
-                shell
-                model.Battlefield
-                model.PreviousFrame
-                model.PresentationAlpha
-                dispatch
-            comparisonPanel model dispatch
-            scenarioCatalog shell dispatch
-            laboratoryResults shell dispatch
-            statusView shell
-            workerStatus shell
-            Html.div [
-                prop.className "dashboard"
+            Html.section [
+                prop.className "workspace-intro"
                 prop.children [
-                    sourcePanel dispatch
-                    controls shell dispatch
-                    inspector shell dispatch
-                    sandbox shell dispatch
+                    Html.p [ prop.className "eyebrow"; prop.text "S.I.R. simulation" ]
+                    Html.h2 "Build, run, and inspect a battlefield"
+                    Html.p "Create a map, assign controllers, advance exact ticks, inspect replays, and verify rules."
                 ]
             ]
-            rulesDataCatalog
+            workspaceNavigation model.Workspace dispatch
+            match model.Workspace with
+            | SimulationWorkspace ->
+                Html.div [
+                    prop.className "editor-workspace"
+                    prop.children [
+                        editorToolbar model.Editor dispatch
+                        editorGrid model.Editor dispatch
+                        controllerPanel model.Editor dispatch
+                        battlefieldView
+                            shell
+                            (Some(MapEditor.frame model.Editor))
+                            (Some model.Editor)
+                            model.Battlefield
+                            None
+                            1.0
+                            dispatch
+                    ]
+                ]
+            | ReplayWorkspace ->
+                Html.div [
+                    statusView shell
+                    workerStatus shell
+                    Html.div [
+                        prop.className "dashboard"
+                        prop.children [
+                            sourcePanel dispatch
+                            controls shell dispatch
+                            inspector shell dispatch
+                        ]
+                    ]
+                    battlefieldView
+                        shell
+                        None
+                        None
+                        model.Battlefield
+                        model.PreviousFrame
+                        model.PresentationAlpha
+                        dispatch
+                ]
+            | RulesWorkspace ->
+                Html.div [
+                    scenarioCatalog shell dispatch
+                    laboratoryResults shell dispatch
+                    comparisonPanel model dispatch
+                    Html.div [
+                        prop.className "dashboard"
+                        prop.children [
+                            sandbox shell dispatch
+                            inspector shell dispatch
+                        ]
+                    ]
+                    rulesDataCatalog
+                ]
             Html.p [
                 prop.className "sr-only"
                 prop.role.status

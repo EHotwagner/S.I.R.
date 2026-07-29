@@ -18,7 +18,7 @@ related:
   - docs/fable-client-and-documentation.md
 ---
 
-# S.I.R. Public gRPC Protocol Architecture
+# Public gRPC Protocol Architecture
 
 ## Decision status
 
