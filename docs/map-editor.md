@@ -408,6 +408,48 @@ for unitId in livingUnitIds |> List.sort do
 
 The editor increments the tick once after all eligible units execute.
 
+## Layers, validation, and lifecycle
+
+Terrain, semantic edges, units, and document/grid presentation each expose
+**Visible**, **Dimmed**, **Hidden**, and **Locked** controls. Dimmed and hidden
+change only the SVG projection. Locked prevents commands in that editing
+domain. None of these authoring controls enter `MapDefinition`, the `SIR-MAP`
+document, or its revision digest. Hidden terrain, edges, and units still
+participate in complete-document validation and Simulator execution.
+
+Validation returns stable, sorted codes such as `MAP-DIMENSIONS`,
+`TERRAIN-OUTSIDE`, `EDGE-GAP`, `EDGE-OVERLAP`, `UNIT-IDENTITY`, and
+`UNIT-PLACEMENT`. The issues panel is an ordinary accessible HTML region with
+polite current-issue announcements and previous/next buttons. The same
+navigation is available with `[` and `]`. The current issue is mirrored in a
+non-interactive SVG validation overlay; the HTML issues panel remains the
+assistive-technology authority.
+
+Shrinking a map first produces an exact loss preview for terrain cells, edges,
+and units. **Confirm** applies the filtered document as one validated revision;
+**Cancel** preserves the complete prior revision. Clear uses the same explicit
+confirmation path. Import parses and validates the entire input before a
+single `ReplaceDocument` command, so malformed input cannot partially replace
+the map. Export remains the deterministic canonical `SIR-MAP 1` ordering
+described below.
+
+The browser debounces local autosave for 500 ms. On startup, a different valid
+local draft produces an explicit **Recover draft** or **Discard draft** choice;
+the editor never silently replaces the loaded map. Recovery records the source
+digest in revision lifecycle state. Invalid autosaves are ignored.
+
+Map name, named camera views, current authoring revision identity, and the
+deterministic SVG thumbnail are `MapAuthoringMetadata`. They are intentionally
+outside `MapDefinition`: changing any of them leaves canonical export and
+revision digest unchanged. Thumbnail generation is a safe presentation
+projection over sorted canonical terrain and units, not serialized DOM.
+
+The deterministic
+`tests/SIR.Client.Tests/fixtures/map-editor-milestone-6-lifecycle.txt` fixture
+freezes layer ordering, hidden-layer validation/simulation, lock enforcement,
+issue navigation, resize loss, atomic import, recovery choice, metadata
+isolation, thumbnail generation, and clear confirmation.
+
 ## File format
 
 The export format is line-oriented UTF-8:

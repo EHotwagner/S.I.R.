@@ -654,6 +654,34 @@
   padding-top: .75rem;
   border-top: 1px solid #43584e;
 }
+#sir-replay-app .editor-layer-controls {
+  display: grid;
+  gap: .5rem;
+  margin-block: .75rem;
+}
+#sir-replay-app .editor-layer-controls fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  padding: .45rem;
+  border: 1px solid #43584e;
+}
+#sir-replay-app .editor-layer-controls button { min-width: 0; }
+#sir-replay-app .editor-confirmation,
+#sir-replay-app .editor-issues-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
+  margin-top: .75rem;
+  padding: .65rem;
+  border: 1px solid #b5843d;
+  border-radius: .35rem;
+  background: #191b17;
+}
+#sir-replay-app .editor-issues-panel { border-color: #43584e; }
+#sir-replay-app .editor-issues-panel h4,
+#sir-replay-app .editor-issues-panel p { flex-basis: 100%; margin: 0; }
 
 #sir-replay-app .sr-only {
   position: absolute;
