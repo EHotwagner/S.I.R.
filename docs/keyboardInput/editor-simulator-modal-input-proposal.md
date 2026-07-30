@@ -534,15 +534,15 @@ explicitly provides the stable contract needed for safe parallel work.
   - **Exit gate:** the paused and running Simulator can be operated entirely by
     keyboard with unavailable mutations omitted from live possible inputs.
 
-- [ ] **M7 — Make the catalog authoritative**
-  - [ ] Compare catalog resolution with legacy branches across the complete
+- [x] **M7 — Make the catalog authoritative**
+  - [x] Compare catalog resolution with legacy branches across the complete
         characterization corpus.
-  - [ ] Route Editor and Simulator keyboard events through the resolver.
-  - [ ] Generalize `EditorSpacePressed` into the held-input session and recover
+  - [x] Route Editor and Simulator keyboard events through the resolver.
+  - [x] Generalize `EditorSpacePressed` into the held-input session and recover
         it on key-up, focus loss, and workspace change.
-  - [ ] Remove superseded hand-written keyboard branches and static shortcut
+  - [x] Remove superseded hand-written keyboard branches and static shortcut
         prose.
-  - [ ] Retain compatibility aliases only when they are labelled, tested, and
+  - [x] Retain compatibility aliases only when they are labelled, tested, and
         assigned a removal milestone.
   - **Exit gate:** one catalog drives dispatch, possible-input display, conflict
     checks, and test enumeration in production.

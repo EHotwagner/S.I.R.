@@ -1016,6 +1016,87 @@ let evaluate () =
         noHandoffCatalog
         "No-handoff Simulator"
 
+    let authoritativeEditorFacts =
+        { Editor = MapEditor.initial
+          ActiveDomain = TerrainDomain
+          PanHeld = false
+          InputHelpExpanded = false }
+    let authoritativeEditorCatalog =
+        ModalInput.editorCatalog authoritativeEditorFacts
+    let authoritativeEditorContexts =
+        ModalInput.deriveEditorContexts authoritativeEditorFacts
+    let compatibilityAliases =
+        authoritativeEditorCatalog
+        |> List.filter (fun input -> input.Id.Contains(".compat-"))
+
+    require
+        (not (List.isEmpty compatibilityAliases)
+         && compatibilityAliases
+            |> List.forall (fun input ->
+                input.Id.EndsWith("-m8")
+                && input.Group = "Compatibility aliases"
+                && input.Label.Contains("compatibility alias"))
+         && ModalInput.validateCatalog authoritativeEditorCatalog = []
+         && (authoritativeEditorCatalog
+             |> List.map _.Id
+             |> List.distinct
+             |> List.length) = authoritativeEditorCatalog.Length)
+        "M7 production catalog aliases were not labelled, tested, conflict-free, and assigned to M8."
+
+    let authoritativePossible =
+        ModalInput.possibleInputs
+            authoritativeEditorContexts
+            authoritativeEditorCatalog
+
+    require
+        (authoritativePossible
+         |> List.forall (fun input ->
+             match
+                 ModalInput.resolve
+                     authoritativeEditorContexts
+                     input.InputGesture
+                     false
+                     authoritativeEditorCatalog
+             with
+             | Resolved resolved -> resolved.Id = input.Id
+             | NoMatch
+             | NoAvailableMatch _ -> false))
+        "M7 possible-input enumeration diverged from production dispatch."
+
+    let panDown =
+        ModalInput.resolve
+            authoritativeEditorContexts
+            (gesture " " None plain KeyDown)
+            false
+            authoritativeEditorCatalog
+    let held =
+        HeldInputSession.empty
+        |> HeldInputSession.apply (SetEditorPanHeld true)
+    let heldFacts =
+        { authoritativeEditorFacts with PanHeld = true }
+    let panUp =
+        ModalInput.resolve
+            (ModalInput.deriveEditorContexts heldFacts)
+            (gesture " " None plain KeyUp)
+            false
+            (ModalInput.editorCatalog heldFacts)
+
+    require
+        (outcomeName panDown = "resolved:editor.camera.pan-held"
+         && outcomeName panUp = "resolved:editor.camera.pan-release"
+         && HeldInputSession.contains EditorPan held
+         && not (
+             held
+             |> HeldInputSession.recover
+             |> HeldInputSession.contains EditorPan
+         )
+         && not (ModalInput.acceptsTarget ModalInputTarget.InputElement)
+         && not (ModalInput.acceptsTarget ModalInputTarget.TextAreaElement)
+         && not (ModalInput.acceptsTarget ModalInputTarget.SelectElement)
+         && not (ModalInput.acceptsTarget ModalInputTarget.ContentEditableElement)
+         && ModalInput.acceptsTarget ModalInputTarget.ApplicationElement)
+        "M7 held-input resolution, recovery, or native-control boundary diverged."
+
     [ outcomeName commit
       outcomeName repeatedCommit
       outcomeName moving
@@ -1030,5 +1111,9 @@ let evaluate () =
       editorProjection.Headline
       documentProjection.Headline
       simulatorProjection.Headline
-      noHandoffProjection.Headline ]
+      noHandoffProjection.Headline
+      outcomeName panDown
+      outcomeName panUp
+      string compatibilityAliases.Length
+      string authoritativePossible.Length ]
     |> String.concat "\n"

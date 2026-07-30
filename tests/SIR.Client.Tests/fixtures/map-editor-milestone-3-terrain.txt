@@ -1,5 +1,5 @@
 tools=Pencil,Rectangle,Line,Flood fill,Eyedropper,Erase
-shortcuts=P,R,L,G,I,X
+commands=editor.tool.terrain.erase,editor.tool.terrain.eyedropper,editor.tool.terrain.flood-fill,editor.tool.terrain.line,editor.tool.terrain.pencil,editor.tool.terrain.rectangle
 patterns=plain,diagonal hatch,cross hatch,inset ring
 pencil=2,5;2,6;0,7;1,7;2,7
 line=7,0;8,1;9,2;10,3;11,4

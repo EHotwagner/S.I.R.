@@ -130,10 +130,10 @@ established document and modelling applications:
   time, preserving canvas width as more tools are added.
 
 Activating a command-rail group opens its contextual panel in place; choosing
-it again hides the panel. `F2` toggles the current panel, and `F3` toggles the
-selected-object inspector overlay. The `T`, `U`, `E`, `Z`, and `M` shortcuts
-open or hide their corresponding tool groups. The contextual panel and
-inspector start hidden so the remaining workspace is the map.
+it again hides the panel. The contextual panel and inspector start hidden so
+the remaining workspace is the map. Keyboard bindings are presented from the
+live modal catalog rather than duplicated in static toolbar or documentation
+copy.
 
 `File`, `Edit`, `View`, and `Map` menus close when focus moves to another menu
 or the user clicks outside the menu. The right-edge group labels remain visible
@@ -151,11 +151,12 @@ simulator design work for explicit import into a version-controlled checkout.
 domain types and rendering infrastructure with the rest of the client, but its
 scenario laboratory does not mutate the editor draft or simulator handoff.
 
-The SVG workspace uses application-level keys only while it has focus.
-Otherwise browser and documentation-page keys retain their normal behavior.
-`Tab` reaches tools, the inspector, and a parallel object list; it does not
-visit every empty cell. A keyboard map cursor and the object list provide the
-non-pointer path for canvas commands.
+The SVG workspace uses application-level input only while it has focus.
+Otherwise browser and documentation-page input retains its normal behavior.
+Standard focus navigation reaches tools, the inspector, and a parallel object
+list without visiting every empty cell. A keyboard map cursor and the object
+list provide the non-pointer path for canvas commands; the live catalog
+discloses their current bindings.
 
 ### Version-controlled design transfer
 
@@ -181,17 +182,17 @@ permission; credentials must not be embedded in the static client.
 | Intent | Mouse or pen | Touch | Commit and cancellation |
 |---|---|---|---|
 | Select | Primary click an object | Tap an object | Replaces selection |
-| Toggle selection | `Shift` + primary click | Select-mode toggle, then tap | Adds or removes one object |
-| Box select | Primary drag from empty workspace | Select-mode drag | Pointer/touch release commits; `Escape` cancels |
-| Pan | Middle-drag, right-drag, or hold `Space` while primary-dragging | Two-finger drag | Camera-only; never commits map state |
+| Toggle selection | Modified primary click | Select-mode toggle, then tap | Adds or removes one object |
+| Box select | Primary drag from empty workspace | Select-mode drag | Pointer/touch release commits; the cancel action discards |
+| Pan | Middle-drag or right-drag | Two-finger drag | Camera-only; never commits map state |
 | Zoom | Wheel or trackpad scroll around pointer | Two-finger pinch around midpoint | Camera-only and bounded |
-| Place unit | Move for full-footprint preview, then primary click | Move map cursor, then tap **Place** | One unit per activation; `Escape` cancels preview |
+| Place unit | Move for full-footprint preview, then primary click | Move map cursor, then tap **Place** | One unit per activation; the cancel action discards the preview |
 | Paint terrain | Primary drag | One-finger drag in an active paint tool | One drag is one command; release commits |
-| Rectangle or line | Primary drag from anchor | Tap anchor, move cursor, tap **Apply** | Release/**Apply** commits; `Escape` cancels |
+| Rectangle or line | Primary drag from anchor | Tap anchor, move cursor, tap **Apply** | Release/**Apply** commits; the cancel action discards |
 | Flood fill or eyedrop | Primary click | Tap | Commits one fill or selects one terrain value |
-| Draw edge polyline | Primary click/drag across snapped edges | Tap successive snapped edges | Double-click/**Finish** commits; `Escape` removes the last segment, then cancels |
-| Move selection | Primary drag selected unit(s) | Tap **Move**, reposition cursor, tap **Apply** | Full route and footprint preview; `Escape` cancels |
-| Open object actions | Secondary click or context button | Long-press or context button | Opens the same linear action menu used by keyboard |
+| Draw edge polyline | Primary click/drag across snapped edges | Tap successive snapped edges | Double-click/**Finish** commits; **Back** removes the last segment before cancellation |
+| Move selection | Primary drag selected unit(s) | Tap **Move**, reposition cursor, tap **Apply** | Full route and footprint preview; the cancel action discards |
+| Open object actions | Secondary click or context button | Long-press or context button | Opens the same linear action menu used by every input path |
 
 Pointer coordinates are mapped through the SVG's centered aspect-fit viewport.
 Horizontal or vertical letterboxing therefore remains non-interactive padding
@@ -202,30 +203,13 @@ cancel, lost capture, tool switch, or unmount. Hover is never required.
 
 ### Keyboard gestures
 
-| Scope | Keys | Frozen behavior |
-|---|---|---|
-| Global editor | `Ctrl/Cmd+Z`, `Ctrl/Cmd+Shift+Z` | Undo and redo one committed command |
-| Global editor | `Ctrl/Cmd+C`, `Ctrl/Cmd+V`, `Ctrl/Cmd+D` | Copy, paste as a validated preview, and duplicate |
-| Global editor | `Delete` or `Backspace` | Delete selection through an undoable command |
-| Global editor | `Escape` | Cancel active preview first, otherwise clear selection |
-| Tools | `V`, `T`, `U`, `E` | Select the Select, Terrain, Units, or Edges domain |
-| Terrain tools | `P`, `R`, `L`, `G`, `I`, `X` | Pencil, rectangle, line, flood fill, eyedropper, or erase |
-| Terrain values | `Shift+1` through `Shift+4` | Open, rough, blocked, or objective |
-| Camera | `0`, `1`, `F` | Fit board, reset to 100%, or frame selection |
-| Camera | `Space` + pointer drag | Temporarily pan without changing the active tool |
-| Object list | Arrow keys, `Home`, `End` | Move list focus without moving map objects |
-| Object list | `Enter`; `Shift+Enter` | Select focused object; toggle it in multiselection |
-| Map cursor | Arrow keys | Move the cursor one cell or snapped edge |
-| Map cursor | `Shift` + Arrow keys | Extend the current box, line, rectangle, or edge preview |
-| Map cursor | `Enter` or standalone `Space` | Start/commit the active tool at the cursor |
-| Selected units | `Alt` + Arrow keys | Preview and commit a one-cell unit move |
-| Edge polyline | `Enter` | Finish the current polyline |
-| Edge polyline | `Escape` | Remove the last preview segment; when empty, cancel |
-
-Platform menu bindings win when focus is in a text field. Repeated movement keys
-produce separate deterministic one-cell commands. No shortcut depends on
-keyboard focus being inside a floating window, and every shortcut also has a
-visible button or inspector/object-list equivalent.
+The current-mode strip and its **Possible inputs** disclosure are the
+authoritative keyboard reference. They are projected from the same catalog
+that resolves production input, so only executable commands for the current
+tool, gesture, held layer, or transient popup are shown. Native text fields
+retain platform editing bindings. Repeated movement inputs remain
+deterministic, and every catalog command has a visible control or
+inspector/object-list equivalent.
 
 ## SVG workspace and camera
 
@@ -241,9 +225,9 @@ Camera and panel state live in `EditorWorkspaceState`, outside
 `MapDefinition`. The camera supports:
 
 - pointer-centered wheel and trackpad zoom between `0.25×` and `6×`;
-- middle-drag, right-drag, and `Space` + primary-drag panning;
+- middle-drag and right-drag panning, plus the held-pan mode disclosed by the live input catalog;
 - two-pointer touch pan and pinch around the touch midpoint;
-- board fit (`0`), 100% reset (`1`), and selected-unit framing (`F`);
+- board fit, 100% reset, and selected-unit framing controls;
 - viewport resize without changing board coordinates; and
 - immediate camera updates under reduced-motion preferences.
 
@@ -254,7 +238,8 @@ does not become harder to acquire as zoom changes. Every accepted edge hit is
 normalized to an east or south `MapEdgeDirection` record before dispatch.
 
 An active drag owns pointer capture. Commit, pointer release, lost capture,
-`Escape`, reset, and workspace disposal all clear captured pointer state.
+the current cancel action, reset, and workspace disposal all clear captured
+pointer state.
 The SVG itself exposes only semantic units as keyboard stops. A collapsible
 linear object list exposes every unit and cell with conventional buttons for
 keyboard and assistive technology. Tool groups, the contextual palette, camera
@@ -275,8 +260,8 @@ lowercase SHA-256 digest of the canonical UTF-8 `SIR-MAP 3` document. Camera,
 selection, clipboard, gestures, panels, runtime ticks, and animation never
 contribute to that digest.
 
-Pointer click replaces the active unit selection. `Shift`-click and
-`Shift+Enter` in the object list add or remove one unit. Dragging from empty
+Pointer click replaces the active unit selection. Modified pointer activation
+and the object-list toggle action add or remove one unit. Dragging from empty
 workspace in Select mode previews a disposable box and selects every unit
 footprint intersecting the committed box. The object list and visible command
 buttons provide the same non-pointer path. Select-all is scoped to the active
@@ -333,8 +318,9 @@ The Simulator uses the same desktop-authoring structure as the Editor:
 - The battlefield is the primary surface. `Controls`, `Events`, and `Samples`
   form a labeled right-edge rail; the active panel opens to the rail's left,
   and the labels remain available to close or switch it.
-- `F2` shows or hides the active simulator panel. Reset restores the immutable
-  handed-off revision rather than rewriting the Editor draft.
+- The live modal input strip presents panel and simulation commands from the
+  production catalog. Reset restores the immutable handed-off revision rather
+  than rewriting the Editor draft.
 
 The route planner uses deterministic weighted A* over eight directions. It
 routes around blocked terrain, semantic walls, windows, closed doors, and
@@ -346,15 +332,16 @@ choices.
 
 The planned route reports step count, physical distance, and movement-credit
 cost. Its presentation-only overlay remains visible after acceptance while
-steps remain queued. Arrow keys or labelled arrow buttons move the destination;
-`Enter` or **Commit route** queues a clear route, and `Escape` or **Cancel
-route** discards the preview. A committed route never teleports the unit.
+steps remain queued. The labelled route controls move the destination, commit
+a clear route, reset it, or discard the preview. The live input catalog
+projects the equivalent commands for the current Simulator mode. A committed
+route never teleports the unit.
 Once a unit starts accumulating credit toward an adjacent cell, that segment
 remains locked until it commits or a new collision invalidates it. Controllers
 therefore replan only at cell boundaries instead of changing the projected
 direction between ticks.
-`Space`/`K`, **Run/Pause**, and **Step** advance the same deterministic
-sandbox without entering authored history.
+**Run/Pause** and **Step**, together with their current live-catalog commands,
+advance the same deterministic sandbox without entering authored history.
 
 ### Fixed-timestep movement
 
@@ -528,13 +515,12 @@ Every terrain value has a text label and non-color pattern: open/plain,
 rough/diagonal hatch, blocked/cross hatch, and objective/inset ring. The SVG
 preview uses a dashed outline, changes to a short red dash for invalid
 geometry, and mirrors its cell count, sample, commit, or rejection through a
-polite live region. Arrow keys move the terrain cursor; `Shift`+Arrow extends
-an active preview; `Enter` or standalone `Space` starts or commits it. All
-shortcuts have visible palette or tool buttons.
+polite live region. The exact cursor, extension, activation, and cancellation
+bindings and their visible equivalents come from the live modal catalog.
 
 The deterministic
 `tests/SIR.Client.Tests/fixtures/map-editor-milestone-3-terrain.txt` fixture
-freezes tool order, shortcuts, patterns, row-major pencil and line geometry,
+freezes tool order, catalog command identities, patterns, row-major pencil and line geometry,
 boundary clipping, and the maximum `40×40` map contract. The client test suite
 alternates 80 flood-fill and diagonal-line preview-plus-validation gestures on
 a `40×40` map and enforces a 50 ms p95 guardrail. On the 2026-07-29 .NET 10
@@ -554,8 +540,8 @@ The outline remains a constant screen-space width at every camera zoom and
 uses different dash shapes as well as color for valid and invalid states.
 Click commits the preview as one `AddUnits` command. Dragging selected units
 previews a translated `UpdateUnits` command; release commits the complete
-selection or none of it. `Alt` plus an arrow key performs the same atomic
-one-cell formation move only while the SVG workspace is focused. Route checks
+selection or none of it. The focused SVG workspace also exposes the same
+atomic one-cell formation move through the live input catalog. Route checks
 include every selected unit's leading edge, and final validation includes map
 borders, blocked terrain, and all occupied footprints.
 
@@ -597,11 +583,10 @@ north or west outer border is rejected because it has no owning cell. The
 normalizer never creates both a leading and trailing representation.
 
 Wall clicks accumulate a disposable polyline preview. Double-click, **Finish**,
-`Enter`, or selecting another tool commits all unique segments as one
-`ReplaceEdges` command and immutable revision. `Escape` or **Back** removes the
-last preview segment; repeating it after the preview is empty cancels.
-Arrow keys move the snapped keyboard edge cursor, `Shift`+Arrow adds the moved
-segment to a wall preview, and `Space` activates the current segment. The same
+**Finish**, catalog activation, or selecting another tool commits all unique
+segments as one `ReplaceEdges` command and immutable revision. Catalog
+backtrack removes the last preview segment; repeating it after the preview is
+empty cancels. The same
 nine-CSS-pixel screen-space tolerance is applied before inverse camera
 projection at every zoom.
 
@@ -644,8 +629,8 @@ they participate in pure validation, revision digests, bounded undo/redo,
 layer locks, resize-loss preview, crash recovery, and deterministic export.
 The SVG region shapes and the HTML object list both expose selection. The
 Zones panel supplies labelled creation and editing controls, a polite live
-announcement reports changes, and the object list supports Arrow, Home, End,
-Enter, and Escape conventions without adding a tab stop for every grid cell.
+announcement reports changes, and the object list supports conventional
+roving focus and activation without adding a tab stop for every grid cell.
 
 `SIR-MAP 3` accepts only the declared line grammar. It has no macro, script,
 callback, expression, or trusted behavior record. Unknown records and

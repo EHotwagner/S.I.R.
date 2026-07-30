@@ -25,6 +25,15 @@ type InputPhase =
     | KeyDown
     | KeyUp
 
+/// Browser targets that define the native-editing boundary before modal
+/// keyboard resolution.
+type ModalInputTarget =
+    | InputElement
+    | TextAreaElement
+    | SelectElement
+    | ContentEditableElement
+    | ApplicationElement
+
 type RepeatPolicy =
     | IgnoreRepeat
     | AllowRepeat
@@ -119,6 +128,18 @@ type ModalCommand =
     | EditorDocumentCommand of EditorDocumentCommand
     | ToggleInputHelp
 
+type HeldInput =
+    | EditorPan
+
+type HeldInputSession
+
+[<RequireQualifiedAccess>]
+module HeldInputSession =
+    val empty: HeldInputSession
+    val contains: input: HeldInput -> session: HeldInputSession -> bool
+    val apply: command: ModalCommand -> session: HeldInputSession -> HeldInputSession
+    val recover: session: HeldInputSession -> HeldInputSession
+
 type ModalBinding<'command> =
     { Id: string
       Context: ModalContextSelector
@@ -174,6 +195,7 @@ type SimulatorModalFacts =
 
 [<RequireQualifiedAccess>]
 module ModalInput =
+    val acceptsTarget: target: ModalInputTarget -> bool
     val deriveEditorContexts: facts: EditorModalFacts -> ModalContext list
     val deriveSimulatorContexts: facts: SimulatorModalFacts -> ModalContext list
 

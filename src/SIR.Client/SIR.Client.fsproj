@@ -10,7 +10,6 @@
     <Compile Include="MapEditorWorkspace.fs" />
     <Compile Include="ModalInput.fsi" />
     <Compile Include="ModalInput.fs" />
-    <Compile Include="CurrentModalInput.fs" />
     <Compile Include="Lab.fs" />
     <Compile Include="EvidenceExport.fs" />
     <Compile Include="EngineCatalog.fs" />

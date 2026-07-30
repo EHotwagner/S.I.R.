@@ -101,7 +101,7 @@ type Model =
       SimulatorToolPanelVisible: bool
       SampleReplayFrames: InspectionProjection array option
       EditorView: EditorWorkspaceState
-      EditorSpacePressed: bool
+      HeldInputs: HeldInputSession
       InputHelpExpanded: bool
       PendingInterchangeReview: InterchangeReview option
       Battlefield: BattlefieldViewState
@@ -109,6 +109,9 @@ type Model =
       PresentationAlpha: float
       ComparisonBookmarks: ComparisonBookmark list
       ComparisonView: ComparisonView }
+
+let private editorPanHeld model =
+    HeldInputSession.contains EditorPan model.HeldInputs
 
 [<Emit("window.matchMedia('(prefers-reduced-motion: reduce)').matches")>]
 let private prefersReducedMotion: bool = jsNative
@@ -118,11 +121,11 @@ let private currentInputTargetName (target: EventTarget) : string = jsNative
 
 let private currentInputTarget target =
     match currentInputTargetName target with
-    | "input" -> InputElement
-    | "textarea" -> TextAreaElement
-    | "select" -> SelectElement
-    | "contenteditable" -> ContentEditableElement
-    | _ -> ApplicationElement
+    | "input" -> ModalInputTarget.InputElement
+    | "textarea" -> ModalInputTarget.TextAreaElement
+    | "select" -> ModalInputTarget.SelectElement
+    | "contenteditable" -> ModalInputTarget.ContentEditableElement
+    | _ -> ModalInputTarget.ApplicationElement
 
 [<Emit("(() => { const target = $0; const current = $1; return target === current || (target && typeof target.tagName === 'string' && target.tagName.toLowerCase() === 'svg' && target.getAttribute('role') === 'application'); })()")>]
 let private isSimulatorModalTarget
@@ -481,7 +484,7 @@ let init () =
       SimulatorToolPanelVisible = false
       SampleReplayFrames = None
       EditorView = editorView
-      EditorSpacePressed = false
+      HeldInputs = HeldInputSession.empty
       InputHelpExpanded = false
       PendingInterchangeReview = None
       Battlefield =
@@ -566,6 +569,7 @@ let rec update msg model =
                 Editor = editor
                 Simulator = None
                 Workspace = EditorWorkspace
+                HeldInputs = HeldInputSession.recover model.HeldInputs
                 EditorToolPanel = TerrainTools
                 EditorToolPanelVisible = false
                 EditorView = editorView
@@ -598,6 +602,7 @@ let rec update msg model =
                     SimulatorSelectedUnit = editor.SelectedUnit
                     SimulatorControllerSelection = None
                     Workspace = SimulatorWorkspace
+                    HeldInputs = HeldInputSession.recover model.HeldInputs
                     SimulatorToolPanel = ControllerTools
                     SimulatorToolPanelVisible = false
                     SampleReplayFrames = None
@@ -621,6 +626,7 @@ let rec update msg model =
                 { model with
                     Shell = shell
                     Workspace = ReplayWorkspace
+                    HeldInputs = HeldInputSession.recover model.HeldInputs
                     SampleReplayFrames = Some frames
                     Battlefield =
                         Battlefield.reconcile frame model.Battlefield
@@ -667,9 +673,7 @@ let rec update msg model =
             EditorView = editorView
             InputHelpExpanded = false
             SimulatorControllerSelection = None
-            EditorSpacePressed =
-                CurrentModalInput.spaceHeldAfterWorkspaceChange
-                    model.EditorSpacePressed },
+            HeldInputs = HeldInputSession.recover model.HeldInputs },
         if initializePlanning then
             Cmd.ofEffect (fun dispatch -> dispatch InitializePlanningWorker)
         else Cmd.none
@@ -686,7 +690,7 @@ let rec update msg model =
     | ApplicationFocusLost ->
         { model with
             InputHelpExpanded = false
-            EditorSpacePressed = false },
+            HeldInputs = HeldInputSession.recover model.HeldInputs },
         Cmd.none
     | SimulateEditorRevision ->
         match MapEditorSimulator.tryHandoff model.Editor with
@@ -705,6 +709,7 @@ let rec update msg model =
                 SimulatorSelectedUnit = model.Editor.SelectedUnit
                 SimulatorControllerSelection = None
                 Workspace = SimulatorWorkspace
+                HeldInputs = HeldInputSession.recover model.HeldInputs
                 Battlefield = Battlefield.reconcile frame model.Battlefield
                 PreviousFrame = None
                 PresentationAlpha = 1.0 },
@@ -1130,240 +1135,175 @@ let rec update msg model =
         else
             let next, effects = Shell.playbackTick model.Shell
             { model with Shell = next }, effectsToCmd effects
-    | KeyPressed(key, controlOrMeta, shift, alt, repeat)
-        when
-            model.Workspace = EditorWorkspace
-            && model.Editor.PendingDestructiveChange.IsSome
-            && not controlOrMeta
-            && not shift
-            && not alt
-            && (key = "Enter" || key = "Escape")
-        ->
-        match
-            CurrentModalInput.resolvePendingDestructiveKey
-                key
-                controlOrMeta
-                shift
-                alt
-                repeat
-        with
-        | Some action -> update (EditorChanged action) model
-        | None -> model, Cmd.none
-    | KeyPressed(key, controlOrMeta, _, alt, repeat)
-        when
-            (model.Workspace = EditorWorkspace
-             || model.Workspace = SimulatorWorkspace)
-            && key = "?"
-            && not controlOrMeta
-            && not alt
-            && not repeat
-        ->
-        update (ToggleInputHelp true) model
-    | KeyPressed(key, controlOrMeta, _, alt, repeat)
-        when
-            model.InputHelpExpanded
-            && key = "Escape"
-            && not controlOrMeta
-            && not alt
-            && not repeat
-        ->
-        update (ToggleInputHelp true) model
-    | KeyPressed(key, controlOrMeta, _, _, true)
-        when
-            not controlOrMeta
-            && ((key = "F2"
-                 && (model.Workspace = EditorWorkspace
-                     || model.Workspace = SimulatorWorkspace))
-                || (key = "F3" && model.Workspace = EditorWorkspace))
-        ->
-        model, Cmd.none
     | KeyPressed(key, controlOrMeta, shift, alt, repeat) ->
-        let currentWorkspace =
-            match model.Workspace with
-            | EditorWorkspace -> CurrentEditor
-            | SimulatorWorkspace -> CurrentSimulator
-            | _ -> CurrentOther
+        let gesture =
+            { Key = NormalizedKey.create key None
+              Modifiers =
+                { ControlOrMeta = controlOrMeta
+                  Shift = shift
+                  Alt = alt }
+              Phase = KeyDown }
 
-        let resolvedM5 =
-            if model.Workspace = SimulatorWorkspace && not alt then
-                let facts =
-                    { SimulatorHandoffPresent = model.Simulator.IsSome
-                      SimulatorIsRunning =
-                        model.Simulator
-                        |> Option.map _.IsRunning
-                        |> Option.defaultValue false
-                      SimulatorHasRoutePreview =
-                        model.Simulator
-                        |> Option.bind _.PreviewDestination
-                        |> Option.isSome
-                      SimulatorControllerSelection =
-                        model.SimulatorControllerSelection
-                      SimulatorRevisionIsStale =
-                        model.Simulator
-                        |> Option.map (MapEditorSimulator.isBehindDraft model.Editor)
-                        |> Option.defaultValue false
-                      InputHelpExpanded = model.InputHelpExpanded }
-                let contexts = ModalInput.deriveSimulatorContexts facts
-                let input =
-                    { Key = NormalizedKey.create key None
-                      Modifiers =
-                        { ControlOrMeta = controlOrMeta
-                          Shift = shift
-                          Alt = alt }
-                      Phase = KeyDown }
-                match
-                    ModalInput.resolve
-                        contexts
-                        input
-                        repeat
-                        (ModalInput.simulatorCatalog
-                            model.SimulatorSelectedUnit
-                            model.Simulator
-                            model.SimulatorControllerSelection)
-                with
-                | Resolved resolved -> Some resolved.Command
-                | NoMatch
-                | NoAvailableMatch _ -> None
-            elif model.Workspace <> EditorWorkspace || alt then
-                None
-            else
-                let activeDomain =
-                    match model.EditorToolPanel with
-                    | TerrainTools -> TerrainDomain
-                    | UnitTools -> UnitDomain
-                    | EdgeTools -> EdgeDomain
-                    | ZoneTools -> RegionDomain
-                    | DocumentTools -> DocumentDomain
-                let facts =
-                    { Editor = model.Editor
-                      ActiveDomain = activeDomain
-                      PanHeld = model.EditorSpacePressed
-                      InputHelpExpanded = model.InputHelpExpanded }
-                let contexts = ModalInput.deriveEditorContexts facts
-                let input =
-                    { Key = NormalizedKey.create key None
-                      Modifiers =
-                        { ControlOrMeta = controlOrMeta
-                          Shift = shift
-                          Alt = alt }
-                      Phase = KeyDown }
-                match ModalInput.resolve contexts input repeat (ModalInput.editorCatalog facts) with
-                | Resolved resolved when
-                    resolved.Id.StartsWith("editor.edge.", StringComparison.Ordinal)
-                    || resolved.Id.StartsWith("editor.region.", StringComparison.Ordinal)
-                    || resolved.Id.StartsWith("editor.document.", StringComparison.Ordinal)
-                    ->
-                    Some resolved.Command
-                | _ -> None
+        let resolveEditor () =
+            let activeDomain =
+                match model.EditorToolPanel with
+                | TerrainTools -> TerrainDomain
+                | UnitTools -> UnitDomain
+                | EdgeTools -> EdgeDomain
+                | ZoneTools -> RegionDomain
+                | DocumentTools -> DocumentDomain
+            let facts =
+                { Editor = model.Editor
+                  ActiveDomain = activeDomain
+                  PanHeld = editorPanHeld model
+                  InputHelpExpanded = model.InputHelpExpanded }
+            ModalInput.resolve
+                (ModalInput.deriveEditorContexts facts)
+                gesture
+                repeat
+                (ModalInput.editorCatalog facts)
 
-        match resolvedM5 with
-        | Some(EditorCommand action) ->
-            update (EditorChanged action) model
-        | Some(EditorWorkspaceCommand action) ->
-            update (EditorWorkspaceChanged action) model
-        | Some(EditorDocumentCommand ExportMapDocument) ->
-            update ExportMap model
-        | Some(EditorDocumentCommand ExportRepositoryDesignBundle) ->
-            update ExportDesignBundle model
-        | Some(EditorDocumentCommand OpenMapImport) ->
-            model, Cmd.ofEffect (fun _ -> openFilePickerAfterRender "editor-map-import")
-        | Some(EditorDocumentCommand(FocusDocumentControl target)) ->
-            let id =
-                match target with
-                | MapImportControl -> "editor-map-import"
-                | LayerStateControls -> "editor-layer-controls"
-                | LocalBackgroundControls -> "editor-background-file"
-                | MapDimensionControls -> "map-width"
-                | SavedViewControls -> "editor-saved-view-controls"
-            model, Cmd.ofEffect (fun _ -> focusElementAfterRender id)
-        | Some(SimulatorCommand action) ->
-            update (SimulatorChanged action) model
-        | Some(TraverseSimulatorUnit delta) ->
-            match model.Simulator with
-            | Some simulator ->
-                update
-                    (SimulatorUnitSelectionChanged(
-                        ModalInput.traverseSimulatorUnit
-                            delta
-                            model.SimulatorSelectedUnit
-                            simulator
-                    ))
-                    model
-            | None -> model, Cmd.none
-        | Some ModalCommand.BeginSimulatorControllerSelection ->
-            update BeginSimulatorControllerSelection model
-        | Some(ModalCommand.ChooseSimulatorController controller) ->
-            update (ChooseSimulatorController controller) model
-        | Some CommitSimulatorController ->
-            update CommitSimulatorControllerSelection model
-        | Some CancelSimulatorController ->
-            update CancelSimulatorControllerSelection model
-        | Some RequestSimulatorSandboxReset ->
-            update RequestSimulatorReset model
-        | Some(ChooseSimulatorPanel panel) ->
-            { model with
-                SimulatorToolPanel =
-                    match panel with
-                    | ControllerPanel -> ControllerTools
-                    | EventPanel -> EventTools
-                    | SimulatorSamplePanel -> SimulatorSampleTools
-                SimulatorToolPanelVisible = true },
-            Cmd.none
-        | Some ToggleSimulatorCommandPanel ->
-            update ToggleSimulatorToolPanelVisibility model
-        | Some ModalCommand.ToggleInputHelp ->
-            update (ToggleInputHelp true) model
-        | Some _ -> model, Cmd.none
-        | None when model.Workspace = SimulatorWorkspace -> model, Cmd.none
-        | None when alt -> model, Cmd.none
-        | None ->
-          match
-              CurrentModalInput.resolveKeyDown
-                  currentWorkspace
-                  key
-                  controlOrMeta
-                  shift
-                  repeat
-          with
-          | Some(CurrentEditorAction action) ->
-            update (EditorChanged action) model
-          | Some(CurrentEditorWorkspaceAction action) ->
-            update (EditorWorkspaceChanged action) model
-          | Some(CurrentChooseEditorPanel panel) ->
-            let appPanel =
-                match panel with
-                | CurrentTerrainPanel -> TerrainTools
-                | CurrentUnitPanel -> UnitTools
-                | CurrentEdgePanel -> EdgeTools
-                | CurrentZonePanel -> ZoneTools
-                | CurrentDocumentPanel -> DocumentTools
+        let resolveSimulator () =
+            let facts =
+                { SimulatorHandoffPresent = model.Simulator.IsSome
+                  SimulatorIsRunning =
+                    model.Simulator
+                    |> Option.map _.IsRunning
+                    |> Option.defaultValue false
+                  SimulatorHasRoutePreview =
+                    model.Simulator
+                    |> Option.bind _.PreviewDestination
+                    |> Option.isSome
+                  SimulatorControllerSelection = model.SimulatorControllerSelection
+                  SimulatorRevisionIsStale =
+                    model.Simulator
+                    |> Option.map (MapEditorSimulator.isBehindDraft model.Editor)
+                    |> Option.defaultValue false
+                  InputHelpExpanded = model.InputHelpExpanded }
+            ModalInput.resolve
+                (ModalInput.deriveSimulatorContexts facts)
+                gesture
+                repeat
+                (ModalInput.simulatorCatalog
+                    model.SimulatorSelectedUnit
+                    model.Simulator
+                    model.SimulatorControllerSelection)
 
-            update (EditorToolPanelChanged appPanel) model
-          | Some CurrentChooseSelectAndShowTerrainPanel ->
-            let next, command =
-                update (EditorChanged(ChooseTool Select)) model
+        let applyCommand targetModel command =
+            match command with
+            | EditorCommand action ->
+                update (EditorChanged action) targetModel
+            | EditorWorkspaceCommand action ->
+                update (EditorWorkspaceChanged action) targetModel
+            | ChooseEditorDomain domain ->
+                let panel, tool =
+                    match domain with
+                    | TerrainDomain ->
+                        TerrainTools,
+                        Some(Terrain targetModel.Editor.LastTerrainPaintTool)
+                    | UnitDomain -> UnitTools, Some UnitBrowse
+                    | EdgeDomain -> EdgeTools, None
+                    | RegionDomain -> ZoneTools, None
+                    | DocumentDomain -> DocumentTools, None
+                let next, panelEffect =
+                    update (EditorToolPanelChanged panel) targetModel
+                match tool with
+                | Some value ->
+                    let changed, toolEffect =
+                        update (EditorChanged(ChooseTool value)) next
+                    changed, Cmd.batch [ panelEffect; toolEffect ]
+                | None -> next, panelEffect
+            | ToggleEditorCommandPanel ->
+                update ToggleEditorToolPanelVisibility targetModel
+            | ChooseSimulatorPanel panel ->
+                { targetModel with
+                    SimulatorToolPanel =
+                        match panel with
+                        | ControllerPanel -> ControllerTools
+                        | EventPanel -> EventTools
+                        | SimulatorSamplePanel -> SimulatorSampleTools
+                    SimulatorToolPanelVisible = true },
+                Cmd.none
+            | ToggleSimulatorCommandPanel ->
+                update ToggleSimulatorToolPanelVisibility targetModel
+            | SimulatorCommand action ->
+                update (SimulatorChanged action) targetModel
+            | TraverseSimulatorUnit delta ->
+                match targetModel.Simulator with
+                | Some simulator ->
+                    update
+                        (SimulatorUnitSelectionChanged(
+                            ModalInput.traverseSimulatorUnit
+                                delta
+                                targetModel.SimulatorSelectedUnit
+                                simulator
+                        ))
+                        targetModel
+                | None -> targetModel, Cmd.none
+            | ModalCommand.BeginSimulatorControllerSelection ->
+                update BeginSimulatorControllerSelection targetModel
+            | ModalCommand.ChooseSimulatorController controller ->
+                update (ChooseSimulatorController controller) targetModel
+            | CommitSimulatorController ->
+                update CommitSimulatorControllerSelection targetModel
+            | CancelSimulatorController ->
+                update CancelSimulatorControllerSelection targetModel
+            | RequestSimulatorSandboxReset ->
+                update RequestSimulatorReset targetModel
+            | SetEditorPanHeld _ ->
+                { targetModel with
+                    HeldInputs =
+                        HeldInputSession.apply command targetModel.HeldInputs },
+                Cmd.none
+            | FocusUnitPresetSearch ->
+                targetModel,
+                Cmd.ofEffect (fun _ ->
+                    focusElementAfterRender "editor-unit-preset-search")
+            | EditorDocumentCommand ExportMapDocument ->
+                update ExportMap targetModel
+            | EditorDocumentCommand ExportRepositoryDesignBundle ->
+                update ExportDesignBundle targetModel
+            | EditorDocumentCommand OpenMapImport ->
+                targetModel,
+                Cmd.ofEffect (fun _ ->
+                    openFilePickerAfterRender "editor-map-import")
+            | EditorDocumentCommand(FocusDocumentControl target) ->
+                let id =
+                    match target with
+                    | MapImportControl -> "editor-map-import"
+                    | LayerStateControls -> "editor-layer-controls"
+                    | LocalBackgroundControls -> "editor-background-file"
+                    | MapDimensionControls -> "map-width"
+                    | SavedViewControls -> "editor-saved-view-controls"
+                targetModel,
+                Cmd.ofEffect (fun _ -> focusElementAfterRender id)
+            | ModalCommand.ToggleInputHelp ->
+                update (ToggleInputHelp true) targetModel
 
-            { next with
-                EditorToolPanel = TerrainTools
-                EditorToolPanelVisible = true },
-            command
-          | Some CurrentToggleEditorPanel ->
-            update ToggleEditorToolPanelVisibility model
-          | Some CurrentToggleSimulatorPanel ->
-            update ToggleSimulatorToolPanelVisibility model
-          | Some CurrentEscapeEditor ->
-            let workspaceAction, editorAction =
-                CurrentModalInput.editorEscapeActions model.Editor.Gesture
+        let applyResolution resolution =
+            match resolution with
+            | Resolved input ->
+                if
+                    model.Workspace = EditorWorkspace
+                    && NormalizedKey.value gesture.Key = "Escape"
+                then
+                    let cleared, pointerEffect =
+                        update
+                            (EditorWorkspaceChanged CancelEditorPointers)
+                            model
+                    let result, effect =
+                        applyCommand cleared input.Command
+                    result, Cmd.batch [ pointerEffect; effect ]
+                else
+                    applyCommand model input.Command
+            | NoMatch
+            | NoAvailableMatch _ ->
+                model, Cmd.none
 
-            model
-            |> update (EditorWorkspaceChanged workspaceAction)
-            |> fst
-            |> update (EditorChanged editorAction)
-          | Some(CurrentSetEditorSpaceHeld held) ->
-            { model with EditorSpacePressed = held }, Cmd.none
-          | Some(CurrentSimulatorAction action) ->
-            update (SimulatorChanged action) model
-          | None when model.Workspace = PlanningWorkspace ->
+        match model.Workspace with
+        | EditorWorkspace -> resolveEditor () |> applyResolution
+        | SimulatorWorkspace -> resolveSimulator () |> applyResolution
+        | PlanningWorkspace ->
             match key, controlOrMeta with
             | ("z" | "Z"), true ->
                 update
@@ -1392,19 +1332,30 @@ let rec update msg model =
                     let current = planning.FocusedIssue |> Option.defaultValue -1
                     update
                         (PlanningChanged(
-                            FocusPlanningIssue((current + 1) % planning.Issues.Length)
+                            FocusPlanningIssue(
+                                (current + 1) % planning.Issues.Length
+                            )
                         ))
                         model
                 | _ -> model, Cmd.none
-            | ("r" | "R"), false -> update (PlanningChanged(ChoosePlanningTool RouteTool)) model
-            | ("f" | "F"), false -> update (PlanningChanged(ChoosePlanningTool FacingTool)) model
-            | ("a" | "A"), false -> update (PlanningChanged(ChoosePlanningTool AttentionTool)) model
-            | ("s" | "S"), false -> update (PlanningChanged(ChoosePlanningTool StanceTool)) model
-            | ("h" | "H"), false -> update (PlanningChanged(ChoosePlanningTool HoldTool)) model
-            | ("e" | "E"), false -> update (PlanningChanged(ChoosePlanningTool EngagementTool)) model
-            | ("m" | "M"), false -> update (PlanningChanged(ChoosePlanningTool SynchronizationTool)) model
+            | ("r" | "R"), false ->
+                update (PlanningChanged(ChoosePlanningTool RouteTool)) model
+            | ("f" | "F"), false ->
+                update (PlanningChanged(ChoosePlanningTool FacingTool)) model
+            | ("a" | "A"), false ->
+                update (PlanningChanged(ChoosePlanningTool AttentionTool)) model
+            | ("s" | "S"), false ->
+                update (PlanningChanged(ChoosePlanningTool StanceTool)) model
+            | ("h" | "H"), false ->
+                update (PlanningChanged(ChoosePlanningTool HoldTool)) model
+            | ("e" | "E"), false ->
+                update (PlanningChanged(ChoosePlanningTool EngagementTool)) model
+            | ("m" | "M"), false ->
+                update
+                    (PlanningChanged(ChoosePlanningTool SynchronizationTool))
+                    model
             | _ -> model, Cmd.none
-          | None when model.Workspace = ReplayWorkspace ->
+        | ReplayWorkspace ->
             match key with
             | " "
             | "k"
@@ -1415,12 +1366,43 @@ let rec update msg model =
             | "]" -> update (ShellMsg NextEvent) model
             | "Escape" -> update (ShellMsg CancelRequested) model
             | _ -> model, Cmd.none
-          | None -> model, Cmd.none
+        | RulesWorkspace
+        | SamplesWorkspace ->
+            model, Cmd.none
     | KeyReleased key ->
-        match CurrentModalInput.resolveKeyUp key with
-        | Some(CurrentSetEditorSpaceHeld held) ->
-            { model with EditorSpacePressed = held }, Cmd.none
-        | _ -> model, Cmd.none
+        if model.Workspace = EditorWorkspace && editorPanHeld model then
+            let facts =
+                { Editor = model.Editor
+                  ActiveDomain =
+                    match model.EditorToolPanel with
+                    | TerrainTools -> TerrainDomain
+                    | UnitTools -> UnitDomain
+                    | EdgeTools -> EdgeDomain
+                    | ZoneTools -> RegionDomain
+                    | DocumentTools -> DocumentDomain
+                  PanHeld = true
+                  InputHelpExpanded = model.InputHelpExpanded }
+            let gesture =
+                { Key = NormalizedKey.create key None
+                  Modifiers = KeyModifiers.none
+                  Phase = KeyUp }
+            match
+                ModalInput.resolve
+                    (ModalInput.deriveEditorContexts facts)
+                    gesture
+                    false
+                    (ModalInput.editorCatalog facts)
+            with
+            | Resolved input ->
+                { model with
+                    HeldInputs =
+                        HeldInputSession.apply input.Command model.HeldInputs },
+                Cmd.none
+            | NoMatch
+            | NoAvailableMatch _ ->
+                model, Cmd.none
+        else
+            model, Cmd.none
     | ExportExperiment ->
         model,
         (model.Shell.Lab.Report
@@ -1460,20 +1442,93 @@ let subscriptions model =
             dispatch (PlanningWorkerResponded envelope))
 
     let keyboard dispatch =
+        let modalResolution phase key controlOrMeta shift alt repeat =
+            let gesture =
+                { Key = NormalizedKey.create key None
+                  Modifiers =
+                    { ControlOrMeta = controlOrMeta
+                      Shift = shift
+                      Alt = alt }
+                  Phase = phase }
+            match model.Workspace with
+            | EditorWorkspace ->
+                let facts =
+                    { Editor = model.Editor
+                      ActiveDomain =
+                        match model.EditorToolPanel with
+                        | TerrainTools -> TerrainDomain
+                        | UnitTools -> UnitDomain
+                        | EdgeTools -> EdgeDomain
+                        | ZoneTools -> RegionDomain
+                        | DocumentTools -> DocumentDomain
+                      PanHeld = editorPanHeld model
+                      InputHelpExpanded = model.InputHelpExpanded }
+                ModalInput.resolve
+                    (ModalInput.deriveEditorContexts facts)
+                    gesture
+                    repeat
+                    (ModalInput.editorCatalog facts)
+                |> Some
+            | SimulatorWorkspace when phase = KeyDown ->
+                let facts =
+                    { SimulatorHandoffPresent = model.Simulator.IsSome
+                      SimulatorIsRunning =
+                        model.Simulator
+                        |> Option.map _.IsRunning
+                        |> Option.defaultValue false
+                      SimulatorHasRoutePreview =
+                        model.Simulator
+                        |> Option.bind _.PreviewDestination
+                        |> Option.isSome
+                      SimulatorControllerSelection =
+                        model.SimulatorControllerSelection
+                      SimulatorRevisionIsStale =
+                        model.Simulator
+                        |> Option.map (MapEditorSimulator.isBehindDraft model.Editor)
+                        |> Option.defaultValue false
+                      InputHelpExpanded = model.InputHelpExpanded }
+                ModalInput.resolve
+                    (ModalInput.deriveSimulatorContexts facts)
+                    gesture
+                    repeat
+                    (ModalInput.simulatorCatalog
+                        model.SimulatorSelectedUnit
+                        model.Simulator
+                        model.SimulatorControllerSelection)
+                |> Some
+            | _ -> None
+
+        let isCatalogGesture = function
+            | Some(Resolved _)
+            | Some(NoAvailableMatch _) -> true
+            | Some NoMatch
+            | None -> false
+
         let downHandler =
             fun (event: Event) ->
                 let keyboardEvent: KeyboardEvent = unbox event
                 if
                     keyboardEvent.target
                     |> currentInputTarget
-                    |> CurrentModalInput.acceptsKeyDown
+                    |> ModalInput.acceptsTarget
                 then
-                    if model.Workspace = EditorWorkspace && keyboardEvent.key = " " then
+                    let controlOrMeta =
+                        keyboardEvent.ctrlKey || keyboardEvent.metaKey
+                    if
+                        modalResolution
+                            KeyDown
+                            keyboardEvent.key
+                            controlOrMeta
+                            keyboardEvent.shiftKey
+                            keyboardEvent.altKey
+                            keyboardEvent.repeat
+                        |> isCatalogGesture
+                    then
                         keyboardEvent.preventDefault ()
                     dispatch (
                         KeyPressed(
                             keyboardEvent.key,
-                            keyboardEvent.ctrlKey || keyboardEvent.metaKey,
+                            controlOrMeta,
                             keyboardEvent.shiftKey,
                             keyboardEvent.altKey,
                             keyboardEvent.repeat
@@ -1482,6 +1537,17 @@ let subscriptions model =
         let upHandler =
             fun (event: Event) ->
                 let keyboardEvent: KeyboardEvent = unbox event
+                if
+                    modalResolution
+                        KeyUp
+                        keyboardEvent.key
+                        false
+                        false
+                        false
+                        false
+                    |> isCatalogGesture
+                then
+                    keyboardEvent.preventDefault ()
                 dispatch (KeyReleased keyboardEvent.key)
         let blurHandler =
             fun (_: Event) -> dispatch ApplicationFocusLost
@@ -3765,6 +3831,7 @@ let private editorUnitSvg
             | "Enter"
             | " " ->
                 event.preventDefault ()
+                event.stopPropagation ()
                 dispatch (
                     EditorChanged(
                         if event.shiftKey then
@@ -3775,6 +3842,7 @@ let private editorUnitSvg
                 )
             | "Escape" ->
                 event.preventDefault ()
+                event.stopPropagation ()
                 dispatch (EditorChanged(SelectEditorUnit None))
             | _ -> ())
         svg.children [
@@ -3821,8 +3889,31 @@ let private editorBattlefield
     (view: EditorWorkspaceState)
     activeDomain
     spacePressed
+    inputHelpExpanded
     dispatch
     =
+    let claimsKeyboardInput phase keyValue controlOrMeta shift alt repeat =
+        let facts =
+            { Editor = state
+              ActiveDomain = activeDomain
+              PanHeld = spacePressed
+              InputHelpExpanded = inputHelpExpanded }
+        match
+            ModalInput.resolve
+                (ModalInput.deriveEditorContexts facts)
+                { Key = NormalizedKey.create keyValue None
+                  Modifiers =
+                    { ControlOrMeta = controlOrMeta
+                      Shift = shift
+                      Alt = alt }
+                  Phase = phase }
+                repeat
+                (ModalInput.editorCatalog facts)
+        with
+        | Resolved _
+        | NoAvailableMatch _ -> true
+        | NoMatch -> false
+
     let palette = ReplayPalettes.accessibleDefault
     let boardWidth = float state.Map.Width * Battlefield.CellSize
     let boardHeight = float state.Map.Height * Battlefield.CellSize
@@ -3928,13 +4019,13 @@ let private editorBattlefield
                 prop.ariaHidden state.SelectedUnits.IsEmpty
                 prop.ariaLabel "Selected unit quick actions"
                 prop.children [
-                    button "Move" "Begin a resettable movement preview (M)" state.SelectedUnits.IsEmpty (fun _ ->
+                    button "Move" "Begin a resettable movement preview" state.SelectedUnits.IsEmpty (fun _ ->
                         dispatch (
                             EditorChanged(
                                 BeginUnitMove state.KeyboardCursor.Cell
                             )
                         ))
-                    button "Duplicate" "Duplicate selected formation (Ctrl or Command D)" state.SelectedUnits.IsEmpty (fun _ ->
+                    button "Duplicate" "Duplicate selected formation" state.SelectedUnits.IsEmpty (fun _ ->
                         dispatch (EditorChanged DuplicateEditorSelection))
                     button "Delete" "Delete selected formation" state.SelectedUnits.IsEmpty (fun _ ->
                         dispatch (EditorChanged DeleteEditorSelection))
@@ -3955,7 +4046,7 @@ let private editorBattlefield
                     + string state.Map.Height
                     + " cells, "
                     + string state.Map.Units.Count
-                    + " units. Wheel zooms around the pointer; middle or right drag, Space drag, and two-finger touch pan."
+                    + " units. Wheel zooms around the pointer; middle or right drag and two-finger touch pan."
                 ))
                 svg.viewBox (
                     0,
@@ -3965,508 +4056,40 @@ let private editorBattlefield
                 )
                 svg.onContextMenu (fun event -> event.preventDefault ())
                 svg.onKeyDown (fun event ->
-                    let arrowDelta =
-                        match event.key with
-                        | "ArrowLeft" -> Some(-1, 0)
-                        | "ArrowRight" -> Some(1, 0)
-                        | "ArrowUp" -> Some(0, -1)
-                        | "ArrowDown" -> Some(0, 1)
-                        | _ -> None
-                    let panelShortcut =
-                        match event.key with
-                        | "t"
-                        | "T" -> Some TerrainTools
-                        | "u"
-                        | "U" -> Some UnitTools
-                        | "e"
-                        | "E" -> Some EdgeTools
-                        | "z"
-                        | "Z" -> Some ZoneTools
-                        | "m"
-                        | "M" -> Some DocumentTools
-                        | _ -> None
-                    let m5Command =
-                        if
-                            state.PendingDestructiveChange.IsSome
-                            || event.ctrlKey
-                            || event.metaKey
-                            || event.altKey
-                        then
-                            None
-                        else
-                            let facts =
-                                { Editor = state
-                                  ActiveDomain = activeDomain
-                                  PanHeld = spacePressed
-                                  InputHelpExpanded = false }
-                            let input =
-                                { Key = NormalizedKey.create event.key None
-                                  Modifiers =
-                                    { ControlOrMeta = false
-                                      Shift = event.shiftKey
-                                      Alt = false }
-                                  Phase = KeyDown }
-                            match
-                                ModalInput.resolve
-                                    (ModalInput.deriveEditorContexts facts)
-                                    input
-                                    event.repeat
-                                    (ModalInput.editorCatalog facts)
-                            with
-                            | Resolved resolved when
-                                resolved.Id.StartsWith("editor.edge.", StringComparison.Ordinal)
-                                || resolved.Id.StartsWith("editor.region.", StringComparison.Ordinal)
-                                || resolved.Id.StartsWith("editor.document.", StringComparison.Ordinal)
-                                ->
-                                Some resolved.Command
-                            | _ -> None
-                    if spacePressed then
-                        match arrowDelta with
-                        | Some(columnDelta, rowDelta) ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            let distance = if event.shiftKey then 120.0 else 40.0
-                            dispatch (
-                                EditorWorkspaceChanged(
-                                    PanEditorBy(
-                                        -float columnDelta * distance,
-                                        -float rowDelta * distance
-                                    )
-                                )
-                            )
-                        | None when event.key = "Escape" ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            dispatch (KeyReleased " ")
-                        | None when event.key = " " -> ()
-                        | None ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                    elif event.key = " " then
-                        // Space is exclusively a held pan layer.
+                    let controlOrMeta = event.ctrlKey || event.metaKey
+                    if
+                        claimsKeyboardInput
+                            KeyDown
+                            event.key
+                            controlOrMeta
+                            event.shiftKey
+                            event.altKey
+                            event.repeat
+                    then
                         event.preventDefault ()
-                        event.stopPropagation ()
-                        if not event.repeat then
-                            dispatch (KeyPressed(" ", false, false, false, false))
-                    elif m5Command.IsSome then
-                        event.preventDefault ()
-                        event.stopPropagation ()
-                        match m5Command.Value with
-                        | EditorCommand action ->
-                            dispatch (EditorChanged action)
-                        | EditorWorkspaceCommand action ->
-                            dispatch (EditorWorkspaceChanged action)
-                        | EditorDocumentCommand ExportMapDocument ->
-                            dispatch ExportMap
-                        | EditorDocumentCommand ExportRepositoryDesignBundle ->
-                            dispatch ExportDesignBundle
-                        | EditorDocumentCommand OpenMapImport ->
-                            openFilePickerAfterRender "editor-map-import"
-                        | EditorDocumentCommand(FocusDocumentControl target) ->
-                            focusElementAfterRender (
-                                match target with
-                                | MapImportControl -> "editor-map-import"
-                                | LayerStateControls -> "editor-layer-controls"
-                                | LocalBackgroundControls -> "editor-background-file"
-                                | MapDimensionControls -> "map-width"
-                                | SavedViewControls -> "editor-saved-view-controls"
-                            )
-                        | _ -> ()
-                    elif
-                        panelShortcut.IsSome
-                        && not event.ctrlKey
-                        && not event.metaKey
-                        && not event.altKey
-                        && not (
-                            (event.key = "m" || event.key = "M")
-                            && state.Tool = Select
-                            && not state.SelectedUnits.IsEmpty
+                    event.stopPropagation ()
+                    dispatch (
+                        KeyPressed(
+                            event.key,
+                            controlOrMeta,
+                            event.shiftKey,
+                            event.altKey,
+                            event.repeat
                         )
+                    ))
+                svg.onKeyUp (fun event ->
+                    if
+                        claimsKeyboardInput
+                            KeyUp
+                            event.key
+                            false
+                            false
+                            false
+                            false
                     then
                         event.preventDefault ()
-                        event.stopPropagation ()
-                        dispatch (
-                            EditorToolPanelChanged panelShortcut.Value
-                        )
-                        if panelShortcut.Value = TerrainTools then
-                            dispatch (
-                                EditorChanged(
-                                    ChooseTool(Terrain state.LastTerrainPaintTool)
-                                )
-                            )
-                        elif panelShortcut.Value = UnitTools then
-                            dispatch (EditorChanged(ChooseTool UnitBrowse))
-                    elif event.key = "F2" then
-                        event.preventDefault ()
-                        event.stopPropagation ()
-                        if not event.repeat then
-                            dispatch ToggleEditorToolPanelVisibility
-                    elif event.key = "F3" then
-                        event.preventDefault ()
-                        event.stopPropagation ()
-                        if not event.repeat then
-                            dispatch (
-                                EditorWorkspaceChanged
-                                    ToggleEditorInspector
-                            )
-                    elif
-                        state.PendingDestructiveChange.IsSome
-                        && (event.key = "Enter" || event.key = "Escape")
-                        && not event.ctrlKey
-                        && not event.metaKey
-                        && not event.shiftKey
-                        && not event.altKey
-                    then
-                        event.preventDefault ()
-                        event.stopPropagation ()
-                        if not event.repeat then
-                            dispatch (
-                                EditorChanged(
-                                    if event.key = "Enter" then
-                                        ConfirmDestructiveChange
-                                    else
-                                        CancelDestructiveChange
-                                )
-                            )
-                    elif event.ctrlKey || event.metaKey then
-                        let action =
-                            match event.key, event.shiftKey with
-                            | ("z" | "Z"), true -> Some RedoEditorCommand
-                            | ("z" | "Z"), false -> Some UndoEditorCommand
-                            | ("y" | "Y"), _ -> Some RedoEditorCommand
-                            | ("c" | "C"), _ -> Some CopyEditorSelection
-                            | ("v" | "V"), _ -> Some PasteEditorClipboard
-                            | ("d" | "D"), _ -> Some DuplicateEditorSelection
-                            | ("a" | "A"), _ -> Some SelectAllInActiveDomain
-                            | _ -> None
-                        action
-                        |> Option.iter (fun editorAction ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            dispatch (EditorChanged editorAction))
-                    elif event.altKey then
-                        let offset =
-                            match event.key with
-                            | "ArrowLeft" -> Some(-1, 0)
-                            | "ArrowRight" -> Some(1, 0)
-                            | "ArrowUp" -> Some(0, -1)
-                            | "ArrowDown" -> Some(0, 1)
-                            | _ -> None
-                        offset
-                        |> Option.iter (fun (columnDelta, rowDelta) ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat && not state.SelectedUnits.IsEmpty then
-                                let anchor = state.KeyboardCursor.Cell
-                                dispatch (EditorChanged(BeginUnitMove anchor))
-                                dispatch (
-                                    EditorChanged(
-                                        ExtendUnitMove
-                                            { CellColumn =
-                                                max 0 (min (state.Map.Width - 1) (anchor.CellColumn + int32 columnDelta))
-                                              CellRow =
-                                                max 0 (min (state.Map.Height - 1) (anchor.CellRow + int32 rowDelta)) }
-                                    )
-                                ))
-                    elif event.key = "v" || event.key = "V" then
-                        event.preventDefault ()
-                        event.stopPropagation ()
-                        if not event.repeat then
-                            dispatch (EditorChanged(ChooseTool Select))
-                    elif event.key = "Delete" || event.key = "Backspace" then
-                        match state.Gesture with
-                        | TerrainGesture _ when event.key = "Backspace" ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            dispatch (EditorChanged ResetTerrainPreview)
-                        | UnitMoveGesture _ when event.key = "Backspace" ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then
-                                dispatch (EditorChanged ResetUnitMovePreview)
-                        | _ ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then
-                                dispatch (EditorChanged DeleteEditorSelection)
-                    elif state.Tool = UnitBrowse then
-                        let action =
-                            match event.key with
-                            | "ArrowUp"
-                            | "[" -> Some(MoveUnitPaletteCursor -1)
-                            | "ArrowDown"
-                            | "]" -> Some(MoveUnitPaletteCursor 1)
-                            | "PageUp" -> Some(PageUnitPaletteFaction -1)
-                            | "PageDown" -> Some(PageUnitPaletteFaction 1)
-                            | "Home" -> Some(SelectUnitPaletteBoundary false)
-                            | "End" -> Some(SelectUnitPaletteBoundary true)
-                            | "Enter" -> Some ArmUnitPalettePreset
-                            | "Escape" -> Some(ChooseTool Select)
-                            | _ -> None
-                        match action with
-                        | Some action ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat
-                               || event.key = "ArrowUp"
-                               || event.key = "ArrowDown"
-                               || event.key = "["
-                               || event.key = "]"
-                               || event.key = "PageUp"
-                               || event.key = "PageDown"
-                            then
-                                dispatch (EditorChanged action)
-                        | None when event.key = "/" ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            document.getElementById("editor-unit-preset-search").focus ()
-                        | None -> ()
-                    elif
-                        match state.Tool with
-                        | Place _ -> true
-                        | _ -> false
-                    then
-                        let action =
-                            match arrowDelta, event.key with
-                            | Some(columnDelta, rowDelta), _ ->
-                                Some(
-                                    MoveUnitPlacementCursor(
-                                        int32 columnDelta,
-                                        int32 rowDelta
-                                    )
-                                )
-                            | None, "[" -> Some(CycleArmedUnitPreset -1)
-                            | None, "]" -> Some(CycleArmedUnitPreset 1)
-                            | None, "Enter" ->
-                                Some(CommitUnitPlacement event.shiftKey)
-                            | None, ("b" | "B" | "Escape") ->
-                                Some ReturnToUnitBrowse
-                            | _ -> None
-                        action
-                        |> Option.iter (fun action ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat
-                               || arrowDelta.IsSome
-                               || event.key = "["
-                               || event.key = "]"
-                            then
-                                dispatch (EditorChanged action))
-                    elif state.Tool = Select then
-                        match state.Gesture, arrowDelta, event.key with
-                        | CommandPreviewGesture _, None, "Enter" ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then
-                                dispatch (EditorChanged CommitEditorGesture)
-                        | CommandPreviewGesture _, None, "Escape" ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then
-                                dispatch (EditorChanged CancelEditorGesture)
-                        | SelectedObjectActionsGesture, None, ("c" | "C") ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then dispatch (EditorChanged CopyEditorSelection)
-                        | SelectedObjectActionsGesture, None, ("d" | "D") ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then dispatch (EditorChanged DuplicateEditorSelection)
-                        | SelectedObjectActionsGesture, None, ("i" | "I") ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then
-                                dispatch (EditorWorkspaceChanged ToggleEditorInspector)
-                        | SelectedObjectActionsGesture, None, "Escape" ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            dispatch (EditorChanged CancelEditorGesture)
-                        | BoxSelectionGesture(_, current), Some(columnDelta, rowDelta), _ ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            dispatch (
-                                EditorChanged(
-                                    ExtendEditorBoxSelection
-                                        { CellColumn =
-                                            max 0 (min (state.Map.Width - 1) (current.CellColumn + int32 columnDelta))
-                                          CellRow =
-                                            max 0 (min (state.Map.Height - 1) (current.CellRow + int32 rowDelta)) }
-                                )
-                            )
-                        | BoxSelectionGesture(anchor, current), None, "Enter" ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then
-                                let box =
-                                    { FirstColumn = anchor.CellColumn
-                                      FirstRow = anchor.CellRow
-                                      LastColumn = current.CellColumn
-                                      LastRow = current.CellRow }
-                                dispatch (
-                                    EditorChanged(
-                                        if event.shiftKey then AddEditorUnitsInBox box
-                                        else SelectEditorUnitsInBox box
-                                    )
-                                )
-                        | BoxSelectionGesture _, None, "Escape" ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            dispatch (EditorChanged CancelEditorGesture)
-                        | UnitMoveGesture(_, current, _, _), Some(columnDelta, rowDelta), _ ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            let distance = if event.shiftKey then 5 else 1
-                            dispatch (
-                                EditorChanged(
-                                    ExtendUnitMove
-                                        { CellColumn =
-                                            max 0 (min (state.Map.Width - 1) (current.CellColumn + int32 (columnDelta * distance)))
-                                          CellRow =
-                                            max 0 (min (state.Map.Height - 1) (current.CellRow + int32 (rowDelta * distance))) }
-                                )
-                            )
-                        | UnitMoveGesture _, None, "Enter" ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then
-                                dispatch (EditorChanged CommitEditorGesture)
-                        | UnitMoveGesture _, None, "Escape" ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then
-                                dispatch (EditorChanged CancelEditorGesture)
-                        | IdleGesture, Some(columnDelta, rowDelta), _ ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            dispatch (
-                                EditorChanged(
-                                    MoveEditorKeyboardCursor(int32 columnDelta, int32 rowDelta)
-                                )
-                            )
-                        | IdleGesture, None, "Enter" ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then
-                                dispatch (EditorChanged(ActivateEditorKeyboardCursor event.shiftKey))
-                        | IdleGesture, None, ("n" | "N") ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then dispatch (EditorChanged(CycleEditorKeyboardObject 1))
-                        | IdleGesture, None, ("p" | "P") ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then dispatch (EditorChanged(CycleEditorKeyboardObject -1))
-                        | IdleGesture, None, ("b" | "B") ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then dispatch (EditorChanged BeginKeyboardBoxSelection)
-                        | IdleGesture, None, ("a" | "A") ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then dispatch (EditorChanged SelectAllInActiveDomain)
-                        | IdleGesture, None, ("m" | "M") when not state.SelectedUnits.IsEmpty ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            if not event.repeat then
-                                dispatch (
-                                    EditorChanged(
-                                        BeginUnitMove state.KeyboardCursor.Cell
-                                    )
-                                )
-                        | _ -> ()
-                    elif
-                        match state.Tool with
-                        | Terrain _ -> true
-                        | _ -> false
-                    then
-                        match arrowDelta with
-                        | Some(columnDelta, rowDelta) ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            dispatch (
-                                EditorChanged(
-                                    MoveTerrainCursor(
-                                        int32 columnDelta,
-                                        int32 rowDelta,
-                                        event.shiftKey
-                                    )
-                                )
-                            )
-                        | None when event.key = "Enter" || event.key = " " ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            dispatch (EditorChanged ActivateTerrainCursor)
-                        | None ->
-                            let action =
-                                match event.key with
-                                | "1" -> Some(ChooseTerrain Open)
-                                | "2" -> Some(ChooseTerrain Rough)
-                                | "3" -> Some(ChooseTerrain Blocked)
-                                | "4" -> Some(ChooseTerrain Objective)
-                                | "[" -> Some(SetTerrainBrushSize(state.BrushSize - 1))
-                                | "]" -> Some(SetTerrainBrushSize(state.BrushSize + 1))
-                                | "p"
-                                | "P" -> Some(ChooseTool(Terrain PencilTool))
-                                | "r"
-                                | "R" -> Some(ChooseTool(Terrain RectangleTool))
-                                | "l"
-                                | "L" -> Some(ChooseTool(Terrain LineTool))
-                                | "g"
-                                | "G" -> Some(ChooseTool(Terrain FloodFillTool))
-                                | "i"
-                                | "I" -> Some(ChooseTool(Terrain EyedropperTool))
-                                | "x"
-                                | "X" -> Some(ChooseTool(Terrain EraseTool))
-                                | "Escape" when state.Gesture = IdleGesture ->
-                                    Some(
-                                        match state.Tool with
-                                        | Terrain EyedropperTool ->
-                                            ChooseTool(Terrain state.LastTerrainPaintTool)
-                                        | _ -> ChooseTool Select
-                                    )
-                                | _ -> None
-                            action
-                            |> Option.iter (fun action ->
-                                event.preventDefault ()
-                                event.stopPropagation ()
-                                if not event.repeat then dispatch (EditorChanged action))
-                    elif
-                        match state.Tool with
-                        | Edge _ -> true
-                        | _ -> false
-                    then
-                        let movement =
-                            match event.key with
-                            | "ArrowLeft" -> Some(-1, 0)
-                            | "ArrowRight" -> Some(1, 0)
-                            | "ArrowUp" -> Some(0, -1)
-                            | "ArrowDown" -> Some(0, 1)
-                            | _ -> None
-                        match movement with
-                        | Some(columnDelta, rowDelta) ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            dispatch (
-                                EditorChanged(
-                                    MoveEdgeCursor(
-                                        int32 columnDelta,
-                                        int32 rowDelta,
-                                        event.shiftKey
-                                    )
-                                )
-                            )
-                        | None when event.key = "Enter" ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            match state.Gesture with
-                            | EdgePolylineGesture _ ->
-                                dispatch (EditorChanged FinishEdgePolyline)
-                            | _ -> dispatch (EditorChanged ActivateEdgeCursor)
-                        | None when event.key = " " ->
-                            event.preventDefault ()
-                            event.stopPropagation ()
-                            dispatch (EditorChanged ActivateEdgeCursor)
-                        | None -> ())
+                    event.stopPropagation ()
+                    dispatch (KeyReleased event.key))
                 svg.onWheel (fun event ->
                     event.preventDefault ()
                     let x, y =
@@ -4914,9 +4537,11 @@ let private editorBattlefield
                                                   | "Enter"
                                                   | " " ->
                                                       event.preventDefault ()
+                                                      event.stopPropagation ()
                                                       dispatch (EditorChanged(SelectEditorRegion(Some region.Id)))
                                                   | "Escape" ->
                                                       event.preventDefault ()
+                                                      event.stopPropagation ()
                                                       dispatch (EditorChanged(SelectEditorRegion None))
                                                   | _ -> ()) ]
                                         match region.Geometry with
@@ -5169,13 +4794,11 @@ let private editorToolbar
             prop.onClick (fun _ -> dispatch (EditorChanged(ChooseTool tool)))
         ]
 
-    let chooseTerrainValue shortcut terrain =
+    let chooseTerrainValue terrain =
         let label =
             MapEditor.terrainLabel terrain
             + " · "
             + MapEditor.terrainPattern terrain
-            + " · "
-            + shortcut
         Html.button [
             prop.type'.button
             prop.className (
@@ -5187,8 +4810,6 @@ let private editorToolbar
                 MapEditor.terrainLabel terrain
                 + " terrain, "
                 + MapEditor.terrainPattern terrain
-                + ", shortcut "
-                + shortcut
             )
             prop.ariaPressed (state.TerrainSelection = terrain)
             prop.onClick (fun _ ->
@@ -5231,7 +4852,6 @@ let private editorToolbar
                         prop.className "active-tool"
                         prop.text (
                             "Active tool: " + toolLabel state.Tool
-                            + " · F2 tools · F3 inspector"
                         )
                     ]
                 ]
@@ -5246,10 +4866,7 @@ let private editorToolbar
                     choosePanel "Zones" ZoneTools
                     choosePanel "Map file" DocumentTools
                     button
-                        (if view.InspectorCollapsed then
-                             "Show inspector · F3"
-                         else
-                             "Hide inspector · F3")
+                        (if view.InspectorCollapsed then "Show inspector" else "Hide inspector")
                         "Toggle selected-object inspector"
                         false
                         (fun _ ->
@@ -5276,11 +4893,7 @@ let private editorToolbar
                                       FloodFillTool
                                       EyedropperTool
                                       EraseTool ] do
-                                    choose
-                                        (MapEditor.terrainToolLabel tool
-                                         + " ("
-                                         + MapEditor.terrainToolShortcut tool
-                                         + ")")
+                                    choose (MapEditor.terrainToolLabel tool)
                                         (Terrain tool)
                             ]
                         ]
@@ -5289,10 +4902,10 @@ let private editorToolbar
                             prop.role.group
                             prop.ariaLabel "Terrain palette"
                             prop.children [
-                                chooseTerrainValue "Shift+1" Open
-                                chooseTerrainValue "Shift+2" Rough
-                                chooseTerrainValue "Shift+3" Blocked
-                                chooseTerrainValue "Shift+4" Objective
+                                chooseTerrainValue Open
+                                chooseTerrainValue Rough
+                                chooseTerrainValue Blocked
+                                chooseTerrainValue Objective
                             ]
                         ]
                         Html.div [
@@ -5318,7 +4931,7 @@ let private editorToolbar
                                 ]
                                 button
                                     "Apply preview"
-                                    "Commit the terrain preview (Enter)"
+                                    "Commit the terrain preview"
                                     (match state.Gesture with
                                      | TerrainGesture _ -> false
                                      | _ -> true)
@@ -5326,7 +4939,7 @@ let private editorToolbar
                                         dispatch (EditorChanged CommitEditorGesture))
                                 button
                                     "Cancel preview"
-                                    "Cancel the terrain preview (Escape)"
+                                    "Cancel the terrain preview"
                                     (match state.Gesture with
                                      | TerrainGesture _ -> false
                                      | _ -> true)
@@ -5395,7 +5008,7 @@ let private editorToolbar
                             prop.children [
                                 button
                                     "Apply preview"
-                                    "Commit the unit placement, paste, or movement preview (Enter)"
+                                    "Commit the unit placement, paste, or movement preview"
                                     (match state.Gesture with
                                      | CommandPreviewGesture _
                                      | UnitMoveGesture _ -> false
@@ -5403,14 +5016,14 @@ let private editorToolbar
                                     (fun _ -> dispatch (EditorChanged CommitEditorGesture))
                                 button
                                     "Reset move"
-                                    "Reset selected units to their original preview positions (Backspace)"
+                                    "Reset selected units to their original preview positions"
                                     (match state.Gesture with
                                      | UnitMoveGesture _ -> false
                                      | _ -> true)
                                     (fun _ -> dispatch (EditorChanged ResetUnitMovePreview))
                                 button
                                     "Cancel preview"
-                                    "Cancel the unit preview (Escape)"
+                                    "Cancel the unit preview"
                                     (match state.Gesture with
                                      | CommandPreviewGesture _
                                      | UnitMoveGesture _ -> false
@@ -5418,7 +5031,7 @@ let private editorToolbar
                                     (fun _ -> dispatch (EditorChanged CancelEditorGesture))
                                 button
                                     "Browse presets"
-                                    "Return to unit preset browsing (B)"
+                                    "Return to unit preset browsing"
                                     (state.Tool = UnitBrowse)
                                     (fun _ -> dispatch (EditorChanged ReturnToUnitBrowse))
                             ]
@@ -5442,9 +5055,9 @@ let private editorToolbar
                             prop.role.group
                             prop.ariaLabel "Edge actions at the keyboard cursor"
                             prop.children [
-                                button "Finish" "Finish wall polyline (Enter)" false (fun _ ->
+                                button "Finish" "Finish wall polyline" false (fun _ ->
                                     dispatch (EditorChanged FinishEdgePolyline))
-                                button "Back" "Remove last polyline segment (Escape)" false (fun _ ->
+                                button "Back" "Remove last polyline segment" false (fun _ ->
                                     dispatch (EditorChanged BacktrackEdgePolyline))
                                 button "Wall" "Convert cursor edge to wall" false (fun _ ->
                                     dispatch (
@@ -5989,7 +5602,7 @@ let private editorGrid state dispatch =
                 )
                 Html.p [
                     prop.className "keyboard-help"
-                    prop.text "Use Tab to reach objects and Enter to activate the current tool. Empty cells remain available here without adding hundreds of SVG tab stops."
+                    prop.text "Use the object list to reach authored objects and activate the current tool. Empty cells remain available here without adding hundreds of SVG tab stops. The live Inputs panel lists commands for the current mode."
                 ]
                 Html.h3 "Units"
                 if state.Map.Units.IsEmpty then
@@ -6027,6 +5640,7 @@ let private editorGrid state dispatch =
                                     prop.onKeyDown (fun event ->
                                         let move amount =
                                             event.preventDefault ()
+                                            event.stopPropagation ()
                                             focusEditorObjectList event.currentTarget amount
                                         match event.key with
                                         | "ArrowUp" -> move -1
@@ -6035,14 +5649,17 @@ let private editorGrid state dispatch =
                                         | "End" -> move 2
                                         | "Enter" ->
                                             event.preventDefault ()
+                                            event.stopPropagation ()
                                             dispatch (
                                                 EditorChanged(
                                                     if event.shiftKey then
                                                         ToggleEditorUnitSelection unit.Id
                                                     else
                                                         SelectEditorUnit(Some unit.Id)
-                                                )
+                                                    )
                                             )
+                                        | " " ->
+                                            event.stopPropagation ()
                                         | _ -> ())
                                 ]
                             ]
@@ -6078,6 +5695,7 @@ let private editorGrid state dispatch =
                                         prop.onKeyDown (fun event ->
                                             let move amount =
                                                 event.preventDefault ()
+                                                event.stopPropagation ()
                                                 focusEditorObjectList event.currentTarget amount
                                             match event.key with
                                             | "ArrowUp" -> move -1
@@ -6086,7 +5704,10 @@ let private editorGrid state dispatch =
                                             | "End" -> move 2
                                             | "Enter" ->
                                                 event.preventDefault ()
+                                                event.stopPropagation ()
                                                 dispatch (EditorChanged(SelectEditorRegion(Some region.Id)))
+                                            | " " ->
+                                                event.stopPropagation ()
                                             | _ -> ())
                                     ]
                                 ]
@@ -6347,7 +5968,7 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                     ]
                 ]
                 Html.h3 "Route planner"
-                Html.p "Arrow keys choose a destination. The planner routes around terrain, blocking edges, and occupied footprints; Enter queues the accepted route."
+                Html.p "Choose a destination with the route controls below. The planner routes around terrain, blocking edges, and occupied footprints. The live Inputs panel lists commands for the current mode."
                 Html.div [
                     prop.className "manual-movement"
                     prop.children [
@@ -6359,11 +5980,11 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                             dispatch (SimulatorChanged(MoveSimulatorPreview(0, 1))))
                         button "→" "Move route preview right" state.IsRunning (fun _ ->
                             dispatch (SimulatorChanged(MoveSimulatorPreview(1, 0))))
-                        button "Commit route" "Commit clear route preview (Enter)" (state.IsRunning || handoff.PreviewDestination.IsNone) (fun _ ->
+                        button "Commit route" "Commit clear route preview" (state.IsRunning || handoff.PreviewDestination.IsNone) (fun _ ->
                             dispatch (SimulatorChanged CommitSimulatorPreview))
-                        button "Reset route" "Return route preview to unit origin (Backspace)" (state.IsRunning || handoff.PreviewDestination.IsNone) (fun _ ->
+                        button "Reset route" "Return route preview to unit origin" (state.IsRunning || handoff.PreviewDestination.IsNone) (fun _ ->
                             dispatch (SimulatorChanged ResetSimulatorPreviewToOrigin))
-                        button "Cancel route" "Cancel route preview (Escape)" (state.IsRunning || handoff.PreviewDestination.IsNone) (fun _ ->
+                        button "Cancel route" "Cancel route preview" (state.IsRunning || handoff.PreviewDestination.IsNone) (fun _ ->
                             dispatch (SimulatorChanged ResetSimulatorPreview))
                     ]
                 ]
@@ -6620,9 +6241,9 @@ let private editorDesktopChrome
                         [ command "Fit map" "Fit the complete map" false (EditorWorkspaceChanged FitEditorBoard)
                           command "Actual size" "Reset map camera to one hundred percent" false (EditorWorkspaceChanged ResetEditorCamera)
                           command "Frame selection" "Frame selected map objects" state.SelectedUnits.IsEmpty (EditorWorkspaceChanged FrameEditorSelection)
-                          command "Toggle command panel · F2" "Show or hide the active command panel" false ToggleEditorToolPanelVisibility
+                          command "Toggle command panel" "Show or hide the active command panel" false ToggleEditorToolPanelVisibility
                           command
-                              (if view.InspectorCollapsed then "Show inspector · F3" else "Hide inspector · F3")
+                              (if view.InspectorCollapsed then "Show inspector" else "Hide inspector")
                               "Show or hide the selected-object inspector"
                               false
                               (EditorWorkspaceChanged ToggleEditorInspector) ]
@@ -6743,7 +6364,7 @@ let private simulatorDesktopChrome
                           command "Zoom in" "Zoom battlefield in" false (BattlefieldChanged(ZoomBy 1.25))
                           command "Zoom out" "Zoom battlefield out" false (BattlefieldChanged(ZoomBy 0.8))
                           command
-                              (if panelVisible then "Hide command panel · F2" else "Show command panel · F2")
+                              (if panelVisible then "Hide command panel" else "Show command panel")
                               "Show or hide the active simulator command panel"
                               false
                               ToggleSimulatorToolPanelVisibility ]
@@ -6823,7 +6444,7 @@ let private simulatorDock
                     choose "Events" EventTools
                     choose "Samples" SimulatorSampleTools
                     button
-                        (if panelVisible then "Close · F2" else "Open · F2")
+                        (if panelVisible then "Close" else "Open")
                         "Show or hide the active simulator command panel"
                         false
                         (fun _ -> dispatch ToggleSimulatorToolPanelVisibility)
@@ -7390,10 +7011,9 @@ let private modalInputStrip
                         prop.id "modal-input-toggle"
                         prop.type'.button
                         prop.className "modal-input-toggle"
-                        prop.text "Inputs · ?"
+                        prop.text "Inputs"
                         prop.ariaExpanded expanded
                         prop.ariaControls "modal-input-panel"
-                        prop.custom ("aria-keyshortcuts", "?")
                         prop.onClick (fun _ -> dispatch (ToggleInputHelp false))
                     ]
                 ]
@@ -7571,30 +7191,42 @@ let view model dispatch =
                                 prop.role.application
                                 prop.ariaLabel "Keyboard-operable simulator map stage"
                                 prop.onKeyDown (fun event ->
+                                    event.stopPropagation ()
                                     if
                                         isSimulatorModalTarget
                                             event.target
                                             event.currentTarget
                                     then
-                                        if
-                                            not event.ctrlKey
-                                            && not event.metaKey
-                                            && not event.altKey
-                                        then
-                                            event.stopPropagation ()
+                                        let controlOrMeta =
+                                            event.ctrlKey || event.metaKey
+                                        let resolution =
+                                            ModalInput.resolve
+                                                (ModalInput.deriveSimulatorContexts facts)
+                                                { Key =
+                                                    NormalizedKey.create
+                                                        event.key
+                                                        None
+                                                  Modifiers =
+                                                    { ControlOrMeta = controlOrMeta
+                                                      Shift = event.shiftKey
+                                                      Alt = event.altKey }
+                                                  Phase = KeyDown }
+                                                event.repeat
+                                                catalog
+                                        match resolution with
+                                        | Resolved _
+                                        | NoAvailableMatch _ ->
                                             event.preventDefault ()
-                                            dispatch (
-                                                KeyPressed(
-                                                    event.key,
-                                                    false,
-                                                    event.shiftKey,
-                                                    false,
-                                                    event.repeat
-                                                )
+                                        | NoMatch -> ()
+                                        dispatch (
+                                            KeyPressed(
+                                                event.key,
+                                                controlOrMeta,
+                                                event.shiftKey,
+                                                event.altKey,
+                                                event.repeat
                                             )
-                                    else
-                                        event.stopPropagation ()
-                                    )
+                                        ))
                                 prop.children [
                                     battlefieldView
                                         shell
@@ -7633,7 +7265,7 @@ let view model dispatch =
                 let facts =
                     { Editor = model.Editor
                       ActiveDomain = editorDomain model.EditorToolPanel
-                      PanHeld = model.EditorSpacePressed
+                      PanHeld = editorPanHeld model
                       InputHelpExpanded = model.InputHelpExpanded }
                 let catalog = ModalInput.editorCatalog facts
                 let projection = ModalInput.projectEditor facts catalog
@@ -7711,7 +7343,8 @@ let view model dispatch =
                                     model.Editor
                                     model.EditorView
                                     (editorDomain model.EditorToolPanel)
-                                    model.EditorSpacePressed
+                                    (editorPanHeld model)
+                                    model.InputHelpExpanded
                                     dispatch
                                 editorToolbar
                                     model.Editor
@@ -7725,7 +7358,7 @@ let view model dispatch =
                                         prop.ariaLabel "Map editor inspector"
                                         prop.children [
                                             button
-                                                "Hide inspector · F3"
+                                                "Hide inspector"
                                                 "Toggle selected-object inspector"
                                                 false
                                                 (fun _ ->
