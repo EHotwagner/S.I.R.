@@ -480,15 +480,15 @@ explicitly provides the stable contract needed for safe parallel work.
   - **Exit gate:** every displayed available input resolves in the displayed
     context, and every resolvable visible command appears in the disclosure.
 
-- [ ] **M3 — Deliver Select, camera, and Terrain keyboard operation**
-  - [ ] Add the deterministic keyboard map cursor and object cycling.
-  - [ ] Implement single, toggle, box, and select-all routes plus selected-object
+- [x] **M3 — Deliver Select, camera, and Terrain keyboard operation**
+  - [x] Add the deterministic keyboard map cursor and object cycling.
+  - [x] Implement single, toggle, box, and select-all routes plus selected-object
         actions.
-  - [ ] Implement held-Space pan, arrow-key pan, frame selection, fit map, and
+  - [x] Implement held-Space pan, arrow-key pan, frame selection, fit map, and
         camera reset without leaking authoring commands through the held layer.
-  - [ ] Implement Terrain tool/value/brush selection and pencil, eraser,
+  - [x] Implement Terrain tool/value/brush selection and pencil, eraser,
         rectangle, line, flood-fill, and eyedropper flows.
-  - [ ] Make every preview explicitly commit, reset, or cancel and produce the
+  - [x] Make every preview explicitly commit, reset, or cancel and produce the
         documented undo granularity.
   - **Exit gate:** terrain can be authored and selected entirely by keyboard,
     while pointer and touch routes still dispatch equivalent map actions.

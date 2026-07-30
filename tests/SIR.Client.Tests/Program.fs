@@ -2559,6 +2559,79 @@ let main _ =
         (terrainFixture = expectedTerrainFixture)
         "The deterministic Milestone 3 terrain review fixture changed."
 
+    let keyboardAtUnit =
+        { editor with SelectedUnit = None; SelectedUnits = Set.empty }
+        |> MapEditor.update (ChooseTool Select)
+        |> MapEditor.update (MoveEditorKeyboardCursor(1, 1))
+    let objectsAtUnit = MapEditor.keyboardObjectsAtCursor keyboardAtUnit
+    let keyboardSelected =
+        keyboardAtUnit |> MapEditor.update (ActivateEditorKeyboardCursor false)
+    let keyboardToggled =
+        keyboardSelected |> MapEditor.update (ActivateEditorKeyboardCursor true)
+    let keyboardActions =
+        keyboardSelected |> MapEditor.update (ActivateEditorKeyboardCursor false)
+    let keyboardBoxAdded =
+        { keyboardSelected with SelectedUnits = Set.singleton 3; SelectedUnit = Some 3 }
+        |> MapEditor.update BeginKeyboardBoxSelection
+        |> MapEditor.update (ExtendEditorBoxSelection(address 2 2))
+        |> MapEditor.update (
+            AddEditorUnitsInBox
+                { FirstColumn = 1
+                  FirstRow = 1
+                  LastColumn = 2
+                  LastRow = 2 }
+        )
+    let keyboardPencil =
+        editor
+        |> MapEditor.update (ChooseTerrain Rough)
+        |> MapEditor.update (ChooseTool(Terrain PencilTool))
+        |> MapEditor.update (MoveTerrainCursor(1, 0, false))
+        |> MapEditor.update ActivateTerrainCursor
+    let keyboardStroke =
+        editor
+        |> MapEditor.update (ChooseTerrain Rough)
+        |> MapEditor.update (ChooseTool(Terrain PencilTool))
+        |> MapEditor.update (MoveTerrainCursor(1, 0, true))
+    let keyboardRectangleReset =
+        editor
+        |> MapEditor.update (ChooseTerrain Objective)
+        |> MapEditor.update (ChooseTool(Terrain RectangleTool))
+        |> MapEditor.update ActivateTerrainCursor
+        |> MapEditor.update (MoveTerrainCursor(3, 2, true))
+        |> MapEditor.update ResetTerrainPreview
+    let keyboardRectangleCommitted =
+        keyboardRectangleReset
+        |> MapEditor.update (MoveTerrainCursor(2, 1, true))
+        |> MapEditor.update ActivateTerrainCursor
+    let keyboardFlood =
+        editor
+        |> MapEditor.update (ChooseTerrain Objective)
+        |> MapEditor.update (ChooseTool(Terrain FloodFillTool))
+        |> MapEditor.update ActivateTerrainCursor
+    let keyboardEyedropper =
+        editor
+        |> MapEditor.update (ChooseTool(Terrain RectangleTool))
+        |> MapEditor.update (ChooseTool(Terrain EyedropperTool))
+        |> MapEditor.update (MoveTerrainCursor(5, 3, false))
+        |> MapEditor.update ActivateTerrainCursor
+
+    require
+        (objectsAtUnit = [ KeyboardUnit 1; KeyboardTerrain(address 1 1) ]
+         && keyboardSelected.SelectedUnits = Set.singleton 1
+         && keyboardToggled.SelectedUnits.IsEmpty
+         && keyboardActions.Gesture = SelectedObjectActionsGesture
+         && keyboardBoxAdded.SelectedUnits = Set.ofList [ 1; 3 ]
+         && keyboardPencil.UndoHistory.Length = editor.UndoHistory.Length + 1
+         && keyboardStroke.UndoHistory.Length = editor.UndoHistory.Length + 1
+         && keyboardRectangleReset.TerrainCursor = address 0 0
+         && keyboardRectangleCommitted.UndoHistory.Length = editor.UndoHistory.Length + 1
+         && keyboardRectangleCommitted.Gesture = IdleGesture
+         && keyboardFlood.UndoHistory.Length = editor.UndoHistory.Length + 1
+         && keyboardEyedropper.TerrainSelection = Objective
+         && keyboardEyedropper.Tool = Terrain RectangleTool
+         && keyboardEyedropper.UndoHistory = editor.UndoHistory)
+        "M3 keyboard cursor, selection, box-add, terrain commit/reset, undo granularity, flood fill, or eyedropper return failed."
+
     let unitPresetFixture =
         MapEditor.searchCanonicalUnitPresets ""
         |> List.map (fun preset ->

@@ -411,6 +411,128 @@ let evaluate () =
         (repeatedF2 = NoMatch)
         "A repeated production F2 toggle was not ignored."
 
+    let m3Editor =
+        { MapEditor.initial with
+            SelectedUnit = None
+            SelectedUnits = Set.empty
+            Tool = Select
+            Gesture = IdleGesture }
+    let m3Facts panHeld editor =
+        { Editor = editor
+          ActiveDomain =
+              match editor.Tool with
+              | Terrain _ -> TerrainDomain
+              | _ -> UnitDomain
+          PanHeld = panHeld
+          InputHelpExpanded = false }
+    let m3SelectFacts = m3Facts false m3Editor
+    let m3SelectCatalog = ModalInput.editorCatalog m3SelectFacts
+    let m3SelectContexts = ModalInput.deriveEditorContexts m3SelectFacts
+    let resolveM3 contexts catalog keyValue modifiers =
+        ModalInput.resolve
+            contexts
+            (gesture keyValue None modifiers KeyDown)
+            false
+            catalog
+        |> outcomeName
+    let m3Terrain =
+        { m3Editor with Tool = Terrain RectangleTool }
+    let m3TerrainFacts = m3Facts false m3Terrain
+    let m3TerrainCatalog = ModalInput.editorCatalog m3TerrainFacts
+    let m3TerrainContexts = ModalInput.deriveEditorContexts m3TerrainFacts
+    let m3PanFacts = m3Facts true m3Terrain
+    let m3PanCatalog = ModalInput.editorCatalog m3PanFacts
+    let m3PanContexts = ModalInput.deriveEditorContexts m3PanFacts
+
+    require
+        (ModalInput.validateCatalog m3SelectCatalog = []
+         && ModalInput.validateCatalog m3TerrainCatalog = []
+         && ModalInput.validateCatalog m3PanCatalog = []
+         && resolveM3 m3SelectContexts m3SelectCatalog "ArrowRight" plain =
+            "resolved:editor.cursor.east"
+         && resolveM3 m3SelectContexts m3SelectCatalog "Enter" plain =
+            "resolved:editor.selection.single"
+         && resolveM3 m3SelectContexts m3SelectCatalog "b" plain =
+            "resolved:editor.selection.box.begin"
+         && resolveM3 m3TerrainContexts m3TerrainCatalog "1" plain =
+            "resolved:editor.terrain.value.open"
+         && resolveM3 m3TerrainContexts m3TerrainCatalog "]" plain =
+            "resolved:editor.terrain.brush.increase"
+         && resolveM3 m3TerrainContexts m3TerrainCatalog "ArrowRight" { plain with Shift = true } =
+            "resolved:editor.terrain.cursor.paint-east"
+         && resolveM3 m3PanContexts m3PanCatalog "ArrowRight" plain =
+            "resolved:editor.camera.pan-east"
+         && resolveM3 m3PanContexts m3PanCatalog "p" plain = "no-match")
+        "M3 Select, Terrain, or held-pan catalog resolution diverged from the vocabulary."
+
+    let boxCommandAt current keyValue =
+        let boxEditor =
+            { m3Editor with
+                Gesture =
+                    BoxSelectionGesture(
+                        { CellColumn = 0; CellRow = 0 },
+                        current
+                    ) }
+        let facts = m3Facts false boxEditor
+        match
+            ModalInput.resolve
+                (ModalInput.deriveEditorContexts facts)
+                (gesture keyValue None plain KeyDown)
+                false
+                (ModalInput.editorCatalog facts)
+        with
+        | Resolved input -> input.Command
+        | NoMatch
+        | NoAvailableMatch _ -> failwith "Expected a box-selection boundary command."
+
+    require
+        (boxCommandAt { CellColumn = 0; CellRow = 0 } "ArrowLeft" =
+            EditorCommand(
+                ExtendEditorBoxSelection
+                    { CellColumn = 0
+                      CellRow = 0 }
+            )
+         && boxCommandAt { CellColumn = 0; CellRow = 0 } "ArrowUp" =
+            EditorCommand(
+                ExtendEditorBoxSelection
+                    { CellColumn = 0
+                      CellRow = 0 }
+            )
+         && boxCommandAt
+                { CellColumn = m3Editor.Map.Width - 1
+                  CellRow = m3Editor.Map.Height - 1 }
+                "ArrowRight" =
+            EditorCommand(
+                ExtendEditorBoxSelection
+                    { CellColumn = m3Editor.Map.Width - 1
+                      CellRow = m3Editor.Map.Height - 1 }
+            )
+         && boxCommandAt
+                { CellColumn = m3Editor.Map.Width - 1
+                  CellRow = m3Editor.Map.Height - 1 }
+                "ArrowDown" =
+            EditorCommand(
+                ExtendEditorBoxSelection
+                    { CellColumn = m3Editor.Map.Width - 1
+                      CellRow = m3Editor.Map.Height - 1 }
+            ))
+        "Box-selection catalog movement escaped the map boundary."
+
+    let selectedRegionEditor =
+        { m3Editor with
+            SelectedRegion = Some 7
+            Gesture = SelectedObjectActionsGesture }
+    let selectedRegionFacts = m3Facts false selectedRegionEditor
+    let selectedRegionProjection =
+        ModalInput.projectEditor
+            selectedRegionFacts
+            (ModalInput.editorCatalog selectedRegionFacts)
+
+    require
+        (selectedRegionProjection.Headline = "EDITOR / SELECT / ACTIONS"
+         && selectedRegionProjection.Detail = "Region 7 selected")
+        "Selected-object Actions projected a region as an empty unit selection."
+
     let simulator =
         MapEditorSimulator.tryHandoff MapEditor.initial
         |> Result.defaultWith failwith

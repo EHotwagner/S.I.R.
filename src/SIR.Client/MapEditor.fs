@@ -148,8 +148,19 @@ type EditorBox =
       LastColumn: int32
       LastRow: int32 }
 
+type EditorKeyboardObject =
+    | KeyboardUnit of id: int32
+    | KeyboardRegion of id: int32
+    | KeyboardEdge of column: int32 * row: int32 * direction: MapEdgeDirection
+    | KeyboardTerrain of EditorCellAddress
+
+type EditorKeyboardCursor =
+    { Cell: EditorCellAddress
+      ObjectCycleIndex: int }
+
 type EditorGesture =
     | IdleGesture
+    | SelectedObjectActionsGesture
     | BoxSelectionGesture of anchor: EditorCellAddress * current: EditorCellAddress
     | CommandPreviewGesture of EditorCommand
     | UnitMoveGesture of
@@ -224,6 +235,9 @@ type MapEditorState =
       TerrainSelection: MapTerrain
       BrushSize: int32
       TerrainCursor: EditorCellAddress
+      KeyboardCursor: EditorKeyboardCursor
+      KeyboardObject: EditorKeyboardObject option
+      LastTerrainPaintTool: TerrainAuthoringTool
       TerrainAnnouncement: string
       EdgeCursor: int32 * int32 * MapEdgeDirection
       EdgeAnnouncement: string
@@ -260,6 +274,13 @@ type MapEditorAction =
     | SetTerrainBrushSize of int32
     | MoveTerrainCursor of columnDelta: int32 * rowDelta: int32 * extendPreview: bool
     | ActivateTerrainCursor
+    | ResetTerrainPreview
+    | MoveEditorKeyboardCursor of columnDelta: int32 * rowDelta: int32
+    | CycleEditorKeyboardObject of delta: int
+    | ActivateEditorKeyboardCursor of toggle: bool
+    | OpenSelectedObjectActions
+    | BeginKeyboardBoxSelection
+    | AddEditorUnitsInBox of EditorBox
     | ActivateEdge of column: int32 * row: int32 * direction: MapEdgeDirection
     | MoveEdgeCursor of columnDelta: int32 * rowDelta: int32 * extendPreview: bool
     | ActivateEdgeCursor
@@ -826,6 +847,13 @@ module MapEditor =
           TerrainCursor =
             { CellColumn = 0
               CellRow = 0 }
+          KeyboardCursor =
+            { Cell =
+                { CellColumn = 0
+                  CellRow = 0 }
+              ObjectCycleIndex = 0 }
+          KeyboardObject = None
+          LastTerrainPaintTool = PencilTool
           TerrainAnnouncement = "Terrain authoring ready."
           EdgeCursor = 0, 0, EastEdge
           EdgeAnnouncement = "Semantic edge authoring ready."
@@ -1342,6 +1370,13 @@ module MapEditor =
         | SetTerrainBrushSize _
         | MoveTerrainCursor _
         | ActivateTerrainCursor
+        | ResetTerrainPreview
+        | MoveEditorKeyboardCursor _
+        | CycleEditorKeyboardObject _
+        | ActivateEditorKeyboardCursor _
+        | OpenSelectedObjectActions
+        | BeginKeyboardBoxSelection
+        | AddEditorUnitsInBox _
         | ActivateEdge _
         | MoveEdgeCursor _
         | ActivateEdgeCursor
@@ -2561,6 +2596,72 @@ module MapEditor =
             then Some id else None)
         |> Set.ofList
 
+    let private regionContains address region =
+        let column = address.CellColumn
+        let row = address.CellRow
+        match region.Geometry with
+        | RegionRectangle(firstColumn, firstRow, width, height) ->
+            column >= firstColumn
+            && column < firstColumn + width
+            && row >= firstRow
+            && row < firstRow + height
+        | RegionPolygon vertices when Array.isEmpty vertices -> false
+        | RegionPolygon vertices ->
+            let pointX = float column + 0.5
+            let pointY = float row + 0.5
+            let mutable inside = false
+            let mutable previous = vertices.Length - 1
+            for current in 0 .. vertices.Length - 1 do
+                let currentX = float vertices[current].CellColumn
+                let currentY = float vertices[current].CellRow
+                let previousX = float vertices[previous].CellColumn
+                let previousY = float vertices[previous].CellRow
+                if
+                    (currentY > pointY) <> (previousY > pointY)
+                    && pointX
+                       < (previousX - currentX)
+                         * (pointY - currentY)
+                         / (previousY - currentY)
+                         + currentX
+                then
+                    inside <- not inside
+                previous <- current
+            inside
+
+    /// Deterministic object order used by keyboard traversal and its live
+    /// description: units, regions, east/south edges, then the terrain cell.
+    let keyboardObjectsAtCursor state =
+        let address = state.KeyboardCursor.Cell
+        [ yield!
+              state.Map.Units
+              |> Map.toList
+              |> List.sortBy fst
+              |> List.choose (fun (id, unit) ->
+                  if
+                      cells unit unit.Column unit.Row
+                      |> List.contains (address.CellColumn, address.CellRow)
+                  then Some(KeyboardUnit id)
+                  else None)
+          yield!
+              state.Map.Regions
+              |> Map.toList
+              |> List.sortBy fst
+              |> List.choose (fun (id, region) ->
+                  if regionContains address region then Some(KeyboardRegion id) else None)
+          for direction in [ EastEdge; SouthEdge ] do
+              if Map.containsKey (address.CellColumn, address.CellRow, direction) state.Map.Edges then
+                  yield KeyboardEdge(address.CellColumn, address.CellRow, direction)
+          yield KeyboardTerrain address ]
+
+    let private objectAtKeyboardCursor state =
+        let objects = keyboardObjectsAtCursor state
+        match objects with
+        | [] -> None
+        | _ ->
+            let index =
+                (state.KeyboardCursor.ObjectCycleIndex % objects.Length + objects.Length) % objects.Length
+            Some objects[index]
+
     let private translatedUnits offset (source: EditorUnit array) nextId =
         source
         |> Array.sortBy _.Id
@@ -2825,6 +2926,14 @@ module MapEditor =
         | ChooseTool(Terrain tool) ->
             { state with
                 Tool = Terrain tool
+                LastTerrainPaintTool =
+                    match tool with
+                    | PencilTool
+                    | RectangleTool
+                    | LineTool
+                    | FloodFillTool
+                    | EraseTool -> tool
+                    | EyedropperTool -> state.LastTerrainPaintTool
                 Gesture = IdleGesture
                 Validation = None
                 TerrainAnnouncement =
@@ -3032,6 +3141,7 @@ module MapEditor =
                 { state with
                     TerrainSelection = sampled
                     TerrainCursor = address
+                    Tool = Terrain state.LastTerrainPaintTool
                     Gesture = IdleGesture
                     Validation = None
                     TerrainAnnouncement =
@@ -3099,18 +3209,121 @@ module MapEditor =
             | _ -> state
         | ExtendTerrainGesture _ -> state
         | MoveTerrainCursor(columnDelta, rowDelta, extendPreview) ->
+            let previous = state.TerrainCursor
             let cursor =
                 { CellColumn =
                     max 0 (min (state.Map.Width - 1) (state.TerrainCursor.CellColumn + columnDelta))
                   CellRow =
                     max 0 (min (state.Map.Height - 1) (state.TerrainCursor.CellRow + rowDelta)) }
             let moved = { state with TerrainCursor = cursor }
-            if extendPreview then update (ExtendTerrainGesture cursor) moved
+            if extendPreview || state.Gesture <> IdleGesture then
+                match state.Gesture, state.Tool with
+                | IdleGesture, Terrain(PencilTool | EraseTool) ->
+                    moved
+                    |> update (BeginTerrainGesture previous)
+                    |> update (ExtendTerrainGesture cursor)
+                    |> update CommitEditorGesture
+                | _ -> update (ExtendTerrainGesture cursor) moved
             else moved
         | ActivateTerrainCursor ->
-            match state.Gesture with
-            | TerrainGesture _ -> update CommitEditorGesture state
+            match state.Gesture, state.Tool with
+            | TerrainGesture _, _ -> update CommitEditorGesture state
+            | IdleGesture, Terrain(PencilTool | EraseTool | FloodFillTool) ->
+                state
+                |> update (BeginTerrainGesture state.TerrainCursor)
+                |> update CommitEditorGesture
             | _ -> update (BeginTerrainGesture state.TerrainCursor) state
+        | ResetTerrainPreview ->
+            match state.Gesture with
+            | TerrainGesture(tool, anchor, _, _) ->
+                { state with
+                    TerrainCursor = anchor
+                    Gesture = TerrainGesture(tool, anchor, anchor, [||])
+                    TerrainAnnouncement = "Terrain preview reset to its anchor."
+                    Validation = None }
+            | _ -> state
+        | MoveEditorKeyboardCursor(columnDelta, rowDelta) ->
+            let current = state.KeyboardCursor.Cell
+            let cell =
+                { CellColumn =
+                    max 0 (min (state.Map.Width - 1) (current.CellColumn + columnDelta))
+                  CellRow =
+                    max 0 (min (state.Map.Height - 1) (current.CellRow + rowDelta)) }
+            let next =
+                { state with
+                    TerrainCursor = cell
+                    KeyboardCursor =
+                        { Cell = cell
+                          ObjectCycleIndex = 0 } }
+            { next with KeyboardObject = objectAtKeyboardCursor next }
+        | CycleEditorKeyboardObject delta ->
+            let count = keyboardObjectsAtCursor state |> List.length
+            if count = 0 then state
+            else
+                let index =
+                    (state.KeyboardCursor.ObjectCycleIndex + delta) % count
+                let next =
+                    { state with
+                        KeyboardCursor =
+                            { state.KeyboardCursor with
+                                ObjectCycleIndex = if index < 0 then index + count else index } }
+                let target = objectAtKeyboardCursor next
+                match target with
+                | Some(KeyboardUnit id) ->
+                    { next with
+                        KeyboardObject = target
+                        SelectedUnit = Some id
+                        SelectedUnits = Set.singleton id
+                        SelectedRegion = None }
+                | Some(KeyboardRegion id) ->
+                    { next with
+                        KeyboardObject = target
+                        SelectedUnit = None
+                        SelectedUnits = Set.empty
+                        SelectedRegion = Some id }
+                | _ ->
+                    { next with
+                        KeyboardObject = target
+                        SelectedUnit = None
+                        SelectedUnits = Set.empty
+                        SelectedRegion = None }
+        | ActivateEditorKeyboardCursor toggle ->
+            let target = objectAtKeyboardCursor state
+            match target with
+            | Some(KeyboardUnit id)
+                when not toggle
+                     && state.SelectedUnits = Set.singleton id ->
+                update OpenSelectedObjectActions state
+            | Some(KeyboardRegion id)
+                when not toggle
+                     && state.SelectedRegion = Some id ->
+                update OpenSelectedObjectActions state
+            | Some(KeyboardUnit id) ->
+                let next =
+                    if toggle then update (ToggleEditorUnitSelection id) state
+                    else update (SelectEditorUnit(Some id)) state
+                { next with KeyboardObject = target }
+            | Some(KeyboardRegion id) ->
+                let next = update (SelectEditorRegion(Some id)) state
+                { next with Tool = Select; KeyboardObject = target }
+            | Some target ->
+                { state with
+                    Tool = Select
+                    KeyboardObject = Some target
+                    SelectedUnit = None
+                    SelectedUnits = Set.empty
+                    SelectedRegion = None
+                    Validation = None }
+            | None -> state
+        | OpenSelectedObjectActions ->
+            if state.SelectedUnits.IsEmpty && state.SelectedRegion.IsNone then
+                state
+            else
+                { state with
+                    Gesture = SelectedObjectActionsGesture
+                    Validation = None }
+        | BeginKeyboardBoxSelection ->
+            update (BeginEditorBoxSelection state.KeyboardCursor.Cell) state
         | ActivateEdge(column, row, direction) ->
             let address = column, row, direction
             if not (validEdgeKey state.Map address) then
@@ -3296,6 +3509,15 @@ module MapEditor =
                 SelectedUnit = selected |> Set.toList |> List.tryHead
                 Gesture = IdleGesture
                 Validation = None }
+        | AddEditorUnitsInBox box ->
+            let selected = Set.union state.SelectedUnits (idsInBox box state.Map)
+            { state with
+                Tool = Select
+                SelectedUnits = selected
+                SelectedUnit = selected |> Set.toList |> List.tryHead
+                SelectedRegion = None
+                Gesture = IdleGesture
+                Validation = None }
         | BeginEditorBoxSelection address ->
             { state with Gesture = BoxSelectionGesture(address, address); Validation = None }
         | ExtendEditorBoxSelection address ->
@@ -3305,6 +3527,8 @@ module MapEditor =
             | _ -> state
         | CommitEditorGesture ->
             match state.Gesture with
+            | SelectedObjectActionsGesture ->
+                { state with Gesture = IdleGesture }
             | BoxSelectionGesture(anchor, current) ->
                 update
                     (SelectEditorUnitsInBox
