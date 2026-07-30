@@ -3693,6 +3693,13 @@ let private editorBattlefield
                 )
                 svg.onContextMenu (fun event -> event.preventDefault ())
                 svg.onKeyDown (fun event ->
+                    let arrowDelta =
+                        match event.key with
+                        | "ArrowLeft" -> Some(-1, 0)
+                        | "ArrowRight" -> Some(1, 0)
+                        | "ArrowUp" -> Some(0, -1)
+                        | "ArrowDown" -> Some(0, 1)
+                        | _ -> None
                     let panelShortcut =
                         match event.key with
                         | "t"
@@ -3706,7 +3713,35 @@ let private editorBattlefield
                         | "m"
                         | "M" -> Some DocumentTools
                         | _ -> None
-                    if
+                    if spacePressed then
+                        match arrowDelta with
+                        | Some(columnDelta, rowDelta) ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            let distance = if event.shiftKey then 120.0 else 40.0
+                            dispatch (
+                                EditorWorkspaceChanged(
+                                    PanEditorBy(
+                                        -float columnDelta * distance,
+                                        -float rowDelta * distance
+                                    )
+                                )
+                            )
+                        | None when event.key = "Escape" ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            dispatch (KeyReleased " ")
+                        | None when event.key = " " -> ()
+                        | None ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                    elif event.key = " " then
+                        // Space is exclusively a held pan layer.
+                        event.preventDefault ()
+                        event.stopPropagation ()
+                        if not event.repeat then
+                            dispatch (KeyPressed(" ", false, false, false))
+                    elif
                         panelShortcut.IsSome
                         && not event.ctrlKey
                         && not event.metaKey
@@ -3717,6 +3752,12 @@ let private editorBattlefield
                         dispatch (
                             EditorToolPanelChanged panelShortcut.Value
                         )
+                        if panelShortcut.Value = TerrainTools then
+                            dispatch (
+                                EditorChanged(
+                                    ChooseTool(Terrain state.LastTerrainPaintTool)
+                                )
+                            )
                     elif event.key = "F2" then
                         event.preventDefault ()
                         event.stopPropagation ()
@@ -3759,23 +3800,107 @@ let private editorBattlefield
                             event.preventDefault ()
                             event.stopPropagation ()
                             dispatch (EditorChanged(MoveSelected value)))
-                    elif event.key = "Delete" || event.key = "Backspace" then
+                    elif event.key = "v" || event.key = "V" then
                         event.preventDefault ()
                         event.stopPropagation ()
-                        dispatch (EditorChanged DeleteEditorSelection)
+                        if not event.repeat then
+                            dispatch (EditorChanged(ChooseTool Select))
+                    elif event.key = "Delete" || event.key = "Backspace" then
+                        match state.Gesture with
+                        | TerrainGesture _ when event.key = "Backspace" ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            dispatch (EditorChanged ResetTerrainPreview)
+                        | _ ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            dispatch (EditorChanged DeleteEditorSelection)
+                    elif state.Tool = Select then
+                        match state.Gesture, arrowDelta, event.key with
+                        | SelectedObjectActionsGesture, None, ("c" | "C") ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat then dispatch (EditorChanged CopyEditorSelection)
+                        | SelectedObjectActionsGesture, None, ("d" | "D") ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat then dispatch (EditorChanged DuplicateEditorSelection)
+                        | SelectedObjectActionsGesture, None, ("i" | "I") ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat then
+                                dispatch (EditorWorkspaceChanged ToggleEditorInspector)
+                        | SelectedObjectActionsGesture, None, "Escape" ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            dispatch (EditorChanged CancelEditorGesture)
+                        | BoxSelectionGesture(_, current), Some(columnDelta, rowDelta), _ ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            dispatch (
+                                EditorChanged(
+                                    ExtendEditorBoxSelection
+                                        { CellColumn =
+                                            max 0 (min (state.Map.Width - 1) (current.CellColumn + int32 columnDelta))
+                                          CellRow =
+                                            max 0 (min (state.Map.Height - 1) (current.CellRow + int32 rowDelta)) }
+                                )
+                            )
+                        | BoxSelectionGesture(anchor, current), None, "Enter" ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat then
+                                let box =
+                                    { FirstColumn = anchor.CellColumn
+                                      FirstRow = anchor.CellRow
+                                      LastColumn = current.CellColumn
+                                      LastRow = current.CellRow }
+                                dispatch (
+                                    EditorChanged(
+                                        if event.shiftKey then AddEditorUnitsInBox box
+                                        else SelectEditorUnitsInBox box
+                                    )
+                                )
+                        | BoxSelectionGesture _, None, "Escape" ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            dispatch (EditorChanged CancelEditorGesture)
+                        | IdleGesture, Some(columnDelta, rowDelta), _ ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            dispatch (
+                                EditorChanged(
+                                    MoveEditorKeyboardCursor(int32 columnDelta, int32 rowDelta)
+                                )
+                            )
+                        | IdleGesture, None, "Enter" ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat then
+                                dispatch (EditorChanged(ActivateEditorKeyboardCursor event.shiftKey))
+                        | IdleGesture, None, ("n" | "N") ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat then dispatch (EditorChanged(CycleEditorKeyboardObject 1))
+                        | IdleGesture, None, ("p" | "P") ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat then dispatch (EditorChanged(CycleEditorKeyboardObject -1))
+                        | IdleGesture, None, ("b" | "B") ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat then dispatch (EditorChanged BeginKeyboardBoxSelection)
+                        | IdleGesture, None, ("a" | "A") ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat then dispatch (EditorChanged SelectAllInActiveDomain)
+                        | _ -> ()
                     elif
                         match state.Tool with
                         | Terrain _ -> true
                         | _ -> false
                     then
-                        let movement =
-                            match event.key with
-                            | "ArrowLeft" -> Some(-1, 0)
-                            | "ArrowRight" -> Some(1, 0)
-                            | "ArrowUp" -> Some(0, -1)
-                            | "ArrowDown" -> Some(0, 1)
-                            | _ -> None
-                        match movement with
+                        match arrowDelta with
                         | Some(columnDelta, rowDelta) ->
                             event.preventDefault ()
                             event.stopPropagation ()
@@ -3792,7 +3917,40 @@ let private editorBattlefield
                             event.preventDefault ()
                             event.stopPropagation ()
                             dispatch (EditorChanged ActivateTerrainCursor)
-                        | None -> ()
+                        | None ->
+                            let action =
+                                match event.key with
+                                | "1" -> Some(ChooseTerrain Open)
+                                | "2" -> Some(ChooseTerrain Rough)
+                                | "3" -> Some(ChooseTerrain Blocked)
+                                | "4" -> Some(ChooseTerrain Objective)
+                                | "[" -> Some(SetTerrainBrushSize(state.BrushSize - 1))
+                                | "]" -> Some(SetTerrainBrushSize(state.BrushSize + 1))
+                                | "p"
+                                | "P" -> Some(ChooseTool(Terrain PencilTool))
+                                | "r"
+                                | "R" -> Some(ChooseTool(Terrain RectangleTool))
+                                | "l"
+                                | "L" -> Some(ChooseTool(Terrain LineTool))
+                                | "g"
+                                | "G" -> Some(ChooseTool(Terrain FloodFillTool))
+                                | "i"
+                                | "I" -> Some(ChooseTool(Terrain EyedropperTool))
+                                | "x"
+                                | "X" -> Some(ChooseTool(Terrain EraseTool))
+                                | "Escape" when state.Gesture = IdleGesture ->
+                                    Some(
+                                        match state.Tool with
+                                        | Terrain EyedropperTool ->
+                                            ChooseTool(Terrain state.LastTerrainPaintTool)
+                                        | _ -> ChooseTool Select
+                                    )
+                                | _ -> None
+                            action
+                            |> Option.iter (fun action ->
+                                event.preventDefault ()
+                                event.stopPropagation ()
+                                if not event.repeat then dispatch (EditorChanged action))
                     elif
                         match state.Tool with
                         | Edge _ -> true
@@ -4221,6 +4379,20 @@ let private editorBattlefield
                                     svg.fill "none"
                                     svg.stroke palette.Focus
                                     svg.strokeWidth 2
+                                    svg.custom ("vector-effect", "non-scaling-stroke")
+                                    svg.custom ("pointer-events", "none")
+                                ]
+                            | Select ->
+                                Svg.rect [
+                                    svg.custom ("data-keyboard-map-cursor", "true")
+                                    svg.x (float state.KeyboardCursor.Cell.CellColumn * Battlefield.CellSize + 5.0)
+                                    svg.y (float state.KeyboardCursor.Cell.CellRow * Battlefield.CellSize + 5.0)
+                                    svg.width (Battlefield.CellSize - 10.0)
+                                    svg.height (Battlefield.CellSize - 10.0)
+                                    svg.fill "none"
+                                    svg.stroke palette.Focus
+                                    svg.strokeWidth 2
+                                    svg.custom ("stroke-dasharray", "5 3")
                                     svg.custom ("vector-effect", "non-scaling-stroke")
                                     svg.custom ("pointer-events", "none")
                                 ]

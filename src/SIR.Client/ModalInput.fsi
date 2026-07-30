@@ -35,6 +35,7 @@ type InputGesture =
       Phase: InputPhase }
 
 type EditorGestureKind =
+    | SelectedObjectActions
     | BoxSelection
     | CommandPreview
     | UnitMovePreview

@@ -512,19 +512,6 @@ window.document
   new window.KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
   );
 await window.happyDOM.waitUntilComplete();
-const previewWorkspace = window.document.querySelector(
-  '[aria-label="SVG tactical map workspace"] svg[role="application"]',
-);
-if (
-  previewWorkspace?.querySelectorAll('[data-preview-terrain="blocked"]').length !== 1 ||
-  !editorCanvas?.textContent.includes("1 terrain cell previewed")
-) {
-  throw new Error("The keyboard terrain cursor did not create and announce an exact preview.");
-}
-previewWorkspace?.dispatchEvent(
-  new window.KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
-);
-await window.happyDOM.waitUntilComplete();
 const terrainDigest = editorCanvas?.getAttribute("data-editor-revision");
 const committedTerrainWorkspace = window.document.querySelector(
   '[aria-label="SVG tactical map workspace"] svg[role="application"]',
@@ -534,7 +521,7 @@ if (
   committedTerrainWorkspace?.querySelectorAll('[data-terrain="blocked"]').length !== 1 ||
   !editorCanvas?.textContent.includes("Painted 1 terrain cell")
 ) {
-  throw new Error("The keyboard terrain gesture did not commit one announced revision.");
+  throw new Error("The keyboard Pencil did not commit one announced revision.");
 }
 buttonByText("Undo")?.click();
 await window.happyDOM.waitUntilComplete();

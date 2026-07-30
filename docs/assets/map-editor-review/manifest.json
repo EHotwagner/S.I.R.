@@ -1,7 +1,7 @@
 {
   "format": "sir-map-editor-review-v1",
   "generatedFrom": "production Fable/React SVG workspaces",
-  "productionBundleSha256": "4b98b6e655ebb120d9cb1fce24d9a978ab050ebf5d51509a7c27cfd7af497608",
+  "productionBundleSha256": "72a1654b147426a8dc0ceafe8fed6edff94071f5cac37aa9d46c853024f71eb8",
   "rasterizer": "rsvg-convert 2.62.3",
   "width": 960,
   "height": 640,
@@ -11,40 +11,40 @@
       "description": "Open, rough, objective, and blocked terrain with grid context.",
       "svg": "terrain.svg",
       "png": "terrain.png",
-      "svgSha256": "1d12400eb7d5162a2818e3336a98882b40bf02cf28107125ab887663b97a2fa5",
-      "pngSha256": "b340b5ff43224d36d51e50f8137e4342d2e0e20a7fa49ebff8c11df4ea2f1976"
+      "svgSha256": "1f6fb725a614a98c282029ebf2705a8783ad13539b1786218d878a1c1e76e841",
+      "pngSha256": "97b76acd83fe1d46504b428360d16f4b6d1d47d089991f0d35eaf20b52d6e401"
     },
     {
       "domain": "edges",
       "description": "Wall, open door, and window semantic edge meanings.",
       "svg": "edges.svg",
       "png": "edges.png",
-      "svgSha256": "b406e5c6341cb834406a677e0f7f609eba40c67e5b6f8080bad38dd737ba15f1",
-      "pngSha256": "40e82cd3942a9ef34ac9cfaa60ff48a570c4781d6624f2023ae4a70408cd48c8"
+      "svgSha256": "75a9fe760041df0383c41a70623c2dce2ec54103fb2199488758967197af9c47",
+      "pngSha256": "8af1c41f1c04ebc88aff43a4db630bc638264c554d3dbcc8f3f76ea40f4a112d"
     },
     {
       "domain": "units",
       "description": "Canonical 1×1, 2×2, and 3×3 square unit footprints.",
       "svg": "units.svg",
       "png": "units.png",
-      "svgSha256": "fdcc8a8311532e02d21922a2ca47af5943ce6d27370e1e0b3b4a190618aa3b48",
-      "pngSha256": "bd726d369e3f87929e12ed0c58e151ddf585bb86545e61598c77ab7daf272700"
+      "svgSha256": "02b4b1e7db7b7e79be910a673f7443a223ce2c37807b882611ac5c201afb9670",
+      "pngSha256": "9176a0dad321d2298d79aa410e3a53e7145cffabce6b9d7d7794ef556392013d"
     },
     {
       "domain": "zones",
       "description": "Objective rectangle and blue deployment polygon.",
       "svg": "zones.svg",
       "png": "zones.png",
-      "svgSha256": "86dbe0e88e1aa6a4f87e0c6554111f6f983d0a33f172379e60474a9bc87f020b",
-      "pngSha256": "09e3b6d424b467266fb42b3fff3c9c044922e25e40bc48b7fbb83868b31bdfcf"
+      "svgSha256": "14bbd895015b2fa2cd19da4de986e57e1198bcd653e49f76df4d045d1194b84c",
+      "pngSha256": "b86a278c1653336649e95aa3ba557f820d6a5e914cb6221f3b34299674355f9d"
     },
     {
       "domain": "background",
       "description": "Signature-validated local raster alignment beneath the grid.",
       "svg": "background.svg",
       "png": "background.png",
-      "svgSha256": "e092727bcd4233550f68f2b09b3ca427904f4a699fe0b8bdc26237472757f73f",
-      "pngSha256": "64bf2a83aaca1b2421122c5eb291bb7a05eb16be69e9a6acaa602b05c821525e"
+      "svgSha256": "3c5dfd015e6893b0e7e672c837d751669c80a07c0c08d90dc2008e9cbf894b94",
+      "pngSha256": "a24e70f325c964db3e377af5c1357828ca8aa26f2ceca588bbb6eba6dc841fc4"
     },
     {
       "domain": "simulator-handoff",
@@ -59,8 +59,8 @@
       "description": "EDGE-GAP issue projected without hiding authoritative domains.",
       "svg": "validation.svg",
       "png": "validation.png",
-      "svgSha256": "132d9934dee023a559e0f7eaaacda5b9843ab731766636a4170bbed0bfb185e2",
-      "pngSha256": "f583462a86894a954530c653344ff1317d45d58ddebb8158b260e06b11f9dd55"
+      "svgSha256": "1d89932af33a18762785eb342eefbd98890e235b38adcda2601e378dea57c284",
+      "pngSha256": "ff49ea63831bacd912c9580f1c5f0f312da037b6cca0003cf07ab7ce444a69eb"
     }
   ]
 }

@@ -167,6 +167,84 @@ require(
   Boolean(window.document.querySelector('[aria-label="Terrain palette"]')),
   "keyboard-only T shortcut did not expose terrain tools",
 );
+const sendEditorKey = async (key, options = {}) => {
+  workspace()?.dispatchEvent(
+    new window.KeyboardEvent(options.phase ?? "keydown", {
+      key,
+      bubbles: true,
+      shiftKey: options.shiftKey ?? false,
+      ctrlKey: options.ctrlKey ?? false,
+      repeat: options.repeat ?? false,
+    }),
+  );
+  await window.happyDOM.waitUntilComplete();
+};
+require(
+  modalRegion()?.textContent.includes("EDITOR / TERRAIN / PENCIL"),
+  "T did not enter the keyboard Terrain domain",
+);
+await sendEditorKey("2");
+await sendEditorKey("]");
+require(
+  modalRegion()?.textContent.includes("Rough terrain") &&
+    modalRegion()?.textContent.includes("2×2 brush"),
+  "terrain value or brush selection was not projected",
+);
+const revisionBeforePencil = window.document
+  .querySelector(".editor-canvas")
+  ?.getAttribute("data-editor-revision");
+await sendEditorKey("Enter");
+const revisionAfterPencil = window.document
+  .querySelector(".editor-canvas")
+  ?.getAttribute("data-editor-revision");
+require(
+  revisionAfterPencil && revisionAfterPencil !== revisionBeforePencil,
+  "keyboard Pencil did not commit one terrain command",
+);
+await sendEditorKey("r");
+await sendEditorKey("Enter");
+await sendEditorKey("ArrowRight");
+await sendEditorKey("ArrowDown", { shiftKey: true });
+await sendEditorKey("Backspace");
+require(
+  modalRegion()?.textContent.includes("anchor A1, endpoint A1"),
+  "Backspace did not reset the terrain preview endpoint",
+);
+await sendEditorKey("ArrowRight");
+await sendEditorKey("Enter");
+require(
+  !modalRegion()?.textContent.includes("anchor"),
+  "terrain rectangle did not explicitly commit and leave preview",
+);
+await sendEditorKey("v");
+await sendEditorKey("ArrowRight");
+await sendEditorKey("ArrowDown");
+require(
+  modalRegion()?.textContent.includes("EDITOR / SELECT") &&
+    modalRegion()?.textContent.includes("Cursor B2"),
+  "Select keyboard cursor did not move deterministically",
+);
+await sendEditorKey("Enter");
+require(
+  modalRegion()?.textContent.includes("EDITOR / SELECT / ACTIONS") &&
+    modalRegion()?.textContent.includes("1 unit selected"),
+  "Select Enter did not select the topmost cursor object and expose its actions",
+);
+await sendEditorKey(" ");
+require(
+  modalRegion()?.textContent.includes("EDITOR / PAN HELD"),
+  "Space key-down did not enter Pan Held",
+);
+await sendEditorKey("p");
+require(
+  modalRegion()?.textContent.includes("EDITOR / PAN HELD"),
+  "an authoring key leaked through Pan Held",
+);
+await sendEditorKey(" ", { phase: "keyup" });
+require(
+  modalRegion()?.textContent.includes("EDITOR / SELECT"),
+  "Space key-up did not restore the underlying Select mode",
+);
 require(
   styles.includes("touch-action:none"),
   "touch gestures can be intercepted by page scrolling",
