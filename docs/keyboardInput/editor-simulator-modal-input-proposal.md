@@ -455,16 +455,16 @@ explicitly provides the stable contract needed for safe parallel work.
   - **Exit gate:** the existing behavior has a passing, reviewable baseline
     whose failures expose accidental migration regressions.
 
-- [ ] **M1 — Land the pure modal-input kernel**
-  - [ ] Add normalized gestures, input phases, repeat policies, modal contexts,
+- [x] **M1 — Land the pure modal-input kernel**
+  - [x] Add normalized gestures, input phases, repeat policies, modal contexts,
         binding availability, stable command IDs, and semantic commands.
-  - [ ] Derive the modal stack from authoritative Editor and Simulator state;
+  - [x] Derive the modal stack from authoritative Editor and Simulator state;
         do not store a competing durable mode stack.
-  - [ ] Implement deterministic highest-precedence resolution and explicit
+  - [x] Implement deterministic highest-precedence resolution and explicit
         no-match results.
-  - [ ] Add catalog validation for duplicate IDs and equal-precedence gesture
+  - [x] Add catalog validation for duplicate IDs and equal-precedence gesture
         conflicts in overlapping contexts.
-  - [ ] Run the same resolver fixtures under .NET and Fable.
+  - [x] Run the same resolver fixtures under .NET and Fable.
   - **Exit gate:** the pure resolver produces identical commands and conflict
     diagnostics in both runtimes without browser or simulation dependencies.
 

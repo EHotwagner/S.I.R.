@@ -63,6 +63,11 @@ dotnet run \
   --no-build \
   --no-restore
 
+modal_dotnet_output=$(dotnet run \
+  --project tests/SIR.ModalInput.Tests/SIR.ModalInput.Tests.fsproj \
+  --no-build \
+  --no-restore)
+
 match_output=$(dotnet run \
   --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj \
   --no-build \
@@ -80,6 +85,21 @@ fable_output=$(node "$fable_entry")
 if [[ "$dotnet_output" != "$fable_output" ]]; then
   echo ".NET/Fable canonical vector mismatch" >&2
   diff -u <(printf '%s\n' "$dotnet_output") <(printf '%s\n' "$fable_output") >&2 || true
+  exit 1
+fi
+
+dotnet fable tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj \
+  --outDir "$task_tmp/modal-fable" \
+  --noCache
+
+modal_fable_entry="$task_tmp/modal-fable/SIR.ModalInput.Shared/Program.js"
+modal_fable_output=$(node "$modal_fable_entry")
+
+if [[ "$modal_dotnet_output" != "$modal_fable_output" ]]; then
+  echo ".NET/Fable modal-input resolver fixture mismatch" >&2
+  diff -u \
+    <(printf '%s\n' "$modal_dotnet_output") \
+    <(printf '%s\n' "$modal_fable_output") >&2 || true
   exit 1
 fi
 
@@ -208,6 +228,7 @@ worker_measurement=$(node scripts/measure-worker.mjs)
 
 printf 'Conformance passed: %d bytes agree across .NET and Fable/Node.\n' \
   "$(( ${#dotnet_output} / 2 ))"
+printf 'Modal input gate passed: resolver commands, projections, repeat policy, availability, and conflict diagnostics agree across .NET and Fable/Node.\n'
 printf 'Control ABI v1 gate passed: F#, Fable, and the standalone decoder agree on the frozen bytes.\n'
 printf 'Divergence guard passed: %s failed first at byte 0 in both runtimes.\n' \
   "$divergence_fixture"

@@ -1,0 +1,353 @@
+module SIR.ModalInput.Fixtures
+
+open SIR.Client
+
+let private require condition message =
+    if not condition then
+        failwith message
+
+let private gesture key code modifiers phase =
+    { Key = NormalizedKey.create key code
+      Modifiers = modifiers
+      Phase = phase }
+
+let private binding
+    id
+    context
+    precedence
+    input
+    repeat
+    availability
+    command
+    : ModalBinding<ModalCommand> =
+    { Id = id
+      Context = context
+      Precedence = precedence
+      BindingGesture = input
+      Label = id
+      Group = "Fixture"
+      Repeat = repeat
+      Availability = availability
+      Command = command }
+
+let private alwaysAvailable _ = Available
+
+let private outcomeName = function
+    | Resolved input -> "resolved:" + input.Id
+    | NoMatch -> "no-match"
+    | NoAvailableMatch inputs ->
+        "unavailable:" + (inputs |> List.map _.Id |> String.concat ",")
+
+let private diagnosticName = function
+    | DuplicateBindingId id -> "duplicate:" + id
+    | EqualPrecedenceGestureConflict(firstId, secondId, precedence, input) ->
+        $"conflict:{firstId}:{secondId}:{precedence}:{NormalizedKey.value input.Key}"
+
+let evaluate () =
+    let plain = KeyModifiers.none
+    let enterFromDom = gesture "Enter" (Some "Enter") plain KeyDown
+    let enterWithoutCode = gesture "Enter" None plain KeyDown
+    let escape = gesture "Esc" (Some "Escape") plain KeyDown
+    let question = gesture "?" (Some "Slash") plain KeyDown
+    let arrow = gesture "ArrowRight" (Some "ArrowRight") plain KeyDown
+    let spaceUp = gesture " " (Some "Space") plain KeyUp
+
+    require
+        (NormalizedKey.value (NormalizedKey.create "A" (Some "KeyA")) = "a"
+         && NormalizedKey.value escape.Key = "Escape"
+         && NormalizedKey.physicalCode question.Key = Some "Slash")
+        "Key values or physical diagnostic codes were not normalized."
+
+    let catalog =
+        [ binding
+              "editor.workspace.enter"
+              AnyEditorContext
+              WorkspaceCommands
+              enterWithoutCode
+              AllowRepeat
+              alwaysAvailable
+              ToggleInputHelp
+          binding
+              "editor.gesture.commit"
+              (ExactContext(EditorGesture CommandPreview))
+              ActiveGestureOrPreview
+              enterWithoutCode
+              IgnoreRepeat
+              alwaysAvailable
+              (EditorCommand CommitEditorGesture)
+          binding
+              "editor.camera.move-east"
+              AnyEditorContext
+              WorkspaceCommands
+              arrow
+              AllowRepeat
+              alwaysAvailable
+              (EditorWorkspaceCommand(PanEditorBy(1.0, 0.0)))
+          binding
+              "editor.selection.delete"
+              (ExactContext(EditorTool Select))
+              ActiveTool
+              (gesture "Delete" (Some "Delete") plain KeyDown)
+              IgnoreRepeat
+              (fun _ -> Unavailable "Nothing is selected.")
+              (EditorCommand DeleteEditorSelection)
+          binding
+              "editor.camera.pan-release"
+              AnyEditorContext
+              HeldLayer
+              spaceUp
+              IgnoreRepeat
+              alwaysAvailable
+              (SetEditorPanHeld false)
+          binding
+              "editor.confirmation.cancel"
+              (ExactContext EditorDestructiveConfirmation)
+              TransientPopup
+              escape
+              IgnoreRepeat
+              alwaysAvailable
+              (EditorCommand CancelDestructiveChange)
+          binding
+              "editor.help.close"
+              (ExactContext InputHelpPopup)
+              InputPopup
+              escape
+              IgnoreRepeat
+              alwaysAvailable
+              ToggleInputHelp ]
+
+    require
+        (ModalInput.validateCatalog catalog = [])
+        "A valid catalog produced diagnostics."
+
+    let gestureContexts =
+        [ EditorBase
+          EditorTool Select
+          EditorGesture CommandPreview ]
+
+    let commit =
+        ModalInput.resolve gestureContexts enterFromDom false catalog
+    let repeatedCommit =
+        ModalInput.resolve gestureContexts enterFromDom true catalog
+    let moving =
+        ModalInput.resolve gestureContexts arrow true catalog
+    let unknown =
+        ModalInput.resolve gestureContexts question false catalog
+    let panRelease =
+        ModalInput.resolve gestureContexts spaceUp false catalog
+    let unavailable =
+        ModalInput.resolve
+            [ EditorBase; EditorTool Select ]
+            (gesture "Delete" None plain KeyDown)
+            false
+            catalog
+
+    require
+        (outcomeName commit = "resolved:editor.gesture.commit")
+        "The highest-precedence binding did not resolve."
+
+    require
+        (outcomeName repeatedCommit = "no-match"
+         && outcomeName moving = "resolved:editor.camera.move-east")
+        "Repeat policy was not applied."
+
+    require
+        (outcomeName unknown = "no-match"
+         && outcomeName unavailable = "unavailable:editor.selection.delete")
+        "No-match and unavailable outcomes were not distinguished."
+
+    require
+        (outcomeName panRelease = "resolved:editor.camera.pan-release"
+         && outcomeName (
+             ModalInput.resolve
+                 gestureContexts
+                 { spaceUp with Phase = KeyDown }
+                 false
+                 catalog
+         ) = "no-match")
+        "Key-up and key-down phases were not distinguished."
+
+    let popupContexts =
+        [ EditorBase
+          EditorDestructiveConfirmation
+          InputHelpPopup ]
+
+    require
+        (outcomeName (ModalInput.resolve popupContexts escape false catalog) =
+            "resolved:editor.help.close"
+         && outcomeName (
+             ModalInput.resolve
+                 [ EditorBase; EditorDestructiveConfirmation ]
+                 escape
+                 false
+                 catalog
+         ) = "resolved:editor.confirmation.cancel")
+        "Popup precedence did not unwind input help before confirmation."
+
+    let visible =
+        ModalInput.possibleInputs [ EditorBase; EditorTool Select ] catalog
+        |> List.map _.Id
+
+    require
+        (visible =
+            [ "editor.camera.move-east"
+              "editor.camera.pan-release"
+              "editor.workspace.enter" ])
+        "Possible inputs included an unavailable binding or were unstable."
+
+    let conflictingCatalog =
+        [ binding
+              "editor.gesture.alpha"
+              AnyEditorContext
+              ActiveGestureOrPreview
+              enterWithoutCode
+              IgnoreRepeat
+              alwaysAvailable
+              ToggleInputHelp
+          binding
+              "editor.gesture.beta"
+              (ExactContext(EditorGesture CommandPreview))
+              ActiveGestureOrPreview
+              enterFromDom
+              IgnoreRepeat
+              alwaysAvailable
+              ToggleInputHelp
+          binding
+              "simulator.enter"
+              AnySimulatorContext
+              ActiveGestureOrPreview
+              enterWithoutCode
+              IgnoreRepeat
+              alwaysAvailable
+              ToggleInputHelp
+          binding
+              "duplicate.id"
+              AnyEditorContext
+              WorkspaceCommands
+              question
+              IgnoreRepeat
+              alwaysAvailable
+              ToggleInputHelp
+          binding
+              "duplicate.id"
+              AnySimulatorContext
+              WorkspaceCommands
+              question
+              IgnoreRepeat
+              alwaysAvailable
+              ToggleInputHelp ]
+
+    let diagnostics =
+        ModalInput.validateCatalog conflictingCatalog
+        |> List.map diagnosticName
+
+    require
+        (diagnostics =
+            [ "duplicate:duplicate.id"
+              "conflict:editor.gesture.alpha:editor.gesture.beta:ActiveGestureOrPreview:Enter" ])
+        "Duplicate IDs or overlapping equal-precedence conflicts were not diagnosed deterministically."
+
+    let deterministicTie =
+        ModalInput.resolve
+            [ EditorBase; EditorGesture CommandPreview ]
+            enterFromDom
+            false
+            (conflictingCatalog |> List.rev)
+
+    require
+        (outcomeName deterministicTie = "resolved:editor.gesture.alpha")
+        "Invalid catalog order changed deterministic resolution."
+
+    let coexistingContextConflict =
+        [ binding
+              "editor.tool.enter"
+              (ExactContext(EditorTool Select))
+              ActiveTool
+              enterWithoutCode
+              IgnoreRepeat
+              alwaysAvailable
+              ToggleInputHelp
+          binding
+              "editor.gesture.enter"
+              (ExactContext(EditorGesture CommandPreview))
+              ActiveTool
+              enterWithoutCode
+              IgnoreRepeat
+              alwaysAvailable
+              ToggleInputHelp ]
+        |> ModalInput.validateCatalog
+        |> List.map diagnosticName
+
+    require
+        (coexistingContextConflict =
+            [ "conflict:editor.gesture.enter:editor.tool.enter:ActiveTool:Enter" ])
+        "Coexisting tool and gesture contexts were not recognized as overlapping."
+
+    let editor =
+        { MapEditor.initial with
+            Tool = Terrain RectangleTool
+            Gesture =
+                TerrainGesture(
+                    RectangleTool,
+                    { CellColumn = 1; CellRow = 2 },
+                    { CellColumn = 3; CellRow = 4 },
+                    [||]
+                )
+            PendingDestructiveChange = Some ClearPending }
+
+    let editorContexts =
+        ModalInput.deriveEditorContexts
+            { Editor = editor
+              ActiveDomain = TerrainDomain
+              PanHeld = true
+              InputHelpExpanded = true }
+
+    require
+        (editorContexts =
+            [ EditorBase
+              EditorDomain TerrainDomain
+              EditorTool(Terrain RectangleTool)
+              EditorGesture(TerrainPreview RectangleTool)
+              EditorPanHeld
+              EditorDestructiveConfirmation
+              InputHelpPopup ])
+        "Editor contexts were not projected from authoritative editor facts."
+
+    let simulatorContexts =
+        ModalInput.deriveSimulatorContexts
+            { SimulatorHandoffPresent = true
+              SimulatorIsRunning = false
+              SimulatorHasRoutePreview = true
+              SimulatorRevisionIsStale = true
+              InputHelpExpanded = false }
+
+    let noHandoffContexts =
+        ModalInput.deriveSimulatorContexts
+            { SimulatorHandoffPresent = false
+              SimulatorIsRunning = true
+              SimulatorHasRoutePreview = true
+              SimulatorRevisionIsStale = true
+              InputHelpExpanded = true }
+
+    require
+        (simulatorContexts =
+            [ SimulatorBase
+              SimulatorPaused
+              SimulatorRoutePreview
+              SimulatorRevisionStale ]
+         && noHandoffContexts =
+            [ SimulatorBase; SimulatorNoHandoff; InputHelpPopup ])
+        "Simulator lifecycle qualifiers were not projected deterministically."
+
+    [ outcomeName commit
+      outcomeName repeatedCommit
+      outcomeName moving
+      outcomeName unknown
+      outcomeName panRelease
+      outcomeName unavailable
+      String.concat "|" visible
+      String.concat "|" diagnostics
+      editorContexts |> List.map string |> String.concat "|"
+      simulatorContexts |> List.map string |> String.concat "|"
+      noHandoffContexts |> List.map string |> String.concat "|" ]
+    |> String.concat "\n"
