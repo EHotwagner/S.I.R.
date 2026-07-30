@@ -43,6 +43,8 @@ let private projection tick : InspectionProjection =
 
 [<EntryPoint>]
 let main _ =
+    SIR.Client.TestsCurrentModalInputCharacterization.run ()
+
     let retainedPackage: SIR.Simulation.ReplayPackage =
         { FormatVersion = int32 SIR.Simulation.Replay.CurrentFormatVersion
           EngineHash = EngineCatalog.Current.EngineHash

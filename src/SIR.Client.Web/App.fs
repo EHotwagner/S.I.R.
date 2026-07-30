@@ -38,7 +38,7 @@ type Msg =
     | LoadMapSample of string
     | LoadSimulationSample of string
     | LoadReplaySample of string
-    | KeyPressed of key: string * controlOrMeta: bool * shift: bool
+    | KeyPressed of key: string * controlOrMeta: bool * shift: bool * repeat: bool
     | KeyReleased of string
     | WorkspaceChanged of WorkspaceMode
     | EditorToolPanelChanged of EditorToolPanel
@@ -97,8 +97,15 @@ type Model =
 [<Emit("window.matchMedia('(prefers-reduced-motion: reduce)').matches")>]
 let private prefersReducedMotion: bool = jsNative
 
-[<Emit("$0 instanceof HTMLInputElement || $0 instanceof HTMLTextAreaElement || $0 instanceof HTMLSelectElement")>]
-let private isTextEntryTarget (target: EventTarget) : bool = jsNative
+[<Emit("$0 instanceof HTMLInputElement ? 'input' : $0 instanceof HTMLTextAreaElement ? 'textarea' : $0 instanceof HTMLSelectElement ? 'select' : 'application'")>]
+let private currentInputTargetName (target: EventTarget) : string = jsNative
+
+let private currentInputTarget target =
+    match currentInputTargetName target with
+    | "input" -> InputElement
+    | "textarea" -> TextAreaElement
+    | "select" -> SelectElement
+    | _ -> ApplicationElement
 
 [<Emit("""
 const target = $0;
@@ -608,7 +615,9 @@ let rec update msg model =
             Planning = planning
             Workspace = workspace
             EditorView = editorView
-            EditorSpacePressed = false },
+            EditorSpacePressed =
+                CurrentModalInput.spaceHeldAfterWorkspaceChange
+                    model.EditorSpacePressed },
         if initializePlanning then
             Cmd.ofEffect (fun dispatch -> dispatch InitializePlanningWorker)
         else Cmd.none
@@ -976,64 +985,60 @@ let rec update msg model =
         else
             let next, effects = Shell.playbackTick model.Shell
             { model with Shell = next }, effectsToCmd effects
-    | KeyPressed(key, controlOrMeta, shift) ->
-        if model.Workspace = EditorWorkspace then
-            match key, controlOrMeta, shift with
-            | ("z" | "Z"), true, true -> update (EditorChanged RedoEditorCommand) model
-            | ("z" | "Z"), true, false -> update (EditorChanged UndoEditorCommand) model
-            | ("y" | "Y"), true, _ -> update (EditorChanged RedoEditorCommand) model
-            | ("c" | "C"), true, _ -> update (EditorChanged CopyEditorSelection) model
-            | ("v" | "V"), true, _ -> update (EditorChanged PasteEditorClipboard) model
-            | ("d" | "D"), true, _ -> update (EditorChanged DuplicateEditorSelection) model
-            | ("a" | "A"), true, _ -> update (EditorChanged SelectAllInActiveDomain) model
-            | ("Delete" | "Backspace"), false, _ -> update (EditorChanged DeleteEditorSelection) model
-            | "[", false, _ -> update (EditorChanged SelectPreviousIssue) model
-            | "]", false, _ -> update (EditorChanged SelectNextIssue) model
-            | " ", false, _ -> { model with EditorSpacePressed = true }, Cmd.none
-            | "1", false, true -> update (EditorChanged(ChooseTerrain Open)) model
-            | "2", false, true -> update (EditorChanged(ChooseTerrain Rough)) model
-            | "3", false, true -> update (EditorChanged(ChooseTerrain Blocked)) model
-            | "4", false, true -> update (EditorChanged(ChooseTerrain Objective)) model
-            | "!", false, _ -> update (EditorChanged(ChooseTerrain Open)) model
-            | "@", false, _ -> update (EditorChanged(ChooseTerrain Rough)) model
-            | "#", false, _ -> update (EditorChanged(ChooseTerrain Blocked)) model
-            | "$", false, _ -> update (EditorChanged(ChooseTerrain Objective)) model
-            | "0", false, _ -> update (EditorWorkspaceChanged FitEditorBoard) model
-            | "1", false, _ -> update (EditorWorkspaceChanged ResetEditorCamera) model
-            | ("f" | "F"), false, _ -> update (EditorWorkspaceChanged FrameEditorSelection) model
-            | ("v" | "V"), false, _ ->
-                let next, command =
-                    update (EditorChanged(ChooseTool Select)) model
-                { next with
-                    EditorToolPanel = TerrainTools
-                    EditorToolPanelVisible = true },
-                command
-            | ("t" | "T"), false, _ -> update (EditorToolPanelChanged TerrainTools) model
-            | ("p" | "P"), false, _ -> update (EditorChanged(ChooseTool(Terrain PencilTool))) model
-            | ("r" | "R"), false, _ -> update (EditorChanged(ChooseTool(Terrain RectangleTool))) model
-            | ("l" | "L"), false, _ -> update (EditorChanged(ChooseTool(Terrain LineTool))) model
-            | ("g" | "G"), false, _ -> update (EditorChanged(ChooseTool(Terrain FloodFillTool))) model
-            | ("i" | "I"), false, _ -> update (EditorChanged(ChooseTool(Terrain EyedropperTool))) model
-            | ("x" | "X"), false, _ -> update (EditorChanged(ChooseTool(Terrain EraseTool))) model
-            | ("u" | "U"), false, _ -> update (EditorToolPanelChanged UnitTools) model
-            | ("e" | "E"), false, _ -> update (EditorToolPanelChanged EdgeTools) model
-            | ("z" | "Z"), false, _ -> update (EditorToolPanelChanged ZoneTools) model
-            | ("m" | "M"), false, _ -> update (EditorToolPanelChanged DocumentTools) model
-            | "F2", false, _ ->
-                update ToggleEditorToolPanelVisibility model
-            | "F3", false, _ ->
-                update (EditorWorkspaceChanged ToggleEditorInspector) model
-            | "Escape", false, _ ->
-                model
-                |> update (EditorWorkspaceChanged CancelEditorPointers)
-                |> fst
-                |> fun next ->
-                    if next.Editor.Gesture <> IdleGesture then
-                        update (EditorChanged CancelEditorGesture) next
-                    else
-                        update (EditorChanged(SelectEditorUnit None)) next
-            | _ -> model, Cmd.none
-        elif model.Workspace = PlanningWorkspace then
+    | KeyPressed(key, controlOrMeta, shift, repeat) ->
+        let currentWorkspace =
+            match model.Workspace with
+            | EditorWorkspace -> CurrentEditor
+            | SimulatorWorkspace -> CurrentSimulator
+            | _ -> CurrentOther
+
+        match
+            CurrentModalInput.resolveKeyDown
+                currentWorkspace
+                key
+                controlOrMeta
+                shift
+                repeat
+        with
+        | Some(CurrentEditorAction action) ->
+            update (EditorChanged action) model
+        | Some(CurrentEditorWorkspaceAction action) ->
+            update (EditorWorkspaceChanged action) model
+        | Some(CurrentChooseEditorPanel panel) ->
+            let appPanel =
+                match panel with
+                | CurrentTerrainPanel -> TerrainTools
+                | CurrentUnitPanel -> UnitTools
+                | CurrentEdgePanel -> EdgeTools
+                | CurrentZonePanel -> ZoneTools
+                | CurrentDocumentPanel -> DocumentTools
+
+            update (EditorToolPanelChanged appPanel) model
+        | Some CurrentChooseSelectAndShowTerrainPanel ->
+            let next, command =
+                update (EditorChanged(ChooseTool Select)) model
+
+            { next with
+                EditorToolPanel = TerrainTools
+                EditorToolPanelVisible = true },
+            command
+        | Some CurrentToggleEditorPanel ->
+            update ToggleEditorToolPanelVisibility model
+        | Some CurrentToggleSimulatorPanel ->
+            update ToggleSimulatorToolPanelVisibility model
+        | Some CurrentEscapeEditor ->
+            let workspaceAction, editorAction =
+                CurrentModalInput.editorEscapeActions model.Editor.Gesture
+
+            model
+            |> update (EditorWorkspaceChanged workspaceAction)
+            |> fst
+            |> update (EditorChanged editorAction)
+        | Some(CurrentSetEditorSpaceHeld held) ->
+            { model with EditorSpacePressed = held }, Cmd.none
+        | Some(CurrentSimulatorAction action) ->
+            update (SimulatorChanged action) model
+        | None when model.Workspace = PlanningWorkspace ->
             match key, controlOrMeta with
             | ("z" | "Z"), true ->
                 update
@@ -1074,7 +1079,7 @@ let rec update msg model =
             | ("e" | "E"), false -> update (PlanningChanged(ChoosePlanningTool EngagementTool)) model
             | ("m" | "M"), false -> update (PlanningChanged(ChoosePlanningTool SynchronizationTool)) model
             | _ -> model, Cmd.none
-        elif model.Workspace = ReplayWorkspace then
+        | None when model.Workspace = ReplayWorkspace ->
             match key with
             | " "
             | "k"
@@ -1085,26 +1090,12 @@ let rec update msg model =
             | "]" -> update (ShellMsg NextEvent) model
             | "Escape" -> update (ShellMsg CancelRequested) model
             | _ -> model, Cmd.none
-        elif model.Workspace = SimulatorWorkspace then
-            match key with
-            | "F2" -> update ToggleSimulatorToolPanelVisibility model
-            | "ArrowLeft" -> update (SimulatorChanged(MoveSimulatorPreview(-1, 0))) model
-            | "ArrowRight" -> update (SimulatorChanged(MoveSimulatorPreview(1, 0))) model
-            | "ArrowUp" -> update (SimulatorChanged(MoveSimulatorPreview(0, -1))) model
-            | "ArrowDown" -> update (SimulatorChanged(MoveSimulatorPreview(0, 1))) model
-            | "Enter" -> update (SimulatorChanged CommitSimulatorPreview) model
-            | "Escape" -> update (SimulatorChanged ResetSimulatorPreview) model
-            | " "
-            | "k"
-            | "K" -> update (SimulatorChanged ToggleSimulatorRun) model
-            | _ -> model, Cmd.none
-        else
-            model, Cmd.none
+        | None -> model, Cmd.none
     | KeyReleased key ->
-        if key = " " then
-            { model with EditorSpacePressed = false }, Cmd.none
-        else
-            model, Cmd.none
+        match CurrentModalInput.resolveKeyUp key with
+        | Some(CurrentSetEditorSpaceHeld held) ->
+            { model with EditorSpacePressed = held }, Cmd.none
+        | _ -> model, Cmd.none
     | ExportExperiment ->
         model,
         (model.Shell.Lab.Report
@@ -1147,14 +1138,19 @@ let subscriptions model =
         let downHandler =
             fun (event: Event) ->
                 let keyboardEvent: KeyboardEvent = unbox event
-                if not (isTextEntryTarget keyboardEvent.target) then
+                if
+                    keyboardEvent.target
+                    |> currentInputTarget
+                    |> CurrentModalInput.acceptsKeyDown
+                then
                     if model.Workspace = EditorWorkspace && keyboardEvent.key = " " then
                         keyboardEvent.preventDefault ()
                     dispatch (
                         KeyPressed(
                             keyboardEvent.key,
                             keyboardEvent.ctrlKey || keyboardEvent.metaKey,
-                            keyboardEvent.shiftKey
+                            keyboardEvent.shiftKey,
+                            keyboardEvent.repeat
                         )
                     )
         let upHandler =

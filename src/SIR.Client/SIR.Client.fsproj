@@ -8,6 +8,7 @@
     <Compile Include="MapEditorSimulator.fs" />
     <Compile Include="MapEditorInterchange.fs" />
     <Compile Include="MapEditorWorkspace.fs" />
+    <Compile Include="CurrentModalInput.fs" />
     <Compile Include="Lab.fs" />
     <Compile Include="EvidenceExport.fs" />
     <Compile Include="EngineCatalog.fs" />
