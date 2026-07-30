@@ -339,6 +339,135 @@ let evaluate () =
             [ SimulatorBase; SimulatorNoHandoff; InputHelpPopup ])
         "Simulator lifecycle qualifiers were not projected deterministically."
 
+    let productionEditorFacts =
+        { Editor = editor
+          ActiveDomain = TerrainDomain
+          PanHeld = false
+          InputHelpExpanded = false }
+    let productionEditorCatalog =
+        ModalInput.editorCatalog productionEditorFacts
+    let editorProjection =
+        ModalInput.projectEditor
+            productionEditorFacts
+            productionEditorCatalog
+
+    require
+        (ModalInput.validateCatalog productionEditorCatalog = []
+         && editorProjection.Headline = "EDITOR / DESTRUCTIVE CONFIRMATION"
+         && editorProjection.Detail.Contains("clearing")
+         && editorProjection.PossibleInputs
+            |> List.exists (fun input -> input.Id = "editor.panel.toggle")
+         && editorProjection.PossibleInputs
+            |> List.exists (fun input -> input.Id = "editor.inspector.toggle"))
+        "The production Editor projection did not expose live state, F2, and F3."
+
+    let assertProjectionIsExact
+        (projection: ModalProjection<ModalCommand>)
+        (productionCatalog: ModalBinding<ModalCommand> list)
+        label
+        =
+        let displayedIds = projection.PossibleInputs |> List.map _.Id |> Set.ofList
+
+        let resolvedIds =
+            productionCatalog
+            |> List.map _.BindingGesture
+            |> List.distinct
+            |> List.choose (fun input ->
+                match ModalInput.resolve projection.Contexts input false productionCatalog with
+                | Resolved resolved -> Some resolved.Id
+                | NoMatch
+                | NoAvailableMatch _ -> None)
+            |> Set.ofList
+
+        require
+            (displayedIds = resolvedIds
+             && projection.PossibleInputs
+                |> List.forall (fun input ->
+                    match
+                        ModalInput.resolve
+                            projection.Contexts
+                            input.InputGesture
+                            false
+                            productionCatalog
+                    with
+                    | Resolved resolved -> resolved.Id = input.Id
+                    | NoMatch
+                    | NoAvailableMatch _ -> false))
+            (label + " possible inputs diverged from live resolution.")
+
+    assertProjectionIsExact
+        editorProjection
+        productionEditorCatalog
+        "Editor"
+
+    let repeatedF2 =
+        productionEditorCatalog
+        |> ModalInput.resolve
+            editorProjection.Contexts
+            (gesture "F2" None plain KeyDown)
+            true
+
+    require
+        (repeatedF2 = NoMatch)
+        "A repeated production F2 toggle was not ignored."
+
+    let simulator =
+        MapEditorSimulator.tryHandoff MapEditor.initial
+        |> Result.defaultWith failwith
+    let pausedSimulatorFacts =
+        { SimulatorHandoffPresent = true
+          SimulatorIsRunning = false
+          SimulatorHasRoutePreview = false
+          SimulatorRevisionIsStale = true
+          InputHelpExpanded = false }
+    let productionSimulatorCatalog =
+        ModalInput.simulatorCatalog MapEditor.initial.SelectedUnit (Some simulator)
+    let simulatorProjection =
+        ModalInput.projectSimulator
+            pausedSimulatorFacts
+            MapEditor.initial.SelectedUnit
+            (Some simulator)
+            productionSimulatorCatalog
+
+    require
+        (ModalInput.validateCatalog productionSimulatorCatalog = []
+         && simulatorProjection.Headline = "SIMULATOR / PAUSED"
+         && simulatorProjection.Detail.Contains("revision stale")
+         && simulatorProjection.PossibleInputs
+            |> List.exists (fun input -> input.Id = "simulator.panel.toggle")
+         && simulatorProjection.PossibleInputs
+            |> List.exists (fun input -> input.Id = "simulator.run.toggle-space"))
+        "The production Simulator projection did not expose live lifecycle and panels."
+
+    assertProjectionIsExact
+        simulatorProjection
+        productionSimulatorCatalog
+        "Simulator"
+
+    let noHandoffCatalog =
+        ModalInput.simulatorCatalog None None
+    let noHandoffProjection =
+        ModalInput.projectSimulator
+            { SimulatorHandoffPresent = false
+              SimulatorIsRunning = false
+              SimulatorHasRoutePreview = false
+              SimulatorRevisionIsStale = false
+              InputHelpExpanded = false }
+            None
+            None
+            noHandoffCatalog
+
+    require
+        (noHandoffProjection.Headline = "SIMULATOR / NO HANDOFF"
+         && (noHandoffProjection.PossibleInputs |> List.map _.Id) =
+            [ "simulator.help.toggle" ])
+        "The no-handoff state disclosed simulator commands that cannot execute."
+
+    assertProjectionIsExact
+        noHandoffProjection
+        noHandoffCatalog
+        "No-handoff Simulator"
+
     [ outcomeName commit
       outcomeName repeatedCommit
       outcomeName moving
@@ -349,5 +478,8 @@ let evaluate () =
       String.concat "|" diagnostics
       editorContexts |> List.map string |> String.concat "|"
       simulatorContexts |> List.map string |> String.concat "|"
-      noHandoffContexts |> List.map string |> String.concat "|" ]
+      noHandoffContexts |> List.map string |> String.concat "|"
+      editorProjection.Headline
+      simulatorProjection.Headline
+      noHandoffProjection.Headline ]
     |> String.concat "\n"

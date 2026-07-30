@@ -309,9 +309,9 @@ let run () =
         (not (CurrentModalInput.acceptsKeyDown InputElement)
          && not (CurrentModalInput.acceptsKeyDown TextAreaElement)
          && not (CurrentModalInput.acceptsKeyDown SelectElement)
-         && CurrentModalInput.acceptsKeyDown ContentEditableElement
+         && not (CurrentModalInput.acceptsKeyDown ContentEditableElement)
          && CurrentModalInput.acceptsKeyDown ApplicationElement)
-        "The current browser text-entry exclusion boundary changed."
+        "The M2 browser text-entry exclusion boundary changed."
 
     let spaceUp = CurrentModalInput.resolveKeyUp " "
     let namedSpaceUp = CurrentModalInput.resolveKeyUp "Space"

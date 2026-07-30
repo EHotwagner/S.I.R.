@@ -40,6 +40,8 @@ type Msg =
     | LoadReplaySample of string
     | KeyPressed of key: string * controlOrMeta: bool * shift: bool * repeat: bool
     | KeyReleased of string
+    | ToggleInputHelp of focusPanel: bool
+    | ApplicationFocusLost
     | WorkspaceChanged of WorkspaceMode
     | EditorToolPanelChanged of EditorToolPanel
     | ToggleEditorToolPanelVisibility
@@ -87,6 +89,7 @@ type Model =
       SampleReplayFrames: InspectionProjection array option
       EditorView: EditorWorkspaceState
       EditorSpacePressed: bool
+      InputHelpExpanded: bool
       PendingInterchangeReview: InterchangeReview option
       Battlefield: BattlefieldViewState
       PreviousFrame: RenderFrame option
@@ -97,7 +100,7 @@ type Model =
 [<Emit("window.matchMedia('(prefers-reduced-motion: reduce)').matches")>]
 let private prefersReducedMotion: bool = jsNative
 
-[<Emit("$0 instanceof HTMLInputElement ? 'input' : $0 instanceof HTMLTextAreaElement ? 'textarea' : $0 instanceof HTMLSelectElement ? 'select' : 'application'")>]
+[<Emit("$0 instanceof HTMLInputElement ? 'input' : $0 instanceof HTMLTextAreaElement ? 'textarea' : $0 instanceof HTMLSelectElement ? 'select' : $0 instanceof HTMLElement && $0.isContentEditable ? 'contenteditable' : 'application'")>]
 let private currentInputTargetName (target: EventTarget) : string = jsNative
 
 let private currentInputTarget target =
@@ -105,6 +108,7 @@ let private currentInputTarget target =
     | "input" -> InputElement
     | "textarea" -> TextAreaElement
     | "select" -> SelectElement
+    | "contenteditable" -> ContentEditableElement
     | _ -> ApplicationElement
 
 [<Emit("""
@@ -127,6 +131,14 @@ let private closeSiblingDesktopMenus (summary: EventTarget) : unit = jsNative
 document.querySelectorAll("details.desktop-menu[open]").forEach(menu => menu.removeAttribute("open"));
 """)>]
 let private closeDesktopMenus () : unit = jsNative
+
+[<Emit("""
+setTimeout(() => {
+  const target = document.getElementById($0);
+  if (target instanceof HTMLElement) target.focus();
+}, 0);
+""")>]
+let private focusElementAfterRender (id: string) : unit = jsNative
 
 let private fileBytes (file: File) =
     async {
@@ -440,6 +452,7 @@ let init () =
       SampleReplayFrames = None
       EditorView = editorView
       EditorSpacePressed = false
+      InputHelpExpanded = false
       PendingInterchangeReview = None
       Battlefield =
         { Battlefield.initial with
@@ -615,12 +628,28 @@ let rec update msg model =
             Planning = planning
             Workspace = workspace
             EditorView = editorView
+            InputHelpExpanded = false
             EditorSpacePressed =
                 CurrentModalInput.spaceHeldAfterWorkspaceChange
                     model.EditorSpacePressed },
         if initializePlanning then
             Cmd.ofEffect (fun dispatch -> dispatch InitializePlanningWorker)
         else Cmd.none
+    | ToggleInputHelp focusPanel ->
+        let expanded = not model.InputHelpExpanded
+        { model with InputHelpExpanded = expanded },
+        if focusPanel then
+            Cmd.ofEffect (fun _ ->
+                focusElementAfterRender (
+                    if expanded then "modal-input-panel" else "modal-input-toggle"
+                ))
+        else
+            Cmd.none
+    | ApplicationFocusLost ->
+        { model with
+            InputHelpExpanded = false
+            EditorSpacePressed = false },
+        Cmd.none
     | SimulateEditorRevision ->
         match MapEditorSimulator.tryHandoff model.Editor with
         | Error message ->
@@ -985,6 +1014,32 @@ let rec update msg model =
         else
             let next, effects = Shell.playbackTick model.Shell
             { model with Shell = next }, effectsToCmd effects
+    | KeyPressed(key, controlOrMeta, _, repeat)
+        when
+            (model.Workspace = EditorWorkspace
+             || model.Workspace = SimulatorWorkspace)
+            && key = "?"
+            && not controlOrMeta
+            && not repeat
+        ->
+        update (ToggleInputHelp true) model
+    | KeyPressed(key, controlOrMeta, _, repeat)
+        when
+            model.InputHelpExpanded
+            && key = "Escape"
+            && not controlOrMeta
+            && not repeat
+        ->
+        update (ToggleInputHelp true) model
+    | KeyPressed(key, controlOrMeta, _, true)
+        when
+            not controlOrMeta
+            && ((key = "F2"
+                 && (model.Workspace = EditorWorkspace
+                     || model.Workspace = SimulatorWorkspace))
+                || (key = "F3" && model.Workspace = EditorWorkspace))
+        ->
+        model, Cmd.none
     | KeyPressed(key, controlOrMeta, shift, repeat) ->
         let currentWorkspace =
             match model.Workspace with
@@ -1157,13 +1212,17 @@ let subscriptions model =
             fun (event: Event) ->
                 let keyboardEvent: KeyboardEvent = unbox event
                 dispatch (KeyReleased keyboardEvent.key)
+        let blurHandler =
+            fun (_: Event) -> dispatch ApplicationFocusLost
         window.addEventListener ("keydown", downHandler)
         window.addEventListener ("keyup", upHandler)
+        window.addEventListener ("blur", blurHandler)
 
         { new IDisposable with
             member _.Dispose() =
                 window.removeEventListener ("keydown", downHandler)
-                window.removeEventListener ("keyup", upHandler) }
+                window.removeEventListener ("keyup", upHandler)
+                window.removeEventListener ("blur", blurHandler) }
 
     let timer dispatch =
         let interval =
@@ -3661,14 +3720,16 @@ let private editorBattlefield
                     elif event.key = "F2" then
                         event.preventDefault ()
                         event.stopPropagation ()
-                        dispatch ToggleEditorToolPanelVisibility
+                        if not event.repeat then
+                            dispatch ToggleEditorToolPanelVisibility
                     elif event.key = "F3" then
                         event.preventDefault ()
                         event.stopPropagation ()
-                        dispatch (
-                            EditorWorkspaceChanged
-                                ToggleEditorInspector
-                        )
+                        if not event.repeat then
+                            dispatch (
+                                EditorWorkspaceChanged
+                                    ToggleEditorInspector
+                            )
                     elif event.ctrlKey || event.metaKey then
                         let action =
                             match event.key, event.shiftKey with
@@ -6552,6 +6613,127 @@ let private workspaceNavigation (workspace: WorkspaceMode) dispatch =
         ]
     ]
 
+let private inputGestureText (gesture: InputGesture) =
+    let key =
+        match NormalizedKey.value gesture.Key with
+        | "ArrowLeft" -> "←"
+        | "ArrowRight" -> "→"
+        | "ArrowUp" -> "↑"
+        | "ArrowDown" -> "↓"
+        | "Space" -> "Space"
+        | "Escape" -> "Esc"
+        | value when value.Length = 1 -> value.ToUpperInvariant()
+        | value -> value
+    [ if gesture.Modifiers.ControlOrMeta then "Ctrl/Cmd"
+      if gesture.Modifiers.Alt then "Alt"
+      if gesture.Modifiers.Shift && NormalizedKey.value gesture.Key <> "?" then "Shift"
+      key
+      if gesture.Phase = KeyUp then "release" ]
+    |> String.concat "+"
+
+let private ariaShortcut (gesture: InputGesture) =
+    let key =
+        match NormalizedKey.value gesture.Key with
+        | "Space" -> "Space"
+        | value when value.Length = 1 -> value.ToUpperInvariant()
+        | value -> value
+    [ if gesture.Modifiers.ControlOrMeta then "Control"
+      if gesture.Modifiers.Alt then "Alt"
+      if gesture.Modifiers.Shift && NormalizedKey.value gesture.Key <> "?" then "Shift"
+      key ]
+    |> String.concat "+"
+
+let private modalInputStrip
+    (projection: ModalProjection<ModalCommand>)
+    expanded
+    dispatch
+    =
+    Html.section [
+        prop.className ("modal-input-strip" + if expanded then " is-expanded" else "")
+        prop.ariaLabel "Current input mode"
+        prop.children [
+            Html.div [
+                prop.className "modal-input-summary"
+                prop.children [
+                    Html.div [
+                        prop.className "modal-input-state"
+                        prop.children [
+                            Html.strong [
+                                prop.className "modal-input-headline"
+                                prop.text projection.Headline
+                            ]
+                            Html.span [
+                                prop.className "modal-input-detail"
+                                prop.text projection.Detail
+                            ]
+                        ]
+                    ]
+                    Html.button [
+                        prop.id "modal-input-toggle"
+                        prop.type'.button
+                        prop.className "modal-input-toggle"
+                        prop.text "Inputs · ?"
+                        prop.ariaExpanded expanded
+                        prop.ariaControls "modal-input-panel"
+                        prop.custom ("aria-keyshortcuts", "?")
+                        prop.onClick (fun _ -> dispatch (ToggleInputHelp false))
+                    ]
+                ]
+            ]
+            Html.p [
+                prop.className "sr-only"
+                prop.role.status
+                prop.ariaLive.polite
+                prop.ariaAtomic true
+                prop.text projection.Headline
+            ]
+            if expanded then
+                Html.section [
+                    prop.id "modal-input-panel"
+                    prop.className "modal-input-panel"
+                    prop.tabIndex -1
+                    prop.ariaLabel ("Possible inputs for " + projection.Headline)
+                    prop.children [
+                        Html.div [
+                            prop.className "modal-input-panel-heading"
+                            prop.children [
+                                Html.h3 "Possible inputs"
+                                Html.button [
+                                    prop.type'.button
+                                    prop.text "Close"
+                                    prop.onClick (fun _ -> dispatch (ToggleInputHelp true))
+                                ]
+                            ]
+                        ]
+                        if List.isEmpty projection.PossibleInputs then
+                            Html.p "No keyboard commands are available in this state."
+                        else
+                            Html.ul [
+                                prop.className "modal-input-list"
+                                prop.children [
+                                    for input in projection.PossibleInputs do
+                                        Html.li [
+                                            prop.custom ("data-modal-command", input.Id)
+                                            prop.custom ("aria-keyshortcuts", ariaShortcut input.InputGesture)
+                                            prop.children [
+                                                Html.kbd (inputGestureText input.InputGesture)
+                                                Html.span input.Label
+                                            ]
+                                        ]
+                                ]
+                            ]
+                    ]
+                ]
+        ]
+    ]
+
+let private editorDomain = function
+    | TerrainTools -> TerrainDomain
+    | UnitTools -> UnitDomain
+    | EdgeTools -> EdgeDomain
+    | ZoneTools -> RegionDomain
+    | DocumentTools -> DocumentDomain
+
 let view model dispatch =
     let shell = model.Shell
 
@@ -6577,6 +6759,20 @@ let view model dispatch =
             | SimulatorWorkspace ->
                 match model.Simulator with
                 | None ->
+                    let facts =
+                        { SimulatorHandoffPresent = false
+                          SimulatorIsRunning = false
+                          SimulatorHasRoutePreview = false
+                          SimulatorRevisionIsStale = false
+                          InputHelpExpanded = model.InputHelpExpanded }
+                    let catalog =
+                        ModalInput.simulatorCatalog model.Editor.SelectedUnit None
+                    let projection =
+                        ModalInput.projectSimulator
+                            facts
+                            model.Editor.SelectedUnit
+                            None
+                            catalog
                     Html.section [
                         prop.className "panel simulator-workspace"
                         prop.ariaLabel "Simulator revision handoff"
@@ -6587,6 +6783,7 @@ let view model dispatch =
                                 dispatch (WorkspaceChanged EditorWorkspace))
                             button "Browse samples" "Open curated map and simulation samples" false (fun _ ->
                                 dispatch (WorkspaceChanged SamplesWorkspace))
+                            modalInputStrip projection model.InputHelpExpanded dispatch
                         ]
                     ]
                 | Some simulator ->
@@ -6596,6 +6793,22 @@ let view model dispatch =
                             simulator
                     let stale =
                         MapEditorSimulator.isBehindDraft model.Editor simulator
+                    let facts =
+                        { SimulatorHandoffPresent = true
+                          SimulatorIsRunning = simulator.IsRunning
+                          SimulatorHasRoutePreview = simulator.PreviewDestination.IsSome
+                          SimulatorRevisionIsStale = stale
+                          InputHelpExpanded = model.InputHelpExpanded }
+                    let catalog =
+                        ModalInput.simulatorCatalog
+                            model.Editor.SelectedUnit
+                            (Some simulator)
+                    let projection =
+                        ModalInput.projectSimulator
+                            facts
+                            model.Editor.SelectedUnit
+                            (Some simulator)
+                            catalog
                     Html.div [
                         prop.className "simulator-workspace"
                         prop.children [
@@ -6654,11 +6867,22 @@ let view model dispatch =
                                         model.SimulatorToolPanel
                                         model.SimulatorToolPanelVisible
                                         dispatch
+                                    modalInputStrip
+                                        projection
+                                        model.InputHelpExpanded
+                                        dispatch
                                 ]
                             ]
                         ]
                     ]
             | EditorWorkspace ->
+                let facts =
+                    { Editor = model.Editor
+                      ActiveDomain = editorDomain model.EditorToolPanel
+                      PanHeld = model.EditorSpacePressed
+                      InputHelpExpanded = model.InputHelpExpanded }
+                let catalog = ModalInput.editorCatalog facts
+                let projection = ModalInput.projectEditor facts catalog
                 Html.div [
                     prop.className "editor-workspace"
                     prop.children [
@@ -6755,6 +6979,10 @@ let view model dispatch =
                                             editorUnitPanel model.Editor dispatch
                                         ]
                                     ]
+                                modalInputStrip
+                                    projection
+                                    model.InputHelpExpanded
+                                    dispatch
                             ]
                         ]
                         editorGrid model.Editor dispatch

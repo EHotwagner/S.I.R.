@@ -108,6 +108,13 @@ type PossibleInput<'command> =
       Availability: BindingAvailability
       Command: 'command }
 
+type ModalProjection<'command> =
+    { Contexts: ModalContext list
+      Breadcrumb: string list
+      Headline: string
+      Detail: string
+      PossibleInputs: PossibleInput<'command> list }
+
 type InputResolution<'command> =
     | Resolved of PossibleInput<'command>
     | NoMatch
@@ -150,6 +157,26 @@ module ModalInput =
         contexts: ModalContext list ->
         catalog: ModalBinding<'command> list ->
         PossibleInput<'command> list
+
+    val editorCatalog:
+        facts: EditorModalFacts -> ModalBinding<ModalCommand> list
+
+    val simulatorCatalog:
+        selectedUnitId: int32 option ->
+        handoff: SimulatorHandoff option ->
+        ModalBinding<ModalCommand> list
+
+    val projectEditor:
+        facts: EditorModalFacts ->
+        catalog: ModalBinding<'command> list ->
+        ModalProjection<'command>
+
+    val projectSimulator:
+        facts: SimulatorModalFacts ->
+        selectedUnitId: int32 option ->
+        handoff: SimulatorHandoff option ->
+        catalog: ModalBinding<'command> list ->
+        ModalProjection<'command>
 
     val validateCatalog:
         catalog: ModalBinding<'command> list -> CatalogDiagnostic list
