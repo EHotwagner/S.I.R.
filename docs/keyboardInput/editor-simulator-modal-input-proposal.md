@@ -493,15 +493,15 @@ explicitly provides the stable contract needed for safe parallel work.
   - **Exit gate:** terrain can be authored and selected entirely by keyboard,
     while pointer and touch routes still dispatch equivalent map actions.
 
-- [ ] **M4 — Deliver complete Unit keyboard operation**
-  - [ ] Add deterministic preset browsing, faction paging, filtering, and
+- [x] **M4 — Deliver complete Unit keyboard operation**
+  - [x] Add deterministic preset browsing, faction paging, filtering, and
         placement arming.
-  - [ ] Implement validated footprint previews, repeated placement, alternate
+  - [x] Implement validated footprint previews, repeated placement, alternate
         place-and-return, and invalid-placement explanations.
-  - [ ] Implement deterministic unit selection and multiselection.
-  - [ ] Replace immediate movement mutation with resettable, cancellable,
+  - [x] Implement deterministic unit selection and multiselection.
+  - [x] Replace immediate movement mutation with resettable, cancellable,
         multi-unit movement previews.
-  - [ ] Implement copy, paste preview, duplicate, delete, and conditional bulk
+  - [x] Implement copy, paste preview, duplicate, delete, and conditional bulk
         confirmation without allowing key repeat on destructive actions.
   - **Exit gate:** units can be found, placed, selected, moved, duplicated, and
     deleted entirely by keyboard with one undoable command per documented

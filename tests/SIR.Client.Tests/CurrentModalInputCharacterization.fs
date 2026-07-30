@@ -246,8 +246,13 @@ let run () =
                     case.Shift
                     true
 
+            let expectedRepeated =
+                match case.Key, case.ControlOrMeta with
+                | ("Delete" | "Backspace"), false -> None
+                | _ -> case.Expected
+
             require
-                (repeated = case.Expected)
+                (repeated = expectedRepeated)
                 $"Current Editor repeat behavior changed for {case.Name} ({key}): {repeated}."
 
     for key, expected in simulatorCases do
@@ -289,6 +294,17 @@ let run () =
          && modifiedT = None
          && modifiedEscape = None)
         "Current Editor modifier precedence changed."
+
+    require
+        (CurrentModalInput.resolvePendingDestructiveKey "Enter" false false false =
+            Some ConfirmDestructiveChange
+         && CurrentModalInput.resolvePendingDestructiveKey "Escape" false false false =
+            Some CancelDestructiveChange
+         && CurrentModalInput.resolvePendingDestructiveKey "Enter" false false true = None
+         && CurrentModalInput.resolvePendingDestructiveKey "Escape" false false true = None
+         && CurrentModalInput.resolvePendingDestructiveKey "Enter" true false false = None
+         && CurrentModalInput.resolvePendingDestructiveKey "Escape" false true false = None)
+        "Pending destructive confirmation did not require a plain, non-repeated Enter or Escape."
 
     let idleEscape =
         CurrentModalInput.editorEscapeActions IdleGesture

@@ -533,6 +533,74 @@ let evaluate () =
          && selectedRegionProjection.Detail = "Region 7 selected")
         "Selected-object Actions projected a region as an empty unit selection."
 
+    let m4Browse =
+        { m3Editor with
+            Tool = UnitBrowse
+            UnitPaletteSearch = ""
+            UnitPaletteCursor =
+                { PresetId = Some "goblin"
+                  FactionIndex = 0
+                  ResultIndex = 2 } }
+    let m4BrowseFacts = m3Facts false m4Browse
+    let m4BrowseCatalog = ModalInput.editorCatalog m4BrowseFacts
+    let m4BrowseContexts = ModalInput.deriveEditorContexts m4BrowseFacts
+    let m4Place =
+        m4Browse
+        |> MapEditor.update ArmUnitPalettePreset
+    let m4PlaceFacts = m3Facts false m4Place
+    let m4PlaceCatalog = ModalInput.editorCatalog m4PlaceFacts
+    let m4PlaceContexts = ModalInput.deriveEditorContexts m4PlaceFacts
+    let m4Move =
+        { m3Editor with
+            Tool = Select
+            SelectedUnit = Some 1
+            SelectedUnits = Set.singleton 1 }
+        |> MapEditor.update (BeginUnitMove { CellColumn = 0; CellRow = 0 })
+    let m4MoveFacts = m3Facts false m4Move
+    let m4MoveCatalog = ModalInput.editorCatalog m4MoveFacts
+    let m4MoveContexts = ModalInput.deriveEditorContexts m4MoveFacts
+
+    require
+        (ModalInput.validateCatalog m4BrowseCatalog = []
+         && ModalInput.validateCatalog m4PlaceCatalog = []
+         && ModalInput.validateCatalog m4MoveCatalog = []
+         && resolveM3 m4BrowseContexts m4BrowseCatalog "ArrowDown" plain =
+            "resolved:editor.unit.preset.next-arrow"
+         && resolveM3 m4BrowseContexts m4BrowseCatalog "PageDown" plain =
+            "resolved:editor.unit.preset.next-faction"
+         && resolveM3 m4BrowseContexts m4BrowseCatalog "Enter" plain =
+            "resolved:editor.unit.preset.arm"
+         && resolveM3 m4BrowseContexts m4BrowseCatalog "/" plain =
+            "resolved:editor.unit.preset.search"
+         && resolveM3 m4PlaceContexts m4PlaceCatalog "Enter" plain =
+            "resolved:editor.unit.place.commit"
+         && resolveM3 m4PlaceContexts m4PlaceCatalog "Enter" { plain with Shift = true } =
+            "resolved:editor.unit.place.commit-return"
+         && resolveM3 m4MoveContexts m4MoveCatalog "ArrowRight" { plain with Shift = true } =
+            "resolved:editor.unit.move.east-large"
+         && resolveM3 m4MoveContexts m4MoveCatalog "Backspace" plain =
+            "resolved:editor.unit.move.reset")
+        "M4 Browse, Place, or atomic movement catalog resolution diverged from the vocabulary."
+
+    let repeatedDelete =
+        ModalInput.resolve
+            (ModalInput.deriveEditorContexts (m3Facts false { m3Editor with SelectedUnits = Set.singleton 1 }))
+            (gesture "Delete" None plain KeyDown)
+            true
+            (ModalInput.editorCatalog (m3Facts false { m3Editor with SelectedUnits = Set.singleton 1 }))
+    let confirmationEditor =
+        { m3Editor with PendingDestructiveChange = Some(UnitDeletionPending [| 1 |]) }
+    let confirmationFacts = m3Facts false confirmationEditor
+    let confirmationCatalog = ModalInput.editorCatalog confirmationFacts
+    require
+        (repeatedDelete = NoMatch
+         && resolveM3
+                (ModalInput.deriveEditorContexts confirmationFacts)
+                confirmationCatalog
+                "Enter"
+                plain = "resolved:editor.confirmation.confirm")
+        "M4 destructive key repeat or explicit Enter confirmation policy regressed."
+
     let simulator =
         MapEditorSimulator.tryHandoff MapEditor.initial
         |> Result.defaultWith failwith

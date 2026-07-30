@@ -1014,6 +1014,23 @@ let rec update msg model =
         else
             let next, effects = Shell.playbackTick model.Shell
             { model with Shell = next }, effectsToCmd effects
+    | KeyPressed(key, controlOrMeta, shift, repeat)
+        when
+            model.Workspace = EditorWorkspace
+            && model.Editor.PendingDestructiveChange.IsSome
+            && not controlOrMeta
+            && not shift
+            && (key = "Enter" || key = "Escape")
+        ->
+        match
+            CurrentModalInput.resolvePendingDestructiveKey
+                key
+                controlOrMeta
+                shift
+                repeat
+        with
+        | Some action -> update (EditorChanged action) model
+        | None -> model, Cmd.none
     | KeyPressed(key, controlOrMeta, _, repeat)
         when
             (model.Workspace = EditorWorkspace
@@ -3275,6 +3292,7 @@ let private toolLabel tool =
     | Select -> "Select"
     | Paint terrain -> "Paint " + MapEditor.terrainLabel terrain
     | Terrain tool -> MapEditor.terrainToolLabel tool
+    | UnitBrowse -> "Browse unit presets"
     | Place(side, classId, size) ->
         let sideName =
             match side with
@@ -3655,14 +3673,12 @@ let private editorBattlefield
                 prop.ariaHidden state.SelectedUnits.IsEmpty
                 prop.ariaLabel "Selected unit quick actions"
                 prop.children [
-                    button "↑" "Move selected formation north (Alt+Arrow up)" state.SelectedUnits.IsEmpty (fun _ ->
-                        dispatch (EditorChanged(MoveSelected North)))
-                    button "←" "Move selected formation west (Alt+Arrow left)" state.SelectedUnits.IsEmpty (fun _ ->
-                        dispatch (EditorChanged(MoveSelected West)))
-                    button "→" "Move selected formation east (Alt+Arrow right)" state.SelectedUnits.IsEmpty (fun _ ->
-                        dispatch (EditorChanged(MoveSelected East)))
-                    button "↓" "Move selected formation south (Alt+Arrow down)" state.SelectedUnits.IsEmpty (fun _ ->
-                        dispatch (EditorChanged(MoveSelected South)))
+                    button "Move" "Begin a resettable movement preview (M)" state.SelectedUnits.IsEmpty (fun _ ->
+                        dispatch (
+                            EditorChanged(
+                                BeginUnitMove state.KeyboardCursor.Cell
+                            )
+                        ))
                     button "Duplicate" "Duplicate selected formation (Ctrl or Command D)" state.SelectedUnits.IsEmpty (fun _ ->
                         dispatch (EditorChanged DuplicateEditorSelection))
                     button "Delete" "Delete selected formation" state.SelectedUnits.IsEmpty (fun _ ->
@@ -3670,6 +3686,7 @@ let private editorBattlefield
                 ]
             ]
             Svg.svg [
+                svg.id "editor-map-stage"
                 svg.className (
                     "editor-battlefield-svg"
                     + if view.ReducedMotion then " reduced-motion" else ""
@@ -3746,6 +3763,11 @@ let private editorBattlefield
                         && not event.ctrlKey
                         && not event.metaKey
                         && not event.altKey
+                        && not (
+                            (event.key = "m" || event.key = "M")
+                            && state.Tool = Select
+                            && not state.SelectedUnits.IsEmpty
+                        )
                     then
                         event.preventDefault ()
                         event.stopPropagation ()
@@ -3758,6 +3780,8 @@ let private editorBattlefield
                                     ChooseTool(Terrain state.LastTerrainPaintTool)
                                 )
                             )
+                        elif panelShortcut.Value = UnitTools then
+                            dispatch (EditorChanged(ChooseTool UnitBrowse))
                     elif event.key = "F2" then
                         event.preventDefault ()
                         event.stopPropagation ()
@@ -3770,6 +3794,25 @@ let private editorBattlefield
                             dispatch (
                                 EditorWorkspaceChanged
                                     ToggleEditorInspector
+                            )
+                    elif
+                        state.PendingDestructiveChange.IsSome
+                        && (event.key = "Enter" || event.key = "Escape")
+                        && not event.ctrlKey
+                        && not event.metaKey
+                        && not event.shiftKey
+                        && not event.altKey
+                    then
+                        event.preventDefault ()
+                        event.stopPropagation ()
+                        if not event.repeat then
+                            dispatch (
+                                EditorChanged(
+                                    if event.key = "Enter" then
+                                        ConfirmDestructiveChange
+                                    else
+                                        CancelDestructiveChange
+                                )
                             )
                     elif event.ctrlKey || event.metaKey then
                         let action =
@@ -3788,18 +3831,29 @@ let private editorBattlefield
                             event.stopPropagation ()
                             dispatch (EditorChanged editorAction))
                     elif event.altKey then
-                        let direction =
+                        let offset =
                             match event.key with
-                            | "ArrowLeft" -> Some West
-                            | "ArrowRight" -> Some East
-                            | "ArrowUp" -> Some North
-                            | "ArrowDown" -> Some South
+                            | "ArrowLeft" -> Some(-1, 0)
+                            | "ArrowRight" -> Some(1, 0)
+                            | "ArrowUp" -> Some(0, -1)
+                            | "ArrowDown" -> Some(0, 1)
                             | _ -> None
-                        direction
-                        |> Option.iter (fun value ->
+                        offset
+                        |> Option.iter (fun (columnDelta, rowDelta) ->
                             event.preventDefault ()
                             event.stopPropagation ()
-                            dispatch (EditorChanged(MoveSelected value)))
+                            if not event.repeat && not state.SelectedUnits.IsEmpty then
+                                let anchor = state.KeyboardCursor.Cell
+                                dispatch (EditorChanged(BeginUnitMove anchor))
+                                dispatch (
+                                    EditorChanged(
+                                        ExtendUnitMove
+                                            { CellColumn =
+                                                max 0 (min (state.Map.Width - 1) (anchor.CellColumn + int32 columnDelta))
+                                              CellRow =
+                                                max 0 (min (state.Map.Height - 1) (anchor.CellRow + int32 rowDelta)) }
+                                    )
+                                ))
                     elif event.key = "v" || event.key = "V" then
                         event.preventDefault ()
                         event.stopPropagation ()
@@ -3811,12 +3865,91 @@ let private editorBattlefield
                             event.preventDefault ()
                             event.stopPropagation ()
                             dispatch (EditorChanged ResetTerrainPreview)
+                        | UnitMoveGesture _ when event.key = "Backspace" ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat then
+                                dispatch (EditorChanged ResetUnitMovePreview)
                         | _ ->
                             event.preventDefault ()
                             event.stopPropagation ()
-                            dispatch (EditorChanged DeleteEditorSelection)
+                            if not event.repeat then
+                                dispatch (EditorChanged DeleteEditorSelection)
+                    elif state.Tool = UnitBrowse then
+                        let action =
+                            match event.key with
+                            | "ArrowUp"
+                            | "[" -> Some(MoveUnitPaletteCursor -1)
+                            | "ArrowDown"
+                            | "]" -> Some(MoveUnitPaletteCursor 1)
+                            | "PageUp" -> Some(PageUnitPaletteFaction -1)
+                            | "PageDown" -> Some(PageUnitPaletteFaction 1)
+                            | "Home" -> Some(SelectUnitPaletteBoundary false)
+                            | "End" -> Some(SelectUnitPaletteBoundary true)
+                            | "Enter" -> Some ArmUnitPalettePreset
+                            | "Escape" -> Some(ChooseTool Select)
+                            | _ -> None
+                        match action with
+                        | Some action ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat
+                               || event.key = "ArrowUp"
+                               || event.key = "ArrowDown"
+                               || event.key = "["
+                               || event.key = "]"
+                               || event.key = "PageUp"
+                               || event.key = "PageDown"
+                            then
+                                dispatch (EditorChanged action)
+                        | None when event.key = "/" ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            document.getElementById("editor-unit-preset-search").focus ()
+                        | None -> ()
+                    elif
+                        match state.Tool with
+                        | Place _ -> true
+                        | _ -> false
+                    then
+                        let action =
+                            match arrowDelta, event.key with
+                            | Some(columnDelta, rowDelta), _ ->
+                                Some(
+                                    MoveUnitPlacementCursor(
+                                        int32 columnDelta,
+                                        int32 rowDelta
+                                    )
+                                )
+                            | None, "[" -> Some(CycleArmedUnitPreset -1)
+                            | None, "]" -> Some(CycleArmedUnitPreset 1)
+                            | None, "Enter" ->
+                                Some(CommitUnitPlacement event.shiftKey)
+                            | None, ("b" | "B" | "Escape") ->
+                                Some ReturnToUnitBrowse
+                            | _ -> None
+                        action
+                        |> Option.iter (fun action ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat
+                               || arrowDelta.IsSome
+                               || event.key = "["
+                               || event.key = "]"
+                            then
+                                dispatch (EditorChanged action))
                     elif state.Tool = Select then
                         match state.Gesture, arrowDelta, event.key with
+                        | CommandPreviewGesture _, None, "Enter" ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat then
+                                dispatch (EditorChanged CommitEditorGesture)
+                        | CommandPreviewGesture _, None, "Escape" ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat then
+                                dispatch (EditorChanged CancelEditorGesture)
                         | SelectedObjectActionsGesture, None, ("c" | "C") ->
                             event.preventDefault ()
                             event.stopPropagation ()
@@ -3865,6 +3998,29 @@ let private editorBattlefield
                             event.preventDefault ()
                             event.stopPropagation ()
                             dispatch (EditorChanged CancelEditorGesture)
+                        | UnitMoveGesture(_, current, _, _), Some(columnDelta, rowDelta), _ ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            let distance = if event.shiftKey then 5 else 1
+                            dispatch (
+                                EditorChanged(
+                                    ExtendUnitMove
+                                        { CellColumn =
+                                            max 0 (min (state.Map.Width - 1) (current.CellColumn + int32 (columnDelta * distance)))
+                                          CellRow =
+                                            max 0 (min (state.Map.Height - 1) (current.CellRow + int32 (rowDelta * distance))) }
+                                )
+                            )
+                        | UnitMoveGesture _, None, "Enter" ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat then
+                                dispatch (EditorChanged CommitEditorGesture)
+                        | UnitMoveGesture _, None, "Escape" ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat then
+                                dispatch (EditorChanged CancelEditorGesture)
                         | IdleGesture, Some(columnDelta, rowDelta), _ ->
                             event.preventDefault ()
                             event.stopPropagation ()
@@ -3894,6 +4050,15 @@ let private editorBattlefield
                             event.preventDefault ()
                             event.stopPropagation ()
                             if not event.repeat then dispatch (EditorChanged SelectAllInActiveDomain)
+                        | IdleGesture, None, ("m" | "M") when not state.SelectedUnits.IsEmpty ->
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            if not event.repeat then
+                                dispatch (
+                                    EditorChanged(
+                                        BeginUnitMove state.KeyboardCursor.Cell
+                                    )
+                                )
                         | _ -> ()
                     elif
                         match state.Tool with
@@ -4867,6 +5032,17 @@ let private editorToolbar
                             prop.value state.UnitPaletteSearch
                             prop.onChange (fun value ->
                                 dispatch (EditorChanged(SetUnitPaletteSearch value)))
+                            prop.onKeyDown (fun event ->
+                                match event.key with
+                                | "Enter" ->
+                                    event.preventDefault ()
+                                    if not event.repeat then
+                                        dispatch (EditorChanged ArmUnitPalettePreset)
+                                        document.getElementById("editor-map-stage").focus ()
+                                | "Escape" ->
+                                    event.preventDefault ()
+                                    document.getElementById("editor-map-stage").focus ()
+                                | _ -> ())
                         ]
                         Html.div [
                             prop.className "unit-preset-groups"
@@ -4895,7 +5071,42 @@ let private editorToolbar
                                                      + " glyph")
                                                     (placePreset preset.Id)
                                         ]
-                                    ]
+                                ]
+                            ]
+                        ]
+                        Html.div [
+                            prop.className "control-row"
+                            prop.role.group
+                            prop.ariaLabel "Unit preview actions"
+                            prop.children [
+                                button
+                                    "Apply preview"
+                                    "Commit the unit placement, paste, or movement preview (Enter)"
+                                    (match state.Gesture with
+                                     | CommandPreviewGesture _
+                                     | UnitMoveGesture _ -> false
+                                     | _ -> true)
+                                    (fun _ -> dispatch (EditorChanged CommitEditorGesture))
+                                button
+                                    "Reset move"
+                                    "Reset selected units to their original preview positions (Backspace)"
+                                    (match state.Gesture with
+                                     | UnitMoveGesture _ -> false
+                                     | _ -> true)
+                                    (fun _ -> dispatch (EditorChanged ResetUnitMovePreview))
+                                button
+                                    "Cancel preview"
+                                    "Cancel the unit preview (Escape)"
+                                    (match state.Gesture with
+                                     | CommandPreviewGesture _
+                                     | UnitMoveGesture _ -> false
+                                     | _ -> true)
+                                    (fun _ -> dispatch (EditorChanged CancelEditorGesture))
+                                button
+                                    "Browse presets"
+                                    "Return to unit preset browsing (B)"
+                                    (state.Tool = UnitBrowse)
+                                    (fun _ -> dispatch (EditorChanged ReturnToUnitBrowse))
                             ]
                         ]
                     | EdgeTools ->
@@ -5926,6 +6137,13 @@ let private editorDestructiveConfirmation state dispatch =
                 + " units, and "
                 + string loss.LostRegions
                 + " regions?"
+            | UnitDeletionPending identifiers ->
+                "Delete "
+                + string identifiers.Length
+                + (if identifiers.Length = 1 then
+                       " unit and its attached authoring data?"
+                   else
+                       " units and their attached authoring data?")
         Html.div [
             prop.className "editor-modal-backdrop"
             prop.children [

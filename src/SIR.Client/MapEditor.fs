@@ -91,6 +91,7 @@ type MapEditorTool =
     | Select
     | Paint of MapTerrain
     | Terrain of TerrainAuthoringTool
+    | UnitBrowse
     | Place of MapSide * classId: string * size: int32
     | Edge of MapEdgeDirection * MapEdgeKind
 
@@ -137,6 +138,7 @@ type PendingDestructiveChange =
     | ResizePending of ResizeLossPreview
     | ClearPending
     | NewMapPending of width: int32 * height: int32 * name: string
+    | UnitDeletionPending of identifiers: int32 array
 
 type CrashRecoveryDraft =
     { SourceDigest: string
@@ -157,6 +159,11 @@ type EditorKeyboardObject =
 type EditorKeyboardCursor =
     { Cell: EditorCellAddress
       ObjectCycleIndex: int }
+
+type UnitPaletteCursor =
+    { PresetId: string option
+      FactionIndex: int
+      ResultIndex: int }
 
 type EditorGesture =
     | IdleGesture
@@ -242,6 +249,8 @@ type MapEditorState =
       EdgeCursor: int32 * int32 * MapEdgeDirection
       EdgeAnnouncement: string
       UnitPaletteSearch: string
+      UnitPaletteCursor: UnitPaletteCursor
+      UnitPlacementCursor: EditorCellAddress
       UnitAnnouncement: string
       RegionAnnouncement: string
       SelectedUnit: int32 option
@@ -292,6 +301,15 @@ type MapEditorAction =
     | SplitEdge of column: int32 * row: int32 * direction: MapEdgeDirection
     | JoinEdge of column: int32 * row: int32 * direction: MapEdgeDirection
     | SetUnitPaletteSearch of string
+    | MoveUnitPaletteCursor of delta: int
+    | PageUnitPaletteFaction of delta: int
+    | SelectUnitPaletteBoundary of last: bool
+    | ArmUnitPalettePreset
+    | ReturnToUnitBrowse
+    | MoveUnitPlacementCursor of columnDelta: int32 * rowDelta: int32
+    | CycleArmedUnitPreset of delta: int
+    | CommitUnitPlacement of returnToBrowse: bool
+    | ResetUnitMovePreview
     | CreateRectangleRegion of RegionPurpose * first: EditorCellAddress * last: EditorCellAddress
     | CreatePolygonRegion of RegionPurpose * vertices: EditorCellAddress array
     | SelectEditorRegion of int32 option
@@ -377,6 +395,9 @@ module MapEditor =
 
     [<Literal>]
     let MaximumClipboardUnits = 256
+
+    [<Literal>]
+    let BulkUnitDeletionThreshold = 5
 
     [<Literal>]
     let MaximumRegionCount = 1_600
@@ -858,6 +879,13 @@ module MapEditor =
           EdgeCursor = 0, 0, EastEdge
           EdgeAnnouncement = "Semantic edge authoring ready."
           UnitPaletteSearch = ""
+          UnitPaletteCursor =
+            { PresetId = Some "goblin"
+              FactionIndex = 0
+              ResultIndex = 0 }
+          UnitPlacementCursor =
+            { CellColumn = 0
+              CellRow = 0 }
           UnitAnnouncement = "Unit authoring ready."
           RegionAnnouncement = "Zone authoring ready."
           SelectedUnit = Some 1
@@ -1388,6 +1416,15 @@ module MapEditor =
         | SplitEdge _
         | JoinEdge _
         | SetUnitPaletteSearch _
+        | MoveUnitPaletteCursor _
+        | PageUnitPaletteFaction _
+        | SelectUnitPaletteBoundary _
+        | ArmUnitPalettePreset
+        | ReturnToUnitBrowse
+        | MoveUnitPlacementCursor _
+        | CycleArmedUnitPreset _
+        | CommitUnitPlacement _
+        | ResetUnitMovePreview
         | PreviewUnitPlacement _
         | BeginUnitMove _
         | ExtendUnitMove _
@@ -1421,6 +1458,7 @@ module MapEditor =
                             Terrain = Map.add (column, row) terrain state.Map.Terrain }
                     Validation = None }
             | Terrain _ -> state
+            | UnitBrowse -> state
             | Place(side, classId, size) ->
                 placeUnit side classId size column row state
             | Edge(direction, kind) ->
@@ -2298,6 +2336,18 @@ module MapEditor =
                 [ issue "UNIT-DUPLICATE" "An add command contains duplicate unit identifiers." ]
             | AddUnits units when units |> Array.exists (fun unit -> Map.containsKey unit.Id map.Units) ->
                 [ issue "UNIT-DUPLICATE" "An added unit identifier already exists." ]
+            | AddUnits units when
+                units
+                |> Array.exists (fun unit ->
+                    [ for y in unit.Row .. unit.Row + unit.Size - 1 do
+                          for x in unit.Column .. unit.Column + unit.Size - 2 do
+                              yield x, y, EastEdge
+                      for y in unit.Row .. unit.Row + unit.Size - 2 do
+                          for x in unit.Column .. unit.Column + unit.Size - 1 do
+                              yield x, y, SouthEdge ]
+                    |> List.exists (edgeIsBlocking map))
+                ->
+                [ issue "UNIT-EDGE" "A blocking edge crosses an added unit footprint." ]
             | UpdateUnits units when Array.isEmpty units ->
                 [ issue "COMMAND-EMPTY" "An update command must contain at least one unit." ]
             | UpdateUnits units when units |> Array.map _.Id |> duplicate ->
@@ -2510,6 +2560,7 @@ module MapEditor =
         | Paint _ -> TerrainDomain
         | Terrain _ -> TerrainDomain
         | Edge _ -> EdgeDomain
+        | UnitBrowse
         | Place _ -> UnitDomain
         | Select -> UnitDomain
 
@@ -2536,6 +2587,15 @@ module MapEditor =
         | SplitEdge _
         | JoinEdge _ -> Some EdgeDomain
         | PreviewUnitPlacement _
+        | MoveUnitPaletteCursor _
+        | PageUnitPaletteFaction _
+        | SelectUnitPaletteBoundary _
+        | ArmUnitPalettePreset
+        | ReturnToUnitBrowse
+        | MoveUnitPlacementCursor _
+        | CycleArmedUnitPreset _
+        | CommitUnitPlacement _
+        | ResetUnitMovePreview
         | BeginUnitMove _
         | ExtendUnitMove _
         | RemoveSelectedUnit
@@ -2693,6 +2753,81 @@ module MapEditor =
           ScriptIndex = 0
           BodyFacing = North
           AttentionDirection = North }
+
+    let private placementIssue map excludedUnit unit column row =
+        let targetCells = cells unit column row
+        if
+            targetCells
+            |> List.exists (fun (x, y) ->
+                x < 0 || y < 0 || x >= map.Width || y >= map.Height)
+        then
+            Some "outside the map"
+        elif
+            targetCells
+            |> List.exists (fun cell -> Map.tryFind cell map.Terrain = Some Blocked)
+        then
+            Some "blocked terrain is inside the footprint"
+        else
+            let occupied =
+                map.Units
+                |> Map.toList
+                |> List.filter (fun (id, _) -> Some id <> excludedUnit)
+                |> List.collect (fun (_, other) -> cells other other.Column other.Row)
+                |> Set.ofList
+            if targetCells |> List.exists (fun cell -> Set.contains cell occupied) then
+                Some "another unit occupies the footprint"
+            else
+                let crossesInternalEdge =
+                    [ for y in row .. row + unit.Size - 1 do
+                          for x in column .. column + unit.Size - 2 do
+                              yield x, y, EastEdge
+                      for y in row .. row + unit.Size - 2 do
+                          for x in column .. column + unit.Size - 1 do
+                              yield x, y, SouthEdge ]
+                    |> List.exists (edgeIsBlocking map)
+                if crossesInternalEdge then
+                    Some "a blocking edge crosses the footprint"
+                else
+                    None
+
+    let unitPlacementIssue state =
+        match state.Tool with
+        | Place(side, classId, size) ->
+            let address = state.UnitPlacementCursor
+            let unit = placementUnit side classId size address state
+            placementIssue state.Map None unit address.CellColumn address.CellRow
+        | _ -> Some "no unit preset is armed"
+
+    let private visibleUnitPresets state =
+        searchCanonicalUnitPresets state.UnitPaletteSearch
+
+    let selectedUnitPalettePreset state =
+        let visible = visibleUnitPresets state
+        state.UnitPaletteCursor.PresetId
+        |> Option.bind (fun id -> visible |> List.tryFind (fun preset -> preset.Id = id))
+        |> Option.orElseWith (fun () -> List.tryHead visible)
+
+    let private paletteCursorFor preferredId preferredIndex state =
+        let visible = visibleUnitPresets state
+        match visible with
+        | [] ->
+            { PresetId = None
+              FactionIndex = 0
+              ResultIndex = 0 }
+        | _ ->
+            let index =
+                preferredId
+                |> Option.bind (fun id ->
+                    visible |> List.tryFindIndex (fun preset -> preset.Id = id))
+                |> Option.defaultValue (max 0 (min (visible.Length - 1) preferredIndex))
+            let preset = visible[index]
+            let factions = visible |> List.map _.Faction |> List.distinct
+            { PresetId = Some preset.Id
+              FactionIndex =
+                factions
+                |> List.tryFindIndex ((=) preset.Faction)
+                |> Option.defaultValue 0
+              ResultIndex = index }
 
     let private selectedUnits state =
         state.SelectedUnits
@@ -2878,6 +3013,12 @@ module MapEditor =
                   SelectedUnits = Set.empty
                   SelectedRegion = None
                   Tool = Select }
+          | Some(UnitDeletionPending identifiers) ->
+              let next = commit (RemoveUnits identifiers) state
+              { next with
+                  UnitAnnouncement =
+                      string identifiers.Length
+                      + (if identifiers.Length = 1 then " unit deleted." else " units deleted.") }
           | None -> state
         | OfferCrashRecovery text ->
           match tryImport text with
@@ -2945,20 +3086,192 @@ module MapEditor =
                      | EyedropperTool -> "Eyedropper"
                      | EraseTool -> "Erase")
                     + " terrain tool selected." }
+        | ChooseTool UnitBrowse ->
+            let cursor =
+                paletteCursorFor
+                    state.UnitPaletteCursor.PresetId
+                    state.UnitPaletteCursor.ResultIndex
+                    state
+            { state with
+                Tool = UnitBrowse
+                UnitPaletteCursor = cursor
+                Gesture = IdleGesture
+                Validation = None
+                UnitAnnouncement =
+                    if cursor.PresetId.IsSome then "Unit preset browser ready."
+                    else "No unit presets match the current filter." }
         | ChooseTerrain terrain ->
             { state with
                 TerrainSelection = terrain
                 Validation = None
                 TerrainAnnouncement = terrainName terrain + " terrain selected." }
         | SetUnitPaletteSearch query ->
+            let filtered = { state with UnitPaletteSearch = query }
+            let cursor =
+                paletteCursorFor
+                    state.UnitPaletteCursor.PresetId
+                    0
+                    filtered
             let count = searchCanonicalUnitPresets query |> List.length
-            { state with
+            { filtered with
+                UnitPaletteCursor = cursor
                 UnitPaletteSearch = query
                 UnitAnnouncement =
                     string count
                     + " canonical unit "
                     + (if count = 1 then "preset" else "presets")
                     + " shown." }
+        | MoveUnitPaletteCursor delta ->
+            let visible = visibleUnitPresets state
+            if List.isEmpty visible then state
+            else
+                let current =
+                    paletteCursorFor
+                        state.UnitPaletteCursor.PresetId
+                        state.UnitPaletteCursor.ResultIndex
+                        state
+                let index =
+                    let raw = current.ResultIndex + delta
+                    (raw % visible.Length + visible.Length) % visible.Length
+                let cursor = paletteCursorFor None index state
+                { state with
+                    Tool = UnitBrowse
+                    UnitPaletteCursor = cursor
+                    UnitAnnouncement =
+                        visible[index].Name
+                        + ", preset "
+                        + string (index + 1)
+                        + " of "
+                        + string visible.Length
+                        + "." }
+        | SelectUnitPaletteBoundary last ->
+            let visible = visibleUnitPresets state
+            if List.isEmpty visible then state
+            else
+                let index = if last then visible.Length - 1 else 0
+                { state with
+                    Tool = UnitBrowse
+                    UnitPaletteCursor = paletteCursorFor None index state
+                    UnitAnnouncement = visible[index].Name + " selected." }
+        | PageUnitPaletteFaction delta ->
+            let visible = visibleUnitPresets state
+            let factions = visible |> List.map _.Faction |> List.distinct
+            if List.isEmpty factions then state
+            else
+                let cursor =
+                    paletteCursorFor
+                        state.UnitPaletteCursor.PresetId
+                        state.UnitPaletteCursor.ResultIndex
+                        state
+                let factionIndex =
+                    let raw = cursor.FactionIndex + delta
+                    (raw % factions.Length + factions.Length) % factions.Length
+                let index =
+                    visible
+                    |> List.findIndex (fun preset -> preset.Faction = factions[factionIndex])
+                { state with
+                    Tool = UnitBrowse
+                    UnitPaletteCursor = paletteCursorFor None index state
+                    UnitAnnouncement = factions[factionIndex] + " faction presets." }
+        | ArmUnitPalettePreset ->
+            match selectedUnitPalettePreset state with
+            | None ->
+                { state with
+                    Validation = Some "No visible unit preset can be armed."
+                    UnitAnnouncement = "No unit preset is available." }
+            | Some preset ->
+                let armed =
+                    { state with
+                        Tool = Place(preset.Side, preset.ClassId, preset.FootprintSize)
+                        Gesture = IdleGesture
+                        Validation = None }
+                let issue = unitPlacementIssue armed
+                { armed with
+                    UnitAnnouncement =
+                        preset.Name
+                        + " armed at the placement cursor — "
+                        + (issue |> Option.map (fun reason -> "invalid: " + reason) |> Option.defaultValue "valid")
+                        + "." }
+        | ReturnToUnitBrowse ->
+            unlockedUpdate (ChooseTool UnitBrowse) state
+        | MoveUnitPlacementCursor(columnDelta, rowDelta) ->
+            let cursor =
+                { CellColumn =
+                    max 0 (min (state.Map.Width - 1) (state.UnitPlacementCursor.CellColumn + columnDelta))
+                  CellRow =
+                    max 0 (min (state.Map.Height - 1) (state.UnitPlacementCursor.CellRow + rowDelta)) }
+            let moved = { state with UnitPlacementCursor = cursor; Gesture = IdleGesture }
+            { moved with
+                UnitAnnouncement =
+                    unitPlacementIssue moved
+                    |> Option.map (fun reason -> "Placement preview invalid: " + reason + ".")
+                    |> Option.defaultValue "Placement preview valid." }
+        | CycleArmedUnitPreset delta ->
+            let visible = visibleUnitPresets state
+            if List.isEmpty visible then state
+            else
+                let currentId =
+                    match state.Tool with
+                    | Place(side, classId, size) ->
+                        visible
+                        |> List.tryFind (fun preset ->
+                            preset.Side = side
+                            && preset.ClassId = classId
+                            && preset.FootprintSize = size)
+                        |> Option.map _.Id
+                    | _ -> state.UnitPaletteCursor.PresetId
+                let cursor = paletteCursorFor currentId 0 state
+                let index =
+                    let raw = cursor.ResultIndex + delta
+                    (raw % visible.Length + visible.Length) % visible.Length
+                let preset = visible[index]
+                let next =
+                    { state with
+                        UnitPaletteCursor = paletteCursorFor None index state
+                        Tool = Place(preset.Side, preset.ClassId, preset.FootprintSize)
+                        Gesture = IdleGesture }
+                { next with
+                    UnitAnnouncement =
+                        preset.Name
+                        + " armed — "
+                        + (unitPlacementIssue next
+                           |> Option.map (fun reason -> "invalid: " + reason)
+                           |> Option.defaultValue "valid")
+                        + "." }
+        | CommitUnitPlacement returnToBrowse ->
+            match state.Tool with
+            | Place(side, classId, size) ->
+                match unitPlacementIssue state with
+                | Some reason ->
+                    { state with
+                        Validation = Some("Invalid placement: " + reason + ".")
+                        UnitAnnouncement = "Placement rejected: " + reason + "." }
+                | None ->
+                    let unit = placementUnit side classId size state.UnitPlacementCursor state
+                    let next = commit (AddUnits [| unit |]) state
+                    let next =
+                        { next with
+                            SelectedUnit = Some unit.Id
+                            SelectedUnits = Set.singleton unit.Id
+                            UnitAnnouncement =
+                                "Placed "
+                                + unit.ClassId
+                                + " as unit "
+                                + string unit.Id
+                                + " in revision "
+                                + string next.Revision.Number
+                                + "." }
+                    if returnToBrowse then unlockedUpdate (ChooseTool UnitBrowse) next
+                    else { next with Tool = Place(side, classId, size) }
+            | _ -> state
+        | ResetUnitMovePreview ->
+            match state.Gesture with
+            | UnitMoveGesture(anchor, _, original, _) ->
+                { state with
+                    Gesture = UnitMoveGesture(anchor, anchor, original, UpdateUnits original)
+                    Validation = None
+                    UnitAnnouncement = "Movement preview reset to the original positions." }
+            | _ -> state
         | CreateRectangleRegion(purpose, first, last) ->
             let column = min first.CellColumn last.CellColumn
             let row = min first.CellRow last.CellRow
@@ -3065,22 +3378,24 @@ module MapEditor =
         | PreviewUnitPlacement address ->
             match state.Tool with
             | Place(side, classId, size) ->
-                let unit = placementUnit side classId size address state
+                let previewState = { state with UnitPlacementCursor = address }
+                let unit = placementUnit side classId size address previewState
                 let command = AddUnits [| unit |]
-                { state with
+                { previewState with
                     Gesture = CommandPreviewGesture command
                     Validation = None
                     UnitAnnouncement =
-                        unitPreviewMessage
-                            ("Placement preview for "
-                             + unit.ClassId
-                             + ", "
-                             + string unit.Size
-                             + " by "
-                             + string unit.Size
-                             + " cells.")
-                            state.Map
-                            command }
+                        "Placement preview for "
+                        + unit.ClassId
+                        + ", "
+                        + string unit.Size
+                        + " by "
+                        + string unit.Size
+                        + " cells — "
+                        + (unitPlacementIssue previewState
+                           |> Option.map (fun reason -> "invalid: " + reason)
+                           |> Option.defaultValue "valid")
+                        + "." }
             | _ -> state
         | BeginUnitMove address ->
             let original = selectedUnits state
@@ -3537,6 +3852,13 @@ module MapEditor =
                             LastColumn = current.CellColumn
                             LastRow = current.CellRow })
                     state
+            | CommandPreviewGesture((AddUnits units) as command) ->
+                let next = commit command state
+                if next.Validation.IsSome then next
+                else
+                    { next with
+                        SelectedUnits = units |> Array.map _.Id |> Set.ofArray
+                        SelectedUnit = units |> Array.tryHead |> Option.map _.Id }
             | CommandPreviewGesture command -> commit command state
             | UnitMoveGesture(anchor, current, original, command) ->
                 let columnDelta = current.CellColumn - anchor.CellColumn
@@ -3595,6 +3917,11 @@ module MapEditor =
                 { state with
                     Gesture = IdleGesture
                     Validation = None
+                    UnitAnnouncement =
+                        match state.Gesture with
+                        | UnitMoveGesture _ -> "Movement preview canceled; original positions restored."
+                        | CommandPreviewGesture(AddUnits _) -> "Unit placement or paste preview canceled."
+                        | _ -> state.UnitAnnouncement
                     TerrainAnnouncement =
                         match state.Gesture with
                         | TerrainGesture _ -> "Terrain preview canceled."
@@ -3639,16 +3966,60 @@ module MapEditor =
                 match tryTranslatedCommand clipboard.UnitFragment state with
                 | None -> { state with Validation = Some "The copied formation does not fit." }
                 | Some(command, units) ->
-                    let next = commit command state
-                    { next with
-                        SelectedUnits = units |> Array.map _.Id |> Set.ofArray
-                        SelectedUnit = units |> Array.tryHead |> Option.map _.Id }
+                    { state with
+                        Gesture = CommandPreviewGesture command
+                        Validation = None
+                        UnitAnnouncement =
+                            "Paste preview for "
+                            + string units.Length
+                            + (if units.Length = 1 then " unit." else " units. Press Enter to commit.") }
         | DuplicateEditorSelection ->
             let copied = update CopyEditorSelection state
-            update PasteEditorClipboard copied
+            match copied.Clipboard with
+            | None -> copied
+            | Some clipboard ->
+                match tryTranslatedCommand clipboard.UnitFragment copied with
+                | None -> { copied with Validation = Some "The duplicated formation does not fit." }
+                | Some(command, units) ->
+                    let next = commit command copied
+                    { next with
+                        SelectedUnits = units |> Array.map _.Id |> Set.ofArray
+                        SelectedUnit = units |> Array.tryHead |> Option.map _.Id
+                        UnitAnnouncement =
+                            "Duplicated "
+                            + string units.Length
+                            + (if units.Length = 1 then " unit." else " units atomically.") }
         | DeleteEditorSelection ->
-            if Set.isEmpty state.SelectedUnits then state
-            else commit (RemoveUnits(state.SelectedUnits |> Set.toArray)) state
+            let identifiers = state.SelectedUnits |> Set.toArray
+            if Array.isEmpty identifiers then state
+            else
+                let includesAuthoredPlanning =
+                    identifiers
+                    |> Array.exists (fun id ->
+                        state.Map.Units
+                        |> Map.tryFind id
+                        |> Option.exists (fun unit ->
+                            unit.Controller <> Manual || not (List.isEmpty unit.Script)))
+                if
+                    identifiers.Length > BulkUnitDeletionThreshold
+                    || includesAuthoredPlanning
+                then
+                    { state with
+                        PendingDestructiveChange = Some(UnitDeletionPending identifiers)
+                        Validation =
+                            Some(
+                                "Deleting this selection requires confirmation because it is bulk or contains authored planning data."
+                            )
+                        UnitAnnouncement =
+                            "Confirm deletion of "
+                            + string identifiers.Length
+                            + (if identifiers.Length = 1 then " unit." else " units.") }
+                else
+                    let next = commit (RemoveUnits identifiers) state
+                    { next with
+                        UnitAnnouncement =
+                            string identifiers.Length
+                            + (if identifiers.Length = 1 then " unit deleted." else " units deleted.") }
         | SetSelectedSide side when state.RevisionState <> SimulatedRevision ->
             selectedUnits state
             |> Array.map (fun unit -> { unit with Side = side })

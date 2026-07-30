@@ -117,6 +117,7 @@ type ModalCommand =
     | ToggleSimulatorCommandPanel
     | SimulatorCommand of SimulatorAction
     | SetEditorPanHeld of bool
+    | FocusUnitPresetSearch
     | ToggleInputHelp
 
 type ModalBinding<'command> =
@@ -560,6 +561,9 @@ module ModalInput =
                   (key "Escape" plain KeyDown) "Close possible inputs" "Help" IgnoreRepeat available
                   ToggleInputHelp
           elif facts.Editor.PendingDestructiveChange.IsSome then
+              yield binding "editor.confirmation.confirm" (ExactContext EditorDestructiveConfirmation) TransientPopup
+                  (key "Enter" plain KeyDown) "Confirm the pending destructive change" "Current operation"
+                  IgnoreRepeat available (EditorCommand ConfirmDestructiveChange)
               yield binding "editor.confirmation.cancel" (ExactContext EditorDestructiveConfirmation) TransientPopup
                   (key "Escape" plain KeyDown) "Cancel the pending destructive change" "Current operation"
                   IgnoreRepeat available (EditorCommand CancelDestructiveChange)
@@ -598,6 +602,11 @@ module ModalInput =
                   (ExactContext(EditorGesture SelectedObjectActions)) ActiveGestureOrPreview
                   (key "i" plain KeyDown) "Open selected-object inspector" "Selected-object actions"
                   IgnoreRepeat available (EditorWorkspaceCommand ToggleEditorInspector)
+              yield binding "editor.selection.actions.move"
+                  (ExactContext(EditorGesture SelectedObjectActions)) ActiveGestureOrPreview
+                  (key "m" plain KeyDown) "Move selected units" "Selected-object actions"
+                  IgnoreRepeat unitSelectionAvailable
+                  (EditorCommand(BeginUnitMove facts.Editor.KeyboardCursor.Cell))
           | BoxSelectionGesture(anchor, current) ->
               let clamp minimum maximum value =
                   max minimum (min maximum value)
@@ -649,6 +658,28 @@ module ModalInput =
                   )) ActiveGestureOrPreview
                   (key "Backspace" plain KeyDown) "Reset endpoint to anchor" "Terrain"
                   IgnoreRepeat available (EditorCommand ResetTerrainPreview)
+          | UnitMoveGesture(_, current, _, _) ->
+              let extend id value modifiers distance dx dy =
+                  binding id (ExactContext(EditorGesture UnitMovePreview)) ActiveGestureOrPreview
+                      (key value modifiers KeyDown) "Move the formation preview" "Units"
+                      AllowRepeat available
+                      (EditorCommand(
+                          ExtendUnitMove
+                              { CellColumn =
+                                  max 0 (min (facts.Editor.Map.Width - 1) (current.CellColumn + dx * distance))
+                                CellRow =
+                                  max 0 (min (facts.Editor.Map.Height - 1) (current.CellRow + dy * distance)) }
+                      ))
+              for modifiers, distance, suffix in
+                  [ plain, 1, ""; { plain with Shift = true }, 5, "-large" ] do
+                  yield extend ("editor.unit.move.west" + suffix) "ArrowLeft" modifiers distance -1 0
+                  yield extend ("editor.unit.move.east" + suffix) "ArrowRight" modifiers distance 1 0
+                  yield extend ("editor.unit.move.north" + suffix) "ArrowUp" modifiers distance 0 -1
+                  yield extend ("editor.unit.move.south" + suffix) "ArrowDown" modifiers distance 0 1
+              yield binding "editor.unit.move.reset"
+                  (ExactContext(EditorGesture UnitMovePreview)) ActiveGestureOrPreview
+                  (key "Backspace" plain KeyDown) "Reset movement preview" "Units"
+                  IgnoreRepeat available (EditorCommand ResetUnitMovePreview)
           | _ -> ()
 
           match facts.Editor.Tool with
@@ -680,6 +711,78 @@ module ModalInput =
               yield binding "editor.selection.all-domain" (ExactContext(EditorTool Select)) ActiveTool
                   (key "a" plain KeyDown) "Select all units" "Selection"
                   IgnoreRepeat selectableDomainAvailable (EditorCommand SelectAllInActiveDomain)
+              yield binding "editor.unit.move.begin" (ExactContext(EditorTool Select)) ActiveTool
+                  (key "m" plain KeyDown) "Begin moving selected units" "Units"
+                  IgnoreRepeat unitSelectionAvailable
+                  (EditorCommand(BeginUnitMove facts.Editor.KeyboardCursor.Cell))
+          | UnitBrowse ->
+              let browse id value repeat delta =
+                  binding id (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                      (key value plain KeyDown) "Browse unit presets" "Units"
+                      repeat available (EditorCommand(MoveUnitPaletteCursor delta))
+              yield browse "editor.unit.preset.previous-arrow" "ArrowUp" AllowRepeat -1
+              yield browse "editor.unit.preset.next-arrow" "ArrowDown" AllowRepeat 1
+              yield browse "editor.unit.preset.previous-bracket" "[" AllowRepeat -1
+              yield browse "editor.unit.preset.next-bracket" "]" AllowRepeat 1
+              yield binding "editor.unit.preset.previous-faction"
+                  (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                  (key "PageUp" plain KeyDown) "Previous faction group" "Units"
+                  AllowRepeat available (EditorCommand(PageUnitPaletteFaction -1))
+              yield binding "editor.unit.preset.next-faction"
+                  (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                  (key "PageDown" plain KeyDown) "Next faction group" "Units"
+                  AllowRepeat available (EditorCommand(PageUnitPaletteFaction 1))
+              yield binding "editor.unit.preset.first"
+                  (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                  (key "Home" plain KeyDown) "First visible preset" "Units"
+                  IgnoreRepeat available (EditorCommand(SelectUnitPaletteBoundary false))
+              yield binding "editor.unit.preset.last"
+                  (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                  (key "End" plain KeyDown) "Last visible preset" "Units"
+                  IgnoreRepeat available (EditorCommand(SelectUnitPaletteBoundary true))
+              yield binding "editor.unit.preset.arm"
+                  (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                  (key "Enter" plain KeyDown) "Arm highlighted preset" "Units"
+                  IgnoreRepeat available (EditorCommand ArmUnitPalettePreset)
+              yield binding "editor.unit.preset.search"
+                  (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                  (key "/" plain KeyDown) "Focus preset search" "Units"
+                  IgnoreRepeat available FocusUnitPresetSearch
+              yield binding "editor.unit.preset.exit"
+                  (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                  (key "Escape" plain KeyDown) "Return to Select" "Units"
+                  IgnoreRepeat available (EditorCommand(ChooseTool Select))
+          | Place _ when facts.Editor.Gesture = IdleGesture ->
+              let move id value dx dy =
+                  binding id (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                      (key value plain KeyDown) "Move the placement cursor" "Units"
+                      AllowRepeat available (EditorCommand(MoveUnitPlacementCursor(dx, dy)))
+              yield move "editor.unit.place.west" "ArrowLeft" -1 0
+              yield move "editor.unit.place.east" "ArrowRight" 1 0
+              yield move "editor.unit.place.north" "ArrowUp" 0 -1
+              yield move "editor.unit.place.south" "ArrowDown" 0 1
+              yield binding "editor.unit.place.previous-preset"
+                  (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                  (key "[" plain KeyDown) "Arm previous visible preset" "Units"
+                  AllowRepeat available (EditorCommand(CycleArmedUnitPreset -1))
+              yield binding "editor.unit.place.next-preset"
+                  (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                  (key "]" plain KeyDown) "Arm next visible preset" "Units"
+                  AllowRepeat available (EditorCommand(CycleArmedUnitPreset 1))
+              yield binding "editor.unit.place.commit"
+                  (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                  (key "Enter" plain KeyDown) "Place and remain armed" "Units"
+                  IgnoreRepeat available (EditorCommand(CommitUnitPlacement false))
+              yield binding "editor.unit.place.commit-return"
+                  (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                  (key "Enter" { plain with Shift = true } KeyDown)
+                  "Place and return to preset browse" "Units"
+                  IgnoreRepeat available (EditorCommand(CommitUnitPlacement true))
+              for value, suffix in [ "b", "browse"; "Escape", "cancel" ] do
+                  yield binding ("editor.unit.place." + suffix)
+                      (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                      (key value plain KeyDown) "Return to unit preset browse" "Units"
+                      IgnoreRepeat available (EditorCommand ReturnToUnitBrowse)
           | Terrain _ ->
               let movement id value dx dy =
                   binding id (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
@@ -839,6 +942,16 @@ module ModalInput =
             | EdgePolylineGesture(_, segments), _ ->
                 [ "Editor"; "Edges"; "Polyline" ],
                 string segments.Length + " segments staged"
+            | CommandPreviewGesture(AddUnits units), Place _ ->
+                [ "Editor"; "Units"; "Place preview" ],
+                string units.Length
+                + (if units.Length = 1 then " unit footprint" else " unit footprints")
+                + " staged"
+            | CommandPreviewGesture(AddUnits units), _ ->
+                [ "Editor"; "Units"; "Paste preview" ],
+                string units.Length
+                + (if units.Length = 1 then " unit" else " units")
+                + " staged — Enter commits one undoable command"
             | CommandPreviewGesture _, _ ->
                 [ "Editor"; "Command preview" ], "A validated editor command is ready to commit"
             | IdleGesture, Select ->
@@ -860,9 +973,43 @@ module ModalInput =
                 terrainName facts.Editor.TerrainSelection
                 + " terrain — " + string facts.Editor.BrushSize + "×" + string facts.Editor.BrushSize
                 + " brush — cursor " + addressText facts.Editor.TerrainCursor
+            | IdleGesture, UnitBrowse ->
+                let visible =
+                    MapEditor.searchCanonicalUnitPresets facts.Editor.UnitPaletteSearch
+                match MapEditor.selectedUnitPalettePreset facts.Editor with
+                | Some preset ->
+                    [ "Editor"; "Units"; "Browse" ],
+                    preset.Faction
+                    + " / "
+                    + preset.Name
+                    + " — "
+                    + string preset.FootprintSize
+                    + "×"
+                    + string preset.FootprintSize
+                    + " — "
+                    + string preset.HealthMaximum
+                    + " HP — preset "
+                    + string (facts.Editor.UnitPaletteCursor.ResultIndex + 1)
+                    + " of "
+                    + string visible.Length
+                | None ->
+                    [ "Editor"; "Units"; "Browse" ],
+                    "No presets match “" + facts.Editor.UnitPaletteSearch + "”"
             | IdleGesture, Place(side, classId, size) ->
                 [ "Editor"; "Units"; "Place" ],
-                string side + " / " + classId + " — " + string size + "×" + string size
+                string side
+                + " / "
+                + classId
+                + " — "
+                + string size
+                + "×"
+                + string size
+                + " — preview at "
+                + addressText facts.Editor.UnitPlacementCursor
+                + " — "
+                + (MapEditor.unitPlacementIssue facts.Editor
+                   |> Option.map (fun reason -> "invalid: " + reason)
+                   |> Option.defaultValue "valid")
             | IdleGesture, Edge(direction, kind) ->
                 [ "Editor"; "Edges" ],
                 string kind + " / " + string direction
@@ -878,6 +1025,10 @@ module ModalInput =
                      "Confirm resize to " + string preview.TargetWidth + "×" + string preview.TargetHeight
                  | Some(NewMapPending(width, height, name)) ->
                      "Confirm new map " + name + " at " + string width + "×" + string height
+                 | Some(UnitDeletionPending identifiers) ->
+                     "Confirm deleting "
+                     + string identifiers.Length
+                     + (if identifiers.Length = 1 then " unit" else " units")
                  | None -> underlyingDetail)
             elif facts.PanHeld then
                 [ "Editor"; "Pan held" ],
