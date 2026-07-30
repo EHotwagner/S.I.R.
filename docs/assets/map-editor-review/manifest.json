@@ -1,7 +1,7 @@
 {
   "format": "sir-map-editor-review-v1",
   "generatedFrom": "production Fable/React SVG workspaces",
-  "productionBundleSha256": "9378a4295b10da23e91b19c88274d2c05765c90f5c99ed7dcf6a6b0aaf00640f",
+  "productionBundleSha256": "7995213194fe8ff779fc484898baa26087f437b623ea7eb54dfb030f1985c29a",
   "rasterizer": "rsvg-convert 2.62.3",
   "width": 960,
   "height": 640,
@@ -11,7 +11,7 @@
       "description": "Open, rough, objective, and blocked terrain with grid context.",
       "svg": "terrain.svg",
       "png": "terrain.png",
-      "svgSha256": "bdfaceb5eafbc023c8cedfa33441bfca4cef898104b0688af5b1330875568d17",
+      "svgSha256": "2fa85e70b72d3f7cf6f97affb410c1bddc57031d4ae0b0b8977aba8af35a4a13",
       "pngSha256": "97b76acd83fe1d46504b428360d16f4b6d1d47d089991f0d35eaf20b52d6e401"
     },
     {
@@ -19,7 +19,7 @@
       "description": "Wall, open door, and window semantic edge meanings.",
       "svg": "edges.svg",
       "png": "edges.png",
-      "svgSha256": "f11b2035ed715ff7dcb67e196fa40e380f448420fbc6467751c070e1a4a4ebe9",
+      "svgSha256": "dfe5df471a0012b02489654048bc8fcec92a1cfddb353f092ba1729cc29afa30",
       "pngSha256": "8af1c41f1c04ebc88aff43a4db630bc638264c554d3dbcc8f3f76ea40f4a112d"
     },
     {
@@ -27,7 +27,7 @@
       "description": "Canonical 1×1, 2×2, and 3×3 square unit footprints.",
       "svg": "units.svg",
       "png": "units.png",
-      "svgSha256": "61eed67b1b2b3b182851d4201830c8f98cd58cc64afcb4d1096e71756acdfe5d",
+      "svgSha256": "f21c967e658e7799c678fe4555b8ba616a5b75c2b3f1e0dbb7997e41e0b0dba8",
       "pngSha256": "9176a0dad321d2298d79aa410e3a53e7145cffabce6b9d7d7794ef556392013d"
     },
     {
@@ -35,7 +35,7 @@
       "description": "Objective rectangle and blue deployment polygon.",
       "svg": "zones.svg",
       "png": "zones.png",
-      "svgSha256": "90d09f059560952869843eeec47935cf4d81a566e21aebd21254fb7ad908f086",
+      "svgSha256": "a7242bc5d1e45f19b73511d77f305052956876f284950e9a0c5b13c1c512b6cd",
       "pngSha256": "b86a278c1653336649e95aa3ba557f820d6a5e914cb6221f3b34299674355f9d"
     },
     {
@@ -43,7 +43,7 @@
       "description": "Signature-validated local raster alignment beneath the grid.",
       "svg": "background.svg",
       "png": "background.png",
-      "svgSha256": "de1b53e2cea3af50db0996fe08df0e93cb4ec5be10056b2a44b04cdaf2b5a751",
+      "svgSha256": "392e93d5171a75d3703a55c53ab925167480d0483d434caa59c528ba945d88cd",
       "pngSha256": "a24e70f325c964db3e377af5c1357828ca8aa26f2ceca588bbb6eba6dc841fc4"
     },
     {
@@ -59,7 +59,7 @@
       "description": "EDGE-GAP issue projected without hiding authoritative domains.",
       "svg": "validation.svg",
       "png": "validation.png",
-      "svgSha256": "2ff83229027c0cfc580f59194afc9aff6ec332ca49e2ce2e75b9081e0811dc4d",
+      "svgSha256": "41b90d4fd3f2a558a678836519ebeb0154f4d3c505ccc6c77861f0f33328ad08",
       "pngSha256": "ff49ea63831bacd912c9580f1c5f0f312da037b6cca0003cf07ab7ce444a69eb"
     }
   ]

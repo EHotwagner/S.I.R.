@@ -4750,15 +4750,6 @@ module MapEditor =
         | EyedropperTool -> "Eyedropper"
         | EraseTool -> "Erase"
 
-    let terrainToolShortcut tool =
-        match tool with
-        | PencilTool -> "P"
-        | RectangleTool -> "R"
-        | LineTool -> "L"
-        | FloodFillTool -> "G"
-        | EyedropperTool -> "I"
-        | EraseTool -> "X"
-
     let terrainPattern terrain =
         match terrain with
         | Open -> "plain"

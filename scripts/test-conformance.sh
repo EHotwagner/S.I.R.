@@ -187,7 +187,7 @@ if command -v rg >/dev/null 2>&1; then
   )
   input_presentation_leak=$(
     rg -n \
-      '\b(SimulatorSelectedUnit|SimulatorControllerSelection|InputHelpExpanded|EditorSpacePressed)\b' \
+      '\b(SimulatorSelectedUnit|SimulatorControllerSelection|InputHelpExpanded|HeldInputs)\b' \
       "${authoritative_roots[@]}" \
       src/SIR.Client/SimulatorWorkerProtocol.fs \
       src/SIR.Client/MapEditor.fs \
@@ -212,7 +212,7 @@ else
   input_presentation_leak=$(
     grep -RInE \
       --include='*.fs' \
-      '(^|[^[:alnum:]_])(SimulatorSelectedUnit|SimulatorControllerSelection|InputHelpExpanded|EditorSpacePressed)([^[:alnum:]_]|$)' \
+      '(^|[^[:alnum:]_])(SimulatorSelectedUnit|SimulatorControllerSelection|InputHelpExpanded|HeldInputs)([^[:alnum:]_]|$)' \
       "${authoritative_roots[@]}" \
       src/SIR.Client/SimulatorWorkerProtocol.fs \
       src/SIR.Client/MapEditor.fs \

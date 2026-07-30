@@ -43,7 +43,7 @@ let private projection tick : InspectionProjection =
 
 [<EntryPoint>]
 let main _ =
-    SIR.Client.TestsCurrentModalInputCharacterization.run ()
+    SIR.Client.TestsModalInputCatalogAuthority.run ()
 
     let retainedPackage: SIR.Simulation.ReplayPackage =
         { FormatVersion = int32 SIR.Simulation.Replay.CurrentFormatVersion
@@ -2526,9 +2526,17 @@ let main _ =
           + ([ PencilTool; RectangleTool; LineTool; FloodFillTool; EyedropperTool; EraseTool ]
              |> List.map MapEditor.terrainToolLabel
              |> String.concat ",")
-          "shortcuts="
-          + ([ PencilTool; RectangleTool; LineTool; FloodFillTool; EyedropperTool; EraseTool ]
-             |> List.map MapEditor.terrainToolShortcut
+          "commands="
+          + (ModalInput.editorCatalog
+                 { Editor = MapEditor.initial
+                   ActiveDomain = TerrainDomain
+                   PanHeld = false
+                   InputHelpExpanded = false }
+             |> List.map _.Id
+             |> List.filter (fun id ->
+                 id.StartsWith("editor.tool.terrain.")
+                 && not (id.Contains(".compat-")))
+             |> List.sort
              |> String.concat ",")
           "patterns="
           + ([ Open; Rough; Blocked; Objective ]

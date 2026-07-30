@@ -502,20 +502,20 @@ buttonByText("Terrain")?.click();
 await window.happyDOM.waitUntilComplete();
 if (
   !window.document.querySelector(
-    'button[aria-label="rough terrain, diagonal hatch, shortcut Shift+2"]',
+    'button[aria-label="rough terrain, diagonal hatch"]',
   ) ||
   !window.document.querySelector(
-    'button[aria-label="blocked terrain, cross hatch, shortcut Shift+3"]',
+    'button[aria-label="blocked terrain, cross hatch"]',
   ) ||
   !window.document.querySelector("#terrain-brush-size")
 ) {
   throw new Error("The accessible terrain palette, patterns, or integer brush control did not mount.");
 }
-buttonByText("Pencil (P)")?.click();
+buttonByText("Pencil")?.click();
 await window.happyDOM.waitUntilComplete();
 window.document
   .querySelector(
-    'button[aria-label="blocked terrain, cross hatch, shortcut Shift+3"]',
+    'button[aria-label="blocked terrain, cross hatch"]',
   )
   ?.click();
 await window.happyDOM.waitUntilComplete();

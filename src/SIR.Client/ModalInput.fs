@@ -50,6 +50,13 @@ type InputPhase =
     | KeyDown
     | KeyUp
 
+type ModalInputTarget =
+    | InputElement
+    | TextAreaElement
+    | SelectElement
+    | ContentEditableElement
+    | ApplicationElement
+
 type RepeatPolicy =
     | IgnoreRepeat
     | AllowRepeat
@@ -148,6 +155,31 @@ type ModalCommand =
     | EditorDocumentCommand of EditorDocumentCommand
     | ToggleInputHelp
 
+type HeldInput =
+    | EditorPan
+
+type HeldInputSession =
+    private
+    | HeldInputSession of Set<HeldInput>
+
+[<RequireQualifiedAccess>]
+module HeldInputSession =
+    let empty = HeldInputSession Set.empty
+
+    let contains input (HeldInputSession inputs) =
+        Set.contains input inputs
+
+    let apply command (HeldInputSession inputs) =
+        match command with
+        | SetEditorPanHeld true ->
+            HeldInputSession(Set.add EditorPan inputs)
+        | SetEditorPanHeld false ->
+            HeldInputSession(Set.remove EditorPan inputs)
+        | _ ->
+            HeldInputSession inputs
+
+    let recover (_: HeldInputSession) = empty
+
 type ModalBinding<'command> =
     { Id: string
       Context: ModalContextSelector
@@ -203,6 +235,14 @@ type SimulatorModalFacts =
 
 [<RequireQualifiedAccess>]
 module ModalInput =
+    let acceptsTarget target =
+        match target with
+        | InputElement
+        | TextAreaElement
+        | SelectElement
+        | ContentEditableElement -> false
+        | ApplicationElement -> true
+
     let private precedenceRank = function
         | WorkspaceCommands -> 0
         | ActiveTool -> 1
@@ -513,641 +553,709 @@ module ModalInput =
             binding id AnyEditorContext WorkspaceCommands
                 (key value modifiers KeyDown) label group repeat availability command
 
-        [ yield editorKey "editor.help.toggle" "?" { plain with Shift = true }
-              "Show or hide possible inputs" "Help" IgnoreRepeat available ToggleInputHelp
-          yield editorKey "editor.panel.toggle" "F2" plain
-              "Show or hide the active command panel" "Panels" IgnoreRepeat available ToggleEditorCommandPanel
-          yield editorKey "editor.inspector.toggle" "F3" plain
-              "Show or hide the selected-object inspector" "Panels" IgnoreRepeat available
-              (EditorWorkspaceCommand ToggleEditorInspector)
-          yield editorKey "editor.history.undo" "z" (control false)
-              "Undo" "Edit" IgnoreRepeat
-              (historyAvailable facts.Editor.UndoHistory "There is nothing to undo.")
-              (EditorCommand UndoEditorCommand)
-          yield editorKey "editor.history.redo-shift-z" "z" (control true)
-              "Redo" "Edit" IgnoreRepeat
-              (historyAvailable facts.Editor.RedoHistory "There is nothing to redo.")
-              (EditorCommand RedoEditorCommand)
-          yield editorKey "editor.history.redo-y" "y" (control false)
-              "Redo" "Edit" IgnoreRepeat
-              (historyAvailable facts.Editor.RedoHistory "There is nothing to redo.")
-              (EditorCommand RedoEditorCommand)
-          yield editorKey "editor.selection.copy" "c" (control false)
-              "Copy selected units" "Edit" IgnoreRepeat unitSelectionAvailable
-              (EditorCommand CopyEditorSelection)
-          yield editorKey "editor.selection.paste" "v" (control false)
-              "Paste the editor clipboard" "Edit" IgnoreRepeat clipboardAvailable
-              (EditorCommand PasteEditorClipboard)
-          yield editorKey "editor.selection.duplicate" "d" (control false)
-              "Duplicate selected units" "Edit" IgnoreRepeat unitSelectionAvailable
-              (EditorCommand DuplicateEditorSelection)
-          yield editorKey "editor.selection.all" "a" (control false)
-              "Select all in the active domain" "Selection" IgnoreRepeat selectableDomainAvailable
-              (EditorCommand SelectAllInActiveDomain)
-          yield editorKey "editor.selection.delete" "Delete" plain
-              "Delete the selection" "Selection" IgnoreRepeat selectionAvailable
-              (EditorCommand DeleteEditorSelection)
-          yield editorKey "editor.selection.delete-backspace" "Backspace" plain
-              "Delete the selection" "Selection" IgnoreRepeat selectionAvailable
-              (EditorCommand DeleteEditorSelection)
-          yield editorKey "editor.camera.fit" "0" plain
-              "Fit the complete map" "View" IgnoreRepeat available
-              (EditorWorkspaceCommand FitEditorBoard)
-          yield editorKey "editor.camera.reset" "1" plain
-              "Reset the camera to 100%" "View" IgnoreRepeat available
-              (EditorWorkspaceCommand ResetEditorCamera)
-          yield editorKey "editor.camera.frame-selection" "f" plain
-              "Frame the selection" "View" IgnoreRepeat selectionAvailable
-              (EditorWorkspaceCommand FrameEditorSelection)
-          yield editorKey "editor.mode.select" "v" plain
-              "Enter Select" "Modes" IgnoreRepeat available
-              (EditorCommand(ChooseTool Select))
-          yield editorKey "editor.domain.terrain" "t" plain
-              "Open Terrain commands" "Modes" IgnoreRepeat available
-              (ChooseEditorDomain TerrainDomain)
-          yield editorKey "editor.domain.units" "u" plain
-              "Open Unit commands" "Modes" IgnoreRepeat available
-              (ChooseEditorDomain UnitDomain)
-          yield editorKey "editor.domain.edges" "e" plain
-              "Open Edge commands" "Modes" IgnoreRepeat available
-              (ChooseEditorDomain EdgeDomain)
-          yield editorKey "editor.domain.zones" "z" plain
-              "Open Zone commands" "Modes" IgnoreRepeat available
-              (ChooseEditorDomain RegionDomain)
-          yield editorKey "editor.domain.document" "m" plain
-              "Open Document commands" "Modes" IgnoreRepeat available
-              (ChooseEditorDomain DocumentDomain)
-          yield editorKey "editor.tool.terrain.pencil" "p" plain
-              "Choose Pencil" "Terrain tools" IgnoreRepeat available
-              (EditorCommand(ChooseTool(Terrain PencilTool)))
-          yield editorKey "editor.tool.terrain.rectangle" "r" plain
-              "Choose Rectangle" "Terrain tools" IgnoreRepeat available
-              (EditorCommand(ChooseTool(Terrain RectangleTool)))
-          yield editorKey "editor.tool.terrain.line" "l" plain
-              "Choose Line" "Terrain tools" IgnoreRepeat available
-              (EditorCommand(ChooseTool(Terrain LineTool)))
-          yield editorKey "editor.tool.terrain.flood-fill" "g" plain
-              "Choose Flood fill" "Terrain tools" IgnoreRepeat available
-              (EditorCommand(ChooseTool(Terrain FloodFillTool)))
-          yield editorKey "editor.tool.terrain.eyedropper" "i" plain
-              "Choose Eyedropper" "Terrain tools" IgnoreRepeat available
-              (EditorCommand(ChooseTool(Terrain EyedropperTool)))
-          yield editorKey "editor.tool.terrain.erase" "x" plain
-              "Choose Eraser" "Terrain tools" IgnoreRepeat available
-              (EditorCommand(ChooseTool(Terrain EraseTool)))
-          yield editorKey "editor.validation.previous" "[" plain
-              "Select the previous validation issue" "Validation" AllowRepeat validationAvailable
-              (EditorCommand SelectPreviousIssue)
-          yield editorKey "editor.validation.next" "]" plain
-              "Select the next validation issue" "Validation" AllowRepeat validationAvailable
-              (EditorCommand SelectNextIssue)
-          yield binding "editor.camera.pan-held" AnyEditorContext HeldLayer
-              (key "Space" plain KeyDown) "Hold to pan the map" "View" IgnoreRepeat available
-              (SetEditorPanHeld true)
-          yield binding "editor.camera.pan-release" (ExactContext EditorPanHeld) HeldLayer
-              (key "Space" plain KeyUp) "Release held pan" "View" IgnoreRepeat available
-              (SetEditorPanHeld false)
-
-          if facts.PanHeld then
-              let pan id value modifiers x y =
-                  binding id (ExactContext EditorPanHeld) HeldLayer
-                      (key value modifiers KeyDown) "Pan the map" "View"
-                      AllowRepeat available (EditorWorkspaceCommand(PanEditorBy(x, y)))
-              yield pan "editor.camera.pan-west" "ArrowLeft" plain 40.0 0.0
-              yield pan "editor.camera.pan-east" "ArrowRight" plain -40.0 0.0
-              yield pan "editor.camera.pan-north" "ArrowUp" plain 0.0 40.0
-              yield pan "editor.camera.pan-south" "ArrowDown" plain 0.0 -40.0
-              yield pan "editor.camera.pan-west-large" "ArrowLeft" { plain with Shift = true } 120.0 0.0
-              yield pan "editor.camera.pan-east-large" "ArrowRight" { plain with Shift = true } -120.0 0.0
-              yield pan "editor.camera.pan-north-large" "ArrowUp" { plain with Shift = true } 0.0 120.0
-              yield pan "editor.camera.pan-south-large" "ArrowDown" { plain with Shift = true } 0.0 -120.0
-              yield binding "editor.camera.pan-cancel" (ExactContext EditorPanHeld) HeldLayer
-                  (key "Escape" plain KeyDown) "Release held pan" "View"
-                  IgnoreRepeat available (SetEditorPanHeld false)
-
-          if facts.InputHelpExpanded then
-              yield binding "editor.help.close" (ExactContext InputHelpPopup) InputPopup
-                  (key "Escape" plain KeyDown) "Close possible inputs" "Help" IgnoreRepeat available
-                  ToggleInputHelp
-          elif facts.Editor.PendingDestructiveChange.IsSome then
-              yield binding "editor.confirmation.confirm" (ExactContext EditorDestructiveConfirmation) TransientPopup
-                  (key "Enter" plain KeyDown) "Confirm the pending destructive change" "Current operation"
-                  IgnoreRepeat available (EditorCommand ConfirmDestructiveChange)
-              yield binding "editor.confirmation.cancel" (ExactContext EditorDestructiveConfirmation) TransientPopup
-                  (key "Escape" plain KeyDown) "Cancel the pending destructive change" "Current operation"
-                  IgnoreRepeat available (EditorCommand CancelDestructiveChange)
-          elif facts.Editor.Gesture <> IdleGesture then
-              yield binding "editor.gesture.cancel" AnyEditorContext ActiveGestureOrPreview
-                  (key "Escape" plain KeyDown) "Cancel the current operation" "Current operation"
-                  IgnoreRepeat available (EditorCommand CancelEditorGesture)
-          else
-              yield binding "editor.selection.clear" AnyEditorContext WorkspaceCommands
-                  (key "Escape" plain KeyDown) "Clear the selection" "Selection"
-                  IgnoreRepeat selectionAvailable (EditorCommand(SelectEditorUnit None))
-
-          match facts.Editor.Gesture with
-          | IdleGesture
-          | SelectedObjectActionsGesture -> ()
-          | _ ->
-              yield binding "editor.gesture.commit" AnyEditorContext ActiveGestureOrPreview
-                        (key "Enter" plain KeyDown) "Commit the current operation" "Current operation"
-                        IgnoreRepeat available (EditorCommand CommitEditorGesture)
-
-          match facts.Editor.Gesture with
-          | SelectedObjectActionsGesture ->
-              yield binding "editor.selection.actions.copy"
-                  (ExactContext(EditorGesture SelectedObjectActions)) ActiveGestureOrPreview
-                  (key "c" plain KeyDown) "Copy selected units" "Selected-object actions"
-                  IgnoreRepeat unitSelectionAvailable (EditorCommand CopyEditorSelection)
-              yield binding "editor.selection.actions.duplicate"
-                  (ExactContext(EditorGesture SelectedObjectActions)) ActiveGestureOrPreview
-                  (key "d" plain KeyDown) "Duplicate selected units" "Selected-object actions"
-                  IgnoreRepeat unitSelectionAvailable (EditorCommand DuplicateEditorSelection)
-              yield binding "editor.selection.actions.delete"
-                  (ExactContext(EditorGesture SelectedObjectActions)) ActiveGestureOrPreview
-                  (key "Delete" plain KeyDown) "Delete the selection" "Selected-object actions"
-                  IgnoreRepeat selectionAvailable (EditorCommand DeleteEditorSelection)
-              yield binding "editor.selection.actions.inspector"
-                  (ExactContext(EditorGesture SelectedObjectActions)) ActiveGestureOrPreview
-                  (key "i" plain KeyDown) "Open selected-object inspector" "Selected-object actions"
-                  IgnoreRepeat available (EditorWorkspaceCommand ToggleEditorInspector)
-              yield binding "editor.selection.actions.move"
-                  (ExactContext(EditorGesture SelectedObjectActions)) ActiveGestureOrPreview
-                  (key "m" plain KeyDown) "Move selected units" "Selected-object actions"
-                  IgnoreRepeat unitSelectionAvailable
-                  (EditorCommand(BeginUnitMove facts.Editor.KeyboardCursor.Cell))
-          | BoxSelectionGesture(anchor, current) ->
-              let clamp minimum maximum value =
-                  max minimum (min maximum value)
-              let move id value modifiers dx dy =
-                  binding id (ExactContext(EditorGesture BoxSelection)) ActiveGestureOrPreview
-                      (key value modifiers KeyDown) "Move the box corner" "Selection"
-                      AllowRepeat available
-                      (EditorCommand(
-                          ExtendEditorBoxSelection
-                              { CellColumn =
-                                  clamp 0 (facts.Editor.Map.Width - 1) (current.CellColumn + dx)
-                                CellRow =
-                                  clamp 0 (facts.Editor.Map.Height - 1) (current.CellRow + dy) }
-                      ))
-              for modifiers, suffix in [ plain, ""; { plain with Shift = true }, "-extended" ] do
-                  yield move ("editor.selection.box.west" + suffix) "ArrowLeft" modifiers -1 0
-                  yield move ("editor.selection.box.east" + suffix) "ArrowRight" modifiers 1 0
-                  yield move ("editor.selection.box.north" + suffix) "ArrowUp" modifiers 0 -1
-                  yield move ("editor.selection.box.south" + suffix) "ArrowDown" modifiers 0 1
-              yield binding "editor.selection.box.add" (ExactContext(EditorGesture BoxSelection))
-                  ActiveGestureOrPreview (key "Enter" { plain with Shift = true } KeyDown)
-                  "Add enclosed units to the selection" "Selection" IgnoreRepeat available
-                  (EditorCommand(
-                      AddEditorUnitsInBox
-                          { FirstColumn = anchor.CellColumn
-                            FirstRow = anchor.CellRow
-                            LastColumn = current.CellColumn
-                            LastRow = current.CellRow }
-                  ))
-          | TerrainGesture(_, _, _, _) ->
-              let extend id value modifiers dx dy =
-                  binding id (ExactContext(EditorGesture(
-                      match facts.Editor.Gesture with
-                      | TerrainGesture(tool, _, _, _) -> TerrainPreview tool
-                      | _ -> TerrainPreview PencilTool
-                  ))) ActiveGestureOrPreview
-                      (key value modifiers KeyDown) "Move the terrain endpoint" "Terrain"
-                      AllowRepeat available (EditorCommand(MoveTerrainCursor(dx, dy, true)))
-              for modifiers, suffix in [ plain, ""; { plain with Shift = true }, "-extended" ] do
-                  yield extend ("editor.terrain.gesture.west" + suffix) "ArrowLeft" modifiers -1 0
-                  yield extend ("editor.terrain.gesture.east" + suffix) "ArrowRight" modifiers 1 0
-                  yield extend ("editor.terrain.gesture.north" + suffix) "ArrowUp" modifiers 0 -1
-                  yield extend ("editor.terrain.gesture.south" + suffix) "ArrowDown" modifiers 0 1
-              yield binding "editor.terrain.gesture.reset"
-                  (ExactContext(
-                      match facts.Editor.Gesture with
-                      | TerrainGesture(tool, _, _, _) -> EditorGesture(TerrainPreview tool)
-                      | _ -> EditorGesture(TerrainPreview PencilTool)
-                  )) ActiveGestureOrPreview
-                  (key "Backspace" plain KeyDown) "Reset endpoint to anchor" "Terrain"
-                  IgnoreRepeat available (EditorCommand ResetTerrainPreview)
-          | UnitMoveGesture(_, current, _, _) ->
-              let extend id value modifiers distance dx dy =
-                  binding id (ExactContext(EditorGesture UnitMovePreview)) ActiveGestureOrPreview
-                      (key value modifiers KeyDown) "Move the formation preview" "Units"
-                      AllowRepeat available
-                      (EditorCommand(
-                          ExtendUnitMove
-                              { CellColumn =
-                                  max 0 (min (facts.Editor.Map.Width - 1) (current.CellColumn + dx * distance))
-                                CellRow =
-                                  max 0 (min (facts.Editor.Map.Height - 1) (current.CellRow + dy * distance)) }
-                      ))
-              for modifiers, distance, suffix in
-                  [ plain, 1, ""; { plain with Shift = true }, 5, "-large" ] do
-                  yield extend ("editor.unit.move.west" + suffix) "ArrowLeft" modifiers distance -1 0
-                  yield extend ("editor.unit.move.east" + suffix) "ArrowRight" modifiers distance 1 0
-                  yield extend ("editor.unit.move.north" + suffix) "ArrowUp" modifiers distance 0 -1
-                  yield extend ("editor.unit.move.south" + suffix) "ArrowDown" modifiers distance 0 1
-              yield binding "editor.unit.move.reset"
-                  (ExactContext(EditorGesture UnitMovePreview)) ActiveGestureOrPreview
-                  (key "Backspace" plain KeyDown) "Reset movement preview" "Units"
-                  IgnoreRepeat available (EditorCommand ResetUnitMovePreview)
-          | _ -> ()
-
-          if facts.ActiveDomain = EdgeDomain then
-              let edgeColumn, edgeRow, edgeDirection = facts.Editor.EdgeCursor
-              let edgeTool =
-                  match facts.Editor.Tool with
-                  | Edge(direction, kind) -> direction, kind
-                  | _ -> edgeDirection, Wall
-              let direction, kind = edgeTool
-              let edgeBinding id value modifiers label repeat command =
-                  binding id (ExactContext(EditorDomain EdgeDomain)) ActiveTool
-                      (key value modifiers KeyDown) label "Edges" repeat available command
-              yield edgeBinding "editor.edge.kind.wall" "w" plain "Choose wall" IgnoreRepeat
-                  (EditorCommand(ConvertEdge(edgeColumn, edgeRow, edgeDirection, Wall)))
-              yield edgeBinding "editor.edge.kind.door" "d" plain "Choose closed door" IgnoreRepeat
-                  (EditorCommand(ConvertEdge(edgeColumn, edgeRow, edgeDirection, Door)))
-              yield edgeBinding "editor.edge.kind.window" "n" plain "Choose window" IgnoreRepeat
-                  (EditorCommand(ConvertEdge(edgeColumn, edgeRow, edgeDirection, Window)))
-              yield edgeBinding "editor.edge.orientation.rotate" "r" plain "Rotate edge orientation" IgnoreRepeat
-                  (EditorCommand(
-                      ChooseTool(
-                          Edge(
-                              (if direction = EastEdge then SouthEdge else EastEdge),
-                              kind
-                          )
-                      )
-                  ))
-              let edgeMove id value modifiers dx dy extend =
-                  edgeBinding id value modifiers
-                      (if extend then "Extend the wall polyline" else "Move the snapped edge cursor")
-                      AllowRepeat
-                      (EditorCommand(MoveEdgeCursor(dx, dy, extend)))
-              yield edgeMove "editor.edge.cursor.west" "ArrowLeft" plain -1 0 false
-              yield edgeMove "editor.edge.cursor.east" "ArrowRight" plain 1 0 false
-              yield edgeMove "editor.edge.cursor.north" "ArrowUp" plain 0 -1 false
-              yield edgeMove "editor.edge.cursor.south" "ArrowDown" plain 0 1 false
-              yield edgeMove "editor.edge.polyline.west" "ArrowLeft" { plain with Shift = true } -1 0 true
-              yield edgeMove "editor.edge.polyline.east" "ArrowRight" { plain with Shift = true } 1 0 true
-              yield edgeMove "editor.edge.polyline.north" "ArrowUp" { plain with Shift = true } 0 -1 true
-              yield edgeMove "editor.edge.polyline.south" "ArrowDown" { plain with Shift = true } 0 1 true
-              if facts.Editor.Gesture = IdleGesture then
-                  yield edgeBinding "editor.edge.activate" "Enter" plain
-                      "Apply the selected edge or begin a wall polyline" IgnoreRepeat
-                      (EditorCommand ActivateEdgeCursor)
-              else
-                  match facts.Editor.Gesture with
-                  | EdgePolylineGesture _ ->
-                      yield binding "editor.edge.polyline.backtrack"
-                          (ExactContext(EditorGesture EdgePolyline)) ActiveGestureOrPreview
-                          (key "Backspace" plain KeyDown) "Remove the last polyline segment"
-                          "Edges" IgnoreRepeat available (EditorCommand BacktrackEdgePolyline)
-                  | _ -> ()
-              yield edgeBinding "editor.edge.door.toggle" "o" plain "Toggle door open or closed" IgnoreRepeat
-                  (EditorCommand(ToggleDoorState(edgeColumn, edgeRow, edgeDirection)))
-              yield edgeBinding "editor.edge.erase" "x" plain "Erase the cursor edge" IgnoreRepeat
-                  (EditorCommand(EraseEdge(edgeColumn, edgeRow, edgeDirection)))
-              yield edgeBinding "editor.edge.split" "s" plain "Split the edge run" IgnoreRepeat
-                  (EditorCommand(SplitEdge(edgeColumn, edgeRow, edgeDirection)))
-              yield edgeBinding "editor.edge.join" "j" plain "Join a compatible edge run" IgnoreRepeat
-                  (EditorCommand(JoinEdge(edgeColumn, edgeRow, edgeDirection)))
-
-          if facts.ActiveDomain = RegionDomain then
-              let regionBinding id context value modifiers label repeat availability command =
-                  binding id context ActiveGestureOrPreview
-                      (key value modifiers KeyDown) label "Zones" repeat availability command
-              let cursorMove id context value modifiers dx dy =
-                  regionBinding id context value modifiers "Move the region cursor"
-                      AllowRepeat available (EditorCommand(MoveRegionCursor(dx, dy)))
-              let previewMove id context value modifiers dx dy opposite =
-                  let distance = if modifiers.Shift && not opposite then 5 else 1
-                  regionBinding id context value modifiers "Update the region preview"
-                      AllowRepeat available
-                      (EditorCommand(MoveRegionEditPreview(dx * distance, dy * distance, opposite)))
-
-              match facts.Editor.RegionKeyboardMode with
-              | RegionIdle ->
-                  let context = ExactContext(EditorDomain RegionDomain)
-                  let idle id value label repeat availability command =
-                      binding id context ActiveGestureOrPreview (key value plain KeyDown)
-                          label "Zones" repeat availability command
-                  for id, value, dx, dy in
-                      [ "west", "ArrowLeft", -1, 0
-                        "east", "ArrowRight", 1, 0
-                        "north", "ArrowUp", 0, -1
-                        "south", "ArrowDown", 0, 1 ] do
-                      yield binding ("editor.region.cursor." + id) context ActiveGestureOrPreview
-                          (key value plain KeyDown) "Move the region cursor" "Zones"
-                          AllowRepeat available (EditorCommand(MoveRegionCursor(dx, dy)))
-                  yield idle "editor.region.select" "Enter" "Select the region under the cursor"
-                      IgnoreRepeat available (EditorCommand ActivateRegionCursor)
-                  yield idle "editor.region.create.begin" "n" "Begin a new region"
-                      IgnoreRepeat available (EditorCommand BeginNewRegion)
-                  yield idle "editor.region.edit.move" "m" "Move the selected region"
-                      IgnoreRepeat selectedRegionAvailable (EditorCommand BeginSelectedRegionMove)
-                  yield idle "editor.region.edit.resize" "r" "Resize the selected rectangle"
-                      IgnoreRepeat selectedRectangleAvailable (EditorCommand BeginSelectedRegionResize)
-                  yield idle "editor.region.edit.vertices" "v" "Edit selected polygon vertices"
-                      IgnoreRepeat selectedPolygonAvailable (EditorCommand BeginSelectedRegionVertexEdit)
-                  yield idle "editor.region.edit.purpose" "p" "Change selected region purpose"
-                      IgnoreRepeat selectedRegionAvailable (EditorCommand BeginSelectedRegionPurposeEdit)
-                  yield idle "editor.region.delete" "Delete" "Delete the selected region"
-                      IgnoreRepeat selectedRegionAvailable (EditorCommand RemoveSelectedRegion)
-                  yield idle "editor.region.exit" "Escape"
-                      (if facts.Editor.SelectedRegion.IsSome then "Clear the region selection" else "Return to Select")
-                      IgnoreRepeat available (EditorCommand CancelRegionKeyboardMode)
-              | RegionPurposeSelection(editingExisting, _) ->
-                  let context = ExactContext(EditorGesture RegionPurpose)
-                  for id, value, purpose, name in
-                      [ "objective", "o", ObjectiveRegion, "Objective"
-                        "blue", "b", DeploymentZone Blue, "Blue deployment"
-                        "red", "r", DeploymentZone Red, "Red deployment" ] do
-                      yield regionBinding ("editor.region.purpose." + id) context value plain
-                          ("Choose " + name) IgnoreRepeat available
-                          (EditorCommand(ChooseRegionPurpose purpose))
-                  if editingExisting then
-                      yield regionBinding "editor.region.purpose.commit" context "Enter" plain
-                          "Apply the highlighted purpose" IgnoreRepeat available
-                          (EditorCommand CommitRegionEditPreview)
-                  yield regionBinding "editor.region.purpose.cancel" context "Escape" plain
-                      "Cancel purpose selection" IgnoreRepeat available
-                      (EditorCommand CancelRegionKeyboardMode)
-              | RegionShapeSelection _ ->
-                  let context = ExactContext(EditorGesture RegionShape)
-                  yield regionBinding "editor.region.shape.rectangle" context "r" plain
-                      "Choose rectangle geometry" IgnoreRepeat available
-                      (EditorCommand(ChooseRegionShape RectangleRegionShape))
-                  yield regionBinding "editor.region.shape.polygon" context "p" plain
-                      "Choose polygon geometry" IgnoreRepeat available
-                      (EditorCommand(ChooseRegionShape PolygonRegionShape))
-                  yield regionBinding "editor.region.shape.back" context "Escape" plain
-                      "Return to purpose selection" IgnoreRepeat available
-                      (EditorCommand CancelRegionKeyboardMode)
-              | RegionRectangleConstruction(_, anchor) ->
-                  let context = ExactContext(EditorGesture RegionRectangleMode)
-                  for id, value, dx, dy in
-                      [ "west", "ArrowLeft", -1, 0
-                        "east", "ArrowRight", 1, 0
-                        "north", "ArrowUp", 0, -1
-                        "south", "ArrowDown", 0, 1 ] do
-                      yield cursorMove ("editor.region.rectangle." + id) context value plain dx dy
-                  yield regionBinding "editor.region.rectangle.activate" context "Enter" plain
-                      (if anchor.IsSome then "Commit the rectangle" else "Set the first rectangle corner")
-                      IgnoreRepeat available (EditorCommand ActivateRegionCursor)
-                  yield regionBinding "editor.region.rectangle.reset" context "Backspace" plain
-                      "Clear the first rectangle corner" IgnoreRepeat
-                      (if anchor.IsSome then available else fun _ -> Unavailable "No rectangle corner is set.")
-                      (EditorCommand BacktrackRegionConstruction)
-                  yield regionBinding "editor.region.rectangle.cancel" context "Escape" plain
-                      "Cancel rectangle geometry" IgnoreRepeat available
-                      (EditorCommand CancelRegionKeyboardMode)
-              | RegionPolygonConstruction(_, vertices) ->
-                  let context = ExactContext(EditorGesture RegionPolygonMode)
-                  for id, value, dx, dy in
-                      [ "west", "ArrowLeft", -1, 0
-                        "east", "ArrowRight", 1, 0
-                        "north", "ArrowUp", 0, -1
-                        "south", "ArrowDown", 0, 1 ] do
-                      yield cursorMove ("editor.region.polygon." + id) context value plain dx dy
-                  yield regionBinding "editor.region.polygon.vertex" context "Enter" plain
-                      "Add a polygon vertex" IgnoreRepeat available (EditorCommand ActivateRegionCursor)
-                  yield regionBinding "editor.region.polygon.commit" context "Enter" { plain with Shift = true }
-                      "Close and commit the polygon" IgnoreRepeat
-                      (if vertices.Length >= 3 then available else fun _ -> Unavailable "Add at least three vertices.")
-                      (EditorCommand CommitRegionPolygon)
-                  yield regionBinding "editor.region.polygon.backtrack" context "Backspace" plain
-                      "Remove the last polygon vertex" IgnoreRepeat
-                      (if Array.isEmpty vertices then fun _ -> Unavailable "No polygon vertex is staged." else available)
-                      (EditorCommand BacktrackRegionConstruction)
-                  yield regionBinding "editor.region.polygon.cancel" context "Escape" plain
-                      "Cancel polygon geometry" IgnoreRepeat available
-                      (EditorCommand CancelRegionKeyboardMode)
-              | RegionMovePreview _ ->
-                  let context = ExactContext(EditorGesture RegionMove)
-                  for modifiers, distance, suffix in
-                      [ plain, 1, ""; { plain with Shift = true }, 5, "-large" ] do
-                      for id, value, dx, dy in
-                          [ "west", "ArrowLeft", -1, 0
-                            "east", "ArrowRight", 1, 0
-                            "north", "ArrowUp", 0, -1
-                            "south", "ArrowDown", 0, 1 ] do
-                          yield regionBinding ("editor.region.move." + id + suffix) context value modifiers
-                              "Move the region preview" AllowRepeat available
-                              (EditorCommand(MoveRegionEditPreview(dx * distance, dy * distance, false)))
-                  yield regionBinding "editor.region.move.commit" context "Enter" plain "Commit the region move"
-                      IgnoreRepeat available (EditorCommand CommitRegionEditPreview)
-                  yield regionBinding "editor.region.move.reset" context "Backspace" plain "Reset the region move"
-                      IgnoreRepeat available (EditorCommand ResetRegionEditPreview)
-                  yield regionBinding "editor.region.move.cancel" context "Escape" plain "Cancel the region move"
-                      IgnoreRepeat available (EditorCommand CancelRegionKeyboardMode)
-              | RegionResizePreview _ ->
-                  let context = ExactContext(EditorGesture RegionResize)
-                  yield previewMove "editor.region.resize.width.decrease" context "ArrowLeft" plain -1 0 false
-                  yield previewMove "editor.region.resize.width.increase" context "ArrowRight" plain 1 0 false
-                  yield previewMove "editor.region.resize.height.decrease" context "ArrowUp" plain 0 -1 false
-                  yield previewMove "editor.region.resize.height.increase" context "ArrowDown" plain 0 1 false
-                  yield previewMove "editor.region.resize.origin.east" context "ArrowLeft" { plain with Shift = true } 1 0 true
-                  yield previewMove "editor.region.resize.origin.west" context "ArrowRight" { plain with Shift = true } -1 0 true
-                  yield previewMove "editor.region.resize.origin.south" context "ArrowUp" { plain with Shift = true } 0 1 true
-                  yield previewMove "editor.region.resize.origin.north" context "ArrowDown" { plain with Shift = true } 0 -1 true
-                  yield regionBinding "editor.region.resize.commit" context "Enter" plain "Commit the rectangle resize"
-                      IgnoreRepeat available (EditorCommand CommitRegionEditPreview)
-                  yield regionBinding "editor.region.resize.reset" context "Backspace" plain "Reset the rectangle resize"
-                      IgnoreRepeat available (EditorCommand ResetRegionEditPreview)
-                  yield regionBinding "editor.region.resize.cancel" context "Escape" plain "Cancel the rectangle resize"
-                      IgnoreRepeat available (EditorCommand CancelRegionKeyboardMode)
-              | RegionVertexPreview _ ->
-                  let context = ExactContext(EditorGesture RegionVertex)
-                  yield regionBinding "editor.region.vertex.previous" context "[" plain "Previous polygon vertex"
-                      AllowRepeat available (EditorCommand(CycleRegionVertex -1))
-                  yield regionBinding "editor.region.vertex.next" context "]" plain "Next polygon vertex"
-                      AllowRepeat available (EditorCommand(CycleRegionVertex 1))
-                  for modifiers, distance, suffix in
-                      [ plain, 1, ""; { plain with Shift = true }, 5, "-large" ] do
-                      for id, value, dx, dy in
-                          [ "west", "ArrowLeft", -1, 0
-                            "east", "ArrowRight", 1, 0
-                            "north", "ArrowUp", 0, -1
-                            "south", "ArrowDown", 0, 1 ] do
-                          yield regionBinding ("editor.region.vertex." + id + suffix) context value modifiers
-                              "Move the active polygon vertex" AllowRepeat available
-                              (EditorCommand(MoveRegionEditPreview(dx * distance, dy * distance, false)))
-                  yield regionBinding "editor.region.vertex.commit" context "Enter" plain "Commit polygon vertex edits"
-                      IgnoreRepeat available (EditorCommand CommitRegionEditPreview)
-                  yield regionBinding "editor.region.vertex.reset" context "Backspace" plain "Reset the active polygon vertex"
-                      IgnoreRepeat available (EditorCommand ResetRegionEditPreview)
-                  yield regionBinding "editor.region.vertex.cancel" context "Escape" plain "Cancel polygon vertex edits"
-                      IgnoreRepeat available (EditorCommand CancelRegionKeyboardMode)
-
-          if facts.ActiveDomain = DocumentDomain then
-              let document id value label command =
-                  binding id (ExactContext(EditorDomain DocumentDomain)) ActiveGestureOrPreview
-                      (key value plain KeyDown) label "Document" IgnoreRepeat available command
-              yield document "editor.document.new" "n" "Request a new map"
-                  (EditorCommand RequestNewMap)
-              yield document "editor.document.clear" "c" "Request clearing the map"
-                  (EditorCommand RequestClearMap)
-              yield document "editor.document.export" "s" "Save or export the canonical map"
-                  (EditorDocumentCommand ExportMapDocument)
-              yield document "editor.document.import" "i" "Open the native map import picker"
-                  (EditorDocumentCommand OpenMapImport)
-              yield document "editor.document.bundle" "b" "Export the repository design bundle"
-                  (EditorDocumentCommand ExportRepositoryDesignBundle)
-              yield document "editor.document.layers" "l" "Focus layer-state controls"
-                  (EditorDocumentCommand(FocusDocumentControl LayerStateControls))
-              yield document "editor.document.background" "g" "Focus local background controls"
-                  (EditorDocumentCommand(FocusDocumentControl LocalBackgroundControls))
-              yield document "editor.document.resize" "r" "Focus map dimensions"
-                  (EditorDocumentCommand(FocusDocumentControl MapDimensionControls))
-              yield document "editor.document.views" "v" "Focus saved views"
-                  (EditorDocumentCommand(FocusDocumentControl SavedViewControls))
-              yield document "editor.document.exit" "Escape" "Return to Select"
+        let catalog =
+            [ yield editorKey "editor.help.toggle" "?" { plain with Shift = true }
+                  "Show or hide possible inputs" "Help" IgnoreRepeat available ToggleInputHelp
+              yield editorKey "editor.panel.toggle" "F2" plain
+                  "Show or hide the active command panel" "Panels" IgnoreRepeat available ToggleEditorCommandPanel
+              yield editorKey "editor.inspector.toggle" "F3" plain
+                  "Show or hide the selected-object inspector" "Panels" IgnoreRepeat available
+                  (EditorWorkspaceCommand ToggleEditorInspector)
+              yield editorKey "editor.history.undo" "z" (control false)
+                  "Undo" "Edit" IgnoreRepeat
+                  (historyAvailable facts.Editor.UndoHistory "There is nothing to undo.")
+                  (EditorCommand UndoEditorCommand)
+              yield editorKey "editor.history.redo-shift-z" "z" (control true)
+                  "Redo" "Edit" IgnoreRepeat
+                  (historyAvailable facts.Editor.RedoHistory "There is nothing to redo.")
+                  (EditorCommand RedoEditorCommand)
+              yield editorKey "editor.history.redo-y" "y" (control false)
+                  "Redo" "Edit" IgnoreRepeat
+                  (historyAvailable facts.Editor.RedoHistory "There is nothing to redo.")
+                  (EditorCommand RedoEditorCommand)
+              yield editorKey "editor.selection.copy" "c" (control false)
+                  "Copy selected units" "Edit" IgnoreRepeat unitSelectionAvailable
+                  (EditorCommand CopyEditorSelection)
+              yield editorKey "editor.selection.paste" "v" (control false)
+                  "Paste the editor clipboard" "Edit" IgnoreRepeat clipboardAvailable
+                  (EditorCommand PasteEditorClipboard)
+              yield editorKey "editor.selection.duplicate" "d" (control false)
+                  "Duplicate selected units" "Edit" IgnoreRepeat unitSelectionAvailable
+                  (EditorCommand DuplicateEditorSelection)
+              yield editorKey "editor.selection.all" "a" (control false)
+                  "Select all in the active domain" "Selection" IgnoreRepeat selectableDomainAvailable
+                  (EditorCommand SelectAllInActiveDomain)
+              yield editorKey "editor.selection.delete" "Delete" plain
+                  "Delete the selection" "Selection" IgnoreRepeat selectionAvailable
+                  (EditorCommand DeleteEditorSelection)
+              yield editorKey "editor.selection.delete-backspace" "Backspace" plain
+                  "Delete the selection" "Selection" IgnoreRepeat selectionAvailable
+                  (EditorCommand DeleteEditorSelection)
+              yield editorKey "editor.camera.fit" "0" plain
+                  "Fit the complete map" "View" IgnoreRepeat available
+                  (EditorWorkspaceCommand FitEditorBoard)
+              yield editorKey "editor.camera.reset" "1" plain
+                  "Reset the camera to 100%" "View" IgnoreRepeat available
+                  (EditorWorkspaceCommand ResetEditorCamera)
+              yield editorKey "editor.camera.frame-selection" "f" plain
+                  "Frame the selection" "View" IgnoreRepeat selectionAvailable
+                  (EditorWorkspaceCommand FrameEditorSelection)
+              yield editorKey "editor.mode.select" "v" plain
+                  "Enter Select" "Modes" IgnoreRepeat available
                   (EditorCommand(ChooseTool Select))
+              yield editorKey "editor.domain.terrain" "t" plain
+                  "Open Terrain commands" "Modes" IgnoreRepeat available
+                  (ChooseEditorDomain TerrainDomain)
+              yield editorKey "editor.domain.units" "u" plain
+                  "Open Unit commands" "Modes" IgnoreRepeat available
+                  (ChooseEditorDomain UnitDomain)
+              yield editorKey "editor.domain.edges" "e" plain
+                  "Open Edge commands" "Modes" IgnoreRepeat available
+                  (ChooseEditorDomain EdgeDomain)
+              yield editorKey "editor.domain.zones" "z" plain
+                  "Open Zone commands" "Modes" IgnoreRepeat available
+                  (ChooseEditorDomain RegionDomain)
+              yield editorKey "editor.domain.document" "m" plain
+                  "Open Document commands" "Modes" IgnoreRepeat available
+                  (ChooseEditorDomain DocumentDomain)
+              yield editorKey "editor.tool.terrain.pencil" "p" plain
+                  "Choose Pencil" "Terrain tools" IgnoreRepeat available
+                  (EditorCommand(ChooseTool(Terrain PencilTool)))
+              yield editorKey "editor.tool.terrain.rectangle" "r" plain
+                  "Choose Rectangle" "Terrain tools" IgnoreRepeat available
+                  (EditorCommand(ChooseTool(Terrain RectangleTool)))
+              yield editorKey "editor.tool.terrain.line" "l" plain
+                  "Choose Line" "Terrain tools" IgnoreRepeat available
+                  (EditorCommand(ChooseTool(Terrain LineTool)))
+              yield editorKey "editor.tool.terrain.flood-fill" "g" plain
+                  "Choose Flood fill" "Terrain tools" IgnoreRepeat available
+                  (EditorCommand(ChooseTool(Terrain FloodFillTool)))
+              yield editorKey "editor.tool.terrain.eyedropper" "i" plain
+                  "Choose Eyedropper" "Terrain tools" IgnoreRepeat available
+                  (EditorCommand(ChooseTool(Terrain EyedropperTool)))
+              yield editorKey "editor.tool.terrain.erase" "x" plain
+                  "Choose Eraser" "Terrain tools" IgnoreRepeat available
+                  (EditorCommand(ChooseTool(Terrain EraseTool)))
+              yield editorKey "editor.validation.previous" "[" plain
+                  "Select the previous validation issue" "Validation" AllowRepeat validationAvailable
+                  (EditorCommand SelectPreviousIssue)
+              yield editorKey "editor.validation.next" "]" plain
+                  "Select the next validation issue" "Validation" AllowRepeat validationAvailable
+                  (EditorCommand SelectNextIssue)
+              yield binding "editor.camera.pan-held" AnyEditorContext HeldLayer
+                  (key "Space" plain KeyDown) "Hold to pan the map" "View" IgnoreRepeat available
+                  (SetEditorPanHeld true)
+              yield binding "editor.camera.pan-release" (ExactContext EditorPanHeld) HeldLayer
+                  (key "Space" plain KeyUp) "Release held pan" "View" IgnoreRepeat available
+                  (SetEditorPanHeld false)
 
-          match facts.Editor.Tool with
-          | Select when facts.Editor.Gesture = IdleGesture ->
-              let movement id value dx dy =
-                  binding id (ExactContext(EditorTool Select)) ActiveTool
-                      (key value plain KeyDown) "Move the map cursor" "Selection"
-                      AllowRepeat available (EditorCommand(MoveEditorKeyboardCursor(dx, dy)))
-              yield movement "editor.cursor.west" "ArrowLeft" -1 0
-              yield movement "editor.cursor.east" "ArrowRight" 1 0
-              yield movement "editor.cursor.north" "ArrowUp" 0 -1
-              yield movement "editor.cursor.south" "ArrowDown" 0 1
-              yield binding "editor.selection.single" (ExactContext(EditorTool Select)) ActiveTool
-                  (key "Enter" plain KeyDown) "Select the current object" "Selection"
-                  IgnoreRepeat available (EditorCommand(ActivateEditorKeyboardCursor false))
-              yield binding "editor.selection.toggle" (ExactContext(EditorTool Select)) ActiveTool
-                  (key "Enter" { plain with Shift = true } KeyDown)
-                  "Toggle the current object in the selection" "Selection"
-                  IgnoreRepeat available (EditorCommand(ActivateEditorKeyboardCursor true))
-              yield binding "editor.cursor.next-object" (ExactContext(EditorTool Select)) ActiveTool
-                  (key "n" plain KeyDown) "Select the next object at the cursor" "Selection"
-                  IgnoreRepeat available (EditorCommand(CycleEditorKeyboardObject 1))
-              yield binding "editor.cursor.previous-object" (ExactContext(EditorTool Select)) ActiveTool
-                  (key "p" plain KeyDown) "Select the previous object at the cursor" "Selection"
-                  IgnoreRepeat available (EditorCommand(CycleEditorKeyboardObject -1))
-              yield binding "editor.selection.box.begin" (ExactContext(EditorTool Select)) ActiveTool
-                  (key "b" plain KeyDown) "Begin box selection" "Selection"
-                  IgnoreRepeat available (EditorCommand BeginKeyboardBoxSelection)
-              yield binding "editor.selection.all-domain" (ExactContext(EditorTool Select)) ActiveTool
-                  (key "a" plain KeyDown) "Select all units" "Selection"
-                  IgnoreRepeat selectableDomainAvailable (EditorCommand SelectAllInActiveDomain)
-              yield binding "editor.unit.move.begin" (ExactContext(EditorTool Select)) ActiveTool
-                  (key "m" plain KeyDown) "Begin moving selected units" "Units"
-                  IgnoreRepeat unitSelectionAvailable
-                  (EditorCommand(BeginUnitMove facts.Editor.KeyboardCursor.Cell))
-          | UnitBrowse ->
-              let browse id value repeat delta =
-                  binding id (ExactContext(EditorTool UnitBrowse)) ActiveTool
-                      (key value plain KeyDown) "Browse unit presets" "Units"
-                      repeat available (EditorCommand(MoveUnitPaletteCursor delta))
-              yield browse "editor.unit.preset.previous-arrow" "ArrowUp" AllowRepeat -1
-              yield browse "editor.unit.preset.next-arrow" "ArrowDown" AllowRepeat 1
-              yield browse "editor.unit.preset.previous-bracket" "[" AllowRepeat -1
-              yield browse "editor.unit.preset.next-bracket" "]" AllowRepeat 1
-              yield binding "editor.unit.preset.previous-faction"
-                  (ExactContext(EditorTool UnitBrowse)) ActiveTool
-                  (key "PageUp" plain KeyDown) "Previous faction group" "Units"
-                  AllowRepeat available (EditorCommand(PageUnitPaletteFaction -1))
-              yield binding "editor.unit.preset.next-faction"
-                  (ExactContext(EditorTool UnitBrowse)) ActiveTool
-                  (key "PageDown" plain KeyDown) "Next faction group" "Units"
-                  AllowRepeat available (EditorCommand(PageUnitPaletteFaction 1))
-              yield binding "editor.unit.preset.first"
-                  (ExactContext(EditorTool UnitBrowse)) ActiveTool
-                  (key "Home" plain KeyDown) "First visible preset" "Units"
-                  IgnoreRepeat available (EditorCommand(SelectUnitPaletteBoundary false))
-              yield binding "editor.unit.preset.last"
-                  (ExactContext(EditorTool UnitBrowse)) ActiveTool
-                  (key "End" plain KeyDown) "Last visible preset" "Units"
-                  IgnoreRepeat available (EditorCommand(SelectUnitPaletteBoundary true))
-              yield binding "editor.unit.preset.arm"
-                  (ExactContext(EditorTool UnitBrowse)) ActiveTool
-                  (key "Enter" plain KeyDown) "Arm highlighted preset" "Units"
-                  IgnoreRepeat available (EditorCommand ArmUnitPalettePreset)
-              yield binding "editor.unit.preset.search"
-                  (ExactContext(EditorTool UnitBrowse)) ActiveTool
-                  (key "/" plain KeyDown) "Focus preset search" "Units"
-                  IgnoreRepeat available FocusUnitPresetSearch
-              yield binding "editor.unit.preset.exit"
-                  (ExactContext(EditorTool UnitBrowse)) ActiveTool
-                  (key "Escape" plain KeyDown) "Return to Select" "Units"
-                  IgnoreRepeat available (EditorCommand(ChooseTool Select))
-          | Place _ when facts.Editor.Gesture = IdleGesture ->
-              let move id value dx dy =
-                  binding id (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
-                      (key value plain KeyDown) "Move the placement cursor" "Units"
-                      AllowRepeat available (EditorCommand(MoveUnitPlacementCursor(dx, dy)))
-              yield move "editor.unit.place.west" "ArrowLeft" -1 0
-              yield move "editor.unit.place.east" "ArrowRight" 1 0
-              yield move "editor.unit.place.north" "ArrowUp" 0 -1
-              yield move "editor.unit.place.south" "ArrowDown" 0 1
-              yield binding "editor.unit.place.previous-preset"
-                  (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
-                  (key "[" plain KeyDown) "Arm previous visible preset" "Units"
-                  AllowRepeat available (EditorCommand(CycleArmedUnitPreset -1))
-              yield binding "editor.unit.place.next-preset"
-                  (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
-                  (key "]" plain KeyDown) "Arm next visible preset" "Units"
-                  AllowRepeat available (EditorCommand(CycleArmedUnitPreset 1))
-              yield binding "editor.unit.place.commit"
-                  (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
-                  (key "Enter" plain KeyDown) "Place and remain armed" "Units"
-                  IgnoreRepeat available (EditorCommand(CommitUnitPlacement false))
-              yield binding "editor.unit.place.commit-return"
-                  (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
-                  (key "Enter" { plain with Shift = true } KeyDown)
-                  "Place and return to preset browse" "Units"
-                  IgnoreRepeat available (EditorCommand(CommitUnitPlacement true))
-              for value, suffix in [ "b", "browse"; "Escape", "cancel" ] do
-                  yield binding ("editor.unit.place." + suffix)
-                      (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
-                      (key value plain KeyDown) "Return to unit preset browse" "Units"
-                      IgnoreRepeat available (EditorCommand ReturnToUnitBrowse)
-          | Terrain _ ->
-              let movement id value dx dy =
-                  binding id (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
-                      (key value plain KeyDown) "Move the terrain cursor" "Terrain"
-                      AllowRepeat available (EditorCommand(MoveTerrainCursor(dx, dy, false)))
-              yield movement "editor.terrain.cursor.west" "ArrowLeft" -1 0
-              yield movement "editor.terrain.cursor.east" "ArrowRight" 1 0
-              yield movement "editor.terrain.cursor.north" "ArrowUp" 0 -1
-              yield movement "editor.terrain.cursor.south" "ArrowDown" 0 1
-              let shiftedMovement id value dx dy =
-                  binding id (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
-                      (key value { plain with Shift = true } KeyDown)
-                      "Paint or extend through the moved cell" "Terrain"
-                      AllowRepeat available (EditorCommand(MoveTerrainCursor(dx, dy, true)))
-              yield shiftedMovement "editor.terrain.cursor.paint-west" "ArrowLeft" -1 0
-              yield shiftedMovement "editor.terrain.cursor.paint-east" "ArrowRight" 1 0
-              yield shiftedMovement "editor.terrain.cursor.paint-north" "ArrowUp" 0 -1
-              yield shiftedMovement "editor.terrain.cursor.paint-south" "ArrowDown" 0 1
-              yield binding "editor.terrain.activate" (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
-                  (key "Enter" plain KeyDown) "Activate at the terrain cursor" "Terrain"
-                  IgnoreRepeat available (EditorCommand ActivateTerrainCursor)
-              for (value, terrain, name) in
-                  [ "1", Open, "Open"; "2", Rough, "Rough"; "3", Blocked, "Blocked"; "4", Objective, "Objective" ] do
-                  yield binding ("editor.terrain.value." + name.ToLowerInvariant())
-                      (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
-                      (key value plain KeyDown) ("Choose " + name + " terrain") "Terrain values"
-                      IgnoreRepeat available (EditorCommand(ChooseTerrain terrain))
-              yield binding "editor.terrain.brush.decrease"
-                  (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
-                  (key "[" plain KeyDown) "Decrease brush size" "Terrain"
-                  AllowRepeat available (EditorCommand(SetTerrainBrushSize(facts.Editor.BrushSize - 1)))
-              yield binding "editor.terrain.brush.increase"
-                  (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
-                  (key "]" plain KeyDown) "Increase brush size" "Terrain"
-                  AllowRepeat available (EditorCommand(SetTerrainBrushSize(facts.Editor.BrushSize + 1)))
-              if facts.Editor.Gesture = IdleGesture then
-                  yield binding "editor.terrain.exit" (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
-                      (key "Escape" plain KeyDown) "Return to Select" "Terrain"
-                      IgnoreRepeat available
+              if facts.PanHeld then
+                  let pan id value modifiers x y =
+                      binding id (ExactContext EditorPanHeld) HeldLayer
+                          (key value modifiers KeyDown) "Pan the map" "View"
+                          AllowRepeat available (EditorWorkspaceCommand(PanEditorBy(x, y)))
+                  yield pan "editor.camera.pan-west" "ArrowLeft" plain 40.0 0.0
+                  yield pan "editor.camera.pan-east" "ArrowRight" plain -40.0 0.0
+                  yield pan "editor.camera.pan-north" "ArrowUp" plain 0.0 40.0
+                  yield pan "editor.camera.pan-south" "ArrowDown" plain 0.0 -40.0
+                  yield pan "editor.camera.pan-west-large" "ArrowLeft" { plain with Shift = true } 120.0 0.0
+                  yield pan "editor.camera.pan-east-large" "ArrowRight" { plain with Shift = true } -120.0 0.0
+                  yield pan "editor.camera.pan-north-large" "ArrowUp" { plain with Shift = true } 0.0 120.0
+                  yield pan "editor.camera.pan-south-large" "ArrowDown" { plain with Shift = true } 0.0 -120.0
+                  yield binding "editor.camera.pan-cancel" (ExactContext EditorPanHeld) HeldLayer
+                      (key "Escape" plain KeyDown) "Release held pan" "View"
+                      IgnoreRepeat available (SetEditorPanHeld false)
+
+              if facts.InputHelpExpanded then
+                  yield binding "editor.help.close" (ExactContext InputHelpPopup) InputPopup
+                      (key "Escape" plain KeyDown) "Close possible inputs" "Help" IgnoreRepeat available
+                      ToggleInputHelp
+              elif facts.Editor.PendingDestructiveChange.IsSome then
+                  yield binding "editor.confirmation.confirm" (ExactContext EditorDestructiveConfirmation) TransientPopup
+                      (key "Enter" plain KeyDown) "Confirm the pending destructive change" "Current operation"
+                      IgnoreRepeat available (EditorCommand ConfirmDestructiveChange)
+                  yield binding "editor.confirmation.cancel" (ExactContext EditorDestructiveConfirmation) TransientPopup
+                      (key "Escape" plain KeyDown) "Cancel the pending destructive change" "Current operation"
+                      IgnoreRepeat available (EditorCommand CancelDestructiveChange)
+              elif facts.Editor.Gesture <> IdleGesture then
+                  yield binding "editor.gesture.cancel" AnyEditorContext ActiveGestureOrPreview
+                      (key "Escape" plain KeyDown) "Cancel the current operation" "Current operation"
+                      IgnoreRepeat available (EditorCommand CancelEditorGesture)
+              else
+                  yield binding "editor.selection.clear" AnyEditorContext WorkspaceCommands
+                      (key "Escape" plain KeyDown) "Clear the selection" "Selection"
+                      IgnoreRepeat selectionAvailable (EditorCommand(SelectEditorUnit None))
+
+              match facts.Editor.Gesture with
+              | IdleGesture
+              | SelectedObjectActionsGesture -> ()
+              | _ ->
+                  yield binding "editor.gesture.commit" AnyEditorContext ActiveGestureOrPreview
+                            (key "Enter" plain KeyDown) "Commit the current operation" "Current operation"
+                            IgnoreRepeat available (EditorCommand CommitEditorGesture)
+
+              match facts.Editor.Gesture with
+              | SelectedObjectActionsGesture ->
+                  yield binding "editor.selection.actions.copy"
+                      (ExactContext(EditorGesture SelectedObjectActions)) ActiveGestureOrPreview
+                      (key "c" plain KeyDown) "Copy selected units" "Selected-object actions"
+                      IgnoreRepeat unitSelectionAvailable (EditorCommand CopyEditorSelection)
+                  yield binding "editor.selection.actions.duplicate"
+                      (ExactContext(EditorGesture SelectedObjectActions)) ActiveGestureOrPreview
+                      (key "d" plain KeyDown) "Duplicate selected units" "Selected-object actions"
+                      IgnoreRepeat unitSelectionAvailable (EditorCommand DuplicateEditorSelection)
+                  yield binding "editor.selection.actions.delete"
+                      (ExactContext(EditorGesture SelectedObjectActions)) ActiveGestureOrPreview
+                      (key "Delete" plain KeyDown) "Delete the selection" "Selected-object actions"
+                      IgnoreRepeat selectionAvailable (EditorCommand DeleteEditorSelection)
+                  yield binding "editor.selection.actions.inspector"
+                      (ExactContext(EditorGesture SelectedObjectActions)) ActiveGestureOrPreview
+                      (key "i" plain KeyDown) "Open selected-object inspector" "Selected-object actions"
+                      IgnoreRepeat available (EditorWorkspaceCommand ToggleEditorInspector)
+                  yield binding "editor.selection.actions.move"
+                      (ExactContext(EditorGesture SelectedObjectActions)) ActiveGestureOrPreview
+                      (key "m" plain KeyDown) "Move selected units" "Selected-object actions"
+                      IgnoreRepeat unitSelectionAvailable
+                      (EditorCommand(BeginUnitMove facts.Editor.KeyboardCursor.Cell))
+              | BoxSelectionGesture(anchor, current) ->
+                  let clamp minimum maximum value =
+                      max minimum (min maximum value)
+                  let move id value modifiers dx dy =
+                      binding id (ExactContext(EditorGesture BoxSelection)) ActiveGestureOrPreview
+                          (key value modifiers KeyDown) "Move the box corner" "Selection"
+                          AllowRepeat available
+                          (EditorCommand(
+                              ExtendEditorBoxSelection
+                                  { CellColumn =
+                                      clamp 0 (facts.Editor.Map.Width - 1) (current.CellColumn + dx)
+                                    CellRow =
+                                      clamp 0 (facts.Editor.Map.Height - 1) (current.CellRow + dy) }
+                          ))
+                  for modifiers, suffix in [ plain, ""; { plain with Shift = true }, "-extended" ] do
+                      yield move ("editor.selection.box.west" + suffix) "ArrowLeft" modifiers -1 0
+                      yield move ("editor.selection.box.east" + suffix) "ArrowRight" modifiers 1 0
+                      yield move ("editor.selection.box.north" + suffix) "ArrowUp" modifiers 0 -1
+                      yield move ("editor.selection.box.south" + suffix) "ArrowDown" modifiers 0 1
+                  yield binding "editor.selection.box.add" (ExactContext(EditorGesture BoxSelection))
+                      ActiveGestureOrPreview (key "Enter" { plain with Shift = true } KeyDown)
+                      "Add enclosed units to the selection" "Selection" IgnoreRepeat available
                       (EditorCommand(
-                          match facts.Editor.Tool with
-                          | Terrain EyedropperTool -> ChooseTool(Terrain facts.Editor.LastTerrainPaintTool)
-                          | _ -> ChooseTool Select
+                          AddEditorUnitsInBox
+                              { FirstColumn = anchor.CellColumn
+                                FirstRow = anchor.CellRow
+                                LastColumn = current.CellColumn
+                                LastRow = current.CellRow }
                       ))
-          | _ -> () ]
+              | TerrainGesture(_, _, _, _) ->
+                  let extend id value modifiers dx dy =
+                      binding id (ExactContext(EditorGesture(
+                          match facts.Editor.Gesture with
+                          | TerrainGesture(tool, _, _, _) -> TerrainPreview tool
+                          | _ -> TerrainPreview PencilTool
+                      ))) ActiveGestureOrPreview
+                          (key value modifiers KeyDown) "Move the terrain endpoint" "Terrain"
+                          AllowRepeat available (EditorCommand(MoveTerrainCursor(dx, dy, true)))
+                  for modifiers, suffix in [ plain, ""; { plain with Shift = true }, "-extended" ] do
+                      yield extend ("editor.terrain.gesture.west" + suffix) "ArrowLeft" modifiers -1 0
+                      yield extend ("editor.terrain.gesture.east" + suffix) "ArrowRight" modifiers 1 0
+                      yield extend ("editor.terrain.gesture.north" + suffix) "ArrowUp" modifiers 0 -1
+                      yield extend ("editor.terrain.gesture.south" + suffix) "ArrowDown" modifiers 0 1
+                  yield binding "editor.terrain.gesture.reset"
+                      (ExactContext(
+                          match facts.Editor.Gesture with
+                          | TerrainGesture(tool, _, _, _) -> EditorGesture(TerrainPreview tool)
+                          | _ -> EditorGesture(TerrainPreview PencilTool)
+                      )) ActiveGestureOrPreview
+                      (key "Backspace" plain KeyDown) "Reset endpoint to anchor" "Terrain"
+                      IgnoreRepeat available (EditorCommand ResetTerrainPreview)
+              | UnitMoveGesture(_, current, _, _) ->
+                  let extend id value modifiers distance dx dy =
+                      binding id (ExactContext(EditorGesture UnitMovePreview)) ActiveGestureOrPreview
+                          (key value modifiers KeyDown) "Move the formation preview" "Units"
+                          AllowRepeat available
+                          (EditorCommand(
+                              ExtendUnitMove
+                                  { CellColumn =
+                                      max 0 (min (facts.Editor.Map.Width - 1) (current.CellColumn + dx * distance))
+                                    CellRow =
+                                      max 0 (min (facts.Editor.Map.Height - 1) (current.CellRow + dy * distance)) }
+                          ))
+                  for modifiers, distance, suffix in
+                      [ plain, 1, ""; { plain with Shift = true }, 5, "-large" ] do
+                      yield extend ("editor.unit.move.west" + suffix) "ArrowLeft" modifiers distance -1 0
+                      yield extend ("editor.unit.move.east" + suffix) "ArrowRight" modifiers distance 1 0
+                      yield extend ("editor.unit.move.north" + suffix) "ArrowUp" modifiers distance 0 -1
+                      yield extend ("editor.unit.move.south" + suffix) "ArrowDown" modifiers distance 0 1
+                  yield binding "editor.unit.move.reset"
+                      (ExactContext(EditorGesture UnitMovePreview)) ActiveGestureOrPreview
+                      (key "Backspace" plain KeyDown) "Reset movement preview" "Units"
+                      IgnoreRepeat available (EditorCommand ResetUnitMovePreview)
+              | _ -> ()
+
+              if facts.ActiveDomain = EdgeDomain then
+                  let edgeColumn, edgeRow, edgeDirection = facts.Editor.EdgeCursor
+                  let edgeTool =
+                      match facts.Editor.Tool with
+                      | Edge(direction, kind) -> direction, kind
+                      | _ -> edgeDirection, Wall
+                  let direction, kind = edgeTool
+                  let edgeBinding id value modifiers label repeat command =
+                      binding id (ExactContext(EditorDomain EdgeDomain)) ActiveTool
+                          (key value modifiers KeyDown) label "Edges" repeat available command
+                  yield edgeBinding "editor.edge.kind.wall" "w" plain "Choose wall" IgnoreRepeat
+                      (EditorCommand(ConvertEdge(edgeColumn, edgeRow, edgeDirection, Wall)))
+                  yield edgeBinding "editor.edge.kind.door" "d" plain "Choose closed door" IgnoreRepeat
+                      (EditorCommand(ConvertEdge(edgeColumn, edgeRow, edgeDirection, Door)))
+                  yield edgeBinding "editor.edge.kind.window" "n" plain "Choose window" IgnoreRepeat
+                      (EditorCommand(ConvertEdge(edgeColumn, edgeRow, edgeDirection, Window)))
+                  yield edgeBinding "editor.edge.orientation.rotate" "r" plain "Rotate edge orientation" IgnoreRepeat
+                      (EditorCommand(
+                          ChooseTool(
+                              Edge(
+                                  (if direction = EastEdge then SouthEdge else EastEdge),
+                                  kind
+                              )
+                          )
+                      ))
+                  let edgeMove id value modifiers dx dy extend =
+                      edgeBinding id value modifiers
+                          (if extend then "Extend the wall polyline" else "Move the snapped edge cursor")
+                          AllowRepeat
+                          (EditorCommand(MoveEdgeCursor(dx, dy, extend)))
+                  yield edgeMove "editor.edge.cursor.west" "ArrowLeft" plain -1 0 false
+                  yield edgeMove "editor.edge.cursor.east" "ArrowRight" plain 1 0 false
+                  yield edgeMove "editor.edge.cursor.north" "ArrowUp" plain 0 -1 false
+                  yield edgeMove "editor.edge.cursor.south" "ArrowDown" plain 0 1 false
+                  yield edgeMove "editor.edge.polyline.west" "ArrowLeft" { plain with Shift = true } -1 0 true
+                  yield edgeMove "editor.edge.polyline.east" "ArrowRight" { plain with Shift = true } 1 0 true
+                  yield edgeMove "editor.edge.polyline.north" "ArrowUp" { plain with Shift = true } 0 -1 true
+                  yield edgeMove "editor.edge.polyline.south" "ArrowDown" { plain with Shift = true } 0 1 true
+                  if facts.Editor.Gesture = IdleGesture then
+                      yield edgeBinding "editor.edge.activate" "Enter" plain
+                          "Apply the selected edge or begin a wall polyline" IgnoreRepeat
+                          (EditorCommand ActivateEdgeCursor)
+                  else
+                      match facts.Editor.Gesture with
+                      | EdgePolylineGesture _ ->
+                          yield binding "editor.edge.polyline.backtrack"
+                              (ExactContext(EditorGesture EdgePolyline)) ActiveGestureOrPreview
+                              (key "Backspace" plain KeyDown) "Remove the last polyline segment"
+                              "Edges" IgnoreRepeat available (EditorCommand BacktrackEdgePolyline)
+                      | _ -> ()
+                  yield edgeBinding "editor.edge.door.toggle" "o" plain "Toggle door open or closed" IgnoreRepeat
+                      (EditorCommand(ToggleDoorState(edgeColumn, edgeRow, edgeDirection)))
+                  yield edgeBinding "editor.edge.erase" "x" plain "Erase the cursor edge" IgnoreRepeat
+                      (EditorCommand(EraseEdge(edgeColumn, edgeRow, edgeDirection)))
+                  yield edgeBinding "editor.edge.split" "s" plain "Split the edge run" IgnoreRepeat
+                      (EditorCommand(SplitEdge(edgeColumn, edgeRow, edgeDirection)))
+                  yield edgeBinding "editor.edge.join" "j" plain "Join a compatible edge run" IgnoreRepeat
+                      (EditorCommand(JoinEdge(edgeColumn, edgeRow, edgeDirection)))
+
+              if facts.ActiveDomain = RegionDomain then
+                  let regionBinding id context value modifiers label repeat availability command =
+                      binding id context ActiveGestureOrPreview
+                          (key value modifiers KeyDown) label "Zones" repeat availability command
+                  let cursorMove id context value modifiers dx dy =
+                      regionBinding id context value modifiers "Move the region cursor"
+                          AllowRepeat available (EditorCommand(MoveRegionCursor(dx, dy)))
+                  let previewMove id context value modifiers dx dy opposite =
+                      let distance = if modifiers.Shift && not opposite then 5 else 1
+                      regionBinding id context value modifiers "Update the region preview"
+                          AllowRepeat available
+                          (EditorCommand(MoveRegionEditPreview(dx * distance, dy * distance, opposite)))
+
+                  match facts.Editor.RegionKeyboardMode with
+                  | RegionIdle ->
+                      let context = ExactContext(EditorDomain RegionDomain)
+                      let idle id value label repeat availability command =
+                          binding id context ActiveGestureOrPreview (key value plain KeyDown)
+                              label "Zones" repeat availability command
+                      for id, value, dx, dy in
+                          [ "west", "ArrowLeft", -1, 0
+                            "east", "ArrowRight", 1, 0
+                            "north", "ArrowUp", 0, -1
+                            "south", "ArrowDown", 0, 1 ] do
+                          yield binding ("editor.region.cursor." + id) context ActiveGestureOrPreview
+                              (key value plain KeyDown) "Move the region cursor" "Zones"
+                              AllowRepeat available (EditorCommand(MoveRegionCursor(dx, dy)))
+                      yield idle "editor.region.select" "Enter" "Select the region under the cursor"
+                          IgnoreRepeat available (EditorCommand ActivateRegionCursor)
+                      yield idle "editor.region.create.begin" "n" "Begin a new region"
+                          IgnoreRepeat available (EditorCommand BeginNewRegion)
+                      yield idle "editor.region.edit.move" "m" "Move the selected region"
+                          IgnoreRepeat selectedRegionAvailable (EditorCommand BeginSelectedRegionMove)
+                      yield idle "editor.region.edit.resize" "r" "Resize the selected rectangle"
+                          IgnoreRepeat selectedRectangleAvailable (EditorCommand BeginSelectedRegionResize)
+                      yield idle "editor.region.edit.vertices" "v" "Edit selected polygon vertices"
+                          IgnoreRepeat selectedPolygonAvailable (EditorCommand BeginSelectedRegionVertexEdit)
+                      yield idle "editor.region.edit.purpose" "p" "Change selected region purpose"
+                          IgnoreRepeat selectedRegionAvailable (EditorCommand BeginSelectedRegionPurposeEdit)
+                      yield idle "editor.region.delete" "Delete" "Delete the selected region"
+                          IgnoreRepeat selectedRegionAvailable (EditorCommand RemoveSelectedRegion)
+                      yield idle "editor.region.exit" "Escape"
+                          (if facts.Editor.SelectedRegion.IsSome then "Clear the region selection" else "Return to Select")
+                          IgnoreRepeat available (EditorCommand CancelRegionKeyboardMode)
+                  | RegionPurposeSelection(editingExisting, _) ->
+                      let context = ExactContext(EditorGesture RegionPurpose)
+                      for id, value, purpose, name in
+                          [ "objective", "o", ObjectiveRegion, "Objective"
+                            "blue", "b", DeploymentZone Blue, "Blue deployment"
+                            "red", "r", DeploymentZone Red, "Red deployment" ] do
+                          yield regionBinding ("editor.region.purpose." + id) context value plain
+                              ("Choose " + name) IgnoreRepeat available
+                              (EditorCommand(ChooseRegionPurpose purpose))
+                      if editingExisting then
+                          yield regionBinding "editor.region.purpose.commit" context "Enter" plain
+                              "Apply the highlighted purpose" IgnoreRepeat available
+                              (EditorCommand CommitRegionEditPreview)
+                      yield regionBinding "editor.region.purpose.cancel" context "Escape" plain
+                          "Cancel purpose selection" IgnoreRepeat available
+                          (EditorCommand CancelRegionKeyboardMode)
+                  | RegionShapeSelection _ ->
+                      let context = ExactContext(EditorGesture RegionShape)
+                      yield regionBinding "editor.region.shape.rectangle" context "r" plain
+                          "Choose rectangle geometry" IgnoreRepeat available
+                          (EditorCommand(ChooseRegionShape RectangleRegionShape))
+                      yield regionBinding "editor.region.shape.polygon" context "p" plain
+                          "Choose polygon geometry" IgnoreRepeat available
+                          (EditorCommand(ChooseRegionShape PolygonRegionShape))
+                      yield regionBinding "editor.region.shape.back" context "Escape" plain
+                          "Return to purpose selection" IgnoreRepeat available
+                          (EditorCommand CancelRegionKeyboardMode)
+                  | RegionRectangleConstruction(_, anchor) ->
+                      let context = ExactContext(EditorGesture RegionRectangleMode)
+                      for id, value, dx, dy in
+                          [ "west", "ArrowLeft", -1, 0
+                            "east", "ArrowRight", 1, 0
+                            "north", "ArrowUp", 0, -1
+                            "south", "ArrowDown", 0, 1 ] do
+                          yield cursorMove ("editor.region.rectangle." + id) context value plain dx dy
+                      yield regionBinding "editor.region.rectangle.activate" context "Enter" plain
+                          (if anchor.IsSome then "Commit the rectangle" else "Set the first rectangle corner")
+                          IgnoreRepeat available (EditorCommand ActivateRegionCursor)
+                      yield regionBinding "editor.region.rectangle.reset" context "Backspace" plain
+                          "Clear the first rectangle corner" IgnoreRepeat
+                          (if anchor.IsSome then available else fun _ -> Unavailable "No rectangle corner is set.")
+                          (EditorCommand BacktrackRegionConstruction)
+                      yield regionBinding "editor.region.rectangle.cancel" context "Escape" plain
+                          "Cancel rectangle geometry" IgnoreRepeat available
+                          (EditorCommand CancelRegionKeyboardMode)
+                  | RegionPolygonConstruction(_, vertices) ->
+                      let context = ExactContext(EditorGesture RegionPolygonMode)
+                      for id, value, dx, dy in
+                          [ "west", "ArrowLeft", -1, 0
+                            "east", "ArrowRight", 1, 0
+                            "north", "ArrowUp", 0, -1
+                            "south", "ArrowDown", 0, 1 ] do
+                          yield cursorMove ("editor.region.polygon." + id) context value plain dx dy
+                      yield regionBinding "editor.region.polygon.vertex" context "Enter" plain
+                          "Add a polygon vertex" IgnoreRepeat available (EditorCommand ActivateRegionCursor)
+                      yield regionBinding "editor.region.polygon.commit" context "Enter" { plain with Shift = true }
+                          "Close and commit the polygon" IgnoreRepeat
+                          (if vertices.Length >= 3 then available else fun _ -> Unavailable "Add at least three vertices.")
+                          (EditorCommand CommitRegionPolygon)
+                      yield regionBinding "editor.region.polygon.backtrack" context "Backspace" plain
+                          "Remove the last polygon vertex" IgnoreRepeat
+                          (if Array.isEmpty vertices then fun _ -> Unavailable "No polygon vertex is staged." else available)
+                          (EditorCommand BacktrackRegionConstruction)
+                      yield regionBinding "editor.region.polygon.cancel" context "Escape" plain
+                          "Cancel polygon geometry" IgnoreRepeat available
+                          (EditorCommand CancelRegionKeyboardMode)
+                  | RegionMovePreview _ ->
+                      let context = ExactContext(EditorGesture RegionMove)
+                      for modifiers, distance, suffix in
+                          [ plain, 1, ""; { plain with Shift = true }, 5, "-large" ] do
+                          for id, value, dx, dy in
+                              [ "west", "ArrowLeft", -1, 0
+                                "east", "ArrowRight", 1, 0
+                                "north", "ArrowUp", 0, -1
+                                "south", "ArrowDown", 0, 1 ] do
+                              yield regionBinding ("editor.region.move." + id + suffix) context value modifiers
+                                  "Move the region preview" AllowRepeat available
+                                  (EditorCommand(MoveRegionEditPreview(dx * distance, dy * distance, false)))
+                      yield regionBinding "editor.region.move.commit" context "Enter" plain "Commit the region move"
+                          IgnoreRepeat available (EditorCommand CommitRegionEditPreview)
+                      yield regionBinding "editor.region.move.reset" context "Backspace" plain "Reset the region move"
+                          IgnoreRepeat available (EditorCommand ResetRegionEditPreview)
+                      yield regionBinding "editor.region.move.cancel" context "Escape" plain "Cancel the region move"
+                          IgnoreRepeat available (EditorCommand CancelRegionKeyboardMode)
+                  | RegionResizePreview _ ->
+                      let context = ExactContext(EditorGesture RegionResize)
+                      yield previewMove "editor.region.resize.width.decrease" context "ArrowLeft" plain -1 0 false
+                      yield previewMove "editor.region.resize.width.increase" context "ArrowRight" plain 1 0 false
+                      yield previewMove "editor.region.resize.height.decrease" context "ArrowUp" plain 0 -1 false
+                      yield previewMove "editor.region.resize.height.increase" context "ArrowDown" plain 0 1 false
+                      yield previewMove "editor.region.resize.origin.east" context "ArrowLeft" { plain with Shift = true } 1 0 true
+                      yield previewMove "editor.region.resize.origin.west" context "ArrowRight" { plain with Shift = true } -1 0 true
+                      yield previewMove "editor.region.resize.origin.south" context "ArrowUp" { plain with Shift = true } 0 1 true
+                      yield previewMove "editor.region.resize.origin.north" context "ArrowDown" { plain with Shift = true } 0 -1 true
+                      yield regionBinding "editor.region.resize.commit" context "Enter" plain "Commit the rectangle resize"
+                          IgnoreRepeat available (EditorCommand CommitRegionEditPreview)
+                      yield regionBinding "editor.region.resize.reset" context "Backspace" plain "Reset the rectangle resize"
+                          IgnoreRepeat available (EditorCommand ResetRegionEditPreview)
+                      yield regionBinding "editor.region.resize.cancel" context "Escape" plain "Cancel the rectangle resize"
+                          IgnoreRepeat available (EditorCommand CancelRegionKeyboardMode)
+                  | RegionVertexPreview _ ->
+                      let context = ExactContext(EditorGesture RegionVertex)
+                      yield regionBinding "editor.region.vertex.previous" context "[" plain "Previous polygon vertex"
+                          AllowRepeat available (EditorCommand(CycleRegionVertex -1))
+                      yield regionBinding "editor.region.vertex.next" context "]" plain "Next polygon vertex"
+                          AllowRepeat available (EditorCommand(CycleRegionVertex 1))
+                      for modifiers, distance, suffix in
+                          [ plain, 1, ""; { plain with Shift = true }, 5, "-large" ] do
+                          for id, value, dx, dy in
+                              [ "west", "ArrowLeft", -1, 0
+                                "east", "ArrowRight", 1, 0
+                                "north", "ArrowUp", 0, -1
+                                "south", "ArrowDown", 0, 1 ] do
+                              yield regionBinding ("editor.region.vertex." + id + suffix) context value modifiers
+                                  "Move the active polygon vertex" AllowRepeat available
+                                  (EditorCommand(MoveRegionEditPreview(dx * distance, dy * distance, false)))
+                      yield regionBinding "editor.region.vertex.commit" context "Enter" plain "Commit polygon vertex edits"
+                          IgnoreRepeat available (EditorCommand CommitRegionEditPreview)
+                      yield regionBinding "editor.region.vertex.reset" context "Backspace" plain "Reset the active polygon vertex"
+                          IgnoreRepeat available (EditorCommand ResetRegionEditPreview)
+                      yield regionBinding "editor.region.vertex.cancel" context "Escape" plain "Cancel polygon vertex edits"
+                          IgnoreRepeat available (EditorCommand CancelRegionKeyboardMode)
+
+              if facts.ActiveDomain = DocumentDomain then
+                  let document id value label command =
+                      binding id (ExactContext(EditorDomain DocumentDomain)) ActiveGestureOrPreview
+                          (key value plain KeyDown) label "Document" IgnoreRepeat available command
+                  yield document "editor.document.new" "n" "Request a new map"
+                      (EditorCommand RequestNewMap)
+                  yield document "editor.document.clear" "c" "Request clearing the map"
+                      (EditorCommand RequestClearMap)
+                  yield document "editor.document.export" "s" "Save or export the canonical map"
+                      (EditorDocumentCommand ExportMapDocument)
+                  yield document "editor.document.import" "i" "Open the native map import picker"
+                      (EditorDocumentCommand OpenMapImport)
+                  yield document "editor.document.bundle" "b" "Export the repository design bundle"
+                      (EditorDocumentCommand ExportRepositoryDesignBundle)
+                  yield document "editor.document.layers" "l" "Focus layer-state controls"
+                      (EditorDocumentCommand(FocusDocumentControl LayerStateControls))
+                  yield document "editor.document.background" "g" "Focus local background controls"
+                      (EditorDocumentCommand(FocusDocumentControl LocalBackgroundControls))
+                  yield document "editor.document.resize" "r" "Focus map dimensions"
+                      (EditorDocumentCommand(FocusDocumentControl MapDimensionControls))
+                  yield document "editor.document.views" "v" "Focus saved views"
+                      (EditorDocumentCommand(FocusDocumentControl SavedViewControls))
+                  yield document "editor.document.exit" "Escape" "Return to Select"
+                      (EditorCommand(ChooseTool Select))
+
+              match facts.Editor.Tool with
+              | Select when facts.Editor.Gesture = IdleGesture ->
+                  let movement id value dx dy =
+                      binding id (ExactContext(EditorTool Select)) ActiveTool
+                          (key value plain KeyDown) "Move the map cursor" "Selection"
+                          AllowRepeat available (EditorCommand(MoveEditorKeyboardCursor(dx, dy)))
+                  yield movement "editor.cursor.west" "ArrowLeft" -1 0
+                  yield movement "editor.cursor.east" "ArrowRight" 1 0
+                  yield movement "editor.cursor.north" "ArrowUp" 0 -1
+                  yield movement "editor.cursor.south" "ArrowDown" 0 1
+                  yield binding "editor.selection.single" (ExactContext(EditorTool Select)) ActiveTool
+                      (key "Enter" plain KeyDown) "Select the current object" "Selection"
+                      IgnoreRepeat available (EditorCommand(ActivateEditorKeyboardCursor false))
+                  yield binding "editor.selection.toggle" (ExactContext(EditorTool Select)) ActiveTool
+                      (key "Enter" { plain with Shift = true } KeyDown)
+                      "Toggle the current object in the selection" "Selection"
+                      IgnoreRepeat available (EditorCommand(ActivateEditorKeyboardCursor true))
+                  yield binding "editor.cursor.next-object" (ExactContext(EditorTool Select)) ActiveTool
+                      (key "n" plain KeyDown) "Select the next object at the cursor" "Selection"
+                      IgnoreRepeat available (EditorCommand(CycleEditorKeyboardObject 1))
+                  yield binding "editor.cursor.previous-object" (ExactContext(EditorTool Select)) ActiveTool
+                      (key "p" plain KeyDown) "Select the previous object at the cursor" "Selection"
+                      IgnoreRepeat available (EditorCommand(CycleEditorKeyboardObject -1))
+                  yield binding "editor.selection.box.begin" (ExactContext(EditorTool Select)) ActiveTool
+                      (key "b" plain KeyDown) "Begin box selection" "Selection"
+                      IgnoreRepeat available (EditorCommand BeginKeyboardBoxSelection)
+                  yield binding "editor.selection.all-domain" (ExactContext(EditorTool Select)) ActiveTool
+                      (key "a" plain KeyDown) "Select all units" "Selection"
+                      IgnoreRepeat selectableDomainAvailable (EditorCommand SelectAllInActiveDomain)
+                  yield binding "editor.unit.move.begin" (ExactContext(EditorTool Select)) ActiveTool
+                      (key "m" plain KeyDown) "Begin moving selected units" "Units"
+                      IgnoreRepeat unitSelectionAvailable
+                      (EditorCommand(BeginUnitMove facts.Editor.KeyboardCursor.Cell))
+              | UnitBrowse ->
+                  let browse id value repeat delta =
+                      binding id (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                          (key value plain KeyDown) "Browse unit presets" "Units"
+                          repeat available (EditorCommand(MoveUnitPaletteCursor delta))
+                  yield browse "editor.unit.preset.previous-arrow" "ArrowUp" AllowRepeat -1
+                  yield browse "editor.unit.preset.next-arrow" "ArrowDown" AllowRepeat 1
+                  yield browse "editor.unit.preset.previous-bracket" "[" AllowRepeat -1
+                  yield browse "editor.unit.preset.next-bracket" "]" AllowRepeat 1
+                  yield binding "editor.unit.preset.previous-faction"
+                      (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                      (key "PageUp" plain KeyDown) "Previous faction group" "Units"
+                      AllowRepeat available (EditorCommand(PageUnitPaletteFaction -1))
+                  yield binding "editor.unit.preset.next-faction"
+                      (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                      (key "PageDown" plain KeyDown) "Next faction group" "Units"
+                      AllowRepeat available (EditorCommand(PageUnitPaletteFaction 1))
+                  yield binding "editor.unit.preset.first"
+                      (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                      (key "Home" plain KeyDown) "First visible preset" "Units"
+                      IgnoreRepeat available (EditorCommand(SelectUnitPaletteBoundary false))
+                  yield binding "editor.unit.preset.last"
+                      (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                      (key "End" plain KeyDown) "Last visible preset" "Units"
+                      IgnoreRepeat available (EditorCommand(SelectUnitPaletteBoundary true))
+                  yield binding "editor.unit.preset.arm"
+                      (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                      (key "Enter" plain KeyDown) "Arm highlighted preset" "Units"
+                      IgnoreRepeat available (EditorCommand ArmUnitPalettePreset)
+                  yield binding "editor.unit.preset.search"
+                      (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                      (key "/" plain KeyDown) "Focus preset search" "Units"
+                      IgnoreRepeat available FocusUnitPresetSearch
+                  yield binding "editor.unit.preset.exit"
+                      (ExactContext(EditorTool UnitBrowse)) ActiveTool
+                      (key "Escape" plain KeyDown) "Return to Select" "Units"
+                      IgnoreRepeat available (EditorCommand(ChooseTool Select))
+              | Place _ when facts.Editor.Gesture = IdleGesture ->
+                  let move id value dx dy =
+                      binding id (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                          (key value plain KeyDown) "Move the placement cursor" "Units"
+                          AllowRepeat available (EditorCommand(MoveUnitPlacementCursor(dx, dy)))
+                  yield move "editor.unit.place.west" "ArrowLeft" -1 0
+                  yield move "editor.unit.place.east" "ArrowRight" 1 0
+                  yield move "editor.unit.place.north" "ArrowUp" 0 -1
+                  yield move "editor.unit.place.south" "ArrowDown" 0 1
+                  yield binding "editor.unit.place.previous-preset"
+                      (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                      (key "[" plain KeyDown) "Arm previous visible preset" "Units"
+                      AllowRepeat available (EditorCommand(CycleArmedUnitPreset -1))
+                  yield binding "editor.unit.place.next-preset"
+                      (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                      (key "]" plain KeyDown) "Arm next visible preset" "Units"
+                      AllowRepeat available (EditorCommand(CycleArmedUnitPreset 1))
+                  yield binding "editor.unit.place.commit"
+                      (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                      (key "Enter" plain KeyDown) "Place and remain armed" "Units"
+                      IgnoreRepeat available (EditorCommand(CommitUnitPlacement false))
+                  yield binding "editor.unit.place.commit-return"
+                      (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                      (key "Enter" { plain with Shift = true } KeyDown)
+                      "Place and return to preset browse" "Units"
+                      IgnoreRepeat available (EditorCommand(CommitUnitPlacement true))
+                  for value, suffix in [ "b", "browse"; "Escape", "cancel" ] do
+                      yield binding ("editor.unit.place." + suffix)
+                          (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                          (key value plain KeyDown) "Return to unit preset browse" "Units"
+                          IgnoreRepeat available (EditorCommand ReturnToUnitBrowse)
+              | Terrain _ ->
+                  let movement id value dx dy =
+                      binding id (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                          (key value plain KeyDown) "Move the terrain cursor" "Terrain"
+                          AllowRepeat available (EditorCommand(MoveTerrainCursor(dx, dy, false)))
+                  yield movement "editor.terrain.cursor.west" "ArrowLeft" -1 0
+                  yield movement "editor.terrain.cursor.east" "ArrowRight" 1 0
+                  yield movement "editor.terrain.cursor.north" "ArrowUp" 0 -1
+                  yield movement "editor.terrain.cursor.south" "ArrowDown" 0 1
+                  let shiftedMovement id value dx dy =
+                      binding id (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                          (key value { plain with Shift = true } KeyDown)
+                          "Paint or extend through the moved cell" "Terrain"
+                          AllowRepeat available (EditorCommand(MoveTerrainCursor(dx, dy, true)))
+                  yield shiftedMovement "editor.terrain.cursor.paint-west" "ArrowLeft" -1 0
+                  yield shiftedMovement "editor.terrain.cursor.paint-east" "ArrowRight" 1 0
+                  yield shiftedMovement "editor.terrain.cursor.paint-north" "ArrowUp" 0 -1
+                  yield shiftedMovement "editor.terrain.cursor.paint-south" "ArrowDown" 0 1
+                  yield binding "editor.terrain.activate" (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                      (key "Enter" plain KeyDown) "Activate at the terrain cursor" "Terrain"
+                      IgnoreRepeat available (EditorCommand ActivateTerrainCursor)
+                  for (value, terrain, name) in
+                      [ "1", Open, "Open"; "2", Rough, "Rough"; "3", Blocked, "Blocked"; "4", Objective, "Objective" ] do
+                      yield binding ("editor.terrain.value." + name.ToLowerInvariant())
+                          (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                          (key value plain KeyDown) ("Choose " + name + " terrain") "Terrain values"
+                          IgnoreRepeat available (EditorCommand(ChooseTerrain terrain))
+                  yield binding "editor.terrain.brush.decrease"
+                      (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                      (key "[" plain KeyDown) "Decrease brush size" "Terrain"
+                      AllowRepeat available (EditorCommand(SetTerrainBrushSize(facts.Editor.BrushSize - 1)))
+                  yield binding "editor.terrain.brush.increase"
+                      (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                      (key "]" plain KeyDown) "Increase brush size" "Terrain"
+                      AllowRepeat available (EditorCommand(SetTerrainBrushSize(facts.Editor.BrushSize + 1)))
+                  if facts.Editor.Gesture = IdleGesture then
+                      yield binding "editor.terrain.exit" (ExactContext(EditorTool facts.Editor.Tool)) ActiveTool
+                          (key "Escape" plain KeyDown) "Return to Select" "Terrain"
+                          IgnoreRepeat available
+                          (EditorCommand(
+                              match facts.Editor.Tool with
+                              | Terrain EyedropperTool -> ChooseTool(Terrain facts.Editor.LastTerrainPaintTool)
+                              | _ -> ChooseTool Select
+                          ))
+              | _ -> () ]
+        // M7 preserves the layout-insensitive shifted forms accepted by the
+        // former hand-written branch. These aliases are intentionally visible,
+        // characterized, and assigned to M8 for removal or acceptance.
+        let shiftedAliasKeys =
+            Set.ofList
+                [ "Backspace"; "]"; "Space"; "0"; "f"; "v"; "t"; "u"
+                  "e"; "z"; "m"; "p"; "r"; "l"; "g"; "i"; "x"; "F2"
+                  "F3"; "Escape" ]
+
+        let shiftedAliases =
+            catalog
+            |> List.choose (fun candidate ->
+                let keyValue = NormalizedKey.value candidate.BindingGesture.Key
+                if
+                    candidate.BindingGesture.Phase = KeyDown
+                    && candidate.BindingGesture.Modifiers = plain
+                    && Set.contains keyValue shiftedAliasKeys
+                then
+                    Some
+                        { candidate with
+                            Id = candidate.Id + ".compat-shift-m8"
+                            BindingGesture =
+                                { candidate.BindingGesture with
+                                    Modifiers = { plain with Shift = true } }
+                            Label =
+                                candidate.Label
+                                + " (compatibility alias; review in M8)"
+                            Group = "Compatibility aliases" }
+                else
+                    None)
+
+        let terrainAliases =
+            [ yield editorKey
+                  "editor.help.toggle.compat-produced-question-m8"
+                  "?"
+                  plain
+                  "Show or hide possible inputs (compatibility alias; review in M8)"
+                  "Compatibility aliases"
+                  IgnoreRepeat
+                  available
+                  ToggleInputHelp
+              for value, terrain, name in
+                  [ "1", Open, "Open"; "2", Rough, "Rough"
+                    "3", Blocked, "Blocked"; "4", Objective, "Objective" ] do
+                  yield editorKey
+                      ("editor.terrain.value." + name.ToLowerInvariant() + ".compat-shift-m8")
+                      value
+                      { plain with Shift = true }
+                      ("Choose " + name + " terrain (compatibility alias; review in M8)")
+                      "Compatibility aliases"
+                      IgnoreRepeat
+                      available
+                      (EditorCommand(ChooseTerrain terrain))
+              for value, terrain, name in
+                  [ "!", Open, "Open"; "@", Rough, "Rough"
+                    "#", Blocked, "Blocked"; "$", Objective, "Objective" ] do
+                  yield editorKey
+                      ("editor.terrain.value." + name.ToLowerInvariant() + ".compat-symbol-m8")
+                      value
+                      plain
+                      ("Choose " + name + " terrain (compatibility alias; review in M8)")
+                      "Compatibility aliases"
+                      IgnoreRepeat
+                      available
+                      (EditorCommand(ChooseTerrain terrain)) ]
+
+        catalog @ shiftedAliases @ terrainAliases
 
     let simulatorCatalog
         (selectedUnitId: int32 option)
@@ -1162,6 +1270,10 @@ module ModalInput =
             if List.contains SimulatorControllerSelection contexts then
                 Unavailable "Finish or cancel controller selection first."
             elif handoff.IsSome then Available
+            else Unavailable "Create a simulator handoff from the Editor first."
+
+        let compatibilityHandoff _ =
+            if handoff.IsSome then Available
             else Unavailable "Create a simulator handoff from the Editor first."
 
         let paused contexts =
@@ -1205,6 +1317,11 @@ module ModalInput =
         [ yield binding "simulator.help.toggle" AnySimulatorContext WorkspaceCommands
               (key "?" { plain with Shift = true } KeyDown)
               "Show or hide possible inputs" "Help" IgnoreRepeat available ToggleInputHelp
+          yield binding "simulator.help.toggle.compat-produced-question-m8"
+              AnySimulatorContext WorkspaceCommands
+              (key "?" plain KeyDown)
+              "Show or hide possible inputs (compatibility alias; review in M8)"
+              "Compatibility aliases" IgnoreRepeat compatibilityHandoff ToggleInputHelp
           yield simulatorKey "simulator.panel.toggle" "F2" "Show or hide the active simulator panel" "Panels"
               IgnoreRepeat popupInactive ToggleSimulatorCommandPanel
           yield simulatorKey "simulator.panel.controls" "c" "Show the Controls panel" "Panels"

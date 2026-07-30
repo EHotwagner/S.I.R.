@@ -19,10 +19,11 @@ related:
 
 This document locks the behavior being migrated by M0 of the
 [modal-input proposal](editor-simulator-modal-input-proposal.md). It describes
-the application as it behaves before the proposed catalog becomes
-authoritative. `CurrentModalInput.fs` is the executable characterization
-surface and `CurrentModalInputCharacterization.fs` exercises every branch in
-that surface.
+the application as it behaved before the proposed catalog became
+authoritative. As of M7, the handwritten branch surface is retired.
+`ModalInputCatalogAuthority.fs` preserves its comparison corpus and exercises
+the production catalog, compatibility aliases, native-control boundary,
+held-input recovery, conflicts, and possible-input enumeration.
 
 This is not the desired key vocabulary. The differences at the end of this
 document are intentional migration work, not omissions from the baseline.
