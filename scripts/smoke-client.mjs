@@ -446,6 +446,19 @@ buttonByText("Copy")?.click();
 await window.happyDOM.waitUntilComplete();
 buttonByText("Paste")?.click();
 await window.happyDOM.waitUntilComplete();
+if (
+  editorCanvas?.getAttribute("data-editor-revision") !== initialEditorDigest ||
+  editorWorkspace.querySelectorAll("[data-editor-unit-id]").length !== 4
+) {
+  throw new Error("Fable paste mutated the map before its explicit preview commit.");
+}
+editorWorkspace.dispatchEvent(
+  new window.KeyboardEvent("keydown", {
+    key: "Enter",
+    bubbles: true,
+  }),
+);
+await window.happyDOM.waitUntilComplete();
 const pastedDigest = editorCanvas?.getAttribute("data-editor-revision");
 if (
   pastedDigest === initialEditorDigest ||

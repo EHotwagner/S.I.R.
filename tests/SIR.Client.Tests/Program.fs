@@ -2127,12 +2127,14 @@ let main _ =
         |> MapEditor.update (SelectEditorUnit(Some 3))
         |> MapEditor.update CopyEditorSelection
         |> MapEditor.update PasteEditorClipboard
+        |> MapEditor.update CommitEditorGesture
     let duplicateDigest = duplicated.Revision.Digest
     let duplicateUndone = duplicated |> MapEditor.update UndoEditorCommand
     let duplicateRedone = duplicateUndone |> MapEditor.update RedoEditorCommand
     let deleted =
         duplicated
         |> MapEditor.update DeleteEditorSelection
+        |> MapEditor.update ConfirmDestructiveChange
     let deleteUndone = deleted |> MapEditor.update UndoEditorCommand
     require
         (duplicated.Map.Units.Count = editor.Map.Units.Count + 1
@@ -2753,25 +2755,42 @@ let main _ =
                     Digest = MapEditor.revisionDigest formationMap }
             SelectedUnit = Some 1
             SelectedUnits = Set.ofList [ 1; 2 ] }
-    let blockedFormation = MapEditor.update (MoveSelected East) formationState
+    let blockedFormation =
+        formationState
+        |> MapEditor.update (BeginUnitMove(address 0 0))
+        |> MapEditor.update (ExtendUnitMove(address 1 0))
+        |> MapEditor.update CommitEditorGesture
     require
         (blockedFormation.Map = formationMap
          && blockedFormation.Revision.Digest = formationState.Revision.Digest)
         "A multiselection crossed a blocking leading edge or partially committed."
     let movableFormation = { formationState with Map = { formationMap with Edges = Map.empty }; Revision = { formationState.Revision with Document = { formationMap with Edges = Map.empty }; Digest = MapEditor.revisionDigest { formationMap with Edges = Map.empty } } }
-    let movedFormation = MapEditor.update (MoveSelected East) movableFormation
+    let movementPreview =
+        movableFormation
+        |> MapEditor.update (BeginUnitMove(address 0 0))
+        |> MapEditor.update (ExtendUnitMove(address 2 1))
+    let resetMovement =
+        movementPreview |> MapEditor.update ResetUnitMovePreview
+    let canceledMovement =
+        movementPreview |> MapEditor.update CancelEditorGesture
+    let movedFormation =
+        movementPreview |> MapEditor.update CommitEditorGesture
     let duplicatedFormation =
         movedFormation
         |> MapEditor.update CopyEditorSelection
         |> MapEditor.update PasteEditorClipboard
+        |> MapEditor.update CommitEditorGesture
     require
-        ((Map.find 1 movedFormation.Map.Units).Column = 2
-         && (Map.find 2 movedFormation.Map.Units).Column = 2
+        ((Map.find 1 movedFormation.Map.Units).Column = 3
+         && (Map.find 2 movedFormation.Map.Units).Column = 3
+         && (Map.find 1 movedFormation.Map.Units).Row = 1
+         && resetMovement.Map = movableFormation.Map
+         && canceledMovement.Map = movableFormation.Map
          && movedFormation.Revision.Number = movableFormation.Revision.Number + 1L
          && duplicatedFormation.Map.Units.Count = 4
          && duplicatedFormation.SelectedUnits = Set.ofList [ 3; 4 ]
          && duplicatedFormation.Revision.Number = movedFormation.Revision.Number + 1L)
-        "Formation movement or copy/paste was not one validated atomic revision."
+        "Formation preview/reset/cancel/commit or paste preview was not one validated atomic revision."
 
     let placementPreview =
         { formationState with Map = { formationMap with Edges = Map.empty; Units = Map.empty; NextUnitId = 1 } }
@@ -2785,6 +2804,117 @@ let main _ =
              && units[0].Size = 3
          | _ -> false)
         "Placement preview omitted the complete footprint or canonical defaults."
+
+    let browseStart =
+        editor |> MapEditor.update (ChooseTool UnitBrowse)
+    let browseNext =
+        browseStart |> MapEditor.update (MoveUnitPaletteCursor 1)
+    let browseFaction =
+        browseStart |> MapEditor.update (PageUnitPaletteFaction 1)
+    let filteredBrowse =
+        browseStart |> MapEditor.update (SetUnitPaletteSearch "human")
+    let filteredFallback =
+        browseStart |> MapEditor.update (SetUnitPaletteSearch "reconnaissance")
+    require
+        (MapEditor.selectedUnitPalettePreset browseStart |> Option.map _.Id = Some "goblin"
+         && MapEditor.selectedUnitPalettePreset browseNext |> Option.map _.Id = Some "human-gunner"
+         && MapEditor.selectedUnitPalettePreset browseFaction |> Option.map _.Faction = Some "Human"
+         && MapEditor.selectedUnitPalettePreset filteredBrowse |> Option.map _.Id = Some "human-gunner"
+         && MapEditor.selectedUnitPalettePreset filteredFallback |> Option.map _.Id = Some "drone")
+        "M4 deterministic preset traversal, faction paging, or filter fallback failed."
+
+    let emptyUnitMap =
+        { formationMap with
+            Terrain = Map.empty
+            Edges = Map.empty
+            Units = Map.empty
+            NextUnitId = 1 }
+    let emptyUnitState =
+        { formationState with
+            Map = emptyUnitMap
+            Revision =
+                { formationState.Revision with
+                    Document = emptyUnitMap
+                    Digest = MapEditor.revisionDigest emptyUnitMap }
+            SelectedUnit = None
+            SelectedUnits = Set.empty
+            UnitPaletteSearch = ""
+            UnitPaletteCursor =
+                { PresetId = Some "troll"
+                  FactionIndex = 0
+                  ResultIndex = 1 } }
+    let armedPlacement =
+        emptyUnitState
+        |> MapEditor.update (ChooseTool UnitBrowse)
+        |> MapEditor.update ArmUnitPalettePreset
+        |> MapEditor.update (MoveUnitPlacementCursor(7, 7))
+    let rejectedPlacement =
+        armedPlacement |> MapEditor.update (CommitUnitPlacement false)
+    let firstPlacement =
+        armedPlacement
+        |> MapEditor.update (MoveUnitPlacementCursor(-7, -7))
+        |> MapEditor.update (CommitUnitPlacement false)
+    let secondPlacement =
+        firstPlacement
+        |> MapEditor.update (MoveUnitPlacementCursor(3, 0))
+        |> MapEditor.update (CommitUnitPlacement true)
+    require
+        (rejectedPlacement.Map = emptyUnitMap
+         && rejectedPlacement.Validation
+            |> Option.exists (_.Contains("outside the map"))
+         && firstPlacement.Map.Units.Count = 1
+         && firstPlacement.Tool = Place(Red, "troll", 3)
+         && firstPlacement.UndoHistory.Length = emptyUnitState.UndoHistory.Length + 1
+         && secondPlacement.Map.Units.Count = 2
+         && secondPlacement.Tool = UnitBrowse
+         && secondPlacement.UndoHistory.Length = emptyUnitState.UndoHistory.Length + 2)
+        "M4 placement validation, repeated placement, alternate return, or undo granularity failed."
+
+    let bulkUnits =
+        [| for index in 0 .. 5 ->
+               unit (int32 (index + 1)) 1 (int32 index) 0 |]
+    let bulkMap =
+        { emptyUnitMap with
+            Units = bulkUnits |> Array.map (fun candidate -> candidate.Id, candidate) |> Map.ofArray
+            NextUnitId = 7 }
+    let bulkState =
+        { emptyUnitState with
+            Map = bulkMap
+            Revision =
+                { emptyUnitState.Revision with
+                    Document = bulkMap
+                    Digest = MapEditor.revisionDigest bulkMap }
+            SelectedUnit = Some 1
+            SelectedUnits = bulkUnits |> Array.map _.Id |> Set.ofArray }
+    let bulkRequested =
+        bulkState |> MapEditor.update DeleteEditorSelection
+    let bulkDeleted =
+        bulkRequested |> MapEditor.update ConfirmDestructiveChange
+    let authoredUnit =
+        { unit 1 1 0 0 with
+            Controller = Scripted
+            Script = [ East ] }
+    let authoredMap =
+        { emptyUnitMap with
+            Units = Map.ofList [ authoredUnit.Id, authoredUnit ]
+            NextUnitId = 2 }
+    let authoredRequested =
+        { emptyUnitState with
+            Map = authoredMap
+            Revision =
+                { emptyUnitState.Revision with
+                    Document = authoredMap
+                    Digest = MapEditor.revisionDigest authoredMap }
+            SelectedUnit = Some 1
+            SelectedUnits = Set.singleton 1 }
+        |> MapEditor.update DeleteEditorSelection
+    require
+        (bulkRequested.Map = bulkMap
+         && bulkRequested.PendingDestructiveChange = Some(UnitDeletionPending [| 1; 2; 3; 4; 5; 6 |])
+         && bulkDeleted.Map.Units.IsEmpty
+         && bulkDeleted.UndoHistory.Length = bulkState.UndoHistory.Length + 1
+         && authoredRequested.PendingDestructiveChange = Some(UnitDeletionPending [| 1 |]))
+        "M4 conditional bulk/authored-data deletion confirmation was not atomic."
 
     let edgeBase = MapEditor.update ClearMap editor
     let wallPreview =

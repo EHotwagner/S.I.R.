@@ -47,12 +47,9 @@ module CurrentModalInput =
         | ContentEditableElement -> false
         | ApplicationElement -> true
 
-    /// Returns the current key-down command. `repeat` is accepted explicitly
-    /// to document that the legacy dispatcher applies the same command for
-    /// initial and repeated key-down events.
+    /// Returns the current key-down command. Destructive deletion is
+    /// deliberately suppressed for repeated key-down events.
     let resolveKeyDown workspace key controlOrMeta shift repeat =
-        let _ = repeat
-
         match workspace with
         | CurrentEditor ->
             match key, controlOrMeta, shift with
@@ -70,7 +67,7 @@ module CurrentModalInput =
                 Some(CurrentEditorAction DuplicateEditorSelection)
             | ("a" | "A"), true, _ ->
                 Some(CurrentEditorAction SelectAllInActiveDomain)
-            | ("Delete" | "Backspace"), false, _ ->
+            | ("Delete" | "Backspace"), false, _ when not repeat ->
                 Some(CurrentEditorAction DeleteEditorSelection)
             | "[", false, _ ->
                 Some(CurrentEditorAction SelectPreviousIssue)
@@ -159,6 +156,18 @@ module CurrentModalInput =
             Some(CurrentSetEditorSpaceHeld false)
         else
             None
+
+    /// Resolves the transient destructive-confirmation layer before ordinary
+    /// Editor commands, independent of which non-text application element
+    /// currently owns focus.
+    let resolvePendingDestructiveKey key controlOrMeta shift repeat =
+        if controlOrMeta || shift || repeat then
+            None
+        else
+            match key with
+            | "Enter" -> Some ConfirmDestructiveChange
+            | "Escape" -> Some CancelDestructiveChange
+            | _ -> None
 
     /// Escape first cancels pointer state, then cancels an active gesture or
     /// clears unit selection when no gesture is active.

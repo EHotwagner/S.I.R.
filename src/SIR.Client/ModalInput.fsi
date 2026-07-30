@@ -88,6 +88,7 @@ type ModalCommand =
     | ToggleSimulatorCommandPanel
     | SimulatorCommand of SimulatorAction
     | SetEditorPanHeld of bool
+    | FocusUnitPresetSearch
     | ToggleInputHelp
 
 type ModalBinding<'command> =
