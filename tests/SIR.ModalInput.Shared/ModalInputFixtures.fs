@@ -1025,23 +1025,18 @@ let evaluate () =
         ModalInput.editorCatalog authoritativeEditorFacts
     let authoritativeEditorContexts =
         ModalInput.deriveEditorContexts authoritativeEditorFacts
-    let compatibilityAliases =
-        authoritativeEditorCatalog
-        |> List.filter (fun input -> input.Id.Contains(".compat-"))
-
     require
-        (not (List.isEmpty compatibilityAliases)
-         && compatibilityAliases
-            |> List.forall (fun input ->
-                input.Id.EndsWith("-m8")
-                && input.Group = "Compatibility aliases"
-                && input.Label.Contains("compatibility alias"))
+        (authoritativeEditorCatalog
+         |> List.forall (fun input ->
+             not (input.Id.Contains(".compat-"))
+             && input.Group <> "Compatibility aliases"
+             && not (input.Label.Contains("compatibility alias")))
          && ModalInput.validateCatalog authoritativeEditorCatalog = []
          && (authoritativeEditorCatalog
              |> List.map _.Id
              |> List.distinct
              |> List.length) = authoritativeEditorCatalog.Length)
-        "M7 production catalog aliases were not labelled, tested, conflict-free, and assigned to M8."
+        "An M7 compatibility alias survived M8 acceptance."
 
     let authoritativePossible =
         ModalInput.possibleInputs
@@ -1097,6 +1092,318 @@ let evaluate () =
          && ModalInput.acceptsTarget ModalInputTarget.ApplicationElement)
         "M7 held-input resolution, recovery, or native-control boundary diverged."
 
+    // M8 acceptance enumerates every derived mode represented by the complete
+    // production vocabulary. Each available binding must resolve to itself,
+    // and its repeat policy must remain executable or suppressed as declared.
+    let boxFacts =
+        m3Facts
+            false
+            { m3Editor with
+                Gesture =
+                    BoxSelectionGesture(
+                        { CellColumn = 0; CellRow = 0 },
+                        { CellColumn = 1; CellRow = 1 }
+                    ) }
+    let helpFacts =
+        { m3SelectFacts with InputHelpExpanded = true }
+    let acceptedTerrainTools =
+        [ PencilTool
+          RectangleTool
+          LineTool
+          FloodFillTool
+          EyedropperTool
+          EraseTool ]
+    let terrainToolFacts =
+        acceptedTerrainTools
+        |> List.map (fun tool ->
+            m3Facts
+                false
+                { m3Editor with
+                    Tool = Terrain tool
+                    Gesture = IdleGesture })
+    let terrainPreviewFacts =
+        acceptedTerrainTools
+        |> List.map (fun tool ->
+            m3Facts
+                false
+                { m3Editor with
+                    Tool = Terrain tool
+                    Gesture =
+                        TerrainGesture(
+                            tool,
+                            { CellColumn = 0; CellRow = 0 },
+                            { CellColumn = 1; CellRow = 1 },
+                            [||]
+                        ) })
+    let acceptedEdgeTools =
+        [ for direction in [ EastEdge; SouthEdge ] do
+              for kind in [ Wall; Door; Window ] do
+                  yield Edge(direction, kind) ]
+    let edgeToolFacts =
+        acceptedEdgeTools
+        |> List.map (fun tool ->
+            m5Facts
+                EdgeDomain
+                { edgeEditor with
+                    Tool = tool
+                    Gesture = IdleGesture })
+    let commandPreviewFacts =
+        m3Facts
+            false
+            { m3Editor with
+                Gesture =
+                    CommandPreviewGesture(
+                        PaintCells(
+                            Rough,
+                            [| { CellColumn = 0; CellRow = 0 } |]
+                        )
+                    ) }
+    let regionRectangleAnchoredFacts =
+        { regionRectangleFacts with
+            Editor =
+                { regionRectangleFacts.Editor with
+                    RegionKeyboardMode =
+                        RegionRectangleConstruction(
+                            ObjectiveRegion,
+                            Some { CellColumn = 0; CellRow = 0 }
+                        ) } }
+    let regionPolygonReadyFacts =
+        { regionPolygonFacts with
+            Editor =
+                { regionPolygonFacts.Editor with
+                    RegionKeyboardMode =
+                        RegionPolygonConstruction(
+                            ObjectiveRegion,
+                            [| { CellColumn = 0; CellRow = 0 }
+                               { CellColumn = 2; CellRow = 0 }
+                               { CellColumn = 1; CellRow = 2 } |]
+                        ) } }
+    let editorQualificationFacts =
+        [ yield m3SelectFacts
+          yield boxFacts
+          yield selectedRegionFacts
+          yield commandPreviewFacts
+          yield! terrainToolFacts
+          yield! terrainPreviewFacts
+          yield productionEditorFacts
+          yield m3PanFacts
+          yield m4BrowseFacts
+          yield m4PlaceFacts
+          yield m4MoveFacts
+          yield! edgeToolFacts
+          yield edgePolylineFacts
+          yield regionIdleFacts
+          yield regionPurposeFacts
+          yield regionShapeFacts
+          yield regionRectangleFacts
+          yield regionRectangleAnchoredFacts
+          yield regionPolygonFacts
+          yield regionPolygonReadyFacts
+          yield regionMoveFacts
+          yield regionResizeFacts
+          yield regionVertexFacts
+          yield regionPurposeEditFacts
+          yield documentFacts
+          yield confirmationFacts
+          yield helpFacts ]
+
+    let previewSimulator =
+        MapEditorSimulator.update
+            (MoveSimulatorPreview(1, 0))
+            (Some selectedId)
+            simulator
+    let previewSimulatorFacts =
+        { pausedSimulatorFacts with SimulatorHasRoutePreview = true }
+    let noHandoffFacts =
+        { SimulatorHandoffPresent = false
+          SimulatorIsRunning = false
+          SimulatorHasRoutePreview = false
+          SimulatorControllerSelection = None
+          SimulatorRevisionIsStale = false
+          InputHelpExpanded = false }
+    let simulatorQualification =
+        [ pausedSimulatorFacts,
+          productionSimulatorCatalog,
+          ModalInput.deriveSimulatorContexts pausedSimulatorFacts
+          previewSimulatorFacts,
+          ModalInput.simulatorCatalog (Some selectedId) (Some previewSimulator) None,
+          ModalInput.deriveSimulatorContexts previewSimulatorFacts
+          runningFacts,
+          runningCatalog,
+          ModalInput.deriveSimulatorContexts runningFacts
+          controllerFacts,
+          controllerCatalog,
+          ModalInput.deriveSimulatorContexts controllerFacts
+          noHandoffFacts,
+          noHandoffCatalog,
+          ModalInput.deriveSimulatorContexts noHandoffFacts ]
+
+    let editorQualification =
+        editorQualificationFacts
+        |> List.map (fun facts ->
+            let catalog = ModalInput.editorCatalog facts
+            facts, catalog, ModalInput.deriveEditorContexts facts)
+
+    let mutable resolvedQualificationIds = Set.empty
+    let qualifyCatalog label contexts catalog =
+        require
+            (ModalInput.validateCatalog catalog = [])
+            (label + " catalog contains a conflict.")
+        for input in ModalInput.possibleInputs contexts catalog do
+            let binding =
+                catalog
+                |> List.find (fun candidate -> candidate.Id = input.Id)
+            match ModalInput.resolve contexts input.InputGesture false catalog with
+            | Resolved resolved ->
+                require
+                    (resolved.Id = input.Id)
+                    (label + " displayed input did not resolve to itself: " + input.Id)
+                resolvedQualificationIds <-
+                    Set.add resolved.Id resolvedQualificationIds
+            | outcome ->
+                failwith (label + " displayed input was not executable: " + input.Id + " / " + outcomeName outcome)
+
+            let repeated =
+                ModalInput.resolve contexts input.InputGesture true catalog
+            match binding.Repeat, repeated with
+            | AllowRepeat, Resolved resolved when resolved.Id = input.Id -> ()
+            | IgnoreRepeat, Resolved resolved when resolved.Id = input.Id ->
+                failwith (label + " repeat-forbidden input repeated: " + input.Id)
+            | IgnoreRepeat, _ -> ()
+            | AllowRepeat, outcome ->
+                failwith (label + " repeat-allowed input was suppressed: " + input.Id + " / " + outcomeName outcome)
+
+    for _, catalog, contexts in editorQualification do
+        qualifyCatalog "Editor M8" contexts catalog
+    for _, catalog, contexts in simulatorQualification do
+        qualifyCatalog "Simulator M8" contexts catalog
+
+    let qualifiedContexts =
+        [ yield!
+              editorQualification
+              |> List.collect (fun (_, _, contexts) -> contexts)
+          yield!
+              simulatorQualification
+              |> List.collect (fun (_, _, contexts) -> contexts) ]
+        |> Set.ofList
+    let qualifiedEditorTools =
+        qualifiedContexts
+        |> Set.toList
+        |> List.choose (function
+            | EditorTool tool -> Some tool
+            | _ -> None)
+        |> Set.ofList
+    let requiredEditorTools =
+        [ yield Select
+          yield UnitBrowse
+          yield m4PlaceFacts.Editor.Tool
+          for tool in acceptedTerrainTools do
+              yield Terrain tool
+          yield! acceptedEdgeTools ]
+        |> Set.ofList
+    let qualifiedTerrainPreviews =
+        qualifiedContexts
+        |> Set.toList
+        |> List.choose (function
+            | EditorGesture(TerrainPreview tool) -> Some tool
+            | _ -> None)
+        |> Set.ofList
+    require
+        (Set.isSubset requiredEditorTools qualifiedEditorTools
+         && qualifiedTerrainPreviews = Set.ofList acceptedTerrainTools)
+        "M8 qualification omitted an accepted parameterized terrain or semantic-edge mode."
+    let requiredContexts =
+        [ EditorBase
+          EditorDomain TerrainDomain
+          EditorDomain UnitDomain
+          EditorDomain EdgeDomain
+          EditorDomain RegionDomain
+          EditorDomain DocumentDomain
+          EditorTool Select
+          EditorGesture SelectedObjectActions
+          EditorGesture BoxSelection
+          EditorGesture CommandPreview
+          EditorGesture UnitMovePreview
+          EditorGesture(TerrainPreview RectangleTool)
+          EditorGesture EdgePolyline
+          EditorGesture RegionPurpose
+          EditorGesture RegionShape
+          EditorGesture RegionRectangleMode
+          EditorGesture RegionPolygonMode
+          EditorGesture RegionMove
+          EditorGesture RegionResize
+          EditorGesture RegionVertex
+          EditorPanHeld
+          EditorDestructiveConfirmation
+          SimulatorBase
+          SimulatorPaused
+          SimulatorRunning
+          SimulatorRoutePreview
+          SimulatorControllerSelection
+          SimulatorRevisionStale
+          SimulatorNoHandoff
+          InputHelpPopup ]
+    let missingContexts =
+        requiredContexts
+        |> List.filter (fun context -> not (Set.contains context qualifiedContexts))
+    require
+        (List.isEmpty missingContexts)
+        ("M8 qualification did not exercise every accepted modal context: "
+         + (missingContexts |> List.map string |> String.concat ", "))
+
+    let qualifiedIds =
+        [ yield!
+              editorQualification
+              |> List.collect (fun (_, catalog, _) -> catalog |> List.map _.Id)
+          yield!
+              simulatorQualification
+              |> List.collect (fun (_, catalog, _) -> catalog |> List.map _.Id) ]
+        |> Set.ofList
+    let requiredTransitionIds =
+        [ "editor.mode.select"
+          "editor.domain.terrain"
+          "editor.domain.units"
+          "editor.domain.edges"
+          "editor.domain.zones"
+          "editor.domain.document"
+          "editor.gesture.commit"
+          "editor.gesture.cancel"
+          "editor.terrain.gesture.reset"
+          "editor.unit.move.reset"
+          "editor.edge.polyline.backtrack"
+          "editor.region.purpose.cancel"
+          "editor.region.shape.back"
+          "editor.region.rectangle.reset"
+          "editor.region.polygon.commit"
+          "editor.region.move.commit"
+          "editor.region.move.reset"
+          "editor.region.move.cancel"
+          "editor.region.resize.commit"
+          "editor.region.resize.reset"
+          "editor.region.resize.cancel"
+          "editor.region.vertex.commit"
+          "editor.region.vertex.reset"
+          "editor.region.vertex.cancel"
+          "editor.confirmation.confirm"
+          "editor.confirmation.cancel"
+          "editor.camera.pan-release"
+          "simulator.preview.commit"
+          "simulator.preview.reset"
+          "simulator.preview.cancel"
+          "simulator.controller.commit"
+          "simulator.controller.cancel"
+          "simulator.run.toggle-space"
+          "simulator.step" ]
+    let unresolvedTransitionIds =
+        requiredTransitionIds
+        |> List.filter (fun id -> not (Set.contains id resolvedQualificationIds))
+    require
+        (List.isEmpty unresolvedTransitionIds
+         && qualifiedIds
+            |> Set.forall (fun id -> not (id.Contains(".compat-"))))
+        ("M8 qualification did not resolve an accepted transition, commit, reset, cancellation, or retained a compatibility alias: "
+         + String.concat ", " unresolvedTransitionIds)
+
     [ outcomeName commit
       outcomeName repeatedCommit
       outcomeName moving
@@ -1114,6 +1421,6 @@ let evaluate () =
       noHandoffProjection.Headline
       outcomeName panDown
       outcomeName panUp
-      string compatibilityAliases.Length
+      string qualifiedContexts.Count
       string authoritativePossible.Length ]
     |> String.concat "\n"

@@ -27,6 +27,19 @@ if (
   );
 }
 
+if (
+  !/@media\s*\(prefers-reduced-motion:reduce\)/.test(styles) ||
+  !/@media\s*\(forced-colors:active\)/.test(styles) ||
+  !/@media\s*\((?:max-width:48rem|width<=48rem)\)[\s\S]*?\.modal-input-panel\{[^}]*position:static/.test(
+    styles,
+  ) ||
+  !/\.modal-input-toggle\{[^}]*min-height:2\.75rem/.test(styles)
+) {
+  throw new Error(
+    "Modal input acceptance styles lost reduced-motion, forced-colors, 400%-reflow, or 44px target-size safeguards.",
+  );
+}
+
 const window = new Window({ url: "https://sir.invalid/replay/" });
 window.document.body.innerHTML = '<div id="sir-replay-app"></div>';
 
@@ -628,6 +641,63 @@ const currentEditorDigest = () =>
     .querySelector('[aria-label="SVG tactical map workspace"]')
     ?.getAttribute("data-editor-revision");
 const keyboardRegionStartDigest = currentEditorDigest();
+const dispatchCurrentEditorKey = (options) =>
+  window.document
+    .querySelector('[aria-label="SVG tactical map workspace"] svg[role="application"]')
+    ?.dispatchEvent(
+      new window.KeyboardEvent("keydown", {
+        ...options,
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+
+const editorModalStrip = window.document.querySelector(
+  'section.modal-input-strip[aria-label="Current input mode"]',
+);
+const editorModalToggle = window.document.querySelector("#modal-input-toggle");
+const editorModeStatus = editorModalStrip?.querySelector(
+  '[role="status"][aria-live="polite"][aria-atomic="true"]',
+);
+if (
+  !editorModalStrip ||
+  editorModalToggle?.tagName !== "BUTTON" ||
+  editorModalToggle.getAttribute("aria-expanded") !== "false" ||
+  editorModalToggle.getAttribute("aria-controls") !== "modal-input-panel" ||
+  !editorModeStatus
+) {
+  throw new Error(
+    "The Editor modal strip lost its labelled region, live status, or native disclosure semantics.",
+  );
+}
+
+window.document
+  .querySelector('[aria-label="SVG tactical map workspace"] svg[role="application"]')
+  ?.focus();
+dispatchCurrentEditorKey({ key: "?", shiftKey: true });
+await window.happyDOM.waitUntilComplete();
+const keyboardOpenedPanel = window.document.querySelector("#modal-input-panel");
+if (
+  !keyboardOpenedPanel ||
+  window.document.activeElement !== keyboardOpenedPanel ||
+  !keyboardOpenedPanel.getAttribute("aria-label")?.startsWith("Possible inputs for ") ||
+  [...keyboardOpenedPanel.querySelectorAll("[data-modal-command]")].some(
+    (item) => !item.getAttribute("aria-keyshortcuts"),
+  )
+) {
+  throw new Error(
+    "Keyboard-opened Editor input help lost focus, labelling, or shortcut semantics.",
+  );
+}
+dispatchCurrentEditorKey({ key: "Escape" });
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document.querySelector("#modal-input-panel") ||
+  window.document.activeElement?.id !== "modal-input-toggle"
+) {
+  throw new Error("Closing Editor input help did not restore disclosure focus.");
+}
+
 window.document.querySelector("#modal-input-toggle")?.click();
 await window.happyDOM.waitUntilComplete();
 const regionInputIds = [
@@ -638,12 +708,6 @@ await window.happyDOM.waitUntilComplete();
 if (!regionInputIds.includes("editor.region.create.begin")) {
   throw new Error(`The live Zone disclosure omitted New Region: ${regionInputIds.join(",")}.`);
 }
-const dispatchCurrentEditorKey = (options) =>
-  window.document
-    .querySelector('[aria-label="SVG tactical map workspace"] svg[role="application"]')
-    ?.dispatchEvent(
-      new window.KeyboardEvent("keydown", { ...options, bubbles: true }),
-    );
 dispatchCurrentEditorKey({ key: "n" });
 await window.happyDOM.waitUntilComplete();
 if (!window.document.querySelector(".modal-input-strip")?.textContent.includes("NEW / PURPOSE")) {
@@ -1510,7 +1574,7 @@ if (
     `Starting Simulator did not clear the uncommitted route preview: ${simulatorModalState()?.textContent}.`,
   );
 }
-await sendSimulatorKey("?");
+await sendSimulatorKey("?", { shiftKey: true });
 const runningInputIds = [
   ...window.document.querySelectorAll(
     ".simulator-workspace [data-modal-command]",

@@ -1189,73 +1189,7 @@ module ModalInput =
                               | _ -> ChooseTool Select
                           ))
               | _ -> () ]
-        // M7 preserves the layout-insensitive shifted forms accepted by the
-        // former hand-written branch. These aliases are intentionally visible,
-        // characterized, and assigned to M8 for removal or acceptance.
-        let shiftedAliasKeys =
-            Set.ofList
-                [ "Backspace"; "]"; "Space"; "0"; "f"; "v"; "t"; "u"
-                  "e"; "z"; "m"; "p"; "r"; "l"; "g"; "i"; "x"; "F2"
-                  "F3"; "Escape" ]
-
-        let shiftedAliases =
-            catalog
-            |> List.choose (fun candidate ->
-                let keyValue = NormalizedKey.value candidate.BindingGesture.Key
-                if
-                    candidate.BindingGesture.Phase = KeyDown
-                    && candidate.BindingGesture.Modifiers = plain
-                    && Set.contains keyValue shiftedAliasKeys
-                then
-                    Some
-                        { candidate with
-                            Id = candidate.Id + ".compat-shift-m8"
-                            BindingGesture =
-                                { candidate.BindingGesture with
-                                    Modifiers = { plain with Shift = true } }
-                            Label =
-                                candidate.Label
-                                + " (compatibility alias; review in M8)"
-                            Group = "Compatibility aliases" }
-                else
-                    None)
-
-        let terrainAliases =
-            [ yield editorKey
-                  "editor.help.toggle.compat-produced-question-m8"
-                  "?"
-                  plain
-                  "Show or hide possible inputs (compatibility alias; review in M8)"
-                  "Compatibility aliases"
-                  IgnoreRepeat
-                  available
-                  ToggleInputHelp
-              for value, terrain, name in
-                  [ "1", Open, "Open"; "2", Rough, "Rough"
-                    "3", Blocked, "Blocked"; "4", Objective, "Objective" ] do
-                  yield editorKey
-                      ("editor.terrain.value." + name.ToLowerInvariant() + ".compat-shift-m8")
-                      value
-                      { plain with Shift = true }
-                      ("Choose " + name + " terrain (compatibility alias; review in M8)")
-                      "Compatibility aliases"
-                      IgnoreRepeat
-                      available
-                      (EditorCommand(ChooseTerrain terrain))
-              for value, terrain, name in
-                  [ "!", Open, "Open"; "@", Rough, "Rough"
-                    "#", Blocked, "Blocked"; "$", Objective, "Objective" ] do
-                  yield editorKey
-                      ("editor.terrain.value." + name.ToLowerInvariant() + ".compat-symbol-m8")
-                      value
-                      plain
-                      ("Choose " + name + " terrain (compatibility alias; review in M8)")
-                      "Compatibility aliases"
-                      IgnoreRepeat
-                      available
-                      (EditorCommand(ChooseTerrain terrain)) ]
-
-        catalog @ shiftedAliases @ terrainAliases
+        catalog
 
     let simulatorCatalog
         (selectedUnitId: int32 option)
@@ -1270,10 +1204,6 @@ module ModalInput =
             if List.contains SimulatorControllerSelection contexts then
                 Unavailable "Finish or cancel controller selection first."
             elif handoff.IsSome then Available
-            else Unavailable "Create a simulator handoff from the Editor first."
-
-        let compatibilityHandoff _ =
-            if handoff.IsSome then Available
             else Unavailable "Create a simulator handoff from the Editor first."
 
         let paused contexts =
@@ -1317,11 +1247,6 @@ module ModalInput =
         [ yield binding "simulator.help.toggle" AnySimulatorContext WorkspaceCommands
               (key "?" { plain with Shift = true } KeyDown)
               "Show or hide possible inputs" "Help" IgnoreRepeat available ToggleInputHelp
-          yield binding "simulator.help.toggle.compat-produced-question-m8"
-              AnySimulatorContext WorkspaceCommands
-              (key "?" plain KeyDown)
-              "Show or hide possible inputs (compatibility alias; review in M8)"
-              "Compatibility aliases" IgnoreRepeat compatibilityHandoff ToggleInputHelp
           yield simulatorKey "simulator.panel.toggle" "F2" "Show or hide the active simulator panel" "Panels"
               IgnoreRepeat popupInactive ToggleSimulatorCommandPanel
           yield simulatorKey "simulator.panel.controls" "c" "Show the Controls panel" "Panels"
