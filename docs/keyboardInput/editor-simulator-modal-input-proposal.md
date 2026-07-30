@@ -6,7 +6,7 @@ index: 9
 status: proposed
 decision-status: proposed
 document-type: design-proposal
-version: "0.1"
+version: "0.2"
 last-updated: 2026-07-30
 description: Apply the archived keyboard-input algebra to the Editor and Simulator with a state-first modal display and optional context-sensitive input help.
 related:
@@ -435,48 +435,131 @@ If `EditorToolPanel` and `SimulatorToolPanel` prevent the catalog from living in
 keep the final `ModalCommand` adapter in `SIR.Client.Web`. Do not move DOM types
 into the pure client library.
 
-## Migration plan
+## Implementation roadmap
 
-### Phase 1 — Freeze current behavior
+The checkboxes below track merged implementation, not work in progress. A
+milestone is checked only when all of its child items and exit gate have landed
+on the default branch. Milestones proceed in order unless an earlier milestone
+explicitly provides the stable contract needed for safe parallel work.
 
-- Enumerate every current Editor and Simulator key branch as characterization
-  tests.
-- Record precedence around text entry, modifiers, repeated keys, `Escape`,
-  `Space` down/up, and focus loss.
-- Add conflict fixtures that intentionally fail.
+- [ ] **M0 — Characterize the current behavior**
+  - [ ] Enumerate every current Editor and Simulator `KeyPressed` branch in
+        characterization tests.
+  - [ ] Cover text-entry exclusion, modifier precedence, repeated keys,
+        `Escape`, `Space` down/up, focus loss, and workspace changes.
+  - [ ] Capture the pointer, touch, toolbar, inspector, and object-list commands
+        that must remain equivalent to keyboard commands.
+  - [ ] Record intentional differences between current behavior and the
+        [complete modal vocabulary](editor-simulator-modal-key-vocabulary.md),
+        including replacement of immediate `Alt+Arrow` unit movement.
+  - **Exit gate:** the existing behavior has a passing, reviewable baseline
+    whose failures expose accidental migration regressions.
 
-### Phase 2 — Add projection without changing dispatch
+- [ ] **M1 — Land the pure modal-input kernel**
+  - [ ] Add normalized gestures, input phases, repeat policies, modal contexts,
+        binding availability, stable command IDs, and semantic commands.
+  - [ ] Derive the modal stack from authoritative Editor and Simulator state;
+        do not store a competing durable mode stack.
+  - [ ] Implement deterministic highest-precedence resolution and explicit
+        no-match results.
+  - [ ] Add catalog validation for duplicate IDs and equal-precedence gesture
+        conflicts in overlapping contexts.
+  - [ ] Run the same resolver fixtures under .NET and Fable.
+  - **Exit gate:** the pure resolver produces identical commands and conflict
+    diagnostics in both runtimes without browser or simulation dependencies.
 
-- Introduce the pure context and projection types.
-- Derive the mode headline and detail from existing state.
-- Render the always-visible status strip.
-- Keep the current `KeyPressed` branches temporarily.
+- [ ] **M2 — Show current state and live possible inputs**
+  - [ ] Render the always-visible Editor and Simulator modal-state strip.
+  - [ ] Project breadcrumb, headline, detail, and availability from the current
+        application model.
+  - [ ] Add the collapsed-by-default `Inputs` disclosure and `?` binding.
+  - [ ] Render the disclosed rows from the live catalog rather than duplicated
+        help prose.
+  - [ ] Implement `F2`, `F3`, popup focus behavior, polite mode announcements,
+        and narrow/400%-zoom in-flow layout.
+  - **Exit gate:** every displayed available input resolves in the displayed
+    context, and every resolvable visible command appears in the disclosure.
 
-This makes projection errors visible before the resolver can change behavior.
+- [ ] **M3 — Deliver Select, camera, and Terrain keyboard operation**
+  - [ ] Add the deterministic keyboard map cursor and object cycling.
+  - [ ] Implement single, toggle, box, and select-all routes plus selected-object
+        actions.
+  - [ ] Implement held-Space pan, arrow-key pan, frame selection, fit map, and
+        camera reset without leaking authoring commands through the held layer.
+  - [ ] Implement Terrain tool/value/brush selection and pencil, eraser,
+        rectangle, line, flood-fill, and eyedropper flows.
+  - [ ] Make every preview explicitly commit, reset, or cancel and produce the
+        documented undo granularity.
+  - **Exit gate:** terrain can be authored and selected entirely by keyboard,
+    while pointer and touch routes still dispatch equivalent map actions.
 
-### Phase 3 — Introduce the catalog
+- [ ] **M4 — Deliver complete Unit keyboard operation**
+  - [ ] Add deterministic preset browsing, faction paging, filtering, and
+        placement arming.
+  - [ ] Implement validated footprint previews, repeated placement, alternate
+        place-and-return, and invalid-placement explanations.
+  - [ ] Implement deterministic unit selection and multiselection.
+  - [ ] Replace immediate movement mutation with resettable, cancellable,
+        multi-unit movement previews.
+  - [ ] Implement copy, paste preview, duplicate, delete, and conditional bulk
+        confirmation without allowing key repeat on destructive actions.
+  - **Exit gate:** units can be found, placed, selected, moved, duplicated, and
+    deleted entirely by keyboard with one undoable command per documented
+    commit.
 
-- Express existing shortcuts as bindings with stable command IDs.
-- Render possible inputs from the catalog.
-- Compare catalog resolution with the old branches for the full
-  characterization corpus.
-- Fail the build if visible possible inputs differ from resolvable inputs.
+- [ ] **M5 — Deliver Edges, Zones, and Document keyboard operation**
+  - [ ] Implement semantic-edge kind/orientation selection, snapped cursor,
+        polyline construction, conversion, door toggle, erase, split, and join.
+  - [ ] Implement nested region purpose and shape selection.
+  - [ ] Implement rectangle and polygon creation plus region move, resize,
+        vertex editing, purpose changes, and deletion.
+  - [ ] Implement document new, clear, export, import, design bundle, validation
+        traversal, and native confirmation/focus handoffs.
+  - [ ] Keep text fields, file pickers, selects, and browser-reserved
+        combinations outside modal dispatch.
+  - **Exit gate:** every Editor command in the complete vocabulary has a
+    keyboard route and a visible non-keyboard equivalent.
 
-### Phase 4 — Make the catalog authoritative
+- [ ] **M6 — Deliver Simulator keyboard operation**
+  - [ ] Project paused, running, route-preview, revision-stale, and no-handoff
+        qualifiers from simulator state.
+  - [ ] Implement unit traversal, deterministic single-step, start/pause, panel
+        selection, and sandbox-reset confirmation.
+  - [ ] Implement route-preview begin, movement, reset, commit, cancel, and
+        run-transition behavior.
+  - [ ] Implement controller selection while preserving native script text
+        editing.
+  - [ ] Prove that input presentation state never enters authoritative
+        simulation, replay, map serialization, or public protocol payloads.
+  - **Exit gate:** the paused and running Simulator can be operated entirely by
+    keyboard with unavailable mutations omitted from live possible inputs.
 
-- Route Editor and Simulator keyboard events through the resolver.
-- Remove the corresponding hand-written branches and static keyboard-help
-  prose.
-- Generalize `EditorSpacePressed` into the held-input session.
-- Preserve all pointer/touch and toolbar paths.
+- [ ] **M7 — Make the catalog authoritative**
+  - [ ] Compare catalog resolution with legacy branches across the complete
+        characterization corpus.
+  - [ ] Route Editor and Simulator keyboard events through the resolver.
+  - [ ] Generalize `EditorSpacePressed` into the held-input session and recover
+        it on key-up, focus loss, and workspace change.
+  - [ ] Remove superseded hand-written keyboard branches and static shortcut
+        prose.
+  - [ ] Retain compatibility aliases only when they are labelled, tested, and
+        assigned a removal milestone.
+  - **Exit gate:** one catalog drives dispatch, possible-input display, conflict
+    checks, and test enumeration in production.
 
-### Phase 5 — Qualify
-
-- Run .NET and Fable semantic tests over identical context/gesture fixtures.
-- Extend the browser smoke test through Editor and Simulator mode transitions.
-- Verify the accessibility tree, live-region behavior, forced colors, reduced
-  motion, touch alternatives, and 400% reflow.
-- Update `docs/map-editor.md` only after implementation is accepted.
+- [ ] **M8 — Qualify and accept the modal system**
+  - [ ] Exercise every vocabulary mode, transition, commit, reset, cancellation,
+        conflict, and repeat policy in automated tests.
+  - [ ] Extend browser smoke coverage across complete Editor and Simulator
+        keyboard workflows.
+  - [ ] Verify screen-reader semantics, focus restoration, forced colors,
+        reduced motion, touch alternatives, target sizing, and 400% reflow.
+  - [ ] Verify no regression in pointer/touch behavior, undo/redo, canonical map
+        output, deterministic simulation, or worker transport.
+  - [ ] Update `docs/map-editor.md`, mark the proposal accepted, and record any
+        intentionally deferred vocabulary.
+  - **Exit gate:** all acceptance criteria below pass in CI and the modal
+    vocabulary is the documented, supported interaction contract.
 
 ## Acceptance criteria
 
