@@ -1326,6 +1326,224 @@ if (
 ) {
   throw new Error("The troll assault sample did not open in the compact simulator.");
 }
+const sendSimulatorKey = async (key, options = {}, target = null) => {
+  (
+    target ??
+    window.document.querySelector("#simulator-map-stage")
+  ).dispatchEvent(
+    new window.KeyboardEvent("keydown", { key, bubbles: true, ...options }),
+  );
+  await new Promise((done) => setTimeout(done, 10));
+};
+const simulatorModalState = () =>
+  window.document.querySelector(".simulator-workspace .modal-input-state");
+const simulatorTick = () => {
+  const match = simulatorModalState()?.textContent.match(/tick (\d+)/i);
+  return match ? Number(match[1]) : Number.NaN;
+};
+
+window.document.querySelector(".simulator-workspace #modal-input-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+const pausedSimulatorInputIds = [
+  ...window.document.querySelectorAll(
+    ".simulator-workspace [data-modal-command]",
+  ),
+].map((item) => item.getAttribute("data-modal-command"));
+window.document
+  .querySelector(".simulator-workspace .modal-input-panel button")
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  !pausedSimulatorInputIds.includes("simulator.unit.next") ||
+  !pausedSimulatorInputIds.includes("simulator.step") ||
+  !pausedSimulatorInputIds.includes("simulator.reset.request")
+) {
+  throw new Error(
+    `Paused Simulator omitted keyboard lifecycle inputs: ${pausedSimulatorInputIds.join(",")}.`,
+  );
+}
+for (const [key, modifiers] of [
+  ["k", { ctrlKey: true }],
+  ["k", { metaKey: true }],
+  ["ArrowRight", { altKey: true }],
+  ["?", { altKey: true }],
+]) {
+  const reservedEvent = new window.KeyboardEvent("keydown", {
+    key,
+    bubbles: true,
+    cancelable: true,
+    ...modifiers,
+  });
+  const dispatched = window.document
+    .querySelector("#simulator-map-stage")
+    ?.dispatchEvent(reservedEvent);
+  await new Promise((done) => setTimeout(done, 10));
+  if (!dispatched || reservedEvent.defaultPrevented) {
+    throw new Error(
+      `Simulator canceled a browser-reserved ${key} modifier combination.`,
+    );
+  }
+}
+if (
+  window.document
+    .querySelector(".simulator-workspace #modal-input-toggle")
+    ?.getAttribute("aria-expanded") !== "false"
+) {
+  throw new Error("Alt+? entered Simulator input-help modal dispatch.");
+}
+window.document.querySelector(".simulator-workspace #modal-input-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+const altEscape = new window.KeyboardEvent("keydown", {
+  key: "Escape",
+  altKey: true,
+  bubbles: true,
+  cancelable: true,
+});
+const altEscapeDispatched = window.document
+  .querySelector("#simulator-map-stage")
+  ?.dispatchEvent(altEscape);
+await new Promise((done) => setTimeout(done, 10));
+if (
+  !altEscapeDispatched ||
+  altEscape.defaultPrevented ||
+  window.document
+    .querySelector(".simulator-workspace #modal-input-toggle")
+    ?.getAttribute("aria-expanded") !== "true"
+) {
+  throw new Error("Alt+Escape closed Simulator input help or was canceled.");
+}
+window.document
+  .querySelector(".simulator-workspace .modal-input-panel button")
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+const selectedBeforeTraversal = simulatorModalState()?.textContent;
+await sendSimulatorKey("]");
+if (
+  simulatorModalState()?.textContent === selectedBeforeTraversal ||
+  !simulatorModalState()?.textContent.includes("selected")
+) {
+  throw new Error(
+    `Simulator ] did not deterministically traverse the inspected unit (${selectedBeforeTraversal} -> ${simulatorModalState()?.textContent}).`,
+  );
+}
+const tickBeforeKeyboardStep = simulatorTick();
+await sendSimulatorKey(".");
+if (simulatorTick() !== tickBeforeKeyboardStep + 1) {
+  throw new Error("Simulator . did not advance exactly one paused tick.");
+}
+await sendSimulatorKey("ArrowRight");
+if (!simulatorModalState()?.textContent.includes("SIMULATOR / ROUTE PREVIEW")) {
+  throw new Error("Simulator ArrowRight did not begin a live route preview.");
+}
+await sendSimulatorKey("Backspace");
+if (!simulatorModalState()?.textContent.includes("SIMULATOR / ROUTE PREVIEW")) {
+  throw new Error("Simulator Backspace cancelled instead of resetting the route preview.");
+}
+await sendSimulatorKey("ArrowRight");
+await sendSimulatorKey("Enter");
+if (!simulatorModalState()?.textContent.includes("SIMULATOR / PAUSED")) {
+  throw new Error("Simulator Enter did not commit the route preview.");
+}
+await sendSimulatorKey("ArrowRight");
+await sendSimulatorKey("Escape");
+if (!simulatorModalState()?.textContent.includes("SIMULATOR / PAUSED")) {
+  throw new Error("Simulator Escape did not cancel the route preview.");
+}
+await sendSimulatorKey("Enter");
+await sendSimulatorKey("g");
+if (
+  !simulatorModalState()?.textContent.includes("SIMULATOR / CONTROLLER") ||
+  !simulatorModalState()?.textContent.includes("General AI")
+) {
+  throw new Error("Simulator controller selection did not expose the highlighted keyboard choice.");
+}
+await sendSimulatorKey("m");
+await sendSimulatorKey("Enter");
+if (!simulatorModalState()?.textContent.includes("SIMULATOR / PAUSED")) {
+  throw new Error(
+    `Simulator Enter did not commit controller selection: ${simulatorModalState()?.textContent}.`,
+  );
+}
+await sendSimulatorKey("c");
+const scriptInput = window.document.querySelector("#unit-script");
+if (!scriptInput) {
+  throw new Error("Simulator C did not expose the native controller script field.");
+}
+scriptInput?.focus();
+const tickBeforeNativeScriptKey = simulatorTick();
+await sendSimulatorKey("k", {}, scriptInput);
+if (
+  simulatorTick() !== tickBeforeNativeScriptKey ||
+  !simulatorModalState()?.textContent.includes("SIMULATOR / PAUSED")
+) {
+  throw new Error("Native simulator script editing leaked into modal run dispatch.");
+}
+const nativeStepButton = [
+  ...window.document.querySelectorAll(
+    "#simulator-map-stage .simulation-controls button",
+  ),
+].find((item) => item.textContent.trim() === "Step");
+if (!nativeStepButton) {
+  throw new Error("The Simulator native Step control was not rendered.");
+}
+await sendSimulatorKey("Enter", {}, nativeStepButton);
+await sendSimulatorKey(" ", {}, nativeStepButton);
+if (
+  !simulatorModalState()?.textContent.includes("SIMULATOR / PAUSED") ||
+  simulatorModalState()?.textContent.includes("SIMULATOR / CONTROLLER")
+) {
+  throw new Error("A bubbled native Simulator button key also entered modal dispatch.");
+}
+window.document.querySelector(".simulator-map-stage")?.focus();
+await sendSimulatorKey("ArrowRight");
+if (!simulatorModalState()?.textContent.includes("SIMULATOR / ROUTE PREVIEW")) {
+  throw new Error(
+    `Simulator did not resume modal keys after native script focus left: ${simulatorModalState()?.textContent}.`,
+  );
+}
+await sendSimulatorKey("k");
+if (
+  !simulatorModalState()?.textContent.includes("SIMULATOR / RUNNING") ||
+  simulatorModalState()?.textContent.includes("ROUTE PREVIEW")
+) {
+  throw new Error(
+    `Starting Simulator did not clear the uncommitted route preview: ${simulatorModalState()?.textContent}.`,
+  );
+}
+await sendSimulatorKey("?");
+const runningInputIds = [
+  ...window.document.querySelectorAll(
+    ".simulator-workspace [data-modal-command]",
+  ),
+].map((item) => item.getAttribute("data-modal-command"));
+if (
+  runningInputIds.includes("simulator.step") ||
+  runningInputIds.includes("simulator.reset.request") ||
+  runningInputIds.includes("simulator.preview.east") ||
+  !runningInputIds.includes("simulator.run.toggle-space")
+) {
+  throw new Error("Running Simulator possible inputs disclosed unavailable mutations.");
+}
+await sendSimulatorKey("Escape");
+await sendSimulatorKey("k");
+const tickBeforeReset = simulatorTick();
+let resetConfirmed = false;
+window.confirm = () => {
+  resetConfirmed = true;
+  return true;
+};
+await sendSimulatorKey("r");
+if (!resetConfirmed || simulatorTick() >= tickBeforeReset) {
+  throw new Error("Simulator R did not use native confirmation and reset sandbox progress.");
+}
+await sendSimulatorKey("e");
+if (
+  !window.document
+    .querySelector('[aria-label="Simulator command panel"]')
+    ?.textContent.includes("events")
+) {
+  throw new Error("Simulator E did not select the Events panel.");
+}
 buttonByText("Controls")?.click();
 await window.happyDOM.waitUntilComplete();
 if (

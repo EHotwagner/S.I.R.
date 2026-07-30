@@ -520,16 +520,16 @@ explicitly provides the stable contract needed for safe parallel work.
   - **Exit gate:** every Editor command in the complete vocabulary has a
     keyboard route and a visible non-keyboard equivalent.
 
-- [ ] **M6 — Deliver Simulator keyboard operation**
-  - [ ] Project paused, running, route-preview, revision-stale, and no-handoff
+- [x] **M6 — Deliver Simulator keyboard operation**
+  - [x] Project paused, running, route-preview, revision-stale, and no-handoff
         qualifiers from simulator state.
-  - [ ] Implement unit traversal, deterministic single-step, start/pause, panel
+  - [x] Implement unit traversal, deterministic single-step, start/pause, panel
         selection, and sandbox-reset confirmation.
-  - [ ] Implement route-preview begin, movement, reset, commit, cancel, and
+  - [x] Implement route-preview begin, movement, reset, commit, cancel, and
         run-transition behavior.
-  - [ ] Implement controller selection while preserving native script text
+  - [x] Implement controller selection while preserving native script text
         editing.
-  - [ ] Prove that input presentation state never enters authoritative
+  - [x] Prove that input presentation state never enters authoritative
         simulation, replay, map serialization, or public protocol payloads.
   - **Exit gate:** the paused and running Simulator can be operated entirely by
     keyboard with unavailable mutations omitted from live possible inputs.

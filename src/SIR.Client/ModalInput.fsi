@@ -73,6 +73,7 @@ type ModalContext =
     | SimulatorPaused
     | SimulatorRunning
     | SimulatorRoutePreview
+    | SimulatorControllerSelection
     | SimulatorRevisionStale
     | SimulatorNoHandoff
     | InputHelpPopup
@@ -107,6 +108,12 @@ type ModalCommand =
     | ChooseSimulatorPanel of SimulatorPanel
     | ToggleSimulatorCommandPanel
     | SimulatorCommand of SimulatorAction
+    | TraverseSimulatorUnit of delta: int
+    | BeginSimulatorControllerSelection
+    | ChooseSimulatorController of MapController
+    | CommitSimulatorController
+    | CancelSimulatorController
+    | RequestSimulatorSandboxReset
     | SetEditorPanHeld of bool
     | FocusUnitPresetSearch
     | EditorDocumentCommand of EditorDocumentCommand
@@ -161,6 +168,7 @@ type SimulatorModalFacts =
     { SimulatorHandoffPresent: bool
       SimulatorIsRunning: bool
       SimulatorHasRoutePreview: bool
+      SimulatorControllerSelection: MapController option
       SimulatorRevisionIsStale: bool
       InputHelpExpanded: bool }
 
@@ -187,7 +195,14 @@ module ModalInput =
     val simulatorCatalog:
         selectedUnitId: int32 option ->
         handoff: SimulatorHandoff option ->
+        controllerSelection: MapController option ->
         ModalBinding<ModalCommand> list
+
+    val traverseSimulatorUnit:
+        delta: int ->
+        selectedUnitId: int32 option ->
+        handoff: SimulatorHandoff ->
+        int32 option
 
     val projectEditor:
         facts: EditorModalFacts ->

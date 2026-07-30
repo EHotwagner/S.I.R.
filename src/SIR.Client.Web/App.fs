@@ -25,6 +25,12 @@ type Msg =
     | EditorPulse
     | SimulateEditorRevision
     | SimulatorChanged of SimulatorAction
+    | SimulatorUnitSelectionChanged of int32 option
+    | BeginSimulatorControllerSelection
+    | ChooseSimulatorController of MapController
+    | CommitSimulatorControllerSelection
+    | CancelSimulatorControllerSelection
+    | RequestSimulatorReset
     | ResetSimulator
     | SimulatorPanelChanged of SimulatorToolPanel
     | ToggleSimulatorToolPanelVisibility
@@ -85,6 +91,8 @@ type Model =
     { Shell: SIR.Client.Model
       Editor: MapEditorState
       Simulator: SimulatorHandoff option
+      SimulatorSelectedUnit: int32 option
+      SimulatorControllerSelection: MapController option
       Planning: PlanningWorkspaceState option
       Workspace: WorkspaceMode
       EditorToolPanel: EditorToolPanel
@@ -105,7 +113,7 @@ type Model =
 [<Emit("window.matchMedia('(prefers-reduced-motion: reduce)').matches")>]
 let private prefersReducedMotion: bool = jsNative
 
-[<Emit("$0 instanceof HTMLInputElement ? 'input' : $0 instanceof HTMLTextAreaElement ? 'textarea' : $0 instanceof HTMLSelectElement ? 'select' : $0 instanceof HTMLElement && $0.isContentEditable ? 'contenteditable' : 'application'")>]
+[<Emit("(() => { const target = $0; const tag = target && typeof target.tagName === 'string' ? target.tagName.toLowerCase() : ''; return tag === 'input' ? 'input' : tag === 'textarea' ? 'textarea' : tag === 'select' ? 'select' : target && target.isContentEditable ? 'contenteditable' : 'application'; })()")>]
 let private currentInputTargetName (target: EventTarget) : string = jsNative
 
 let private currentInputTarget target =
@@ -115,6 +123,13 @@ let private currentInputTarget target =
     | "select" -> SelectElement
     | "contenteditable" -> ContentEditableElement
     | _ -> ApplicationElement
+
+[<Emit("(() => { const target = $0; const current = $1; return target === current || (target && typeof target.tagName === 'string' && target.tagName.toLowerCase() === 'svg' && target.getAttribute('role') === 'application'); })()")>]
+let private isSimulatorModalTarget
+    (target: EventTarget)
+    (currentTarget: EventTarget)
+    : bool =
+    jsNative
 
 [<Emit("""
 const target = $0;
@@ -456,6 +471,8 @@ let init () =
     { Shell = Shell.init ()
       Editor = editor
       Simulator = None
+      SimulatorSelectedUnit = None
+      SimulatorControllerSelection = None
       Planning = None
       Workspace = EditorWorkspace
       EditorToolPanel = TerrainTools
@@ -578,6 +595,8 @@ let rec update msg model =
                         { editor with
                             SimulatedDigest = Some simulator.Revision.Digest }
                     Simulator = Some simulator
+                    SimulatorSelectedUnit = editor.SelectedUnit
+                    SimulatorControllerSelection = None
                     Workspace = SimulatorWorkspace
                     SimulatorToolPanel = ControllerTools
                     SimulatorToolPanelVisible = false
@@ -647,6 +666,7 @@ let rec update msg model =
             Workspace = workspace
             EditorView = editorView
             InputHelpExpanded = false
+            SimulatorControllerSelection = None
             EditorSpacePressed =
                 CurrentModalInput.spaceHeldAfterWorkspaceChange
                     model.EditorSpacePressed },
@@ -682,6 +702,8 @@ let rec update msg model =
                         SimulatedDigest = Some simulator.Revision.Digest
                         Validation = None }
                 Simulator = Some simulator
+                SimulatorSelectedUnit = model.Editor.SelectedUnit
+                SimulatorControllerSelection = None
                 Workspace = SimulatorWorkspace
                 Battlefield = Battlefield.reconcile frame model.Battlefield
                 PreviousFrame = None
@@ -692,14 +714,70 @@ let rec update msg model =
         | None -> model, Cmd.none
         | Some current ->
             let simulator =
-                MapEditorSimulator.update action model.Editor.SelectedUnit current
-            let frame = MapEditorSimulator.frame model.Editor.SelectedUnit simulator
+                MapEditorSimulator.update action model.SimulatorSelectedUnit current
+            let frame = MapEditorSimulator.frame model.SimulatorSelectedUnit simulator
             { model with
                 Simulator = Some simulator
+                SimulatorControllerSelection =
+                    match action with
+                    | ToggleSimulatorRun -> None
+                    | _ -> model.SimulatorControllerSelection
                 Battlefield = Battlefield.reconcile frame model.Battlefield
                 PreviousFrame = None
                 PresentationAlpha = 1.0 },
             Cmd.none
+    | SimulatorUnitSelectionChanged selected ->
+        match model.Simulator with
+        | None -> model, Cmd.none
+        | Some simulator ->
+            let selected =
+                selected
+                |> Option.filter (fun id ->
+                    Map.containsKey id simulator.RuntimeMap.Units)
+            let frame = MapEditorSimulator.frame selected simulator
+            { model with
+                SimulatorSelectedUnit = selected
+                SimulatorControllerSelection = None
+                Battlefield = Battlefield.reconcile frame model.Battlefield
+                PreviousFrame = None
+                PresentationAlpha = 1.0 },
+            Cmd.none
+    | BeginSimulatorControllerSelection ->
+        match model.Simulator, model.SimulatorSelectedUnit with
+        | Some simulator, Some id when not simulator.IsRunning ->
+            match Map.tryFind id simulator.RuntimeMap.Units with
+            | Some unit ->
+                { model with
+                    SimulatorControllerSelection = Some unit.Controller },
+                Cmd.none
+            | None -> model, Cmd.none
+        | _ -> model, Cmd.none
+    | ChooseSimulatorController controller ->
+        match model.SimulatorControllerSelection with
+        | Some _ ->
+            { model with
+                SimulatorControllerSelection = Some controller },
+            Cmd.none
+        | None -> model, Cmd.none
+    | CommitSimulatorControllerSelection ->
+        match model.SimulatorControllerSelection with
+        | Some controller ->
+            let next, command =
+                update
+                    (SimulatorChanged(SetSimulatorController controller))
+                    model
+            { next with SimulatorControllerSelection = None }, command
+        | None -> model, Cmd.none
+    | CancelSimulatorControllerSelection ->
+        { model with SimulatorControllerSelection = None }, Cmd.none
+    | RequestSimulatorReset ->
+        model,
+        Cmd.ofEffect (fun dispatch ->
+            if
+                window.confirm
+                    "Reset runtime-only simulator progress to the immutable editor revision?"
+            then
+                dispatch ResetSimulator)
     | ResetSimulator ->
         match MapEditorSimulator.tryHandoff model.Editor with
         | Error message ->
@@ -708,9 +786,10 @@ let rec update msg model =
             Cmd.none
         | Ok simulator ->
             let frame =
-                MapEditorSimulator.frame model.Editor.SelectedUnit simulator
+                MapEditorSimulator.frame model.SimulatorSelectedUnit simulator
             { model with
                 Simulator = Some simulator
+                SimulatorControllerSelection = None
                 Battlefield = Battlefield.reconcile frame model.Battlefield
                 PreviousFrame = None
                 PresentationAlpha = 1.0 },
@@ -865,7 +944,7 @@ let rec update msg model =
             match model.Workspace, model.Simulator with
             | SimulatorWorkspace, Some simulator ->
                 Battlefield.reconcile
-                    (MapEditorSimulator.frame editor.SelectedUnit simulator)
+                    (MapEditorSimulator.frame model.SimulatorSelectedUnit simulator)
                     model.Battlefield
             | _ ->
                 Battlefield.reconcile (MapEditor.frame editor) model.Battlefield
@@ -889,7 +968,7 @@ let rec update msg model =
     | EditorPulse ->
         match model.Simulator with
         | Some simulator when simulator.IsRunning ->
-            update (SimulatorChanged StepSimulator) model
+            update (SimulatorChanged AdvanceRunningSimulatorTick) model
         | _ -> model, Cmd.none
     | ExportMap ->
         let editor = MapEditor.update MarkEditorSaved model.Editor
@@ -998,8 +1077,18 @@ let rec update msg model =
             |> Option.defaultValue Battlefield.representativeFrame
 
         let battlefield = Battlefield.update frame action model.Battlefield
+        let simulatorSelected =
+            match model.Workspace, action with
+            | SimulatorWorkspace, SelectUnit selected -> selected
+            | _ -> model.SimulatorSelectedUnit
         { model with
             Battlefield = battlefield
+            SimulatorSelectedUnit = simulatorSelected
+            SimulatorControllerSelection =
+                if simulatorSelected <> model.SimulatorSelectedUnit then
+                    None
+                else
+                    model.SimulatorControllerSelection
             PreviousFrame =
                 if battlefield.ExactTicks || battlefield.ReducedMotion then
                     None
@@ -1060,20 +1149,22 @@ let rec update msg model =
         with
         | Some action -> update (EditorChanged action) model
         | None -> model, Cmd.none
-    | KeyPressed(key, controlOrMeta, _, _, repeat)
+    | KeyPressed(key, controlOrMeta, _, alt, repeat)
         when
             (model.Workspace = EditorWorkspace
              || model.Workspace = SimulatorWorkspace)
             && key = "?"
             && not controlOrMeta
+            && not alt
             && not repeat
         ->
         update (ToggleInputHelp true) model
-    | KeyPressed(key, controlOrMeta, _, _, repeat)
+    | KeyPressed(key, controlOrMeta, _, alt, repeat)
         when
             model.InputHelpExpanded
             && key = "Escape"
             && not controlOrMeta
+            && not alt
             && not repeat
         ->
         update (ToggleInputHelp true) model
@@ -1094,7 +1185,46 @@ let rec update msg model =
             | _ -> CurrentOther
 
         let resolvedM5 =
-            if model.Workspace <> EditorWorkspace || alt then
+            if model.Workspace = SimulatorWorkspace && not alt then
+                let facts =
+                    { SimulatorHandoffPresent = model.Simulator.IsSome
+                      SimulatorIsRunning =
+                        model.Simulator
+                        |> Option.map _.IsRunning
+                        |> Option.defaultValue false
+                      SimulatorHasRoutePreview =
+                        model.Simulator
+                        |> Option.bind _.PreviewDestination
+                        |> Option.isSome
+                      SimulatorControllerSelection =
+                        model.SimulatorControllerSelection
+                      SimulatorRevisionIsStale =
+                        model.Simulator
+                        |> Option.map (MapEditorSimulator.isBehindDraft model.Editor)
+                        |> Option.defaultValue false
+                      InputHelpExpanded = model.InputHelpExpanded }
+                let contexts = ModalInput.deriveSimulatorContexts facts
+                let input =
+                    { Key = NormalizedKey.create key None
+                      Modifiers =
+                        { ControlOrMeta = controlOrMeta
+                          Shift = shift
+                          Alt = alt }
+                      Phase = KeyDown }
+                match
+                    ModalInput.resolve
+                        contexts
+                        input
+                        repeat
+                        (ModalInput.simulatorCatalog
+                            model.SimulatorSelectedUnit
+                            model.Simulator
+                            model.SimulatorControllerSelection)
+                with
+                | Resolved resolved -> Some resolved.Command
+                | NoMatch
+                | NoAvailableMatch _ -> None
+            elif model.Workspace <> EditorWorkspace || alt then
                 None
             else
                 let activeDomain =
@@ -1146,7 +1276,45 @@ let rec update msg model =
                 | MapDimensionControls -> "map-width"
                 | SavedViewControls -> "editor-saved-view-controls"
             model, Cmd.ofEffect (fun _ -> focusElementAfterRender id)
+        | Some(SimulatorCommand action) ->
+            update (SimulatorChanged action) model
+        | Some(TraverseSimulatorUnit delta) ->
+            match model.Simulator with
+            | Some simulator ->
+                update
+                    (SimulatorUnitSelectionChanged(
+                        ModalInput.traverseSimulatorUnit
+                            delta
+                            model.SimulatorSelectedUnit
+                            simulator
+                    ))
+                    model
+            | None -> model, Cmd.none
+        | Some ModalCommand.BeginSimulatorControllerSelection ->
+            update BeginSimulatorControllerSelection model
+        | Some(ModalCommand.ChooseSimulatorController controller) ->
+            update (ChooseSimulatorController controller) model
+        | Some CommitSimulatorController ->
+            update CommitSimulatorControllerSelection model
+        | Some CancelSimulatorController ->
+            update CancelSimulatorControllerSelection model
+        | Some RequestSimulatorSandboxReset ->
+            update RequestSimulatorReset model
+        | Some(ChooseSimulatorPanel panel) ->
+            { model with
+                SimulatorToolPanel =
+                    match panel with
+                    | ControllerPanel -> ControllerTools
+                    | EventPanel -> EventTools
+                    | SimulatorSamplePanel -> SimulatorSampleTools
+                SimulatorToolPanelVisible = true },
+            Cmd.none
+        | Some ToggleSimulatorCommandPanel ->
+            update ToggleSimulatorToolPanelVisibility model
+        | Some ModalCommand.ToggleInputHelp ->
+            update (ToggleInputHelp true) model
         | Some _ -> model, Cmd.none
+        | None when model.Workspace = SimulatorWorkspace -> model, Cmd.none
         | None when alt -> model, Cmd.none
         | None ->
           match
@@ -6143,6 +6311,8 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                 Html.select [
                     prop.id "unit-controller"
                     prop.value (MapEditor.controllerLabel unit.Controller)
+                    prop.disabled state.IsRunning
+                    prop.onKeyDown (fun event -> event.stopPropagation ())
                     prop.onChange (fun value ->
                         let controller =
                             match value with
@@ -6162,6 +6332,8 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                     prop.key ("unit-script-" + string unit.Id)
                     prop.type'.text
                     prop.defaultValue (MapEditor.scriptText unit.Script)
+                    prop.disabled state.IsRunning
+                    prop.onKeyDown (fun event -> event.stopPropagation ())
                     prop.placeholder "N,E,E,S"
                     prop.onChange (fun value ->
                         dispatch (SimulatorChanged(SetSimulatorScript value)))
@@ -6170,7 +6342,7 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                     prop.className "manual-movement"
                     prop.children [
                         for label, direction in movement do
-                            button label ("Move unit " + label) false (fun _ ->
+                            button label ("Move unit " + label) state.IsRunning (fun _ ->
                                 dispatch (SimulatorChanged(MoveSimulatorUnit direction)))
                     ]
                 ]
@@ -6179,17 +6351,19 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                 Html.div [
                     prop.className "manual-movement"
                     prop.children [
-                        button "←" "Move route preview left" false (fun _ ->
+                        button "←" "Move route preview left" state.IsRunning (fun _ ->
                             dispatch (SimulatorChanged(MoveSimulatorPreview(-1, 0))))
-                        button "↑" "Move route preview up" false (fun _ ->
+                        button "↑" "Move route preview up" state.IsRunning (fun _ ->
                             dispatch (SimulatorChanged(MoveSimulatorPreview(0, -1))))
-                        button "↓" "Move route preview down" false (fun _ ->
+                        button "↓" "Move route preview down" state.IsRunning (fun _ ->
                             dispatch (SimulatorChanged(MoveSimulatorPreview(0, 1))))
-                        button "→" "Move route preview right" false (fun _ ->
+                        button "→" "Move route preview right" state.IsRunning (fun _ ->
                             dispatch (SimulatorChanged(MoveSimulatorPreview(1, 0))))
-                        button "Commit route" "Commit clear route preview (Enter)" handoff.PreviewDestination.IsNone (fun _ ->
+                        button "Commit route" "Commit clear route preview (Enter)" (state.IsRunning || handoff.PreviewDestination.IsNone) (fun _ ->
                             dispatch (SimulatorChanged CommitSimulatorPreview))
-                        button "Cancel route" "Cancel route preview (Escape)" handoff.PreviewDestination.IsNone (fun _ ->
+                        button "Reset route" "Return route preview to unit origin (Backspace)" (state.IsRunning || handoff.PreviewDestination.IsNone) (fun _ ->
+                            dispatch (SimulatorChanged ResetSimulatorPreviewToOrigin))
+                        button "Cancel route" "Cancel route preview (Escape)" (state.IsRunning || handoff.PreviewDestination.IsNone) (fun _ ->
                             dispatch (SimulatorChanged ResetSimulatorPreview))
                     ]
                 ]
@@ -6224,7 +6398,7 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                         (if state.IsRunning then "Pause map simulation" else "Run map simulation")
                         false
                         (fun _ -> dispatch (SimulatorChanged ToggleSimulatorRun))
-                    button "Step" "Advance the map simulation one tick" false (fun _ ->
+                    button "Step" "Advance the map simulation one tick" state.IsRunning (fun _ ->
                         dispatch (SimulatorChanged StepSimulator))
                 ]
             ]
@@ -6580,8 +6754,8 @@ let private simulatorDesktopChrome
                               "Run or pause deterministic simulation"
                               false
                               (SimulatorChanged ToggleSimulatorRun)
-                          command "Step" "Advance simulation one tick" false (SimulatorChanged StepSimulator)
-                          command "Reset simulation" "Reset runtime state to the immutable editor revision" false ResetSimulator ]
+                          command "Step" "Advance simulation one tick" state.IsRunning (SimulatorChanged StepSimulator)
+                          command "Reset simulation" "Reset runtime state to the immutable editor revision" state.IsRunning RequestSimulatorReset ]
                     menu
                         "Samples"
                         [ for sample in ExperienceSamples.maps do
@@ -6602,8 +6776,8 @@ let private simulatorDesktopChrome
                         "Run or pause deterministic simulation"
                         false
                         (SimulatorChanged ToggleSimulatorRun)
-                    command "Step" "Advance simulation one tick" false (SimulatorChanged StepSimulator)
-                    command "Reset" "Reset simulation to its immutable revision" false ResetSimulator
+                    command "Step" "Advance simulation one tick" state.IsRunning (SimulatorChanged StepSimulator)
+                    command "Reset" "Reset simulation to its immutable revision" state.IsRunning RequestSimulatorReset
                     Html.span [ prop.className "toolbar-separator"; prop.ariaHidden true ]
                     command "Controls" "Toggle simulator controls panel" false (SimulatorPanelChanged ControllerTools)
                     command "Events" "Toggle simulator events panel" false (SimulatorPanelChanged EventTools)
@@ -7307,14 +7481,18 @@ let view model dispatch =
                         { SimulatorHandoffPresent = false
                           SimulatorIsRunning = false
                           SimulatorHasRoutePreview = false
+                          SimulatorControllerSelection = None
                           SimulatorRevisionIsStale = false
                           InputHelpExpanded = model.InputHelpExpanded }
                     let catalog =
-                        ModalInput.simulatorCatalog model.Editor.SelectedUnit None
+                        ModalInput.simulatorCatalog
+                            model.SimulatorSelectedUnit
+                            None
+                            model.SimulatorControllerSelection
                     let projection =
                         ModalInput.projectSimulator
                             facts
-                            model.Editor.SelectedUnit
+                            model.SimulatorSelectedUnit
                             None
                             catalog
                     Html.section [
@@ -7333,7 +7511,7 @@ let view model dispatch =
                 | Some simulator ->
                     let simulatorState =
                         MapEditorSimulator.viewState
-                            model.Editor.SelectedUnit
+                            model.SimulatorSelectedUnit
                             simulator
                     let stale =
                         MapEditorSimulator.isBehindDraft model.Editor simulator
@@ -7341,16 +7519,19 @@ let view model dispatch =
                         { SimulatorHandoffPresent = true
                           SimulatorIsRunning = simulator.IsRunning
                           SimulatorHasRoutePreview = simulator.PreviewDestination.IsSome
+                          SimulatorControllerSelection =
+                            model.SimulatorControllerSelection
                           SimulatorRevisionIsStale = stale
                           InputHelpExpanded = model.InputHelpExpanded }
                     let catalog =
                         ModalInput.simulatorCatalog
-                            model.Editor.SelectedUnit
+                            model.SimulatorSelectedUnit
                             (Some simulator)
+                            model.SimulatorControllerSelection
                     let projection =
                         ModalInput.projectSimulator
                             facts
-                            model.Editor.SelectedUnit
+                            model.SimulatorSelectedUnit
                             (Some simulator)
                             catalog
                     Html.div [
@@ -7385,12 +7566,41 @@ let view model dispatch =
                             ]
                             Html.div [
                                 prop.className "simulator-map-stage"
+                                prop.id "simulator-map-stage"
+                                prop.tabIndex 0
+                                prop.role.application
+                                prop.ariaLabel "Keyboard-operable simulator map stage"
+                                prop.onKeyDown (fun event ->
+                                    if
+                                        isSimulatorModalTarget
+                                            event.target
+                                            event.currentTarget
+                                    then
+                                        if
+                                            not event.ctrlKey
+                                            && not event.metaKey
+                                            && not event.altKey
+                                        then
+                                            event.stopPropagation ()
+                                            event.preventDefault ()
+                                            dispatch (
+                                                KeyPressed(
+                                                    event.key,
+                                                    false,
+                                                    event.shiftKey,
+                                                    false,
+                                                    event.repeat
+                                                )
+                                            )
+                                    else
+                                        event.stopPropagation ()
+                                    )
                                 prop.children [
                                     battlefieldView
                                         shell
                                         (Some(
                                             MapEditorSimulator.frame
-                                                model.Editor.SelectedUnit
+                                                model.SimulatorSelectedUnit
                                                 simulator
                                         ))
                                         (Some simulatorState)
