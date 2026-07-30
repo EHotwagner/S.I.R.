@@ -77,6 +77,11 @@ Do not treat this archive as a supported S.I.R or current FS.GG API.
 - [`context/current-keyboard-input-guidance.md`](context/current-keyboard-input-guidance.md)
   is the current generated-product guidance, included to make the distinction
   between the retired algebra and the supported input path explicit.
+- [`editor-simulator-modal-input-proposal.md`](editor-simulator-modal-input-proposal.md)
+  applies the algebra's design principles to S.I.R without copying its runtime.
+- [`editor-simulator-modal-key-vocabulary.md`](editor-simulator-modal-key-vocabulary.md)
+  defines the complete proposed keyboard language for terrain, units, edges,
+  regions, selection, movement, deletion, and simulator control.
 - [`PROVENANCE.md`](PROVENANCE.md) records exact repositories, revisions, and
   source paths.
 - [`SOURCE-LICENSE-MIT.txt`](SOURCE-LICENSE-MIT.txt) preserves the license
