@@ -623,6 +623,89 @@ if (editorCanvas?.getAttribute("data-editor-revision") === regionDigest) {
   throw new Error("The selected region edit did not create an immutable revision.");
 }
 
+const currentEditorDigest = () =>
+  window.document
+    .querySelector('[aria-label="SVG tactical map workspace"]')
+    ?.getAttribute("data-editor-revision");
+const keyboardRegionStartDigest = currentEditorDigest();
+window.document.querySelector("#modal-input-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+const regionInputIds = [
+  ...window.document.querySelectorAll("[data-modal-command]"),
+].map((item) => item.getAttribute("data-modal-command"));
+window.document.querySelector("#modal-input-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+if (!regionInputIds.includes("editor.region.create.begin")) {
+  throw new Error(`The live Zone disclosure omitted New Region: ${regionInputIds.join(",")}.`);
+}
+const dispatchCurrentEditorKey = (options) =>
+  window.document
+    .querySelector('[aria-label="SVG tactical map workspace"] svg[role="application"]')
+    ?.dispatchEvent(
+      new window.KeyboardEvent("keydown", { ...options, bubbles: true }),
+    );
+dispatchCurrentEditorKey({ key: "n" });
+await window.happyDOM.waitUntilComplete();
+if (!window.document.querySelector(".modal-input-strip")?.textContent.includes("NEW / PURPOSE")) {
+  throw new Error(
+    `The live N route did not enter region purpose selection: ${window.document.querySelector(".modal-input-strip")?.textContent}.`,
+  );
+}
+for (const key of ["b", "p", "Enter", "ArrowRight", "ArrowRight", "Enter", "ArrowDown", "ArrowDown", "Enter"]) {
+  dispatchCurrentEditorKey({ key });
+  await window.happyDOM.waitUntilComplete();
+}
+if (
+  !window.document
+    .querySelector(".modal-input-strip")
+    ?.textContent.includes("3 vertices")
+) {
+  throw new Error(
+    `The live region polygon mode did not stage three keyboard vertices: ${window.document
+      .querySelector(".modal-input-strip")
+      ?.textContent}.`,
+  );
+}
+dispatchCurrentEditorKey({ key: "Enter", shiftKey: true });
+await window.happyDOM.waitUntilComplete();
+await window.happyDOM.waitUntilComplete();
+const keyboardRegionDigest = currentEditorDigest();
+if (
+  keyboardRegionDigest === keyboardRegionStartDigest ||
+  window.document.querySelectorAll(
+    '[aria-label="SVG tactical map workspace"] [data-region-id]',
+  ).length !== 2
+) {
+  throw new Error("The nested keyboard region workflow did not commit one polygon revision.");
+}
+dispatchCurrentEditorKey({ key: "m" });
+await window.happyDOM.waitUntilComplete();
+dispatchCurrentEditorKey({ key: "ArrowRight", shiftKey: true });
+await window.happyDOM.waitUntilComplete();
+if (currentEditorDigest() !== keyboardRegionDigest) {
+  throw new Error(
+    `The keyboard region move preview mutated the document before Enter: ${keyboardRegionDigest} -> ${currentEditorDigest()} / ${window.document.querySelector(".modal-input-strip")?.textContent}.`,
+  );
+}
+dispatchCurrentEditorKey({ key: "Backspace" });
+await window.happyDOM.waitUntilComplete();
+dispatchCurrentEditorKey({ key: "ArrowRight" });
+await window.happyDOM.waitUntilComplete();
+dispatchCurrentEditorKey({ key: "Enter" });
+await window.happyDOM.waitUntilComplete();
+if (currentEditorDigest() === keyboardRegionDigest) {
+  throw new Error("The resettable keyboard region move did not commit atomically.");
+}
+dispatchCurrentEditorKey({ key: "p" });
+await window.happyDOM.waitUntilComplete();
+dispatchCurrentEditorKey({ key: "r" });
+await window.happyDOM.waitUntilComplete();
+dispatchCurrentEditorKey({ key: "Enter" });
+await window.happyDOM.waitUntilComplete();
+if (!objectList?.textContent.includes("Region 2 · Red deployment · polygon")) {
+  throw new Error("The keyboard purpose popup did not apply the highlighted region purpose.");
+}
+
 buttonByText("Map file")?.click();
 await window.happyDOM.waitUntilComplete();
 if (
@@ -637,6 +720,59 @@ if (
 ) {
   throw new Error(
     "The editor Map file sub-tab did not expose import, export, and accessible local-background controls.",
+  );
+}
+
+const mapNameInput = window.document.querySelector("#map-name");
+mapNameInput?.focus();
+mapNameInput?.dispatchEvent(
+  new window.KeyboardEvent("keydown", { key: "c", bubbles: true }),
+);
+await window.happyDOM.waitUntilComplete();
+if (window.document.querySelector('[role="alertdialog"]')) {
+  throw new Error("A native map-name field leaked a document key into modal dispatch.");
+}
+window.document.querySelector("#editor-map-stage")?.focus();
+dispatchCurrentEditorKey({ key: "r", altKey: true });
+await window.happyDOM.waitUntilComplete();
+if (window.document.activeElement?.id === "map-width") {
+  throw new Error("An Alt browser-reserved combination leaked into document modal dispatch.");
+}
+dispatchCurrentEditorKey({ key: "r" });
+await window.happyDOM.waitUntilComplete();
+if (window.document.activeElement?.id !== "map-width") {
+  throw new Error("Document R did not hand focus to the native map dimension control.");
+}
+window.document.querySelector("#editor-map-stage")?.focus();
+let importPickerInvoked = false;
+const mapImport = window.document.querySelector("#editor-map-import");
+mapImport?.addEventListener("click", () => {
+  importPickerInvoked = true;
+});
+dispatchCurrentEditorKey({ key: "i" });
+await window.happyDOM.waitUntilComplete();
+if (!importPickerInvoked) {
+  throw new Error("Document I did not invoke the visible native import picker.");
+}
+window.document.querySelector("#editor-map-stage")?.focus();
+dispatchCurrentEditorKey({ key: "n" });
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document.querySelector('[role="alertdialog"]') ||
+  window.document.activeElement?.id !== "editor-destructive-confirmation"
+) {
+  throw new Error("Document N did not open and focus the native destructive confirmation.");
+}
+dispatchCurrentEditorKey({ key: "Escape" });
+await window.happyDOM.waitUntilComplete();
+await new Promise((resolve) => setTimeout(resolve, 0));
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document.querySelector('[role="alertdialog"]') ||
+  window.document.activeElement?.id !== "editor-map-stage"
+) {
+  throw new Error(
+    `Document confirmation cancellation did not restore map focus: dialog=${Boolean(window.document.querySelector('[role="alertdialog"]'))}, focus=${window.document.activeElement?.id}.`,
   );
 }
 

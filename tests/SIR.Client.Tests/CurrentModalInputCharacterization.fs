@@ -296,14 +296,16 @@ let run () =
         "Current Editor modifier precedence changed."
 
     require
-        (CurrentModalInput.resolvePendingDestructiveKey "Enter" false false false =
+        (CurrentModalInput.resolvePendingDestructiveKey "Enter" false false false false =
             Some ConfirmDestructiveChange
-         && CurrentModalInput.resolvePendingDestructiveKey "Escape" false false false =
+         && CurrentModalInput.resolvePendingDestructiveKey "Escape" false false false false =
             Some CancelDestructiveChange
-         && CurrentModalInput.resolvePendingDestructiveKey "Enter" false false true = None
-         && CurrentModalInput.resolvePendingDestructiveKey "Escape" false false true = None
-         && CurrentModalInput.resolvePendingDestructiveKey "Enter" true false false = None
-         && CurrentModalInput.resolvePendingDestructiveKey "Escape" false true false = None)
+         && CurrentModalInput.resolvePendingDestructiveKey "Enter" false false false true = None
+         && CurrentModalInput.resolvePendingDestructiveKey "Escape" false false false true = None
+         && CurrentModalInput.resolvePendingDestructiveKey "Enter" true false false false = None
+         && CurrentModalInput.resolvePendingDestructiveKey "Escape" false true false false = None
+         && CurrentModalInput.resolvePendingDestructiveKey "Enter" false false true false = None
+         && CurrentModalInput.resolvePendingDestructiveKey "Escape" false false true false = None)
         "Pending destructive confirmation did not require a plain, non-repeated Enter or Escape."
 
     let idleEscape =

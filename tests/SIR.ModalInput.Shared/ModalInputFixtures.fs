@@ -601,6 +601,177 @@ let evaluate () =
                 plain = "resolved:editor.confirmation.confirm")
         "M4 destructive key repeat or explicit Enter confirmation policy regressed."
 
+    let m5Facts domain editor =
+        { Editor = editor
+          ActiveDomain = domain
+          PanHeld = false
+          InputHelpExpanded = false }
+    let resolveM5 facts keyValue modifiers repeated =
+        ModalInput.resolve
+            (ModalInput.deriveEditorContexts facts)
+            (gesture keyValue None modifiers KeyDown)
+            repeated
+            (ModalInput.editorCatalog facts)
+        |> outcomeName
+
+    let edgeEditor =
+        { m3Editor with
+            Tool = Edge(EastEdge, Wall)
+            EdgeCursor = 1, 1, EastEdge }
+    let edgeFacts = m5Facts EdgeDomain edgeEditor
+    let edgePolylineFacts =
+        m5Facts
+            EdgeDomain
+            { edgeEditor with
+                Gesture = EdgePolylineGesture(Wall, [| 1, 1, EastEdge |]) }
+    require
+        (ModalInput.validateCatalog (ModalInput.editorCatalog edgeFacts) = []
+         && ModalInput.validateCatalog (ModalInput.editorCatalog edgePolylineFacts) = []
+         && resolveM5 edgeFacts "w" plain false = "resolved:editor.edge.kind.wall"
+         && resolveM5 edgeFacts "d" plain false = "resolved:editor.edge.kind.door"
+         && resolveM5 edgeFacts "n" plain false = "resolved:editor.edge.kind.window"
+         && resolveM5 edgeFacts "r" plain false = "resolved:editor.edge.orientation.rotate"
+         && resolveM5 edgeFacts "ArrowRight" plain true = "resolved:editor.edge.cursor.east"
+         && resolveM5 edgeFacts "ArrowDown" { plain with Shift = true } true =
+            "resolved:editor.edge.polyline.south"
+         && resolveM5 edgeFacts "Enter" plain false = "resolved:editor.edge.activate"
+         && resolveM5 edgePolylineFacts "Enter" plain false = "resolved:editor.gesture.commit"
+         && resolveM5 edgePolylineFacts "Backspace" plain false =
+            "resolved:editor.edge.polyline.backtrack"
+         && resolveM5 edgeFacts "o" plain false = "resolved:editor.edge.door.toggle"
+         && resolveM5 edgeFacts "x" plain false = "resolved:editor.edge.erase"
+         && resolveM5 edgeFacts "s" plain false = "resolved:editor.edge.split"
+         && resolveM5 edgeFacts "j" plain false = "resolved:editor.edge.join")
+        "M5 semantic-edge catalog routes or polyline precedence diverged."
+
+    let regionBase =
+        { m3Editor with
+            Map = { m3Editor.Map with Regions = Map.empty; NextRegionId = 1 }
+            SelectedRegion = None }
+        |> MapEditor.update (
+            CreateRectangleRegion(
+                ObjectiveRegion,
+                { CellColumn = 1; CellRow = 1 },
+                { CellColumn = 2; CellRow = 2 }
+            )
+        )
+    let regionIdleFacts = m5Facts RegionDomain regionBase
+    let regionPurpose =
+        regionBase |> MapEditor.update BeginNewRegion
+    let regionPurposeFacts = m5Facts RegionDomain regionPurpose
+    let regionShape =
+        regionPurpose |> MapEditor.update (ChooseRegionPurpose(DeploymentZone Blue))
+    let regionShapeFacts = m5Facts RegionDomain regionShape
+    let regionRectangle =
+        regionShape |> MapEditor.update (ChooseRegionShape RectangleRegionShape)
+    let regionRectangleFacts = m5Facts RegionDomain regionRectangle
+    let regionPolygon =
+        regionShape |> MapEditor.update (ChooseRegionShape PolygonRegionShape)
+    let regionPolygonFacts = m5Facts RegionDomain regionPolygon
+    let regionMove =
+        regionBase |> MapEditor.update BeginSelectedRegionMove
+    let regionMoveFacts = m5Facts RegionDomain regionMove
+    let regionResize =
+        regionBase |> MapEditor.update BeginSelectedRegionResize
+    let regionResizeFacts = m5Facts RegionDomain regionResize
+    let polygonBase =
+        { regionBase with
+            Map =
+                { regionBase.Map with
+                    Regions =
+                        Map.ofList [
+                            1,
+                            { Id = 1
+                              Purpose = ObjectiveRegion
+                              Geometry =
+                                RegionPolygon(
+                                    [| { CellColumn = 1; CellRow = 1 }
+                                       { CellColumn = 4; CellRow = 1 }
+                                       { CellColumn = 2; CellRow = 4 } |]
+                                )
+                              Behavior = NoRegionBehavior }
+                        ] }
+            SelectedRegion = Some 1 }
+    let regionVertex =
+        polygonBase |> MapEditor.update BeginSelectedRegionVertexEdit
+    let regionVertexFacts = m5Facts RegionDomain regionVertex
+    let regionPurposeEdit =
+        regionBase |> MapEditor.update BeginSelectedRegionPurposeEdit
+    let regionPurposeEditFacts = m5Facts RegionDomain regionPurposeEdit
+
+    let m5RegionOutcomes =
+        [ resolveM5 regionIdleFacts "n" plain false
+          resolveM5 regionIdleFacts "m" plain false
+          resolveM5 regionIdleFacts "r" plain false
+          resolveM5 regionPurposeFacts "b" plain false
+          resolveM5 regionShapeFacts "r" plain false
+          resolveM5 regionRectangleFacts "Enter" plain false
+          resolveM5 regionPolygonFacts "Enter" { plain with Shift = true } false
+          resolveM5 regionMoveFacts "ArrowRight" { plain with Shift = true } true
+          resolveM5 regionMoveFacts "Backspace" plain false
+          resolveM5 regionResizeFacts "ArrowLeft" { plain with Shift = true } true
+          resolveM5 regionVertexFacts "]" plain true
+          resolveM5 regionPurposeEditFacts "r" plain false
+          resolveM5 regionPurposeEditFacts "Enter" plain false ]
+    require
+        ([ regionIdleFacts
+           regionPurposeFacts
+           regionShapeFacts
+           regionRectangleFacts
+           regionPolygonFacts
+           regionMoveFacts
+           regionResizeFacts
+           regionVertexFacts
+           regionPurposeEditFacts ]
+         |> List.forall (ModalInput.editorCatalog >> ModalInput.validateCatalog >> List.isEmpty)
+         && resolveM5 regionIdleFacts "n" plain false = "resolved:editor.region.create.begin"
+         && resolveM5 regionIdleFacts "m" plain false = "resolved:editor.region.edit.move"
+         && resolveM5 regionIdleFacts "r" plain false = "resolved:editor.region.edit.resize"
+         && resolveM5 regionPurposeFacts "b" plain false = "resolved:editor.region.purpose.blue"
+         && resolveM5 regionShapeFacts "r" plain false = "resolved:editor.region.shape.rectangle"
+         && resolveM5 regionRectangleFacts "Enter" plain false =
+            "resolved:editor.region.rectangle.activate"
+         && resolveM5 regionPolygonFacts "Enter" { plain with Shift = true } false =
+            "unavailable:editor.region.polygon.commit"
+         && resolveM5 regionMoveFacts "ArrowRight" { plain with Shift = true } true =
+            "resolved:editor.region.move.east-large"
+         && resolveM5 regionMoveFacts "Backspace" plain false =
+            "resolved:editor.region.move.reset"
+         && resolveM5 regionResizeFacts "ArrowLeft" { plain with Shift = true } true =
+            "resolved:editor.region.resize.origin.east"
+         && resolveM5 regionVertexFacts "]" plain true =
+            "resolved:editor.region.vertex.next"
+         && resolveM5 regionPurposeEditFacts "r" plain false =
+            "resolved:editor.region.purpose.red"
+         && resolveM5 regionPurposeEditFacts "Enter" plain false =
+            "resolved:editor.region.purpose.commit")
+        ("M5 nested region construction or resettable edit routes diverged: "
+         + String.concat "|" m5RegionOutcomes)
+
+    let documentFacts = m5Facts DocumentDomain m3Editor
+    let documentCatalog = ModalInput.editorCatalog documentFacts
+    let documentProjection =
+        ModalInput.projectEditor documentFacts documentCatalog
+    require
+        (ModalInput.validateCatalog documentCatalog = []
+         && documentProjection.Headline = "EDITOR / DOCUMENT"
+         && resolveM5 documentFacts "n" plain false = "resolved:editor.document.new"
+         && resolveM5 documentFacts "c" plain false = "resolved:editor.document.clear"
+         && resolveM5 documentFacts "s" plain false = "resolved:editor.document.export"
+         && resolveM5 documentFacts "i" plain false = "resolved:editor.document.import"
+         && resolveM5 documentFacts "b" plain false = "resolved:editor.document.bundle"
+         && resolveM5 documentFacts "l" plain false = "resolved:editor.document.layers"
+         && resolveM5 documentFacts "g" plain false = "resolved:editor.document.background"
+         && resolveM5 documentFacts "r" plain false = "resolved:editor.document.resize"
+         && resolveM5 documentFacts "v" plain false = "resolved:editor.document.views"
+         && resolveM5 documentFacts "c" plain true = "no-match")
+        "M5 document routes, projection, or destructive repeat suppression diverged."
+
+    assertProjectionIsExact
+        documentProjection
+        documentCatalog
+        "M5 Document"
+
     let simulator =
         MapEditorSimulator.tryHandoff MapEditor.initial
         |> Result.defaultWith failwith
@@ -670,6 +841,7 @@ let evaluate () =
       simulatorContexts |> List.map string |> String.concat "|"
       noHandoffContexts |> List.map string |> String.concat "|"
       editorProjection.Headline
+      documentProjection.Headline
       simulatorProjection.Headline
       noHandoffProjection.Headline ]
     |> String.concat "\n"

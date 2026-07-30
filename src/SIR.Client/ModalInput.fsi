@@ -41,6 +41,26 @@ type EditorGestureKind =
     | UnitMovePreview
     | TerrainPreview of TerrainAuthoringTool
     | EdgePolyline
+    | RegionPurpose
+    | RegionShape
+    | RegionRectangleMode
+    | RegionPolygonMode
+    | RegionMove
+    | RegionResize
+    | RegionVertex
+
+type EditorDocumentControl =
+    | MapImportControl
+    | LayerStateControls
+    | LocalBackgroundControls
+    | MapDimensionControls
+    | SavedViewControls
+
+type EditorDocumentCommand =
+    | ExportMapDocument
+    | OpenMapImport
+    | ExportRepositoryDesignBundle
+    | FocusDocumentControl of EditorDocumentControl
 
 type ModalContext =
     | EditorBase
@@ -89,6 +109,7 @@ type ModalCommand =
     | SimulatorCommand of SimulatorAction
     | SetEditorPanHeld of bool
     | FocusUnitPresetSearch
+    | EditorDocumentCommand of EditorDocumentCommand
     | ToggleInputHelp
 
 type ModalBinding<'command> =
