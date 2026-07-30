@@ -37,14 +37,14 @@ type CurrentKeyCommand =
 
 [<RequireQualifiedAccess>]
 module CurrentModalInput =
-    /// Mirrors the current `isTextEntryTarget` browser check. Content-editable
-    /// regions are intentionally not excluded by the current implementation.
+    /// Mirrors the browser text-entry boundary after M2 closed the
+    /// characterized content-editable gap.
     let acceptsKeyDown target =
         match target with
         | InputElement
         | TextAreaElement
-        | SelectElement -> false
-        | ContentEditableElement
+        | SelectElement
+        | ContentEditableElement -> false
         | ApplicationElement -> true
 
     /// Returns the current key-down command. `repeat` is accepted explicitly

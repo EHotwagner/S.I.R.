@@ -468,14 +468,14 @@ explicitly provides the stable contract needed for safe parallel work.
   - **Exit gate:** the pure resolver produces identical commands and conflict
     diagnostics in both runtimes without browser or simulation dependencies.
 
-- [ ] **M2 — Show current state and live possible inputs**
-  - [ ] Render the always-visible Editor and Simulator modal-state strip.
-  - [ ] Project breadcrumb, headline, detail, and availability from the current
+- [x] **M2 — Show current state and live possible inputs**
+  - [x] Render the always-visible Editor and Simulator modal-state strip.
+  - [x] Project breadcrumb, headline, detail, and availability from the current
         application model.
-  - [ ] Add the collapsed-by-default `Inputs` disclosure and `?` binding.
-  - [ ] Render the disclosed rows from the live catalog rather than duplicated
+  - [x] Add the collapsed-by-default `Inputs` disclosure and `?` binding.
+  - [x] Render the disclosed rows from the live catalog rather than duplicated
         help prose.
-  - [ ] Implement `F2`, `F3`, popup focus behavior, polite mode announcements,
+  - [x] Implement `F2`, `F3`, popup focus behavior, polite mode announcements,
         and narrow/400%-zoom in-flow layout.
   - **Exit gate:** every displayed available input resolves in the displayed
     context, and every resolvable visible command appears in the disclosure.

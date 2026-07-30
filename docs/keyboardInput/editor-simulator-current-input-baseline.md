@@ -6,7 +6,7 @@ index: 11
 status: current
 decision-status: characterized
 document-type: qualification-baseline
-version: "1.0"
+version: "1.1"
 last-updated: 2026-07-30
 description: Review baseline for the Editor and Simulator behavior that predates the modal-input migration.
 related:
@@ -26,6 +26,8 @@ that surface.
 
 This is not the desired key vocabulary. The differences at the end of this
 document are intentional migration work, not omissions from the baseline.
+M2 deliberately updates one edge of this characterization: content-editable
+regions now share the text-entry exclusion boundary.
 
 ## Window-level Editor key dispatch
 
@@ -78,9 +80,10 @@ forms dispatch the same commands.
 
 ## Event-edge behavior
 
-- Key-down from an HTML `input` (including file input), `textarea`, or `select`
-  is excluded before dispatch. Content-editable regions and native buttons are
-  not explicitly excluded by the current predicate.
+- Key-down from an HTML `input` (including file input), `textarea`, `select`,
+  or content-editable region is excluded before dispatch. Content-editable
+  exclusion landed in M2; native buttons are still not explicitly excluded by
+  the legacy predicate.
 - Key-up is not subject to the text-entry or workspace filter. A literal
   `Space` key-up clears the Editor held-pan flag from any workspace.
 - Initial and repeated key-down events dispatch identically for every command,
@@ -151,9 +154,9 @@ The proposed vocabulary deliberately changes or adds the following behavior:
 - Introduce explicit repeat policy: movement/cursor commands may repeat;
   toggles, commits, destructive commands, and popup transitions must ignore
   repeat.
-- Explicitly preserve file-input exclusion and add content-editable regions,
-  native control activation, and reserved platform/browser chords to the
-  modal-dispatch boundary.
+- Explicitly preserve file-input exclusion. M2 added content-editable regions
+  to the modal-dispatch boundary; native control activation and reserved
+  platform/browser chords remain migration work.
 - Route key-up even after a mode change, while clearing held and popup state on
   workspace changes and focus loss.
 - Make `Escape` close only the highest transient context: input help, then

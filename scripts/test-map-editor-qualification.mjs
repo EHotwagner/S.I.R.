@@ -69,6 +69,79 @@ require(
   Boolean(window.document.querySelector('[aria-live="polite"]')),
   "editor changes have no polite announcement channel",
 );
+const modalRegion = () =>
+  window.document.querySelector('[aria-label="Current input mode"]');
+const modalToggle = () => window.document.querySelector("#modal-input-toggle");
+require(
+  modalRegion()?.textContent.includes("EDITOR / SELECT"),
+  "the Editor modal-state strip does not project the live Select state",
+);
+require(
+  modalToggle()?.getAttribute("aria-expanded") === "false" &&
+    !window.document.querySelector("#modal-input-panel"),
+  "possible inputs are not collapsed by default",
+);
+const editable = window.document.createElement("div");
+editable.contentEditable = "true";
+editable.textContent = "Editable qualification target";
+window.document.body.append(editable);
+editable.focus();
+editable.dispatchEvent(
+  new window.KeyboardEvent("keydown", {
+    key: "?",
+    shiftKey: true,
+    bubbles: true,
+  }),
+);
+await window.happyDOM.waitUntilComplete();
+require(
+  modalToggle()?.getAttribute("aria-expanded") === "false" &&
+    !window.document.querySelector("#modal-input-panel"),
+  "content-editable keydown entered modal dispatch",
+);
+editable.remove();
+modalToggle()?.focus();
+modalToggle()?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  modalToggle()?.getAttribute("aria-expanded") === "true" &&
+    window.document.querySelector("#modal-input-panel")?.getAttribute("tabindex") ===
+      "-1" &&
+    window.document.activeElement?.id === "modal-input-toggle",
+  "pointer-opened possible inputs changed focus or lacked a programmatic keyboard focus target",
+);
+require(
+  Boolean(
+    window.document.querySelector(
+      '[data-modal-command="editor.panel.toggle"]',
+    ),
+  ) &&
+    Boolean(
+      window.document.querySelector(
+        '[data-modal-command="editor.inspector.toggle"]',
+      ),
+    ),
+  "the live Editor catalog omitted F2 or F3",
+);
+const modalClose = buttonByText("Close");
+modalClose?.focus();
+modalClose?.click();
+await new Promise((done) => setTimeout(done, 0));
+await window.happyDOM.waitUntilComplete();
+require(
+  modalToggle()?.getAttribute("aria-expanded") === "false" &&
+    window.document.activeElement?.id === "modal-input-toggle",
+  "the possible-input close control did not collapse and preserve disclosure focus",
+);
+buttonByText("Simulator")?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  modalRegion()?.textContent.includes("SIMULATOR / NO HANDOFF") &&
+    modalToggle()?.getAttribute("aria-expanded") === "false",
+  "the Simulator modal-state strip did not project its live no-handoff state",
+);
+buttonByText("Editor")?.click();
+await window.happyDOM.waitUntilComplete();
 
 for (const control of window.document.querySelectorAll(
   "#sir-replay-app button, #sir-replay-app input, #sir-replay-app select",
@@ -110,7 +183,8 @@ require(
 );
 require(
   /@media\s*\((max-width:)?48rem|width<=48rem\)/.test(styles) &&
-    styles.includes(".editor-workspace{grid-template-columns:1fr}"),
+    styles.includes(".editor-workspace{grid-template-columns:1fr}") &&
+    /\.modal-input-panel\{[^}]*position:static/.test(styles),
   "the 400% zoom/narrow-layout collapse is missing",
 );
 require(
@@ -159,6 +233,6 @@ if (failures.length > 0) {
   throw new Error(`Map-editor qualification failed: ${failures.join("; ")}.`);
 }
 console.log(
-  "Map-editor automated qualification passed: keyboard structure, screen-reader semantics, touch CSS, forced colors, 400% responsive collapse, reduced motion, target sizing, and seven hashed SVG/PNG domain pairs.",
+  "Map-editor automated qualification passed: modal-state disclosure, content-editable exclusion, popup focus restoration, keyboard structure, screen-reader semantics, touch CSS, forced colors, 400% responsive collapse, reduced motion, target sizing, and seven hashed SVG/PNG domain pairs.",
 );
 window.happyDOM.close();
