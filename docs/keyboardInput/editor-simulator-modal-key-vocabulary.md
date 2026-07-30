@@ -3,10 +3,10 @@ title: Editor and Simulator Modal Key Vocabulary
 category: Engineering
 categoryindex: 6
 index: 10
-status: proposed
-decision-status: proposed
+status: accepted
+decision-status: accepted
 document-type: interaction-contract
-version: "0.1"
+version: "1.0"
 last-updated: 2026-07-30
 description: Complete modal keyboard vocabulary for map authoring, unit placement and manipulation, semantic edges, regions, and simulator control.
 related:
@@ -17,9 +17,9 @@ related:
 
 # Editor and Simulator Modal Key Vocabulary
 
-This document defines the proposed keyboard language for fully operating the
+This document defines the accepted keyboard language for fully operating the
 S.I.R Editor and Simulator. It is an interaction contract subordinate to the
-[modal input architecture proposal](editor-simulator-modal-input-proposal.md).
+[accepted modal input design](editor-simulator-modal-input-proposal.md).
 Every map-authoring operation—including terrain, units, edges, regions,
 selection, movement, duplication, and deletion—receives an explicit modal
 route. Pointer, touch, menus, toolbars, inspectors, and native form controls

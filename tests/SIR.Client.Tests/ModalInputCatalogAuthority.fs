@@ -21,36 +21,22 @@ let private editorCases =
       "Ctrl+D duplicate", "d", true, false, EditorCommand DuplicateEditorSelection
       "Ctrl+A select all", "a", true, false, EditorCommand SelectAllInActiveDomain
       "Delete selection", "Delete", false, false, EditorCommand DeleteEditorSelection
-      "Shift+Backspace compatibility", "Backspace", false, true, EditorCommand DeleteEditorSelection
       "Previous issue", "[", false, false, EditorCommand SelectPreviousIssue
-      "Shift+] compatibility", "]", false, true, EditorCommand SelectNextIssue
-      "Shift+Space compatibility", " ", false, true, SetEditorPanHeld true
-      "Shift+1 open terrain", "1", false, true, EditorCommand(ChooseTerrain Open)
-      "Shift+2 rough terrain", "2", false, true, EditorCommand(ChooseTerrain Rough)
-      "Shift+3 blocked terrain", "3", false, true, EditorCommand(ChooseTerrain Blocked)
-      "Shift+4 objective terrain", "4", false, true, EditorCommand(ChooseTerrain Objective)
-      "Exclamation open terrain", "!", false, false, EditorCommand(ChooseTerrain Open)
-      "At rough terrain", "@", false, false, EditorCommand(ChooseTerrain Rough)
-      "Hash blocked terrain", "#", false, false, EditorCommand(ChooseTerrain Blocked)
-      "Dollar objective terrain", "$", false, false, EditorCommand(ChooseTerrain Objective)
-      "Shift+0 fit compatibility", "0", false, true, EditorWorkspaceCommand FitEditorBoard
       "Reset camera", "1", false, false, EditorWorkspaceCommand ResetEditorCamera
-      "Shift+F frame compatibility", "f", false, true, EditorWorkspaceCommand FrameEditorSelection
       "Select tool", "v", false, false, EditorCommand(ChooseTool Select)
-      "Shift+T terrain compatibility", "t", false, true, ChooseEditorDomain TerrainDomain
+      "Terrain domain", "t", false, false, ChooseEditorDomain TerrainDomain
       "Pencil tool", "p", false, false, EditorCommand(ChooseTool(Terrain PencilTool))
-      "Shift+R rectangle compatibility", "r", false, true, EditorCommand(ChooseTool(Terrain RectangleTool))
+      "Rectangle tool", "r", false, false, EditorCommand(ChooseTool(Terrain RectangleTool))
       "Line tool", "l", false, false, EditorCommand(ChooseTool(Terrain LineTool))
-      "Shift+G flood compatibility", "g", false, true, EditorCommand(ChooseTool(Terrain FloodFillTool))
+      "Flood-fill tool", "g", false, false, EditorCommand(ChooseTool(Terrain FloodFillTool))
       "Eyedropper tool", "i", false, false, EditorCommand(ChooseTool(Terrain EyedropperTool))
-      "Shift+X erase compatibility", "x", false, true, EditorCommand(ChooseTool(Terrain EraseTool))
+      "Eraser tool", "x", false, false, EditorCommand(ChooseTool(Terrain EraseTool))
       "Unit domain", "u", false, false, ChooseEditorDomain UnitDomain
-      "Shift+E edge compatibility", "e", false, true, ChooseEditorDomain EdgeDomain
+      "Edge domain", "e", false, false, ChooseEditorDomain EdgeDomain
       "Zone domain", "z", false, false, ChooseEditorDomain RegionDomain
-      "Shift+M document compatibility", "m", false, true, ChooseEditorDomain DocumentDomain
+      "Document domain", "m", false, false, ChooseEditorDomain DocumentDomain
       "Toggle editor panel", "F2", false, false, ToggleEditorCommandPanel
-      "Shift+F3 inspector compatibility", "F3", false, true, EditorWorkspaceCommand ToggleEditorInspector
-      "Shift+Escape compatibility", "Escape", false, true, EditorCommand(SelectEditorUnit None) ]
+      "Toggle inspector", "F3", false, false, EditorWorkspaceCommand ToggleEditorInspector ]
     |> List.map (fun (name, key, controlOrMeta, shift, expected) ->
         { Name = name
           Key = key
@@ -221,5 +207,5 @@ let run () =
                 failwith $"Possible input {input.Id} was not executable: {outcome}."
 
     printfn
-        "Authoritative modal catalog passed: %d characterized Editor inputs, retained Simulator corpus, native boundaries, compatibility aliases through M8, held-input recovery, conflicts, and possible-input enumeration."
+        "Authoritative modal catalog passed: %d accepted Editor inputs, retained Simulator corpus, native boundaries, held-input recovery, conflicts, and possible-input enumeration."
         editorCases.Length

@@ -3,10 +3,10 @@ title: Editor and Simulator Modal Input Proposal
 category: Engineering
 categoryindex: 6
 index: 9
-status: proposed
-decision-status: proposed
-document-type: design-proposal
-version: "0.2"
+status: accepted
+decision-status: accepted
+document-type: design-decision
+version: "1.0"
 last-updated: 2026-07-30
 description: Apply the archived keyboard-input algebra to the Editor and Simulator with a state-first modal display and optional context-sensitive input help.
 related:
@@ -16,44 +16,69 @@ related:
   - docs/keyboardInput/context/design-and-controls.md
 ---
 
-# Editor and Simulator Modal Input Proposal
+# Editor and Simulator Modal Input — Accepted Design
 
-S.I.R should treat keyboard input in the Editor and Simulator as a
-context-sensitive command language. The interface should always present the
+S.I.R treats keyboard input in the Editor and Simulator as a
+context-sensitive command language. The interface always presents the
 current modal state in a compact status strip. The inputs valid in that exact
-state should be available through an optional disclosure, generated from the
+state are available through an optional disclosure, generated from the
 same binding catalog used for dispatch. Existing editor and simulator state
-remains authoritative; this proposal does not introduce a second mode model.
+remains authoritative; the accepted design does not introduce a second mode
+model.
 
-The complete proposed key map, submode transitions, commit/cancel rules, and
+The complete accepted key map, submode transitions, commit/cancel rules, and
 conflict matrix are specified in the
 [Editor and Simulator Modal Key Vocabulary](editor-simulator-modal-key-vocabulary.md).
 
 ## Status
 
-This is a proposal, not an implemented contract. Existing shortcuts and
-pointer behavior remain authoritative until the migration and its qualification
-tests land.
+Accepted on 2026-07-30. The modal vocabulary is the supported Editor and
+Simulator keyboard interaction contract. One production catalog drives
+dispatch, possible-input display, conflict validation, and .NET/Fable test
+enumeration; pointer, touch, and native-control routes remain equivalent
+supported inputs.
 
-## Problem
+Acceptance ran the complete conformance suite, production browser workflows,
+map-editor qualification, deterministic simulation and worker round trips,
+canonical map import/export and undo/redo regression coverage, documentation
+build, and accessibility checks. The accessibility gate covers the labelled
+mode region, polite announcements, native disclosure semantics, keyboard focus
+entry and restoration, forced colors, reduced motion, touch alternatives,
+44 CSS-pixel targets, and the narrow layout used for 400% reflow.
 
-The current application already behaves modally, but expresses that behavior in
-several places:
+All temporary M7 compatibility aliases were removed. They represented the
+former branch's shift-insensitive matching rather than accepted commands:
+shifted letters, shifted function keys, shifted `Escape`/`Space`/`Backspace`,
+and symbol/shifted-number terrain forms no longer dispatch. `?` uses the
+produced question-mark key with its actual Shift modifier. This leaves the
+documented modifier meanings unambiguous and prevents hidden aliases from
+drifting beyond acceptance.
 
-- `App.update` contains separate workspace-specific `KeyPressed` branches;
-- `MapEditorState.Tool` selects the active editor tool;
-- `MapEditorState.Gesture` records an in-progress rectangle, line, move,
+The intentionally deferred vocabulary remains user rebinding, multi-key leader
+sequences, internationalized command labels, gamepad and switch-device
+bindings, Replay and Planning workspace modal vocabularies, and text editing
+inside native script, map-name, and search controls. These are outside this
+accepted contract and require separate design decisions.
+
+## Pre-implementation problem
+
+Before M1–M7, the application already behaved modally but expressed that
+behavior in several places:
+
+- `App.update` contained separate workspace-specific `KeyPressed` branches;
+- `MapEditorState.Tool` selected the active editor tool;
+- `MapEditorState.Gesture` recorded an in-progress rectangle, line, move,
   selection, terrain, or edge operation;
-- `EditorToolPanel` records the active authoring domain;
-- `EditorSpacePressed` acts as a temporary held pan mode;
-- `SimulatorHandoff.IsRunning` distinguishes paused and running simulation;
-- `SimulatorHandoff.PreviewDestination` distinguishes ordinary inspection from
+- `EditorToolPanel` recorded the active authoring domain;
+- `EditorSpacePressed` acted as a temporary held pan mode;
+- `SimulatorHandoff.IsRunning` distinguished paused and running simulation;
+- `SimulatorHandoff.PreviewDestination` distinguished ordinary inspection from
   a pending movement preview;
-- toolbar labels, documentation tables, and keyboard-help prose repeat parts of
+- toolbar labels, documentation tables, and keyboard-help prose repeated parts of
   the binding information.
 
-This creates an implicit modal system without a single projection that can
-answer two basic user questions:
+That structure created an implicit modal system without a single projection
+that could answer two basic user questions:
 
 1. What state is the interface in now?
 2. What can I do from this state?
@@ -62,7 +87,7 @@ A static shortcut sheet cannot answer the second question accurately. For
 example, `Enter` may begin an operation, commit an operation, accept a simulator
 preview, or activate a focused native control depending on context.
 
-## Proposed experience
+## Accepted experience
 
 ### Always show the current modal state
 
@@ -90,8 +115,8 @@ The right side contains a secondary disclosure:
 [ Inputs · ? ]
 ```
 
-The strip should show state, not a permanently expanded wall of shortcut
-badges. A user should be able to understand the active context without learning
+The strip shows state, not a permanently expanded wall of shortcut
+badges. A user can understand the active context without learning
 the keyboard scheme.
 
 ### Make possible inputs optional
@@ -144,7 +169,7 @@ workspace
                  └─ held layer or popup
 ```
 
-The proposed precedence, highest first, is:
+The accepted precedence, highest first, is:
 
 1. Native text-entry and platform/browser reservations.
 2. An open input-help popup.
@@ -158,7 +183,7 @@ bindings with the same gesture and equal precedence in an overlapping context.
 
 ### Editor contexts
 
-The first implementation should project at least:
+The accepted Editor projection includes:
 
 - `Editor / Select`;
 - `Editor / Terrain / Pencil`;
@@ -177,13 +202,13 @@ The first implementation should project at least:
 - `Editor / Pan held`;
 - `Editor / Destructive confirmation`.
 
-The detail line should expose the useful parameters already held by the model:
+The detail line exposes the useful parameters already held by the model:
 selected terrain, brush size, anchor and cursor, staged segment count, selected
 unit count, and pending destructive action.
 
 ### Simulator contexts
 
-The first implementation should project at least:
+The accepted Simulator projection includes:
 
 - `Simulator / Paused`;
 - `Simulator / Running`;
@@ -191,7 +216,7 @@ The first implementation should project at least:
 - `Simulator / Revision stale`;
 - `Simulator / No handoff`.
 
-The detail line should expose the immutable revision identity, current tick,
+The detail line exposes the immutable revision identity, current tick,
 selected unit, preview destination, and collision/result summary where
 available. `Revision stale` is a status qualifier, not a separate simulation
 state; it may appear alongside paused or running.
@@ -273,7 +298,7 @@ The actual implementation may use a closed context selector instead of a
 function if that produces clearer equality and conflict diagnostics. The
 important contract is that a binding is declarative and inspectable.
 
-The catalog's command should remain semantic. It can wrap the application's
+The catalog's command remains semantic and wraps the application's
 existing action unions:
 
 ```fsharp
@@ -295,7 +320,7 @@ A binding can belong to the active mode but still be unavailable. For example,
 `Delete selection` is meaningful in Select mode but unavailable when nothing is
 selected.
 
-The resolver should distinguish:
+The resolver distinguishes:
 
 ```fsharp
 type BindingAvailability =
@@ -324,7 +349,7 @@ simulator.preview.commit
 
 The ID is independent of its key and visible label. This preserves the useful
 mechanism/policy separation from the archived design and leaves room for later
-rebinding without making rebinding part of this proposal.
+rebinding without making rebinding part of this accepted scope.
 
 ## Resolution rules
 
@@ -357,13 +382,17 @@ Rules:
 - pointer and touch commands update the same durable model, so the modal display
   changes identically regardless of input device.
 
-## Initial binding policy
+## Accepted binding policy
 
-The first migration preserves all accepted bindings documented in the
-[Map Editor Reference](../map-editor.md). It is a structural migration, not an
-opportunity to redesign the key layout.
+The accepted bindings are the commands in the
+[complete modal vocabulary](editor-simulator-modal-key-vocabulary.md) and the
+live production catalog. M0 characterized the broader legacy branch so that
+migration differences were deliberate, not so every historical match became a
+permanent shortcut. M8 specifically supersedes the old shift-insensitive
+letter, function-key, navigation, and terrain-number forms; those temporary M7
+aliases are not part of the supported key layout.
 
-The only proposed additive binding is:
+The one additive binding introduced by this design is:
 
 | Gesture | Command |
 |---|---|
@@ -396,7 +425,7 @@ The state strip is not merely decorative:
   sizes, and 400% reflow;
 - never use color alone to distinguish mode, availability, preview, or error.
 
-The mode announcement should occur only when its semantic headline changes.
+The mode announcement occurs only when its semantic headline changes.
 Opening the input panel moves focus only when explicitly requested by keyboard;
 pointer activation may leave focus on the disclosure button.
 
@@ -414,7 +443,7 @@ pointer activation may leave focus on the disclosure button.
 
 ## Placement in the codebase
 
-The proposed responsibility split is:
+The implemented responsibility split is:
 
 ```text
 SIR.Client/ModalInput.fs
@@ -547,23 +576,23 @@ explicitly provides the stable contract needed for safe parallel work.
   - **Exit gate:** one catalog drives dispatch, possible-input display, conflict
     checks, and test enumeration in production.
 
-- [ ] **M8 — Qualify and accept the modal system**
-  - [ ] Exercise every vocabulary mode, transition, commit, reset, cancellation,
+- [x] **M8 — Qualify and accept the modal system**
+  - [x] Exercise every vocabulary mode, transition, commit, reset, cancellation,
         conflict, and repeat policy in automated tests.
-  - [ ] Extend browser smoke coverage across complete Editor and Simulator
+  - [x] Extend browser smoke coverage across complete Editor and Simulator
         keyboard workflows.
-  - [ ] Verify screen-reader semantics, focus restoration, forced colors,
+  - [x] Verify screen-reader semantics, focus restoration, forced colors,
         reduced motion, touch alternatives, target sizing, and 400% reflow.
-  - [ ] Verify no regression in pointer/touch behavior, undo/redo, canonical map
+  - [x] Verify no regression in pointer/touch behavior, undo/redo, canonical map
         output, deterministic simulation, or worker transport.
-  - [ ] Update `docs/map-editor.md`, mark the proposal accepted, and record any
+  - [x] Update `docs/map-editor.md`, mark the proposal accepted, and record any
         intentionally deferred vocabulary.
   - **Exit gate:** all acceptance criteria below pass in CI and the modal
     vocabulary is the documented, supported interaction contract.
 
 ## Acceptance criteria
 
-The proposal is implemented when:
+The design is accepted because:
 
 1. Editor and Simulator always show a correct current modal-state headline.
 2. The possible-input panel is collapsed by default and user-toggleable.
@@ -571,7 +600,8 @@ The proposal is implemented when:
 4. Every catalog-resolvable input is present in the expanded projection unless
    deliberately classified as hidden with a tested rationale.
 5. One catalog drives dispatch, help, conflict checks, and test enumeration.
-6. Existing accepted shortcut behavior is preserved.
+6. The complete accepted vocabulary is preserved; migration-only legacy
+   matches are explicitly superseded rather than silently retained.
 7. Text entry, platform commands, pointer/touch alternatives, and native
    control activation retain precedence.
 8. Held and popup contexts recover on key-up, focus loss, and workspace change.
@@ -635,7 +665,7 @@ separate decision.
 
 ## Relationship to the archive
 
-This proposal adopts the archive's strongest ideas:
+This accepted design adopts the archive's strongest ideas:
 
 - semantic commands independent of physical keys;
 - modes, states, held layers, and closed outcomes;

@@ -211,6 +211,16 @@ retain platform editing bindings. Repeated movement inputs remain
 deterministic, and every catalog command has a visible control or
 inspector/object-list equivalent.
 
+The [accepted Editor and Simulator modal input design](keyboardInput/editor-simulator-modal-input-proposal.md)
+and its [complete key vocabulary](keyboardInput/editor-simulator-modal-key-vocabulary.md)
+are the supported interaction contract. Acceptance qualification covers every
+derived mode and declared repeat policy, complete production-browser Editor and
+Simulator workflows, popup and held-layer recovery, pointer/touch equivalence,
+canonical output and undo/redo, deterministic simulation, worker transport,
+screen-reader semantics, forced colors, reduced motion, minimum targets, and
+400% reflow. Migration-only shifted and symbol compatibility aliases were
+removed; only bindings listed by the live catalog are supported.
+
 ## SVG workspace and camera
 
 The Editor tab renders the authoritative map through the shared tactical SVG
