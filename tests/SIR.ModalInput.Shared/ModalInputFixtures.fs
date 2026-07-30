@@ -318,6 +318,7 @@ let evaluate () =
             { SimulatorHandoffPresent = true
               SimulatorIsRunning = false
               SimulatorHasRoutePreview = true
+              SimulatorControllerSelection = None
               SimulatorRevisionIsStale = true
               InputHelpExpanded = false }
 
@@ -326,6 +327,7 @@ let evaluate () =
             { SimulatorHandoffPresent = false
               SimulatorIsRunning = true
               SimulatorHasRoutePreview = true
+              SimulatorControllerSelection = None
               SimulatorRevisionIsStale = true
               InputHelpExpanded = true }
 
@@ -779,10 +781,11 @@ let evaluate () =
         { SimulatorHandoffPresent = true
           SimulatorIsRunning = false
           SimulatorHasRoutePreview = false
+          SimulatorControllerSelection = None
           SimulatorRevisionIsStale = true
           InputHelpExpanded = false }
     let productionSimulatorCatalog =
-        ModalInput.simulatorCatalog MapEditor.initial.SelectedUnit (Some simulator)
+        ModalInput.simulatorCatalog MapEditor.initial.SelectedUnit (Some simulator) None
     let simulatorProjection =
         ModalInput.projectSimulator
             pausedSimulatorFacts
@@ -805,13 +808,197 @@ let evaluate () =
         productionSimulatorCatalog
         "Simulator"
 
+    let resolveSimulator facts catalog key modifiers repeat =
+        ModalInput.resolve
+            (ModalInput.deriveSimulatorContexts facts)
+            (gesture key None modifiers KeyDown)
+            repeat
+            catalog
+        |> outcomeName
+
+    let pausedInputIds =
+        simulatorProjection.PossibleInputs |> List.map _.Id |> Set.ofList
+
+    require
+        ([ "simulator.panel.controls"
+           "simulator.panel.events"
+           "simulator.panel.samples"
+           "simulator.unit.previous"
+           "simulator.unit.next"
+           "simulator.step"
+           "simulator.reset.request"
+           "simulator.controller.begin"
+           "simulator.preview.west" ]
+         |> List.forall (fun id -> Set.contains id pausedInputIds))
+        "M6 paused Simulator inputs omitted traversal, lifecycle, panels, controller selection, or route begin."
+
+    let runningSimulator = { simulator with IsRunning = true }
+    let runningFacts =
+        { pausedSimulatorFacts with
+            SimulatorIsRunning = true
+            SimulatorRevisionIsStale = false }
+    let runningCatalog =
+        ModalInput.simulatorCatalog
+            MapEditor.initial.SelectedUnit
+            (Some runningSimulator)
+            None
+    let runningProjection =
+        ModalInput.projectSimulator
+            runningFacts
+            MapEditor.initial.SelectedUnit
+            (Some runningSimulator)
+            runningCatalog
+    let runningInputIds =
+        runningProjection.PossibleInputs |> List.map _.Id |> Set.ofList
+
+    require
+        (runningProjection.Headline = "SIMULATOR / RUNNING"
+         && [ "simulator.run.toggle-space"
+              "simulator.panel.controls"
+              "simulator.unit.previous"
+              "simulator.unit.next" ]
+            |> List.forall (fun id -> Set.contains id runningInputIds)
+         && [ "simulator.step"
+              "simulator.reset.request"
+              "simulator.controller.begin"
+              "simulator.preview.west"
+              "simulator.preview.commit" ]
+            |> List.forall (fun id -> not (Set.contains id runningInputIds))
+         && resolveSimulator runningFacts runningCatalog "." plain false = "unavailable:simulator.step"
+         && resolveSimulator runningFacts runningCatalog "ArrowRight" plain false =
+            "unavailable:simulator.preview.east")
+        "M6 running projection disclosed or resolved an unavailable mutation."
+
+    assertProjectionIsExact
+        runningProjection
+        runningCatalog
+        "Running Simulator"
+
+    let unitIds =
+        simulator.RuntimeMap.Units |> Map.toArray |> Array.map fst |> Array.sort
+    let firstUnit = Array.head unitIds
+    let lastUnit = Array.last unitIds
+    require
+        (ModalInput.traverseSimulatorUnit 1 None simulator = Some firstUnit
+         && ModalInput.traverseSimulatorUnit -1 None simulator = Some lastUnit
+         && ModalInput.traverseSimulatorUnit 1 (Some lastUnit) simulator = Some firstUnit
+         && ModalInput.traverseSimulatorUnit -1 (Some firstUnit) simulator = Some lastUnit)
+        "M6 unit traversal was not deterministic and wrapping."
+
+    let selectedId = MapEditor.initial.SelectedUnit |> Option.defaultWith (fun () -> failwith "Expected selected fixture unit.")
+    let selectedUnit = Map.find selectedId simulator.RuntimeMap.Units
+    let previewing =
+        MapEditorSimulator.update
+            (MoveSimulatorPreview(1, 0))
+            (Some selectedId)
+            simulator
+    let resetPreview =
+        MapEditorSimulator.update
+            ResetSimulatorPreviewToOrigin
+            (Some selectedId)
+            previewing
+    let cancelledPreview =
+        MapEditorSimulator.update
+            ResetSimulatorPreview
+            (Some selectedId)
+            previewing
+    let startedFromPreview =
+        MapEditorSimulator.update
+            ToggleSimulatorRun
+            (Some selectedId)
+            previewing
+    let runningMutation =
+        MapEditorSimulator.update
+            (MoveSimulatorPreview(1, 0))
+            (Some selectedId)
+            runningSimulator
+    let runningSingleStep =
+        MapEditorSimulator.update
+            StepSimulator
+            (Some selectedId)
+            runningSimulator
+    let runningPulse =
+        MapEditorSimulator.update
+            AdvanceRunningSimulatorTick
+            (Some selectedId)
+            runningSimulator
+
+    require
+        (previewing.PreviewDestination.IsSome
+         && resetPreview.PreviewDestination =
+            Some
+                { CellColumn = selectedUnit.Column
+                  CellRow = selectedUnit.Row }
+         && cancelledPreview.PreviewDestination.IsNone
+         && startedFromPreview.IsRunning
+         && startedFromPreview.PreviewDestination.IsNone
+         && runningMutation = runningSimulator
+         && runningSingleStep = runningSimulator
+         && runningPulse.Tick = runningSimulator.Tick + 1)
+        "M6 route-preview reset, cancel, run transition, or running guard diverged."
+
+    let controllerFacts =
+        { pausedSimulatorFacts with
+            SimulatorControllerSelection = Some Scripted
+            SimulatorRevisionIsStale = false }
+    let controllerCatalog =
+        ModalInput.simulatorCatalog
+            (Some selectedId)
+            (Some simulator)
+            (Some Scripted)
+    let controllerProjection =
+        ModalInput.projectSimulator
+            controllerFacts
+            (Some selectedId)
+            (Some simulator)
+            controllerCatalog
+    let controllerInputIds =
+        controllerProjection.PossibleInputs |> List.map _.Id |> Set.ofList
+
+    require
+        (controllerProjection.Headline = "SIMULATOR / CONTROLLER"
+         && controllerProjection.Detail.Contains("Scripted AI")
+         && [ "simulator.controller.manual"
+              "simulator.controller.scripted"
+              "simulator.controller.general"
+              "simulator.controller.commit"
+              "simulator.controller.cancel" ]
+            |> List.forall (fun id -> Set.contains id controllerInputIds)
+         && not (Set.contains "simulator.run.toggle-space" controllerInputIds)
+         && resolveSimulator controllerFacts controllerCatalog "g" plain false =
+            "resolved:simulator.controller.general"
+         && resolveSimulator controllerFacts controllerCatalog "Enter" plain false =
+            "resolved:simulator.controller.commit")
+        "M6 controller selection did not own modal input while preserving a separate native script field."
+
+    assertProjectionIsExact
+        controllerProjection
+        controllerCatalog
+        "Simulator controller selection"
+
+    let authoredBefore = MapEditor.export MapEditor.initial
+    ModalInput.projectSimulator
+        controllerFacts
+        (Some selectedId)
+        (Some simulator)
+        controllerCatalog
+    |> ignore
+    ModalInput.traverseSimulatorUnit 1 (Some selectedId) simulator |> ignore
+    let authoredAfter = MapEditor.export MapEditor.initial
+
+    require
+        (authoredBefore = authoredAfter
+         && simulator = simulator)
+        "M6 input presentation projection entered authored map serialization or simulator runtime state."
+
     let noHandoffCatalog =
-        ModalInput.simulatorCatalog None None
+        ModalInput.simulatorCatalog None None None
     let noHandoffProjection =
         ModalInput.projectSimulator
             { SimulatorHandoffPresent = false
               SimulatorIsRunning = false
               SimulatorHasRoutePreview = false
+              SimulatorControllerSelection = None
               SimulatorRevisionIsStale = false
               InputHelpExpanded = false }
             None

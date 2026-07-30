@@ -185,6 +185,16 @@ if command -v rg >/dev/null 2>&1; then
       src/SIR.Simulation/SIR.Simulation.fsproj \
       src/SIR.Match/SIR.Match.fsproj || true
   )
+  input_presentation_leak=$(
+    rg -n \
+      '\b(SimulatorSelectedUnit|SimulatorControllerSelection|InputHelpExpanded|EditorSpacePressed)\b' \
+      "${authoritative_roots[@]}" \
+      src/SIR.Client/SimulatorWorkerProtocol.fs \
+      src/SIR.Client/MapEditor.fs \
+      src/SIR.Client/MapEditorInterchange.fs \
+      src/SIR.Client/MapEditorSimulator.fs \
+      src/SIR.Client/ReplayPresentation.fs || true
+  )
 else
   floating_source=$(
     grep -RInE \
@@ -199,6 +209,17 @@ else
       src/SIR.Simulation/SIR.Simulation.fsproj \
       src/SIR.Match/SIR.Match.fsproj || true
   )
+  input_presentation_leak=$(
+    grep -RInE \
+      --include='*.fs' \
+      '(^|[^[:alnum:]_])(SimulatorSelectedUnit|SimulatorControllerSelection|InputHelpExpanded|EditorSpacePressed)([^[:alnum:]_]|$)' \
+      "${authoritative_roots[@]}" \
+      src/SIR.Client/SimulatorWorkerProtocol.fs \
+      src/SIR.Client/MapEditor.fs \
+      src/SIR.Client/MapEditorInterchange.fs \
+      src/SIR.Client/MapEditorSimulator.fs \
+      src/SIR.Client/ReplayPresentation.fs || true
+  )
 fi
 
 if [[ -n "$floating_source" ]]; then
@@ -210,6 +231,12 @@ fi
 if [[ -n "$client_reference" ]]; then
   printf '%s\n' "$client_reference" >&2
   echo "An authoritative project references the presentation-only client" >&2
+  exit 1
+fi
+
+if [[ -n "$input_presentation_leak" ]]; then
+  printf '%s\n' "$input_presentation_leak" >&2
+  echo "Modal input presentation state entered authority, replay, map serialization, simulator handoff, or a public protocol payload" >&2
   exit 1
 fi
 
@@ -236,6 +263,7 @@ printf 'Simulation divergence guard passed: tick 1 phase %s failed first at byte
   "$simulation_phase"
 printf 'Replay gate passed: formats v1-v2, SHA-256, checkpoint seeks, safety limits, disclosure boundaries, and verification levels agree.\n'
 printf 'Numeric authority gate passed: Domain, Simulation, and Match contain no floating-point state and do not reference the presentation-only client.\n'
+printf 'Modal input boundary gate passed: transient selection, controller-choice, help, and held-input state remain outside authority, replay, map serialization, simulator handoff, and public protocol payloads.\n'
 printf '%s\n' "$match_output"
 printf '%s\n' "$browser_wasm_output"
 printf 'Elmish and rules-lab gate passed: modes, immutable baseline/fork comparison, typed validation, deterministic sweep, reproducible fixture export, stale operations, cancellation, Fable compilation, production bundle, and browser mount agree.\n'

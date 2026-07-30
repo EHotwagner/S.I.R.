@@ -98,6 +98,7 @@ type ModalContext =
     | SimulatorPaused
     | SimulatorRunning
     | SimulatorRoutePreview
+    | SimulatorControllerSelection
     | SimulatorRevisionStale
     | SimulatorNoHandoff
     | InputHelpPopup
@@ -136,6 +137,12 @@ type ModalCommand =
     | ChooseSimulatorPanel of SimulatorPanel
     | ToggleSimulatorCommandPanel
     | SimulatorCommand of SimulatorAction
+    | TraverseSimulatorUnit of delta: int
+    | BeginSimulatorControllerSelection
+    | ChooseSimulatorController of MapController
+    | CommitSimulatorController
+    | CancelSimulatorController
+    | RequestSimulatorSandboxReset
     | SetEditorPanHeld of bool
     | FocusUnitPresetSearch
     | EditorDocumentCommand of EditorDocumentCommand
@@ -190,6 +197,7 @@ type SimulatorModalFacts =
     { SimulatorHandoffPresent: bool
       SimulatorIsRunning: bool
       SimulatorHasRoutePreview: bool
+      SimulatorControllerSelection: MapController option
       SimulatorRevisionIsStale: bool
       InputHelpExpanded: bool }
 
@@ -217,6 +225,7 @@ module ModalInput =
         | SimulatorPaused
         | SimulatorRunning
         | SimulatorRoutePreview
+        | SimulatorControllerSelection
         | SimulatorRevisionStale
         | SimulatorNoHandoff -> true
         | _ -> false
@@ -238,8 +247,10 @@ module ModalInput =
         match left, right with
         | SimulatorPaused, SimulatorRunning
         | SimulatorRunning, SimulatorPaused -> false
-        | SimulatorNoHandoff, (SimulatorPaused | SimulatorRunning | SimulatorRoutePreview | SimulatorRevisionStale)
-        | (SimulatorPaused | SimulatorRunning | SimulatorRoutePreview | SimulatorRevisionStale), SimulatorNoHandoff ->
+        | SimulatorRoutePreview, SimulatorControllerSelection
+        | SimulatorControllerSelection, SimulatorRoutePreview -> false
+        | SimulatorNoHandoff, (SimulatorPaused | SimulatorRunning | SimulatorRoutePreview | SimulatorControllerSelection | SimulatorRevisionStale)
+        | (SimulatorPaused | SimulatorRunning | SimulatorRoutePreview | SimulatorControllerSelection | SimulatorRevisionStale), SimulatorNoHandoff ->
             false
         | _ -> true
 
@@ -345,6 +356,9 @@ module ModalInput =
 
               if facts.SimulatorHasRoutePreview then
                   yield SimulatorRoutePreview
+
+              if facts.SimulatorControllerSelection.IsSome then
+                  yield SimulatorControllerSelection
 
               if facts.SimulatorRevisionIsStale then
                   yield SimulatorRevisionStale
@@ -1138,38 +1152,81 @@ module ModalInput =
     let simulatorCatalog
         (selectedUnitId: int32 option)
         (handoff: SimulatorHandoff option)
+        (controllerSelection: MapController option)
         =
         let simulatorKey id value label group repeat availability command =
             binding id AnySimulatorContext WorkspaceCommands
                 (key value plain KeyDown) label group repeat availability command
 
-        let hasHandoff _ =
-            if handoff.IsSome then Available
+        let popupInactive contexts =
+            if List.contains SimulatorControllerSelection contexts then
+                Unavailable "Finish or cancel controller selection first."
+            elif handoff.IsSome then Available
             else Unavailable "Create a simulator handoff from the Editor first."
 
-        let selectedPaused _ =
-            match selectedUnitId, handoff with
-            | Some _, Some simulator when not simulator.IsRunning -> Available
-            | None, Some _ -> Unavailable "Select a unit first."
-            | _, Some _ -> Unavailable "Route preview is unavailable while running."
+        let paused contexts =
+            if List.contains SimulatorControllerSelection contexts then
+                Unavailable "Finish or cancel controller selection first."
+            else
+                match handoff with
+                | Some simulator when not simulator.IsRunning -> Available
+                | Some _ -> Unavailable "This command is unavailable while running."
+                | None -> Unavailable "Create a simulator handoff from the Editor first."
+
+        let selectedPaused contexts =
+            match paused contexts, selectedUnitId, handoff with
+            | Available, Some _, Some _ -> Available
+            | Available, None, Some _ -> Unavailable "Select a unit first."
+            | Unavailable reason, _, _ -> Unavailable reason
             | _ -> Unavailable "Create a simulator handoff from the Editor first."
 
-        let previewAvailable _ =
-            match handoff with
-            | Some simulator when simulator.PreviewDestination.IsSome && not simulator.IsRunning -> Available
-            | Some simulator when simulator.IsRunning -> Unavailable "Route preview is unavailable while running."
-            | Some _ -> Unavailable "No route preview is active."
-            | None -> Unavailable "Create a simulator handoff from the Editor first."
+        let hasUnits contexts =
+            match popupInactive contexts, handoff with
+            | Available, Some simulator when not (Map.isEmpty simulator.RuntimeMap.Units) -> Available
+            | Available, Some _ -> Unavailable "The simulator has no units."
+            | Unavailable reason, _ -> Unavailable reason
+            | _ -> Unavailable "Create a simulator handoff from the Editor first."
+
+        let previewAvailable contexts =
+            match paused contexts, handoff with
+            | Available, Some simulator when simulator.PreviewDestination.IsSome -> Available
+            | Available, Some _ -> Unavailable "No route preview is active."
+            | Unavailable reason, _ -> Unavailable reason
+            | _ -> Unavailable "Create a simulator handoff from the Editor first."
+
+        let controllerActive contexts =
+            match controllerSelection, selectedUnitId, handoff with
+            | Some _, Some _, Some simulator when not simulator.IsRunning -> Available
+            | None, _, _ -> Unavailable "Controller selection is not active."
+            | _, None, Some _ -> Unavailable "Select a unit first."
+            | _, _, Some _ -> Unavailable "Controller mutation is unavailable while running."
+            | _, _, None -> Unavailable "Create a simulator handoff from the Editor first."
 
         [ yield binding "simulator.help.toggle" AnySimulatorContext WorkspaceCommands
               (key "?" { plain with Shift = true } KeyDown)
               "Show or hide possible inputs" "Help" IgnoreRepeat available ToggleInputHelp
           yield simulatorKey "simulator.panel.toggle" "F2" "Show or hide the active simulator panel" "Panels"
-              IgnoreRepeat hasHandoff ToggleSimulatorCommandPanel
+              IgnoreRepeat popupInactive ToggleSimulatorCommandPanel
+          yield simulatorKey "simulator.panel.controls" "c" "Show the Controls panel" "Panels"
+              IgnoreRepeat popupInactive (ChooseSimulatorPanel ControllerPanel)
+          yield simulatorKey "simulator.panel.events" "e" "Show the Events panel" "Panels"
+              IgnoreRepeat popupInactive (ChooseSimulatorPanel EventPanel)
+          yield simulatorKey "simulator.panel.samples" "a" "Show the Samples panel" "Panels"
+              IgnoreRepeat popupInactive (ChooseSimulatorPanel SimulatorSamplePanel)
+          yield simulatorKey "simulator.unit.previous" "[" "Inspect the previous unit" "Units"
+              IgnoreRepeat hasUnits (TraverseSimulatorUnit -1)
+          yield simulatorKey "simulator.unit.next" "]" "Inspect the next unit" "Units"
+              IgnoreRepeat hasUnits (TraverseSimulatorUnit 1)
           yield simulatorKey "simulator.run.toggle-space" "Space" "Start or pause the simulator" "Simulation"
-              IgnoreRepeat hasHandoff (SimulatorCommand ToggleSimulatorRun)
+              IgnoreRepeat popupInactive (SimulatorCommand ToggleSimulatorRun)
           yield simulatorKey "simulator.run.toggle-k" "k" "Start or pause the simulator" "Simulation"
-              IgnoreRepeat hasHandoff (SimulatorCommand ToggleSimulatorRun)
+              IgnoreRepeat popupInactive (SimulatorCommand ToggleSimulatorRun)
+          yield simulatorKey "simulator.step" "." "Advance exactly one deterministic tick" "Simulation"
+              IgnoreRepeat paused (SimulatorCommand StepSimulator)
+          yield simulatorKey "simulator.reset.request" "r" "Reset the simulator sandbox" "Simulation"
+              IgnoreRepeat paused RequestSimulatorSandboxReset
+          yield simulatorKey "simulator.controller.begin" "Enter" "Choose the selected unit controller" "Controllers"
+              IgnoreRepeat selectedPaused BeginSimulatorControllerSelection
           let movement id value dx dy =
               simulatorKey id value "Move the route-preview destination" "Route preview"
                   AllowRepeat selectedPaused (SimulatorCommand(MoveSimulatorPreview(dx, dy)))
@@ -1177,14 +1234,78 @@ module ModalInput =
           yield movement "simulator.preview.east" "ArrowRight" 1 0
           yield movement "simulator.preview.north" "ArrowUp" 0 -1
           yield movement "simulator.preview.south" "ArrowDown" 0 1
-          yield simulatorKey "simulator.preview.commit" "Enter" "Commit the route preview" "Route preview"
+          let fastMovement id value dx dy =
+              binding id AnySimulatorContext WorkspaceCommands
+                  (key value { plain with Shift = true } KeyDown)
+                  "Move the route-preview destination five cells" "Route preview"
+                  AllowRepeat selectedPaused
+                  (SimulatorCommand(MoveSimulatorPreview(dx * 5, dy * 5)))
+          yield fastMovement "simulator.preview.fast-west" "ArrowLeft" -1 0
+          yield fastMovement "simulator.preview.fast-east" "ArrowRight" 1 0
+          yield fastMovement "simulator.preview.fast-north" "ArrowUp" 0 -1
+          yield fastMovement "simulator.preview.fast-south" "ArrowDown" 0 1
+          yield binding "simulator.preview.commit" (ExactContext SimulatorRoutePreview)
+              ActiveGestureOrPreview (key "Enter" plain KeyDown)
+              "Commit the route preview" "Route preview"
               IgnoreRepeat previewAvailable (SimulatorCommand CommitSimulatorPreview)
+          yield binding "simulator.preview.reset" (ExactContext SimulatorRoutePreview)
+              ActiveGestureOrPreview (key "Backspace" plain KeyDown)
+              "Return the route preview to the unit origin" "Route preview"
+              IgnoreRepeat previewAvailable (SimulatorCommand ResetSimulatorPreviewToOrigin)
 
           match handoff with
           | Some simulator when simulator.PreviewDestination.IsSome ->
-              yield simulatorKey "simulator.preview.cancel" "Escape" "Discard the route preview" "Route preview"
+              yield binding "simulator.preview.cancel" (ExactContext SimulatorRoutePreview)
+                  ActiveGestureOrPreview (key "Escape" plain KeyDown)
+                  "Discard the route preview" "Route preview"
                   IgnoreRepeat previewAvailable (SimulatorCommand ResetSimulatorPreview)
           | _ -> () ]
+
+        @
+        [ yield binding "simulator.controller.manual" (ExactContext SimulatorControllerSelection)
+                    ActiveGestureOrPreview (key "m" plain KeyDown)
+                    "Choose Manual controller" "Controller selection"
+                    IgnoreRepeat controllerActive (ChooseSimulatorController Manual)
+          yield binding "simulator.controller.scripted" (ExactContext SimulatorControllerSelection)
+                    ActiveGestureOrPreview (key "s" plain KeyDown)
+                    "Choose Scripted controller" "Controller selection"
+                    IgnoreRepeat controllerActive (ChooseSimulatorController Scripted)
+          yield binding "simulator.controller.general" (ExactContext SimulatorControllerSelection)
+                    ActiveGestureOrPreview (key "g" plain KeyDown)
+                    "Choose General AI controller" "Controller selection"
+                    IgnoreRepeat controllerActive (ChooseSimulatorController General)
+          yield binding "simulator.controller.commit" (ExactContext SimulatorControllerSelection)
+                    ActiveGestureOrPreview (key "Enter" plain KeyDown)
+                    "Commit controller choice" "Controller selection"
+                    IgnoreRepeat controllerActive CommitSimulatorController
+          yield binding "simulator.controller.cancel" (ExactContext SimulatorControllerSelection)
+                    ActiveGestureOrPreview (key "Escape" plain KeyDown)
+                    "Cancel controller choice" "Controller selection"
+                    IgnoreRepeat controllerActive CancelSimulatorController ]
+
+    let traverseSimulatorUnit delta selectedUnitId (handoff: SimulatorHandoff) =
+        let identifiers =
+            handoff.RuntimeMap.Units
+            |> Map.toArray
+            |> Array.map fst
+            |> Array.sort
+
+        if Array.isEmpty identifiers then
+            None
+        else
+            let currentIndex =
+                selectedUnitId
+                |> Option.bind (fun selected ->
+                    identifiers |> Array.tryFindIndex ((=) selected))
+
+            let nextIndex =
+                match currentIndex with
+                | Some index ->
+                    (index + delta % identifiers.Length + identifiers.Length) % identifiers.Length
+                | None when delta < 0 -> identifiers.Length - 1
+                | None -> 0
+
+            Some identifiers[nextIndex]
 
     let private columnName column =
         let rec loop value suffix =
@@ -1409,6 +1530,12 @@ module ModalInput =
             | None ->
                 [ "Simulator"; "No handoff" ],
                 "Create an immutable simulator handoff from the Editor"
+            | Some simulator when facts.SimulatorControllerSelection.IsSome ->
+                let choice = facts.SimulatorControllerSelection.Value
+                [ "Simulator"; "Controller" ],
+                "Unit "
+                + (selectedUnitId |> Option.map string |> Option.defaultValue "not selected")
+                + " — " + MapEditor.controllerLabel choice
             | Some simulator when simulator.PreviewDestination.IsSome && not simulator.IsRunning ->
                 let destination = simulator.PreviewDestination.Value
                 let route = MapEditorSimulator.preview selectedUnitId destination simulator

@@ -91,10 +91,12 @@ type SimulatorHandoff =
 type SimulatorAction =
     | ToggleSimulatorRun
     | StepSimulator
+    | AdvanceRunningSimulatorTick
     | MoveSimulatorUnit of MapDirection
     | SetSimulatorController of MapController
     | SetSimulatorScript of string
     | MoveSimulatorPreview of columnDelta: int32 * rowDelta: int32
+    | ResetSimulatorPreviewToOrigin
     | ResetSimulatorPreview
     | CommitSimulatorPreview
 
@@ -455,7 +457,22 @@ module MapEditorSimulator =
                     PreviewDestination = None })
             |> Option.defaultValue handoff
         match action with
-        | ToggleSimulatorRun -> { handoff with IsRunning = not handoff.IsRunning }
+        | ToggleSimulatorRun ->
+            { handoff with
+                IsRunning = not handoff.IsRunning
+                PreviewDestination =
+                    if handoff.IsRunning then handoff.PreviewDestination else None }
+        | AdvanceRunningSimulatorTick when handoff.IsRunning -> step handoff
+        | AdvanceRunningSimulatorTick -> handoff
+        | StepSimulator
+        | MoveSimulatorUnit _
+        | SetSimulatorController _
+        | SetSimulatorScript _
+        | MoveSimulatorPreview _
+        | ResetSimulatorPreviewToOrigin
+        | ResetSimulatorPreview
+        | CommitSimulatorPreview when handoff.IsRunning ->
+            handoff
         | StepSimulator -> step handoff
         | MoveSimulatorUnit direction ->
             selectedUnitId
@@ -496,6 +513,15 @@ module MapEditorSimulator =
                     origin |> Option.map (fun p ->
                         { CellColumn = p.CellColumn + columnDelta
                           CellRow = p.CellRow + rowDelta }) }
+        | ResetSimulatorPreviewToOrigin ->
+            { handoff with
+                PreviewDestination =
+                    selectedUnitId
+                    |> Option.bind (fun id ->
+                        Map.tryFind id handoff.RuntimeMap.Units)
+                    |> Option.map (fun unit ->
+                        { CellColumn = unit.Column
+                          CellRow = unit.Row }) }
         | ResetSimulatorPreview -> { handoff with PreviewDestination = None }
         | CommitSimulatorPreview ->
             match handoff.PreviewDestination |> Option.bind (fun destination -> preview selectedUnitId destination handoff) with
