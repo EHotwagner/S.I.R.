@@ -442,14 +442,14 @@ milestone is checked only when all of its child items and exit gate have landed
 on the default branch. Milestones proceed in order unless an earlier milestone
 explicitly provides the stable contract needed for safe parallel work.
 
-- [ ] **M0 — Characterize the current behavior**
-  - [ ] Enumerate every current Editor and Simulator `KeyPressed` branch in
+- [x] **M0 — Characterize the current behavior**
+  - [x] Enumerate every current Editor and Simulator `KeyPressed` branch in
         characterization tests.
-  - [ ] Cover text-entry exclusion, modifier precedence, repeated keys,
+  - [x] Cover text-entry exclusion, modifier precedence, repeated keys,
         `Escape`, `Space` down/up, focus loss, and workspace changes.
-  - [ ] Capture the pointer, touch, toolbar, inspector, and object-list commands
+  - [x] Capture the pointer, touch, toolbar, inspector, and object-list commands
         that must remain equivalent to keyboard commands.
-  - [ ] Record intentional differences between current behavior and the
+  - [x] Record intentional differences between current behavior and the
         [complete modal vocabulary](editor-simulator-modal-key-vocabulary.md),
         including replacement of immediate `Alt+Arrow` unit movement.
   - **Exit gate:** the existing behavior has a passing, reviewable baseline
