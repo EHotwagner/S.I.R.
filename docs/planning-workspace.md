@@ -13,6 +13,13 @@ The browser planning workspace authors coordinated intent against an immutable
 map revision. It is a client of the retained simulator worker protocol, not a
 second simulation engine.
 
+Plan is now a modality of the
+[unified tactical workspace](unified-tactical-workspace.md). Its docked roster,
+tools, battlefield, inspector, and validation panels share the persistent
+battlefield and time cursor with Editor, Simulate, and Review. Commands are
+authored at the current editable cursor; moving the cursor alone remains a
+projection and never creates a revision.
+
 ## Decision-checkpoint review
 
 Before implementation, the inert map/simulator interaction prototype and the
@@ -66,8 +73,9 @@ The workspace provides:
 
 All pointer targets are native buttons and therefore activate with Enter or
 Space. Inspector controls provide an equivalent for battlefield waypoint and
-direction operations. Tool shortcuts are `R`, `F`, `A`, `S`, `H`, `E`, and
-`M`; undo and redo use the platform `Ctrl`/`Command` conventions.
+direction operations. Effective bindings, including restored defaults or local
+rebounds, are shown by the live `?` action panel rather than maintained as a
+second static shortcut table.
 
 ## Accessibility and responsive behavior
 

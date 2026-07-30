@@ -1,5 +1,17 @@
 # Keyboard input algebra archive
 
+## Accepted tactical input contract
+
+The production client now projects Editor, Plan, Simulate, and Review actions
+through the unified tactical workspace. `?` opens a live contextual list in
+every modality. Effective bindings drive both dispatch and
+`aria-keyshortcuts`; pointer-only, unbound, rebound, and unavailable actions
+are derived rather than copied into static shortcut prose. Versioned local
+overrides support capture, conflict diagnosis, explicit replacement, clear,
+restore, and deterministic JSON migration/import/export while native text
+entry and browser-reserved gestures remain protected. See
+[Unified Tactical Workspace](../unified-tactical-workspace.md).
+
 This directory preserves the retired `FS.GG.UI.Input` keyboard system and the
 design material that explains its place in the wider FS.GG UI architecture.
 

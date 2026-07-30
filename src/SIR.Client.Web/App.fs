@@ -22,6 +22,23 @@ type Msg =
     | AcceptInterchangeReview
     | RejectInterchangeReview
     | PlaybackPulse
+    | TacticalTimeChanged of int64
+    | TacticalTimeStepped of int64
+    | TacticalPlaybackToggled
+    | TacticalPulse
+    | ToggleTacticalBindings
+    | TacticalBindingDraftChanged of commandId: string * gesture: string
+    | ApplyTacticalBinding of commandId: string * replaceConflict: bool
+    | ClearTacticalBinding of commandId: string
+    | RestoreTacticalBinding of commandId: string
+    | RestoreTacticalModalityBindings
+    | RestoreAllTacticalBindings
+    | TacticalBindingImportChanged of string
+    | ImportTacticalBindings
+    | InvokeTacticalCommand of string
+    | InvokeTacticalValueCommand of commandId: string * value: string
+    | ExecuteTacticalCommand of string
+    | ExecuteModalCommand of ModalCommand
     | EditorPulse
     | SimulateEditorRevision
     | SimulatorChanged of SimulatorAction
@@ -94,6 +111,12 @@ type Model =
       SimulatorSelectedUnit: int32 option
       SimulatorControllerSelection: MapController option
       Planning: PlanningWorkspaceState option
+      Tactical: TacticalTimelineState
+      TacticalBindings: TacticalBindingProfile
+      TacticalBindingDrafts: Map<string, string>
+      TacticalBindingImport: string
+      TacticalBindingDiagnostics: string list
+      TacticalBindingsOpen: bool
       Workspace: WorkspaceMode
       EditorToolPanel: EditorToolPanel
       EditorToolPanelVisible: bool
@@ -112,6 +135,287 @@ type Model =
 
 let private editorPanHeld model =
     HeldInputSession.contains EditorPan model.HeldInputs
+
+let private activeTacticalRegistry model =
+    let pointerCommand id label category modality =
+        { Id = id
+          Label = label
+          Category = category
+          Modalities = Set.singleton modality
+          DefaultGesture = None
+          PointerAvailable = true
+          Precedence = 300
+          ModalContext = None
+          ModalPhase = None
+          Availability = AlwaysAvailable }
+    let modal =
+        match model.Workspace with
+        | EditorWorkspace ->
+            let facts =
+                { Editor = model.Editor
+                  ActiveDomain =
+                    match model.EditorToolPanel with
+                    | TerrainTools -> TerrainDomain
+                    | UnitTools -> UnitDomain
+                    | EdgeTools -> EdgeDomain
+                    | ZoneTools -> RegionDomain
+                    | DocumentTools -> DocumentDomain
+                  PanHeld = editorPanHeld model
+                  InputHelpExpanded = model.InputHelpExpanded }
+            ModalInput.editorCatalog facts
+            |> UnifiedTacticalWorkspace.modalCommandDefinitions Editor
+        | SimulatorWorkspace ->
+            ModalInput.simulatorCatalog
+                model.SimulatorSelectedUnit
+                model.Simulator
+                model.SimulatorControllerSelection
+            |> UnifiedTacticalWorkspace.modalCommandDefinitions Simulate
+        | _ -> []
+    let contextual =
+        match model.Workspace, model.Planning with
+        | PlanningWorkspace, Some planning ->
+            let selectionActions =
+                [ yield!
+                      planning.Roster
+                      |> Array.map (fun unit ->
+                          pointerCommand
+                              ("planning.roster.select." + string unit.UnitId)
+                              ("Select " + unit.Name)
+                              "Plan roster"
+                              Plan)
+                      |> Array.toList
+                  yield!
+                      planning.Commands
+                      |> List.map (fun command ->
+                          pointerCommand
+                              ("planning.timeline.select." + command.Id)
+                              ("Select timeline command " + command.Id)
+                              "Plan timeline"
+                              Plan)
+                  yield!
+                      planning.Issues
+                      |> Array.mapi (fun index issue ->
+                          pointerCommand
+                              ("planning.issue.focus." + string index)
+                              ("Focus issue " + issue.Code)
+                              "Plan validation"
+                              Plan)
+                      |> Array.toList ]
+            let battlefieldActions =
+                [ for row in 0 .. int model.Editor.Map.Height - 1 do
+                      for column in 0 .. int model.Editor.Map.Width - 1 do
+                          yield
+                              pointerCommand
+                                  ("planning.battlefield.cell."
+                                   + string column + "." + string row)
+                                  ("Add route waypoint "
+                                   + string column + "," + string row)
+                                  "Plan battlefield cells"
+                                  Plan ]
+            if planning.SelectedUnit.IsNone then selectionActions
+            else
+            let directions =
+                [ "north"; "north-east"; "east"; "south-east"
+                  "south"; "south-west"; "west"; "north-west" ]
+            let inspectorActions =
+              match planning.Tool with
+              | RouteTool ->
+                [ "west"; "north"; "south"; "east" ]
+                |> List.map (fun direction ->
+                    pointerCommand
+                        ("planning.inspector.waypoint." + direction)
+                        ("Add waypoint " + direction)
+                        "Plan inspector"
+                        Plan)
+              | FacingTool
+              | AttentionTool ->
+                directions
+                |> List.map (fun direction ->
+                    let channel =
+                        if planning.Tool = FacingTool then "facing" else "attention"
+                    pointerCommand
+                        ("planning.inspector." + channel + "." + direction)
+                        ("Set " + channel + " " + direction)
+                        "Plan inspector"
+                        Plan)
+              | StanceTool ->
+                [ "standing"; "crouched"; "prone" ]
+                |> List.map (fun stance ->
+                    pointerCommand
+                        ("planning.inspector.stance." + stance)
+                        ("Set stance " + stance)
+                        "Plan inspector"
+                        Plan)
+              | HoldTool ->
+                [ pointerCommand "planning.inspector.hold" "Add hold" "Plan inspector" Plan ]
+              | EngagementTool ->
+                [ pointerCommand "planning.inspector.engagement" "Add disclosed engagement" "Plan inspector" Plan ]
+              | SynchronizationTool ->
+                [ pointerCommand "planning.inspector.synchronization" "Add synchronization marker" "Plan inspector" Plan ]
+            selectionActions @ battlefieldActions @ inspectorActions
+        | SimulatorWorkspace, _ ->
+            let controllerActions =
+                [ "manual", "Manual"; "scripted", "Scripted AI"
+                  "general", "General AI" ]
+                |> List.map (fun (id, label) ->
+                    pointerCommand
+                        ("simulator.pointer.controller." + id)
+                        ("Set controller " + label)
+                        "Simulator controllers"
+                        Simulate)
+            let scriptAction =
+                pointerCommand
+                    "simulator.pointer.script.set"
+                    "Set selected unit direction script"
+                    "Simulator controllers"
+                    Simulate
+            let movementActions =
+                [ "north-west", "NW"; "north", "N"; "north-east", "NE"
+                  "west", "W"; "east", "E"
+                  "south-west", "SW"; "south", "S"; "south-east", "SE" ]
+                |> List.map (fun (id, label) ->
+                    pointerCommand
+                        ("simulator.pointer.movement." + id)
+                        ("Move selected unit " + label)
+                        "Simulator movement"
+                        Simulate)
+            scriptAction :: controllerActions @ movementActions
+        | _ -> []
+    UnifiedTacticalWorkspace.commandRegistry @ modal @ contextual
+    |> List.distinctBy _.Id
+
+let private projectPlanningSegments (state: PlanningWorkspaceState) =
+    [ for command in state.Commands do
+          let authored =
+              { Id = command.Id
+                UnitId = Some command.UnitId
+                StartTick = int64 command.EarliestTick
+                EndTick = int64 command.EarliestTick + 1L
+                Channel = Authored
+                Label = string command.Kind
+                Issue =
+                    state.Issues
+                    |> Array.tryFind (fun issue -> issue.CommandId = Some command.Id)
+                    |> Option.map _.Detail }
+          yield authored
+          if state.AcceptedRevision = Some state.Revision then
+              yield
+                  { authored with
+                      Id = "accepted:" + command.Id
+                      Channel = Accepted
+                      Label = "Worker-accepted " + string command.Kind
+                      Issue = None }
+          if state.CommittedRevision = Some state.Revision then
+              yield
+                  { authored with
+                      Id = "committed:" + command.Id
+                      Channel = Committed
+                      Label = "Committed " + string command.Kind
+                      Issue = None }
+      match state.Predicted with
+      | Some prediction ->
+          yield
+              { Id = "prediction-" + string prediction.Revision
+                UnitId = None
+                StartTick = 0L
+                EndTick = 1L
+                Channel = Predicted
+                Label = "Intent-only predicted state"
+                Issue = None }
+      | None -> () ]
+
+let private tacticalCommandAvailable model (command: TacticalCommandDefinition) =
+    let availability =
+        match command.Availability with
+        | AlwaysAvailable -> true
+        | TimelineEditable ->
+            UnifiedTacticalWorkspace.canEditAt model.Tactical.Cursor model.Tactical
+        | TimelineSelectionRequired ->
+            model.Planning |> Option.bind _.SelectedCommand |> Option.isSome
+        | PredictionRequired ->
+            model.Planning |> Option.bind _.Predicted |> Option.isSome
+        | CommittedHistoryRequired -> model.Tactical.CommittedThrough >= 0L
+        | HelpOpenRequired -> model.InputHelpExpanded
+        | PlanningAcceptedRequired ->
+            model.Planning
+            |> Option.exists (fun planning ->
+                planning.AcceptedRevision = Some planning.Revision)
+        | PlanningIssuesRequired ->
+            model.Planning |> Option.exists (fun planning -> planning.Issues.Length > 0)
+        | ReplayLoadedRequired -> model.Shell.Playback.FinalTick > 0
+        | ReplayEventsRequired ->
+            model.Shell.Inspection
+            |> Option.exists (fun inspection -> not (List.isEmpty inspection.Events))
+        | ReplayOperationRequired -> model.Shell.ActiveOperation.IsSome
+
+    let currentTick, finalTick, transportReady =
+        match model.Workspace with
+        | ReplayWorkspace ->
+            int64 model.Shell.Playback.CurrentTick,
+            int64 model.Shell.Playback.FinalTick,
+            model.Shell.Playback.FinalTick > 0
+        | SimulatorWorkspace ->
+            model.Simulator |> Option.map (fun simulator -> int64 simulator.Tick) |> Option.defaultValue 0L,
+            model.Tactical.Horizon,
+            model.Simulator.IsSome
+        | _ -> model.Tactical.Cursor, model.Tactical.Horizon, true
+
+    let transportAvailability =
+        match command.Id with
+        | "timeline.play-toggle" ->
+            match model.Workspace with
+            | ReplayWorkspace
+            | SimulatorWorkspace -> transportReady
+            | _ -> true
+        | "timeline.step-back"
+        | "timeline.home" -> currentTick > 0L
+        | "timeline.step-forward"
+        | "timeline.end" -> transportReady && currentTick < finalTick
+        | _ -> true
+
+    let planningAvailability =
+        match command.Id, model.Planning with
+        | "planning.undo", Some planning -> PlanningWorkspace.canUndo planning
+        | "planning.redo", Some planning -> PlanningWorkspace.canRedo planning
+        | ("timeline.move-command" | "timeline.remove-command"), Some planning ->
+            planning.SelectedCommand
+            |> Option.bind (fun id ->
+                planning.Commands |> List.tryFind (fun current -> current.Id = id))
+            |> Option.exists (fun selected ->
+                planning.CommittedTick
+                |> Option.forall (fun boundary ->
+                    selected.EarliestTick > boundary
+                    && (command.Id <> "timeline.move-command"
+                        || model.Tactical.Cursor > int64 boundary)))
+        | id, Some _ when
+            id.StartsWith("planning.inspector.", StringComparison.Ordinal)
+            ->
+            UnifiedTacticalWorkspace.canEditAt
+                model.Tactical.Cursor
+                model.Tactical
+        | id, Some planning when
+            id.StartsWith("planning.battlefield.cell.", StringComparison.Ordinal)
+            ->
+            planning.Tool = RouteTool
+            && planning.SelectedUnit.IsSome
+            && UnifiedTacticalWorkspace.canEditAt
+                model.Tactical.Cursor
+                model.Tactical
+        | _ -> true
+
+    let simulatorAvailability =
+        if
+            command.Id.StartsWith("simulator.pointer.", StringComparison.Ordinal)
+        then
+            model.Simulator.IsSome
+            && model.SimulatorSelectedUnit.IsSome
+            && (model.Simulator |> Option.forall (fun simulator -> not simulator.IsRunning))
+        else true
+
+    availability
+    && transportAvailability
+    && planningAvailability
+    && simulatorAvailability
 
 [<Emit("window.matchMedia('(prefers-reduced-motion: reduce)').matches")>]
 let private prefersReducedMotion: bool = jsNative
@@ -299,6 +603,12 @@ let private downloadDesignBundle (state: MapEditorState) (simulator: SimulatorHa
 [<Emit("window.localStorage.getItem('sir.map-editor.autosave.v1')")>]
 let private readMapAutosave () : string = jsNative
 
+[<Emit("window.localStorage.getItem('sir.tactical-bindings.v1')")>]
+let private readTacticalBindings () : string = jsNative
+
+[<Emit("window.localStorage.setItem('sir.tactical-bindings.v1', $0)")>]
+let private writeTacticalBindings (_: string) : unit = jsNative
+
 let private scheduleMapAutosave content =
     emitJsStatement
         content
@@ -470,6 +780,21 @@ let init () =
             editor.Map
             (MapEditor.selected editor)
             FitEditorBoard
+    let tacticalBindings, tacticalBindingDiagnostics =
+        let stored = readTacticalBindings ()
+        if isNull stored then
+            UnifiedTacticalWorkspace.emptyBindingProfile, []
+        else
+            match
+                UnifiedTacticalWorkspace.importBindings
+                    UnifiedTacticalWorkspace.commandRegistry
+                    stored
+            with
+            | Ok profile -> profile, []
+            | Error diagnostics ->
+                UnifiedTacticalWorkspace.emptyBindingProfile,
+                [ "Stored binding overrides were malformed and defaults were restored: "
+                  + string diagnostics ]
 
     { Shell = Shell.init ()
       Editor = editor
@@ -477,6 +802,12 @@ let init () =
       SimulatorSelectedUnit = None
       SimulatorControllerSelection = None
       Planning = None
+      Tactical = UnifiedTacticalWorkspace.initial 600L
+      TacticalBindings = tacticalBindings
+      TacticalBindingDrafts = Map.empty
+      TacticalBindingImport = ""
+      TacticalBindingDiagnostics = tacticalBindingDiagnostics
+      TacticalBindingsOpen = false
       Workspace = EditorWorkspace
       EditorToolPanel = TerrainTools
       EditorToolPanelVisible = false
@@ -602,6 +933,9 @@ let rec update msg model =
                     SimulatorSelectedUnit = editor.SelectedUnit
                     SimulatorControllerSelection = None
                     Workspace = SimulatorWorkspace
+                    Tactical =
+                        model.Tactical
+                        |> UnifiedTacticalWorkspace.switchModality Simulate
                     HeldInputs = HeldInputSession.recover model.HeldInputs
                     SimulatorToolPanel = ControllerTools
                     SimulatorToolPanelVisible = false
@@ -662,14 +996,29 @@ let rec update msg model =
                      |> Map.toSeq
                      |> Seq.map snd
                      |> PlanningWorkspace.initial model.Editor.Revision.Digest
+                     |> PlanningWorkspace.update (
+                         SetPlanningAuthoringTick(int model.Tactical.Cursor)
+                     )
                      |> Some),
                     true
             else model.Planning, false
+
+        let tacticalModality =
+            match workspace with
+            | EditorWorkspace -> Editor
+            | PlanningWorkspace -> Plan
+            | SimulatorWorkspace -> Simulate
+            | ReplayWorkspace -> Review
+            | RulesWorkspace
+            | SamplesWorkspace -> model.Tactical.Modality
 
         { model with
             Editor = editor
             Planning = planning
             Workspace = workspace
+            Tactical =
+                model.Tactical
+                |> UnifiedTacticalWorkspace.switchModality tacticalModality
             EditorView = editorView
             InputHelpExpanded = false
             SimulatorControllerSelection = None
@@ -683,9 +1032,167 @@ let rec update msg model =
         if focusPanel then
             Cmd.ofEffect (fun _ ->
                 focusElementAfterRender (
-                    if expanded then "modal-input-panel" else "modal-input-toggle"
+                    if expanded then "tactical-input-panel" else "tactical-input-toggle"
                 ))
         else
+            Cmd.none
+    | TacticalTimeChanged tick ->
+        let cursor = max 0L (min model.Tactical.Horizon tick)
+        let planning =
+            model.Planning
+            |> Option.map (
+                PlanningWorkspace.update (
+                    SetPlanningAuthoringTick(int (min (int64 Int32.MaxValue) cursor))
+                )
+            )
+        let projected =
+            { model with
+                Planning = planning
+                Tactical =
+                    model.Tactical
+                    |> UnifiedTacticalWorkspace.scrub cursor }
+        match model.Workspace with
+        | ReplayWorkspace ->
+            update (ShellMsg(SeekRequested(int32 (min (int64 Int32.MaxValue) cursor)))) projected
+        | _ -> projected, Cmd.none
+    | TacticalTimeStepped delta ->
+        let origin =
+            if model.Workspace = ReplayWorkspace then
+                int64 model.Shell.Playback.CurrentTick
+            elif model.Workspace = SimulatorWorkspace then
+                model.Simulator
+                |> Option.map (fun simulator -> int64 simulator.Tick)
+                |> Option.defaultValue model.Tactical.Cursor
+            else model.Tactical.Cursor
+        update (TacticalTimeChanged(origin + delta)) model
+    | TacticalPlaybackToggled ->
+        match model.Workspace with
+        | ReplayWorkspace ->
+            let next, effect = update (ShellMsg TogglePlayback) model
+            { next with
+                Tactical =
+                    next.Tactical
+                    |> UnifiedTacticalWorkspace.setPlaying next.Shell.Playback.IsPlaying },
+            effect
+        | SimulatorWorkspace when model.Simulator.IsSome ->
+            let next, effect = update (SimulatorChanged ToggleSimulatorRun) model
+            { next with
+                Tactical =
+                    next.Tactical
+                    |> UnifiedTacticalWorkspace.setPlaying (
+                        next.Simulator |> Option.exists _.IsRunning
+                    ) },
+            effect
+        | _ ->
+            { model with
+                Tactical =
+                    model.Tactical
+                    |> UnifiedTacticalWorkspace.setPlaying (not model.Tactical.IsPlaying) },
+            Cmd.none
+    | TacticalPulse ->
+        let tactical =
+            match model.Workspace with
+            | ReplayWorkspace ->
+                model.Tactical
+                |> UnifiedTacticalWorkspace.scrub (int64 model.Shell.Playback.CurrentTick)
+                |> UnifiedTacticalWorkspace.setPlaying model.Shell.Playback.IsPlaying
+            | SimulatorWorkspace ->
+                match model.Simulator with
+                | Some simulator ->
+                    model.Tactical
+                    |> UnifiedTacticalWorkspace.scrub (int64 simulator.Tick)
+                    |> UnifiedTacticalWorkspace.setPlaying simulator.IsRunning
+                | None -> UnifiedTacticalWorkspace.setPlaying false model.Tactical
+            | _ -> UnifiedTacticalWorkspace.pulse model.Tactical
+        { model with Tactical = tactical }, Cmd.none
+    | ToggleTacticalBindings ->
+        { model with
+            TacticalBindingsOpen = not model.TacticalBindingsOpen
+            TacticalBindingDiagnostics = [] },
+        Cmd.none
+    | TacticalBindingDraftChanged(commandId, gesture) ->
+        { model with
+            TacticalBindingDrafts =
+                Map.add commandId gesture model.TacticalBindingDrafts },
+        Cmd.none
+    | ApplyTacticalBinding(commandId, replaceConflict) ->
+        let gesture =
+            model.TacticalBindingDrafts
+            |> Map.tryFind commandId
+            |> Option.bind (fun value ->
+                if String.IsNullOrWhiteSpace value then None
+                else Some value)
+        match
+            UnifiedTacticalWorkspace.setBinding
+                (activeTacticalRegistry model)
+                commandId
+                gesture
+                replaceConflict
+                model.TacticalBindings
+        with
+        | Ok bindings ->
+            writeTacticalBindings (
+                UnifiedTacticalWorkspace.exportBindings bindings
+            )
+            { model with
+                TacticalBindings = bindings
+                TacticalBindingDiagnostics = [] },
+            Cmd.none
+        | Error diagnostics ->
+            { model with
+                TacticalBindingDiagnostics =
+                    diagnostics |> List.map string },
+            Cmd.none
+    | ClearTacticalBinding commandId ->
+        let bindings =
+            model.TacticalBindings
+            |> UnifiedTacticalWorkspace.setBinding
+                (activeTacticalRegistry model)
+                commandId
+                None
+                false
+            |> Result.defaultValue model.TacticalBindings
+        writeTacticalBindings (UnifiedTacticalWorkspace.exportBindings bindings)
+        { model with TacticalBindings = bindings }, Cmd.none
+    | RestoreTacticalBinding commandId ->
+        let bindings =
+            model.TacticalBindings
+            |> UnifiedTacticalWorkspace.restoreCommand commandId
+        writeTacticalBindings (UnifiedTacticalWorkspace.exportBindings bindings)
+        { model with TacticalBindings = bindings }, Cmd.none
+    | RestoreTacticalModalityBindings ->
+        let bindings =
+            model.TacticalBindings
+            |> UnifiedTacticalWorkspace.restoreModality
+                (activeTacticalRegistry model)
+                model.Tactical.Modality
+        writeTacticalBindings (UnifiedTacticalWorkspace.exportBindings bindings)
+        { model with TacticalBindings = bindings }, Cmd.none
+    | RestoreAllTacticalBindings ->
+        let bindings =
+            UnifiedTacticalWorkspace.restoreAll model.TacticalBindings
+        writeTacticalBindings (UnifiedTacticalWorkspace.exportBindings bindings)
+        { model with TacticalBindings = bindings }, Cmd.none
+    | TacticalBindingImportChanged value ->
+        { model with TacticalBindingImport = value }, Cmd.none
+    | ImportTacticalBindings ->
+        match
+            UnifiedTacticalWorkspace.importBindings
+                (activeTacticalRegistry model)
+                model.TacticalBindingImport
+        with
+        | Ok bindings ->
+            writeTacticalBindings (
+                UnifiedTacticalWorkspace.exportBindings bindings
+            )
+            { model with
+                TacticalBindings = bindings
+                TacticalBindingDiagnostics = [] },
+            Cmd.none
+        | Error diagnostics ->
+            { model with
+                TacticalBindingDiagnostics =
+                    diagnostics |> List.map string },
             Cmd.none
     | ApplicationFocusLost ->
         { model with
@@ -709,6 +1216,9 @@ let rec update msg model =
                 SimulatorSelectedUnit = model.Editor.SelectedUnit
                 SimulatorControllerSelection = None
                 Workspace = SimulatorWorkspace
+                Tactical =
+                    model.Tactical
+                    |> UnifiedTacticalWorkspace.switchModality Simulate
                 HeldInputs = HeldInputSession.recover model.HeldInputs
                 Battlefield = Battlefield.reconcile frame model.Battlefield
                 PreviousFrame = None
@@ -723,6 +1233,10 @@ let rec update msg model =
             let frame = MapEditorSimulator.frame model.SimulatorSelectedUnit simulator
             { model with
                 Simulator = Some simulator
+                Tactical =
+                    model.Tactical
+                    |> UnifiedTacticalWorkspace.scrub (int64 simulator.Tick)
+                    |> UnifiedTacticalWorkspace.setPlaying simulator.IsRunning
                 SimulatorControllerSelection =
                     match action with
                     | ToggleSimulatorRun -> None
@@ -817,7 +1331,13 @@ let rec update msg model =
         match model.Planning with
         | None -> model, Cmd.none
         | Some planning ->
-            { model with Planning = Some(PlanningWorkspace.update action planning) }, Cmd.none
+            let next = PlanningWorkspace.update action planning
+            { model with
+                Planning = Some next
+                Tactical =
+                    { model.Tactical with
+                        Segments = projectPlanningSegments next } },
+            Cmd.none
     | InitializePlanningWorker ->
         match model.Planning with
         | None -> model, Cmd.none
@@ -863,7 +1383,11 @@ let rec update msg model =
         match model.Planning with
         | None -> model, Cmd.none
         | Some planning ->
-            let tick = planning.CommittedTick |> Option.defaultValue 0
+            let tick =
+                match operation with
+                | PreviewPlanningRevision ->
+                    int (min (int64 Int32.MaxValue) model.Tactical.Cursor)
+                | _ -> planning.CommittedTick |> Option.defaultValue 0
             let correlation = PlanningWorkspace.correlation tick planning
             let plan = PlanningWorkspace.planTransport planning
             let request =
@@ -895,7 +1419,38 @@ let rec update msg model =
         | Some planning when not (PlanningWorkspace.acceptsResponse envelope planning) ->
             model, Cmd.none
         | Some planning ->
-            { model with Planning = Some(PlanningWorkspace.receive envelope planning) },
+            let received = PlanningWorkspace.receive envelope planning
+            let projected =
+                { model.Tactical with
+                    Segments = projectPlanningSegments received }
+            let authoredBoundary =
+                received.Commands
+                |> List.map (fun command -> int64 command.EarliestTick + 1L)
+                |> List.fold max 0L
+            let tactical =
+                match envelope.Response with
+                | PlanValidated(Some revision, diagnostics)
+                    when revision = received.Revision && diagnostics.Length = 0 ->
+                    projected
+                    |> UnifiedTacticalWorkspace.acceptThrough authoredBoundary
+                | PlanCommitted revision when received.CommittedRevision = Some revision ->
+                    let boundary =
+                        received.CommittedTick
+                        |> Option.map int64
+                        |> Option.defaultValue (int64 envelope.CurrentTick)
+                    projected
+                    |> UnifiedTacticalWorkspace.commitThrough boundary
+                | response ->
+                    UnifiedTacticalWorkspace.authoritativeProgressBoundary
+                        response
+                        envelope.CurrentTick
+                    |> Option.map (fun boundary ->
+                        projected
+                        |> UnifiedTacticalWorkspace.commitThrough boundary)
+                    |> Option.defaultValue projected
+            { model with
+                Planning = Some received
+                Tactical = tactical },
             Cmd.none
     | ExportPlanningReview ->
         model,
@@ -1135,6 +1690,348 @@ let rec update msg model =
         else
             let next, effects = Shell.playbackTick model.Shell
             { model with Shell = next }, effectsToCmd effects
+    | InvokeTacticalCommand commandId ->
+        activeTacticalRegistry model
+        |> List.tryFind (fun command ->
+            command.Id = commandId
+            && Set.contains model.Tactical.Modality command.Modalities
+            && tacticalCommandAvailable model command)
+        |> Option.map (fun _ ->
+            let modalCommand =
+                match model.Workspace with
+                | EditorWorkspace ->
+                    let facts =
+                        { Editor = model.Editor
+                          ActiveDomain =
+                            match model.EditorToolPanel with
+                            | TerrainTools -> TerrainDomain
+                            | UnitTools -> UnitDomain
+                            | EdgeTools -> EdgeDomain
+                            | ZoneTools -> RegionDomain
+                            | DocumentTools -> DocumentDomain
+                          PanHeld = editorPanHeld model
+                          InputHelpExpanded = model.InputHelpExpanded }
+                    ModalInput.tryAvailableCommandById
+                        (ModalInput.deriveEditorContexts facts)
+                        commandId
+                        (ModalInput.editorCatalog facts)
+                | SimulatorWorkspace ->
+                    let facts =
+                        { SimulatorHandoffPresent = model.Simulator.IsSome
+                          SimulatorIsRunning =
+                            model.Simulator |> Option.exists _.IsRunning
+                          SimulatorHasRoutePreview =
+                            model.Simulator
+                            |> Option.bind _.PreviewDestination
+                            |> Option.isSome
+                          SimulatorControllerSelection =
+                            model.SimulatorControllerSelection
+                          SimulatorRevisionIsStale =
+                            model.Simulator
+                            |> Option.map (MapEditorSimulator.isBehindDraft model.Editor)
+                            |> Option.defaultValue false
+                          InputHelpExpanded = model.InputHelpExpanded }
+                    ModalInput.tryAvailableCommandById
+                        (ModalInput.deriveSimulatorContexts facts)
+                        commandId
+                        (ModalInput.simulatorCatalog
+                            model.SimulatorSelectedUnit
+                            model.Simulator
+                            model.SimulatorControllerSelection)
+                | _ -> None
+            match modalCommand with
+            | Some command -> update (ExecuteModalCommand command) model
+            | None -> update (ExecuteTacticalCommand commandId) model)
+        |> Option.defaultValue (model, Cmd.none)
+    | InvokeTacticalValueCommand(commandId, value) ->
+        activeTacticalRegistry model
+        |> List.tryFind (fun command ->
+            command.Id = commandId
+            && Set.contains model.Tactical.Modality command.Modalities
+            && tacticalCommandAvailable model command)
+        |> Option.map (fun _ ->
+            match commandId with
+            | "simulator.pointer.script.set" ->
+                update (SimulatorChanged(SetSimulatorScript value)) model
+            | _ -> model, Cmd.none)
+        |> Option.defaultValue (model, Cmd.none)
+    | ExecuteTacticalCommand commandId ->
+        match commandId with
+        | "workspace.editor" -> update (WorkspaceChanged EditorWorkspace) model
+        | "workspace.plan" -> update (WorkspaceChanged PlanningWorkspace) model
+        | "workspace.simulate" -> update (WorkspaceChanged SimulatorWorkspace) model
+        | "workspace.review" -> update (WorkspaceChanged ReplayWorkspace) model
+        | "timeline.play-toggle" -> update TacticalPlaybackToggled model
+        | "timeline.step-back" -> update (TacticalTimeStepped -1L) model
+        | "timeline.step-forward" -> update (TacticalTimeStepped 1L) model
+        | "timeline.home" -> update (TacticalTimeChanged 0L) model
+        | "timeline.end" -> update (TacticalTimeChanged model.Tactical.Horizon) model
+        | "timeline.move-command" ->
+            update
+                (PlanningChanged(
+                    MoveSelectedPlanningCommandTo(int model.Tactical.Cursor)
+                ))
+                model
+        | "timeline.remove-command" ->
+            update (PlanningChanged RemoveSelectedPlanningCommand) model
+        | "planning.undo" -> update (PlanningChanged UndoPlanning) model
+        | "planning.redo" -> update (PlanningChanged RedoPlanning) model
+        | "planning.route" ->
+            update (PlanningChanged(ChoosePlanningTool RouteTool)) model
+        | "planning.facing" ->
+            update (PlanningChanged(ChoosePlanningTool FacingTool)) model
+        | "planning.attention" ->
+            update (PlanningChanged(ChoosePlanningTool AttentionTool)) model
+        | "planning.stance" ->
+            update (PlanningChanged(ChoosePlanningTool StanceTool)) model
+        | "planning.hold" ->
+            update (PlanningChanged(ChoosePlanningTool HoldTool)) model
+        | "planning.engagement" ->
+            update (PlanningChanged(ChoosePlanningTool EngagementTool)) model
+        | "planning.synchronization" ->
+            update
+                (PlanningChanged(ChoosePlanningTool SynchronizationTool))
+                model
+        | "planning.validate" -> update ValidatePlanningRevision model
+        | "planning.preview" -> update PreviewPlanningRevision model
+        | "planning.commit" -> update CommitPlanningRevision model
+        | "planning.issue.previous"
+        | "planning.issue.next" ->
+            match model.Planning with
+            | Some planning when planning.Issues.Length > 0 ->
+                let current =
+                    planning.FocusedIssue
+                    |> Option.defaultValue (
+                        if commandId = "planning.issue.previous" then 0 else -1
+                    )
+                let delta = if commandId = "planning.issue.previous" then -1 else 1
+                update
+                    (PlanningChanged(
+                        FocusPlanningIssue(
+                            (current + delta + planning.Issues.Length) % planning.Issues.Length
+                        )
+                    ))
+                    model
+            | _ -> model, Cmd.none
+        | id when id.StartsWith("planning.roster.select.", StringComparison.Ordinal) ->
+            match Int32.TryParse(id.Substring("planning.roster.select.".Length)) with
+            | true, unitId ->
+                update (PlanningChanged(SelectPlanningUnit unitId)) model
+            | _ -> model, Cmd.none
+        | id when id.StartsWith("planning.timeline.select.", StringComparison.Ordinal) ->
+            update
+                (PlanningChanged(
+                    SelectPlanningCommand(
+                        id.Substring("planning.timeline.select.".Length)
+                    )
+                ))
+                model
+        | id when id.StartsWith("planning.issue.focus.", StringComparison.Ordinal) ->
+            match Int32.TryParse(id.Substring("planning.issue.focus.".Length)) with
+            | true, index -> update (PlanningChanged(FocusPlanningIssue index)) model
+            | _ -> model, Cmd.none
+        | id when
+            id.StartsWith("planning.battlefield.cell.", StringComparison.Ordinal)
+            ->
+            match
+                id.Substring("planning.battlefield.cell.".Length).Split('.')
+            with
+            | [| column; row |] ->
+                match Int32.TryParse column, Int32.TryParse row with
+                | (true, columnValue), (true, rowValue) ->
+                    update
+                        (PlanningChanged(
+                            AddRouteWaypoint(columnValue, rowValue)
+                        ))
+                        model
+                | _ -> model, Cmd.none
+            | _ -> model, Cmd.none
+        | id when id.StartsWith("planning.inspector.", StringComparison.Ordinal) ->
+            match model.Planning with
+            | Some planning ->
+                let selected =
+                    planning.SelectedUnit
+                    |> Option.bind (fun selectedId ->
+                        planning.Roster
+                        |> Array.tryFind (fun unit -> unit.UnitId = selectedId))
+                let direction slug =
+                    match slug with
+                    | "north" -> Some North
+                    | "north-east" -> Some NorthEast
+                    | "east" -> Some East
+                    | "south-east" -> Some SouthEast
+                    | "south" -> Some South
+                    | "south-west" -> Some SouthWest
+                    | "west" -> Some West
+                    | "north-west" -> Some NorthWest
+                    | _ -> None
+                let action =
+                    match id, selected with
+                    | "planning.inspector.waypoint.west", Some unit ->
+                        Some(AddRouteWaypoint(unit.Column - 1, unit.Row))
+                    | "planning.inspector.waypoint.north", Some unit ->
+                        Some(AddRouteWaypoint(unit.Column, unit.Row - 1))
+                    | "planning.inspector.waypoint.south", Some unit ->
+                        Some(AddRouteWaypoint(unit.Column, unit.Row + 1))
+                    | "planning.inspector.waypoint.east", Some unit ->
+                        Some(AddRouteWaypoint(unit.Column + 1, unit.Row))
+                    | "planning.inspector.stance.standing", _ ->
+                        Some(SetPlanningStance "standing")
+                    | "planning.inspector.stance.crouched", _ ->
+                        Some(SetPlanningStance "crouched")
+                    | "planning.inspector.stance.prone", _ ->
+                        Some(SetPlanningStance "prone")
+                    | "planning.inspector.hold", _ -> Some AddPlanningHold
+                    | "planning.inspector.synchronization", _ ->
+                        Some(
+                            AddPlanningSynchronization(
+                                "sync-" + string planning.NextCommand,
+                                600
+                            )
+                        )
+                    | "planning.inspector.engagement", Some unit ->
+                        match
+                            planning.Roster
+                            |> Array.tryFind (fun target -> target.UnitId <> unit.UnitId),
+                            unit.CapabilityIds |> Array.tryHead
+                        with
+                        | Some target, Some capability ->
+                            Some(AddPlanningEngagement(target.UnitId, capability))
+                        | _ -> None
+                    | value, _ when value.StartsWith("planning.inspector.facing.") ->
+                        value.Substring("planning.inspector.facing.".Length)
+                        |> direction
+                        |> Option.map SetPlanningFacing
+                    | value, _ when value.StartsWith("planning.inspector.attention.") ->
+                        value.Substring("planning.inspector.attention.".Length)
+                        |> direction
+                        |> Option.map SetPlanningAttention
+                    | _ -> None
+                action
+                |> Option.map (fun planningAction ->
+                    update (PlanningChanged planningAction) model)
+                |> Option.defaultValue (model, Cmd.none)
+            | None -> model, Cmd.none
+        | id when
+            id.StartsWith("simulator.pointer.controller.", StringComparison.Ordinal)
+            ->
+            match id.Substring("simulator.pointer.controller.".Length) with
+            | "manual" ->
+                update (SimulatorChanged(SetSimulatorController Manual)) model
+            | "scripted" ->
+                update (SimulatorChanged(SetSimulatorController Scripted)) model
+            | "general" ->
+                update (SimulatorChanged(SetSimulatorController General)) model
+            | _ -> model, Cmd.none
+        | id when
+            id.StartsWith("simulator.pointer.movement.", StringComparison.Ordinal)
+            ->
+            let direction =
+                match id.Substring("simulator.pointer.movement.".Length) with
+                | "north-west" -> Some NorthWest
+                | "north" -> Some North
+                | "north-east" -> Some NorthEast
+                | "west" -> Some West
+                | "east" -> Some East
+                | "south-west" -> Some SouthWest
+                | "south" -> Some South
+                | "south-east" -> Some SouthEast
+                | _ -> None
+            direction
+            |> Option.map (fun value ->
+                update (SimulatorChanged(MoveSimulatorUnit value)) model)
+            |> Option.defaultValue (model, Cmd.none)
+        | "review.previous-event" -> update (ShellMsg PreviousEvent) model
+        | "review.next-event" -> update (ShellMsg NextEvent) model
+        | "review.cancel" -> update (ShellMsg CancelRequested) model
+        | "input.help"
+        | "input.help.close" -> update (ToggleInputHelp true) model
+        | "input.bindings" -> update ToggleTacticalBindings model
+        | _ -> model, Cmd.none
+    | ExecuteModalCommand command ->
+        match command with
+        | EditorCommand action -> update (EditorChanged action) model
+        | EditorWorkspaceCommand action ->
+            update (EditorWorkspaceChanged action) model
+        | ChooseEditorDomain domain ->
+            let panel, tool =
+                match domain with
+                | TerrainDomain ->
+                    TerrainTools,
+                    Some(Terrain model.Editor.LastTerrainPaintTool)
+                | UnitDomain -> UnitTools, Some UnitBrowse
+                | EdgeDomain -> EdgeTools, None
+                | RegionDomain -> ZoneTools, None
+                | DocumentDomain -> DocumentTools, None
+            let next, panelEffect =
+                update (EditorToolPanelChanged panel) model
+            match tool with
+            | Some value ->
+                let changed, toolEffect =
+                    update (EditorChanged(ChooseTool value)) next
+                changed, Cmd.batch [ panelEffect; toolEffect ]
+            | None -> next, panelEffect
+        | ToggleEditorCommandPanel ->
+            update ToggleEditorToolPanelVisibility model
+        | ChooseSimulatorPanel panel ->
+            { model with
+                SimulatorToolPanel =
+                    match panel with
+                    | ControllerPanel -> ControllerTools
+                    | EventPanel -> EventTools
+                    | SimulatorSamplePanel -> SimulatorSampleTools
+                SimulatorToolPanelVisible = true },
+            Cmd.none
+        | ToggleSimulatorCommandPanel ->
+            update ToggleSimulatorToolPanelVisibility model
+        | SimulatorCommand action -> update (SimulatorChanged action) model
+        | TraverseSimulatorUnit delta ->
+            match model.Simulator with
+            | Some simulator ->
+                update
+                    (SimulatorUnitSelectionChanged(
+                        ModalInput.traverseSimulatorUnit
+                            delta
+                            model.SimulatorSelectedUnit
+                            simulator
+                    ))
+                    model
+            | None -> model, Cmd.none
+        | ModalCommand.BeginSimulatorControllerSelection ->
+            update BeginSimulatorControllerSelection model
+        | ModalCommand.ChooseSimulatorController controller ->
+            update (ChooseSimulatorController controller) model
+        | CommitSimulatorController ->
+            update CommitSimulatorControllerSelection model
+        | CancelSimulatorController ->
+            update CancelSimulatorControllerSelection model
+        | RequestSimulatorSandboxReset -> update RequestSimulatorReset model
+        | SetEditorPanHeld _ ->
+            { model with
+                HeldInputs = HeldInputSession.apply command model.HeldInputs },
+            Cmd.none
+        | FocusUnitPresetSearch ->
+            model,
+            Cmd.ofEffect (fun _ ->
+                focusElementAfterRender "editor-unit-preset-search")
+        | EditorDocumentCommand ExportMapDocument -> update ExportMap model
+        | EditorDocumentCommand ExportRepositoryDesignBundle ->
+            update ExportDesignBundle model
+        | EditorDocumentCommand OpenMapImport ->
+            model,
+            Cmd.ofEffect (fun _ ->
+                openFilePickerAfterRender "editor-map-import")
+        | EditorDocumentCommand(FocusDocumentControl target) ->
+            let id =
+                match target with
+                | MapImportControl -> "editor-map-import"
+                | LayerStateControls -> "editor-layer-controls"
+                | LocalBackgroundControls -> "editor-background-file"
+                | MapDimensionControls -> "map-width"
+                | SavedViewControls -> "editor-saved-view-controls"
+            model, Cmd.ofEffect (fun _ -> focusElementAfterRender id)
+        | ModalCommand.ToggleInputHelp ->
+            update (ToggleInputHelp true) model
     | KeyPressed(key, controlOrMeta, shift, alt, repeat) ->
         let gesture =
             { Key = NormalizedKey.create key None
@@ -1161,7 +2058,8 @@ let rec update msg model =
                 (ModalInput.deriveEditorContexts facts)
                 gesture
                 repeat
-                (ModalInput.editorCatalog facts)
+                (ModalInput.editorCatalog facts
+                 |> UnifiedTacticalWorkspace.adaptModalCatalog model.TacticalBindings)
 
         let resolveSimulator () =
             let facts =
@@ -1187,98 +2085,11 @@ let rec update msg model =
                 (ModalInput.simulatorCatalog
                     model.SimulatorSelectedUnit
                     model.Simulator
-                    model.SimulatorControllerSelection)
+                    model.SimulatorControllerSelection
+                 |> UnifiedTacticalWorkspace.adaptModalCatalog model.TacticalBindings)
 
         let applyCommand targetModel command =
-            match command with
-            | EditorCommand action ->
-                update (EditorChanged action) targetModel
-            | EditorWorkspaceCommand action ->
-                update (EditorWorkspaceChanged action) targetModel
-            | ChooseEditorDomain domain ->
-                let panel, tool =
-                    match domain with
-                    | TerrainDomain ->
-                        TerrainTools,
-                        Some(Terrain targetModel.Editor.LastTerrainPaintTool)
-                    | UnitDomain -> UnitTools, Some UnitBrowse
-                    | EdgeDomain -> EdgeTools, None
-                    | RegionDomain -> ZoneTools, None
-                    | DocumentDomain -> DocumentTools, None
-                let next, panelEffect =
-                    update (EditorToolPanelChanged panel) targetModel
-                match tool with
-                | Some value ->
-                    let changed, toolEffect =
-                        update (EditorChanged(ChooseTool value)) next
-                    changed, Cmd.batch [ panelEffect; toolEffect ]
-                | None -> next, panelEffect
-            | ToggleEditorCommandPanel ->
-                update ToggleEditorToolPanelVisibility targetModel
-            | ChooseSimulatorPanel panel ->
-                { targetModel with
-                    SimulatorToolPanel =
-                        match panel with
-                        | ControllerPanel -> ControllerTools
-                        | EventPanel -> EventTools
-                        | SimulatorSamplePanel -> SimulatorSampleTools
-                    SimulatorToolPanelVisible = true },
-                Cmd.none
-            | ToggleSimulatorCommandPanel ->
-                update ToggleSimulatorToolPanelVisibility targetModel
-            | SimulatorCommand action ->
-                update (SimulatorChanged action) targetModel
-            | TraverseSimulatorUnit delta ->
-                match targetModel.Simulator with
-                | Some simulator ->
-                    update
-                        (SimulatorUnitSelectionChanged(
-                            ModalInput.traverseSimulatorUnit
-                                delta
-                                targetModel.SimulatorSelectedUnit
-                                simulator
-                        ))
-                        targetModel
-                | None -> targetModel, Cmd.none
-            | ModalCommand.BeginSimulatorControllerSelection ->
-                update BeginSimulatorControllerSelection targetModel
-            | ModalCommand.ChooseSimulatorController controller ->
-                update (ChooseSimulatorController controller) targetModel
-            | CommitSimulatorController ->
-                update CommitSimulatorControllerSelection targetModel
-            | CancelSimulatorController ->
-                update CancelSimulatorControllerSelection targetModel
-            | RequestSimulatorSandboxReset ->
-                update RequestSimulatorReset targetModel
-            | SetEditorPanHeld _ ->
-                { targetModel with
-                    HeldInputs =
-                        HeldInputSession.apply command targetModel.HeldInputs },
-                Cmd.none
-            | FocusUnitPresetSearch ->
-                targetModel,
-                Cmd.ofEffect (fun _ ->
-                    focusElementAfterRender "editor-unit-preset-search")
-            | EditorDocumentCommand ExportMapDocument ->
-                update ExportMap targetModel
-            | EditorDocumentCommand ExportRepositoryDesignBundle ->
-                update ExportDesignBundle targetModel
-            | EditorDocumentCommand OpenMapImport ->
-                targetModel,
-                Cmd.ofEffect (fun _ ->
-                    openFilePickerAfterRender "editor-map-import")
-            | EditorDocumentCommand(FocusDocumentControl target) ->
-                let id =
-                    match target with
-                    | MapImportControl -> "editor-map-import"
-                    | LayerStateControls -> "editor-layer-controls"
-                    | LocalBackgroundControls -> "editor-background-file"
-                    | MapDimensionControls -> "map-width"
-                    | SavedViewControls -> "editor-saved-view-controls"
-                targetModel,
-                Cmd.ofEffect (fun _ -> focusElementAfterRender id)
-            | ModalCommand.ToggleInputHelp ->
-                update (ToggleInputHelp true) targetModel
+            update (ExecuteModalCommand command) targetModel
 
         let applyResolution resolution =
             match resolution with
@@ -1300,75 +2111,58 @@ let rec update msg model =
             | NoAvailableMatch _ ->
                 model, Cmd.none
 
-        match model.Workspace with
-        | EditorWorkspace -> resolveEditor () |> applyResolution
-        | SimulatorWorkspace -> resolveSimulator () |> applyResolution
-        | PlanningWorkspace ->
-            match key, controlOrMeta with
-            | ("z" | "Z"), true ->
-                update
-                    (PlanningChanged(
-                        if shift then RedoPlanning else UndoPlanning
-                    ))
-                    model
-            | ("y" | "Y"), true -> update (PlanningChanged RedoPlanning) model
-            | ("Delete" | "Backspace"), false ->
-                update (PlanningChanged RemoveSelectedPlanningCommand) model
-            | "[", false ->
-                match model.Planning with
-                | Some planning when planning.Issues.Length > 0 ->
-                    let current = planning.FocusedIssue |> Option.defaultValue 0
-                    update
-                        (PlanningChanged(
-                            FocusPlanningIssue(
-                                (current - 1 + planning.Issues.Length) % planning.Issues.Length
-                            )
-                        ))
-                        model
-                | _ -> model, Cmd.none
-            | "]", false ->
-                match model.Planning with
-                | Some planning when planning.Issues.Length > 0 ->
-                    let current = planning.FocusedIssue |> Option.defaultValue -1
-                    update
-                        (PlanningChanged(
-                            FocusPlanningIssue(
-                                (current + 1) % planning.Issues.Length
-                            )
-                        ))
-                        model
-                | _ -> model, Cmd.none
-            | ("r" | "R"), false ->
-                update (PlanningChanged(ChoosePlanningTool RouteTool)) model
-            | ("f" | "F"), false ->
-                update (PlanningChanged(ChoosePlanningTool FacingTool)) model
-            | ("a" | "A"), false ->
-                update (PlanningChanged(ChoosePlanningTool AttentionTool)) model
-            | ("s" | "S"), false ->
-                update (PlanningChanged(ChoosePlanningTool StanceTool)) model
-            | ("h" | "H"), false ->
-                update (PlanningChanged(ChoosePlanningTool HoldTool)) model
-            | ("e" | "E"), false ->
-                update (PlanningChanged(ChoosePlanningTool EngagementTool)) model
-            | ("m" | "M"), false ->
-                update
-                    (PlanningChanged(ChoosePlanningTool SynchronizationTool))
-                    model
-            | _ -> model, Cmd.none
-        | ReplayWorkspace ->
-            match key with
-            | " "
-            | "k"
-            | "K" -> update (ShellMsg TogglePlayback) model
-            | "ArrowLeft" -> update (ShellMsg StepBackward) model
-            | "ArrowRight" -> update (ShellMsg StepForward) model
-            | "[" -> update (ShellMsg PreviousEvent) model
-            | "]" -> update (ShellMsg NextEvent) model
-            | "Escape" -> update (ShellMsg CancelRequested) model
-            | _ -> model, Cmd.none
-        | RulesWorkspace
-        | SamplesWorkspace ->
-            model, Cmd.none
+        let producedGesture =
+            let producedKey =
+                match key with
+                | " " -> "Space"
+                | value when value.Length = 1 ->
+                    value.ToUpperInvariant()
+                | value -> value
+            [ if controlOrMeta then "Ctrl"
+              if alt then "Alt"
+              if shift && key <> "?" then "Shift"
+              producedKey ]
+            |> String.concat "+"
+            |> fun value -> value.ToUpperInvariant()
+
+        let tacticalCommand: TacticalCommandDefinition option =
+            activeTacticalRegistry model
+            |> List.filter (fun command ->
+                Set.contains model.Tactical.Modality command.Modalities
+                && tacticalCommandAvailable model command
+                && not (command.Id.StartsWith("editor.", StringComparison.Ordinal))
+                && not (command.Id.StartsWith("simulator.", StringComparison.Ordinal))
+                // Space remains a held pan gesture in Editor and the simulator
+                // run/pause gesture in Simulate. Those modality catalogs retain
+                // precedence until they are represented as registry commands.
+                && not (
+                    command.Id = "timeline.play-toggle"
+                    && Set.contains
+                        model.Tactical.Modality
+                        (Set.ofList [ Editor; Simulate ])
+                ))
+            |> List.sortByDescending _.Precedence
+            |> List.tryFind (fun command ->
+                UnifiedTacticalWorkspace.effectiveGesture
+                    model.TacticalBindings
+                    command
+                |> Option.exists (fun binding ->
+                    binding.Trim().ToUpperInvariant() = producedGesture))
+
+        let applyTacticalCommand (command: TacticalCommandDefinition) =
+            update (InvokeTacticalCommand command.Id) model
+
+        match tacticalCommand with
+        | Some command -> applyTacticalCommand command
+        | None ->
+            match model.Workspace with
+            | EditorWorkspace -> resolveEditor () |> applyResolution
+            | SimulatorWorkspace -> resolveSimulator () |> applyResolution
+            | PlanningWorkspace
+            | ReplayWorkspace
+            | RulesWorkspace
+            | SamplesWorkspace ->
+                model, Cmd.none
     | KeyReleased key ->
         if model.Workspace = EditorWorkspace && editorPanHeld model then
             let facts =
@@ -1467,7 +2261,8 @@ let subscriptions model =
                     (ModalInput.deriveEditorContexts facts)
                     gesture
                     repeat
-                    (ModalInput.editorCatalog facts)
+                    (ModalInput.editorCatalog facts
+                     |> UnifiedTacticalWorkspace.adaptModalCatalog model.TacticalBindings)
                 |> Some
             | SimulatorWorkspace when phase = KeyDown ->
                 let facts =
@@ -1494,15 +2289,36 @@ let subscriptions model =
                     (ModalInput.simulatorCatalog
                         model.SimulatorSelectedUnit
                         model.Simulator
-                        model.SimulatorControllerSelection)
+                        model.SimulatorControllerSelection
+                     |> UnifiedTacticalWorkspace.adaptModalCatalog model.TacticalBindings)
                 |> Some
             | _ -> None
 
         let isCatalogGesture = function
-            | Some(Resolved _)
-            | Some(NoAvailableMatch _) -> true
+            | Some(Resolved _) -> true
+            | Some(NoAvailableMatch _)
             | Some NoMatch
             | None -> false
+
+        let isRegistryGesture key controlOrMeta shift alt =
+            let produced =
+                [ if controlOrMeta then "Ctrl"
+                  if alt then "Alt"
+                  if shift && key <> "?" then "Shift"
+                  if key = " " then "Space"
+                  elif key.Length = 1 then key.ToUpperInvariant()
+                  else key ]
+                |> String.concat "+"
+                |> _.ToUpperInvariant()
+            activeTacticalRegistry model
+            |> List.exists (fun command ->
+                Set.contains model.Tactical.Modality command.Modalities
+                && tacticalCommandAvailable model command
+                && (UnifiedTacticalWorkspace.effectiveGesture
+                        model.TacticalBindings
+                        command
+                    |> Option.exists (fun value ->
+                        value.Trim().ToUpperInvariant() = produced)))
 
         let downHandler =
             fun (event: Event) ->
@@ -1515,14 +2331,19 @@ let subscriptions model =
                     let controlOrMeta =
                         keyboardEvent.ctrlKey || keyboardEvent.metaKey
                     if
-                        modalResolution
+                        (modalResolution
                             KeyDown
                             keyboardEvent.key
                             controlOrMeta
                             keyboardEvent.shiftKey
                             keyboardEvent.altKey
                             keyboardEvent.repeat
-                        |> isCatalogGesture
+                         |> isCatalogGesture)
+                        || isRegistryGesture
+                            keyboardEvent.key
+                            controlOrMeta
+                            keyboardEvent.shiftKey
+                            keyboardEvent.altKey
                     then
                         keyboardEvent.preventDefault ()
                     dispatch (
@@ -1571,7 +2392,9 @@ let subscriptions model =
 
         let identifier =
             window.setInterval (
-                (fun () -> dispatch PlaybackPulse),
+                (fun () ->
+                    dispatch PlaybackPulse
+                    dispatch TacticalPulse),
                 interval
             )
 
@@ -1580,7 +2403,12 @@ let subscriptions model =
 
     let editorTimer dispatch =
         let identifier =
-            window.setInterval ((fun () -> dispatch EditorPulse), 50)
+            window.setInterval (
+                (fun () ->
+                    dispatch EditorPulse
+                    dispatch TacticalPulse),
+                50
+            )
 
         { new IDisposable with
             member _.Dispose() = window.clearInterval identifier }
@@ -1607,7 +2435,11 @@ let subscriptions model =
       [ "keyboard" ], keyboard
       if model.Workspace = EditorWorkspace then
           [ "editor-resize" ], editorResize
-      if model.Shell.Playback.IsPlaying then
+      if
+          model.Shell.Playback.IsPlaying
+          || (model.Tactical.IsPlaying
+              && model.Workspace <> SimulatorWorkspace)
+      then
           let speedKey =
               match model.Shell.Playback.Speed with
               | Half -> "half"
@@ -1748,32 +2580,32 @@ let private controls model dispatch =
                          else
                              "Play replay")
                         unavailable
-                        (fun _ -> dispatch (ShellMsg TogglePlayback))
+                        (fun _ -> dispatch (InvokeTacticalCommand "timeline.play-toggle"))
                     button
                         "Previous event"
                         "Go to previous disclosed replay event"
                         (unavailable || not hasEvents)
-                        (fun _ -> dispatch (ShellMsg PreviousEvent))
+                        (fun _ -> dispatch (InvokeTacticalCommand "review.previous-event"))
                     button
                         "Back"
                         "Step backward one committed replay tick"
                         (unavailable || atStart)
-                        (fun _ -> dispatch (ShellMsg StepBackward))
+                        (fun _ -> dispatch (InvokeTacticalCommand "timeline.step-back"))
                     button
                         "Step"
                         "Advance one replay step"
                         (unavailable || atEnd)
-                        (fun _ -> dispatch (ShellMsg StepForward))
+                        (fun _ -> dispatch (InvokeTacticalCommand "timeline.step-forward"))
                     button
                         "Next event"
                         "Go to next disclosed replay event"
                         (unavailable || not hasEvents)
-                        (fun _ -> dispatch (ShellMsg NextEvent))
+                        (fun _ -> dispatch (InvokeTacticalCommand "review.next-event"))
                     button
                         "Cancel"
                         "Cancel current replay operation"
                         (Option.isNone model.ActiveOperation)
-                        (fun _ -> dispatch (ShellMsg CancelRequested))
+                        (fun _ -> dispatch (InvokeTacticalCommand "review.cancel"))
                 ]
             ]
             Html.label [
@@ -3890,6 +4722,7 @@ let private editorBattlefield
     activeDomain
     spacePressed
     inputHelpExpanded
+    bindings
     dispatch
     =
     let claimsKeyboardInput phase keyValue controlOrMeta shift alt repeat =
@@ -3908,10 +4741,11 @@ let private editorBattlefield
                       Alt = alt }
                   Phase = phase }
                 repeat
-                (ModalInput.editorCatalog facts)
+                (ModalInput.editorCatalog facts
+                 |> UnifiedTacticalWorkspace.adaptModalCatalog bindings)
         with
-        | Resolved _
-        | NoAvailableMatch _ -> true
+        | Resolved _ -> true
+        | NoAvailableMatch _
         | NoMatch -> false
 
     let palette = ReplayPalettes.accessibleDefault
@@ -5935,12 +6769,14 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                     prop.disabled state.IsRunning
                     prop.onKeyDown (fun event -> event.stopPropagation ())
                     prop.onChange (fun value ->
-                        let controller =
+                        let commandId =
                             match value with
-                            | "Scripted AI" -> Scripted
-                            | "General AI" -> General
-                            | _ -> Manual
-                        dispatch (SimulatorChanged(SetSimulatorController controller)))
+                            | "Scripted AI" ->
+                                "simulator.pointer.controller.scripted"
+                            | "General AI" ->
+                                "simulator.pointer.controller.general"
+                            | _ -> "simulator.pointer.controller.manual"
+                        dispatch (InvokeTacticalCommand commandId))
                     prop.children [
                         Html.option [ prop.value "Manual"; prop.text "Manual" ]
                         Html.option [ prop.value "Scripted AI"; prop.text "Scripted AI" ]
@@ -5957,14 +6793,33 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                     prop.onKeyDown (fun event -> event.stopPropagation ())
                     prop.placeholder "N,E,E,S"
                     prop.onChange (fun value ->
-                        dispatch (SimulatorChanged(SetSimulatorScript value)))
+                        dispatch (
+                            InvokeTacticalValueCommand(
+                                "simulator.pointer.script.set",
+                                value
+                            )
+                        ))
                 ]
                 Html.div [
                     prop.className "manual-movement"
                     prop.children [
                         for label, direction in movement do
+                            let directionId =
+                                match direction with
+                                | NorthWest -> "north-west"
+                                | North -> "north"
+                                | NorthEast -> "north-east"
+                                | West -> "west"
+                                | East -> "east"
+                                | SouthWest -> "south-west"
+                                | South -> "south"
+                                | SouthEast -> "south-east"
                             button label ("Move unit " + label) state.IsRunning (fun _ ->
-                                dispatch (SimulatorChanged(MoveSimulatorUnit direction)))
+                                dispatch (
+                                    InvokeTacticalCommand(
+                                        "simulator.pointer.movement." + directionId
+                                    )
+                                ))
                     ]
                 ]
                 Html.h3 "Route planner"
@@ -5973,19 +6828,19 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                     prop.className "manual-movement"
                     prop.children [
                         button "←" "Move route preview left" state.IsRunning (fun _ ->
-                            dispatch (SimulatorChanged(MoveSimulatorPreview(-1, 0))))
+                            dispatch (InvokeTacticalCommand "simulator.preview.west"))
                         button "↑" "Move route preview up" state.IsRunning (fun _ ->
-                            dispatch (SimulatorChanged(MoveSimulatorPreview(0, -1))))
+                            dispatch (InvokeTacticalCommand "simulator.preview.north"))
                         button "↓" "Move route preview down" state.IsRunning (fun _ ->
-                            dispatch (SimulatorChanged(MoveSimulatorPreview(0, 1))))
+                            dispatch (InvokeTacticalCommand "simulator.preview.south"))
                         button "→" "Move route preview right" state.IsRunning (fun _ ->
-                            dispatch (SimulatorChanged(MoveSimulatorPreview(1, 0))))
+                            dispatch (InvokeTacticalCommand "simulator.preview.east"))
                         button "Commit route" "Commit clear route preview" (state.IsRunning || handoff.PreviewDestination.IsNone) (fun _ ->
-                            dispatch (SimulatorChanged CommitSimulatorPreview))
+                            dispatch (InvokeTacticalCommand "simulator.preview.commit"))
                         button "Reset route" "Return route preview to unit origin" (state.IsRunning || handoff.PreviewDestination.IsNone) (fun _ ->
-                            dispatch (SimulatorChanged ResetSimulatorPreviewToOrigin))
+                            dispatch (InvokeTacticalCommand "simulator.preview.reset"))
                         button "Cancel route" "Cancel route preview" (state.IsRunning || handoff.PreviewDestination.IsNone) (fun _ ->
-                            dispatch (SimulatorChanged ResetSimulatorPreview))
+                            dispatch (InvokeTacticalCommand "simulator.preview.cancel"))
                     ]
                 ]
                 match handoff.PreviewDestination with
@@ -6018,9 +6873,9 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                         (if state.IsRunning then "Pause" else "Run")
                         (if state.IsRunning then "Pause map simulation" else "Run map simulation")
                         false
-                        (fun _ -> dispatch (SimulatorChanged ToggleSimulatorRun))
+                        (fun _ -> dispatch (InvokeTacticalCommand "simulator.run.toggle-k"))
                     button "Step" "Advance the map simulation one tick" state.IsRunning (fun _ ->
-                        dispatch (SimulatorChanged StepSimulator))
+                        dispatch (InvokeTacticalCommand "simulator.step"))
                 ]
             ]
             state.Validation
@@ -6374,9 +7229,9 @@ let private simulatorDesktopChrome
                               (if state.IsRunning then "Pause" else "Run")
                               "Run or pause deterministic simulation"
                               false
-                              (SimulatorChanged ToggleSimulatorRun)
-                          command "Step" "Advance simulation one tick" state.IsRunning (SimulatorChanged StepSimulator)
-                          command "Reset simulation" "Reset runtime state to the immutable editor revision" state.IsRunning RequestSimulatorReset ]
+                              (InvokeTacticalCommand "simulator.run.toggle-k")
+                          command "Step" "Advance simulation one tick" state.IsRunning (InvokeTacticalCommand "simulator.step")
+                          command "Reset simulation" "Reset runtime state to the immutable editor revision" state.IsRunning (InvokeTacticalCommand "simulator.reset.request") ]
                     menu
                         "Samples"
                         [ for sample in ExperienceSamples.maps do
@@ -6396,13 +7251,13 @@ let private simulatorDesktopChrome
                         (if state.IsRunning then "Pause" else "Run")
                         "Run or pause deterministic simulation"
                         false
-                        (SimulatorChanged ToggleSimulatorRun)
-                    command "Step" "Advance simulation one tick" state.IsRunning (SimulatorChanged StepSimulator)
-                    command "Reset" "Reset simulation to its immutable revision" state.IsRunning RequestSimulatorReset
+                        (InvokeTacticalCommand "simulator.run.toggle-k")
+                    command "Step" "Advance simulation one tick" state.IsRunning (InvokeTacticalCommand "simulator.step")
+                    command "Reset" "Reset simulation to its immutable revision" state.IsRunning (InvokeTacticalCommand "simulator.reset.request")
                     Html.span [ prop.className "toolbar-separator"; prop.ariaHidden true ]
-                    command "Controls" "Toggle simulator controls panel" false (SimulatorPanelChanged ControllerTools)
-                    command "Events" "Toggle simulator events panel" false (SimulatorPanelChanged EventTools)
-                    command "Samples" "Toggle simulator samples panel" false (SimulatorPanelChanged SimulatorSampleTools)
+                    command "Controls" "Toggle simulator controls panel" false (InvokeTacticalCommand "simulator.panel.controls")
+                    command "Events" "Toggle simulator events panel" false (InvokeTacticalCommand "simulator.panel.events")
+                    command "Samples" "Toggle simulator samples panel" false (InvokeTacticalCommand "simulator.panel.samples")
                     Html.span [ prop.className "toolbar-separator"; prop.ariaHidden true ]
                     command "−" "Zoom battlefield out" false (BattlefieldChanged(ZoomBy 0.8))
                     command "+" "Zoom battlefield in" false (BattlefieldChanged(ZoomBy 1.25))
@@ -6420,6 +7275,11 @@ let private simulatorDock
     (dispatch: Msg -> unit)
     =
     let choose (label: string) (panel: SimulatorToolPanel) =
+        let commandId =
+            match panel with
+            | ControllerTools -> "simulator.panel.controls"
+            | EventTools -> "simulator.panel.events"
+            | SimulatorSampleTools -> "simulator.panel.samples"
         Html.button [
             prop.type'.button
             prop.text label
@@ -6427,7 +7287,7 @@ let private simulatorDock
                 panelVisible && Object.Equals(activePanel, panel)
             )
             prop.onClick (fun _ ->
-                dispatch (SimulatorPanelChanged panel))
+                dispatch (InvokeTacticalCommand commandId))
         ]
     Html.section [
         prop.className (
@@ -6447,7 +7307,8 @@ let private simulatorDock
                         (if panelVisible then "Close" else "Open")
                         "Show or hide the active simulator command panel"
                         false
-                        (fun _ -> dispatch ToggleSimulatorToolPanelVisibility)
+                        (fun _ ->
+                            dispatch (InvokeTacticalCommand "simulator.panel.toggle"))
                 ]
             ]
             if panelVisible then
@@ -6627,23 +7488,85 @@ let private planningCommandLabel (command: PlanningCommand) =
     | PlannedSynchronization(marker, deadline) ->
         "Sync " + marker + " by tick " + string deadline
 
-let private planningWorkspace
+let private planningBattlefield
     (editor: MapEditorState)
     (state: PlanningWorkspaceState)
     dispatch
     =
-    let planningButton label action =
-        button label label false (fun _ -> dispatch (PlanningChanged action))
+    Html.section [
+        prop.className "panel planning-battlefield"
+        prop.ariaLabel "Battlefield route authoring"
+        prop.children [
+            Html.h2 "Battlefield plan"
+            Html.p (
+                "Selected tool: " + string state.Tool
+                + ". Grid cells are native buttons; Enter or Space performs the same edit as pointer activation."
+            )
+            Html.div [
+                prop.className "planning-cell-grid"
+                prop.children [
+                    for row in 0 .. int editor.Map.Height - 1 do
+                        for column in 0 .. int editor.Map.Width - 1 do
+                            let occupants =
+                                state.Roster
+                                |> Array.filter (fun unit ->
+                                    unit.Column = int32 column && unit.Row = int32 row)
+                            Html.button [
+                                prop.type'.button
+                                prop.custom ("data-planning-column", string column)
+                                prop.custom ("data-planning-row", string row)
+                                prop.ariaLabel (
+                                    "Cell " + string column + ", " + string row
+                                    + (if Array.isEmpty occupants then ""
+                                       else
+                                           "; "
+                                           + (occupants
+                                              |> Array.map _.Name
+                                              |> String.concat ", "))
+                                    + "; add route waypoint"
+                                )
+                                prop.text (
+                                    if Array.isEmpty occupants then
+                                        string column + "," + string row
+                                    else
+                                        occupants
+                                        |> Array.map (fun unit -> string unit.UnitId)
+                                        |> String.concat ","
+                                )
+                                prop.onClick (fun _ ->
+                                    dispatch (
+                                        InvokeTacticalCommand(
+                                            "planning.battlefield.cell."
+                                            + string column
+                                            + "."
+                                            + string row
+                                        )
+                                    ))
+                            ]
+                ]
+            ]
+        ]
+    ]
+
+let private planningWorkspace
+    (editor: MapEditorState)
+    (state: PlanningWorkspaceState)
+    includeBattlefield
+    dispatch
+    =
+    let planningButton label commandId =
+        button label label false (fun _ ->
+            dispatch (InvokeTacticalCommand commandId))
 
     let directions =
-        [ "N", North
-          "NE", NorthEast
-          "E", East
-          "SE", SouthEast
-          "S", South
-          "SW", SouthWest
-          "W", West
-          "NW", NorthWest ]
+        [ "N", "north", North
+          "NE", "north-east", NorthEast
+          "E", "east", East
+          "SE", "south-east", SouthEast
+          "S", "south", South
+          "SW", "south-west", SouthWest
+          "W", "west", West
+          "NW", "north-west", NorthWest ]
 
     let selected =
         state.SelectedUnit
@@ -6699,34 +7622,34 @@ let private planningWorkspace
                 prop.className "panel planning-tools"
                 prop.ariaLabel "Battlefield planning tools"
                 prop.children [
-                    for label, key, tool in
-                        [ "Route", "R", RouteTool
-                          "Facing", "F", FacingTool
-                          "Attention", "A", AttentionTool
-                          "Stance", "S", StanceTool
-                          "Hold", "H", HoldTool
-                          "Engage", "E", EngagementTool
-                          "Sync", "M", SynchronizationTool ] do
+                    for label, key, commandId, tool in
+                        [ "Route", "R", "planning.route", RouteTool
+                          "Facing", "F", "planning.facing", FacingTool
+                          "Attention", "A", "planning.attention", AttentionTool
+                          "Stance", "S", "planning.stance", StanceTool
+                          "Hold", "H", "planning.hold", HoldTool
+                          "Engage", "E", "planning.engagement", EngagementTool
+                          "Sync", "M", "planning.synchronization", SynchronizationTool ] do
                         Html.button [
                             prop.type'.button
                             prop.ariaPressed (state.Tool = tool)
                             prop.text (label + " · " + key)
                             prop.onClick (fun _ ->
-                                dispatch (PlanningChanged(ChoosePlanningTool tool)))
+                                dispatch (InvokeTacticalCommand commandId))
                         ]
-                    button "Undo" "Undo planning edit · Ctrl+Z" (List.isEmpty state.Past) (fun _ ->
-                        dispatch (PlanningChanged UndoPlanning))
-                    button "Redo" "Redo planning edit · Ctrl+Y" (List.isEmpty state.Future) (fun _ ->
-                        dispatch (PlanningChanged RedoPlanning))
+                    button "Undo" "Undo planning edit · Ctrl+Z" (not (PlanningWorkspace.canUndo state)) (fun _ ->
+                        dispatch (InvokeTacticalCommand "planning.undo"))
+                    button "Redo" "Redo planning edit · Ctrl+Y" (not (PlanningWorkspace.canRedo state)) (fun _ ->
+                        dispatch (InvokeTacticalCommand "planning.redo"))
                     button "Validate" "Validate authored revision in worker" false (fun _ ->
-                        dispatch ValidatePlanningRevision)
+                        dispatch (InvokeTacticalCommand "planning.validate"))
                     button "Preview" "Preview authored revision as intent-only prediction" false (fun _ ->
-                        dispatch PreviewPlanningRevision)
+                        dispatch (InvokeTacticalCommand "planning.preview"))
                     button
                         "Commit"
                         "Commit accepted authored revision"
                         (state.AcceptedRevision <> Some state.Revision)
-                        (fun _ -> dispatch CommitPlanningRevision)
+                        (fun _ -> dispatch (InvokeTacticalCommand "planning.commit"))
                 ]
             ]
             Html.aside [
@@ -6748,13 +7671,18 @@ let private planningWorkspace
                                         + string unit.Column + "," + string unit.Row
                                     )
                                     prop.onClick (fun _ ->
-                                        dispatch (PlanningChanged(SelectPlanningUnit unit.UnitId)))
+                                        dispatch (
+                                            InvokeTacticalCommand(
+                                                "planning.roster.select."
+                                                + string unit.UnitId
+                                            )
+                                        ))
                                 ]
                         ]
                     ]
                 ]
             ]
-            Html.section [
+            if includeBattlefield then Html.section [
                 prop.className "panel planning-battlefield"
                 prop.ariaLabel "Battlefield route authoring"
                 prop.children [
@@ -6825,10 +7753,10 @@ let private planningWorkspace
                             Html.div [
                                 prop.className "planning-direction-grid"
                                 prop.children [
-                                    planningButton "Waypoint west" (AddRouteWaypoint(unit.Column - 1, unit.Row))
-                                    planningButton "Waypoint north" (AddRouteWaypoint(unit.Column, unit.Row - 1))
-                                    planningButton "Waypoint south" (AddRouteWaypoint(unit.Column, unit.Row + 1))
-                                    planningButton "Waypoint east" (AddRouteWaypoint(unit.Column + 1, unit.Row))
+                                    planningButton "Waypoint west" "planning.inspector.waypoint.west"
+                                    planningButton "Waypoint north" "planning.inspector.waypoint.north"
+                                    planningButton "Waypoint south" "planning.inspector.waypoint.south"
+                                    planningButton "Waypoint east" "planning.inspector.waypoint.east"
                                 ]
                             ]
                         | FacingTool
@@ -6836,19 +7764,19 @@ let private planningWorkspace
                             Html.div [
                                 prop.className "planning-direction-grid"
                                 prop.children [
-                                    for label, direction in directions do
+                                    for label, slug, _ in directions do
                                         planningButton
                                             label
-                                            (if state.Tool = FacingTool then
-                                                 SetPlanningFacing direction
-                                             else SetPlanningAttention direction)
+                                            ("planning.inspector."
+                                             + (if state.Tool = FacingTool then "facing." else "attention.")
+                                             + slug)
                                 ]
                             ]
                         | StanceTool ->
-                            planningButton "Standing" (SetPlanningStance "standing")
-                            planningButton "Crouched" (SetPlanningStance "crouched")
-                            planningButton "Prone" (SetPlanningStance "prone")
-                        | HoldTool -> planningButton "Add hold" AddPlanningHold
+                            planningButton "Standing" "planning.inspector.stance.standing"
+                            planningButton "Crouched" "planning.inspector.stance.crouched"
+                            planningButton "Prone" "planning.inspector.stance.prone"
+                        | HoldTool -> planningButton "Add hold" "planning.inspector.hold"
                         | EngagementTool ->
                             match
                                 state.Roster
@@ -6858,7 +7786,7 @@ let private planningWorkspace
                             | Some target, Some capability ->
                                 planningButton
                                     ("Engage " + target.Name + " with " + capability)
-                                    (AddPlanningEngagement(target.UnitId, capability))
+                                    "planning.inspector.engagement"
                             | None, _ ->
                                 Html.p "No other roster unit is available as a disclosed target."
                             | _, None ->
@@ -6866,12 +7794,13 @@ let private planningWorkspace
                         | SynchronizationTool ->
                             planningButton
                                 "Add synchronization marker"
-                                (AddPlanningSynchronization("sync-" + string state.NextCommand, 600))
+                                "planning.inspector.synchronization"
                     button
                         "Remove selected command"
                         "Remove selected planning command · Delete"
                         state.SelectedCommand.IsNone
-                        (fun _ -> dispatch (PlanningChanged RemoveSelectedPlanningCommand))
+                        (fun _ ->
+                            dispatch (InvokeTacticalCommand "timeline.remove-command"))
                 ]
             ]
             Html.section [
@@ -6895,7 +7824,11 @@ let private planningWorkspace
                                         prop.ariaPressed (state.SelectedCommand = Some command.Id)
                                         prop.text (planningCommandLabel command)
                                         prop.onClick (fun _ ->
-                                            dispatch (PlanningChanged(SelectPlanningCommand command.Id)))
+                                            dispatch (
+                                                InvokeTacticalCommand(
+                                                    "planning.timeline.select." + command.Id
+                                                )
+                                            ))
                                     ]
                             ]
                         ]
@@ -6913,7 +7846,11 @@ let private planningWorkspace
                             prop.ariaPressed (state.FocusedIssue = Some index)
                             prop.text (issue.Code + " · " + issue.Detail)
                             prop.onClick (fun _ ->
-                                dispatch (PlanningChanged(FocusPlanningIssue index)))
+                                dispatch (
+                                    InvokeTacticalCommand(
+                                        "planning.issue.focus." + string index
+                                    )
+                                ))
                         ]
                 ]
             ]
@@ -6941,14 +7878,671 @@ let private workspaceNavigation (workspace: WorkspaceMode) dispatch =
 
     Html.nav [
         prop.className "workspace-navigation"
-        prop.ariaLabel "Application sections"
+        prop.ariaLabel "Supporting application sections"
         prop.children [
-            item "Simulator" SimulatorWorkspace
-            item "Planner" PlanningWorkspace
-            item "Editor" EditorWorkspace
-            item "Replay" ReplayWorkspace
             item "Rules and data" RulesWorkspace
             item "Samples" SamplesWorkspace
+        ]
+    ]
+
+let private tacticalModalityControls (workspace: WorkspaceMode) dispatch =
+    let item (label: string) commandId (value: WorkspaceMode) =
+        let isCurrent = workspace = value
+        Html.button [
+            prop.type'.button
+            prop.text label
+            prop.ariaPressed isCurrent
+            prop.onClick (fun _ -> dispatch (InvokeTacticalCommand commandId))
+        ]
+
+    Html.nav [
+        prop.className "tactical-modality-controls"
+        prop.ariaLabel "Tactical modality"
+        prop.children [
+            item "Editor" "workspace.editor" EditorWorkspace
+            item "Plan" "workspace.plan" PlanningWorkspace
+            item "Simulate" "workspace.simulate" SimulatorWorkspace
+            item "Review" "workspace.review" ReplayWorkspace
+        ]
+    ]
+
+let private tacticalTimeline model dispatch =
+    let state = model.Tactical
+    let available commandId =
+        activeTacticalRegistry model
+        |> List.exists (fun command ->
+            command.Id = commandId
+            && Set.contains model.Tactical.Modality command.Modalities
+            && tacticalCommandAvailable model command)
+    let runtime =
+        match model.Workspace, model.Simulator with
+        | SimulatorWorkspace, Some simulator ->
+            [ { Id = "committed-simulator-runtime"
+                UnitId = model.SimulatorSelectedUnit
+                StartTick = 0L
+                EndTick = int64 simulator.Tick
+                Channel = Committed
+                Label = "Committed simulator execution"
+                Issue = None } ]
+        | ReplayWorkspace, _ when model.Shell.Playback.FinalTick > 0 ->
+            [ { Id = "committed-replay"
+                UnitId = None
+                StartTick = 0L
+                EndTick = int64 model.Shell.Playback.FinalTick
+                Channel = Committed
+                Label = "Verified committed replay"
+                Issue = None } ]
+        | _ -> []
+    let segments = state.Segments @ runtime
+
+    Html.section [
+        prop.className "tactical-timeline"
+        prop.ariaLabel "Unified tactical timeline"
+        prop.custom ("data-time-cursor", string state.Cursor)
+        prop.custom ("data-committed-through", string state.CommittedThrough)
+        prop.custom (
+            "data-scrub-semantics",
+            if model.Workspace = SimulatorWorkspace then
+                "projection-only-runtime-tick-unchanged"
+            else "projection-only"
+        )
+        prop.children [
+            Html.div [
+                prop.className "tactical-transport"
+                prop.children [
+                    Html.button [
+                        prop.type'.button
+                        prop.text (if state.IsPlaying then "Pause" else "Play")
+                        prop.disabled (not (available "timeline.play-toggle"))
+                        prop.ariaLabel (if state.IsPlaying then "Pause tactical timeline" else "Play tactical timeline")
+                        prop.onClick (fun _ -> dispatch (InvokeTacticalCommand "timeline.play-toggle"))
+                    ]
+                    Html.button [
+                        prop.type'.button
+                        prop.text "Home"
+                        prop.disabled (not (available "timeline.home"))
+                        prop.onClick (fun _ -> dispatch (InvokeTacticalCommand "timeline.home"))
+                    ]
+                    Html.button [
+                        prop.type'.button
+                        prop.text "−1"
+                        prop.disabled (not (available "timeline.step-back"))
+                        prop.ariaLabel "Step tactical timeline backward"
+                        prop.onClick (fun _ -> dispatch (InvokeTacticalCommand "timeline.step-back"))
+                    ]
+                    Html.button [
+                        prop.type'.button
+                        prop.text "+1"
+                        prop.disabled (not (available "timeline.step-forward"))
+                        prop.ariaLabel "Step tactical timeline forward"
+                        prop.onClick (fun _ -> dispatch (InvokeTacticalCommand "timeline.step-forward"))
+                    ]
+                    Html.button [
+                        prop.type'.button
+                        prop.text "End"
+                        prop.disabled (not (available "timeline.end"))
+                        prop.onClick (fun _ -> dispatch (InvokeTacticalCommand "timeline.end"))
+                    ]
+                    Html.button [
+                        prop.type'.button
+                        prop.text "Move command here"
+                        prop.disabled (not (available "timeline.move-command"))
+                        prop.onClick (fun _ ->
+                            dispatch (InvokeTacticalCommand "timeline.move-command"))
+                    ]
+                    Html.button [
+                        prop.type'.button
+                        prop.text "Remove command"
+                        prop.disabled (not (available "timeline.remove-command"))
+                        prop.onClick (fun _ ->
+                            dispatch (InvokeTacticalCommand "timeline.remove-command"))
+                    ]
+                    Html.label [
+                        prop.text "Time"
+                        prop.children [
+                            Html.input [
+                                prop.type'.number
+                                prop.min 0
+                                prop.max (int state.Horizon)
+                                prop.value (int state.Cursor)
+                                prop.onChange (fun (value: int) ->
+                                    dispatch (TacticalTimeChanged(int64 value)))
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+            Html.input [
+                prop.type'.range
+                prop.className "tactical-time-ruler"
+                prop.ariaLabel "Current tactical time"
+                prop.min 0
+                prop.max (int state.Horizon)
+                prop.value (int state.Cursor)
+                prop.onChange (fun (value: int) ->
+                    dispatch (TacticalTimeChanged(int64 value)))
+            ]
+            Html.div [
+                prop.className "tactical-time-cursor"
+                prop.role.status
+                prop.ariaLive.polite
+                prop.text (
+                    "Current time "
+                    + string state.Cursor
+                    + " · next editable "
+                    + string (UnifiedTacticalWorkspace.nextEditableBoundary state)
+                )
+            ]
+            Html.ol [
+                prop.className "tactical-command-lanes"
+                prop.ariaLabel "Authored, predicted, accepted, and committed timeline segments"
+                prop.children [
+                    for segment in segments do
+                        Html.li [
+                            prop.custom ("data-segment-id", segment.Id)
+                            prop.custom ("data-time-channel", string segment.Channel)
+                            prop.children [
+                                Html.strong (string segment.Channel)
+                                Html.span (
+                                    " " + segment.Label + " · "
+                                    + string segment.StartTick + "–" + string segment.EndTick
+                                )
+                                match segment.Issue with
+                                | Some issue -> Html.span (" · issue: " + issue)
+                                | None -> Html.none
+                            ]
+                        ]
+                ]
+            ]
+        ]
+    ]
+
+let private tacticalBindingDialog model dispatch =
+    if not model.TacticalBindingsOpen then Html.none
+    else
+        let commands =
+            activeTacticalRegistry model
+            |> List.filter (fun command ->
+                Set.contains model.Tactical.Modality command.Modalities
+                && not (
+                    command.Id.StartsWith(
+                        "simulator.pointer.",
+                        StringComparison.Ordinal
+                    )
+                ))
+        Html.section [
+            prop.className "tactical-binding-dialog"
+            prop.role.dialog
+            prop.custom ("aria-modal", "true")
+            prop.ariaLabel "Configure tactical command bindings"
+            prop.children [
+                Html.div [
+                    prop.className "modal-input-panel-heading"
+                    prop.children [
+                        Html.h2 "Command bindings"
+                        Html.button [
+                            prop.type'.button
+                            prop.text "Close"
+                            prop.onClick (fun _ -> dispatch ToggleTacticalBindings)
+                        ]
+                    ]
+                ]
+                Html.p "Capture or type a gesture. Conflicts and browser reservations are validated before local storage is updated."
+                if not (List.isEmpty model.TacticalBindingDiagnostics) then
+                    Html.ul [
+                        prop.role.alert
+                        prop.children [
+                            for diagnostic in model.TacticalBindingDiagnostics do
+                                Html.li diagnostic
+                        ]
+                    ]
+                Html.ul [
+                    prop.className "tactical-binding-list"
+                    prop.children [
+                        for command in commands do
+                            let effective =
+                                UnifiedTacticalWorkspace.effectiveGesture
+                                    model.TacticalBindings
+                                    command
+                            Html.li [
+                                prop.custom ("data-binding-command", command.Id)
+                                prop.children [
+                                    Html.label [
+                                        prop.children [
+                                            Html.span (command.Label + " · " + command.Category)
+                                            Html.input [
+                                                prop.type'.text
+                                                prop.ariaLabel ("Binding for " + command.Label)
+                                                prop.placeholder (
+                                                    effective
+                                                    |> Option.defaultValue "Unbound"
+                                                )
+                                                prop.value (
+                                                    model.TacticalBindingDrafts
+                                                    |> Map.tryFind command.Id
+                                                    |> Option.defaultValue ""
+                                                )
+                                                prop.onChange (fun value ->
+                                                    dispatch (
+                                                        TacticalBindingDraftChanged(
+                                                            command.Id,
+                                                            value
+                                                        )
+                                                    ))
+                                                prop.onKeyDown (fun event ->
+                                                    event.stopPropagation ()
+                                                    let key =
+                                                        if event.key = " " then "Space"
+                                                        elif event.key.Length = 1 then event.key.ToUpperInvariant()
+                                                        else event.key
+                                                    let gesture =
+                                                        [ if event.ctrlKey || event.metaKey then "Ctrl"
+                                                          if event.altKey then "Alt"
+                                                          if event.shiftKey && event.key <> "?" then "Shift"
+                                                          key ]
+                                                        |> String.concat "+"
+                                                    let reserved =
+                                                        Set.contains
+                                                            (gesture.ToUpperInvariant())
+                                                            (Set.ofList [
+                                                                "CTRL+L"; "CTRL+T"; "CTRL+W"; "CTRL+R"
+                                                                "CTRL+SHIFT+R"; "ALT+F4"; "F5"
+                                                            ])
+                                                    let capture =
+                                                        (event.ctrlKey || event.metaKey || event.altKey
+                                                         || event.key.StartsWith("F")
+                                                         || Set.contains event.key (Set.ofList [
+                                                             "ArrowLeft"; "ArrowRight"; "ArrowUp"; "ArrowDown"
+                                                             "Home"; "End"; "Delete"; "Backspace"; "Escape"; " "
+                                                         ]))
+                                                        && event.key <> "Tab"
+                                                    if capture && not reserved then
+                                                        event.preventDefault ()
+                                                        dispatch (
+                                                            TacticalBindingDraftChanged(command.Id, gesture)
+                                                        ))
+                                            ]
+                                        ]
+                                    ]
+                                    Html.span (
+                                        effective
+                                        |> Option.defaultValue "Unbound"
+                                    )
+                                    Html.button [
+                                        prop.type'.button
+                                        prop.text "Apply"
+                                        prop.onClick (fun _ ->
+                                            dispatch (
+                                                ApplyTacticalBinding(
+                                                    command.Id,
+                                                    false
+                                                )
+                                            ))
+                                    ]
+                                    Html.button [
+                                        prop.type'.button
+                                        prop.text "Replace conflict"
+                                        prop.onClick (fun _ ->
+                                            dispatch (
+                                                ApplyTacticalBinding(
+                                                    command.Id,
+                                                    true
+                                                )
+                                            ))
+                                    ]
+                                    Html.button [
+                                        prop.type'.button
+                                        prop.text "Clear"
+                                        prop.onClick (fun _ ->
+                                            dispatch (
+                                                ClearTacticalBinding command.Id
+                                            ))
+                                    ]
+                                    Html.button [
+                                        prop.type'.button
+                                        prop.text "Restore"
+                                        prop.onClick (fun _ ->
+                                            dispatch (
+                                                RestoreTacticalBinding command.Id
+                                            ))
+                                    ]
+                                ]
+                            ]
+                    ]
+                ]
+                Html.div [
+                    prop.className "tactical-binding-actions"
+                    prop.children [
+                        Html.button [
+                            prop.type'.button
+                            prop.text "Restore modality"
+                            prop.onClick (fun _ ->
+                                dispatch RestoreTacticalModalityBindings)
+                        ]
+                        Html.button [
+                            prop.type'.button
+                            prop.text "Restore all"
+                            prop.onClick (fun _ ->
+                                dispatch RestoreAllTacticalBindings)
+                        ]
+                    ]
+                ]
+                Html.label [
+                    prop.children [
+                        Html.span "Import or export deterministic binding JSON"
+                        Html.textarea [
+                            prop.ariaLabel "Tactical binding JSON"
+                            prop.value (
+                                if
+                                    String.IsNullOrWhiteSpace
+                                        model.TacticalBindingImport
+                                then
+                                    UnifiedTacticalWorkspace.exportBindings
+                                        model.TacticalBindings
+                                else model.TacticalBindingImport
+                            )
+                            prop.onChange (fun value ->
+                                dispatch (
+                                    TacticalBindingImportChanged value
+                                ))
+                        ]
+                    ]
+                ]
+                Html.button [
+                    prop.type'.button
+                    prop.text "Import bindings"
+                    prop.onClick (fun _ -> dispatch ImportTacticalBindings)
+                ]
+            ]
+        ]
+
+let private currentModalInputs model =
+    match model.Workspace with
+    | EditorWorkspace ->
+        let facts =
+            { Editor = model.Editor
+              ActiveDomain =
+                match model.EditorToolPanel with
+                | TerrainTools -> TerrainDomain
+                | UnitTools -> UnitDomain
+                | EdgeTools -> EdgeDomain
+                | ZoneTools -> RegionDomain
+                | DocumentTools -> DocumentDomain
+              PanHeld = editorPanHeld model
+              InputHelpExpanded = model.InputHelpExpanded }
+        let catalog =
+            ModalInput.editorCatalog facts
+            |> UnifiedTacticalWorkspace.adaptModalCatalog model.TacticalBindings
+        ModalInput.possibleInputs (ModalInput.deriveEditorContexts facts) catalog
+    | SimulatorWorkspace ->
+        let simulator = model.Simulator
+        let facts =
+            { SimulatorHandoffPresent = simulator.IsSome
+              SimulatorIsRunning = simulator |> Option.exists _.IsRunning
+              SimulatorHasRoutePreview = simulator |> Option.bind _.PreviewDestination |> Option.isSome
+              SimulatorControllerSelection = model.SimulatorControllerSelection
+              SimulatorRevisionIsStale =
+                simulator
+                |> Option.exists (MapEditorSimulator.isBehindDraft model.Editor)
+              InputHelpExpanded = model.InputHelpExpanded }
+        let catalog =
+            ModalInput.simulatorCatalog
+                model.SimulatorSelectedUnit
+                simulator
+                model.SimulatorControllerSelection
+            |> UnifiedTacticalWorkspace.adaptModalCatalog model.TacticalBindings
+        ModalInput.possibleInputs (ModalInput.deriveSimulatorContexts facts) catalog
+    | _ -> []
+
+let private tacticalContextHelp model dispatch =
+    let gestureText (gesture: InputGesture) =
+        let key =
+            match NormalizedKey.value gesture.Key with
+            | "ArrowLeft" -> "←"
+            | "ArrowRight" -> "→"
+            | "ArrowUp" -> "↑"
+            | "ArrowDown" -> "↓"
+            | "Escape" -> "Esc"
+            | value when value.Length = 1 -> value.ToUpperInvariant()
+            | value -> value
+        [ if gesture.Modifiers.ControlOrMeta then "Ctrl/Cmd"
+          if gesture.Modifiers.Alt then "Alt"
+          if gesture.Modifiers.Shift && NormalizedKey.value gesture.Key <> "?" then "Shift"
+          key ]
+        |> String.concat "+"
+    let accessibleGesture (gesture: InputGesture) =
+        (gestureText gesture)
+            .Replace("Ctrl/Cmd", "Control")
+            .Replace("←", "ArrowLeft")
+            .Replace("→", "ArrowRight")
+            .Replace("↑", "ArrowUp")
+            .Replace("↓", "ArrowDown")
+            .Replace("Esc", "Escape")
+    let modalInputs = currentModalInputs model
+    let modalIds = modalInputs |> List.map _.Id |> Set.ofList
+    let commands =
+        activeTacticalRegistry model
+        |> List.filter (fun command ->
+            Set.contains model.Tactical.Modality command.Modalities
+            && tacticalCommandAvailable model command
+            && not (command.Id.StartsWith("editor.", StringComparison.Ordinal))
+            && (not (command.Id.StartsWith("simulator.", StringComparison.Ordinal))
+                || command.Id.StartsWith(
+                    "simulator.pointer.",
+                    StringComparison.Ordinal
+                ))
+            && not (Set.contains command.Id modalIds))
+        |> List.sortBy (fun command -> command.Category, command.Label)
+    Html.section [
+        prop.className ("modal-input-strip" + if model.InputHelpExpanded then " is-expanded" else "")
+        prop.ariaLabel "Current tactical actions"
+        prop.children [
+            Html.div [
+                prop.className "modal-input-summary"
+                prop.children [
+                    Html.div [
+                        prop.className "modal-input-state"
+                        prop.children [
+                            Html.strong [
+                                prop.className "modal-input-headline"
+                                prop.text (string model.Tactical.Modality + " · time " + string model.Tactical.Cursor)
+                            ]
+                            Html.span [
+                                prop.className "modal-input-detail"
+                                prop.text (string (commands.Length + modalInputs.Length) + " actions currently executable")
+                            ]
+                        ]
+                    ]
+                    Html.button [
+                        prop.id "tactical-input-toggle"
+                        prop.type'.button
+                        prop.className "modal-input-toggle"
+                        prop.text "Inputs"
+                        prop.ariaExpanded model.InputHelpExpanded
+                        prop.ariaControls "tactical-input-panel"
+                        prop.onClick (fun _ -> dispatch (ToggleInputHelp false))
+                    ]
+                ]
+            ]
+            Html.p [
+                prop.className "sr-only"
+                prop.role.status
+                prop.ariaLive.polite
+                prop.ariaAtomic true
+                prop.text (string model.Tactical.Modality + " action context")
+            ]
+            if model.InputHelpExpanded then
+                Html.section [
+                    prop.id "tactical-input-panel"
+                    prop.className "modal-input-panel"
+                    prop.tabIndex -1
+                    prop.ariaLabel ("Executable actions for " + string model.Tactical.Modality)
+                    prop.children [
+                        Html.div [
+                            prop.className "modal-input-panel-heading"
+                            prop.children [
+                                Html.h3 "Executable actions"
+                                Html.button [
+                                    prop.type'.button
+                                    prop.text "Configure bindings"
+                                    prop.onClick (fun _ -> dispatch ToggleTacticalBindings)
+                                ]
+                                Html.button [
+                                    prop.type'.button
+                                    prop.text "Close"
+                                    prop.onClick (fun _ -> dispatch (ToggleInputHelp true))
+                                ]
+                            ]
+                        ]
+                        Html.ul [
+                            prop.className "modal-input-list"
+                            prop.children [
+                                for command in commands do
+                                    let effective =
+                                        UnifiedTacticalWorkspace.effectiveGesture
+                                            model.TacticalBindings command
+                                    Html.li [
+                                        prop.custom ("data-tactical-command", command.Id)
+                                        match effective with
+                                        | Some shortcut ->
+                                            prop.custom (
+                                                "aria-keyshortcuts",
+                                                shortcut.Replace("Ctrl", "Control")
+                                            )
+                                        | None -> prop.custom ("data-binding-state", "unbound")
+                                        prop.children [
+                                            Html.kbd (effective |> Option.defaultValue "Unbound")
+                                            Html.span (command.Label + " · " + command.Category)
+                                            Html.small (
+                                                if UnifiedTacticalWorkspace.isRebound model.TacticalBindings command then
+                                                    "Rebound"
+                                                elif effective.IsNone && command.PointerAvailable then
+                                                    "Pointer only / unbound"
+                                                else "Default"
+                                            )
+                                        ]
+                                    ]
+                                for input in modalInputs do
+                                    let effective =
+                                        match Map.tryFind input.Id model.TacticalBindings.Overrides with
+                                        | Some value -> value
+                                        | None ->
+                                            Some(
+                                                UnifiedTacticalWorkspace.gestureText
+                                                    input.InputGesture
+                                            )
+                                    Html.li [
+                                        prop.custom ("data-modal-command", input.Id)
+                                        match effective with
+                                        | Some shortcut ->
+                                            prop.custom (
+                                                "aria-keyshortcuts",
+                                                shortcut.Replace("Ctrl", "Control")
+                                            )
+                                        | None -> prop.custom ("data-binding-state", "unbound")
+                                        prop.children [
+                                            Html.kbd (effective |> Option.defaultValue "Unbound")
+                                            Html.span (input.Label + " · " + input.Group)
+                                            Html.small (
+                                                if Map.containsKey input.Id model.TacticalBindings.Overrides then
+                                                    if effective.IsSome then "Rebound" else "Pointer only / unbound"
+                                                else "Default"
+                                            )
+                                        ]
+                                    ]
+                            ]
+                        ]
+                    ]
+                ]
+        ]
+    ]
+
+let private tacticalPersistentBattlefield model dispatch =
+    let shell = model.Shell
+    Html.section [
+        prop.id "tactical-battlefield-viewport"
+        prop.className "tactical-battlefield-viewport"
+        prop.ariaLabel "Persistent tactical battlefield viewport"
+        prop.custom ("data-viewport-lifecycle", "shared")
+        prop.custom ("data-active-modality", string model.Tactical.Modality)
+        prop.children [
+            match model.Workspace with
+            | EditorWorkspace ->
+                editorBattlefield
+                    model.Editor
+                    model.EditorView
+                    (match model.EditorToolPanel with
+                     | TerrainTools -> TerrainDomain
+                     | UnitTools -> UnitDomain
+                     | EdgeTools -> EdgeDomain
+                     | ZoneTools -> RegionDomain
+                     | DocumentTools -> DocumentDomain)
+                    (editorPanHeld model)
+                    model.InputHelpExpanded
+                    model.TacticalBindings
+                    dispatch
+            | PlanningWorkspace ->
+                match model.Planning with
+                | Some planning -> planningBattlefield model.Editor planning dispatch
+                | None -> Html.p "Planning battlefield unavailable."
+            | SimulatorWorkspace ->
+                match model.Simulator with
+                | Some simulator ->
+                    let simulatorState =
+                        MapEditorSimulator.viewState model.SimulatorSelectedUnit simulator
+                    battlefieldView
+                        shell
+                        (Some(MapEditorSimulator.frame model.SimulatorSelectedUnit simulator))
+                        (Some simulatorState)
+                        model.Battlefield
+                        None
+                        1.0
+                        (if model.Battlefield.ExactTicks || model.Battlefield.ReducedMotion then
+                             Map.empty
+                         else
+                             MapEditorSimulator.presentationOffsets simulator)
+                        dispatch
+                | None ->
+                    battlefieldView
+                        shell
+                        (Some(MapEditor.frame model.Editor))
+                        None
+                        model.Battlefield
+                        None
+                        1.0
+                        Map.empty
+                        dispatch
+            | ReplayWorkspace ->
+                battlefieldView
+                    shell
+                    None
+                    None
+                    model.Battlefield
+                    model.PreviousFrame
+                    model.PresentationAlpha
+                    Map.empty
+                    dispatch
+            | RulesWorkspace
+            | SamplesWorkspace -> Html.none
+        ]
+    ]
+
+let private tacticalShell model dispatch content =
+    Html.section [
+        prop.id "unified-tactical-workspace"
+        prop.className "unified-tactical-workspace"
+        prop.ariaLabel "Unified tactical workspace"
+        prop.custom ("data-mounted-shell", "persistent")
+        prop.children [
+            tacticalModalityControls model.Workspace dispatch
+            tacticalPersistentBattlefield model dispatch
+            Html.div [
+                prop.className "tactical-workspace-content"
+                prop.children [ content ]
+            ]
+            tacticalTimeline model dispatch
+            tacticalContextHelp model dispatch
+            tacticalBindingDialog model dispatch
         ]
     ]
 
@@ -6984,37 +8578,23 @@ let private ariaShortcut (gesture: InputGesture) =
 
 let private modalInputStrip
     (projection: ModalProjection<ModalCommand>)
-    expanded
-    dispatch
+    _
+    _
     =
     Html.section [
-        prop.className ("modal-input-strip" + if expanded then " is-expanded" else "")
+        prop.className "modal-input-state-strip"
         prop.ariaLabel "Current input mode"
         prop.children [
             Html.div [
-                prop.className "modal-input-summary"
+                prop.className "modal-input-state"
                 prop.children [
-                    Html.div [
-                        prop.className "modal-input-state"
-                        prop.children [
-                            Html.strong [
-                                prop.className "modal-input-headline"
-                                prop.text projection.Headline
-                            ]
-                            Html.span [
-                                prop.className "modal-input-detail"
-                                prop.text projection.Detail
-                            ]
-                        ]
+                    Html.strong [
+                        prop.className "modal-input-headline"
+                        prop.text projection.Headline
                     ]
-                    Html.button [
-                        prop.id "modal-input-toggle"
-                        prop.type'.button
-                        prop.className "modal-input-toggle"
-                        prop.text "Inputs"
-                        prop.ariaExpanded expanded
-                        prop.ariaControls "modal-input-panel"
-                        prop.onClick (fun _ -> dispatch (ToggleInputHelp false))
+                    Html.span [
+                        prop.className "modal-input-detail"
+                        prop.text projection.Detail
                     ]
                 ]
             ]
@@ -7025,43 +8605,6 @@ let private modalInputStrip
                 prop.ariaAtomic true
                 prop.text projection.Headline
             ]
-            if expanded then
-                Html.section [
-                    prop.id "modal-input-panel"
-                    prop.className "modal-input-panel"
-                    prop.tabIndex -1
-                    prop.ariaLabel ("Possible inputs for " + projection.Headline)
-                    prop.children [
-                        Html.div [
-                            prop.className "modal-input-panel-heading"
-                            prop.children [
-                                Html.h3 "Possible inputs"
-                                Html.button [
-                                    prop.type'.button
-                                    prop.text "Close"
-                                    prop.onClick (fun _ -> dispatch (ToggleInputHelp true))
-                                ]
-                            ]
-                        ]
-                        if List.isEmpty projection.PossibleInputs then
-                            Html.p "No keyboard commands are available in this state."
-                        else
-                            Html.ul [
-                                prop.className "modal-input-list"
-                                prop.children [
-                                    for input in projection.PossibleInputs do
-                                        Html.li [
-                                            prop.custom ("data-modal-command", input.Id)
-                                            prop.custom ("aria-keyshortcuts", ariaShortcut input.InputGesture)
-                                            prop.children [
-                                                Html.kbd (inputGestureText input.InputGesture)
-                                                Html.span input.Label
-                                            ]
-                                        ]
-                                ]
-                            ]
-                    ]
-                ]
         ]
     ]
 
@@ -7084,183 +8627,173 @@ let view model dispatch =
             workspaceNavigation model.Workspace dispatch
             match model.Workspace with
             | PlanningWorkspace ->
-                match model.Planning with
-                | Some planning -> planningWorkspace model.Editor planning dispatch
-                | None ->
-                    Html.section [
-                        prop.className "panel"
-                        prop.children [
-                            Html.h2 "Planner unavailable"
-                            Html.p "Open the planner again to create an authored revision from the current map."
+                tacticalShell
+                    model
+                    dispatch
+                    (match model.Planning with
+                     | Some planning -> planningWorkspace model.Editor planning false dispatch
+                     | None ->
+                         Html.section [
+                             prop.className "panel"
+                             prop.children [
+                                 Html.h2 "Planner unavailable"
+                                 Html.p "Open the planner again to create an authored revision from the current map."
+                             ]
                         ]
-                    ]
+                    )
             | SimulatorWorkspace ->
-                match model.Simulator with
-                | None ->
-                    let facts =
-                        { SimulatorHandoffPresent = false
-                          SimulatorIsRunning = false
-                          SimulatorHasRoutePreview = false
-                          SimulatorControllerSelection = None
-                          SimulatorRevisionIsStale = false
-                          InputHelpExpanded = model.InputHelpExpanded }
-                    let catalog =
-                        ModalInput.simulatorCatalog
-                            model.SimulatorSelectedUnit
-                            None
-                            model.SimulatorControllerSelection
-                    let projection =
-                        ModalInput.projectSimulator
-                            facts
-                            model.SimulatorSelectedUnit
-                            None
-                            catalog
-                    Html.section [
-                        prop.className "panel simulator-workspace"
-                        prop.ariaLabel "Simulator revision handoff"
-                        prop.children [
-                            Html.h2 "No simulated revision"
-                            Html.p "Return to the editor and choose Simulate to create an immutable sandbox handoff."
-                            button "Open Editor" "Open the map editor" false (fun _ ->
-                                dispatch (WorkspaceChanged EditorWorkspace))
-                            button "Browse samples" "Open curated map and simulation samples" false (fun _ ->
-                                dispatch (WorkspaceChanged SamplesWorkspace))
-                            modalInputStrip projection model.InputHelpExpanded dispatch
-                        ]
-                    ]
-                | Some simulator ->
-                    let simulatorState =
-                        MapEditorSimulator.viewState
-                            model.SimulatorSelectedUnit
-                            simulator
-                    let stale =
-                        MapEditorSimulator.isBehindDraft model.Editor simulator
-                    let facts =
-                        { SimulatorHandoffPresent = true
-                          SimulatorIsRunning = simulator.IsRunning
-                          SimulatorHasRoutePreview = simulator.PreviewDestination.IsSome
-                          SimulatorControllerSelection =
-                            model.SimulatorControllerSelection
-                          SimulatorRevisionIsStale = stale
-                          InputHelpExpanded = model.InputHelpExpanded }
-                    let catalog =
-                        ModalInput.simulatorCatalog
-                            model.SimulatorSelectedUnit
-                            (Some simulator)
-                            model.SimulatorControllerSelection
-                    let projection =
-                        ModalInput.projectSimulator
-                            facts
-                            model.SimulatorSelectedUnit
-                            (Some simulator)
-                            catalog
-                    Html.div [
-                        prop.className "simulator-workspace"
-                        prop.children [
-                            simulatorDesktopChrome
-                                model.Editor
-                                simulatorState
+                tacticalShell
+                    model
+                    dispatch
+                    (match model.Simulator with
+                     | None ->
+                        let facts =
+                            { SimulatorHandoffPresent = false
+                              SimulatorIsRunning = false
+                              SimulatorHasRoutePreview = false
+                              SimulatorControllerSelection = None
+                              SimulatorRevisionIsStale = false
+                              InputHelpExpanded = model.InputHelpExpanded }
+                        let catalog =
+                            ModalInput.simulatorCatalog
+                                model.SimulatorSelectedUnit
+                                None
+                                model.SimulatorControllerSelection
+                        let projection =
+                            ModalInput.projectSimulator
+                                facts
+                                model.SimulatorSelectedUnit
+                                None
+                                catalog
+                        Html.section [
+                            prop.className "panel simulator-workspace"
+                            prop.ariaLabel "Simulator revision handoff"
+                            prop.children [
+                                Html.h2 "No simulated revision"
+                                Html.p "Return to the editor and choose Simulate to create an immutable sandbox handoff."
+                                button "Open Editor" "Open the map editor" false (fun _ ->
+                                    dispatch (WorkspaceChanged EditorWorkspace))
+                                button "Browse samples" "Open curated map and simulation samples" false (fun _ ->
+                                    dispatch (WorkspaceChanged SamplesWorkspace))
+                                modalInputStrip projection model.InputHelpExpanded dispatch
+                            ]
+                             ]
+                     | Some simulator ->
+                        let simulatorState =
+                            MapEditorSimulator.viewState
+                                model.SimulatorSelectedUnit
                                 simulator
-                                model.SimulatorToolPanelVisible
-                                dispatch
-                            Html.section [
-                                prop.className "panel simulator-revision-status"
-                                prop.role.status
-                                prop.ariaLive.polite
-                                prop.children [
-                                    Html.h2 (
+                        let stale =
+                            MapEditorSimulator.isBehindDraft model.Editor simulator
+                        let facts =
+                            { SimulatorHandoffPresent = true
+                              SimulatorIsRunning = simulator.IsRunning
+                              SimulatorHasRoutePreview = simulator.PreviewDestination.IsSome
+                              SimulatorControllerSelection =
+                                model.SimulatorControllerSelection
+                              SimulatorRevisionIsStale = stale
+                              InputHelpExpanded = model.InputHelpExpanded }
+                        let catalog =
+                            ModalInput.simulatorCatalog
+                                model.SimulatorSelectedUnit
+                                (Some simulator)
+                                model.SimulatorControllerSelection
+                            |> UnifiedTacticalWorkspace.adaptModalCatalog
+                                model.TacticalBindings
+                        let projection =
+                            ModalInput.projectSimulator
+                                facts
+                                model.SimulatorSelectedUnit
+                                (Some simulator)
+                                catalog
+                        Html.div [
+                            prop.className "simulator-workspace"
+                            prop.children [
+                                simulatorDesktopChrome
+                                    model.Editor
+                                    simulatorState
+                                    simulator
+                                    model.SimulatorToolPanelVisible
+                                    dispatch
+                                Html.section [
+                                    prop.className "panel simulator-revision-status"
+                                    prop.role.status
+                                    prop.ariaLive.polite
+                                    prop.children [
+                                        Html.h2 (
+                                            if stale then
+                                                "Simulator behind editor draft"
+                                            else
+                                                "Simulator matches editor draft"
+                                        )
+                                        Html.p (
+                                            "Simulating immutable revision "
+                                            + string simulator.Revision.Number
+                                            + " · "
+                                            + simulator.Revision.Digest.Substring(0, 12)
+                                        )
                                         if stale then
-                                            "Simulator behind editor draft"
-                                        else
-                                            "Simulator matches editor draft"
-                                    )
-                                    Html.p (
-                                        "Simulating immutable revision "
-                                        + string simulator.Revision.Number
-                                        + " · "
-                                        + simulator.Revision.Digest.Substring(0, 12)
-                                    )
-                                    if stale then
-                                        Html.p "Editor changes are preserved separately. Choose Simulate in Editor to reset this sandbox."
+                                            Html.p "Editor changes are preserved separately. Choose Simulate in Editor to reset this sandbox."
+                                    ]
+                                ]
+                                Html.div [
+                                    prop.className "simulator-map-stage"
+                                    prop.id "simulator-map-stage"
+                                    prop.tabIndex 0
+                                    prop.role.application
+                                    prop.ariaLabel "Keyboard-operable simulator map stage"
+                                    prop.onKeyDown (fun event ->
+                                        event.stopPropagation ()
+                                        if
+                                            isSimulatorModalTarget
+                                                event.target
+                                                event.currentTarget
+                                        then
+                                            let controlOrMeta =
+                                                event.ctrlKey || event.metaKey
+                                            let resolution =
+                                                ModalInput.resolve
+                                                    (ModalInput.deriveSimulatorContexts facts)
+                                                    { Key =
+                                                        NormalizedKey.create
+                                                            event.key
+                                                            None
+                                                      Modifiers =
+                                                        { ControlOrMeta = controlOrMeta
+                                                          Shift = event.shiftKey
+                                                          Alt = event.altKey }
+                                                      Phase = KeyDown }
+                                                    event.repeat
+                                                    catalog
+                                            match resolution with
+                                            | Resolved _ ->
+                                                event.preventDefault ()
+                                            | NoAvailableMatch _
+                                            | NoMatch -> ()
+                                            dispatch (
+                                                KeyPressed(
+                                                    event.key,
+                                                    controlOrMeta,
+                                                    event.shiftKey,
+                                                    event.altKey,
+                                                    event.repeat
+                                                )
+                                            ))
+                                    prop.children [
+                                        simulatorDock
+                                            simulator
+                                            simulatorState
+                                            model.SimulatorToolPanel
+                                            model.SimulatorToolPanelVisible
+                                            dispatch
+                                        modalInputStrip
+                                            projection
+                                            model.InputHelpExpanded
+                                            dispatch
+                                    ]
                                 ]
                             ]
-                            Html.div [
-                                prop.className "simulator-map-stage"
-                                prop.id "simulator-map-stage"
-                                prop.tabIndex 0
-                                prop.role.application
-                                prop.ariaLabel "Keyboard-operable simulator map stage"
-                                prop.onKeyDown (fun event ->
-                                    event.stopPropagation ()
-                                    if
-                                        isSimulatorModalTarget
-                                            event.target
-                                            event.currentTarget
-                                    then
-                                        let controlOrMeta =
-                                            event.ctrlKey || event.metaKey
-                                        let resolution =
-                                            ModalInput.resolve
-                                                (ModalInput.deriveSimulatorContexts facts)
-                                                { Key =
-                                                    NormalizedKey.create
-                                                        event.key
-                                                        None
-                                                  Modifiers =
-                                                    { ControlOrMeta = controlOrMeta
-                                                      Shift = event.shiftKey
-                                                      Alt = event.altKey }
-                                                  Phase = KeyDown }
-                                                event.repeat
-                                                catalog
-                                        match resolution with
-                                        | Resolved _
-                                        | NoAvailableMatch _ ->
-                                            event.preventDefault ()
-                                        | NoMatch -> ()
-                                        dispatch (
-                                            KeyPressed(
-                                                event.key,
-                                                controlOrMeta,
-                                                event.shiftKey,
-                                                event.altKey,
-                                                event.repeat
-                                            )
-                                        ))
-                                prop.children [
-                                    battlefieldView
-                                        shell
-                                        (Some(
-                                            MapEditorSimulator.frame
-                                                model.SimulatorSelectedUnit
-                                                simulator
-                                        ))
-                                        (Some simulatorState)
-                                        model.Battlefield
-                                        None
-                                        1.0
-                                        (if
-                                             model.Battlefield.ExactTicks
-                                             || model.Battlefield.ReducedMotion
-                                         then
-                                             Map.empty
-                                         else
-                                             MapEditorSimulator.presentationOffsets simulator)
-                                        dispatch
-                                    simulatorDock
-                                        simulator
-                                        simulatorState
-                                        model.SimulatorToolPanel
-                                        model.SimulatorToolPanelVisible
-                                        dispatch
-                                    modalInputStrip
-                                        projection
-                                        model.InputHelpExpanded
-                                        dispatch
-                                ]
-                            ]
-                        ]
-                    ]
+                         ])
             | EditorWorkspace ->
                 let facts =
                     { Editor = model.Editor
@@ -7269,7 +8802,7 @@ let view model dispatch =
                       InputHelpExpanded = model.InputHelpExpanded }
                 let catalog = ModalInput.editorCatalog facts
                 let projection = ModalInput.projectEditor facts catalog
-                Html.div [
+                tacticalShell model dispatch (Html.div [
                     prop.className "editor-workspace"
                     prop.children [
                         editorDesktopChrome
@@ -7339,13 +8872,6 @@ let view model dispatch =
                         Html.div [
                             prop.className "editor-map-stage"
                             prop.children [
-                                editorBattlefield
-                                    model.Editor
-                                    model.EditorView
-                                    (editorDomain model.EditorToolPanel)
-                                    (editorPanHeld model)
-                                    model.InputHelpExpanded
-                                    dispatch
                                 editorToolbar
                                     model.Editor
                                     model.EditorView
@@ -7377,9 +8903,9 @@ let view model dispatch =
                         ]
                         editorGrid model.Editor dispatch
                     ]
-                ]
+                ])
             | ReplayWorkspace ->
-                Html.div [
+                tacticalShell model dispatch (Html.div [
                     statusView shell
                     workerStatus shell
                     Html.div [
@@ -7390,16 +8916,7 @@ let view model dispatch =
                             inspector shell dispatch
                         ]
                     ]
-                    battlefieldView
-                        shell
-                        None
-                        None
-                        model.Battlefield
-                        model.PreviousFrame
-                        model.PresentationAlpha
-                        Map.empty
-                        dispatch
-                ]
+                ])
             | RulesWorkspace ->
                 Html.div [
                     scenarioCatalog shell dispatch

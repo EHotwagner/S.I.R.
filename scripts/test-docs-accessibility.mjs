@@ -32,7 +32,7 @@ await window.happyDOM.waitUntilComplete();
 
 const replayButton = [...window.document.querySelectorAll(
   "#sir-replay-app button",
-)].find((button) => button.textContent.trim() === "Replay");
+)].find((button) => button.textContent.trim() === "Review");
 replayButton?.click();
 await window.happyDOM.waitUntilComplete();
 

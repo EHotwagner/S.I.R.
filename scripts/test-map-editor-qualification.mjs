@@ -71,14 +71,14 @@ require(
 );
 const modalRegion = () =>
   window.document.querySelector('[aria-label="Current input mode"]');
-const modalToggle = () => window.document.querySelector("#modal-input-toggle");
+const modalToggle = () => window.document.querySelector("#tactical-input-toggle");
 require(
   modalRegion()?.textContent.includes("EDITOR / SELECT"),
   "the Editor modal-state strip does not project the live Select state",
 );
 require(
   modalToggle()?.getAttribute("aria-expanded") === "false" &&
-    !window.document.querySelector("#modal-input-panel"),
+    !window.document.querySelector("#tactical-input-panel"),
   "possible inputs are not collapsed by default",
 );
 const editable = window.document.createElement("div");
@@ -96,7 +96,7 @@ editable.dispatchEvent(
 await window.happyDOM.waitUntilComplete();
 require(
   modalToggle()?.getAttribute("aria-expanded") === "false" &&
-    !window.document.querySelector("#modal-input-panel"),
+    !window.document.querySelector("#tactical-input-panel"),
   "content-editable keydown entered modal dispatch",
 );
 editable.remove();
@@ -105,9 +105,9 @@ modalToggle()?.click();
 await window.happyDOM.waitUntilComplete();
 require(
   modalToggle()?.getAttribute("aria-expanded") === "true" &&
-    window.document.querySelector("#modal-input-panel")?.getAttribute("tabindex") ===
+    window.document.querySelector("#tactical-input-panel")?.getAttribute("tabindex") ===
       "-1" &&
-    window.document.activeElement?.id === "modal-input-toggle",
+    window.document.activeElement?.id === "tactical-input-toggle",
   "pointer-opened possible inputs changed focus or lacked a programmatic keyboard focus target",
 );
 require(
@@ -123,17 +123,19 @@ require(
     ),
   "the live Editor catalog omitted F2 or F3",
 );
-const modalClose = buttonByText("Close");
+const modalClose = window.document.querySelector(
+  "#tactical-input-panel button:last-child",
+);
 modalClose?.focus();
 modalClose?.click();
 await new Promise((done) => setTimeout(done, 0));
 await window.happyDOM.waitUntilComplete();
 require(
   modalToggle()?.getAttribute("aria-expanded") === "false" &&
-    window.document.activeElement?.id === "modal-input-toggle",
+    window.document.activeElement?.id === "tactical-input-toggle",
   "the possible-input close control did not collapse and preserve disclosure focus",
 );
-buttonByText("Simulator")?.click();
+buttonByText("Simulate")?.click();
 await window.happyDOM.waitUntilComplete();
 require(
   modalRegion()?.textContent.includes("SIMULATOR / NO HANDOFF") &&

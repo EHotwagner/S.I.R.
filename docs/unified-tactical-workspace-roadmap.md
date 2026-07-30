@@ -3,10 +3,10 @@ title: Unified Tactical Workspace Roadmap
 category: Engineering
 categoryindex: 6
 index: 10
-status: proposed
-decision-status: implementation-roadmap
+status: accepted
+decision-status: accepted
 document-type: design-decision
-version: "0.1"
+version: "1.0"
 last-updated: 2026-07-30
 description: Unify map authoring, plan authoring, prediction, execution, and replay around one persistent battlefield and one scrub-able timeline.
 related:
@@ -108,99 +108,168 @@ focused tests, documentation, and roadmap evidence are present.
 
 ### M0 — Contract and regression characterization
 
-- [ ] Record the current Editor, Planner, Simulator, and Replay state ownership,
+- [x] Record the current Editor, Planner, Simulator, and Replay state ownership,
   lifecycle transitions, DOM landmarks, and keyboard behavior.
-- [ ] Add regression tests that preserve authored/predicted/accepted/committed
+- [x] Add regression tests that preserve authored/predicted/accepted/committed
   separation and current Editor/Simulator modal resolution.
-- [ ] Define unified modality, time-cursor, timeline-segment, and command
+- [x] Define unified modality, time-cursor, timeline-segment, and command
   registry contracts without duplicating authoritative simulation state.
 
 ### M1 — Persistent tactical shell
 
-- [ ] Replace four battlefield workspace pages with one mounted tactical shell.
-- [ ] Add Editor, Plan, Simulate, and Review modality controls using native
+- [x] Replace four battlefield workspace pages with one mounted tactical shell.
+- [x] Add Editor, Plan, Simulate, and Review modality controls using native
   buttons with pressed state.
-- [ ] Preserve battlefield camera, selection where valid, and time cursor when
+- [x] Preserve battlefield camera, selection where valid, and time cursor when
   modality changes.
-- [ ] Keep Rules, data, and Samples as separate supporting sections.
+- [x] Keep Rules, data, and Samples as separate supporting sections.
 
 ### M2 — One movable timeline
 
-- [ ] Introduce one bounded time ruler and current-time cursor shared by all
+- [x] Introduce one bounded time ruler and current-time cursor shared by all
   tactical modalities.
-- [ ] Render per-unit authored commands, predicted availability, committed
+- [x] Render per-unit authored commands, predicted availability, committed
   history, validation issues, and event markers on the same axis.
-- [ ] Support pointer dragging, native range input, direct time entry, stepping,
+- [x] Support pointer dragging, native range input, direct time entry, stepping,
   Home/End, and play/pause with deterministic clamping.
-- [ ] Make backward/forward scrubbing projection-only and prove it cannot
+- [x] Make backward/forward scrubbing projection-only and prove it cannot
   commit, edit history, or alter authoritative ticks.
 
 ### M3 — Plan authoring on the battlefield
 
-- [ ] Move roster, tools, inspector, validation, and revision controls into
+- [x] Move roster, tools, inspector, validation, and revision controls into
   docked panels around the persistent battlefield.
-- [ ] Author route, facing, attention, stance, hold, engagement, and
+- [x] Author route, facing, attention, stance, hold, engagement, and
   synchronization commands at the current editable time.
-- [ ] Select, move in time, and remove timeline commands while preserving exact
+- [x] Select, move in time, and remove timeline commands while preserving exact
   undo/redo identity and monotonic revision allocation.
-- [ ] Overlay authored routes and intent plus labelled predicted state directly
+- [x] Overlay authored routes and intent plus labelled predicted state directly
   on the battlefield.
-- [ ] Preserve Preview → Validate → Commit and stale-response rejection through
+- [x] Preserve Preview → Validate → Commit and stale-response rejection through
   the retained simulator worker.
 
 ### M4 — Unified execution and review
 
-- [ ] Use the shared transport and time cursor for predicted playback and
+- [x] Use the shared transport and time cursor for predicted playback and
   committed execution/replay.
-- [ ] Visually distinguish authored, predicted, accepted, and committed ranges.
-- [ ] Prevent editing committed time and expose the next editable boundary.
-- [ ] Reconcile selection and viewport without remounting when execution starts,
+- [x] Visually distinguish authored, predicted, accepted, and committed ranges.
+- [x] Prevent editing committed time and expose the next editable boundary.
+- [x] Reconcile selection and viewport without remounting when execution starts,
   pauses, completes, or returns to planning.
 
 ### M5 — Configurable command bindings
 
-- [ ] Generalize the modal catalog into the live command registry for all four
+- [x] Generalize the modal catalog into the live command registry for all four
   tactical modalities.
-- [ ] Add versioned local binding overrides with deterministic import/export.
-- [ ] Add capture, conflict diagnosis, clear, restore-command, restore-modality,
+- [x] Add versioned local binding overrides with deterministic import/export.
+- [x] Add capture, conflict diagnosis, clear, restore-command, restore-modality,
   and restore-all flows using native controls.
-- [ ] Preserve text-entry and browser/platform reservations and require an
+- [x] Preserve text-entry and browser/platform reservations and require an
   explicit decision before replacing a contextual conflict.
-- [ ] Add .NET/Fable parity, migration, malformed-storage, and conflict tests.
+- [x] Add .NET/Fable parity, migration, malformed-storage, and conflict tests.
 
 ### M6 — Complete contextual action help
 
-- [ ] Make `?` open help in every tactical modality and transient state.
-- [ ] Project all currently executable registry actions, not only actions with
+- [x] Make `?` open help in every tactical modality and transient state.
+- [x] Project all currently executable registry actions, not only actions with
   shortcuts.
-- [ ] Show effective gestures, rebound/default status, unbound state, action
+- [x] Show effective gestures, rebound/default status, unbound state, action
   category, and an entry point to binding configuration.
-- [ ] Close with Escape, restore focus, announce context changes, and emit
+- [x] Close with Escape, restore focus, announce context changes, and emit
   `aria-keyshortcuts` from effective bindings only.
-- [ ] Prove help and dispatch use the same availability result for every
+- [x] Prove help and dispatch use the same availability result for every
   qualified context.
 
 ### M7 — Responsive, accessible DCC-style workspace
 
-- [ ] Meet 44 CSS-pixel pointer targets, 400% reflow, forced-colors,
+- [x] Meet 44 CSS-pixel pointer targets, 400% reflow, forced-colors,
   reduced-motion, screen-reader landmarks, and keyboard-only operation.
-- [ ] Keep the timeline and current modal state visible while panels collapse
+- [x] Keep the timeline and current modal state visible while panels collapse
   into drawers at narrow widths.
-- [ ] Ensure native descendants do not bubble into battlefield commands and
+- [x] Ensure native descendants do not bubble into battlefield commands and
   pointer capture recovers on blur/cancel.
-- [ ] Add production-browser tests for mode switching without remount, timeline
+- [x] Add production-browser tests for mode switching without remount, timeline
   scrubbing, plan editing, rebinding, and contextual help.
 
 ### M8 — Acceptance and migration
 
-- [ ] Remove superseded top-level Planner/Simulator/Replay page paths and static
+- [x] Remove superseded top-level Planner/Simulator/Replay page paths and static
   shortcut prose.
-- [ ] Update user, architecture, planning, replay, map-editor, and keyboard
+- [x] Update user, architecture, planning, replay, map-editor, and keyboard
   documentation to the accepted unified contract.
-- [ ] Run `npm test`, `npm run build:docs`, browser smoke, and
+- [x] Run `npm test`, `npm run build:docs`, browser smoke, and
   `./fake.sh build -t Dev`, `Test`, and `Verify` sequentially.
-- [ ] Record review evidence, mark this decision accepted, and verify a clean
+- [x] Record review evidence, mark this decision accepted, and verify a clean
   production build with no catalog conflicts or accessibility violations.
+
+### Implementation evidence
+
+- `npm test`: passed, including .NET/Fable command-binding parity, production
+  build, browser smoke, map-editor accessibility qualification, worker,
+  conformance, replay, ABI, and modal-boundary gates.
+- `npm run build:docs`: passed, including generated-site browser smoke and
+  accessibility verification.
+- Explicit browser smoke: passed with persistent-shell modality switching,
+  projection-only timeline movement, plan authoring/undo/redo, native binding
+  capture and persisted rebound dispatch, and contextual action help.
+- `./fake.sh build -t Dev`, `Test`, and `Verify`: passed sequentially.
+- Seven deterministic map-editor SVG/PNG review pairs were regenerated from the
+  current production bundle.
+- Corrective review coverage proves that `#tactical-battlefield-viewport`
+  remains the same DOM node across Editor, Plan, Simulate, and Review; the
+  shared ruler seeks the loaded Replay projection; and planner-worker Validate
+  and Commit responses populate the shared tactical Accepted and Committed
+  segments.
+- Command-authority coverage clears the Editor panel binding and proves its
+  former default no longer dispatches, then rebinds it and proves the effective
+  gesture drives both dispatch and help. Plan help is checked for worker,
+  roster, and current inspector actions.
+- Binding-profile qualification uses a strict parser in both .NET and Fable and
+  rejects future schemas, duplicate fields, duplicate command IDs, unknown
+  fields, malformed values, and trailing content.
+- Review transport availability is evaluated from the active Replay or
+  Simulator transport before a command enters dispatch or contextual help, so
+  unavailable timeline actions are not advertised as executable.
+- The third corrective pass makes unified playback subscribe in Editor and
+  Plan as well as Review, synchronizes every Simulator update back to the
+  tactical cursor/play state, and labels paused Simulator scrubbing as a
+  projection-only operation that leaves its authoritative runtime tick
+  unchanged. Browser coverage exercises all three behaviors.
+- Every pointer and keyboard command now enters the same availability-checked
+  stable-ID invocation boundary, including planning battlefield cells and
+  Simulator controller, script, movement, preview, run, step, reset, and panel
+  controls. Clearing or rebinding a keyboard gesture does not disable its
+  native pointer action. Authoritative worker progress advances the shared
+  committed boundary, committed snapshots cannot be undone or redone across
+  that boundary, and committed Move/Remove/Undo/Redo pointer controls are
+  disabled and proven non-mutating.
+- Modal binding conflicts preserve the original context selector, precedence,
+  and key phase. .NET/Fable fixtures reject two simultaneously active modal
+  commands rebound to one gesture while retaining disjoint and key-up/key-down
+  bindings.
+- Persisted modal command IDs are checked against the complete qualified
+  Editor/Simulator ID vocabulary. A typo is rejected, while a valid command
+  from an inactive transient context imports and survives until that context
+  becomes active.
+- Availability is shared by help, keyboard resolution, pointer invocation, and
+  browser-default prevention. Browser coverage proves an unloaded Review
+  transport gesture is neither advertised nor default-prevented, then proves
+  the same actions appear after a replay is loaded. It also rebinds an
+  unavailable running-Simulator command and proves it is absent from help,
+  performs no action, and leaves `defaultPrevented = false`, while the rebound
+  command's native pointer control remains available.
+- Simulator pointer-only controller, script, and movement commands are listed
+  in contextual help by stable ID with an unbound/pointer-only label exactly
+  while executable; modal IDs already projected by the current context are not
+  duplicated.
+- Editor and Simulator stage-local default prevention resolve the same adapted
+  binding catalog as dispatch. Browser coverage clears or rebinds commands in
+  both stages, proving old defaults neither act nor prevent, while effective
+  replacement gestures still act and prevent as resolved commands.
+- Independent review approved the exact final state after five read-only review
+  passes and four corrective implementation passes. The final residual check
+  also verified that pointer-only Simulator actions remain in contextual help
+  but are not misleadingly exposed as configurable keyboard bindings.
 
 ## Review gate
 

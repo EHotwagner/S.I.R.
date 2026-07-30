@@ -20,6 +20,16 @@ related:
 
 # F# Codebase Architecture
 
+## Unified tactical client boundary
+
+`UnifiedTacticalWorkspace.fs` owns projection-only modality, time-channel,
+cursor, and command-binding contracts. It does not duplicate authoritative map,
+planning, simulation, or replay state. `App.fs` mounts one tactical shell and
+adapts the existing Editor, Plan, Simulate, and Review models into that shell;
+Rules/data and Samples remain separate. The live command registry supplies
+dispatch, contextual help, accessible shortcut metadata, conflict validation,
+and versioned deterministic local overrides.
+
 ## Decision status
 
 This is the canonical initial F# solution and dependency architecture.

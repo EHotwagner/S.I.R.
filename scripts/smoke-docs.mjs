@@ -146,7 +146,9 @@ if (!application || mount?.querySelector("header, h1")) {
   throw new Error("The Fable application did not mount inside the fsdocs page.");
 }
 
-const simulateButton = [...mount.querySelectorAll("button")].find(
+const simulateButton = [
+  ...mount.querySelectorAll('[aria-label="Map editor menu and toolbar"] button'),
+].find(
   (button) => button.textContent.trim() === "Simulate",
 );
 if (!simulateButton) {
@@ -246,7 +248,7 @@ if (
 }
 
 console.log(
-  "Documentation browser smoke passed: separate Simulator and Editor tabs use the available width, the editor exposes canonical unit symbols, and the rules workspace retains six scenarios and seven data tables.",
+  "Documentation browser smoke passed: the unified tactical workspace uses the available width, the editor exposes canonical unit symbols, and the rules workspace retains six scenarios and seven data tables.",
 );
 
 window.happyDOM.close();
