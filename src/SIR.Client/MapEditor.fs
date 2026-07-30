@@ -165,6 +165,29 @@ type UnitPaletteCursor =
       FactionIndex: int
       ResultIndex: int }
 
+type RegionShape =
+    | RectangleRegionShape
+    | PolygonRegionShape
+
+/// Keyboard-only presentation state for nested region construction and
+/// resettable edit previews. It is intentionally excluded from MapDefinition.
+type RegionKeyboardMode =
+    | RegionIdle
+    | RegionPurposeSelection of editingExisting: bool * highlighted: RegionPurpose
+    | RegionShapeSelection of purpose: RegionPurpose
+    | RegionRectangleConstruction of
+        purpose: RegionPurpose *
+        anchor: EditorCellAddress option
+    | RegionPolygonConstruction of
+        purpose: RegionPurpose *
+        vertices: EditorCellAddress array
+    | RegionMovePreview of original: RegionGeometry * preview: RegionGeometry
+    | RegionResizePreview of original: RegionGeometry * preview: RegionGeometry
+    | RegionVertexPreview of
+        original: RegionGeometry *
+        preview: RegionGeometry *
+        activeIndex: int
+
 type EditorGesture =
     | IdleGesture
     | SelectedObjectActionsGesture
@@ -253,6 +276,7 @@ type MapEditorState =
       UnitPlacementCursor: EditorCellAddress
       UnitAnnouncement: string
       RegionAnnouncement: string
+      RegionKeyboardMode: RegionKeyboardMode
       SelectedUnit: int32 option
       SelectedUnits: Set<int32>
       SelectedRegion: int32 option
@@ -310,6 +334,25 @@ type MapEditorAction =
     | CycleArmedUnitPreset of delta: int
     | CommitUnitPlacement of returnToBrowse: bool
     | ResetUnitMovePreview
+    | MoveRegionCursor of columnDelta: int32 * rowDelta: int32
+    | BeginNewRegion
+    | ChooseRegionPurpose of RegionPurpose
+    | ChooseRegionShape of RegionShape
+    | ActivateRegionCursor
+    | CommitRegionPolygon
+    | BacktrackRegionConstruction
+    | BeginSelectedRegionMove
+    | BeginSelectedRegionResize
+    | BeginSelectedRegionVertexEdit
+    | BeginSelectedRegionPurposeEdit
+    | MoveRegionEditPreview of
+        columnDelta: int32 *
+        rowDelta: int32 *
+        fromOppositeOrigin: bool
+    | CycleRegionVertex of delta: int
+    | ResetRegionEditPreview
+    | CommitRegionEditPreview
+    | CancelRegionKeyboardMode
     | CreateRectangleRegion of RegionPurpose * first: EditorCellAddress * last: EditorCellAddress
     | CreatePolygonRegion of RegionPurpose * vertices: EditorCellAddress array
     | SelectEditorRegion of int32 option
@@ -888,6 +931,7 @@ module MapEditor =
               CellRow = 0 }
           UnitAnnouncement = "Unit authoring ready."
           RegionAnnouncement = "Zone authoring ready."
+          RegionKeyboardMode = RegionIdle
           SelectedUnit = Some 1
           SelectedUnits = Set.singleton 1
           SelectedRegion = None
@@ -1425,6 +1469,22 @@ module MapEditor =
         | CycleArmedUnitPreset _
         | CommitUnitPlacement _
         | ResetUnitMovePreview
+        | MoveRegionCursor _
+        | BeginNewRegion
+        | ChooseRegionPurpose _
+        | ChooseRegionShape _
+        | ActivateRegionCursor
+        | CommitRegionPolygon
+        | BacktrackRegionConstruction
+        | BeginSelectedRegionMove
+        | BeginSelectedRegionResize
+        | BeginSelectedRegionVertexEdit
+        | BeginSelectedRegionPurposeEdit
+        | MoveRegionEditPreview _
+        | CycleRegionVertex _
+        | ResetRegionEditPreview
+        | CommitRegionEditPreview
+        | CancelRegionKeyboardMode
         | PreviewUnitPlacement _
         | BeginUnitMove _
         | ExtendUnitMove _
@@ -2611,6 +2671,22 @@ module MapEditor =
         | DuplicateEditorSelection -> Some UnitDomain
         | CreateRectangleRegion _
         | CreatePolygonRegion _
+        | MoveRegionCursor _
+        | BeginNewRegion
+        | ChooseRegionPurpose _
+        | ChooseRegionShape _
+        | ActivateRegionCursor
+        | CommitRegionPolygon
+        | BacktrackRegionConstruction
+        | BeginSelectedRegionMove
+        | BeginSelectedRegionResize
+        | BeginSelectedRegionVertexEdit
+        | BeginSelectedRegionPurposeEdit
+        | MoveRegionEditPreview _
+        | CycleRegionVertex _
+        | ResetRegionEditPreview
+        | CommitRegionEditPreview
+        | CancelRegionKeyboardMode
         | SetSelectedRegionPurpose _
         | SetSelectedRegionGeometry _
         | MoveSelectedRegion _
@@ -2845,6 +2921,34 @@ module MapEditor =
                 { CellColumn = vertex.CellColumn + columnDelta
                   CellRow = vertex.CellRow + rowDelta })
             |> RegionPolygon
+
+    let private regionBounds geometry =
+        match geometry with
+        | RegionRectangle(column, row, width, height) ->
+            column, row, column + width - 1, row + height - 1
+        | RegionPolygon vertices ->
+            vertices |> Array.minBy _.CellColumn |> _.CellColumn,
+            vertices |> Array.minBy _.CellRow |> _.CellRow,
+            vertices |> Array.maxBy _.CellColumn |> _.CellColumn,
+            vertices |> Array.maxBy _.CellRow |> _.CellRow
+
+    let private translatedRegionPreview map columnDelta rowDelta geometry =
+        let firstColumn, firstRow, lastColumn, lastRow = regionBounds geometry
+        let clampedColumnDelta =
+            max (-firstColumn) (min (map.Width - 1 - lastColumn) columnDelta)
+        let clampedRowDelta =
+            max (-firstRow) (min (map.Height - 1 - lastRow) rowDelta)
+        translatedRegionGeometry clampedColumnDelta clampedRowDelta geometry
+
+    let private selectedRegion state =
+        state.SelectedRegion
+        |> Option.bind (fun id -> Map.tryFind id state.Map.Regions)
+
+    let private regionPurposeName = function
+        | ObjectiveRegion -> "Objective"
+        | DeploymentZone Blue -> "Blue deployment"
+        | DeploymentZone Red -> "Red deployment"
+        | DeploymentZone NeutralSide -> "Neutral deployment"
 
     let private translatedSelection columnDelta rowDelta (source: EditorUnit array) =
         source
@@ -3272,6 +3376,261 @@ module MapEditor =
                     Validation = None
                     UnitAnnouncement = "Movement preview reset to the original positions." }
             | _ -> state
+        | MoveRegionCursor(columnDelta, rowDelta) ->
+            let current = state.KeyboardCursor.Cell
+            let cell =
+                { CellColumn =
+                    max 0 (min (state.Map.Width - 1) (current.CellColumn + columnDelta))
+                  CellRow =
+                    max 0 (min (state.Map.Height - 1) (current.CellRow + rowDelta)) }
+            { state with
+                TerrainCursor = cell
+                KeyboardCursor =
+                    { Cell = cell
+                      ObjectCycleIndex = 0 }
+                RegionAnnouncement =
+                    "Region cursor at column "
+                    + string (cell.CellColumn + 1)
+                    + ", row "
+                    + string (cell.CellRow + 1)
+                    + "." }
+        | BeginNewRegion ->
+            { state with
+                RegionKeyboardMode = RegionPurposeSelection(false, ObjectiveRegion)
+                RegionAnnouncement = "Choose region purpose: Objective, Blue deployment, or Red deployment."
+                Validation = None }
+        | ChooseRegionPurpose purpose ->
+            match state.RegionKeyboardMode with
+            | RegionPurposeSelection(false, _) ->
+                { state with
+                    RegionKeyboardMode = RegionShapeSelection purpose
+                    RegionAnnouncement = regionPurposeName purpose + " selected. Choose rectangle or polygon."
+                    Validation = None }
+            | RegionPurposeSelection(true, _) ->
+                { state with
+                    RegionKeyboardMode = RegionPurposeSelection(true, purpose)
+                    RegionAnnouncement = regionPurposeName purpose + " highlighted. Press Enter to apply."
+                    Validation = None }
+            | _ -> state
+        | ChooseRegionShape shape ->
+            match state.RegionKeyboardMode with
+            | RegionShapeSelection purpose ->
+                { state with
+                    RegionKeyboardMode =
+                        match shape with
+                        | RectangleRegionShape -> RegionRectangleConstruction(purpose, None)
+                        | PolygonRegionShape -> RegionPolygonConstruction(purpose, [||])
+                    RegionAnnouncement =
+                        match shape with
+                        | RectangleRegionShape -> "Rectangle geometry selected. Press Enter to set the first corner."
+                        | PolygonRegionShape -> "Polygon geometry selected. Press Enter to add the first vertex."
+                    Validation = None }
+            | _ -> state
+        | ActivateRegionCursor ->
+            let cursor = state.KeyboardCursor.Cell
+            match state.RegionKeyboardMode with
+            | RegionIdle ->
+                let selected =
+                    state.Map.Regions
+                    |> Map.toList
+                    |> List.sortBy fst
+                    |> List.tryPick (fun (id, region) ->
+                        if regionContains cursor region then Some id else None)
+                unlockedUpdate (SelectEditorRegion selected) state
+            | RegionRectangleConstruction(purpose, None) ->
+                { state with
+                    RegionKeyboardMode = RegionRectangleConstruction(purpose, Some cursor)
+                    RegionAnnouncement = "Rectangle first corner set. Move to the opposite corner and press Enter."
+                    Validation = None }
+            | RegionRectangleConstruction(purpose, Some anchor) ->
+                let next = unlockedUpdate (CreateRectangleRegion(purpose, anchor, cursor)) state
+                if next.Revision.Number = state.Revision.Number then next
+                else { next with RegionKeyboardMode = RegionIdle }
+            | RegionPolygonConstruction(purpose, vertices) ->
+                if Array.contains cursor vertices then
+                    { state with
+                        Validation = Some "Polygon vertices must be unique."
+                        RegionAnnouncement = "Duplicate polygon vertex ignored." }
+                else
+                    let vertices = Array.append vertices [| cursor |]
+                    { state with
+                        RegionKeyboardMode = RegionPolygonConstruction(purpose, vertices)
+                        Validation = None
+                        RegionAnnouncement =
+                            string vertices.Length
+                            + (if vertices.Length = 1 then " polygon vertex staged." else " polygon vertices staged.") }
+            | _ -> state
+        | CommitRegionPolygon ->
+            match state.RegionKeyboardMode with
+            | RegionPolygonConstruction(purpose, vertices) when vertices.Length >= 3 ->
+                let next = unlockedUpdate (CreatePolygonRegion(purpose, vertices)) state
+                if next.Revision.Number = state.Revision.Number then next
+                else { next with RegionKeyboardMode = RegionIdle }
+            | RegionPolygonConstruction _ ->
+                { state with
+                    Validation = Some "Polygon regions require at least three unique vertices."
+                    RegionAnnouncement = "Add at least three vertices before closing the polygon." }
+            | _ -> state
+        | BacktrackRegionConstruction ->
+            match state.RegionKeyboardMode with
+            | RegionRectangleConstruction(purpose, Some _) ->
+                { state with
+                    RegionKeyboardMode = RegionRectangleConstruction(purpose, None)
+                    Validation = None
+                    RegionAnnouncement = "Rectangle first corner cleared." }
+            | RegionPolygonConstruction(purpose, vertices) when not (Array.isEmpty vertices) ->
+                let vertices = vertices |> Array.take (vertices.Length - 1)
+                { state with
+                    RegionKeyboardMode = RegionPolygonConstruction(purpose, vertices)
+                    Validation = None
+                    RegionAnnouncement = string vertices.Length + " polygon vertices remain." }
+            | _ -> state
+        | BeginSelectedRegionMove ->
+            match selectedRegion state with
+            | Some region ->
+                { state with
+                    RegionKeyboardMode = RegionMovePreview(region.Geometry, region.Geometry)
+                    RegionAnnouncement = "Region movement preview started."
+                    Validation = None }
+            | None -> { state with Validation = Some "Select a region first." }
+        | BeginSelectedRegionResize ->
+            match selectedRegion state with
+            | Some { Geometry = RegionRectangle _ as geometry } ->
+                { state with
+                    RegionKeyboardMode = RegionResizePreview(geometry, geometry)
+                    RegionAnnouncement = "Rectangle resize preview started."
+                    Validation = None }
+            | Some _ -> { state with Validation = Some "Only rectangle regions can be resized." }
+            | None -> { state with Validation = Some "Select a region first." }
+        | BeginSelectedRegionVertexEdit ->
+            match selectedRegion state with
+            | Some { Geometry = RegionPolygon vertices as geometry } when not (Array.isEmpty vertices) ->
+                { state with
+                    RegionKeyboardMode = RegionVertexPreview(geometry, geometry, 0)
+                    RegionAnnouncement = "Polygon vertex 1 of " + string vertices.Length + " active."
+                    Validation = None }
+            | Some _ -> { state with Validation = Some "Only polygon regions have editable vertices." }
+            | None -> { state with Validation = Some "Select a region first." }
+        | BeginSelectedRegionPurposeEdit ->
+            match selectedRegion state with
+            | Some region ->
+                { state with
+                    RegionKeyboardMode = RegionPurposeSelection(true, region.Purpose)
+                    RegionAnnouncement = regionPurposeName region.Purpose + " purpose highlighted."
+                    Validation = None }
+            | None -> { state with Validation = Some "Select a region first." }
+        | MoveRegionEditPreview(columnDelta, rowDelta, fromOppositeOrigin) ->
+            match state.RegionKeyboardMode with
+            | RegionMovePreview(original, preview) ->
+                let moved = translatedRegionPreview state.Map columnDelta rowDelta preview
+                { state with
+                    RegionKeyboardMode = RegionMovePreview(original, moved)
+                    RegionAnnouncement = "Region movement preview updated."
+                    Validation = None }
+            | RegionResizePreview(original, RegionRectangle(column, row, width, height)) ->
+                let nextColumn, nextRow, nextWidth, nextHeight =
+                    if fromOppositeOrigin then
+                        let columnChange =
+                            max (-column) (min (width - 1) columnDelta)
+                        let rowChange =
+                            max (-row) (min (height - 1) rowDelta)
+                        column + columnChange,
+                        row + rowChange,
+                        width - columnChange,
+                        height - rowChange
+                    else
+                        column,
+                        row,
+                        max 1 (min (state.Map.Width - column) (width + columnDelta)),
+                        max 1 (min (state.Map.Height - row) (height + rowDelta))
+                let preview = RegionRectangle(nextColumn, nextRow, nextWidth, nextHeight)
+                { state with
+                    RegionKeyboardMode = RegionResizePreview(original, preview)
+                    RegionAnnouncement =
+                        "Rectangle preview "
+                        + string nextWidth + " by " + string nextHeight + "."
+                    Validation = None }
+            | RegionVertexPreview(original, RegionPolygon vertices, activeIndex) ->
+                let moved = Array.copy vertices
+                let vertex = moved[activeIndex]
+                moved[activeIndex] <-
+                    { CellColumn =
+                        max 0 (min (state.Map.Width - 1) (vertex.CellColumn + columnDelta))
+                      CellRow =
+                        max 0 (min (state.Map.Height - 1) (vertex.CellRow + rowDelta)) }
+                { state with
+                    RegionKeyboardMode = RegionVertexPreview(original, RegionPolygon moved, activeIndex)
+                    RegionAnnouncement = "Polygon vertex preview updated."
+                    Validation = None }
+            | _ -> state
+        | CycleRegionVertex delta ->
+            match state.RegionKeyboardMode with
+            | RegionVertexPreview(original, (RegionPolygon vertices as preview), activeIndex) ->
+                let index = (activeIndex + delta) % vertices.Length
+                let index = if index < 0 then index + vertices.Length else index
+                { state with
+                    RegionKeyboardMode = RegionVertexPreview(original, preview, index)
+                    RegionAnnouncement =
+                        "Polygon vertex "
+                        + string (index + 1)
+                        + " of "
+                        + string vertices.Length
+                        + " active." }
+            | _ -> state
+        | ResetRegionEditPreview ->
+            match state.RegionKeyboardMode with
+            | RegionMovePreview(original, _) ->
+                { state with
+                    RegionKeyboardMode = RegionMovePreview(original, original)
+                    RegionAnnouncement = "Region movement preview reset." }
+            | RegionResizePreview(original, _) ->
+                { state with
+                    RegionKeyboardMode = RegionResizePreview(original, original)
+                    RegionAnnouncement = "Rectangle resize preview reset." }
+            | RegionVertexPreview(original, RegionPolygon vertices, activeIndex) ->
+                match original with
+                | RegionPolygon originalVertices ->
+                    let reset = Array.copy vertices
+                    reset[activeIndex] <- originalVertices[activeIndex]
+                    { state with
+                        RegionKeyboardMode =
+                            RegionVertexPreview(original, RegionPolygon reset, activeIndex)
+                        RegionAnnouncement = "Active polygon vertex reset." }
+                | _ -> state
+            | _ -> state
+        | CommitRegionEditPreview ->
+            match state.RegionKeyboardMode with
+            | RegionMovePreview(_, preview)
+            | RegionResizePreview(_, preview)
+            | RegionVertexPreview(_, preview, _) ->
+                let next = unlockedUpdate (SetSelectedRegionGeometry preview) state
+                if next.Validation.IsSome then next
+                else { next with RegionKeyboardMode = RegionIdle }
+            | RegionPurposeSelection(true, highlighted) ->
+                let next = unlockedUpdate (SetSelectedRegionPurpose highlighted) state
+                if next.Validation.IsSome then next
+                else { next with RegionKeyboardMode = RegionIdle }
+            | _ -> state
+        | CancelRegionKeyboardMode ->
+            match state.RegionKeyboardMode with
+            | RegionShapeSelection purpose ->
+                { state with
+                    RegionKeyboardMode = RegionPurposeSelection(false, purpose)
+                    RegionAnnouncement = "Returned to region purpose selection."
+                    Validation = None }
+            | RegionRectangleConstruction(purpose, _)
+            | RegionPolygonConstruction(purpose, _) ->
+                { state with
+                    RegionKeyboardMode = RegionShapeSelection purpose
+                    RegionAnnouncement = "Region geometry canceled; choose a shape."
+                    Validation = None }
+            | RegionIdle when state.SelectedRegion.IsSome ->
+                unlockedUpdate (SelectEditorRegion None) state
+            | _ ->
+                { state with
+                    RegionKeyboardMode = RegionIdle
+                    RegionAnnouncement = "Region keyboard operation canceled."
+                    Validation = None }
         | CreateRectangleRegion(purpose, first, last) ->
             let column = min first.CellColumn last.CellColumn
             let row = min first.CellRow last.CellRow
@@ -3739,7 +4098,7 @@ module MapEditor =
                 (column, row, direction)
                 (Some(kind, false))
                 ("Converted edge to " + edgeKindName kind + ".")
-                state
+                { state with Tool = Edge(direction, kind) }
         | ToggleDoorState(column, row, direction) ->
             let address = column, row, direction
             match Map.tryFind address state.Map.Edges with
@@ -3912,7 +4271,11 @@ module MapEditor =
             | IdleGesture -> state
         | CancelEditorGesture ->
             match state.Gesture with
-            | EdgePolylineGesture _ -> update BacktrackEdgePolyline state
+            | EdgePolylineGesture _ ->
+                { state with
+                    Gesture = IdleGesture
+                    Validation = None
+                    EdgeAnnouncement = "Edge polyline canceled; no staged segments were applied." }
             | _ ->
                 { state with
                     Gesture = IdleGesture

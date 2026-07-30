@@ -507,15 +507,15 @@ explicitly provides the stable contract needed for safe parallel work.
     deleted entirely by keyboard with one undoable command per documented
     commit.
 
-- [ ] **M5 — Deliver Edges, Zones, and Document keyboard operation**
-  - [ ] Implement semantic-edge kind/orientation selection, snapped cursor,
+- [x] **M5 — Deliver Edges, Zones, and Document keyboard operation**
+  - [x] Implement semantic-edge kind/orientation selection, snapped cursor,
         polyline construction, conversion, door toggle, erase, split, and join.
-  - [ ] Implement nested region purpose and shape selection.
-  - [ ] Implement rectangle and polygon creation plus region move, resize,
+  - [x] Implement nested region purpose and shape selection.
+  - [x] Implement rectangle and polygon creation plus region move, resize,
         vertex editing, purpose changes, and deletion.
-  - [ ] Implement document new, clear, export, import, design bundle, validation
+  - [x] Implement document new, clear, export, import, design bundle, validation
         traversal, and native confirmation/focus handoffs.
-  - [ ] Keep text fields, file pickers, selects, and browser-reserved
+  - [x] Keep text fields, file pickers, selects, and browser-reserved
         combinations outside modal dispatch.
   - **Exit gate:** every Editor command in the complete vocabulary has a
     keyboard route and a visible non-keyboard equivalent.

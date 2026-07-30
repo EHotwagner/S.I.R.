@@ -2939,19 +2939,16 @@ let main _ =
              segments.Length > 2 && segments.Length = (segments |> Array.distinct |> Array.length)
          | _ -> false)
         "Separated snapped clicks did not resolve to one continuous canonical polyline."
-    let emptyAfterEscape =
+    let canceledAfterEscape =
         edgeBase
         |> MapEditor.update (ChooseTool(Edge(EastEdge, Wall)))
         |> MapEditor.update (ActivateEdge(1, 1, EastEdge))
         |> MapEditor.update CancelEditorGesture
-    let canceledAfterEscape =
-        emptyAfterEscape |> MapEditor.update CancelEditorGesture
     require
-        ((match emptyAfterEscape.Gesture with
-          | EdgePolylineGesture(Wall, segments) -> Array.isEmpty segments
-          | _ -> false)
-         && canceledAfterEscape.Gesture = IdleGesture)
-        "Escape did not remove the last segment before canceling an empty polyline."
+        (canceledAfterEscape.Gesture = IdleGesture
+         && canceledAfterEscape.Revision.Digest = edgeBase.Revision.Digest
+         && canceledAfterEscape.EdgeAnnouncement.Contains("no staged segments"))
+        "Escape did not cancel the complete uncommitted edge polyline."
     let committedOnSwitch =
         edgeBase
         |> MapEditor.update (ChooseTool(Edge(EastEdge, Wall)))
@@ -3394,6 +3391,85 @@ let main _ =
               "REGION-POLYGON-SELF-INTERSECTION" ])
         ("The deterministic Milestone 7 zone review fixture changed.\n"
          + zoneFixture)
+
+    let keyboardRectangle =
+        { editor with
+            Map = { editor.Map with Regions = Map.empty; NextRegionId = 1 }
+            SelectedRegion = None
+            KeyboardCursor =
+                { Cell = address 1 1
+                  ObjectCycleIndex = 0 } }
+        |> MapEditor.update BeginNewRegion
+        |> MapEditor.update (ChooseRegionPurpose(DeploymentZone Blue))
+        |> MapEditor.update (ChooseRegionShape RectangleRegionShape)
+        |> MapEditor.update ActivateRegionCursor
+        |> MapEditor.update (MoveRegionCursor(2, 1))
+        |> MapEditor.update ActivateRegionCursor
+    let keyboardRectangleMovedPreview =
+        keyboardRectangle
+        |> MapEditor.update BeginSelectedRegionMove
+        |> MapEditor.update (MoveRegionEditPreview(2, 0, false))
+    let keyboardRectangleReset =
+        keyboardRectangleMovedPreview
+        |> MapEditor.update ResetRegionEditPreview
+    let keyboardRectangleMoved =
+        keyboardRectangleMovedPreview
+        |> MapEditor.update CommitRegionEditPreview
+    let keyboardRectangleResized =
+        keyboardRectangleMoved
+        |> MapEditor.update BeginSelectedRegionResize
+        |> MapEditor.update (MoveRegionEditPreview(1, 1, false))
+        |> MapEditor.update CommitRegionEditPreview
+    let keyboardPolygon =
+        { keyboardRectangle with
+            KeyboardCursor =
+                { Cell = address 5 1
+                  ObjectCycleIndex = 0 } }
+        |> MapEditor.update BeginNewRegion
+        |> MapEditor.update (ChooseRegionPurpose ObjectiveRegion)
+        |> MapEditor.update (ChooseRegionShape PolygonRegionShape)
+        |> MapEditor.update ActivateRegionCursor
+        |> MapEditor.update (MoveRegionCursor(3, 0))
+        |> MapEditor.update ActivateRegionCursor
+        |> MapEditor.update (MoveRegionCursor(-1, 3))
+        |> MapEditor.update ActivateRegionCursor
+        |> MapEditor.update CommitRegionPolygon
+    let keyboardPolygonVertexPreview =
+        keyboardPolygon
+        |> MapEditor.update BeginSelectedRegionVertexEdit
+        |> MapEditor.update (CycleRegionVertex 1)
+        |> MapEditor.update (MoveRegionEditPreview(0, 1, false))
+    let keyboardPolygonVertexReset =
+        keyboardPolygonVertexPreview
+        |> MapEditor.update ResetRegionEditPreview
+    let keyboardPolygonVertexCommitted =
+        keyboardPolygonVertexPreview
+        |> MapEditor.update CommitRegionEditPreview
+    let keyboardPurposeCommitted =
+        keyboardPolygonVertexCommitted
+        |> MapEditor.update BeginSelectedRegionPurposeEdit
+        |> MapEditor.update (ChooseRegionPurpose(DeploymentZone Red))
+        |> MapEditor.update CommitRegionEditPreview
+    require
+        (keyboardRectangle.Map.Regions.Count = 1
+         && keyboardRectangle.UndoHistory.Length = 1
+         && keyboardRectangle.RegionKeyboardMode = RegionIdle
+         && keyboardRectangleMovedPreview.Map = keyboardRectangle.Map
+         && keyboardRectangleReset.RegionKeyboardMode =
+            RegionMovePreview(
+                keyboardRectangle.Map.Regions[1].Geometry,
+                keyboardRectangle.Map.Regions[1].Geometry
+            )
+         && keyboardRectangleMoved.UndoHistory.Length = 2
+         && keyboardRectangleResized.UndoHistory.Length = 3
+         && keyboardPolygon.Map.Regions.Count = 2
+         && keyboardPolygon.UndoHistory.Length = 2
+         && keyboardPolygonVertexPreview.Map = keyboardPolygon.Map
+         && keyboardPolygonVertexReset.RegionKeyboardMode <> RegionIdle
+         && keyboardPolygonVertexCommitted.UndoHistory.Length = 3
+         && keyboardPurposeCommitted.UndoHistory.Length = 4
+         && keyboardPurposeCommitted.Map.Regions[2].Purpose = DeploymentZone Red)
+        "M5 keyboard rectangle/polygon construction or resettable region edit previews were not atomic."
 
     let pngHeader =
         [| 137uy; 80uy; 78uy; 71uy; 13uy; 10uy; 26uy; 10uy

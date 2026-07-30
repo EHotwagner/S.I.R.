@@ -38,7 +38,12 @@ type Msg =
     | LoadMapSample of string
     | LoadSimulationSample of string
     | LoadReplaySample of string
-    | KeyPressed of key: string * controlOrMeta: bool * shift: bool * repeat: bool
+    | KeyPressed of
+        key: string *
+        controlOrMeta: bool *
+        shift: bool *
+        alt: bool *
+        repeat: bool
     | KeyReleased of string
     | ToggleInputHelp of focusPanel: bool
     | ApplicationFocusLost
@@ -135,10 +140,18 @@ let private closeDesktopMenus () : unit = jsNative
 [<Emit("""
 setTimeout(() => {
   const target = document.getElementById($0);
-  if (target instanceof HTMLElement) target.focus();
+  if (target && typeof target.focus === "function") target.focus();
 }, 0);
 """)>]
 let private focusElementAfterRender (id: string) : unit = jsNative
+
+[<Emit("""
+setTimeout(() => {
+  const target = document.getElementById($0);
+  if (target instanceof window.HTMLInputElement && target.type === "file") target.click();
+}, 0);
+""")>]
+let private openFilePickerAfterRender (id: string) : unit = jsNative
 
 let private fileBytes (file: File) =
     async {
@@ -490,7 +503,7 @@ let rec update msg model =
             { model with
                 PendingInterchangeReview =
                     Some(MapEditorInterchange.evaluate format sourceName text) },
-            Cmd.none
+            Cmd.ofEffect (fun _ -> focusElementAfterRender "editor-interchange-review")
     | BackgroundFileSelected file ->
         model,
         Cmd.OfAsync.perform
@@ -504,7 +517,8 @@ let rec update msg model =
             ))
             model
     | RejectInterchangeReview ->
-        { model with PendingInterchangeReview = None }, Cmd.none
+        { model with PendingInterchangeReview = None },
+        Cmd.ofEffect (fun _ -> focusElementAfterRender "editor-map-stage")
     | AcceptInterchangeReview ->
         match model.PendingInterchangeReview with
         | Some review ->
@@ -513,7 +527,11 @@ let rec update msg model =
                 let importText =
                     MapEditor.export { model.Editor with Map = candidate }
                 let next, command = update (EditorChanged(LoadMapText importText)) model
-                { next with PendingInterchangeReview = None }, command
+                { next with PendingInterchangeReview = None },
+                Cmd.batch [
+                    command
+                    Cmd.ofEffect (fun _ -> focusElementAfterRender "editor-map-stage")
+                ]
             | Error _ -> model, Cmd.none
         | None -> model, Cmd.none
     | LoadMapSample sampleId ->
@@ -858,7 +876,16 @@ let rec update msg model =
             PreviousFrame = None
             PresentationAlpha = 1.0 },
         Cmd.ofEffect (fun _ ->
-            scheduleMapAutosave (MapEditor.autosaveText editor))
+            scheduleMapAutosave (MapEditor.autosaveText editor)
+            match action with
+            | RequestNewMap
+            | RequestClearMap
+            | Resize _ when editor.PendingDestructiveChange.IsSome ->
+                focusElementAfterRender "editor-destructive-confirmation"
+            | ConfirmDestructiveChange
+            | CancelDestructiveChange ->
+                focusElementAfterRender "editor-map-stage"
+            | _ -> ())
     | EditorPulse ->
         match model.Simulator with
         | Some simulator when simulator.IsRunning ->
@@ -1014,12 +1041,13 @@ let rec update msg model =
         else
             let next, effects = Shell.playbackTick model.Shell
             { model with Shell = next }, effectsToCmd effects
-    | KeyPressed(key, controlOrMeta, shift, repeat)
+    | KeyPressed(key, controlOrMeta, shift, alt, repeat)
         when
             model.Workspace = EditorWorkspace
             && model.Editor.PendingDestructiveChange.IsSome
             && not controlOrMeta
             && not shift
+            && not alt
             && (key = "Enter" || key = "Escape")
         ->
         match
@@ -1027,11 +1055,12 @@ let rec update msg model =
                 key
                 controlOrMeta
                 shift
+                alt
                 repeat
         with
         | Some action -> update (EditorChanged action) model
         | None -> model, Cmd.none
-    | KeyPressed(key, controlOrMeta, _, repeat)
+    | KeyPressed(key, controlOrMeta, _, _, repeat)
         when
             (model.Workspace = EditorWorkspace
              || model.Workspace = SimulatorWorkspace)
@@ -1040,7 +1069,7 @@ let rec update msg model =
             && not repeat
         ->
         update (ToggleInputHelp true) model
-    | KeyPressed(key, controlOrMeta, _, repeat)
+    | KeyPressed(key, controlOrMeta, _, _, repeat)
         when
             model.InputHelpExpanded
             && key = "Escape"
@@ -1048,7 +1077,7 @@ let rec update msg model =
             && not repeat
         ->
         update (ToggleInputHelp true) model
-    | KeyPressed(key, controlOrMeta, _, true)
+    | KeyPressed(key, controlOrMeta, _, _, true)
         when
             not controlOrMeta
             && ((key = "F2"
@@ -1057,26 +1086,82 @@ let rec update msg model =
                 || (key = "F3" && model.Workspace = EditorWorkspace))
         ->
         model, Cmd.none
-    | KeyPressed(key, controlOrMeta, shift, repeat) ->
+    | KeyPressed(key, controlOrMeta, shift, alt, repeat) ->
         let currentWorkspace =
             match model.Workspace with
             | EditorWorkspace -> CurrentEditor
             | SimulatorWorkspace -> CurrentSimulator
             | _ -> CurrentOther
 
-        match
-            CurrentModalInput.resolveKeyDown
-                currentWorkspace
-                key
-                controlOrMeta
-                shift
-                repeat
-        with
-        | Some(CurrentEditorAction action) ->
+        let resolvedM5 =
+            if model.Workspace <> EditorWorkspace || alt then
+                None
+            else
+                let activeDomain =
+                    match model.EditorToolPanel with
+                    | TerrainTools -> TerrainDomain
+                    | UnitTools -> UnitDomain
+                    | EdgeTools -> EdgeDomain
+                    | ZoneTools -> RegionDomain
+                    | DocumentTools -> DocumentDomain
+                let facts =
+                    { Editor = model.Editor
+                      ActiveDomain = activeDomain
+                      PanHeld = model.EditorSpacePressed
+                      InputHelpExpanded = model.InputHelpExpanded }
+                let contexts = ModalInput.deriveEditorContexts facts
+                let input =
+                    { Key = NormalizedKey.create key None
+                      Modifiers =
+                        { ControlOrMeta = controlOrMeta
+                          Shift = shift
+                          Alt = alt }
+                      Phase = KeyDown }
+                match ModalInput.resolve contexts input repeat (ModalInput.editorCatalog facts) with
+                | Resolved resolved when
+                    resolved.Id.StartsWith("editor.edge.", StringComparison.Ordinal)
+                    || resolved.Id.StartsWith("editor.region.", StringComparison.Ordinal)
+                    || resolved.Id.StartsWith("editor.document.", StringComparison.Ordinal)
+                    ->
+                    Some resolved.Command
+                | _ -> None
+
+        match resolvedM5 with
+        | Some(EditorCommand action) ->
             update (EditorChanged action) model
-        | Some(CurrentEditorWorkspaceAction action) ->
+        | Some(EditorWorkspaceCommand action) ->
             update (EditorWorkspaceChanged action) model
-        | Some(CurrentChooseEditorPanel panel) ->
+        | Some(EditorDocumentCommand ExportMapDocument) ->
+            update ExportMap model
+        | Some(EditorDocumentCommand ExportRepositoryDesignBundle) ->
+            update ExportDesignBundle model
+        | Some(EditorDocumentCommand OpenMapImport) ->
+            model, Cmd.ofEffect (fun _ -> openFilePickerAfterRender "editor-map-import")
+        | Some(EditorDocumentCommand(FocusDocumentControl target)) ->
+            let id =
+                match target with
+                | MapImportControl -> "editor-map-import"
+                | LayerStateControls -> "editor-layer-controls"
+                | LocalBackgroundControls -> "editor-background-file"
+                | MapDimensionControls -> "map-width"
+                | SavedViewControls -> "editor-saved-view-controls"
+            model, Cmd.ofEffect (fun _ -> focusElementAfterRender id)
+        | Some _ -> model, Cmd.none
+        | None when alt -> model, Cmd.none
+        | None ->
+          match
+              CurrentModalInput.resolveKeyDown
+                  currentWorkspace
+                  key
+                  controlOrMeta
+                  shift
+                  repeat
+          with
+          | Some(CurrentEditorAction action) ->
+            update (EditorChanged action) model
+          | Some(CurrentEditorWorkspaceAction action) ->
+            update (EditorWorkspaceChanged action) model
+          | Some(CurrentChooseEditorPanel panel) ->
             let appPanel =
                 match panel with
                 | CurrentTerrainPanel -> TerrainTools
@@ -1086,7 +1171,7 @@ let rec update msg model =
                 | CurrentDocumentPanel -> DocumentTools
 
             update (EditorToolPanelChanged appPanel) model
-        | Some CurrentChooseSelectAndShowTerrainPanel ->
+          | Some CurrentChooseSelectAndShowTerrainPanel ->
             let next, command =
                 update (EditorChanged(ChooseTool Select)) model
 
@@ -1094,11 +1179,11 @@ let rec update msg model =
                 EditorToolPanel = TerrainTools
                 EditorToolPanelVisible = true },
             command
-        | Some CurrentToggleEditorPanel ->
+          | Some CurrentToggleEditorPanel ->
             update ToggleEditorToolPanelVisibility model
-        | Some CurrentToggleSimulatorPanel ->
+          | Some CurrentToggleSimulatorPanel ->
             update ToggleSimulatorToolPanelVisibility model
-        | Some CurrentEscapeEditor ->
+          | Some CurrentEscapeEditor ->
             let workspaceAction, editorAction =
                 CurrentModalInput.editorEscapeActions model.Editor.Gesture
 
@@ -1106,11 +1191,11 @@ let rec update msg model =
             |> update (EditorWorkspaceChanged workspaceAction)
             |> fst
             |> update (EditorChanged editorAction)
-        | Some(CurrentSetEditorSpaceHeld held) ->
+          | Some(CurrentSetEditorSpaceHeld held) ->
             { model with EditorSpacePressed = held }, Cmd.none
-        | Some(CurrentSimulatorAction action) ->
+          | Some(CurrentSimulatorAction action) ->
             update (SimulatorChanged action) model
-        | None when model.Workspace = PlanningWorkspace ->
+          | None when model.Workspace = PlanningWorkspace ->
             match key, controlOrMeta with
             | ("z" | "Z"), true ->
                 update
@@ -1151,7 +1236,7 @@ let rec update msg model =
             | ("e" | "E"), false -> update (PlanningChanged(ChoosePlanningTool EngagementTool)) model
             | ("m" | "M"), false -> update (PlanningChanged(ChoosePlanningTool SynchronizationTool)) model
             | _ -> model, Cmd.none
-        | None when model.Workspace = ReplayWorkspace ->
+          | None when model.Workspace = ReplayWorkspace ->
             match key with
             | " "
             | "k"
@@ -1162,7 +1247,7 @@ let rec update msg model =
             | "]" -> update (ShellMsg NextEvent) model
             | "Escape" -> update (ShellMsg CancelRequested) model
             | _ -> model, Cmd.none
-        | None -> model, Cmd.none
+          | None -> model, Cmd.none
     | KeyReleased key ->
         match CurrentModalInput.resolveKeyUp key with
         | Some(CurrentSetEditorSpaceHeld held) ->
@@ -1222,6 +1307,7 @@ let subscriptions model =
                             keyboardEvent.key,
                             keyboardEvent.ctrlKey || keyboardEvent.metaKey,
                             keyboardEvent.shiftKey,
+                            keyboardEvent.altKey,
                             keyboardEvent.repeat
                         )
                     )
@@ -3565,6 +3651,7 @@ let private editorUnitSvg
 let private editorBattlefield
     (state: MapEditorState)
     (view: EditorWorkspaceState)
+    activeDomain
     spacePressed
     dispatch
     =
@@ -3730,6 +3817,41 @@ let private editorBattlefield
                         | "m"
                         | "M" -> Some DocumentTools
                         | _ -> None
+                    let m5Command =
+                        if
+                            state.PendingDestructiveChange.IsSome
+                            || event.ctrlKey
+                            || event.metaKey
+                            || event.altKey
+                        then
+                            None
+                        else
+                            let facts =
+                                { Editor = state
+                                  ActiveDomain = activeDomain
+                                  PanHeld = spacePressed
+                                  InputHelpExpanded = false }
+                            let input =
+                                { Key = NormalizedKey.create event.key None
+                                  Modifiers =
+                                    { ControlOrMeta = false
+                                      Shift = event.shiftKey
+                                      Alt = false }
+                                  Phase = KeyDown }
+                            match
+                                ModalInput.resolve
+                                    (ModalInput.deriveEditorContexts facts)
+                                    input
+                                    event.repeat
+                                    (ModalInput.editorCatalog facts)
+                            with
+                            | Resolved resolved when
+                                resolved.Id.StartsWith("editor.edge.", StringComparison.Ordinal)
+                                || resolved.Id.StartsWith("editor.region.", StringComparison.Ordinal)
+                                || resolved.Id.StartsWith("editor.document.", StringComparison.Ordinal)
+                                ->
+                                Some resolved.Command
+                            | _ -> None
                     if spacePressed then
                         match arrowDelta with
                         | Some(columnDelta, rowDelta) ->
@@ -3757,7 +3879,31 @@ let private editorBattlefield
                         event.preventDefault ()
                         event.stopPropagation ()
                         if not event.repeat then
-                            dispatch (KeyPressed(" ", false, false, false))
+                            dispatch (KeyPressed(" ", false, false, false, false))
+                    elif m5Command.IsSome then
+                        event.preventDefault ()
+                        event.stopPropagation ()
+                        match m5Command.Value with
+                        | EditorCommand action ->
+                            dispatch (EditorChanged action)
+                        | EditorWorkspaceCommand action ->
+                            dispatch (EditorWorkspaceChanged action)
+                        | EditorDocumentCommand ExportMapDocument ->
+                            dispatch ExportMap
+                        | EditorDocumentCommand ExportRepositoryDesignBundle ->
+                            dispatch ExportDesignBundle
+                        | EditorDocumentCommand OpenMapImport ->
+                            openFilePickerAfterRender "editor-map-import"
+                        | EditorDocumentCommand(FocusDocumentControl target) ->
+                            focusElementAfterRender (
+                                match target with
+                                | MapImportControl -> "editor-map-import"
+                                | LayerStateControls -> "editor-layer-controls"
+                                | LocalBackgroundControls -> "editor-background-file"
+                                | MapDimensionControls -> "map-width"
+                                | SavedViewControls -> "editor-saved-view-controls"
+                            )
+                        | _ -> ()
                     elif
                         panelShortcut.IsSome
                         && not event.ctrlKey
@@ -5335,6 +5481,7 @@ let private editorToolbar
                                 prop.children [
                                     Html.span "Choose local PNG, JPEG, or WebP"
                                     Html.input [
+                                        prop.id "editor-background-file"
                                         prop.type'.file
                                         prop.accept "image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp"
                                         prop.ariaLabel "Choose local raster map background"
@@ -5471,6 +5618,8 @@ let private editorToolbar
                                 dispatch (EditorChanged(SetMapName value)))
                         ]
                         Html.div [
+                            prop.id "editor-layer-controls"
+                            prop.tabIndex 0
                             prop.className "editor-layer-controls"
                             prop.role.group
                             prop.ariaLabel "Editing layer states"
@@ -5505,6 +5654,8 @@ let private editorToolbar
                             ]
                         ]
                         Html.div [
+                            prop.id "editor-saved-view-controls"
+                            prop.tabIndex 0
                             prop.className "control-row"
                             prop.children [
                                 button "Save current view" "Save the current camera as a named authoring view" false (fun _ ->
@@ -5589,6 +5740,7 @@ let private editorToolbar
                                     prop.children [
                                         Html.span "Import map"
                                         Html.input [
+                                            prop.id "editor-map-import"
                                             prop.type'.file
                                             prop.accept ".sir-map,.dd2vtt,.uvtt,.json,.xml,text/plain,application/json"
                                             prop.ariaLabel "Import SIR map"
@@ -6148,6 +6300,8 @@ let private editorDestructiveConfirmation state dispatch =
             prop.className "editor-modal-backdrop"
             prop.children [
                 Html.section [
+                    prop.id "editor-destructive-confirmation"
+                    prop.tabIndex -1
                     prop.className "panel editor-confirmation editor-modal"
                     prop.custom ("role", "alertdialog")
                     prop.ariaLabel "Confirm destructive map command"
@@ -7287,6 +7441,8 @@ let view model dispatch =
                         match model.PendingInterchangeReview with
                         | Some review ->
                             Html.section [
+                                prop.id "editor-interchange-review"
+                                prop.tabIndex -1
                                 prop.className "panel editor-interchange-review"
                                 prop.ariaLabel "Interchange import review"
                                 prop.role.alert
@@ -7344,6 +7500,7 @@ let view model dispatch =
                                 editorBattlefield
                                     model.Editor
                                     model.EditorView
+                                    (editorDomain model.EditorToolPanel)
                                     model.EditorSpacePressed
                                     dispatch
                                 editorToolbar

@@ -160,8 +160,8 @@ module CurrentModalInput =
     /// Resolves the transient destructive-confirmation layer before ordinary
     /// Editor commands, independent of which non-text application element
     /// currently owns focus.
-    let resolvePendingDestructiveKey key controlOrMeta shift repeat =
-        if controlOrMeta || shift || repeat then
+    let resolvePendingDestructiveKey key controlOrMeta shift alt repeat =
+        if controlOrMeta || shift || alt || repeat then
             None
         else
             match key with
