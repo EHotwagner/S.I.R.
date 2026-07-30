@@ -16,6 +16,7 @@
     <Compile Include="Shell.fs" />
     <Compile Include="SimulatorWorkerProtocol.fs" />
     <Compile Include="PlanningWorkspace.fs" />
+    <Compile Include="UnifiedTacticalWorkspace.fs" />
     <Compile Include="ExperienceSamples.fs" />
     <Compile Include="Comparison.fs" />
   </ItemGroup>

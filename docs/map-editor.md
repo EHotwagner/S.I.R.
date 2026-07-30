@@ -17,12 +17,15 @@ related:
 
 # Map Editor Reference
 
-The browser application separates full-width **Editor** and **Simulator** tabs.
-The editor supports terrain, semantic edges, square units, and versioned map
-files. The simulator provides manual control, repeatable scripts, and a bundled
-general controller.
+The browser application presents **Editor**, **Plan**, **Simulate**, and
+**Review** as modalities of one
+[unified tactical workspace](unified-tactical-workspace.md). The battlefield,
+camera, selection where valid, and time cursor remain mounted while the active
+tooling changes. The editor supports terrain, semantic edges, square units, and
+versioned map files. Simulate provides manual control, repeatable scripts, and
+a bundled general controller.
 
-Open the [simulator](interactive-rules-lab.md) to use it.
+Use the Simulate modality for the immutable sandbox handoff.
 
 ## Accepted editor contract
 

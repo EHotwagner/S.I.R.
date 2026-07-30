@@ -158,6 +158,13 @@ data and demonstrably removes duplication without coupling SVG to `Scene`.
 
 ## Replay transport
 
+Review is a modality of the
+[unified tactical workspace](unified-tactical-workspace.md). The shared
+transport and current-time cursor seek both predicted projections and committed
+replay frames without remounting the tactical shell. Authored, predicted,
+accepted, and committed lanes remain visually and semantically distinct;
+seeking committed history is read-only.
+
 Worker protocol 3 carries one bounded inspection projection at an exact
 committed tick. Full replay projections contain the minimal kernel slice's
 board, one-cell unit occupancy, side, bounded health, semantic edges, disclosed

@@ -226,7 +226,85 @@ const scenarioResponse = (message) => {
 class SmokeWorker {
   postMessage(message) {
     workerMessages.push(message);
-    if (
+    if (message.Kind === "sir-simulator-session") {
+      const requestTag = message.Request?.tag;
+      let response;
+      if (requestTag === 0) {
+        response = {
+          tag: 0,
+          fields: [
+            {
+              IsSnapshot: true,
+              Projection: message.Request.fields[0].InitialProjection,
+            },
+          ],
+        };
+      } else if (requestTag === 1) {
+        response = {
+          tag: 1,
+          fields: [message.Correlation.PlanRevision, []],
+        };
+      } else if (requestTag === 2) {
+        response = {
+          tag: 2,
+          fields: [{ tag: 2, fields: [] }, ["intent-only smoke disclosure"], []],
+        };
+      } else if (requestTag === 3) {
+        const progressTick = 300;
+        queueMicrotask(() =>
+          this.onmessage?.({
+            data: structuredClone({
+              Kind: message.Kind,
+              ProtocolVersion: 1,
+              Correlation: message.Correlation,
+              CurrentTick: progressTick,
+              Response: {
+                tag: 5,
+                fields: [
+                  1,
+                  {
+                    IsSnapshot: false,
+                    Projection: replayProjection(progressTick, true),
+                  },
+                ],
+              },
+            }),
+          }),
+        );
+        setTimeout(
+          () =>
+            this.onmessage?.({
+              data: structuredClone({
+                Kind: message.Kind,
+                ProtocolVersion: 1,
+                Correlation: message.Correlation,
+                CurrentTick: message.Request.fields[0].HorizonTicks,
+                Response: {
+                  tag: 3,
+                  fields: [message.Correlation.PlanRevision],
+                },
+              }),
+            }),
+          80,
+        );
+        return;
+      }
+      if (response) {
+        const currentTick =
+          requestTag === 3 ? message.Request.fields[0].HorizonTicks : message.Correlation.Tick;
+        queueMicrotask(() =>
+          this.onmessage?.({
+            data: structuredClone({
+              Kind: message.Kind,
+              ProtocolVersion: 1,
+              Correlation: message.Correlation,
+              CurrentTick: currentTick,
+              Response: response,
+            }),
+          }),
+        );
+      }
+    } else if (
       message.Request?.tag === 0 ||
       (Array.isArray(message.Request) && message.Request[0] === "LoadPackage")
     ) {
@@ -285,12 +363,68 @@ if (!application || application.querySelector("header, h1")) {
   throw new Error("The React simulator did not mount.");
 }
 
+const persistentTacticalShell = window.document.querySelector(
+  '[aria-label="Unified tactical workspace"][data-mounted-shell="persistent"]',
+);
+const persistentBattlefieldViewport = window.document.querySelector(
+  '#tactical-battlefield-viewport[data-viewport-lifecycle="shared"]',
+);
+const initialTimeline = persistentTacticalShell?.querySelector(
+  '[aria-label="Unified tactical timeline"]',
+);
+const modalityLabels = [
+  ...(persistentTacticalShell?.querySelectorAll(
+    '[aria-label="Tactical modality"] button',
+  ) ?? []),
+].map((button) => button.textContent.trim());
+if (
+  !persistentTacticalShell ||
+  !persistentBattlefieldViewport ||
+  window.document.querySelectorAll("#tactical-battlefield-viewport").length !== 1 ||
+  !initialTimeline ||
+  JSON.stringify(modalityLabels) !==
+    JSON.stringify(["Editor", "Plan", "Simulate", "Review"]) ||
+  initialTimeline.querySelectorAll('input[type="range"]').length !== 1
+) {
+  throw new Error(
+    "The mounted tactical shell, four native modality controls, or unified time ruler is missing.",
+  );
+}
+const editorRevisionBeforeScrub = window.document
+  .querySelector('[aria-label="SVG tactical map workspace"]')
+  ?.getAttribute("data-editor-revision");
+const timelineStepForward = [
+  ...initialTimeline.querySelectorAll("button"),
+].find((button) => button.textContent.trim() === "+1");
+for (let index = 0; index < 17; index += 1) {
+  timelineStepForward.click();
+  await window.happyDOM.waitUntilComplete();
+}
+if (
+  Number(
+    window.document
+      .querySelector('[aria-label="Unified tactical timeline"]')
+      ?.getAttribute("data-time-cursor"),
+  ) !== 17 ||
+  window.document
+    .querySelector('[aria-label="SVG tactical map workspace"]')
+    ?.getAttribute("data-editor-revision") !== editorRevisionBeforeScrub
+) {
+  throw new Error(
+    `Timeline scrub failed projection-only guard: cursor=${window.document
+      .querySelector('[aria-label="Unified tactical timeline"]')
+      ?.getAttribute("data-time-cursor")}, revision=${editorRevisionBeforeScrub}->${window.document
+      .querySelector('[aria-label="SVG tactical map workspace"]')
+      ?.getAttribute("data-editor-revision")}.`,
+  );
+}
+
 const buttonByText = (text) =>
   [...window.document.querySelectorAll("button")].find(
     (button) => button.textContent.trim() === text,
   );
 
-buttonByText("Planner")?.click();
+buttonByText("Plan")?.click();
 await window.happyDOM.waitUntilComplete();
 const planner = window.document.querySelector(
   '[aria-label="Coordinated planning workspace"]',
@@ -299,11 +433,20 @@ const stateLabels = [...planner?.querySelectorAll(".planning-status .eyebrow") ?
   .map((element) => element.textContent.trim());
 if (
   !planner ||
+  window.document.querySelector("#unified-tactical-workspace") !==
+    persistentTacticalShell ||
+  window.document.querySelector("#tactical-battlefield-viewport") !==
+    persistentBattlefieldViewport ||
+  Number(
+    window.document
+      .querySelector('[aria-label="Unified tactical timeline"]')
+      ?.getAttribute("data-time-cursor"),
+  ) !== 17 ||
   !["Authored", "Predicted", "Accepted", "Committed"].every((label) =>
     stateLabels.includes(label)
   ) ||
   !planner.querySelector('[aria-label^="Planning roster"]') ||
-  !planner.querySelector('[aria-label="Battlefield route authoring"]') ||
+  !persistentBattlefieldViewport.querySelector('[aria-label="Battlefield route authoring"]') ||
   !planner.querySelector('[aria-label="Planning timeline lanes"]') ||
   !planner.querySelector('[aria-label="Planning inspector"]') ||
   !planner.querySelector('[aria-label="Planning validation navigation"]') ||
@@ -313,8 +456,64 @@ if (
     "The planning workspace did not mount its distinct state channels, five coordinated panes, and real worker initialization.",
   );
 }
+window.document.querySelector("#tactical-input-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+const planHelpIds = [
+  ...window.document.querySelectorAll(
+    "#tactical-input-panel [data-tactical-command]",
+  ),
+].map((item) => item.getAttribute("data-tactical-command"));
+if (
+  ![
+    "planning.preview",
+    "planning.validate",
+    "planning.roster.select.1",
+    "planning.inspector.waypoint.west",
+    "planning.battlefield.cell.0.0",
+  ].every((id) => planHelpIds.includes(id))
+) {
+  throw new Error(
+    `Plan contextual help omitted executable worker, roster, or inspector actions: ${planHelpIds.join(",")}.`,
+  );
+}
+window.document.querySelector("#tactical-input-panel button:last-child")?.click();
+await window.happyDOM.waitUntilComplete();
+const planCursorBeforePlayback = Number(
+  window.document
+    .querySelector('[aria-label="Unified tactical timeline"]')
+    ?.getAttribute("data-time-cursor"),
+);
+[
+  ...window.document.querySelectorAll(
+    '[aria-label="Unified tactical timeline"] button',
+  ),
+]
+  .find((button) => button.textContent.trim() === "Play")
+  ?.click();
+await new Promise((resolveWait) => setTimeout(resolveWait, 130));
+await window.happyDOM.waitUntilComplete();
+const planCursorAfterPlayback = Number(
+  window.document
+    .querySelector('[aria-label="Unified tactical timeline"]')
+    ?.getAttribute("data-time-cursor"),
+);
+if (planCursorAfterPlayback <= planCursorBeforePlayback) {
+  throw new Error(
+    `Unified Plan playback did not advance its tactical cursor: ${planCursorBeforePlayback} -> ${planCursorAfterPlayback}.`,
+  );
+}
+[
+  ...window.document.querySelectorAll(
+    '[aria-label="Unified tactical timeline"] button',
+  ),
+]
+  .find((button) => button.textContent.trim() === "Pause")
+  ?.click();
+await window.happyDOM.waitUntilComplete();
 const authoredBefore = planner.querySelector(".planning-status strong")?.textContent;
-planner.querySelector("[data-planning-column][data-planning-row]")?.click();
+persistentBattlefieldViewport
+  .querySelector("[data-planning-column][data-planning-row]")
+  ?.click();
 await window.happyDOM.waitUntilComplete();
 const authoredAfter = window.document
   .querySelector('[aria-label="Coordinated planning workspace"] .planning-status strong')
@@ -338,8 +537,239 @@ if (
 ) {
   throw new Error("Planning undo/redo did not restore the authored command.");
 }
+const planningCells = [
+  ...persistentBattlefieldViewport.querySelectorAll(
+    "[data-planning-column][data-planning-row]",
+  ),
+];
+planningCells[1]?.click();
+await window.happyDOM.waitUntilComplete();
+buttonByText("Undo")?.click();
+await window.happyDOM.waitUntilComplete();
+buttonByText("Validate")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document.querySelector(
+    '[aria-label="Unified tactical timeline"] [data-time-channel="Accepted"]',
+  ) ||
+  !window.document
+    .querySelector('[aria-label="Coordinated planning workspace"]')
+    ?.textContent.includes("Revision accepted by worker validation")
+) {
+  throw new Error(
+    "A worker-accepted planning revision did not project into the shared tactical segments.",
+  );
+}
+buttonByText("Commit")?.click();
+await new Promise((resolveWait) => setTimeout(resolveWait, 10));
+const progressBoundary = Number(
+  window.document
+    .querySelector('[aria-label="Unified tactical timeline"]')
+    ?.getAttribute("data-committed-through"),
+);
+if (progressBoundary !== 300) {
+  throw new Error(
+    `Authoritative SimulatorProgress did not advance App's shared boundary before PlanCommitted (${progressBoundary}).`,
+  );
+}
+await new Promise((resolveWait) => setTimeout(resolveWait, 100));
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document.querySelector(
+    '[aria-label="Unified tactical timeline"] [data-time-channel="Committed"]',
+  ) ||
+  !window.document
+    .querySelector('[aria-label="Coordinated planning workspace"]')
+    ?.textContent.includes("Plan committed to simulator session")
+) {
+  throw new Error(
+    "A worker-committed planning revision did not project into the shared tactical boundary and segments.",
+  );
+}
+const committedRevisionText = window.document
+  .querySelector('[aria-label="Coordinated planning workspace"] .planning-status strong')
+  ?.textContent;
+const committedUndo = buttonByText("Undo");
+const committedRedo = buttonByText("Redo");
+const committedMove = buttonByText("Move command here");
+const committedRemove = buttonByText("Remove command");
+if (
+  !committedUndo?.disabled ||
+  !committedRedo?.disabled ||
+  !committedMove?.disabled ||
+  !committedRemove?.disabled
+) {
+  throw new Error(
+    "Committed planning history left Undo, Redo, Move, or Remove pointer actions available.",
+  );
+}
+for (const guarded of [committedUndo, committedRedo, committedMove, committedRemove]) {
+  guarded?.click();
+}
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document
+    .querySelector('[aria-label="Coordinated planning workspace"] .planning-status strong')
+    ?.textContent !== committedRevisionText ||
+  !window.document
+    .querySelector('[aria-label="Planning timeline lanes"]')
+    ?.textContent.includes("Route")
+) {
+  throw new Error("A pointer action mutated committed planning history.");
+}
+for (const modality of ["Simulate", "Review", "Editor", "Plan"]) {
+  buttonByText(modality)?.click();
+  await window.happyDOM.waitUntilComplete();
+  if (
+    window.document.querySelector("#tactical-battlefield-viewport") !==
+      persistentBattlefieldViewport ||
+    window.document.querySelectorAll("#tactical-battlefield-viewport").length !== 1
+  ) {
+    throw new Error(`The tactical battlefield viewport remounted in ${modality}.`);
+  }
+}
 buttonByText("Editor")?.click();
 await window.happyDOM.waitUntilComplete();
+
+window.document.querySelector("#tactical-input-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+buttonByText("Configure bindings")?.click();
+await window.happyDOM.waitUntilComplete();
+const reviewBindingRow = [
+  ...window.document.querySelectorAll(".tactical-binding-list li"),
+].find((item) => item.textContent.includes("Switch to Review"));
+const reviewBindingInput = reviewBindingRow?.querySelector("input");
+if (!reviewBindingRow || !reviewBindingInput) {
+  throw new Error(
+    `The native binding configuration omitted Review (row=${Boolean(reviewBindingRow)}, inputs=${window.document.querySelectorAll(".tactical-binding-dialog input").length}): ${window.document.querySelector(".tactical-binding-dialog")?.textContent ?? "dialog closed"}`,
+  );
+}
+reviewBindingInput.focus();
+reviewBindingInput.dispatchEvent(
+  new window.KeyboardEvent("keydown", {
+    key: "F10",
+    bubbles: true,
+    cancelable: true,
+  }),
+);
+await window.happyDOM.waitUntilComplete();
+[
+  ...window.document.querySelectorAll(".tactical-binding-list li"),
+]
+  .find((item) => item.textContent.includes("Switch to Review"))
+  ?.querySelector("button")
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+if (!window.localStorage.getItem("sir.tactical-bindings.v1")) {
+  throw new Error(
+    `Binding apply did not persist: ${window.document.querySelector(".tactical-binding-dialog")?.textContent}`,
+  );
+}
+window.document.querySelector(".tactical-binding-dialog button")?.click();
+await window.happyDOM.waitUntilComplete();
+window.document
+  .querySelector('[aria-label="SVG tactical map workspace"] svg[role="application"]')
+  ?.dispatchEvent(
+  new window.KeyboardEvent("keydown", {
+    key: "F10",
+    bubbles: true,
+    cancelable: true,
+  }),
+  );
+await window.happyDOM.waitUntilComplete();
+if (
+  buttonByText("Review")?.getAttribute("aria-pressed") !== "true" ||
+  !window.localStorage.getItem("sir.tactical-bindings.v1")?.includes("F10")
+) {
+  throw new Error(
+    `A rebound effective gesture did not drive dispatch or durable local storage (review=${buttonByText("Review")?.getAttribute("aria-pressed")}, storage=${window.localStorage.getItem("sir.tactical-bindings.v1")}, diagnostics=${window.document.querySelector(".tactical-binding-dialog")?.textContent}).`,
+  );
+}
+buttonByText("Editor")?.click();
+await window.happyDOM.waitUntilComplete();
+if (window.document.querySelector("#tactical-input-panel")) {
+  window.document.querySelector("#tactical-input-toggle")?.click();
+  await window.happyDOM.waitUntilComplete();
+}
+window.document.querySelector("#tactical-input-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+buttonByText("Configure bindings")?.click();
+await window.happyDOM.waitUntilComplete();
+let panelBindingRow = [
+  ...window.document.querySelectorAll(".tactical-binding-list li"),
+].find((item) => item.textContent.includes("Show or hide the active command panel"));
+[...panelBindingRow.querySelectorAll("button")]
+  .find((item) => item.textContent.trim() === "Clear")
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+window.document.querySelector(".tactical-binding-dialog button")?.click();
+await window.happyDOM.waitUntilComplete();
+const editorRibbonWasCollapsed = window.document
+  .querySelector(".editor-ribbon")
+  ?.classList.contains("is-collapsed");
+const dispatchEditorModalKey = (key) => {
+  const event = new window.KeyboardEvent("keydown", {
+    key,
+    bubbles: true,
+    cancelable: true,
+  });
+  window.document
+    .querySelector('[aria-label="SVG tactical map workspace"] svg[role="application"]')
+    ?.dispatchEvent(event);
+  return event;
+};
+const clearedEditorDefault = dispatchEditorModalKey("F2");
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document.querySelector(".editor-ribbon")?.classList.contains("is-collapsed") !==
+    editorRibbonWasCollapsed ||
+  clearedEditorDefault.defaultPrevented
+) {
+  throw new Error(
+    "Clearing an Editor modal binding left its legacy F2 action or stage-local default prevention active.",
+  );
+}
+buttonByText("Configure bindings")?.click();
+await window.happyDOM.waitUntilComplete();
+panelBindingRow = [
+  ...window.document.querySelectorAll(".tactical-binding-list li"),
+].find((item) => item.textContent.includes("Show or hide the active command panel"));
+const panelBindingInput = panelBindingRow?.querySelector("input");
+panelBindingInput?.focus();
+panelBindingInput?.dispatchEvent(
+  new window.KeyboardEvent("keydown", {
+    key: "F11",
+    bubbles: true,
+    cancelable: true,
+  }),
+);
+await window.happyDOM.waitUntilComplete();
+panelBindingRow = [
+  ...window.document.querySelectorAll(".tactical-binding-list li"),
+].find((item) => item.textContent.includes("Show or hide the active command panel"));
+[...panelBindingRow.querySelectorAll("button")]
+  .find((item) => item.textContent.trim() === "Apply")
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+window.document.querySelector(".tactical-binding-dialog button")?.click();
+await window.happyDOM.waitUntilComplete();
+const reboundEditorEffective = dispatchEditorModalKey("F11");
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document.querySelector(".editor-ribbon")?.classList.contains("is-collapsed") ===
+    editorRibbonWasCollapsed ||
+  !reboundEditorEffective.defaultPrevented
+) {
+  throw new Error(
+    "A rebound Editor modal command did not replace its cleared default and stage-local cancellation.",
+  );
+}
+dispatchEditorModalKey("F11");
+await window.happyDOM.waitUntilComplete();
+if (window.document.querySelector("#tactical-input-panel")) {
+  window.document.querySelector("#tactical-input-toggle")?.click();
+  await window.happyDOM.waitUntilComplete();
+}
 
 const viewMenu = [...window.document.querySelectorAll(
   '[aria-label="Map editor menus"] summary',
@@ -371,7 +801,11 @@ if (
 buttonByText("Cancel")?.click();
 await window.happyDOM.waitUntilComplete();
 
-const handoffButton = buttonByText("Simulate");
+const handoffButton = [
+  ...window.document.querySelectorAll(
+    '[aria-label="Map editor menu and toolbar"] button',
+  ),
+].find((button) => button.textContent.trim() === "Simulate");
 if (
   !handoffButton ||
   !window.document
@@ -383,7 +817,11 @@ if (
 handoffButton.click();
 await window.happyDOM.waitUntilComplete();
 
-buttonByText("Controls")?.click();
+window.document
+  .querySelector(
+    '[aria-label="Simulator menu and toolbar"] button[aria-label="Toggle simulator controls panel"]',
+  )
+  ?.click();
 await window.happyDOM.waitUntilComplete();
 const controllerPanel = window.document.querySelector(
   '[aria-label="Simulation controllers"]',
@@ -401,7 +839,9 @@ if (
   editorBattlefield?.querySelectorAll('[data-terrain="objective"]').length !== 2 ||
   editorBattlefield?.querySelectorAll('[data-terrain="rough"]').length !== 4
 ) {
-  throw new Error("The full-width simulator or its controller modes did not mount.");
+  throw new Error(
+    `The full-width simulator or its controller modes did not mount: menu=${Boolean(window.document.querySelector('[aria-label="Simulator menu and toolbar"]'))}, panel=${Boolean(window.document.querySelector('[aria-label="Simulator command panel"]'))}, controllers=${controllerPanel?.textContent}, units=${editorBattlefield?.querySelectorAll("[data-unit-id]").length}.`,
+  );
 }
 
 controllerPanel
@@ -415,6 +855,37 @@ if (
     ?.includes("exact tick 1")
 ) {
   throw new Error("The simulator did not advance one deterministic tick.");
+}
+if (
+  window.document
+    .querySelector('[aria-label="Unified tactical timeline"]')
+    ?.getAttribute("data-time-cursor") !== "1"
+) {
+  throw new Error("Simulator stepping did not synchronize the unified tactical cursor.");
+}
+const simulatorRuler = window.document.querySelector(
+  '[aria-label="Unified tactical timeline"] input[type="range"]',
+);
+Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set.call(
+  simulatorRuler,
+  "10",
+);
+simulatorRuler.dispatchEvent(new window.Event("input", { bubbles: true }));
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document
+    .querySelector('[aria-label="Unified tactical timeline"]')
+    ?.getAttribute("data-time-cursor") !== "10" ||
+  window.document
+    .querySelector('[aria-label="Unified tactical timeline"]')
+    ?.getAttribute("data-scrub-semantics") !==
+    "projection-only-runtime-tick-unchanged" ||
+  !window.document
+    .querySelector('[aria-label="Editable simulation SVG battlefield"] svg')
+    ?.getAttribute("aria-label")
+    ?.includes("exact tick 1")
+) {
+  throw new Error("Simulator scrubbing mutated its authoritative runtime tick.");
 }
 
 buttonByText("Editor")?.click();
@@ -477,7 +948,9 @@ if (
   pastedDigest === initialEditorDigest ||
   editorWorkspace.querySelectorAll("[data-editor-unit-id]").length !== 5
 ) {
-  throw new Error("Fable did not commit a copied formation as one immutable revision.");
+  throw new Error(
+    `Fable did not commit a copied formation as one immutable revision (connected=${editorWorkspace.isConnected}, digest=${editorCanvas?.getAttribute("data-editor-revision")}, liveDigest=${window.document.querySelector('[aria-label="SVG tactical map workspace"]')?.getAttribute("data-editor-revision")}, units=${window.document.querySelectorAll("[data-editor-unit-id]").length}).`,
+  );
 }
 editorWorkspace.dispatchEvent(
   new window.KeyboardEvent("keydown", {
@@ -653,9 +1126,9 @@ const dispatchCurrentEditorKey = (options) =>
     );
 
 const editorModalStrip = window.document.querySelector(
-  'section.modal-input-strip[aria-label="Current input mode"]',
+  'section.modal-input-strip[aria-label="Current tactical actions"]',
 );
-const editorModalToggle = window.document.querySelector("#modal-input-toggle");
+const editorModalToggle = window.document.querySelector("#tactical-input-toggle");
 const editorModeStatus = editorModalStrip?.querySelector(
   '[role="status"][aria-live="polite"][aria-atomic="true"]',
 );
@@ -663,7 +1136,7 @@ if (
   !editorModalStrip ||
   editorModalToggle?.tagName !== "BUTTON" ||
   editorModalToggle.getAttribute("aria-expanded") !== "false" ||
-  editorModalToggle.getAttribute("aria-controls") !== "modal-input-panel" ||
+  editorModalToggle.getAttribute("aria-controls") !== "tactical-input-panel" ||
   !editorModeStatus
 ) {
   throw new Error(
@@ -676,11 +1149,11 @@ window.document
   ?.focus();
 dispatchCurrentEditorKey({ key: "?", shiftKey: true });
 await window.happyDOM.waitUntilComplete();
-const keyboardOpenedPanel = window.document.querySelector("#modal-input-panel");
+const keyboardOpenedPanel = window.document.querySelector("#tactical-input-panel");
 if (
   !keyboardOpenedPanel ||
   window.document.activeElement !== keyboardOpenedPanel ||
-  !keyboardOpenedPanel.getAttribute("aria-label")?.startsWith("Possible inputs for ") ||
+  !keyboardOpenedPanel.getAttribute("aria-label")?.startsWith("Executable actions for ") ||
   [...keyboardOpenedPanel.querySelectorAll("[data-modal-command]")].some(
     (item) => !item.getAttribute("aria-keyshortcuts"),
   )
@@ -692,27 +1165,27 @@ if (
 dispatchCurrentEditorKey({ key: "Escape" });
 await window.happyDOM.waitUntilComplete();
 if (
-  window.document.querySelector("#modal-input-panel") ||
-  window.document.activeElement?.id !== "modal-input-toggle"
+  window.document.querySelector("#tactical-input-panel") ||
+  window.document.activeElement?.id !== "tactical-input-toggle"
 ) {
   throw new Error("Closing Editor input help did not restore disclosure focus.");
 }
 
-window.document.querySelector("#modal-input-toggle")?.click();
+window.document.querySelector("#tactical-input-toggle")?.click();
 await window.happyDOM.waitUntilComplete();
 const regionInputIds = [
   ...window.document.querySelectorAll("[data-modal-command]"),
 ].map((item) => item.getAttribute("data-modal-command"));
-window.document.querySelector("#modal-input-toggle")?.click();
+window.document.querySelector("#tactical-input-toggle")?.click();
 await window.happyDOM.waitUntilComplete();
 if (!regionInputIds.includes("editor.region.create.begin")) {
   throw new Error(`The live Zone disclosure omitted New Region: ${regionInputIds.join(",")}.`);
 }
 dispatchCurrentEditorKey({ key: "n" });
 await window.happyDOM.waitUntilComplete();
-if (!window.document.querySelector(".modal-input-strip")?.textContent.includes("NEW / PURPOSE")) {
+if (!window.document.querySelector(".modal-input-state-strip")?.textContent.includes("NEW / PURPOSE")) {
   throw new Error(
-    `The live N route did not enter region purpose selection: ${window.document.querySelector(".modal-input-strip")?.textContent}.`,
+    `The live N route did not enter region purpose selection: ${window.document.querySelector(".modal-input-state-strip")?.textContent}.`,
   );
 }
 for (const key of ["b", "p", "Enter", "ArrowRight", "ArrowRight", "Enter", "ArrowDown", "ArrowDown", "Enter"]) {
@@ -721,12 +1194,12 @@ for (const key of ["b", "p", "Enter", "ArrowRight", "ArrowRight", "Enter", "Arro
 }
 if (
   !window.document
-    .querySelector(".modal-input-strip")
+    .querySelector(".modal-input-state-strip")
     ?.textContent.includes("3 vertices")
 ) {
   throw new Error(
     `The live region polygon mode did not stage three keyboard vertices: ${window.document
-      .querySelector(".modal-input-strip")
+      .querySelector(".modal-input-state-strip")
       ?.textContent}.`,
   );
 }
@@ -748,7 +1221,7 @@ dispatchCurrentEditorKey({ key: "ArrowRight", shiftKey: true });
 await window.happyDOM.waitUntilComplete();
 if (currentEditorDigest() !== keyboardRegionDigest) {
   throw new Error(
-    `The keyboard region move preview mutated the document before Enter: ${keyboardRegionDigest} -> ${currentEditorDigest()} / ${window.document.querySelector(".modal-input-strip")?.textContent}.`,
+    `The keyboard region move preview mutated the document before Enter: ${keyboardRegionDigest} -> ${currentEditorDigest()} / ${window.document.querySelector(".modal-input-state-strip")?.textContent}.`,
   );
 }
 dispatchCurrentEditorKey({ key: "Backspace" });
@@ -843,7 +1316,7 @@ if (
 window.document
   .querySelector('[aria-label="SVG tactical map workspace"] svg[role="application"]')
   ?.dispatchEvent(
-  new window.KeyboardEvent("keydown", { key: "F2", bubbles: true }),
+  new window.KeyboardEvent("keydown", { key: "F11", bubbles: true }),
 );
 await window.happyDOM.waitUntilComplete();
 if (
@@ -851,12 +1324,12 @@ if (
     '.editor-context-palette input[aria-label="Import SIR map"]',
   )
 ) {
-  throw new Error("F2 did not hide the active contextual ribbon.");
+  throw new Error("The rebound F11 did not hide the active contextual ribbon.");
 }
 window.document
   .querySelector('[aria-label="SVG tactical map workspace"] svg[role="application"]')
   ?.dispatchEvent(
-  new window.KeyboardEvent("keydown", { key: "F2", bubbles: true }),
+  new window.KeyboardEvent("keydown", { key: "F11", bubbles: true }),
 );
 await window.happyDOM.waitUntilComplete();
 if (
@@ -982,7 +1455,45 @@ if (
   );
 }
 
-buttonByText("Replay")?.click();
+buttonByText("Review")?.click();
+await window.happyDOM.waitUntilComplete();
+
+const unloadedReviewGesture = new window.KeyboardEvent("keydown", {
+  key: "ArrowRight",
+  ctrlKey: true,
+  bubbles: true,
+  cancelable: true,
+});
+window.document
+  .querySelector("#unified-tactical-workspace")
+  ?.dispatchEvent(unloadedReviewGesture);
+await window.happyDOM.waitUntilComplete();
+if (unloadedReviewGesture.defaultPrevented) {
+  throw new Error(
+    "An unavailable unloaded-Review transport gesture prevented the browser default.",
+  );
+}
+window.document.querySelector("#tactical-input-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+const reviewHelpIdsAtEnd = [
+  ...window.document.querySelectorAll(
+    "#tactical-input-panel [data-tactical-command]",
+  ),
+].map((item) => item.getAttribute("data-tactical-command"));
+if (
+  [
+    "timeline.play-toggle",
+    "timeline.step-back",
+    "timeline.step-forward",
+    "timeline.home",
+    "timeline.end",
+  ].some((id) => reviewHelpIdsAtEnd.includes(id))
+) {
+  throw new Error(
+    `Review help advertised timeline transport actions before a replay was loaded: ${reviewHelpIdsAtEnd.join(",")}.`,
+  );
+}
+window.document.querySelector("#tactical-input-panel button:last-child")?.click();
 await window.happyDOM.waitUntilComplete();
 
 const status = window.document.querySelector('[role="status"]');
@@ -1169,6 +1680,51 @@ if (
       + `status=${status?.textContent} messages=${JSON.stringify(workerMessages.slice(-2))}`,
   );
 }
+const sharedReplayRuler = window.document.querySelector(
+  '[aria-label="Unified tactical timeline"] input[type="range"]',
+);
+Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set.call(
+  sharedReplayRuler,
+  "1",
+);
+sharedReplayRuler.dispatchEvent(new window.Event("input", { bubbles: true }));
+await new Promise((resolveWait) => setTimeout(resolveWait, 0));
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document
+    .querySelector('[aria-label="Loaded replay SVG battlefield"] svg[role="application"]')
+    ?.getAttribute("aria-label")
+    ?.includes("exact tick 1") ||
+  window.document
+    .querySelector('[aria-label="Unified tactical timeline"]')
+    ?.getAttribute("data-time-cursor") !== "1"
+) {
+  throw new Error(
+    `The shared tactical ruler did not seek the actual Review projection (cursor=${window.document.querySelector('[aria-label="Unified tactical timeline"]')?.getAttribute("data-time-cursor")}, battlefield=${window.document.querySelector('[aria-label="Loaded replay SVG battlefield"] svg[role="application"]')?.getAttribute("aria-label")}, connected=${sharedReplayRuler.isConnected}).`,
+  );
+}
+window.document.querySelector("#tactical-input-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+const loadedReviewHelpIds = [
+  ...window.document.querySelectorAll(
+    "#tactical-input-panel [data-tactical-command]",
+  ),
+].map((item) => item.getAttribute("data-tactical-command"));
+if (
+  ![
+    "timeline.play-toggle",
+    "timeline.step-back",
+    "timeline.step-forward",
+    "timeline.home",
+    "timeline.end",
+  ].every((id) => loadedReviewHelpIds.includes(id))
+) {
+  throw new Error(
+    `Loaded Review help omitted executable transport actions: ${loadedReviewHelpIds.join(",")}.`,
+  );
+}
+window.document.querySelector("#tactical-input-panel button:last-child")?.click();
+await window.happyDOM.waitUntilComplete();
 
 const contact = loadedBattlefield.querySelector('[data-unit-id="10"]');
 contact?.dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
@@ -1406,26 +1962,191 @@ const simulatorTick = () => {
   return match ? Number(match[1]) : Number.NaN;
 };
 
-window.document.querySelector(".simulator-workspace #modal-input-toggle")?.click();
+window.document.querySelector("#tactical-input-toggle")?.click();
 await window.happyDOM.waitUntilComplete();
 const pausedSimulatorInputIds = [
   ...window.document.querySelectorAll(
-    ".simulator-workspace [data-modal-command]",
+    "#tactical-input-panel [data-modal-command]",
   ),
 ].map((item) => item.getAttribute("data-modal-command"));
+const pausedSimulatorPointerIds = [
+  ...window.document.querySelectorAll(
+    "#tactical-input-panel [data-tactical-command]",
+  ),
+].map((item) => item.getAttribute("data-tactical-command"));
 window.document
-  .querySelector(".simulator-workspace .modal-input-panel button")
+  .querySelector("#tactical-input-panel button:last-child")
   ?.click();
 await window.happyDOM.waitUntilComplete();
 if (
   !pausedSimulatorInputIds.includes("simulator.unit.next") ||
   !pausedSimulatorInputIds.includes("simulator.step") ||
-  !pausedSimulatorInputIds.includes("simulator.reset.request")
+  !pausedSimulatorInputIds.includes("simulator.reset.request") ||
+  ![
+    "simulator.pointer.controller.manual",
+    "simulator.pointer.script.set",
+    "simulator.pointer.movement.north",
+  ].every((id) => pausedSimulatorPointerIds.includes(id))
 ) {
   throw new Error(
-    `Paused Simulator omitted keyboard lifecycle inputs: ${pausedSimulatorInputIds.join(",")}.`,
+    `Paused Simulator omitted keyboard or pointer-only lifecycle inputs: modal=${pausedSimulatorInputIds.join(",")}; pointer=${pausedSimulatorPointerIds.join(",")}.`,
   );
 }
+window.document.querySelector("#tactical-input-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+buttonByText("Configure bindings")?.click();
+await window.happyDOM.waitUntilComplete();
+const pointerOnlyBindingRows = window.document.querySelectorAll(
+  '.tactical-binding-list [data-binding-command^="simulator.pointer."]',
+);
+if (pointerOnlyBindingRows.length !== 0) {
+  throw new Error(
+    "Pointer-only Simulator actions were incorrectly exposed as configurable keyboard bindings.",
+  );
+}
+const resetBindingRow = [
+  ...window.document.querySelectorAll(".tactical-binding-list li"),
+].find((item) => item.textContent.includes("Reset the simulator sandbox"));
+const resetBindingInput = resetBindingRow?.querySelector("input");
+resetBindingInput?.focus();
+resetBindingInput?.dispatchEvent(
+  new window.KeyboardEvent("keydown", {
+    key: "F12",
+    bubbles: true,
+    cancelable: true,
+  }),
+);
+await window.happyDOM.waitUntilComplete();
+[
+  ...window.document.querySelectorAll(".tactical-binding-list li"),
+]
+  .find((item) => item.textContent.includes("Reset the simulator sandbox"))
+  ?.querySelector("button")
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+window.document.querySelector(".tactical-binding-dialog button")?.click();
+await window.happyDOM.waitUntilComplete();
+window.document
+  .querySelector("#tactical-input-panel button:last-child")
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+let stageLocalResetConfirmCalls = 0;
+const stageLocalPreviousConfirm = window.confirm;
+window.confirm = () => {
+  stageLocalResetConfirmCalls += 1;
+  return false;
+};
+const clearedSimulatorDefault = new window.KeyboardEvent("keydown", {
+  key: "r",
+  bubbles: true,
+  cancelable: true,
+});
+window.document
+  .querySelector("#simulator-map-stage")
+  ?.dispatchEvent(clearedSimulatorDefault);
+await new Promise((done) => setTimeout(done, 10));
+const reboundSimulatorEffective = new window.KeyboardEvent("keydown", {
+  key: "F12",
+  bubbles: true,
+  cancelable: true,
+});
+window.document
+  .querySelector("#simulator-map-stage")
+  ?.dispatchEvent(reboundSimulatorEffective);
+await new Promise((done) => setTimeout(done, 10));
+window.confirm = stageLocalPreviousConfirm;
+if (
+  clearedSimulatorDefault.defaultPrevented ||
+  !reboundSimulatorEffective.defaultPrevented ||
+  stageLocalResetConfirmCalls !== 1
+) {
+  throw new Error(
+    `Simulator stage-local adapted binding diverged (old-prevented=${clearedSimulatorDefault.defaultPrevented}, new-prevented=${reboundSimulatorEffective.defaultPrevented}, actions=${stageLocalResetConfirmCalls}).`,
+  );
+}
+await sendSimulatorKey("k");
+window.document.querySelector("#tactical-input-toggle")?.click();
+await new Promise((done) => setTimeout(done, 10));
+const runningHelpIds = [
+  ...window.document.querySelectorAll(
+    "#tactical-input-panel [data-modal-command]",
+  ),
+].map((item) => item.getAttribute("data-modal-command"));
+const runningPointerHelpIds = [
+  ...window.document.querySelectorAll(
+    "#tactical-input-panel [data-tactical-command]",
+  ),
+].map((item) => item.getAttribute("data-tactical-command"));
+window.document
+  .querySelector("#tactical-input-panel button:last-child")
+  ?.click();
+await new Promise((done) => setTimeout(done, 10));
+let unavailableResetConfirmCalls = 0;
+const previousConfirm = window.confirm;
+window.confirm = () => {
+  unavailableResetConfirmCalls += 1;
+  return false;
+};
+const unavailableAdaptedModal = new window.KeyboardEvent("keydown", {
+  key: "F12",
+  bubbles: true,
+  cancelable: true,
+});
+window.document
+  .querySelector("#simulator-map-stage")
+  ?.dispatchEvent(unavailableAdaptedModal);
+await new Promise((done) => setTimeout(done, 10));
+window.confirm = previousConfirm;
+await sendSimulatorKey("k");
+let reboundPointerConfirmCalls = 0;
+window.confirm = () => {
+  reboundPointerConfirmCalls += 1;
+  return false;
+};
+window.document
+  .querySelector(
+    '[aria-label="Simulator menu and toolbar"] button[aria-label="Reset simulation to its immutable revision"]',
+  )
+  ?.click();
+await new Promise((done) => setTimeout(done, 10));
+window.confirm = previousConfirm;
+if (
+  runningHelpIds.includes("simulator.reset.request") ||
+  [
+    "simulator.pointer.controller.manual",
+    "simulator.pointer.script.set",
+    "simulator.pointer.movement.north",
+  ].some((id) => runningPointerHelpIds.includes(id)) ||
+  unavailableResetConfirmCalls !== 0 ||
+  reboundPointerConfirmCalls !== 1 ||
+  ![
+    ...window.document.querySelectorAll(
+      '[aria-label="Simulator menu and toolbar"] button[aria-label="Run or pause deterministic simulation"]',
+    ),
+  ].some((button) => button.textContent.trim() === "Run") ||
+  unavailableAdaptedModal.defaultPrevented
+) {
+  throw new Error(
+    `Unavailable adapted Simulator binding or rebound pointer authority diverged (help=${runningHelpIds.join(",")}, unavailable-actions=${unavailableResetConfirmCalls}, pointer-actions=${reboundPointerConfirmCalls}, prevented=${unavailableAdaptedModal.defaultPrevented}).`,
+  );
+}
+window.document.querySelector("#tactical-input-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+buttonByText("Configure bindings")?.click();
+await window.happyDOM.waitUntilComplete();
+const restoredResetBindingRow = [
+  ...window.document.querySelectorAll(".tactical-binding-list li"),
+].find((item) => item.textContent.includes("Reset the simulator sandbox"));
+[...(restoredResetBindingRow?.querySelectorAll("button") ?? [])]
+  .find((item) => item.textContent.trim() === "Restore")
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+window.document.querySelector(".tactical-binding-dialog button")?.click();
+await window.happyDOM.waitUntilComplete();
+window.document
+  .querySelector("#tactical-input-panel button:last-child")
+  ?.click();
+await window.happyDOM.waitUntilComplete();
 for (const [key, modifiers] of [
   ["k", { ctrlKey: true }],
   ["k", { metaKey: true }],
@@ -1450,12 +2171,12 @@ for (const [key, modifiers] of [
 }
 if (
   window.document
-    .querySelector(".simulator-workspace #modal-input-toggle")
+    .querySelector("#tactical-input-toggle")
     ?.getAttribute("aria-expanded") !== "false"
 ) {
   throw new Error("Alt+? entered Simulator input-help modal dispatch.");
 }
-window.document.querySelector(".simulator-workspace #modal-input-toggle")?.click();
+window.document.querySelector("#tactical-input-toggle")?.click();
 await window.happyDOM.waitUntilComplete();
 const altEscape = new window.KeyboardEvent("keydown", {
   key: "Escape",
@@ -1471,13 +2192,13 @@ if (
   !altEscapeDispatched ||
   altEscape.defaultPrevented ||
   window.document
-    .querySelector(".simulator-workspace #modal-input-toggle")
+    .querySelector("#tactical-input-toggle")
     ?.getAttribute("aria-expanded") !== "true"
 ) {
   throw new Error("Alt+Escape closed Simulator input help or was canceled.");
 }
 window.document
-  .querySelector(".simulator-workspace .modal-input-panel button")
+  .querySelector("#tactical-input-panel button:last-child")
   ?.click();
 await window.happyDOM.waitUntilComplete();
 const selectedBeforeTraversal = simulatorModalState()?.textContent;
@@ -1577,7 +2298,7 @@ if (
 await sendSimulatorKey("?", { shiftKey: true });
 const runningInputIds = [
   ...window.document.querySelectorAll(
-    ".simulator-workspace [data-modal-command]",
+    "#tactical-input-panel [data-modal-command]",
   ),
 ].map((item) => item.getAttribute("data-modal-command"));
 if (

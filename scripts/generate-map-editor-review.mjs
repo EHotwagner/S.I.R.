@@ -184,12 +184,16 @@ await writeBoard(
   "Signature-validated local raster alignment beneath the grid.",
 );
 
-buttonByText("Simulate")?.click();
+[
+  ...window.document.querySelectorAll(
+    '[aria-label="Map editor menu and toolbar"] button',
+  ),
+].find((button) => button.textContent.trim() === "Simulate")?.click();
 await window.happyDOM.waitUntilComplete();
 await writeBoard(
   "simulator-handoff",
   window.document.querySelector(
-    '[aria-label="Editable simulation SVG battlefield"] svg[role="application"]',
+    '[aria-label="Editable simulation SVG battlefield"] svg',
   ),
   null,
   "Immutable authored revision rendered by the simulator.",

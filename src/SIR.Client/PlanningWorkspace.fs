@@ -60,6 +60,7 @@ type PlanningWorkspaceState =
       Roster: PlanningRosterMember array
       SelectedUnit: int32 option
       SelectedCommand: string option
+      AuthoringTick: int32
       Tool: PlanningTool
       Commands: PlanningCommand list
       Revision: int64
@@ -80,6 +81,8 @@ type PlanningWorkspaceState =
 type PlanningAction =
     | SelectPlanningUnit of int32
     | SelectPlanningCommand of string
+    | SetPlanningAuthoringTick of int32
+    | MoveSelectedPlanningCommandTo of int32
     | ChoosePlanningTool of PlanningTool
     | AddRouteWaypoint of column: int32 * row: int32
     | SetPlanningFacing of Direction8
@@ -170,9 +173,40 @@ module PlanningWorkspace =
     let private selected (state: PlanningWorkspaceState) =
         state.SelectedUnit
 
+    let private committedCommands boundary commands =
+        commands
+        |> List.filter (fun command -> command.EarliestTick <= boundary)
+
+    let private preservesCommittedHistory
+        (state: PlanningWorkspaceState)
+        (candidateSnapshot: PlanningSnapshot)
+        =
+        match state.CommittedTick with
+        | None -> true
+        | Some boundary ->
+            let candidate =
+                committedCommands boundary candidateSnapshot.Commands
+            let current = committedCommands boundary state.Commands
+            candidate = current
+
+    let canUndo state =
+        state.Past
+        |> List.tryHead
+        |> Option.exists (preservesCommittedHistory state)
+
+    let canRedo state =
+        state.Future
+        |> List.tryHead
+        |> Option.exists (preservesCommittedHistory state)
+
     let private append kind (state: PlanningWorkspaceState) =
         match selected state with
         | None -> state
+        | Some _ when
+            state.CommittedTick
+            |> Option.exists (fun tick -> state.AuthoringTick <= tick)
+            ->
+            state
         | Some unitId ->
             let id = "command-" + state.NextCommand.ToString("D4")
             { edit
@@ -180,7 +214,7 @@ module PlanningWorkspace =
                     commands
                     @ [ { Id = id
                           UnitId = unitId
-                          EarliestTick = 0
+                          EarliestTick = state.AuthoringTick
                           Kind = kind } ])
                 state with
                 SelectedCommand = Some id
@@ -209,6 +243,7 @@ module PlanningWorkspace =
           Roster = roster
           SelectedUnit = roster |> Array.tryHead |> Option.map _.UnitId
           SelectedCommand = None
+          AuthoringTick = 0
           Tool = RouteTool
           Commands = []
           Revision = 0L
@@ -235,6 +270,27 @@ module PlanningWorkspace =
             let command = state.Commands |> List.find (fun value -> value.Id = commandId)
             { state with SelectedUnit = Some command.UnitId; SelectedCommand = Some commandId }
         | SelectPlanningCommand _ -> state
+        | SetPlanningAuthoringTick tick ->
+            { state with AuthoringTick = max 0 tick }
+        | MoveSelectedPlanningCommandTo tick ->
+            match state.SelectedCommand with
+            | Some id ->
+                match state.Commands |> List.tryFind (fun command -> command.Id = id) with
+                | Some command when
+                    state.CommittedTick
+                    |> Option.exists (fun boundary ->
+                        command.EarliestTick <= boundary || tick <= boundary)
+                    ->
+                    state
+                | Some _ ->
+                    edit
+                        (List.map (fun command ->
+                            if command.Id = id then
+                                { command with EarliestTick = max 0 tick }
+                            else command))
+                        state
+                | None -> state
+            | None -> state
         | ChoosePlanningTool tool -> { state with Tool = tool }
         | AddRouteWaypoint(column, row) ->
             match state.SelectedUnit with
@@ -247,6 +303,11 @@ module PlanningWorkspace =
                         && match command.Kind with PlannedRoute _ -> true | _ -> false)
 
                 match existing with
+                | Some route when
+                    state.CommittedTick
+                    |> Option.exists (fun tick -> route.EarliestTick <= tick)
+                    ->
+                    state
                 | Some route ->
                     edit
                         (List.map (fun command ->
@@ -287,12 +348,22 @@ module PlanningWorkspace =
             append (PlannedSynchronization(marker, deadline)) state
         | RemoveSelectedPlanningCommand ->
             match state.SelectedCommand with
+            | Some id when
+                state.Commands
+                |> List.tryFind (fun command -> command.Id = id)
+                |> Option.bind (fun command ->
+                    state.CommittedTick
+                    |> Option.map (fun boundary ->
+                        command.EarliestTick <= boundary))
+                |> Option.defaultValue false
+                ->
+                state
             | Some id ->
                 { edit (List.filter (fun command -> command.Id <> id)) state with SelectedCommand = None }
             | None -> state
         | UndoPlanning ->
             match state.Past with
-            | previous :: remaining ->
+            | previous :: remaining when preservesCommittedHistory state previous ->
                 { state with
                     Commands = previous.Commands
                     Revision = previous.Revision
@@ -302,10 +373,10 @@ module PlanningWorkspace =
                     SelectedCommand = None
                     Predicted = None
                     AcceptedRevision = None }
-            | [] -> state
+            | _ -> state
         | RedoPlanning ->
             match state.Future with
-            | next :: remaining ->
+            | next :: remaining when preservesCommittedHistory state next ->
                 { state with
                     Commands = next.Commands
                     Revision = next.Revision
@@ -315,7 +386,7 @@ module PlanningWorkspace =
                     SelectedCommand = None
                     Predicted = None
                     AcceptedRevision = None }
-            | [] -> state
+            | _ -> state
         | FocusPlanningIssue index when index >= 0 && index < state.Issues.Length ->
             let issue = state.Issues[index]
             { state with
@@ -397,6 +468,7 @@ module PlanningWorkspace =
             { advanced with
                 CommittedRevision = Some revision
                 CommittedTick = Some envelope.CurrentTick
+                AuthoringTick = max advanced.AuthoringTick (envelope.CurrentTick + 1)
                 WorkerStatus = "Plan committed to simulator session" }
         | AuthoritativeRunLoaded(_, _, finalTick) ->
             { advanced with

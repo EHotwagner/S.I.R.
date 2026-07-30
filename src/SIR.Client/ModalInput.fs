@@ -243,7 +243,8 @@ module ModalInput =
         | ContentEditableElement -> false
         | ApplicationElement -> true
 
-    let private precedenceRank = function
+    let precedenceRank precedence =
+        match precedence with
         | WorkspaceCommands -> 0
         | ActiveTool -> 1
         | ActiveGestureOrPreview -> 2
@@ -311,7 +312,7 @@ module ModalInput =
         | AnySimulatorContext -> contexts |> List.exists isSimulatorContext
         | ExactContext expected -> contexts |> List.contains expected
 
-    let private selectorsOverlap left right =
+    let selectorsOverlap left right =
         match left, right with
         | AnyEditorContext, AnyEditorContext
         | AnySimulatorContext, AnySimulatorContext -> true
@@ -470,6 +471,118 @@ module ModalInput =
             | NoMatch
             | NoAvailableMatch _ -> false)
         |> List.sortBy (fun input -> input.Group, input.Label, input.Id)
+
+    let tryAvailableCommandById
+        (contexts: ModalContext list)
+        id
+        (catalog: ModalBinding<'command> list)
+        =
+        catalog
+        |> List.tryFind (fun binding ->
+            binding.Id = id
+            && selectorMatches contexts binding.Context
+            && binding.Availability contexts = Available)
+        |> Option.map _.Command
+
+    /// Stable binding identifiers accepted in persisted tactical profiles.
+    /// This is deliberately stricter than an editor./simulator. prefix check:
+    /// a typo must not become a dormant override that silently activates later.
+    let isKnownCommandId (id: string) =
+        let suffixIn (prefix: string) (values: string list) =
+            id.StartsWith(prefix, StringComparison.Ordinal)
+            && Set.contains
+                (id.Substring(prefix.Length))
+                (Set.ofList values)
+
+        suffixIn
+            "editor.camera."
+            [ "fit"; "frame-selection"; "pan-cancel"; "pan-east"
+              "pan-east-large"; "pan-held"; "pan-north"; "pan-north-large"
+              "pan-release"; "pan-south"; "pan-south-large"; "pan-west"
+              "pan-west-large"; "reset" ]
+        || suffixIn "editor.confirmation." [ "cancel"; "confirm" ]
+        || suffixIn
+            "editor.cursor."
+            [ "east"; "north"; "south"; "west"; "next-object"; "previous-object" ]
+        || suffixIn
+            "editor.document."
+            [ "background"; "bundle"; "clear"; "exit"; "export"; "import"
+              "layers"; "new"; "resize"; "views" ]
+        || suffixIn "editor.domain." [ "document"; "edges"; "terrain"; "units"; "zones" ]
+        || suffixIn
+            "editor.edge."
+            [ "activate"; "cursor.east"; "cursor.north"; "cursor.south"; "cursor.west"
+              "door.toggle"; "erase"; "join"; "kind.door"; "kind.wall"; "kind.window"
+              "orientation.rotate"; "polyline.backtrack"; "polyline.east"
+              "polyline.north"; "polyline.south"; "polyline.west"; "split" ]
+        || suffixIn "editor.gesture." [ "cancel"; "commit" ]
+        || suffixIn "editor.help." [ "close"; "toggle" ]
+        || suffixIn "editor.history." [ "redo-shift-z"; "redo-y"; "undo" ]
+        || id = "editor.inspector.toggle"
+        || id = "editor.mode.select"
+        || id = "editor.panel.toggle"
+        || suffixIn
+            "editor.selection."
+            [ "actions.copy"; "actions.delete"; "actions.duplicate"; "actions.inspector"
+              "actions.move"; "all"; "all-domain"; "box.add"; "box.begin"
+              "box.east"; "box.east-extended"; "box.north"; "box.north-extended"
+              "box.south"; "box.south-extended"; "box.west"; "box.west-extended"
+              "clear"; "copy"; "delete"; "delete-backspace"; "duplicate"; "paste"
+              "single"; "toggle" ]
+        || suffixIn
+            "editor.terrain."
+            [ "activate"; "brush.decrease"; "brush.increase"; "cursor.east"
+              "cursor.north"; "cursor.paint-east"; "cursor.paint-north"
+              "cursor.paint-south"; "cursor.paint-west"; "cursor.south"; "cursor.west"
+              "exit"; "gesture.east"; "gesture.east-extended"; "gesture.north"
+              "gesture.north-extended"; "gesture.reset"; "gesture.south"
+              "gesture.south-extended"; "gesture.west"; "gesture.west-extended"
+              "value.open"; "value.rough"; "value.blocked"; "value.objective" ]
+        || suffixIn
+            "editor.tool.terrain."
+            [ "erase"; "eyedropper"; "flood-fill"; "line"; "pencil"; "rectangle" ]
+        || suffixIn
+            "editor.unit."
+            [ "move.begin"; "move.east"; "move.east-large"; "move.north"
+              "move.north-large"; "move.reset"; "move.south"; "move.south-large"
+              "move.west"; "move.west-large"; "place.browse"; "place.cancel"
+              "place.commit"; "place.commit-return"; "place.east"; "place.next-preset"
+              "place.north"; "place.previous-preset"; "place.south"; "place.west"
+              "preset.arm"; "preset.exit"; "preset.first"; "preset.last"
+              "preset.next-arrow"; "preset.next-bracket"; "preset.next-faction"
+              "preset.previous-arrow"; "preset.previous-bracket"
+              "preset.previous-faction"; "preset.search" ]
+        || suffixIn "editor.validation." [ "next"; "previous" ]
+        || suffixIn
+            "editor.region."
+            [ "create.begin"; "cursor.east"; "cursor.north"; "cursor.south"; "cursor.west"
+              "delete"; "edit.move"; "edit.purpose"; "edit.resize"; "edit.vertices"
+              "exit"; "move.east"; "move.east-large"; "move.north"; "move.north-large"
+              "move.south"; "move.south-large"; "move.west"; "move.west-large"
+              "move.cancel"; "move.commit"; "move.reset"; "polygon.east"
+              "polygon.north"; "polygon.south"; "polygon.west"; "polygon.backtrack"
+              "polygon.cancel"; "polygon.commit"; "polygon.vertex"; "purpose.objective"
+              "purpose.blue"; "purpose.red"; "purpose.cancel"; "purpose.commit"
+              "rectangle.east"; "rectangle.north"; "rectangle.south"; "rectangle.west"
+              "rectangle.activate"; "rectangle.cancel"; "rectangle.reset"
+              "resize.cancel"; "resize.commit"; "resize.height.decrease"
+              "resize.height.increase"; "resize.origin.east"; "resize.origin.north"
+              "resize.origin.south"; "resize.origin.west"; "resize.reset"
+              "resize.width.decrease"; "resize.width.increase"; "select"; "shape.back"
+              "shape.polygon"; "shape.rectangle"; "vertex.east"; "vertex.east-large"
+              "vertex.north"; "vertex.north-large"; "vertex.south"; "vertex.south-large"
+              "vertex.west"; "vertex.west-large"; "vertex.cancel"; "vertex.commit"
+              "vertex.next"; "vertex.previous"; "vertex.reset" ]
+        || suffixIn
+            "simulator."
+            [ "controller.begin"; "controller.cancel"; "controller.commit"
+              "controller.general"; "controller.manual"; "controller.scripted"
+              "help.toggle"; "panel.controls"; "panel.events"; "panel.samples"
+              "panel.toggle"; "preview.cancel"; "preview.commit"; "preview.east"
+              "preview.fast-east"; "preview.fast-north"; "preview.fast-south"
+              "preview.fast-west"; "preview.north"; "preview.reset"; "preview.south"
+              "preview.west"; "reset.request"; "run.toggle-k"; "run.toggle-space"
+              "step"; "unit.next"; "unit.previous" ]
 
     let private key value modifiers phase =
         { Key = NormalizedKey.create value None

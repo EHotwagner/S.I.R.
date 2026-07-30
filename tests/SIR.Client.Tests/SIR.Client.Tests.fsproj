@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ModalInputCatalogAuthority.fs" />
+    <Compile Include="UnifiedTacticalWorkspaceQualification.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

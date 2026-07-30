@@ -1400,9 +1400,137 @@ let evaluate () =
     require
         (List.isEmpty unresolvedTransitionIds
          && qualifiedIds
-            |> Set.forall (fun id -> not (id.Contains(".compat-"))))
+            |> Set.forall (fun id ->
+                not (id.Contains(".compat-"))
+                && ModalInput.isKnownCommandId id))
         ("M8 qualification did not resolve an accepted transition, commit, reset, cancellation, or retained a compatibility alias: "
          + String.concat ", " unresolvedTransitionIds)
+
+    let registry = UnifiedTacticalWorkspace.commandRegistry
+    let rebound =
+        UnifiedTacticalWorkspace.setBinding
+            registry
+            "workspace.editor"
+            (Some "Ctrl+Shift+E")
+            false
+            UnifiedTacticalWorkspace.emptyBindingProfile
+        |> function
+            | Ok profile -> profile
+            | Error diagnostics ->
+                failwith ("Cross-runtime binding setup failed: " + string diagnostics)
+    let bindingJson = UnifiedTacticalWorkspace.exportBindings rebound
+    let imported =
+        UnifiedTacticalWorkspace.importBindings registry bindingJson
+        |> function
+            | Ok profile -> profile
+            | Error diagnostics ->
+                failwith ("Cross-runtime binding import failed: " + string diagnostics)
+    require
+        (bindingJson = UnifiedTacticalWorkspace.exportBindings imported
+         && imported.Overrides = rebound.Overrides)
+        "Versioned binding import/export differed across the shared runtime fixture."
+    let conflictRejected =
+        UnifiedTacticalWorkspace.setBinding
+            registry
+            "workspace.plan"
+            (Some "F6")
+            false
+            UnifiedTacticalWorkspace.emptyBindingProfile
+        |> Result.isError
+    let malformedRejected =
+        UnifiedTacticalWorkspace.importBindings registry """{"schemaVersion":1}"""
+        |> Result.isError
+    let typoIdRejected =
+        UnifiedTacticalWorkspace.importBindings
+            registry
+            """{"schemaVersion":1,"bindings":[{"id":"editor.panel.toggl","gesture":"F11"}]}"""
+        |> Result.isError
+    let inactiveModalAccepted =
+        UnifiedTacticalWorkspace.importBindings
+            registry
+            """{"schemaVersion":1,"bindings":[{"id":"editor.terrain.gesture.west","gesture":"F11"}]}"""
+        |> Result.isOk
+    let overlapGesture key =
+        { Key = NormalizedKey.create key None
+          Modifiers = KeyModifiers.none
+          Phase = KeyDown }
+    let overlappingModalBindings =
+        [ { Id = "editor.camera.fit"
+            Context = AnyEditorContext
+            Precedence = WorkspaceCommands
+            BindingGesture = overlapGesture "x"
+            Label = "Fit"
+            Group = "Fixture"
+            Repeat = IgnoreRepeat
+            Availability = fun _ -> Available
+            Command = ToggleInputHelp }
+          { Id = "editor.camera.reset"
+            Context = AnyEditorContext
+            Precedence = WorkspaceCommands
+            BindingGesture = overlapGesture "y"
+            Label = "Reset"
+            Group = "Fixture"
+            Repeat = IgnoreRepeat
+            Availability = fun _ -> Available
+            Command = ToggleInputHelp } ]
+    let overlappingModalRegistry =
+        overlappingModalBindings
+        |> UnifiedTacticalWorkspace.modalCommandDefinitions Editor
+    let overlappingModalRejected =
+        UnifiedTacticalWorkspace.setBinding
+            overlappingModalRegistry
+            "editor.camera.fit"
+            (Some "Y")
+            false
+            UnifiedTacticalWorkspace.emptyBindingProfile
+        |> Result.isError
+    let sameGestureAccepted bindings =
+        let registry =
+            bindings
+            |> UnifiedTacticalWorkspace.modalCommandDefinitions Editor
+        bindings
+        |> List.fold (fun profile binding ->
+            profile
+            |> Result.bind (
+                UnifiedTacticalWorkspace.setBinding
+                    registry
+                    binding.Id
+                    (Some "Y")
+                    false
+            ))
+            (Ok UnifiedTacticalWorkspace.emptyBindingProfile)
+        |> Result.isOk
+    let mutuallyExclusiveGestureAccepted =
+        sameGestureAccepted
+            [ { overlappingModalBindings.Head with
+                  Context = ExactContext(EditorDomain TerrainDomain) }
+              { overlappingModalBindings.Tail.Head with
+                  Context = ExactContext(EditorDomain UnitDomain) } ]
+    let phaseSeparatedGestureAccepted =
+        sameGestureAccepted
+            [ overlappingModalBindings.Head
+              { overlappingModalBindings.Tail.Head with
+                  BindingGesture =
+                    { overlappingModalBindings.Tail.Head.BindingGesture with
+                        Phase = KeyUp } } ]
+    let strictSchemaRejected =
+        [ """{"schemaVersion":2,"bindings":[]}"""
+          """{"schemaVersion":1,"schemaVersion":1,"bindings":[]}"""
+          """{"schemaVersion":1,"bindings":[{"id":"workspace.editor","gesture":"F10"},{"id":"workspace.editor","gesture":"F11"}]}"""
+          """{"schemaVersion":1,"bindings":[]} trailing""" ]
+        |> List.forall (fun json ->
+            UnifiedTacticalWorkspace.importBindings registry json
+            |> Result.isError)
+    require
+        (conflictRejected
+         && malformedRejected
+         && typoIdRejected
+         && inactiveModalAccepted
+         && overlappingModalRejected
+         && mutuallyExclusiveGestureAccepted
+         && phaseSeparatedGestureAccepted
+         && strictSchemaRejected)
+        "Binding conflicts or malformed storage were accepted."
 
     [ outcomeName commit
       outcomeName repeatedCommit
@@ -1422,5 +1550,14 @@ let evaluate () =
       outcomeName panDown
       outcomeName panUp
       string qualifiedContexts.Count
-      string authoritativePossible.Length ]
+      string authoritativePossible.Length
+      bindingJson
+      (if conflictRejected then "true" else "false")
+      (if malformedRejected then "true" else "false")
+      (if typoIdRejected then "true" else "false")
+      (if inactiveModalAccepted then "true" else "false")
+      (if overlappingModalRejected then "true" else "false")
+      (if mutuallyExclusiveGestureAccepted then "true" else "false")
+      (if phaseSeparatedGestureAccepted then "true" else "false")
+      (if strictSchemaRejected then "true" else "false") ]
     |> String.concat "\n"

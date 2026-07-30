@@ -196,6 +196,10 @@ type SimulatorModalFacts =
 [<RequireQualifiedAccess>]
 module ModalInput =
     val acceptsTarget: target: ModalInputTarget -> bool
+    val precedenceRank: precedence: ModalPrecedence -> int
+    val selectorsOverlap:
+        left: ModalContextSelector -> right: ModalContextSelector -> bool
+    val isKnownCommandId: id: string -> bool
     val deriveEditorContexts: facts: EditorModalFacts -> ModalContext list
     val deriveSimulatorContexts: facts: SimulatorModalFacts -> ModalContext list
 
@@ -210,6 +214,12 @@ module ModalInput =
         contexts: ModalContext list ->
         catalog: ModalBinding<'command> list ->
         PossibleInput<'command> list
+
+    val tryAvailableCommandById:
+        contexts: ModalContext list ->
+        id: string ->
+        catalog: ModalBinding<'command> list ->
+        'command option
 
     val editorCatalog:
         facts: EditorModalFacts -> ModalBinding<ModalCommand> list

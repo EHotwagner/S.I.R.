@@ -44,6 +44,7 @@ let private projection tick : InspectionProjection =
 [<EntryPoint>]
 let main _ =
     SIR.Client.TestsModalInputCatalogAuthority.run ()
+    SIR.Client.TestsUnifiedTacticalWorkspaceQualification.run ()
 
     let retainedPackage: SIR.Simulation.ReplayPackage =
         { FormatVersion = int32 SIR.Simulation.Replay.CurrentFormatVersion
@@ -2172,7 +2173,7 @@ let main _ =
 
     let boundedHistory =
         [ 0 .. 139 ]
-        |> List.fold (fun state index ->
+        |> List.fold (fun (state: MapEditorState) index ->
             let terrain = if index % 2 = 0 then Rough else Open
             { state with
                 Gesture =
