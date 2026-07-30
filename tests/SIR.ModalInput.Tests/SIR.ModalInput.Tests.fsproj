@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../SIR.ModalInput.Shared/ModalInputFixtures.fs" Link="ModalInputFixtures.fs" />
+    <Compile Include="../SIR.ModalInput.Shared/Program.fs" Link="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/SIR.Client/SIR.Client.fsproj" />
+  </ItemGroup>
+</Project>
