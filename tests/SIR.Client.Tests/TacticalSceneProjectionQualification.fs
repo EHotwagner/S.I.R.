@@ -472,20 +472,49 @@ let run () =
             bounded
             (Some firstUnit)
             (Some 44)
-    let adversarialPerspective =
+    let perspectiveInspection change =
         { validPerspective with
-            Inspection =
-                Some(
-                    inspection
-                        7
-                        [ projectedUnit ]
-                        [ projectedEvent ]
-                        (Some "relabeled-full-frame")
-                ) }
+            Inspection = validPerspective.Inspection |> Option.map change }
+    let faultEdge : EdgeProjection =
+        { Id = "perspective-fault-edge"
+          Kind = "wall"
+          State = "closed"
+          StartColumn = 0
+          StartRow = 0
+          EndColumn = 1
+          EndRow = 0 }
+    let faultCheckpoint : CheckpointProjection =
+        { Tick = 7
+          StateHash = "perspective-fault-state"
+          EventHash = "perspective-fault-event" }
+    let perspectiveFaults =
+        [ "unit", perspectiveInspection (fun value -> { value with Units = [ projectedUnit ] })
+          "edge", perspectiveInspection (fun value -> { value with Edges = [ faultEdge ] })
+          "event", perspectiveInspection (fun value -> { value with Events = [ projectedEvent ] })
+          "checkpoint", perspectiveInspection (fun value -> { value with Checkpoints = [ faultCheckpoint ] })
+          "board-minimum-column", perspectiveInspection (fun value -> { value with BoardMinimumColumn = 1 })
+          "board-minimum-row", perspectiveInspection (fun value -> { value with BoardMinimumRow = 1 })
+          "board-maximum-column", perspectiveInspection (fun value -> { value with BoardMaximumColumn = 1 })
+          "board-maximum-row", perspectiveInspection (fun value -> { value with BoardMaximumRow = 1 })
+          "missing-perspective-hash", perspectiveInspection (fun value -> { value with PerspectiveHash = None })
+          "replay-kind-mismatch",
+              { validPerspective with
+                  Source =
+                    match validPerspective.Source with
+                    | Loaded metadata -> Loaded { metadata with Kind = FullReplay }
+                    | _ -> failwith "Expected perspective metadata." }
+          "mode-mismatch", { validPerspective with Mode = VerifiedReplay }
+          "verification-mismatch", { validPerspective with Verification = BrowserKernelVerified } ]
+    let acceptedPerspectiveFaults =
+        perspectiveFaults
+        |> List.choose (fun (name, model) ->
+            TacticalSceneProjection.acceptReview model
+            |> Option.map (fun _ -> name))
     require
-        (TacticalSceneProjection.acceptReview adversarialPerspective
-         |> Option.isNone)
-        "Review accepted a perspective-labelled owner containing hidden entities."
+        (perspectiveFaults.Length = 12
+         && List.isEmpty acceptedPerspectiveFaults)
+        ("Review accepted independently faulted perspective owners: "
+         + String.concat ", " acceptedPerspectiveFaults)
     let perspectiveAccepted =
         TacticalSceneProjection.acceptReview validPerspective
         |> Option.defaultWith (fun () ->
@@ -499,7 +528,12 @@ let run () =
         (perspectiveProjection.Disclosure.PerspectiveFiltered
          && perspectiveProjection.Units.Length = 0
          && perspectiveProjection.Edges.Length = 0
-         && perspectiveProjection.Annotations.Length = 0
+         && perspectiveProjection.Annotations.Length = 1
+         && perspectiveProjection.Annotations[0].Kind = "perspective-projection"
+         && perspectiveProjection.Annotations[0].Text =
+            Disclosed(
+                "Verification · perspective-source · engine-qualification · bounded-perspective"
+            )
          && perspectiveProjection.Selection.SelectedUnits.Length = 0
          && perspectiveProjection.Selection.SelectedEvent.IsNone)
         "Perspective review exposed an entity or retained an invisible selection."
@@ -528,6 +562,13 @@ let run () =
          && reviewProjection.Disclosure.PreservesFieldDisclosures
          && reviewProjection.Units[0].Visual.Level = NotPresent
          && reviewProjection.Units[0].Visual.StanceId = NotPresent
+         && (reviewProjection.Annotations
+             |> Array.exists (fun annotation ->
+                 annotation.Kind = "browser-kernel-verified"
+                 && annotation.Text =
+                    Disclosed(
+                        "Verification · full-source · engine-qualification"
+                    )))
          && reviewProjection.Selection.SelectedUnits = [| firstUnit |]
          && reviewProjection.Selection.SelectedEvent = Some projectedEvent.Id
          && (reviewProjection.Selection.SelectedPrimitiveIds
@@ -536,6 +577,62 @@ let run () =
                  ; "review-event:" + string projectedEvent.Id |]
          && reviewProjection.Selection.FocusedUnit.IsNone)
         "Review projection expanded absent fields or retained stale selection."
+    let previousReviewFrame =
+        { fullModel with
+            Inspection =
+                Some(
+                    inspection
+                        6
+                        [ { projectedUnit with Column = 0; Row = 1 } ]
+                        [ { projectedEvent with Tick = 6 } ]
+                        None
+                ) }
+        |> Shell.renderFrame
+        |> Option.defaultWith (fun () ->
+            failwith "Previous accepted Review frame did not render.")
+    let interpolatedReview, interpolatedAlpha =
+        TacticalSceneProjection.interpolateReviewPresentation
+            previousReviewFrame
+            0.5
+            reviewProjection
+    require
+        (interpolatedAlpha = 0.5
+         && interpolatedReview.Tick = reviewProjection.Tick
+         && interpolatedReview.RevisionIdentity = reviewProjection.RevisionIdentity
+         && interpolatedReview.Disclosure = reviewProjection.Disclosure
+         && interpolatedReview.Annotations = reviewProjection.Annotations
+         && interpolatedReview.Selection = reviewProjection.Selection
+         && interpolatedReview.Units[0].PresentationColumn = 1.0
+         && interpolatedReview.Units[0].PresentationRow = 2.0
+         && interpolatedReview.Units[0].Visual = reviewProjection.Units[0].Visual)
+        "Shared Review interpolation changed committed identity/facts or missed midpoint presentation coordinates."
+    let hiddenPrevious =
+        { previousReviewFrame with
+            Disclosure = PerspectiveDisclosure }
+    let guardedDisclosure, guardedDisclosureAlpha =
+        TacticalSceneProjection.interpolateReviewPresentation
+            hiddenPrevious
+            0.5
+            reviewProjection
+    let extraPrevious =
+        { previousReviewFrame with
+            Units =
+                Array.append
+                    previousReviewFrame.Units
+                    [| { previousReviewFrame.Units[0] with Id = 999 } |] }
+    let guardedEntities, guardedEntitiesAlpha =
+        TacticalSceneProjection.interpolateReviewPresentation
+            extraPrevious
+            0.5
+            reviewProjection
+    require
+        (guardedDisclosureAlpha = 1.0
+         && guardedDisclosure = reviewProjection
+         && guardedEntitiesAlpha = 1.0
+         && guardedEntities = reviewProjection
+         && guardedEntities.Units
+            |> Array.forall (fun unit -> unit.Visual.Id <> 999))
+        "Review interpolation crossed disclosure/semantic-owner guards or leaked a previous-frame entity."
     let reviewInputBefore = reviewInput
     reviewProjection.Units[0] <-
         { reviewProjection.Units[0] with

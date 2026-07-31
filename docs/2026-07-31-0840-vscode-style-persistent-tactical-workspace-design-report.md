@@ -499,13 +499,18 @@ legacy-removal proof are recorded in the
 
 ### Milestone 7 — Review migration
 
-- [ ] Project committed replay frames, disclosed events, inspection state, and
+- [x] Project committed replay frames, disclosed events, inspection state, and
   verification annotations through shared layers.
-- [ ] Move sources, transport detail, event inspection, and worker status into
+- [x] Move sources, transport detail, event inspection, and worker status into
   registered panels.
-- [ ] Preserve read-only committed history, perspective filtering, cancellation,
+- [x] Preserve read-only committed history, perspective filtering, cancellation,
   verification identity, and playback interpolation.
-- [ ] Remove the replay-specific battlefield and dashboard layout.
+- [x] Remove the replay-specific battlefield and dashboard layout.
+
+Milestone 7 opaque accepted-owner projection, verification/disclosure mapping,
+registered-panel ownership, real-worker full/perspective evidence, singleton
+browser trace, and legacy-removal proof are recorded in the
+[Review migration evidence](persistent-tactical-workspace-m7-review-migration-evidence.md).
 
 ### Milestone 8 — Timeline and supporting panels
 

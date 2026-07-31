@@ -109,4 +109,9 @@ module TacticalSceneProjection =
     val simulator: SimulatorProjectionInput -> SharedSceneProjection
     val acceptReview: Model -> AcceptedReviewProjection option
     val review: ReviewProjectionInput -> SharedSceneProjection
+    val interpolateReviewPresentation:
+        previousFrame: RenderFrame ->
+        alpha: float ->
+        current: SharedSceneProjection ->
+            SharedSceneProjection * float
     val primitiveIds: SharedSceneProjection -> ScenePrimitiveId array

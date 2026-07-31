@@ -102,6 +102,8 @@ type AcceptedReviewProjection =
     private
         { AcceptedFrame: RenderFrame
           AcceptedRevisionIdentity: string
+          AcceptedVerificationIdentity: string
+          AcceptedVerificationKind: string
           AcceptedSelectedUnit: int32 option
           AcceptedSelectedEvent: int32 option }
 
@@ -685,6 +687,9 @@ module TacticalSceneProjection =
                     + metadata.SourceIdentity
                     + ":"
                     + metadata.EngineIdentity
+                  AcceptedVerificationIdentity =
+                    metadata.SourceIdentity + " · " + metadata.EngineIdentity
+                  AcceptedVerificationKind = "browser-kernel-verified"
                   AcceptedSelectedUnit = model.Selection.Unit
                   AcceptedSelectedEvent = model.Selection.Event })
         | Loaded metadata, PerspectivePlayback, PerspectiveReady, Some inspection
@@ -706,6 +711,13 @@ module TacticalSceneProjection =
                     + metadata.SourceIdentity
                     + ":"
                     + metadata.EngineIdentity
+                  AcceptedVerificationIdentity =
+                    metadata.SourceIdentity
+                    + " · "
+                    + metadata.EngineIdentity
+                    + " · "
+                    + Option.get inspection.PerspectiveHash
+                  AcceptedVerificationKind = "perspective-projection"
                   AcceptedSelectedUnit = model.Selection.Unit
                   AcceptedSelectedEvent = model.Selection.Event })
         | _ -> None
@@ -732,6 +744,16 @@ module TacticalSceneProjection =
                   Text = overlay.Label })
         let eventAnnotations =
             eventAnnotations "review-event" frame.Events
+        let verificationAnnotation =
+            { PrimitiveId = primitive "review-verification" "accepted"
+              Kind = input.AcceptedReview.AcceptedVerificationKind
+              Column = None
+              Row = None
+              Text =
+                Disclosed(
+                    "Verification · "
+                    + input.AcceptedReview.AcceptedVerificationIdentity
+                ) }
         let visibleEvents =
             frame.Events |> Array.map _.Id |> Set.ofArray
         let selectedEvent =
@@ -746,9 +768,10 @@ module TacticalSceneProjection =
           Units = units
           Routes = routes |> Array.map overlayRoute
           Annotations =
-            Array.append
-                overlayAnnotations
-                eventAnnotations
+            Array.concat
+                [| overlayAnnotations
+                   eventAnnotations
+                   [| verificationAnnotation |] |]
           Disclosure = disclosure frame.Disclosure
           Camera = camera input.ReviewCamera
           Selection =
@@ -763,6 +786,52 @@ module TacticalSceneProjection =
                      [| primitive "review-event" (invariant id) |])
                  |> Option.defaultValue [||])
           Layers = Array.copy standardLayers }
+
+    /// Interpolates only presentation coordinates for semantic units present
+    /// in both accepted Review frames. Current committed identity, tick,
+    /// disclosure, visual facts, events, annotations, and selection remain the
+    /// authoritative projection. A failed guard returns the exact current
+    /// projection with an effective alpha of one.
+    let interpolateReviewPresentation
+        (previousFrame: RenderFrame)
+        (alpha: float)
+        (current: SharedSceneProjection)
+        =
+        let currentIds =
+            current.Units |> Array.map _.Visual.Id |> Set.ofArray
+        let previousIds =
+            previousFrame.Units |> Array.map _.Id |> Set.ofArray
+        let valid =
+            current.Owner = ReviewScene
+            && previousFrame.Tick <> current.Tick
+            && previousFrame.Board = current.Board
+            && previousFrame.Disclosure = current.Disclosure.Source
+            && currentIds = previousIds
+            && currentIds.Count = current.Units.Length
+            && previousIds.Count = previousFrame.Units.Length
+            && not (Double.IsNaN alpha || Double.IsInfinity alpha)
+
+        if not valid then current, 1.0
+        else
+            let effectiveAlpha = max 0.0 (min 1.0 alpha)
+            let previousById =
+                previousFrame.Units
+                |> Array.map (fun unit -> unit.Id, unit)
+                |> Map.ofArray
+            let units =
+                current.Units
+                |> Array.map (fun unit ->
+                    let previous = previousById[unit.Visual.Id]
+                    { unit with
+                        PresentationColumn =
+                            float previous.AnchorColumn
+                            + (unit.PresentationColumn - float previous.AnchorColumn)
+                              * effectiveAlpha
+                        PresentationRow =
+                            float previous.AnchorRow
+                            + (unit.PresentationRow - float previous.AnchorRow)
+                              * effectiveAlpha })
+            { current with Units = units }, effectiveAlpha
 
     let primitiveIds (projection: SharedSceneProjection) =
         [| yield! projection.Terrain |> Array.map _.PrimitiveId

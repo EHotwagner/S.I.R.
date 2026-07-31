@@ -55,6 +55,19 @@ entity identity, footprint, exact class, faction, condition, headings, level,
 stance, status, edges, events, and exact overlay geometry. Each renderer owns
 its own safe mapping from those facts to its presentation technology.
 
+The interactive Review modality consumes that contract through the singleton
+persistent tactical SVG. Its accepted replay owner is opaque; committed units,
+edges, events, selection, and a typed verification annotation cross the shared
+projection, while source/transport and inspection details live in registered
+panels. Perspective-labelled input fails closed if it contains undisclosed
+entities or events. Browser-kernel verification and perspective projection
+remain explicitly distinct from authoritative exact-artifact verification.
+Playback interpolation is also a shared-projection operation: only matching
+semantic units from board- and disclosure-compatible Review frames receive
+intermediate presentation coordinates. It never adds a prior-frame entity or
+changes the current committed tick, revision, facts, selection, annotations,
+or verification identity.
+
 ## Typed contract and disclosure
 
 The executable contract lives in `SIR.Client`:
