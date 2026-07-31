@@ -42,6 +42,11 @@ type Msg =
     | ToggleLayoutDrawer of SidebarSide
     | ToggleLayoutBottomPanelVisibility
     | ToggleLayoutBottomPanel
+    | BeginLayoutBottomPanelResize
+    | ResizeLayoutBottomPanel of height: int
+    | EndLayoutBottomPanelResize
+    | ResizeLayoutBottomPanelKeyboard of delta: int
+    | OpenSupportingPanel of panelId: string
     | ResetTacticalLayout
     | InvokeTacticalCommand of string
     | InvokeTacticalValueCommand of commandId: string * value: string
@@ -95,8 +100,6 @@ and WorkspaceMode =
     | PlanningWorkspace
     | EditorWorkspace
     | ReplayWorkspace
-    | RulesWorkspace
-    | SamplesWorkspace
 
 and EditorToolPanel =
     | TerrainTools
@@ -120,6 +123,7 @@ type Model =
       TacticalBindingsOpen: bool
       TacticalLayout: TacticalLayoutProfile
       TacticalLayoutDiagnostics: string list
+      BottomPanelResizeActive: bool
       TacticalSelectedUnit: int32 option
       Workspace: WorkspaceMode
       EditorToolPanel: EditorToolPanel
@@ -161,8 +165,6 @@ let private tacticalUnitIds workspace (model: Model) =
             |> Seq.map _.Id
             |> Set.ofSeq)
         |> Option.defaultValue Set.empty
-    | RulesWorkspace
-    | SamplesWorkspace -> Set.empty
 
 let private reconcileTacticalSelectedUnit workspace (model: Model) =
     let visible = tacticalUnitIds workspace model
@@ -179,8 +181,7 @@ let private reconcileTacticalSelectedUnit workspace (model: Model) =
             |> keep
         | SimulatorWorkspace -> keep model.SimulatorSelectedUnit
         | ReplayWorkspace -> keep model.Shell.Selection.Unit
-        | RulesWorkspace
-        | SamplesWorkspace -> None)
+        )
     |> Option.orElseWith (fun () ->
         visible |> Set.toSeq |> Seq.tryHead)
 
@@ -958,6 +959,7 @@ let init () =
       TacticalBindingsOpen = false
       TacticalLayout = tacticalLayout
       TacticalLayoutDiagnostics = tacticalLayoutDiagnostics
+      BottomPanelResizeActive = false
       TacticalSelectedUnit = None
       Workspace = EditorWorkspace
       EditorToolPanel = TerrainTools
@@ -1123,11 +1125,7 @@ let rec update msg model =
                 Cmd.none
     | WorkspaceChanged workspace ->
         let editor =
-            if
-                workspace = ReplayWorkspace
-                || workspace = RulesWorkspace
-                || workspace = SamplesWorkspace
-            then
+            if workspace = ReplayWorkspace then
                 MapEditor.update CancelEditorGesture model.Editor
             else
                 model.Editor
@@ -1163,8 +1161,6 @@ let rec update msg model =
             | PlanningWorkspace -> Plan
             | SimulatorWorkspace -> Simulate
             | ReplayWorkspace -> Review
-            | RulesWorkspace
-            | SamplesWorkspace -> model.Tactical.Modality
 
         let transitionModel =
             { model with
@@ -1422,6 +1418,66 @@ let rec update msg model =
         { model with TacticalLayout = layout; TacticalLayoutDiagnostics = [] },
         Cmd.ofEffect (fun _ ->
             focusElementAfterRender "layout-timeline-toggle")
+    | BeginLayoutBottomPanelResize ->
+        { model with BottomPanelResizeActive = true }, Cmd.none
+    | ResizeLayoutBottomPanel height when model.BottomPanelResizeActive ->
+        let layout =
+            model.TacticalLayout
+            |> TacticalWorkspaceLayout.resizeBottomPanel height
+        { model with
+            TacticalLayout = layout
+            TacticalLayoutDiagnostics = [] },
+        Cmd.none
+    | ResizeLayoutBottomPanel _ -> model, Cmd.none
+    | EndLayoutBottomPanelResize ->
+        if model.BottomPanelResizeActive then
+            writeTacticalLayout (
+                TacticalWorkspaceLayout.exportProfile model.TacticalLayout
+            )
+        { model with BottomPanelResizeActive = false }, Cmd.none
+    | ResizeLayoutBottomPanelKeyboard delta ->
+        let layout =
+            model.TacticalLayout
+            |> TacticalWorkspaceLayout.resizeBottomPanel (
+                model.TacticalLayout.BottomPanel.Height + delta
+            )
+        writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
+        { model with
+            TacticalLayout = layout
+            TacticalLayoutDiagnostics = [] },
+        Cmd.ofEffect (fun _ ->
+            focusElementAfterRender "tactical-bottom-panel-resize")
+    | OpenSupportingPanel panelId ->
+        let placement =
+            model.TacticalLayout.Placements
+            |> List.find (fun placement -> placement.PanelId = panelId)
+        let visible =
+            if placement.Visible then model.TacticalLayout
+            else
+                model.TacticalLayout
+                |> TacticalWorkspaceLayout.togglePanelVisibility panelId
+        let expanded =
+            let current =
+                visible.Placements
+                |> List.find (fun item -> item.PanelId = panelId)
+            if current.Collapsed then
+                visible |> TacticalWorkspaceLayout.togglePanelCollapsed panelId
+            else visible
+        let drawerOpen =
+            let current =
+                expanded.Placements
+                |> List.find (fun item -> item.PanelId = panelId)
+            let drawer =
+                if current.Side = Left then expanded.LeftSidebar
+                else expanded.RightSidebar
+            if drawer.DrawerOpen then expanded
+            else expanded |> TacticalWorkspaceLayout.toggleDrawer current.Side
+        writeTacticalLayout (TacticalWorkspaceLayout.exportProfile drawerOpen)
+        { model with
+            TacticalLayout = drawerOpen
+            TacticalLayoutDiagnostics = [] },
+        Cmd.ofEffect (fun _ ->
+            focusElementAfterRender ("layout-panel-" + panelId + "-body"))
     | ResetTacticalLayout ->
         let layout = TacticalWorkspaceLayout.reset model.TacticalLayout
         writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
@@ -2529,9 +2585,7 @@ let rec update msg model =
             | EditorWorkspace -> resolveEditor () |> applyResolution
             | SimulatorWorkspace -> resolveSimulator () |> applyResolution
             | PlanningWorkspace
-            | ReplayWorkspace
-            | RulesWorkspace
-            | SamplesWorkspace ->
+            | ReplayWorkspace ->
                 model, Cmd.none
     | KeyReleased key ->
         if model.Workspace = EditorWorkspace && editorPanHeld model then
@@ -5370,7 +5424,7 @@ let private sampleCatalogView (dispatch: Msg -> unit) =
             ]
         ]
     Html.section [
-        prop.className "samples-workspace"
+        prop.className "samples-panel-content"
         prop.ariaLabel "Curated maps simulations and replays"
         prop.children [
             Html.div [
@@ -5667,22 +5721,26 @@ let private planningPanelBody
         ]
     ]
 
-let private workspaceNavigation (workspace: WorkspaceMode) dispatch =
-    let item (label: string) (value: WorkspaceMode) =
-        let isCurrent = workspace = value
+let private workspaceNavigation (model: Model) dispatch =
+    let item (label: string) panelId =
+        let placement =
+            model.TacticalLayout.Placements
+            |> List.find (fun placement -> placement.PanelId = panelId)
         Html.button [
             prop.type'.button
             prop.text label
-            prop.ariaPressed isCurrent
-            prop.onClick (fun _ -> dispatch (WorkspaceChanged value))
+            prop.ariaPressed placement.Visible
+            prop.ariaControls ("layout-panel-" + panelId)
+            prop.onClick (fun _ -> dispatch (OpenSupportingPanel panelId))
         ]
 
     Html.nav [
         prop.className "workspace-navigation"
         prop.ariaLabel "Supporting application sections"
         prop.children [
-            item "Rules and data" RulesWorkspace
-            item "Samples" SamplesWorkspace
+            item "Rules" "rules"
+            item "Data" "data"
+            item "Samples" "samples"
         ]
     ]
 
@@ -6292,8 +6350,6 @@ let private activeSceneProjection (model: Model) =
                 { AcceptedReview = accepted
                   ReviewCamera = model.EditorView.Camera
                   ReviewFocusedUnit = focusedUnit })
-    | RulesWorkspace
-    | SamplesWorkspace -> None
 
 let private activePresentedSceneProjection (model: Model) =
     let projection = activeSceneProjection model
@@ -6349,8 +6405,6 @@ let private sharedSceneUnitCommand model unitId =
         Some("simulator.scene.select.unit." + string unitId)
     | ReplayWorkspace ->
         Some("review.scene.select.unit." + string unitId)
-    | RulesWorkspace
-    | SamplesWorkspace -> None
 
 let private sharedSceneCellCommand model column row =
     match model.Workspace with
@@ -7727,7 +7781,22 @@ let private simulatorPanelBody
         ]
 
 let private tacticalPanelBody panelId model dispatch =
-    if model.Workspace = PlanningWorkspace then
+    if panelId = "rules" then
+        Html.div [
+            prop.ariaLabel "Rules supporting panel"
+            prop.children [
+                scenarioCatalog model.Shell dispatch
+                laboratoryResults model.Shell dispatch
+                comparisonPanel model dispatch
+                sandbox model.Shell dispatch
+                inspector model.Shell dispatch
+            ]
+        ]
+    elif panelId = "data" then
+        rulesDataCatalog
+    elif panelId = "samples" then
+        sampleCatalogView dispatch
+    elif model.Workspace = PlanningWorkspace then
         match model.Planning with
         | Some planning when
             panelId = "roster"
@@ -7884,6 +7953,7 @@ let private tacticalSidebar side model dispatch =
                                 Html.div [
                                     prop.id ("layout-panel-" + panel.Id + "-body")
                                     prop.className "tactical-layout-panel-body"
+                                    prop.tabIndex -1
                                     prop.children [ tacticalPanelBody panel.Id model dispatch ]
                                 ]
                         ]
@@ -7925,16 +7995,73 @@ let private tacticalShell model dispatch content =
                     tacticalSidebar Left model dispatch
                     tacticalPersistentBattlefield model dispatch
                     tacticalSidebar Right model dispatch
-                    if bottomVisible then
-                        Html.section [
+                    Html.section [
                             prop.id "tactical-bottom-panel"
+                            prop.hidden (not bottomVisible)
+                            prop.ariaHidden (not bottomVisible)
                             prop.className (
                                 "tactical-bottom-panel"
                                 + if bottomCollapsed then " is-collapsed" else ""
                             )
                             prop.ariaLabel "Tactical bottom panel"
-                            prop.children [ tacticalTimeline model dispatch ]
-                        ]
+                            prop.children [
+                                Html.div [
+                                        prop.id "tactical-bottom-panel-resize"
+                                        prop.className (
+                                            "tactical-bottom-panel-resize"
+                                            + if bottomCollapsed then " is-disabled" else ""
+                                        )
+                                        prop.role.separator
+                                        prop.tabIndex (if bottomCollapsed then -1 else 0)
+                                        prop.ariaHidden bottomCollapsed
+                                        prop.ariaLabel "Resize tactical timeline panel"
+                                        prop.custom ("aria-orientation", "horizontal")
+                                        prop.ariaValueMin 96
+                                        prop.ariaValueMax 480
+                                        prop.ariaValueNow layout.BottomPanel.Height
+                                        prop.onPointerDown (fun event ->
+                                            if not bottomCollapsed then
+                                                event.preventDefault ()
+                                                capturePointer event.currentTarget (int event.pointerId)
+                                                dispatch BeginLayoutBottomPanelResize)
+                                        prop.onPointerMove (fun event ->
+                                            if model.BottomPanelResizeActive then
+                                                dispatch (
+                                                    ResizeLayoutBottomPanel(
+                                                        int window.innerHeight
+                                                        - int event.clientY
+                                                    )
+                                                ))
+                                        prop.onPointerUp (fun event ->
+                                            releasePointer event.currentTarget (int event.pointerId)
+                                            dispatch EndLayoutBottomPanelResize)
+                                        prop.onPointerCancel (fun event ->
+                                            releasePointer event.currentTarget (int event.pointerId)
+                                            dispatch EndLayoutBottomPanelResize)
+                                        prop.onKeyDown (fun event ->
+                                            let delta =
+                                                match event.key with
+                                                | "ArrowUp" -> Some 16
+                                                | "ArrowDown" -> Some -16
+                                                | "PageUp" -> Some 64
+                                                | "PageDown" -> Some -64
+                                                | "Home" -> Some(96 - layout.BottomPanel.Height)
+                                                | "End" -> Some(480 - layout.BottomPanel.Height)
+                                                | _ -> None
+                                            delta
+                                            |> Option.iter (fun value ->
+                                                event.preventDefault ()
+                                                event.stopPropagation ()
+                                                dispatch (ResizeLayoutBottomPanelKeyboard value)))
+                                ]
+                                Html.div [
+                                    prop.className "tactical-bottom-panel-content"
+                                    prop.hidden bottomCollapsed
+                                    prop.ariaHidden bottomCollapsed
+                                    prop.children [ tacticalTimeline model dispatch ]
+                                ]
+                            ]
+                    ]
                 ]
             ]
             Html.div [
@@ -8030,7 +8157,7 @@ let view model dispatch =
         prop.onClick (fun event ->
             dismissDesktopMenus event.target)
         prop.children [
-            workspaceNavigation model.Workspace dispatch
+            workspaceNavigation model dispatch
             match model.Workspace with
             | PlanningWorkspace ->
                 tacticalShell
@@ -8138,22 +8265,6 @@ let view model dispatch =
                 ])
             | ReplayWorkspace ->
                 tacticalShell model dispatch Html.none
-            | RulesWorkspace ->
-                Html.div [
-                    scenarioCatalog shell dispatch
-                    laboratoryResults shell dispatch
-                    comparisonPanel model dispatch
-                    Html.div [
-                        prop.className "dashboard"
-                        prop.children [
-                            sandbox shell dispatch
-                            inspector shell dispatch
-                        ]
-                    ]
-                    rulesDataCatalog
-                ]
-            | SamplesWorkspace ->
-                sampleCatalogView dispatch
             Html.p [
                 prop.className "sr-only"
                 prop.role.status

@@ -17,6 +17,7 @@ node scripts/test-map-editor-qualification.mjs "$client_output"
 node scripts/test-planning-workspace-m5-qualification.mjs
 node scripts/test-simulator-workspace-m6-qualification.mjs
 node scripts/test-review-workspace-m7-qualification.mjs
+node scripts/test-timeline-supporting-panels-m8-qualification.mjs
 
 if [[ -d "$repo_root/.fsdocs" ]]; then
   rm -rf -- "$repo_root/.fsdocs"

@@ -201,21 +201,24 @@ if (
 }
 
 const rulesButton = [...mount.querySelectorAll("button")].find(
-  (button) => button.textContent.trim() === "Rules and data",
+  (button) => button.textContent.trim() === "Rules",
 );
 rulesButton?.click();
 await window.happyDOM.waitUntilComplete();
 
+const rulesPanel = mount?.querySelector('[data-panel-id="rules"]');
 const catalog = mount?.querySelector('[aria-label="Design scenario catalog"]');
 const scenarioButtons = [
   ...catalog?.querySelectorAll('button[aria-label^="Simulate design scenario"]') ?? [],
 ];
 
 if (
+  !rulesPanel ||
+  mount?.querySelector("#persistent-tactical-svg") !== persistentWorksurface ||
   scenarioButtons.length !== 6 ||
   !catalog?.textContent.includes("Lethality threshold")
 ) {
-  throw new Error("The mounted documentation application has no runnable scenario gallery.");
+  throw new Error("The mounted documentation application has no registered runnable Rules panel.");
 }
 
 scenarioButtons[0].click();
@@ -230,9 +233,16 @@ if (
 }
 
 const result = mount?.querySelector('[aria-label="Laboratory results"]');
+const dataButton = [...mount.querySelectorAll("button")].find(
+  (button) => button.textContent.trim() === "Data",
+);
+dataButton?.click();
+await window.happyDOM.waitUntilComplete();
 const rulesData = mount?.querySelector('[aria-label="Rules data tables"]');
 
 if (
+  mount?.querySelector("#persistent-tactical-svg") !== persistentWorksurface ||
+  !mount?.querySelector('[data-panel-id="data"]') ||
   !result?.textContent.includes(
     "4 attacks resolved · 100 damage · target finishes on 0 HP",
   ) ||
@@ -245,7 +255,7 @@ if (
 }
 
 console.log(
-  "Documentation browser smoke passed: the unified tactical workspace uses the available width, the editor exposes canonical unit symbols, and the rules workspace retains six scenarios and seven data tables.",
+  "Documentation browser smoke passed: the unified tactical workspace uses the available width, the editor exposes canonical unit symbols, and registered Rules/Data panels retain six scenarios and seven data tables without replacing the SVG.",
 );
 
 window.happyDOM.close();

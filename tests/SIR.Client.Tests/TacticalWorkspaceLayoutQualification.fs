@@ -47,6 +47,19 @@ let run () =
          && TacticalWorkspaceLayout.reset hiddenBottom = baseline)
         "Bottom-panel false/true visibility, persistence, or reset semantics diverged."
 
+    let resized =
+        baseline |> TacticalWorkspaceLayout.resizeBottomPanel 327
+    let resizedRoundTrip =
+        resized
+        |> TacticalWorkspaceLayout.exportProfile
+        |> TacticalWorkspaceLayout.importProfile
+    require
+        (resized.BottomPanel.Height = 327
+         && (baseline |> TacticalWorkspaceLayout.resizeBottomPanel 1).BottomPanel.Height = 96
+         && (baseline |> TacticalWorkspaceLayout.resizeBottomPanel 999).BottomPanel.Height = 480
+         && resizedRoundTrip = Ok resized)
+        "Bottom-panel resizing did not clamp or persist deterministically."
+
     let configured =
         baseline
         |> TacticalWorkspaceLayout.togglePanelCollapsed "tools"

@@ -100,11 +100,6 @@
 #sir-replay-app .status-unsupported { color: #e9b4ff; background: #291631; }
 #sir-replay-app .status-loading { color: #f7d794; }
 
-#sir-replay-app .dashboard {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
-  gap: 1rem;
-}
 #sir-replay-app .panel {
   background: #17211e;
   border: 1px solid #43584e;
@@ -770,6 +765,23 @@
   min-height: 0;
   overflow: auto;
 }
+#sir-replay-app .tactical-bottom-panel-resize {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  height: .65rem;
+  border-block: 1px solid #60776b;
+  background: #26372f;
+  cursor: ns-resize;
+  touch-action: none;
+}
+#sir-replay-app .tactical-bottom-panel-resize:focus-visible {
+  outline: 3px solid #ffd166;
+  outline-offset: -3px;
+}
+#sir-replay-app .tactical-bottom-panel-resize.is-disabled {
+  pointer-events: none;
+}
 #sir-replay-app .tactical-bottom-panel.is-collapsed {
   height: .3rem;
   overflow: hidden;
@@ -923,7 +935,7 @@
 }
 #sir-replay-app .sample-compact-card h4,
 #sir-replay-app .sample-compact-card p { margin: 0 0 .25rem; }
-#sir-replay-app .samples-workspace {
+#sir-replay-app .samples-panel-content {
   display: grid;
   gap: .6rem;
 }

@@ -168,7 +168,7 @@ for (const token of [
   "sourcePanel model dispatch",
   "controls model dispatch",
   "tacticalShell model dispatch Html.none",
-  "inspector shell dispatch",
+  "OpenSupportingPanel panelId",
   '"scene.camera.zoom-out"',
   '"scene.camera.zoom-in"',
   '"scene.camera.fit"',

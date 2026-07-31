@@ -514,14 +514,19 @@ browser trace, and legacy-removal proof are recorded in the
 
 ### Milestone 8 — Timeline and supporting panels
 
-- [ ] Move the unified timeline into a resizable, collapsible bottom panel with
+- [x] Move the unified timeline into a resizable, collapsible bottom panel with
   persisted height and modality defaults.
-- [ ] Preserve one cursor and authored, predicted, accepted, and committed
+- [x] Preserve one cursor and authored, predicted, accepted, and committed
   channels without duplicating planning lanes.
-- [ ] Convert Rules, Data, and Samples into registered side or temporary overlay
+- [x] Convert Rules, Data, and Samples into registered side or temporary overlay
   panels.
-- [ ] Prove no timeline or supporting-content operation remounts the SVG or
+- [x] Prove no timeline or supporting-content operation remounts the SVG or
   clears camera and valid selection.
+
+Milestone 8 single-timeline ownership, persisted resize/coalescing, supporting
+panel mapping, focus/native-input/responsive access, exact SVG/timeline browser
+identity, and legacy-page removal proof are recorded in the
+[Timeline and supporting panels evidence](persistent-tactical-workspace-m8-timeline-supporting-panels-evidence.md).
 
 ### Milestone 9 — Legacy removal and acceptance
 

@@ -44,6 +44,10 @@ last-updated: 2026-07-30
 > status. The former replay battlefield renderer and dashboard layout have
 > been removed; see the
 > [M7 review migration evidence](persistent-tactical-workspace-m7-review-migration-evidence.md).
+> The unified timeline now remains mounted in its persisted, resizable,
+> modality-collapsible bottom panel. Rules, Data, and Samples open in registered
+> side panels instead of replacing the tactical shell; see the
+> [M8 timeline and supporting panels evidence](persistent-tactical-workspace-m8-timeline-supporting-panels-evidence.md).
 > Review playback interpolates only presentation coordinates for the exact
 > semantic units shared by disclosure-compatible committed frames; committed
 > tick, revision, facts, verification, and evidence remain current-frame data.
@@ -61,8 +65,9 @@ last-updated: 2026-07-30
 
 Editor, Plan, Simulate, and Review are modalities of one tactical workspace.
 Use the four pressed-state buttons or their effective bindings to change tools
-without discarding the battlefield, selection, camera, or current time. Rules
-and data and Samples remain separate supporting sections.
+without discarding the battlefield, selection, camera, or current time. Rules,
+Data, and Samples are registered supporting panels in that same persistent
+shell.
 
 The single timeline shows authored, predicted, accepted, and committed
 channels together. Drag its range control, enter an exact time, use Home/End,
