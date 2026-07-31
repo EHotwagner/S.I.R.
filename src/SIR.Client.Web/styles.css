@@ -890,6 +890,36 @@
   grid-area: workscreen;
   min-width: 0;
   min-height: 32rem;
+  overflow: hidden;
+  border: 1px solid #43584e;
+  border-radius: .4rem;
+  background: #0d1512;
+}
+#sir-replay-app #persistent-tactical-svg {
+  display: block;
+  width: 100%;
+  min-height: 32rem;
+  max-height: 44rem;
+  background: #16211d;
+  touch-action: none;
+}
+#sir-replay-app #persistent-tactical-svg:focus-visible {
+  outline: 3px solid #ffd166;
+  outline-offset: -4px;
+}
+#sir-replay-app .tactical-compatibility-surface {
+  border-top: 1px solid #43584e;
+  background: #111a17;
+}
+#sir-replay-app .tactical-compatibility-surface > summary {
+  min-height: 2.75rem;
+  padding: .65rem;
+  color: #c9d7d0;
+  cursor: pointer;
+}
+#sir-replay-app .tactical-compatibility-surface > div {
+  max-height: 36rem;
+  overflow: auto;
 }
 #sir-replay-app .tactical-sidebar {
   min-width: 0;

@@ -18,11 +18,20 @@ last-updated: 2026-07-30
 > and independently visible/collapsible bottom-panel profile surround the
 > existing battlefield paths. Invalid or future persisted layout profiles fail
 > closed to canonical Field Focus with an announced diagnostic. Actual
-> tool-panel migration and the single persistent SVG are later sequential
-> milestones; the present shell does not claim either. A shared,
+> tool-panel migration remains in later sequential milestones. The canonical
+> workscreen is now one retained, keyboard-focusable SVG with stable camera,
+> terrain, edge, route, unit, selection, and annotation layers. Exact SVG and
+> layer references survive modality, panel, timeline, resize, overlay, and
+> playback updates. The labelled compatibility disclosure contains only
+> non-workscreen, registry-routed migration guidance; alternate modality
+> battlefield and grid roots are not mounted. Existing Editor, Plan,
+> Simulator, and Review control panels remain reachable beside the shell while
+> later milestones move them into final sidebar placements. A shared,
 > presentation-only scene projection now gives Editor, Plan, Simulate, and
 > Review stable terrain/unit/route/annotation/layer identities while preserving
-> complete visible semantic selection. Review accepts only an opaque validated
+> complete visible semantic selection. A shell-owned semantic unit identity is
+> retained only when visible in the target projection, while each owner keeps
+> its separate authoritative selection. Review accepts only an opaque validated
 > replay owner; relabelled perspective data with hidden entities is rejected.
 > The projection is ready for the later renderer migration.
 

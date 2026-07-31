@@ -146,32 +146,27 @@ if (!application || mount?.querySelector("h1")) {
   throw new Error("The Fable application did not mount inside the fsdocs page.");
 }
 
-const simulateButton = [
-  ...mount.querySelectorAll('[aria-label="Map editor menu and toolbar"] button'),
-].find(
+const persistentWorksurface = mount?.querySelector(
+  "svg#persistent-tactical-svg[role='application']",
+);
+const simulateButton = [...mount.querySelectorAll(
+  '[aria-label="Map editor quick access"] button',
+)].find(
   (button) => button.textContent.trim() === "Simulate",
 );
 if (!simulateButton) {
-  throw new Error("The generated editor omitted the explicit simulator revision handoff.");
+  throw new Error("The generated shell omitted the registry-routed simulator handoff.");
 }
 simulateButton.click();
 await window.happyDOM.waitUntilComplete();
 
-const controlsButton = [...mount.querySelectorAll("button")].find(
-  (button) => button.textContent.trim() === "Controls",
-);
-controlsButton?.click();
-await window.happyDOM.waitUntilComplete();
-
 if (
-  !mount?.querySelector('[aria-label="Simulator menu and toolbar"]') ||
-  !mount?.querySelector('[aria-label="Simulator command panel"]') ||
-  !mount?.textContent.includes("Manual") ||
-  !mount?.textContent.includes("Scripted AI") ||
-  !mount?.textContent.includes("General AI") ||
-  !mount?.querySelector('[aria-label="Editable simulation SVG battlefield"]')
+  mount?.querySelector("#persistent-tactical-svg") !== persistentWorksurface ||
+  persistentWorksurface?.getAttribute("data-scene-owner") !== "SimulatorScene" ||
+  mount?.querySelectorAll("[role='application']").length !== 1 ||
+  mount?.querySelector("[aria-label='Editable simulation SVG battlefield']")
 ) {
-  throw new Error("The generated site did not hand the immutable revision to the desktop simulator.");
+  throw new Error("The generated site did not project the immutable handoff into the retained SVG.");
 }
 
 const editorButton = [...mount.querySelectorAll("button")].find(
@@ -180,26 +175,19 @@ const editorButton = [...mount.querySelectorAll("button")].find(
 editorButton?.click();
 await window.happyDOM.waitUntilComplete();
 
-const editorWorkspace = mount?.querySelector(
-  '[aria-label="SVG tactical map workspace"] svg[role="application"]',
-);
-const objectList = mount?.querySelector(
-  '[aria-label="Map object list fallback"]',
-);
 const editorSymbols =
-  editorWorkspace?.querySelectorAll("[data-editor-unit-id]") ?? [];
+  persistentWorksurface?.querySelectorAll(
+    '#persistent-layer-units [data-unit-id][role="button"]',
+  ) ?? [];
 if (
-  !editorWorkspace ||
-  !objectList ||
-  objectList.querySelectorAll("[data-map-column]").length !== 96 ||
+  mount?.querySelector("#persistent-tactical-svg") !== persistentWorksurface ||
+  persistentWorksurface?.getAttribute("data-scene-owner") !== "EditorScene" ||
   editorSymbols.length !== 4 ||
-  [...editorSymbols].some(
-    (unit) => unit.querySelectorAll("[data-class-id]").length !== 1,
-  ) ||
-  mount?.querySelector('[aria-label="Editable map grid"]')
+  mount?.querySelector('[aria-label="Editable map grid"]') ||
+  mount?.querySelector('[aria-label="SVG tactical map workspace"]')
 ) {
   throw new Error(
-    "The generated Editor tab did not use the SVG workspace, canonical square-unit symbols, and object-list fallback.",
+    "The generated Editor projection did not retain one SVG with four semantic units and no legacy root.",
   );
 }
 

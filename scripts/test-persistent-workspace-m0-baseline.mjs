@@ -156,6 +156,21 @@ for (const token of [
   '("simulator.pointer.controller."',
   '"simulator.pointer.script.set"',
   '("simulator.pointer.movement."',
+  "editorDesktopChrome",
+  "editorToolbar",
+  "editorUnitPanel",
+  'prop.className "editor-owner-controls"',
+  "simulatorDesktopChrome",
+  "simulatorDock",
+  'prop.className "simulator-owner-controls"',
+  "planningWorkspace",
+  "sourcePanel shell dispatch",
+  "controls shell dispatch",
+  "inspector shell dispatch",
+  '"scene.camera.zoom-out"',
+  '"scene.camera.zoom-in"',
+  '"scene.camera.fit"',
+  '"editor.scene.create-simulator-handoff"',
 ]) {
   requireText(app, token, `M0 render/dynamic-path inventory lost source token: ${token}`);
 }
@@ -194,31 +209,31 @@ requireText(
 requireText(
   packageJson,
   '"characterize:persistent-workscreen"',
-  "Known-failure characterization command is not exposed.",
+  "Persistent-workscreen characterization command is not exposed.",
 );
 requireText(
   smoke,
-  "SIR_CHARACTERIZE_PERSISTENT_WORKSCREEN",
-  "Browser characterization is not opt-in.",
+  'querySelector("#persistent-tactical-svg")',
+  "Milestone 3 persistent SVG characterization is missing.",
 );
 requireText(
   smoke,
-  "KNOWN M0 FAILURE",
-  "Browser characterization lost its diagnosed known-failure assertion.",
+  "assertSingleWorksurface",
+  "Milestone 3 browser characterization lost strict reference equality.",
 );
 for (const token of [
-  'querySelector("svg#editor-map-stage")',
-  'querySelector(".planning-cell-grid")',
-  "initialEditorWorksurface.isConnected",
-  "persistentBattlefieldViewport.contains(initialEditorWorksurface)",
-  "planningWorksurface.isConnected",
-  "currentViewport.contains(planningWorksurface)",
-  "initialEditorWorksurface === planningWorksurface",
+  'data-work-surface-root="persistent-svg"',
+  "window.document.querySelectorAll(\"[data-work-surface-root]\").length !== 1",
+  "window.document.querySelectorAll(\"[role='application']\").length !== 1",
+  "legacyRootSelectors",
+  "for (const source of Object.keys(ownerByModality))",
+  "data-semantic-selection-unit",
+  "Shared SVG keyboard intent",
 ]) {
   requireText(
     smoke,
     token,
-    `Browser characterization lost exact-root evidence: ${token}`,
+    `Persistent SVG characterization lost exact-root evidence: ${token}`,
   );
 }
 

@@ -432,14 +432,26 @@ and stable/unique ID plus dense performance evidence for all four modalities.
 
 ### Milestone 3 — Persistent SVG renderer
 
-- [ ] Mount one SVG work surface outside modality render branches.
-- [ ] Render shared terrain, edges, units, selection, annotations, and camera
+- [x] Mount one SVG work surface outside modality render branches.
+- [x] Render shared terrain, edges, units, selection, annotations, and camera
   transforms as stable layers.
-- [ ] Route modality-aware pointer and keyboard intent through the existing
+- [x] Route modality-aware pointer and keyboard intent through the existing
   command registry and availability boundary.
-- [ ] Assert strict SVG reference identity across every modality transition,
+- [x] Assert strict SVG reference identity across every modality transition,
   panel operation, timeline toggle, resize, supporting overlay, and playback
   update.
+
+Milestone 3 renderer structure, compatibility boundary, registry-routed intent,
+spatial continuity, accessibility, and strict production DOM reference evidence
+are recorded in the
+[persistent SVG renderer evidence](persistent-tactical-workspace-m3-svg-renderer-evidence.md).
+The labelled compatibility disclosure contains only non-workscreen,
+registry-routed migration guidance. Existing non-workscreen Editor, Plan,
+Simulator, and Review controls remain mounted as companion panels so capability
+is not lost during sequential migration. Shared-camera and simulator-handoff
+surface intents use the command registry. No alternate modality battlefield,
+grid, workscreen, or application landmark is mounted; final sidebar placement
+and specialized parity work remain assigned to Milestones 4–7.
 
 ### Milestone 4 — Editor migration
 

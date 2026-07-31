@@ -1,66 +1,66 @@
 {
   "format": "sir-map-editor-review-v1",
-  "generatedFrom": "production Fable/React SVG workspaces",
-  "productionBundleSha256": "10648670c6bddbedae1920c966212edca24170a52aff01f17e61edf0db7f25ef",
+  "generatedFrom": "production persistent Fable/React SVG workscreen at the M3 boundary",
+  "productionBundleSha256": "7d9d4966d316a863f3bc84e2519638529b9a48cc7ef8c80f2efabef569e4c77f",
   "rasterizer": "rsvg-convert 2.62.3",
   "width": 960,
   "height": 640,
   "files": [
     {
       "domain": "terrain",
-      "description": "Open, rough, objective, and blocked terrain with grid context.",
+      "description": "Shared authored terrain projected through the persistent M3 renderer.",
       "svg": "terrain.svg",
       "png": "terrain.png",
-      "svgSha256": "2fa85e70b72d3f7cf6f97affb410c1bddc57031d4ae0b0b8977aba8af35a4a13",
-      "pngSha256": "97b76acd83fe1d46504b428360d16f4b6d1d47d089991f0d35eaf20b52d6e401"
+      "svgSha256": "c5cdbe1ac56cb0a64eaacebdd337e800e1c9d77be2de7dba161490c764d8cb42",
+      "pngSha256": "2d3ac33b675c3134b1428b783eefdd0683c0f97c30bae2fde0424dc68d732d36"
     },
     {
       "domain": "edges",
-      "description": "Wall, open door, and window semantic edge meanings.",
+      "description": "Shared semantic edges projected through the persistent M3 renderer.",
       "svg": "edges.svg",
       "png": "edges.png",
-      "svgSha256": "dfe5df471a0012b02489654048bc8fcec92a1cfddb353f092ba1729cc29afa30",
-      "pngSha256": "8af1c41f1c04ebc88aff43a4db630bc638264c554d3dbcc8f3f76ea40f4a112d"
+      "svgSha256": "d9f91da38b97603714fd2bcffa9a29d6fef3aff274ffa8fee6d4599dbdca5a4d",
+      "pngSha256": "46734031f099f2124d809995ce778a4ccf16d6413a637520ab2ada13c3f961bc"
     },
     {
       "domain": "units",
-      "description": "Canonical 1×1, 2×2, and 3×3 square unit footprints.",
+      "description": "Canonical square-unit footprints in the shared Editor projection.",
       "svg": "units.svg",
       "png": "units.png",
-      "svgSha256": "f21c967e658e7799c678fe4555b8ba616a5b75c2b3f1e0dbb7997e41e0b0dba8",
-      "pngSha256": "9176a0dad321d2298d79aa410e3a53e7145cffabce6b9d7d7794ef556392013d"
+      "svgSha256": "b37b1770eab387612e889c35c45cad90888892a0d0a937050da028e40dca2810",
+      "pngSha256": "c28cad27aadf83c32a7ffc1e31c3c2ec3bfd61ebdfe28981b8ff7459e96a4ec9"
     },
     {
       "domain": "zones",
-      "description": "Objective rectangle and blue deployment polygon.",
+      "description": "Imported objective and deployment regions projected as positioned annotations.",
       "svg": "zones.svg",
       "png": "zones.png",
-      "svgSha256": "a7242bc5d1e45f19b73511d77f305052956876f284950e9a0c5b13c1c512b6cd",
-      "pngSha256": "b86a278c1653336649e95aa3ba557f820d6a5e914cb6221f3b34299674355f9d"
+      "svgSha256": "b8bdf534e4cbf458ff61c864b726c827d1bd0a3c9d39dd41064aa62f079bb3e3",
+      "pngSha256": "5239622a1f62715a4e8ae3e202aa8c2e4ae7b4118b10c6cef383c1a96207707c"
     },
     {
       "domain": "background",
-      "description": "Signature-validated local raster alignment beneath the grid.",
+      "description": "Signature-validated local background control state beside the retained authored projection; raster drawing migrates in M4.",
       "svg": "background.svg",
       "png": "background.png",
-      "svgSha256": "392e93d5171a75d3703a55c53ab925167480d0483d434caa59c528ba945d88cd",
-      "pngSha256": "a24e70f325c964db3e377af5c1357828ca8aa26f2ceca588bbb6eba6dc841fc4"
+      "svgSha256": "44d57c9d0f10a4e3985ae4749f42dda1a07456824e38533d52585a195017d225",
+      "pngSha256": "cc0943e16d41abe5eedfc3ca20bd29416a96550b26d2180efba5a72b6f9f2c79"
     },
     {
       "domain": "simulator-handoff",
-      "description": "Immutable authored revision rendered by the simulator.",
+      "description": "Immutable simulator handoff projected into the same retained SVG.",
       "svg": "simulator-handoff.svg",
       "png": "simulator-handoff.png",
-      "svgSha256": "bf6a6f1a69c3d24b02fdd72df74022bc0aa79f855ecae2f4fe830761305feb71",
-      "pngSha256": "eb2e7c963bbff09023bc1f605d69c3f0c6b61aa4880d4aef39d25f9fb14124d7"
+      "svgSha256": "a3260408f98b4216f2522a58cd25f6798f01f83b8e015043b22c9817555ad6c2",
+      "pngSha256": "8af746bfa64a02a6ef9fd754b87a765594bac5c0850d83973b0497a9bd1ada96"
     },
     {
       "domain": "validation",
-      "description": "EDGE-GAP issue projected without hiding authoritative domains.",
+      "description": "Imported EDGE-GAP validation state shown with the authoritative persistent projection.",
       "svg": "validation.svg",
       "png": "validation.png",
-      "svgSha256": "41b90d4fd3f2a558a678836519ebeb0154f4d3c505ccc6c77861f0f33328ad08",
-      "pngSha256": "ff49ea63831bacd912c9580f1c5f0f312da037b6cca0003cf07ab7ce444a69eb"
+      "svgSha256": "d1c70da3c59b65d55af85d3a30fbb7867bb47aad05dde612ab4d6db07542eb38",
+      "pngSha256": "31a759cea79691a99acb0a149504469778ba867e500b5913efb33a32f28e3320"
     }
   ]
 }
