@@ -19,7 +19,12 @@ last-updated: 2026-07-30
 > existing battlefield paths. Invalid or future persisted layout profiles fail
 > closed to canonical Field Focus with an announced diagnostic. Actual
 > tool-panel migration and the single persistent SVG are later sequential
-> milestones; the present shell does not claim either.
+> milestones; the present shell does not claim either. A shared,
+> presentation-only scene projection now gives Editor, Plan, Simulate, and
+> Review stable terrain/unit/route/annotation/layer identities while preserving
+> complete visible semantic selection. Review accepts only an opaque validated
+> replay owner; relabelled perspective data with hidden entities is rejected.
+> The projection is ready for the later renderer migration.
 
 Editor, Plan, Simulate, and Review are modalities of one tactical workspace.
 Use the four pressed-state buttons or their effective bindings to change tools

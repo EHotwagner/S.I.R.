@@ -23,7 +23,7 @@ related:
 
 **Report timestamp:** 2026-07-31 08:40:09 CEST (UTC+02:00)
 
-**Status:** design accepted; Milestones 0–1 complete
+**Status:** design accepted; Milestones 0–2 complete
 
 ## Executive decision
 
@@ -414,13 +414,21 @@ timeline collapse, and responsive drawer close.
 
 ### Milestone 2 — Shared scene projection
 
-- [ ] Define presentation-only terrain, unit, route, annotation, disclosure,
+- [x] Define presentation-only terrain, unit, route, annotation, disclosure,
   camera, selection, and layer projection types.
-- [ ] Add pure adapters for Editor, Plan, Simulate, and Review.
-- [ ] Prove adapters cannot mutate or disclose state outside their owning
+- [x] Add pure adapters for Editor, Plan, Simulate, and Review.
+- [x] Prove adapters cannot mutate or disclose state outside their owning
   subsystem and perspective.
-- [ ] Establish stable semantic primitive identities and projection performance
+- [x] Establish stable semantic primitive identities and projection performance
   budgets.
+
+Milestone 2 contracts, ownership/disclosure rationale, focused tests, identity,
+and performance/allocation evidence are recorded in the
+[shared scene projection evidence](persistent-tactical-workspace-m2-scene-projection-evidence.md).
+Independent review corrections additionally require an opaque validated replay
+owner (including rejection of relabelled perspective data), complete semantic
+selection for unit/region/command/event owners, source-stable revision identity,
+and stable/unique ID plus dense performance evidence for all four modalities.
 
 ### Milestone 3 — Persistent SVG renderer
 

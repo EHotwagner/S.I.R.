@@ -46,6 +46,7 @@ let main _ =
     SIR.Client.TestsModalInputCatalogAuthority.run ()
     SIR.Client.TestsUnifiedTacticalWorkspaceQualification.run ()
     SIR.Client.TestsTacticalWorkspaceLayoutQualification.run ()
+    SIR.Client.TestsTacticalSceneProjectionQualification.run ()
 
     let retainedPackage: SIR.Simulation.ReplayPackage =
         { FormatVersion = int32 SIR.Simulation.Replay.CurrentFormatVersion
