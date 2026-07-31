@@ -127,6 +127,7 @@ type Model =
       TacticalBindingsOpen: bool
       TacticalLayout: TacticalLayoutProfile
       TacticalLayoutDiagnostics: string list
+      TacticalSelectedUnit: int32 option
       Workspace: WorkspaceMode
       EditorToolPanel: EditorToolPanel
       EditorToolPanelVisible: bool
@@ -145,6 +146,52 @@ type Model =
 
 let private editorPanHeld model =
     HeldInputSession.contains EditorPan model.HeldInputs
+
+let private tacticalUnitIds workspace (model: Model) =
+    match workspace with
+    | EditorWorkspace
+    | PlanningWorkspace ->
+        model.Editor.Map.Units
+        |> Map.toSeq
+        |> Seq.map fst
+        |> Set.ofSeq
+    | SimulatorWorkspace ->
+        model.Simulator
+        |> Option.map (fun simulator ->
+            simulator.RuntimeMap.Units
+            |> Map.toSeq
+            |> Seq.map fst
+            |> Set.ofSeq)
+        |> Option.defaultValue Set.empty
+    | ReplayWorkspace ->
+        model.Shell.Inspection
+        |> Option.map (fun inspection ->
+            inspection.Units
+            |> Seq.map _.Id
+            |> Set.ofSeq)
+        |> Option.defaultValue Set.empty
+    | RulesWorkspace
+    | SamplesWorkspace -> Set.empty
+
+let private reconcileTacticalSelectedUnit workspace (model: Model) =
+    let visible = tacticalUnitIds workspace model
+    let keep candidate =
+        candidate
+        |> Option.filter (fun unitId -> Set.contains unitId visible)
+    keep model.TacticalSelectedUnit
+    |> Option.orElseWith (fun () ->
+        match workspace with
+        | EditorWorkspace -> keep model.Editor.SelectedUnit
+        | PlanningWorkspace ->
+            model.Planning
+            |> Option.bind _.SelectedUnit
+            |> keep
+        | SimulatorWorkspace -> keep model.SimulatorSelectedUnit
+        | ReplayWorkspace -> keep model.Shell.Selection.Unit
+        | RulesWorkspace
+        | SamplesWorkspace -> None)
+    |> Option.orElseWith (fun () ->
+        visible |> Set.toSeq |> Seq.tryHead)
 
 let private activeTacticalRegistry model =
     let pointerCommand id label category modality =
@@ -183,6 +230,32 @@ let private activeTacticalRegistry model =
         | _ -> []
     let contextual =
         match model.Workspace, model.Planning with
+        | EditorWorkspace, _ ->
+            [ yield
+                  pointerCommand
+                      "editor.scene.create-simulator-handoff"
+                      "Create simulator handoff from authored revision"
+                      "Editor shared scene"
+                      Editor
+              yield!
+                  model.Editor.Map.Units
+                  |> Map.toList
+                  |> List.map (fun (unitId, _) ->
+                      pointerCommand
+                          ("editor.scene.select.unit." + string unitId)
+                          ("Select shared-scene unit " + string unitId)
+                          "Editor shared scene"
+                          Editor)
+              for row in 0 .. int model.Editor.Map.Height - 1 do
+                  for column in 0 .. int model.Editor.Map.Width - 1 do
+                      yield
+                          pointerCommand
+                              ("editor.scene.cell."
+                               + string column + "." + string row)
+                              ("Activate shared-scene cell "
+                               + string column + "," + string row)
+                              "Editor shared scene"
+                              Editor ]
         | PlanningWorkspace, Some planning ->
             let selectionActions =
                 [ yield!
@@ -264,6 +337,17 @@ let private activeTacticalRegistry model =
                 [ pointerCommand "planning.inspector.synchronization" "Add synchronization marker" "Plan inspector" Plan ]
             selectionActions @ battlefieldActions @ inspectorActions
         | SimulatorWorkspace, _ ->
+            let selectionActions =
+                model.Simulator
+                |> Option.map _.RuntimeMap.Units
+                |> Option.defaultValue Map.empty
+                |> Map.toList
+                |> List.map (fun (unitId, _) ->
+                    pointerCommand
+                        ("simulator.scene.select.unit." + string unitId)
+                        ("Select shared-scene unit " + string unitId)
+                        "Simulator shared scene"
+                        Simulate)
             let controllerActions =
                 [ "manual", "Manual"; "scripted", "Scripted AI"
                   "general", "General AI" ]
@@ -289,9 +373,46 @@ let private activeTacticalRegistry model =
                         ("Move selected unit " + label)
                         "Simulator movement"
                         Simulate)
-            scriptAction :: controllerActions @ movementActions
+            selectionActions @ (scriptAction :: controllerActions @ movementActions)
+        | ReplayWorkspace, _ ->
+            [ yield!
+                  model.Shell.Inspection
+                  |> Option.map _.Units
+                  |> Option.defaultValue []
+                  |> List.map (fun unit ->
+                      pointerCommand
+                          ("review.scene.select.unit." + string unit.Id)
+                          ("Select disclosed unit " + string unit.Id)
+                          "Review shared scene"
+                          Review)
+              yield!
+                  model.Shell.Inspection
+                  |> Option.map _.Events
+                  |> Option.defaultValue []
+                  |> List.map (fun event ->
+                      pointerCommand
+                          ("review.scene.select.event." + string event.Id)
+                          ("Select disclosed event " + string event.Id)
+                          "Review shared scene"
+                          Review) ]
         | _ -> []
-    UnifiedTacticalWorkspace.commandRegistry @ modal @ contextual
+    let cameraCommands =
+        [ pointerCommand
+              "scene.camera.zoom-out"
+              "Zoom shared workscreen out"
+              "Shared camera"
+              model.Tactical.Modality
+          pointerCommand
+              "scene.camera.zoom-in"
+              "Zoom shared workscreen in"
+              "Shared camera"
+              model.Tactical.Modality
+          pointerCommand
+              "scene.camera.fit"
+              "Fit shared workscreen"
+              "Shared camera"
+              model.Tactical.Modality ]
+    UnifiedTacticalWorkspace.commandRegistry @ modal @ contextual @ cameraCommands
     |> List.distinctBy _.Id
 
 let private projectPlanningSegments (state: PlanningWorkspaceState) =
@@ -841,6 +962,7 @@ let init () =
       TacticalBindingsOpen = false
       TacticalLayout = tacticalLayout
       TacticalLayoutDiagnostics = tacticalLayoutDiagnostics
+      TacticalSelectedUnit = None
       Workspace = EditorWorkspace
       EditorToolPanel = TerrainTools
       EditorToolPanelVisible = false
@@ -993,6 +1115,13 @@ let rec update msg model =
                 { model with
                     Shell = shell
                     Workspace = ReplayWorkspace
+                    Tactical =
+                        model.Tactical
+                        |> UnifiedTacticalWorkspace.switchModality Review
+                    TacticalSelectedUnit =
+                        reconcileTacticalSelectedUnit
+                            ReplayWorkspace
+                            { model with Shell = shell }
                     HeldInputs = HeldInputSession.recover model.HeldInputs
                     SampleReplayFrames = Some frames
                     Battlefield =
@@ -1045,9 +1174,17 @@ let rec update msg model =
             | RulesWorkspace
             | SamplesWorkspace -> model.Tactical.Modality
 
+        let transitionModel =
+            { model with
+                Editor = editor
+                Planning = planning }
+        let tacticalSelectedUnit =
+            reconcileTacticalSelectedUnit workspace transitionModel
+
         { model with
             Editor = editor
             Planning = planning
+            TacticalSelectedUnit = tacticalSelectedUnit
             Workspace = workspace
             Tactical =
                 model.Tactical
@@ -1318,6 +1455,10 @@ let rec update msg model =
                         Validation = None }
                 Simulator = Some simulator
                 SimulatorSelectedUnit = model.Editor.SelectedUnit
+                TacticalSelectedUnit =
+                    reconcileTacticalSelectedUnit
+                        SimulatorWorkspace
+                        { model with Simulator = Some simulator }
                 SimulatorControllerSelection = None
                 Workspace = SimulatorWorkspace
                 Tactical =
@@ -1870,6 +2011,28 @@ let rec update msg model =
         | "timeline.step-forward" -> update (TacticalTimeStepped 1L) model
         | "timeline.home" -> update (TacticalTimeChanged 0L) model
         | "timeline.end" -> update (TacticalTimeChanged model.Tactical.Horizon) model
+        | "scene.camera.zoom-out" ->
+            update
+                (EditorWorkspaceChanged(
+                    ZoomEditorAt(
+                        model.EditorView.ViewportWidth / 2.0,
+                        model.EditorView.ViewportHeight / 2.0,
+                        0.8
+                    )
+                ))
+                model
+        | "scene.camera.zoom-in" ->
+            update
+                (EditorWorkspaceChanged(
+                    ZoomEditorAt(
+                        model.EditorView.ViewportWidth / 2.0,
+                        model.EditorView.ViewportHeight / 2.0,
+                        1.25
+                    )
+                ))
+                model
+        | "scene.camera.fit" ->
+            update (EditorWorkspaceChanged FitEditorBoard) model
         | "timeline.move-command" ->
             update
                 (PlanningChanged(
@@ -1899,6 +2062,82 @@ let rec update msg model =
         | "planning.validate" -> update ValidatePlanningRevision model
         | "planning.preview" -> update PreviewPlanningRevision model
         | "planning.commit" -> update CommitPlanningRevision model
+        | "editor.scene.create-simulator-handoff" ->
+            update SimulateEditorRevision model
+        | id when
+            id.StartsWith(
+                "editor.scene.select.unit.",
+                StringComparison.Ordinal
+            )
+            ->
+            match
+                Int32.TryParse(
+                    id.Substring("editor.scene.select.unit.".Length)
+                )
+            with
+            | true, unitId ->
+                let selected, command =
+                    update (EditorChanged(SelectEditorUnit(Some unitId))) model
+                { selected with TacticalSelectedUnit = Some unitId }, command
+            | _ -> model, Cmd.none
+        | id when
+            id.StartsWith("editor.scene.cell.", StringComparison.Ordinal)
+            ->
+            match id.Substring("editor.scene.cell.".Length).Split('.') with
+            | [| column; row |] ->
+                match Int32.TryParse column, Int32.TryParse row with
+                | (true, columnValue), (true, rowValue) ->
+                    update
+                        (EditorChanged(ActivateCell(columnValue, rowValue)))
+                        model
+                | _ -> model, Cmd.none
+            | _ -> model, Cmd.none
+        | id when
+            id.StartsWith(
+                "simulator.scene.select.unit.",
+                StringComparison.Ordinal
+            )
+            ->
+            match
+                Int32.TryParse(
+                    id.Substring("simulator.scene.select.unit.".Length)
+                )
+            with
+            | true, unitId ->
+                let selected, command =
+                    update (SimulatorUnitSelectionChanged(Some unitId)) model
+                { selected with TacticalSelectedUnit = Some unitId }, command
+            | _ -> model, Cmd.none
+        | id when
+            id.StartsWith(
+                "review.scene.select.unit.",
+                StringComparison.Ordinal
+            )
+            ->
+            match
+                Int32.TryParse(
+                    id.Substring("review.scene.select.unit.".Length)
+                )
+            with
+            | true, unitId ->
+                let selected, command =
+                    update (ShellMsg(UnitSelected(Some unitId))) model
+                { selected with TacticalSelectedUnit = Some unitId }, command
+            | _ -> model, Cmd.none
+        | id when
+            id.StartsWith(
+                "review.scene.select.event.",
+                StringComparison.Ordinal
+            )
+            ->
+            match
+                Int32.TryParse(
+                    id.Substring("review.scene.select.event.".Length)
+                )
+            with
+            | true, eventId ->
+                update (ShellMsg(EventSelected(Some eventId))) model
+            | _ -> model, Cmd.none
         | "planning.issue.previous"
         | "planning.issue.next" ->
             match model.Planning with
@@ -1920,7 +2159,9 @@ let rec update msg model =
         | id when id.StartsWith("planning.roster.select.", StringComparison.Ordinal) ->
             match Int32.TryParse(id.Substring("planning.roster.select.".Length)) with
             | true, unitId ->
-                update (PlanningChanged(SelectPlanningUnit unitId)) model
+                let selected, command =
+                    update (PlanningChanged(SelectPlanningUnit unitId)) model
+                { selected with TacticalSelectedUnit = Some unitId }, command
             | _ -> model, Cmd.none
         | id when id.StartsWith("planning.timeline.select.", StringComparison.Ordinal) ->
             update
@@ -7188,32 +7429,36 @@ let private editorDesktopChrome
                               ExportDesignBundle ]
                     menu
                         "Edit"
-                        [ command "Undo" "Undo last editor command" state.UndoHistory.IsEmpty (EditorChanged UndoEditorCommand)
-                          command "Redo" "Redo last editor command" state.RedoHistory.IsEmpty (EditorChanged RedoEditorCommand)
-                          command "Copy" "Copy selected units" state.SelectedUnits.IsEmpty (EditorChanged CopyEditorSelection)
-                          command "Paste" "Paste copied units" state.Clipboard.IsNone (EditorChanged PasteEditorClipboard)
-                          command "Duplicate" "Duplicate selected units" state.SelectedUnits.IsEmpty (EditorChanged DuplicateEditorSelection)
-                          command "Delete" "Delete selected objects" (state.SelectedUnits.IsEmpty && state.SelectedRegion.IsNone) (EditorChanged DeleteEditorSelection)
-                          command "Select all" "Select all objects in the active domain" false (EditorChanged SelectAllInActiveDomain) ]
+                        [ command "Undo" "Undo last editor command" state.UndoHistory.IsEmpty (InvokeTacticalCommand "editor.history.undo")
+                          command "Redo" "Redo last editor command" state.RedoHistory.IsEmpty (InvokeTacticalCommand "editor.history.redo-shift-z")
+                          command "Copy" "Copy selected units" state.SelectedUnits.IsEmpty (InvokeTacticalCommand "editor.selection.copy")
+                          command "Paste" "Paste copied units" state.Clipboard.IsNone (InvokeTacticalCommand "editor.selection.paste")
+                          command "Duplicate" "Duplicate selected units" state.SelectedUnits.IsEmpty (InvokeTacticalCommand "editor.selection.duplicate")
+                          command "Delete" "Delete selected objects" (state.SelectedUnits.IsEmpty && state.SelectedRegion.IsNone) (InvokeTacticalCommand "editor.selection.delete")
+                          command "Select all" "Select all objects in the active domain" false (InvokeTacticalCommand "editor.selection.all") ]
                     menu
                         "View"
                         [ command "Fit map" "Fit the complete map" false (EditorWorkspaceChanged FitEditorBoard)
                           command "Actual size" "Reset map camera to one hundred percent" false (EditorWorkspaceChanged ResetEditorCamera)
                           command "Frame selection" "Frame selected map objects" state.SelectedUnits.IsEmpty (EditorWorkspaceChanged FrameEditorSelection)
-                          command "Toggle command panel" "Show or hide the active command panel" false ToggleEditorToolPanelVisibility
+                          command "Toggle command panel" "Show or hide the active command panel" false (InvokeTacticalCommand "editor.panel.toggle")
                           command
                               (if view.InspectorCollapsed then "Show inspector" else "Hide inspector")
                               "Show or hide the selected-object inspector"
                               false
-                              (EditorWorkspaceChanged ToggleEditorInspector) ]
+                              (InvokeTacticalCommand "editor.inspector.toggle") ]
                     menu
                         "Map"
-                        [ command "Terrain tools" "Show terrain command panel" false (EditorToolPanelChanged TerrainTools)
-                          command "Unit tools" "Show unit command panel" false (EditorToolPanelChanged UnitTools)
-                          command "Edge tools" "Show edge command panel" false (EditorToolPanelChanged EdgeTools)
-                          command "Zone tools" "Show zone command panel" false (EditorToolPanelChanged ZoneTools)
-                          command "Map properties" "Show map document command panel" false (EditorToolPanelChanged DocumentTools)
-                          command "Simulate revision" "Validate and send this revision to Simulator" false SimulateEditorRevision ]
+                        [ command "Terrain tools" "Show terrain command panel" false (InvokeTacticalCommand "editor.domain.terrain")
+                          command "Unit tools" "Show unit command panel" false (InvokeTacticalCommand "editor.domain.units")
+                          command "Edge tools" "Show edge command panel" false (InvokeTacticalCommand "editor.domain.edges")
+                          command "Zone tools" "Show zone command panel" false (InvokeTacticalCommand "editor.domain.zones")
+                          command "Map properties" "Show map document command panel" false (InvokeTacticalCommand "editor.domain.document")
+                          command
+                              "Simulate revision"
+                              "Validate and send this revision to Simulator"
+                              false
+                              (InvokeTacticalCommand "editor.scene.create-simulator-handoff") ]
                 ]
             ]
             Html.div [
@@ -7225,36 +7470,28 @@ let private editorDesktopChrome
                     importMapControl "Open"
                     command "Save" "Export the current map document" false ExportMap
                     Html.span [ prop.className "toolbar-separator"; prop.ariaHidden true ]
-                    command "Undo" "Undo last editor command" state.UndoHistory.IsEmpty (EditorChanged UndoEditorCommand)
-                    command "Redo" "Redo last editor command" state.RedoHistory.IsEmpty (EditorChanged RedoEditorCommand)
+                    command "Undo" "Undo last editor command" state.UndoHistory.IsEmpty (InvokeTacticalCommand "editor.history.undo")
+                    command "Redo" "Redo last editor command" state.RedoHistory.IsEmpty (InvokeTacticalCommand "editor.history.redo-shift-z")
                     Html.span [ prop.className "toolbar-separator"; prop.ariaHidden true ]
-                    command "Select" "Activate selection tool" false (EditorChanged(ChooseTool Select))
-                    command "Pencil" "Activate terrain pencil" false (EditorChanged(ChooseTool(Terrain PencilTool)))
-                    command "Units" "Toggle unit command panel" false (EditorToolPanelChanged UnitTools)
-                    command "Fit" "Fit the complete map" false (EditorWorkspaceChanged FitEditorBoard)
+                    command "Select" "Activate selection tool" false (InvokeTacticalCommand "editor.mode.select")
+                    command "Pencil" "Activate terrain pencil" false (InvokeTacticalCommand "editor.tool.terrain.pencil")
+                    command "Units" "Toggle unit command panel" false (InvokeTacticalCommand "editor.domain.units")
+                    command "Fit" "Fit the complete map" false (InvokeTacticalCommand "scene.camera.fit")
                     command
                         "−"
                         "Zoom out around workspace center"
                         false
-                        (EditorWorkspaceChanged(
-                            ZoomEditorAt(
-                                view.ViewportWidth / 2.0,
-                                view.ViewportHeight / 2.0,
-                                0.8
-                            )
-                        ))
+                        (InvokeTacticalCommand "scene.camera.zoom-out")
                     command
                         "+"
                         "Zoom in around workspace center"
                         false
-                        (EditorWorkspaceChanged(
-                            ZoomEditorAt(
-                                view.ViewportWidth / 2.0,
-                                view.ViewportHeight / 2.0,
-                                1.25
-                            )
-                        ))
-                    command "Simulate" "Validate and send this revision to Simulator" false SimulateEditorRevision
+                        (InvokeTacticalCommand "scene.camera.zoom-in")
+                    command
+                        "Simulate"
+                        "Validate and send this revision to Simulator"
+                        false
+                        (InvokeTacticalCommand "editor.scene.create-simulator-handoff")
                 ]
             ]
         ]
@@ -7319,9 +7556,9 @@ let private simulatorDesktopChrome
                           command "Repository bundle" "Download editor and simulator design work" false ExportDesignBundle ]
                     menu
                         "View"
-                        [ command "Reset camera" "Reset battlefield camera" false (BattlefieldChanged ResetCamera)
-                          command "Zoom in" "Zoom battlefield in" false (BattlefieldChanged(ZoomBy 1.25))
-                          command "Zoom out" "Zoom battlefield out" false (BattlefieldChanged(ZoomBy 0.8))
+                        [ command "Reset camera" "Reset battlefield camera" false (InvokeTacticalCommand "scene.camera.fit")
+                          command "Zoom in" "Zoom battlefield in" false (InvokeTacticalCommand "scene.camera.zoom-in")
+                          command "Zoom out" "Zoom battlefield out" false (InvokeTacticalCommand "scene.camera.zoom-out")
                           command
                               (if panelVisible then "Hide command panel" else "Show command panel")
                               "Show or hide the active simulator command panel"
@@ -7363,9 +7600,9 @@ let private simulatorDesktopChrome
                     command "Events" "Toggle simulator events panel" false (InvokeTacticalCommand "simulator.panel.events")
                     command "Samples" "Toggle simulator samples panel" false (InvokeTacticalCommand "simulator.panel.samples")
                     Html.span [ prop.className "toolbar-separator"; prop.ariaHidden true ]
-                    command "−" "Zoom battlefield out" false (BattlefieldChanged(ZoomBy 0.8))
-                    command "+" "Zoom battlefield in" false (BattlefieldChanged(ZoomBy 1.25))
-                    command "Fit" "Reset battlefield camera" false (BattlefieldChanged ResetCamera)
+                    command "−" "Zoom battlefield out" false (InvokeTacticalCommand "scene.camera.zoom-out")
+                    command "+" "Zoom battlefield in" false (InvokeTacticalCommand "scene.camera.zoom-in")
+                    command "Fit" "Reset battlefield camera" false (InvokeTacticalCommand "scene.camera.fit")
                 ]
             ]
         ]
@@ -8561,8 +8798,476 @@ let private tacticalContextHelp model dispatch =
         ]
     ]
 
+let private activeSceneProjection (model: Model) =
+    let focusedUnit =
+        reconcileTacticalSelectedUnit model.Workspace model
+    match model.Workspace with
+    | EditorWorkspace ->
+        Some(
+            TacticalSceneProjection.editor
+                { EditorState = model.Editor
+                  EditorWorkspace = model.EditorView
+                  EditorFocusedUnit = focusedUnit }
+        )
+    | PlanningWorkspace ->
+        model.Planning
+        |> Option.map (fun planning ->
+            TacticalSceneProjection.planning
+                { PlanningMap = model.Editor.Map
+                  PlanningState = planning
+                  PlanningCamera = model.EditorView.Camera
+                  PlanningFocusedUnit = focusedUnit })
+    | SimulatorWorkspace ->
+        model.Simulator
+        |> Option.map (fun simulator ->
+            TacticalSceneProjection.simulator
+                { SimulatorHandoff = simulator
+                  SimulatorSelectedUnit = model.SimulatorSelectedUnit
+                  SimulatorCamera = model.EditorView.Camera
+                  SimulatorFocusedUnit = focusedUnit })
+    | ReplayWorkspace ->
+        TacticalSceneProjection.acceptReview model.Shell
+        |> Option.map (fun accepted ->
+            TacticalSceneProjection.review
+                { AcceptedReview = accepted
+                  ReviewCamera = model.EditorView.Camera
+                  ReviewFocusedUnit = focusedUnit })
+    | RulesWorkspace
+    | SamplesWorkspace -> None
+
+let private sceneDisclosureText = function
+    | Disclosed value -> value
+    | ExplicitlyUnknown -> "Unknown"
+    | NotApplicable -> "Not applicable"
+    | NotPresent -> ""
+
+let private sharedSceneClaimsKeyboard
+    model
+    key
+    controlOrMeta
+    shift
+    alt
+    =
+    let produced =
+        [ if controlOrMeta then "Ctrl"
+          if alt then "Alt"
+          if shift && key <> "?" then "Shift"
+          if key = " " then "Space"
+          elif key.Length = 1 then key.ToUpperInvariant()
+          else key ]
+        |> String.concat "+"
+        |> _.ToUpperInvariant()
+    activeTacticalRegistry model
+    |> List.exists (fun command ->
+        Set.contains model.Tactical.Modality command.Modalities
+        && tacticalCommandAvailable model command
+        && (UnifiedTacticalWorkspace.effectiveGesture
+                model.TacticalBindings
+                command
+            |> Option.exists (fun gesture ->
+                gesture.Trim().ToUpperInvariant() = produced)))
+
+let private sharedSceneUnitCommand model unitId =
+    match model.Workspace with
+    | EditorWorkspace ->
+        Some("editor.scene.select.unit." + string unitId)
+    | PlanningWorkspace ->
+        Some("planning.roster.select." + string unitId)
+    | SimulatorWorkspace ->
+        Some("simulator.scene.select.unit." + string unitId)
+    | ReplayWorkspace ->
+        Some("review.scene.select.unit." + string unitId)
+    | RulesWorkspace
+    | SamplesWorkspace -> None
+
+let private sharedSceneCellCommand model column row =
+    match model.Workspace with
+    | EditorWorkspace ->
+        Some(
+            "editor.scene.cell."
+            + string column
+            + "."
+            + string row
+        )
+    | PlanningWorkspace ->
+        Some(
+            "planning.battlefield.cell."
+            + string column
+            + "."
+            + string row
+        )
+    | _ -> None
+
+let private persistentSceneSvg
+    (model: Model)
+    (projection: SharedSceneProjection option)
+    dispatch
+    =
+    let cellSize = 64.0
+    let board =
+        projection
+        |> Option.map _.Board
+        |> Option.defaultValue
+            { MinimumColumn = 0
+              MinimumRow = 0
+              MaximumColumn = 0
+              MaximumRow = 0 }
+    let boardWidth =
+        float (max 1 (board.MaximumColumn - board.MinimumColumn + 1))
+        * cellSize
+    let boardHeight =
+        float (max 1 (board.MaximumRow - board.MinimumRow + 1))
+        * cellSize
+    // The retained workscreen owns one spatial camera even while a modality
+    // projection is temporarily unavailable (for example before Simulate or
+    // Review has accepted input).
+    let camera = model.EditorView.Camera
+    let selectedPrimitiveIds =
+        projection
+        |> Option.map (fun scene ->
+            [ yield!
+                  scene.Selection.SelectedPrimitiveIds
+                  |> Array.map ScenePrimitiveId.value
+                  |> Array.filter (fun primitiveId ->
+                      not (
+                          primitiveId.StartsWith(
+                              "unit:",
+                              StringComparison.Ordinal
+                          )
+                      ))
+              match scene.Selection.FocusedUnit with
+              | Some unitId -> yield "unit:" + string unitId
+              | None -> () ]
+            |> Set.ofList)
+        |> Option.defaultValue Set.empty
+    let layerVisible kind =
+        projection
+        |> Option.bind (fun scene ->
+            scene.Layers
+            |> Array.tryFind (fun layer -> layer.Kind = kind))
+        |> Option.map _.Visible
+        |> Option.defaultValue true
+    let owner =
+        projection
+        |> Option.map (fun scene -> string scene.Owner)
+        |> Option.defaultValue "Unavailable"
+    let availableCommandIds =
+        activeTacticalRegistry model
+        |> List.filter (fun command ->
+            Set.contains model.Tactical.Modality command.Modalities
+            && tacticalCommandAvailable model command)
+        |> List.map _.Id
+        |> Set.ofList
+    let commandAvailable commandId =
+        Set.contains commandId availableCommandIds
+    let invoke commandId =
+        if commandAvailable commandId then
+            dispatch (InvokeTacticalCommand commandId)
+    let selected primitiveId =
+        Set.contains (ScenePrimitiveId.value primitiveId) selectedPrimitiveIds
+
+    Svg.svg [
+        svg.id "persistent-tactical-svg"
+        svg.custom ("data-work-surface-root", "persistent-svg")
+        svg.custom ("data-render-contract", "shared-scene-projection-v1")
+        svg.custom ("data-scene-owner", owner)
+        svg.custom (
+            "data-scene-revision",
+            projection
+            |> Option.map _.RevisionIdentity
+            |> Option.defaultValue "unavailable"
+        )
+        svg.custom ("data-scene-tick", projection |> Option.map _.Tick |> Option.defaultValue 0 |> string)
+        svg.custom ("data-camera-pan-x", string camera.PanX)
+        svg.custom ("data-camera-pan-y", string camera.PanY)
+        svg.custom ("data-camera-zoom", string camera.Zoom)
+        svg.custom (
+            "data-semantic-selection-unit",
+            projection
+            |> Option.bind _.Selection.FocusedUnit
+            |> Option.map string
+            |> Option.defaultValue ""
+        )
+        svg.custom ("data-keyboard-intent-boundary", "tactical-command-registry")
+        svg.custom ("role", "application")
+        svg.custom (
+            "aria-label",
+            "Persistent shared tactical SVG work surface for " + owner
+        )
+        svg.tabIndex 0
+        svg.onKeyDown (fun event ->
+            let controlOrMeta = event.ctrlKey || event.metaKey
+            if
+                sharedSceneClaimsKeyboard
+                    model
+                    event.key
+                    controlOrMeta
+                    event.shiftKey
+                    event.altKey
+            then
+                event.preventDefault ()
+            event.stopPropagation ()
+            dispatch (
+                KeyPressed(
+                    event.key,
+                    controlOrMeta,
+                    event.shiftKey,
+                    event.altKey,
+                    event.repeat
+                )
+            ))
+        svg.onKeyUp (fun event ->
+            event.stopPropagation ()
+            dispatch (KeyReleased event.key))
+        svg.viewBox (0, 0, max 1 (int boardWidth), max 1 (int boardHeight))
+        svg.children [
+            Svg.title "Persistent tactical battlefield"
+            Svg.desc "One retained SVG renders presentation-only shared scene layers. Pointer and keyboard intent pass through the tactical command registry and availability boundary."
+            Svg.g [
+                svg.id "persistent-scene-camera"
+                svg.custom ("data-scene-layer", "camera")
+                svg.custom (
+                    "transform",
+                    "translate("
+                    + string camera.PanX
+                    + " "
+                    + string camera.PanY
+                    + ") scale("
+                    + string camera.Zoom
+                    + ")"
+                )
+                svg.children [
+                    Svg.g [
+                        svg.id "persistent-layer-terrain"
+                        svg.custom ("data-scene-layer", "terrain")
+                        svg.custom ("data-layer-visible", string (layerVisible "terrain"))
+                        svg.custom ("display", if layerVisible "terrain" then "inline" else "none")
+                        svg.children [
+                            match projection with
+                            | Some scene ->
+                                for terrain in scene.Terrain do
+                                    let command =
+                                        sharedSceneCellCommand
+                                            model
+                                            terrain.Column
+                                            terrain.Row
+                                    let available =
+                                        command
+                                        |> Option.exists commandAvailable
+                                    Svg.rect [
+                                        svg.key (ScenePrimitiveId.value terrain.PrimitiveId)
+                                        svg.custom (
+                                            "data-primitive-id",
+                                            ScenePrimitiveId.value terrain.PrimitiveId
+                                        )
+                                        svg.custom ("data-command-available", string available)
+                                        svg.x (float terrain.Column * cellSize)
+                                        svg.y (float terrain.Row * cellSize)
+                                        svg.width cellSize
+                                        svg.height cellSize
+                                        svg.fill (
+                                            match terrain.Kind with
+                                            | "rough" -> "#35443a"
+                                            | "blocked" -> "#202925"
+                                            | "objective" -> "#4b4630"
+                                            | _ -> "#2b3832"
+                                        )
+                                        svg.stroke "#52675d"
+                                        svg.strokeWidth 1
+                                        match command with
+                                        | Some commandId when available ->
+                                            svg.custom ("role", "button")
+                                            svg.custom ("aria-label", "Activate cell " + string terrain.Column + "," + string terrain.Row)
+                                            svg.onClick (fun _ -> invoke commandId)
+                                        | _ -> svg.custom ("aria-hidden", "true")
+                                    ]
+                            | None -> ()
+                        ]
+                    ]
+                    Svg.g [
+                        svg.id "persistent-layer-edges"
+                        svg.custom ("data-scene-layer", "edges")
+                        svg.custom ("data-layer-visible", string (layerVisible "edges"))
+                        svg.custom ("display", if layerVisible "edges" then "inline" else "none")
+                        svg.custom ("pointer-events", "none")
+                        svg.children [
+                            match projection with
+                            | Some scene ->
+                                for edge in scene.Edges do
+                                    Svg.line [
+                                        svg.key edge.Id
+                                        svg.custom ("data-primitive-id", "edge:" + edge.Id)
+                                        svg.x1 (float edge.StartColumn * cellSize)
+                                        svg.y1 (float edge.StartRow * cellSize)
+                                        svg.x2 (float edge.EndColumn * cellSize)
+                                        svg.y2 (float edge.EndRow * cellSize)
+                                        svg.stroke (if edge.State = "open" then "#8cc7a8" else "#d6ded9")
+                                        svg.strokeWidth (if edge.Kind = "wall" then 6 else 4)
+                                    ]
+                            | None -> ()
+                        ]
+                    ]
+                    Svg.g [
+                        svg.id "persistent-layer-routes"
+                        svg.custom ("data-scene-layer", "routes")
+                        svg.custom ("data-layer-visible", string (layerVisible "routes"))
+                        svg.custom ("display", if layerVisible "routes" then "inline" else "none")
+                        svg.custom ("pointer-events", "none")
+                        svg.children [
+                            match projection with
+                            | Some scene ->
+                                for route in scene.Routes do
+                                    Svg.polyline [
+                                        svg.key (ScenePrimitiveId.value route.PrimitiveId)
+                                        svg.custom ("data-primitive-id", ScenePrimitiveId.value route.PrimitiveId)
+                                        svg.points (
+                                            route.Points
+                                            |> Array.chunkBySize 2
+                                            |> Array.choose (fun pair ->
+                                                if pair.Length = 2 then
+                                                    Some(string (pair[0] * cellSize) + "," + string (pair[1] * cellSize))
+                                                else None)
+                                            |> String.concat " "
+                                        )
+                                        svg.fill "none"
+                                        svg.stroke "#77bdf2"
+                                        svg.strokeWidth 5
+                                        svg.custom ("stroke-dasharray", "10 6")
+                                    ]
+                            | None -> ()
+                        ]
+                    ]
+                    Svg.g [
+                        svg.id "persistent-layer-units"
+                        svg.custom ("data-scene-layer", "units")
+                        svg.custom ("data-layer-visible", string (layerVisible "units"))
+                        svg.custom ("display", if layerVisible "units" then "inline" else "none")
+                        svg.children [
+                            match projection with
+                            | Some scene ->
+                                for unit in scene.Units do
+                                    let visual = unit.Visual
+                                    let width = float (CellExtent.value visual.FootprintWidth) * cellSize
+                                    let depth = float (CellExtent.value visual.FootprintDepth) * cellSize
+                                    let command = sharedSceneUnitCommand model visual.Id
+                                    let available =
+                                        command
+                                        |> Option.exists commandAvailable
+                                    Svg.g [
+                                        svg.key (ScenePrimitiveId.value unit.PrimitiveId)
+                                        svg.custom ("data-primitive-id", ScenePrimitiveId.value unit.PrimitiveId)
+                                        svg.custom ("data-unit-id", string visual.Id)
+                                        svg.custom ("data-command-available", string available)
+                                        svg.tabIndex (if selected unit.PrimitiveId then 0 else -1)
+                                        match command with
+                                        | Some commandId when available ->
+                                            svg.custom ("role", "button")
+                                            svg.custom ("aria-label", "Select tactical unit " + string visual.Id)
+                                            svg.onClick (fun _ -> invoke commandId)
+                                            svg.onKeyDown (fun event ->
+                                                if event.key = "Enter" || event.key = " " then
+                                                    event.preventDefault ()
+                                                    event.stopPropagation ()
+                                                    invoke commandId)
+                                        | _ -> svg.custom ("aria-hidden", "true")
+                                        svg.children [
+                                            Svg.rect [
+                                                svg.x (float visual.AnchorColumn * cellSize + 5.0)
+                                                svg.y (float visual.AnchorRow * cellSize + 5.0)
+                                                svg.width (width - 10.0)
+                                                svg.height (depth - 10.0)
+                                                svg.rx 6
+                                                svg.fill "#101916"
+                                                svg.stroke (
+                                                    if selected unit.PrimitiveId then "#ffd166"
+                                                    else
+                                                        match visual.Faction with
+                                                        | Human -> "#67b7ff"
+                                                        | Arcane -> "#e384ff"
+                                                        | Neutral -> "#c9d7d0"
+                                                        | OtherFaction _ -> "#f2a65a"
+                                                )
+                                                svg.strokeWidth (if selected unit.PrimitiveId then 5 else 3)
+                                            ]
+                                            Svg.text [
+                                                svg.x (float visual.AnchorColumn * cellSize + width / 2.0)
+                                                svg.y (float visual.AnchorRow * cellSize + depth / 2.0 + 6.0)
+                                                svg.custom ("text-anchor", "middle")
+                                                svg.fill "#eef7f2"
+                                                svg.fontSize 16
+                                                svg.text (
+                                                    match sceneDisclosureText visual.ShortLabel with
+                                                    | "" -> string visual.Id
+                                                    | label -> label
+                                                )
+                                            ]
+                                        ]
+                                    ]
+                            | None -> ()
+                        ]
+                    ]
+                    Svg.g [
+                        svg.id "persistent-layer-selection"
+                        svg.custom ("data-scene-layer", "selection")
+                        svg.custom ("pointer-events", "none")
+                        svg.children [
+                            match projection with
+                            | Some scene ->
+                                for unit in scene.Units do
+                                    if selected unit.PrimitiveId then
+                                        Svg.rect [
+                                            svg.key ("selection:" + ScenePrimitiveId.value unit.PrimitiveId)
+                                            svg.custom ("data-selection-for", ScenePrimitiveId.value unit.PrimitiveId)
+                                            svg.x (float unit.Visual.AnchorColumn * cellSize + 1.0)
+                                            svg.y (float unit.Visual.AnchorRow * cellSize + 1.0)
+                                            svg.width (float (CellExtent.value unit.Visual.FootprintWidth) * cellSize - 2.0)
+                                            svg.height (float (CellExtent.value unit.Visual.FootprintDepth) * cellSize - 2.0)
+                                            svg.rx 8
+                                            svg.fill "none"
+                                            svg.stroke "#ffd166"
+                                            svg.strokeWidth 3
+                                            svg.custom ("stroke-dasharray", "6 3")
+                                        ]
+                            | None -> ()
+                        ]
+                    ]
+                    Svg.g [
+                        svg.id "persistent-layer-annotations"
+                        svg.custom ("data-scene-layer", "annotations")
+                        svg.custom ("data-layer-visible", string (layerVisible "annotations"))
+                        svg.custom ("display", if layerVisible "annotations" then "inline" else "none")
+                        svg.custom ("pointer-events", "none")
+                        svg.children [
+                            match projection with
+                            | Some scene ->
+                                for index, annotation in Array.indexed scene.Annotations do
+                                    let x =
+                                        annotation.Column
+                                        |> Option.map (fun column -> float column * cellSize + 12.0)
+                                        |> Option.defaultValue 12.0
+                                    let y =
+                                        annotation.Row
+                                        |> Option.map (fun row -> float row * cellSize + 20.0)
+                                        |> Option.defaultValue (20.0 + float index * 20.0)
+                                    Svg.text [
+                                        svg.key (ScenePrimitiveId.value annotation.PrimitiveId)
+                                        svg.custom ("data-primitive-id", ScenePrimitiveId.value annotation.PrimitiveId)
+                                        svg.x x
+                                        svg.y y
+                                        svg.fill "#ffd166"
+                                        svg.fontSize 13
+                                        svg.text (sceneDisclosureText annotation.Text)
+                                    ]
+                            | None -> ()
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+
 let private tacticalPersistentBattlefield model dispatch =
-    let shell = model.Shell
+    let projection = activeSceneProjection model
     Html.section [
         prop.id "tactical-battlefield-viewport"
         prop.className "tactical-battlefield-viewport"
@@ -8570,64 +9275,25 @@ let private tacticalPersistentBattlefield model dispatch =
         prop.custom ("data-viewport-lifecycle", "shared")
         prop.custom ("data-active-modality", string model.Tactical.Modality)
         prop.children [
-            match model.Workspace with
-            | EditorWorkspace ->
-                editorBattlefield
-                    model.Editor
-                    model.EditorView
-                    (match model.EditorToolPanel with
-                     | TerrainTools -> TerrainDomain
-                     | UnitTools -> UnitDomain
-                     | EdgeTools -> EdgeDomain
-                     | ZoneTools -> RegionDomain
-                     | DocumentTools -> DocumentDomain)
-                    (editorPanHeld model)
-                    model.InputHelpExpanded
-                    model.TacticalBindings
-                    dispatch
-            | PlanningWorkspace ->
-                match model.Planning with
-                | Some planning -> planningBattlefield model.Editor planning dispatch
-                | None -> Html.p "Planning battlefield unavailable."
-            | SimulatorWorkspace ->
-                match model.Simulator with
-                | Some simulator ->
-                    let simulatorState =
-                        MapEditorSimulator.viewState model.SimulatorSelectedUnit simulator
-                    battlefieldView
-                        shell
-                        (Some(MapEditorSimulator.frame model.SimulatorSelectedUnit simulator))
-                        (Some simulatorState)
-                        model.Battlefield
-                        None
-                        1.0
-                        (if model.Battlefield.ExactTicks || model.Battlefield.ReducedMotion then
-                             Map.empty
-                         else
-                             MapEditorSimulator.presentationOffsets simulator)
-                        dispatch
-                | None ->
-                    battlefieldView
-                        shell
-                        (Some(MapEditor.frame model.Editor))
-                        None
-                        model.Battlefield
-                        None
-                        1.0
-                        Map.empty
-                        dispatch
-            | ReplayWorkspace ->
-                battlefieldView
-                    shell
-                    None
-                    None
-                    model.Battlefield
-                    model.PreviousFrame
-                    model.PresentationAlpha
-                    Map.empty
-                    dispatch
-            | RulesWorkspace
-            | SamplesWorkspace -> Html.none
+            persistentSceneSvg model projection dispatch
+            Html.details [
+                prop.className "tactical-compatibility-surface"
+                prop.children [
+                    Html.summary "Modality-specific compatibility tools"
+                    Html.div [
+                        prop.custom ("data-migration-boundary", "milestones-4-through-7")
+                        prop.children [
+                            Html.p "Specialized owner controls migrate in Milestones 4–7. The retained shared SVG is the only tactical workscreen."
+                            Html.button [
+                                prop.type'.button
+                                prop.text "Open active command help"
+                                prop.onClick (fun _ ->
+                                    dispatch (InvokeTacticalCommand "input.help"))
+                            ]
+                        ]
+                    ]
+                ]
+            ]
         ]
     ]
 
@@ -9119,48 +9785,8 @@ let view model dispatch =
                                     ]
                                 ]
                                 Html.div [
-                                    prop.className "simulator-map-stage"
-                                    prop.id "simulator-map-stage"
-                                    prop.tabIndex 0
-                                    prop.role.application
-                                    prop.ariaLabel "Keyboard-operable simulator map stage"
-                                    prop.onKeyDown (fun event ->
-                                        event.stopPropagation ()
-                                        if
-                                            isSimulatorModalTarget
-                                                event.target
-                                                event.currentTarget
-                                        then
-                                            let controlOrMeta =
-                                                event.ctrlKey || event.metaKey
-                                            let resolution =
-                                                ModalInput.resolve
-                                                    (ModalInput.deriveSimulatorContexts facts)
-                                                    { Key =
-                                                        NormalizedKey.create
-                                                            event.key
-                                                            None
-                                                      Modifiers =
-                                                        { ControlOrMeta = controlOrMeta
-                                                          Shift = event.shiftKey
-                                                          Alt = event.altKey }
-                                                      Phase = KeyDown }
-                                                    event.repeat
-                                                    catalog
-                                            match resolution with
-                                            | Resolved _ ->
-                                                event.preventDefault ()
-                                            | NoAvailableMatch _
-                                            | NoMatch -> ()
-                                            dispatch (
-                                                KeyPressed(
-                                                    event.key,
-                                                    controlOrMeta,
-                                                    event.shiftKey,
-                                                    event.altKey,
-                                                    event.repeat
-                                                )
-                                            ))
+                                    prop.className "simulator-owner-controls"
+                                    prop.ariaLabel "Simulator non-workscreen controls"
                                     prop.children [
                                         simulatorDock
                                             simulator
@@ -9252,7 +9878,8 @@ let view model dispatch =
                             ]
                         | None -> Html.none
                         Html.div [
-                            prop.className "editor-map-stage"
+                            prop.className "editor-owner-controls"
+                            prop.ariaLabel "Editor non-workscreen controls"
                             prop.children [
                                 editorToolbar
                                     model.Editor
@@ -9283,7 +9910,6 @@ let view model dispatch =
                                     dispatch
                             ]
                         ]
-                        editorGrid model.Editor dispatch
                     ]
                 ])
             | ReplayWorkspace ->

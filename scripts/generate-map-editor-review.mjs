@@ -9,19 +9,16 @@ const clientOutput = resolve("artifacts/client");
 const reviewOutput = resolve("docs/assets/map-editor-review");
 const html = await readFile(resolve(clientOutput, "index.html"), "utf8");
 const scriptMatch = html.match(/<script[^>]+src="([^"]+\.js)"/);
-
 if (!scriptMatch) {
-  throw new Error("Build the production client before generating map-editor review boards.");
+  throw new Error("Build the production client before generating review boards.");
 }
 
 const window = new Window({ url: "https://sir.invalid/map-editor-review/" });
 window.document.body.innerHTML = '<div id="sir-replay-app"></div>';
-
 class ReviewWorker {
   postMessage() {}
   terminate() {}
 }
-
 Object.assign(globalThis, {
   window,
   document: window.document,
@@ -42,90 +39,80 @@ await import(pathToFileURL(bundle));
 await window.happyDOM.waitUntilComplete();
 await mkdir(reviewOutput, { recursive: true });
 
-const buttonByText = (text) =>
-  [...window.document.querySelectorAll("button")].find(
+const worksurface = () =>
+  window.document.querySelector("svg#persistent-tactical-svg");
+const buttonByText = (text, root = window.document) =>
+  [...root.querySelectorAll("button")].find(
     (button) => button.textContent.trim() === text,
   );
-const workspace = () =>
-  window.document.querySelector(
-    '[aria-label="SVG tactical map workspace"] svg[role="application"]',
-  );
 const setFile = (input, file) => {
+  if (!input) throw new Error(`Required review input for ${file.name} is unavailable.`);
   Object.defineProperty(input, "files", {
     configurable: true,
     value: {
       0: file,
       length: 1,
-      item(index) {
-        return index === 0 ? file : null;
+      item: (index) => (index === 0 ? file : null),
+      [Symbol.iterator]: function* () {
+        yield file;
       },
     },
   });
   input.dispatchEvent(new window.Event("change", { bubbles: true }));
 };
 const settleFile = async () => {
-  await new Promise((done) => setTimeout(done, 0));
+  await new Promise((done) => setTimeout(done, 20));
   await window.happyDOM.waitUntilComplete();
 };
-
-buttonByText("Map file")?.click();
-await window.happyDOM.waitUntilComplete();
-
-const validMap = `SIR-MAP 2
-size 12 8
-terrain 2 2 rough
-terrain 3 2 rough
-terrain 2 3 objective
-terrain 3 3 blocked
-edge 4 1 east wall closed
-edge 4 2 east door open
-edge 4 3 east window closed
-zone 1 objective rectangle 6 2 3 2
-zone 2 deployment blue polygon 0,5 4,5 4,8 0,8
-unit 1 blue rifleman 0 0 2 12 12 manual -
-unit 2 red goblin 8 1 1 35 35 general -
-unit 3 red troll 8 4 3 240 240 general -
-`;
-const importInput = window.document.querySelector(
-  'input[aria-label="Import SIR map"]',
-);
-setFile(
-  importInput,
-  new window.File([validMap], "qualification.sir-map", {
-    type: "text/plain",
-  }),
-);
-await settleFile();
-
-const png = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFElEQVR42mNkYGD4z8DAwMDEAAUADikBA8NqN1EAAAAASUVORK5CYII=",
-  "base64",
-);
-const backgroundInput = window.document.querySelector(
-  'input[aria-label="Choose local raster map background"]',
-);
-setFile(
-  backgroundInput,
-  new window.File([png], "qualification.png", { type: "image/png" }),
-);
-await settleFile();
-
+const ensureDocumentPanel = async () => {
+  let validation = window.document.querySelector(
+    '[aria-label="Map validation issues"]',
+  );
+  if (!validation) {
+    buttonByText(
+      "Map file",
+      window.document.querySelector('[aria-label="Map editor tool groups"]'),
+    )?.click();
+    await window.happyDOM.waitUntilComplete();
+    validation = window.document.querySelector(
+      '[aria-label="Map validation issues"]',
+    );
+  }
+  if (!validation) {
+    throw new Error("Map file controls did not expose the validation region.");
+  }
+  return validation;
+};
 const files = [];
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
-const writeBoard = async (name, source, keepLayers, description) => {
-  if (!source) throw new Error(`The ${name} production review SVG did not render.`);
+const writeBoard = async (name, keepLayers, description, evidenceText = "") => {
+  const source = worksurface();
+  if (!source) throw new Error(`The ${name} persistent review SVG did not render.`);
   const svg = source.cloneNode(true);
   svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
   svg.setAttribute("width", "960");
   svg.setAttribute("height", "640");
   svg.setAttribute("data-map-editor-review", name);
   svg.setAttribute("style", "background:#0b100f");
-  if (keepLayers) {
-    for (const layer of svg.querySelectorAll("[data-layer]")) {
-      if (!keepLayers.includes(layer.getAttribute("data-layer"))) {
-        layer.setAttribute("display", "none");
-      }
+  for (const layer of svg.querySelectorAll(
+    "#persistent-scene-camera > [data-scene-layer]",
+  )) {
+    if (!keepLayers.includes(layer.getAttribute("data-scene-layer"))) {
+      layer.setAttribute("display", "none");
     }
+  }
+  if (evidenceText) {
+    const note = window.document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "text",
+    );
+    note.setAttribute("x", "12");
+    note.setAttribute("y", "500");
+    note.setAttribute("fill", "#ffd166");
+    note.setAttribute("font-size", "14");
+    note.setAttribute("data-evidence-control-state", name);
+    note.textContent = evidenceText.replace(/\s+/g, " ").trim().slice(0, 180);
+    svg.append(note);
   }
   const svgName = `${name}.svg`;
   const pngName = `${name}.png`;
@@ -153,58 +140,98 @@ const writeBoard = async (name, source, keepLayers, description) => {
   });
 };
 
+await ensureDocumentPanel();
+const validMap = `SIR-MAP 2
+size 12 8
+terrain 2 2 rough
+terrain 3 2 rough
+terrain 2 3 objective
+terrain 3 3 blocked
+edge 4 1 east wall closed
+edge 4 2 east door open
+edge 4 3 east window closed
+zone 1 objective rectangle 6 2 3 2
+zone 2 deployment blue polygon 0,5 4,5 4,8 0,8
+unit 1 blue rifleman 0 0 2 12 12 manual -
+unit 2 blue medic 3 0 1 12 12 manual -
+unit 3 red goblin 8 1 1 35 35 general -
+unit 4 red troll 8 4 3 240 240 general -
+`;
+setFile(
+  window.document.querySelector('input[aria-label="Import SIR map"]'),
+  new window.File([validMap], "qualification.sir-map", {
+    type: "text/plain",
+  }),
+);
+await settleFile();
+
 await writeBoard(
   "terrain",
-  workspace(),
-  ["grid", "terrain"],
-  "Open, rough, objective, and blocked terrain with grid context.",
+  ["terrain"],
+  "Shared authored terrain projected through the persistent M3 renderer.",
 );
 await writeBoard(
   "edges",
-  workspace(),
-  ["grid", "edges"],
-  "Wall, open door, and window semantic edge meanings.",
+  ["edges"],
+  "Shared semantic edges projected through the persistent M3 renderer.",
 );
 await writeBoard(
   "units",
-  workspace(),
-  ["grid", "units"],
-  "Canonical 1×1, 2×2, and 3×3 square unit footprints.",
+  ["units"],
+  "Canonical square-unit footprints in the shared Editor projection.",
 );
 await writeBoard(
   "zones",
-  workspace(),
-  ["grid", "regions"],
-  "Objective rectangle and blue deployment polygon.",
-);
-await writeBoard(
-  "background",
-  workspace(),
-  ["local-raster-background", "grid"],
-  "Signature-validated local raster alignment beneath the grid.",
+  ["annotations"],
+  "Imported objective and deployment regions projected as positioned annotations.",
 );
 
-[
-  ...window.document.querySelectorAll(
-    '[aria-label="Map editor menu and toolbar"] button',
+const png = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFElEQVR42mNkYGD4z8DAwMDEAAUADikBA8NqN1EAAAAASUVORK5CYII=",
+  "base64",
+);
+setFile(
+  window.document.querySelector(
+    'input[aria-label="Choose local raster map background"]',
   ),
-].find((button) => button.textContent.trim() === "Simulate")?.click();
+  new window.File([png], "qualification.png", { type: "image/png" }),
+);
+await settleFile();
+const backgroundState =
+  window.document.querySelector('[aria-label="Editor non-workscreen controls"]')
+    ?.textContent ?? "";
+await writeBoard(
+  "background",
+  ["terrain", "annotations"],
+  "Signature-validated local background control state beside the retained authored projection; raster drawing migrates in M4.",
+  backgroundState,
+);
+
+const unit = worksurface()?.querySelector(
+  '[data-unit-id="2"][data-command-available="true"]',
+);
+unit?.dispatchEvent(
+  new window.MouseEvent("click", { bubbles: true, cancelable: true }),
+);
 await window.happyDOM.waitUntilComplete();
+[...window.document.querySelectorAll(
+  '[aria-label="Map editor quick access"] button',
+)]
+  .find((button) => button.textContent.trim() === "Simulate")
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+if (worksurface()?.getAttribute("data-scene-owner") !== "SimulatorScene") {
+  throw new Error("The registry-routed simulator handoff did not project.");
+}
 await writeBoard(
   "simulator-handoff",
-  window.document.querySelector(
-    '[aria-label="Editable simulation SVG battlefield"] svg',
-  ),
-  null,
-  "Immutable authored revision rendered by the simulator.",
+  ["terrain", "edges", "routes", "units", "selection", "annotations"],
+  "Immutable simulator handoff projected into the same retained SVG.",
 );
 
 buttonByText("Editor")?.click();
 await window.happyDOM.waitUntilComplete();
-if (!window.document.querySelector('input[aria-label="Import SIR map"]')) {
-  buttonByText("Map file")?.click();
-  await window.happyDOM.waitUntilComplete();
-}
+await ensureDocumentPanel();
 const gapMap = validMap.replace(
   "edge 4 2 east door open",
   "edge 4 4 east door open",
@@ -214,16 +241,23 @@ setFile(
   new window.File([gapMap], "validation.sir-map", { type: "text/plain" }),
 );
 await settleFile();
+const validationRegion = await ensureDocumentPanel();
+const validationState = validationRegion.textContent;
+if (!validationState.includes("EDGE-GAP")) {
+  throw new Error(
+    `Expected EDGE-GAP validation issue was absent: ${validationState}`,
+  );
+}
 await writeBoard(
   "validation",
-  workspace(),
-  ["grid", "terrain", "edges", "units", "regions", "validation-overlay"],
-  "EDGE-GAP issue projected without hiding authoritative domains.",
+  ["terrain", "edges", "units", "selection", "annotations"],
+  "Imported EDGE-GAP validation state shown with the authoritative persistent projection.",
+  validationState,
 );
 
 const manifest = {
   format: "sir-map-editor-review-v1",
-  generatedFrom: "production Fable/React SVG workspaces",
+  generatedFrom: "production persistent Fable/React SVG workscreen at the M3 boundary",
   productionBundleSha256,
   rasterizer: "rsvg-convert 2.62.3",
   width: 960,
@@ -237,18 +271,20 @@ await writeFile(
 );
 await writeFile(
   resolve(reviewOutput, "README.md"),
-  `# Map editor review boards
+  `# Persistent tactical Editor review boards
 
-These deterministic SVG/PNG pairs are generated from the production Fable/React
-editor and simulator by \`node scripts/generate-map-editor-review.mjs\`.
-The manifest pins the production bundle and every artifact hash. The boards are
-presentation evidence only; the canonical SIR-MAP document remains authoritative.
+These deterministic SVG/PNG pairs are generated from the production retained
+Fable/React workscreen by \`node scripts/generate-map-editor-review.mjs\`.
+The manifest pins the production bundle and every artifact hash. At Milestone 3
+the boards prove the renderer boundary and shared layers; full Editor parity is
+assigned to Milestone 4.
 
-Domains: terrain, semantic edges, units, zones, local background, validation,
-and immutable simulator handoff.
+Domains: imported terrain, semantic edges, units, positioned regions,
+signature-validated background control state, imported validation state, and
+immutable simulator handoff.
 `,
   "utf8",
 );
 
-console.log(`Generated ${files.length} deterministic map-editor SVG/PNG review pairs.`);
+console.log(`Generated ${files.length} deterministic persistent SVG/PNG review pairs.`);
 window.happyDOM.close();
