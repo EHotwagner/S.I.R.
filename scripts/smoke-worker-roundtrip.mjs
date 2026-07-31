@@ -292,7 +292,11 @@ for (const [operation, plan, expectedLabel] of [
   }
   if (
     expectedLabel === 2 &&
-    (updates[0].Projection.Units.length !== 0 ||
+    (disclosures.length !== intentOnlyPlan.Intents.length ||
+      !disclosures.every((value, index) =>
+        value === `Intent only: ${intentOnlyPlan.Intents[index]}`,
+      ) ||
+      updates[0].Projection.Units.length !== 0 ||
       updates[0].Projection.Edges.length !== 0 ||
       updates[0].Projection.Events.length !== 0 ||
       updates[0].Projection.Checkpoints.length !== 0)
@@ -512,5 +516,5 @@ if (
 await worker.terminate();
 
 console.log(
-  `Worker round-trip smoke passed: replay/lab and all simulator session requests/responses crossed structured clone; a pinned authoritative run loaded, cancellation stopped run-to, stale revisions were rejected, intent-only disclosure was empty, and 6,000 ticks used ${runMessages.length} projection messages in ${runElapsedMilliseconds.toFixed(3)} ms.`,
+  `Worker round-trip smoke passed: replay/lab and all simulator session requests/responses crossed structured clone; a pinned authoritative run loaded, cancellation stopped run-to, stale revisions were rejected, intent-only prediction disclosed only its authored intent text and no entity/event state, and 6,000 ticks used ${runMessages.length} projection messages in ${runElapsedMilliseconds.toFixed(3)} ms.`,
 );

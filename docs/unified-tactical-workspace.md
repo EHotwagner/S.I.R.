@@ -16,17 +16,21 @@ last-updated: 2026-07-30
 > [persistent-workspace design report](2026-07-31-0840-vscode-style-persistent-tactical-workspace-design-report.md).
 > Its compact toolbar, configurable sidebars, responsive drawers,
 > and independently visible/collapsible bottom-panel profile surround the
-> existing battlefield paths. Invalid or future persisted layout profiles fail
+> retained workscreen and remaining compatibility controls. Invalid or future persisted layout profiles fail
 > closed to canonical Field Focus with an announced diagnostic. Editor tools,
 > layers, selection inspector, validation, and document state now occupy real
-> registered panels; later milestones migrate the other modalities. The canonical
+> registered panels. Plan roster, tools, inspector, validation, and exact
+> revision state are also registered-panel capabilities; authored intent,
+> annotation-only intent prediction, and validation disclosure render through the shared SVG
+> layers. The old planning battlefield and page layout have been removed. The
+> canonical
 > workscreen is now one retained, keyboard-focusable SVG with stable camera,
 > terrain, edge, route, unit, selection, and annotation layers. Exact SVG and
 > layer references survive modality, panel, timeline, resize, overlay, and
 > playback updates. The labelled compatibility disclosure contains only
 > non-workscreen, registry-routed migration guidance; alternate modality
-> battlefield and grid roots are not mounted. Existing Plan, Simulator, and
-> Review control panels remain reachable beside the shell while later
+> battlefield and grid roots are not mounted. Existing Simulator and Review
+> control panels remain reachable beside the shell while later
 > milestones move them into final sidebar placements. A shared,
 > presentation-only scene projection now gives Editor, Plan, Simulate, and
 > Review stable terrain/unit/route/annotation/layer identities while preserving

@@ -344,6 +344,7 @@ module TacticalSceneProjection =
 
     let private planningUnit
         (map: MapDefinition)
+        (commands: PlanningCommand list)
         (member': PlanningRosterMember)
         : SceneUnitProjection
         =
@@ -368,6 +369,41 @@ module TacticalSceneProjection =
                 CellExtent.tryCreate 1
                 |> Option.defaultWith (fun () ->
                     invalidOp "One-cell planning footprint was invalid."))
+        let latest choose =
+            commands
+            |> List.choose (fun command ->
+                if command.UnitId = member'.UnitId then choose command.Kind
+                else None)
+            |> List.tryLast
+        let bodyHeading =
+            latest (function
+                | PlannedFacing direction -> Some direction
+                | _ -> None)
+            |> Option.map (HeadingRadians.ofDirection8 >> Disclosed)
+            |> Option.defaultValue NotPresent
+        let attentionHeading =
+            latest (function
+                | PlannedAttention direction -> Some direction
+                | _ -> None)
+            |> Option.map (fun direction ->
+                Disclosed
+                    { Radians = HeadingRadians.ofDirection8 direction
+                      Source = AttentionHeading })
+            |> Option.defaultValue NotPresent
+        let stance =
+            latest (function
+                | PlannedStance value -> Some value
+                | _ -> None)
+            |> Option.map Disclosed
+            |> Option.defaultValue NotPresent
+        let statusIds =
+            [| yield "planning"
+               if commands |> List.exists (fun command -> command.UnitId = member'.UnitId && command.Kind = PlannedHold) then
+                   yield "hold"
+               if commands |> List.exists (fun command -> command.UnitId = member'.UnitId && match command.Kind with PlannedEngagement _ -> true | _ -> false) then
+                   yield "engagement"
+               if commands |> List.exists (fun command -> command.UnitId = member'.UnitId && match command.Kind with PlannedSynchronization _ -> true | _ -> false) then
+                   yield "synchronization" |]
         { PrimitiveId = primitive "unit" (invariant member'.UnitId)
           Visual =
             { Id = member'.UnitId
@@ -383,13 +419,17 @@ module TacticalSceneProjection =
               Faction = faction
               Health = NotPresent
               Level = NotPresent
-              StanceId = NotPresent
-              BodyHeading = NotPresent
-              SecondaryHeading = NotPresent
+              StanceId = stance
+              BodyHeading = bodyHeading
+              SecondaryHeading = attentionHeading
               ShortLabel = Disclosed member'.Name
-              StatusIds = [| "planning" |] } }
+              StatusIds = statusIds } }
 
-    let private planningAnnotation (command: PlanningCommand) : SceneAnnotationProjection =
+    let private planningAnnotation
+        (roster: PlanningRosterMember array)
+        (command: PlanningCommand)
+        : SceneAnnotationProjection
+        =
         let kind, text =
             match command.Kind with
             | PlannedRoute _ -> "route", "Route"
@@ -405,18 +445,38 @@ module TacticalSceneProjection =
             | PlannedSynchronization(marker, deadline) ->
                 "synchronization",
                 marker + " by " + invariant deadline
+        let owner = roster |> Array.tryFind (fun unit -> unit.UnitId = command.UnitId)
         { PrimitiveId = primitive "plan-command" command.Id
           Kind = kind
-          Column = None
-          Row = None
+          Column = owner |> Option.map _.Column
+          Row = owner |> Option.map _.Row
           Text = Disclosed text }
+
+    let private planningIssueAnnotation
+        (state: PlanningWorkspaceState)
+        index
+        (issue: PlanningIssue)
+        =
+        let command =
+            issue.CommandId
+            |> Option.bind (fun commandId ->
+                state.Commands |> List.tryFind (fun command -> command.Id = commandId))
+        let unitId = issue.UnitId |> Option.orElse (command |> Option.map _.UnitId)
+        let owner =
+            unitId
+            |> Option.bind (fun id -> state.Roster |> Array.tryFind (fun unit -> unit.UnitId = id))
+        { PrimitiveId = primitive "planning-issue" (invariant index)
+          Kind = "validation"
+          Column = owner |> Option.map _.Column
+          Row = owner |> Option.map _.Row
+          Text = Disclosed(issue.Code + " · " + issue.Detail) }
 
     let planning (input: PlanningProjectionInput) =
         let units =
             input.PlanningState.Roster
             |> Array.sortBy _.UnitId
-            |> Array.map (planningUnit input.PlanningMap)
-        let routes =
+            |> Array.map (planningUnit input.PlanningMap input.PlanningState.Commands)
+        let authoredRoutes =
             input.PlanningState.Commands
             |> List.choose (fun command ->
                 match command.Kind with
@@ -433,6 +493,7 @@ module TacticalSceneProjection =
                             ) }
                 | _ -> None)
             |> List.toArray
+        let routes = authoredRoutes
         let selected, focused =
             selectedUnits
                 (input.PlanningState.SelectedUnit |> Option.toList)
@@ -465,13 +526,26 @@ module TacticalSceneProjection =
           Units = units
           Routes = routes
           Annotations =
-            input.PlanningState.Commands
-            |> List.filter (fun command ->
-                match command.Kind with
-                | PlannedRoute _ -> false
-                | _ -> true)
-            |> List.map planningAnnotation
-            |> List.toArray
+            Array.concat
+                [ input.PlanningState.Commands
+                  |> List.filter (fun command ->
+                      match command.Kind with
+                      | PlannedRoute _ -> false
+                      | _ -> true)
+                  |> List.map (planningAnnotation input.PlanningState.Roster)
+                  |> List.toArray
+                  input.PlanningState.Issues
+                  |> Array.mapi (planningIssueAnnotation input.PlanningState)
+                  input.PlanningState.Predicted
+                  |> Option.map (fun prediction ->
+                      prediction.Disclosures
+                      |> Array.mapi (fun index disclosure ->
+                          { PrimitiveId = primitive "prediction" (string prediction.Revision + ":" + invariant index)
+                            Kind = "prediction"
+                            Column = None
+                            Row = None
+                            Text = Disclosed disclosure }))
+                  |> Option.defaultValue [||] ]
           Disclosure = disclosure SandboxDisclosure
           Camera = camera input.PlanningCamera
           Selection =

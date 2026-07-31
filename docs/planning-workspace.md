@@ -14,9 +14,9 @@ map revision. It is a client of the retained simulator worker protocol, not a
 second simulation engine.
 
 Plan is now a modality of the
-[unified tactical workspace](unified-tactical-workspace.md). Its docked roster,
-tools, battlefield, inspector, and validation panels share the persistent
-battlefield and time cursor with Editor, Simulate, and Review. Commands are
+[unified tactical workspace](unified-tactical-workspace.md). Its registered
+roster, tools, inspector, validation, and revision panels surround the one
+persistent SVG and shared time cursor used by Editor, Simulate, and Review. Commands are
 authored at the current editable cursor; moving the cursor alone remains a
 projection and never creates a revision.
 
@@ -32,7 +32,8 @@ worker:
   revision, and tick correlation;
 - validation returns an accepted revision or structured diagnostics;
 - preview returns an explicit deterministic, assumption-based, or intent-only
-  label;
+  label and, for the current intent-only contract, canonical authored-intent
+  disclosures with no entity or event geometry;
 - commit identifies the revision accepted by the simulator session; and
 - execution responses identify the current committed tick.
 
@@ -56,7 +57,10 @@ digest. A post-commit edit creates a new authored revision while the previous
 committed identity stays visible. Revision allocation remains monotonic when an
 undo is followed by a different edit, so distinct authored content cannot
 reuse an abandoned revision number. Responses for an older authored revision
-are discarded before they can update the active workspace.
+are discarded before they can update the active workspace. The planner keeps
+one explicit pending request and also rejects a wrong operation, correlation
+tick, response class, envelope kind/version, a superseded request for the same
+revision, or any response when no request is pending.
 
 ## Authoring surface
 
@@ -66,25 +70,27 @@ The workspace provides:
 - battlefield route waypoints;
 - body-facing and attention direction controls;
 - stance, hold, point-engagement, and synchronization commands;
-- per-unit timeline lanes and selected-command removal;
+- shared authored/predicted/accepted/committed timeline segments and
+  selected-command removal;
 - validation issue navigation with buttons and bracket-key shortcuts; and
 - validation, intent-only preview, and commit actions sent through the real
   retained worker.
 
-All pointer targets are native buttons and therefore activate with Enter or
-Space. Inspector controls provide an equivalent for battlefield waypoint and
-direction operations. Effective bindings, including restored defaults or local
+All panel targets are native buttons and therefore activate with Enter or
+Space. The persistent SVG exposes registry-qualified unit and cell actions;
+inspector controls provide an equivalent for waypoint and direction operations.
+Effective bindings, including restored defaults or local
 rebounds, are shown by the live `?` action panel rather than maintained as a
 second static shortcut table.
 
 ## Accessibility and responsive behavior
 
 Interactive planning targets have a minimum 44-by-44 CSS-pixel hit area.
-The layout collapses from three columns to one below 48 rem and therefore
-remains reflowed at 400% zoom without a page-wide fixed canvas. Roster and
-battlefield collections scroll within their labelled regions. The global
+At narrow widths the same registered panels become responsive drawers without
+changing ownership or remounting the SVG. Roster content scrolls within its
+labelled region. The global
 reduced-motion rule removes transitions and animation, and forced-colors mode
-preserves panel, lane, focus, and control boundaries using system colors.
+preserves panel, focus, shared-layer, and control boundaries using system colors.
 
 ## Deterministic review evidence
 
@@ -97,6 +103,7 @@ renders this artifact in the workspace and downloads it as
 The client qualification authors a representative command set across the
 intended 200-unit roster, verifies exact undo/redo identity, keeps all four
 state channels distinct, and asserts the worker document remains below its
-262,144-byte bound. Browser smoke verifies the production Planner mounts all
-five panes, authors through a native grid button, restores the route through
-undo/redo, and sends initialization through the simulator worker boundary.
+262,144-byte bound. Browser qualification verifies the five registered owners,
+all shared planning projections, exact route restoration, stale-response
+rejection, Preview → Validate → Commit, committed protection, and the simulator
+worker boundary while retaining the one SVG object.
