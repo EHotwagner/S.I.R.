@@ -183,6 +183,13 @@ require(reviewManifest.captureKind === "actual-production-shell-chromium-screens
 require(reviewManifest.productionBundleSha256 === hash(bundleBytes), "review is not bound to the production bundle");
 require(reviewManifest.productionStylesSha256 === hash(builtStylesBytes), "review is not bound to production CSS");
 require(reviewManifest.acceptedMockupSha256 === hash(mockup), "review is not bound to the accepted mockup");
+require(
+  typeof reviewManifest.chromiumExecutable === "string" && reviewManifest.chromiumExecutable.length > 0 &&
+    typeof reviewManifest.chromiumUserAgent === "string" && reviewManifest.chromiumUserAgent.includes("Chrome/") &&
+    typeof liveBrowserAudit.chromiumExecutable === "string" && liveBrowserAudit.chromiumExecutable.length > 0 &&
+    liveBrowserAudit.chromium.includes("Chrome/"),
+  "review/live audit does not identify a real Chromium executable and user agent",
+);
 require(reviewManifest.geometrySvgSha256 === hash(reviewGeometrySvg) && reviewManifest.pngSha256 === hash(reviewPng), "review asset hashes drifted");
 require(reviewPng.readUInt32BE(16) === 1440 && reviewPng.readUInt32BE(20) === 900, "actual Chromium screenshot is not 1440×900");
 require(

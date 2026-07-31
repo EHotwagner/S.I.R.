@@ -48,6 +48,7 @@ const manifest = {
   productionBundleSha256: hash(bundleBytes),
   productionStylesSha256: hash(stylesBytes),
   acceptedMockupSha256: hash(mockupBytes),
+  chromiumExecutable: audit.chromiumExecutable,
   chromiumUserAgent: audit.chromium,
   fieldFocus: audit.wide,
   narrow400PercentEquivalent: audit.narrow,

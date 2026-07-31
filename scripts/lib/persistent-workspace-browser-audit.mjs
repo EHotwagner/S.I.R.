@@ -1,11 +1,11 @@
 import { spawn } from "node:child_process";
+import { constants } from "node:fs";
 import { createServer } from "node:http";
-import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { access, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { createServer as createNetServer } from "node:net";
-import { tmpdir } from "node:os";
-import { extname, join, normalize, resolve, sep } from "node:path";
+import { homedir, tmpdir } from "node:os";
+import { delimiter, extname, isAbsolute, join, normalize, resolve, sep } from "node:path";
 
-const chromium = "/usr/sbin/chromium";
 const delay = (milliseconds) => new Promise((resolveDelay) => setTimeout(resolveDelay, milliseconds));
 const mime = new Map([
   [".html", "text/html; charset=utf-8"],
@@ -14,6 +14,70 @@ const mime = new Map([
   [".svg", "image/svg+xml"],
   [".png", "image/png"],
 ]);
+
+const standardChromiumCandidates = [
+  "/usr/sbin/chromium",
+  "/usr/bin/chromium",
+  "/usr/bin/chromium-browser",
+  "/usr/bin/google-chrome",
+  "/usr/bin/google-chrome-stable",
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "/Applications/Chromium.app/Contents/MacOS/Chromium",
+  join(homedir(), "Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
+  join(homedir(), "Applications/Chromium.app/Contents/MacOS/Chromium"),
+];
+const chromiumCommands = [
+  "chromium",
+  "chromium-browser",
+  "google-chrome",
+  "google-chrome-stable",
+  "chrome",
+  "chrome.exe",
+];
+
+const executable = async (candidate) => {
+  try {
+    const info = await stat(candidate);
+    if (!info.isFile()) return false;
+    await access(candidate, constants.X_OK);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const chromiumDiscoveryFailure = (reason, attempted) => {
+  const pathValue = process.env.PATH ?? "";
+  return new Error(
+    `${reason}\nChromium remains required for M9 acceptance.` +
+    `\nAttempted executables:\n- ${attempted.join("\n- ")}` +
+    `\nPATH=${pathValue || "<empty>"}`,
+  );
+};
+
+const discoverChromium = async () => {
+  const override = process.env.CHROMIUM_PATH?.trim();
+  if (override) {
+    const candidate = isAbsolute(override) ? normalize(override) : resolve(override);
+    if (await executable(candidate)) return candidate;
+    throw chromiumDiscoveryFailure(
+      `CHROMIUM_PATH was set but is not an accessible executable: ${candidate}`,
+      [candidate],
+    );
+  }
+
+  const pathDirectories = (process.env.PATH ?? "")
+    .split(delimiter)
+    .filter(Boolean);
+  const pathCandidates = pathDirectories.flatMap((directory) =>
+    chromiumCommands.map((command) => resolve(directory, command))
+  );
+  const attempted = [...new Set([...standardChromiumCandidates, ...pathCandidates])];
+  for (const candidate of attempted) {
+    if (await executable(candidate)) return candidate;
+  }
+  throw chromiumDiscoveryFailure("No Chromium or Chrome executable was found.", attempted);
+};
 
 const allocateLoopbackPort = async () => {
   const reservation = createNetServer();
@@ -253,12 +317,13 @@ const assertNarrow = (audit) => {
 };
 
 export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/client", screenshotPath } = {}) => {
+  const chromiumExecutable = await discoverChromium();
   const { server, port } = await serve(clientRoot);
   const profile = await mkdtemp(join(tmpdir(), "sir-m9-chromium-"));
   const debugPort = await allocateLoopbackPort();
   const browserState = { exited: false, code: null, signal: null, error: null };
   let browserStderr = "";
-  const browser = spawn(chromium, [
+  const browser = spawn(chromiumExecutable, [
     "--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars",
     "--disable-dev-shm-usage", "--no-first-run", "--no-default-browser-check",
     "--disable-background-networking", "--disable-default-apps", "--disable-extensions",
@@ -328,7 +393,12 @@ export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/
     await delay(250);
     const narrow = await evaluate(cdp, `(${collectNarrowAccess.toString()})()`);
     assertNarrow(narrow);
-    return { chromium: await evaluate(cdp, "navigator.userAgent"), wide, narrow };
+    return {
+      chromiumExecutable,
+      chromium: await evaluate(cdp, "navigator.userAgent"),
+      wide,
+      narrow,
+    };
   } finally {
     cdp?.close();
     browser.kill("SIGTERM");
