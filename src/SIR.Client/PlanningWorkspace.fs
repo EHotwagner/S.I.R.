@@ -49,6 +49,16 @@ type PlanningPreview =
       Label: SimulatorPreviewLabel
       Disclosures: string array }
 
+type PlanningRequestKind =
+    | InitializePlanningRequest
+    | PreviewPlanningRequest
+    | ValidatePlanningRequest
+    | CommitPlanningRequest
+
+type PendingPlanningRequest =
+    { Kind: PlanningRequestKind
+      Correlation: SimulatorCorrelation }
+
 type PlanningSnapshot =
     { Commands: PlanningCommand list
       Revision: int64
@@ -70,6 +80,7 @@ type PlanningWorkspaceState =
       Future: PlanningSnapshot list
       NextCommand: int32
       NextOperation: int32
+      PendingRequest: PendingPlanningRequest option
       Issues: PlanningIssue array
       FocusedIssue: int option
       Predicted: PlanningPreview option
@@ -167,6 +178,7 @@ module PlanningWorkspace =
                 Future = []
                 AcceptedRevision = None
                 Predicted = None
+                PendingRequest = None
                 Issues = [||]
                 FocusedIssue = None }
 
@@ -253,6 +265,7 @@ module PlanningWorkspace =
           Future = []
           NextCommand = 1
           NextOperation = 1
+          PendingRequest = None
           Issues = [||]
           FocusedIssue = None
           Predicted = None
@@ -372,6 +385,7 @@ module PlanningWorkspace =
                     Future = snapshot state :: state.Future
                     SelectedCommand = None
                     Predicted = None
+                    PendingRequest = None
                     AcceptedRevision = None }
             | _ -> state
         | RedoPlanning ->
@@ -385,6 +399,7 @@ module PlanningWorkspace =
                     Future = remaining
                     SelectedCommand = None
                     Predicted = None
+                    PendingRequest = None
                     AcceptedRevision = None }
             | _ -> state
         | FocusPlanningIssue index when index >= 0 && index < state.Issues.Length ->
@@ -401,6 +416,13 @@ module PlanningWorkspace =
           MapRevision = state.MapRevision
           PlanRevision = state.Revision
           Tick = tick }
+
+    let beginRequest kind tick (state: PlanningWorkspaceState) =
+        let expected = correlation tick state
+        expected,
+        { state with
+            NextOperation = state.NextOperation + 1
+            PendingRequest = Some { Kind = kind; Correlation = expected } }
 
     let planTransport (state: PlanningWorkspaceState) =
         let loadouts =
@@ -435,9 +457,17 @@ module PlanningWorkspace =
           Intents = state.Commands |> List.map commandText |> List.toArray }
 
     let receive (envelope: SimulatorResponseEnvelope) (state: PlanningWorkspaceState) =
+        let terminal =
+            match state.PendingRequest |> Option.map _.Kind, envelope.Response with
+            | Some InitializePlanningRequest, (SessionInitialized _ | SimulatorRequestRejected _) -> true
+            | Some PreviewPlanningRequest, (PlanPreviewed _ | PlanValidated _ | SimulatorRequestRejected _) -> true
+            | Some ValidatePlanningRequest, (PlanValidated _ | SimulatorRequestRejected _) -> true
+            | Some CommitPlanningRequest, (PlanCommitted _ | SimulatorRequestRejected _) -> true
+            | _ -> false
         let advanced =
             { state with
                 NextOperation = max state.NextOperation (envelope.Correlation.Operation + 1)
+                PendingRequest = if terminal then None else state.PendingRequest
                 WorkerStatus = "Worker responded at tick " + string envelope.CurrentTick }
 
         match envelope.Response with
@@ -496,9 +526,20 @@ module PlanningWorkspace =
                 WorkerStatus = "Worker rejected request" }
 
     let acceptsResponse (envelope: SimulatorResponseEnvelope) (state: PlanningWorkspaceState) =
-        envelope.Correlation.Session = state.SessionId
-        && envelope.Correlation.MapRevision = state.MapRevision
-        && envelope.Correlation.PlanRevision = state.Revision
+        envelope.Kind = SimulatorProtocol.Kind
+        && envelope.ProtocolVersion = SimulatorProtocol.CurrentVersion
+        && (state.PendingRequest
+            |> Option.exists (fun expected ->
+                envelope.Correlation = expected.Correlation
+                && envelope.Correlation.Session = state.SessionId
+                && envelope.Correlation.MapRevision = state.MapRevision
+                && envelope.Correlation.PlanRevision = state.Revision
+                && match expected.Kind, envelope.Response with
+                   | InitializePlanningRequest, (SessionInitialized _ | SimulatorRequestRejected _)
+                   | PreviewPlanningRequest, (PlanPreviewed _ | PlanValidated _ | SimulatorRequestRejected _)
+                   | ValidatePlanningRequest, (PlanValidated _ | SimulatorRequestRejected _)
+                   | CommitPlanningRequest, (PlanCommitted _ | SimulatorProgress _ | SimulatorRequestRejected _) -> true
+                   | _ -> false))
 
     let reviewArtifact (state: PlanningWorkspaceState) =
         let loadouts =

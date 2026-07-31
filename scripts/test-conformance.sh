@@ -251,6 +251,7 @@ env \
 ./scripts/build-client.sh
 node scripts/smoke-client.mjs
 node scripts/test-map-editor-qualification.mjs
+node scripts/test-planning-workspace-m5-qualification.mjs
 node scripts/smoke-worker-roundtrip.mjs
 worker_measurement=$(node scripts/measure-worker.mjs)
 

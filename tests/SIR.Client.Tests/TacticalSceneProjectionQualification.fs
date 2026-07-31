@@ -205,10 +205,40 @@ let run () =
                   { Id = "command-engage"
                     UnitId = selectedUnit
                     EarliestTick = 4
-                    Kind = PlannedEngagement(3, "rifle") } ]
+                    Kind = PlannedEngagement(3, "rifle") }
+                  { Id = "command-facing"
+                    UnitId = selectedUnit
+                    EarliestTick = 5
+                    Kind = PlannedFacing East }
+                  { Id = "command-attention"
+                    UnitId = selectedUnit
+                    EarliestTick = 6
+                    Kind = PlannedAttention NorthEast }
+                  { Id = "command-stance"
+                    UnitId = selectedUnit
+                    EarliestTick = 7
+                    Kind = PlannedStance "crouched" }
+                  { Id = "command-hold"
+                    UnitId = selectedUnit
+                    EarliestTick = 8
+                    Kind = PlannedHold }
+                  { Id = "command-sync"
+                    UnitId = selectedUnit
+                    EarliestTick = 9
+                    Kind = PlannedSynchronization("phase-line", 12) } ]
             SelectedUnit = Some selectedUnit
             SelectedCommand = Some "command-route"
-            Digest = "planning-qualification" }
+            Digest = "planning-qualification"
+            Issues =
+                [| { Code = "SIR.PLAN.QUALIFICATION"
+                     CommandId = Some "command-engage"
+                     UnitId = Some selectedUnit
+                     Detail = "Qualification diagnostic" } |]
+            Predicted =
+                Some
+                    { Revision = 0L
+                      Label = IntentOnlyPreview
+                      Disclosures = [| "Intent-only qualification" |] } }
     let planningInput =
         { PlanningMap = editor.Map
           PlanningState = planningState
@@ -221,7 +251,7 @@ let run () =
         (planningInput = planningBefore
          && planningProjection.Owner = PlanningScene
          && planningProjection.Routes.Length = 1
-         && planningProjection.Annotations.Length = 1
+         && planningProjection.Annotations.Length = 8
          && planningProjection.Selection.SelectedUnits = [| selectedUnit |]
          && planningProjection.Selection.SelectedCommand = Some "command-route"
          && (planningProjection.Selection.SelectedPrimitiveIds
@@ -233,11 +263,22 @@ let run () =
              |> _.Visual.ClassId
              |> UnitClassId.value)
             = (editor.Map.Units[selectedUnit]).ClassId
-         && planningProjection.Units
-            |> Array.forall (fun unit ->
-                unit.Visual.Health = NotPresent
-                && unit.Visual.BodyHeading = NotPresent
-                && unit.Visual.SecondaryHeading = NotPresent))
+         && (planningProjection.Annotations
+             |> Array.exists (fun annotation -> annotation.Kind = "validation"))
+         && (planningProjection.Annotations
+             |> Array.exists (fun annotation -> annotation.Kind = "prediction"))
+         && (planningProjection.Units
+             |> Array.forall (fun unit -> unit.Visual.Health = NotPresent))
+         && (planningProjection.Units
+             |> Array.find (fun unit -> unit.Visual.Id = selectedUnit)
+             |> fun unit ->
+                unit.Visual.StanceId = Disclosed "crouched"
+                && unit.Visual.BodyHeading = Disclosed(HeadingRadians.ofDirection8 East)
+                && (match unit.Visual.SecondaryHeading with
+                    | Disclosed heading -> heading.Radians = HeadingRadians.ofDirection8 NorthEast
+                    | _ -> false)
+                && Set.ofArray unit.Visual.StatusIds
+                   = Set.ofList [ "planning"; "hold"; "engagement"; "synchronization" ]))
         "Planning projection mutated input or disclosed editor/runtime-only unit state."
     let annotationSelection =
         TacticalSceneProjection.planning

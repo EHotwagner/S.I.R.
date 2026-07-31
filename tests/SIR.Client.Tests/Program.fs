@@ -681,34 +681,47 @@ let main _ =
          && branchedPlanning.Digest <> authoredDigest)
         "A new edit after undo reused an authored revision identity."
 
-    let planningCorrelation = PlanningWorkspace.correlation 0 planning
-    let planningEnvelope response currentTick =
+    let planningEnvelope correlation response currentTick =
         { Kind = SimulatorProtocol.Kind
           ProtocolVersion = SimulatorProtocol.CurrentVersion
-          Correlation = planningCorrelation
+          Correlation = correlation
           CurrentTick = currentTick
           Response = response }
 
-    let acceptedPlanning =
-        PlanningWorkspace.receive
-            (planningEnvelope (PlanValidated(Some authoredRevision, [||])) 0)
-            planning
-
+    let previewCorrelation, previewPending =
+        PlanningWorkspace.beginRequest PreviewPlanningRequest 0 planning
+    let previewEnvelope =
+        planningEnvelope
+            previewCorrelation
+            (PlanPreviewed(
+                IntentOnlyPreview,
+                [| "Intent only: coordinated plan" |],
+                [||]
+            ))
+            0
     let predictedPlanning =
         PlanningWorkspace.receive
-            (planningEnvelope
-                (PlanPreviewed(
-                    IntentOnlyPreview,
-                    [| "Intent only: coordinated plan" |],
-                    [||]
-                ))
-                0)
-            acceptedPlanning
+            previewEnvelope
+            previewPending
 
+    let validateCorrelation, validatePending =
+        PlanningWorkspace.beginRequest ValidatePlanningRequest 0 predictedPlanning
+    let validateEnvelope =
+        planningEnvelope
+            validateCorrelation
+            (PlanValidated(Some authoredRevision, [||]))
+            0
+    let acceptedPlanning =
+        PlanningWorkspace.receive
+            validateEnvelope
+            validatePending
+
+    let commitCorrelation, commitPending =
+        PlanningWorkspace.beginRequest CommitPlanningRequest 0 acceptedPlanning
     let committedPlanning =
         PlanningWorkspace.receive
-            (planningEnvelope (PlanCommitted authoredRevision) 0)
-            predictedPlanning
+            (planningEnvelope commitCorrelation (PlanCommitted authoredRevision) 0)
+            commitPending
 
     require
         (committedPlanning.Revision = authoredRevision
@@ -731,18 +744,34 @@ let main _ =
          && afterCommitEdit.CommittedRevision = Some authoredRevision)
         "A new authored edit overwrote or masqueraded as predicted, accepted, or committed state."
 
+    let wrongOperation =
+        { validateEnvelope with
+            Correlation =
+                { validateCorrelation with
+                    Operation = validateCorrelation.Operation + 1 } }
+    let wrongTick =
+        { validateEnvelope with
+            Correlation = { validateCorrelation with Tick = validateCorrelation.Tick + 1 } }
+    let wrongKind = { validateEnvelope with Kind = "foreign-kind" }
+    let wrongVersion =
+        { validateEnvelope with ProtocolVersion = SimulatorProtocol.CurrentVersion + 1 }
+    let wrongResponseKind =
+        { validateEnvelope with
+            Response = PlanPreviewed(IntentOnlyPreview, [| "wrong response class" |], [||]) }
+    let sameRevisionOutOfOrder =
+        { previewEnvelope with CurrentTick = 1 }
     require
-        (PlanningWorkspace.acceptsResponse
-            (planningEnvelope (PlanCommitted authoredRevision) 0)
-            committedPlanning
-         && not (
-             PlanningWorkspace.acceptsResponse
-                 (planningEnvelope
-                     (PlanPreviewed(IntentOnlyPreview, [||], [||]))
-                     0)
-                 afterCommitEdit
-         ))
-        "A late response for an older authored revision could change the active planning workspace."
+        (PlanningWorkspace.acceptsResponse validateEnvelope validatePending
+         && not (PlanningWorkspace.acceptsResponse wrongOperation validatePending)
+         && not (PlanningWorkspace.acceptsResponse wrongTick validatePending)
+         && not (PlanningWorkspace.acceptsResponse wrongKind validatePending)
+         && not (PlanningWorkspace.acceptsResponse wrongVersion validatePending)
+         && not (PlanningWorkspace.acceptsResponse wrongResponseKind validatePending)
+         && not (PlanningWorkspace.acceptsResponse sameRevisionOutOfOrder validatePending)
+         && not (PlanningWorkspace.acceptsResponse previewEnvelope afterCommitEdit)
+         && not (PlanningWorkspace.acceptsResponse validateEnvelope committedPlanning)
+         && committedPlanning.PendingRequest.IsNone)
+        "Planning response correlation accepted a wrong operation, tick, kind, version, response class, or superseded same-revision request."
 
     let reviewArtifact = PlanningWorkspace.reviewArtifact committedPlanning
     require

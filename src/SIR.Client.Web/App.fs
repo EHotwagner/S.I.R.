@@ -470,7 +470,9 @@ let private tacticalCommandAvailable model (command: TacticalCommandDefinition) 
         | PlanningAcceptedRequired ->
             model.Planning
             |> Option.exists (fun planning ->
-                planning.AcceptedRevision = Some planning.Revision)
+                planning.AcceptedRevision = Some planning.Revision
+                && planning.Predicted
+                   |> Option.exists (fun preview -> preview.Revision = planning.Revision))
         | PlanningIssuesRequired ->
             model.Planning |> Option.exists (fun planning -> planning.Issues.Length > 0)
         | ReplayLoadedRequired -> model.Shell.Playback.FinalTick > 0
@@ -508,6 +510,9 @@ let private tacticalCommandAvailable model (command: TacticalCommandDefinition) 
         match command.Id, model.Planning with
         | "planning.undo", Some planning -> PlanningWorkspace.canUndo planning
         | "planning.redo", Some planning -> PlanningWorkspace.canRedo planning
+        | "planning.validate", Some planning ->
+            planning.Predicted
+            |> Option.exists (fun preview -> preview.Revision = planning.Revision)
         | ("timeline.move-command" | "timeline.remove-command"), Some planning ->
             planning.SelectedCommand
             |> Option.bind (fun id ->
@@ -1587,7 +1592,11 @@ let rec update msg model =
         match model.Planning with
         | None -> model, Cmd.none
         | Some planning ->
-            let correlation = PlanningWorkspace.correlation 0 planning
+            let correlation, pending =
+                PlanningWorkspace.beginRequest
+                    InitializePlanningRequest
+                    0
+                    planning
             let units =
                 planning.Roster
                 |> Array.map (fun unit ->
@@ -1612,8 +1621,7 @@ let rec update msg model =
                   Checkpoints = [||]
                   PerspectiveHash = None }
             let next =
-                { planning with
-                    NextOperation = planning.NextOperation + 1
+                { pending with
                     WorkerStatus = "Connecting to planning worker" }
             { model with Planning = Some next },
             Cmd.ofEffect (fun _ ->
@@ -1633,7 +1641,14 @@ let rec update msg model =
                 | PreviewPlanningRevision ->
                     int (min (int64 Int32.MaxValue) model.Tactical.Cursor)
                 | _ -> planning.CommittedTick |> Option.defaultValue 0
-            let correlation = PlanningWorkspace.correlation tick planning
+            let requestKind =
+                match operation with
+                | ValidatePlanningRevision -> ValidatePlanningRequest
+                | PreviewPlanningRevision -> PreviewPlanningRequest
+                | CommitPlanningRevision -> CommitPlanningRequest
+                | _ -> failwith "unreachable planning operation"
+            let correlation, pending =
+                PlanningWorkspace.beginRequest requestKind tick planning
             let plan = PlanningWorkspace.planTransport planning
             let request =
                 match operation with
@@ -1649,8 +1664,7 @@ let rec update msg model =
                 | CommitPlanningRevision -> CommitPlan plan
                 | _ -> failwith "unreachable planning operation"
             let next =
-                { planning with
-                    NextOperation = planning.NextOperation + 1
+                { pending with
                     WorkerStatus =
                         match operation with
                         | ValidatePlanningRevision -> "Validating authored revision"
@@ -6384,70 +6398,9 @@ let private planningCommandLabel (command: PlanningCommand) =
     | PlannedSynchronization(marker, deadline) ->
         "Sync " + marker + " by tick " + string deadline
 
-let private planningBattlefield
-    (editor: MapEditorState)
+let private planningPanelBody
     (state: PlanningWorkspaceState)
-    dispatch
-    =
-    Html.section [
-        prop.className "panel planning-battlefield"
-        prop.ariaLabel "Battlefield route authoring"
-        prop.children [
-            Html.h2 "Battlefield plan"
-            Html.p (
-                "Selected tool: " + string state.Tool
-                + ". Grid cells are native buttons; Enter or Space performs the same edit as pointer activation."
-            )
-            Html.div [
-                prop.className "planning-cell-grid"
-                prop.children [
-                    for row in 0 .. int editor.Map.Height - 1 do
-                        for column in 0 .. int editor.Map.Width - 1 do
-                            let occupants =
-                                state.Roster
-                                |> Array.filter (fun unit ->
-                                    unit.Column = int32 column && unit.Row = int32 row)
-                            Html.button [
-                                prop.type'.button
-                                prop.custom ("data-planning-column", string column)
-                                prop.custom ("data-planning-row", string row)
-                                prop.ariaLabel (
-                                    "Cell " + string column + ", " + string row
-                                    + (if Array.isEmpty occupants then ""
-                                       else
-                                           "; "
-                                           + (occupants
-                                              |> Array.map _.Name
-                                              |> String.concat ", "))
-                                    + "; add route waypoint"
-                                )
-                                prop.text (
-                                    if Array.isEmpty occupants then
-                                        string column + "," + string row
-                                    else
-                                        occupants
-                                        |> Array.map (fun unit -> string unit.UnitId)
-                                        |> String.concat ","
-                                )
-                                prop.onClick (fun _ ->
-                                    dispatch (
-                                        InvokeTacticalCommand(
-                                            "planning.battlefield.cell."
-                                            + string column
-                                            + "."
-                                            + string row
-                                        )
-                                    ))
-                            ]
-                ]
-            ]
-        ]
-    ]
-
-let private planningWorkspace
-    (editor: MapEditorState)
-    (state: PlanningWorkspaceState)
-    includeBattlefield
+    panelId
     dispatch
     =
     let planningButton label commandId =
@@ -6469,11 +6422,11 @@ let private planningWorkspace
         |> Option.bind (fun id -> state.Roster |> Array.tryFind (fun unit -> unit.UnitId = id))
 
     Html.div [
-        prop.className "planning-workspace"
-        prop.ariaLabel "Coordinated planning workspace"
+        prop.className "planning-panel-content"
         prop.children [
-            Html.header [
+            if panelId = "document" then Html.header [
                 prop.className "panel planning-status"
+                prop.ariaLabel "Planning revision state"
                 prop.children [
                     Html.div [
                         Html.p [ prop.className "eyebrow"; prop.text "Authored" ]
@@ -6514,7 +6467,7 @@ let private planningWorkspace
                     ]
                 ]
             ]
-            Html.nav [
+            if panelId = "tools" then Html.nav [
                 prop.className "panel planning-tools"
                 prop.ariaLabel "Battlefield planning tools"
                 prop.children [
@@ -6537,18 +6490,22 @@ let private planningWorkspace
                         dispatch (InvokeTacticalCommand "planning.undo"))
                     button "Redo" "Redo planning edit · Ctrl+Y" (not (PlanningWorkspace.canRedo state)) (fun _ ->
                         dispatch (InvokeTacticalCommand "planning.redo"))
-                    button "Validate" "Validate authored revision in worker" false (fun _ ->
-                        dispatch (InvokeTacticalCommand "planning.validate"))
                     button "Preview" "Preview authored revision as intent-only prediction" false (fun _ ->
                         dispatch (InvokeTacticalCommand "planning.preview"))
                     button
+                        "Validate"
+                        "Validate previewed authored revision in worker"
+                        (state.Predicted |> Option.forall (fun preview -> preview.Revision <> state.Revision))
+                        (fun _ -> dispatch (InvokeTacticalCommand "planning.validate"))
+                    button
                         "Commit"
-                        "Commit accepted authored revision"
-                        (state.AcceptedRevision <> Some state.Revision)
+                        "Commit previewed and accepted authored revision"
+                        (state.AcceptedRevision <> Some state.Revision
+                         || state.Predicted |> Option.forall (fun preview -> preview.Revision <> state.Revision))
                         (fun _ -> dispatch (InvokeTacticalCommand "planning.commit"))
                 ]
             ]
-            Html.aside [
+            if panelId = "roster" then Html.aside [
                 prop.className "panel planning-roster"
                 prop.ariaLabel ("Planning roster, " + string state.Roster.Length + " units")
                 prop.children [
@@ -6578,56 +6535,7 @@ let private planningWorkspace
                     ]
                 ]
             ]
-            if includeBattlefield then Html.section [
-                prop.className "panel planning-battlefield"
-                prop.ariaLabel "Battlefield route authoring"
-                prop.children [
-                    Html.h2 "Battlefield plan"
-                    Html.p (
-                        "Selected tool: " + string state.Tool
-                        + ". Grid cells are native buttons; Enter or Space performs the same edit as pointer activation."
-                    )
-                    Html.div [
-                        prop.className "planning-cell-grid"
-                        prop.children [
-                            for row in 0 .. int editor.Map.Height - 1 do
-                                for column in 0 .. int editor.Map.Width - 1 do
-                                    let occupants =
-                                        state.Roster
-                                        |> Array.filter (fun unit ->
-                                            unit.Column = int32 column && unit.Row = int32 row)
-                                    Html.button [
-                                        prop.type'.button
-                                        prop.custom ("data-planning-column", string column)
-                                        prop.custom ("data-planning-row", string row)
-                                        prop.ariaLabel (
-                                            "Cell " + string column + ", " + string row
-                                            + (if Array.isEmpty occupants then ""
-                                               else
-                                                   "; "
-                                                   + (occupants
-                                                      |> Array.map _.Name
-                                                      |> String.concat ", "))
-                                            + "; add route waypoint"
-                                        )
-                                        prop.text (
-                                            if Array.isEmpty occupants then
-                                                string column + "," + string row
-                                            else
-                                                occupants |> Array.map (fun unit -> string unit.UnitId) |> String.concat ","
-                                        )
-                                        prop.onClick (fun _ ->
-                                            dispatch (
-                                                PlanningChanged(
-                                                    AddRouteWaypoint(int32 column, int32 row)
-                                                )
-                                            ))
-                                    ]
-                        ]
-                    ]
-                ]
-            ]
-            Html.aside [
+            if panelId = "selection" then Html.aside [
                 prop.className "panel planning-inspector"
                 prop.ariaLabel "Planning inspector"
                 prop.children [
@@ -6697,40 +6605,19 @@ let private planningWorkspace
                         state.SelectedCommand.IsNone
                         (fun _ ->
                             dispatch (InvokeTacticalCommand "timeline.remove-command"))
-                ]
-            ]
-            Html.section [
-                prop.className "panel planning-timeline"
-                prop.ariaLabel "Planning timeline lanes"
-                prop.children [
-                    Html.h2 "Timeline lanes"
-                    for unit in state.Roster do
-                        let commands: PlanningCommand list =
-                            state.Commands
-                            |> List.filter (fun command -> command.UnitId = unit.UnitId)
-                        Html.div [
-                            prop.className "planning-lane"
-                            prop.custom ("data-planning-unit", string unit.UnitId)
-                            prop.children [
-                                Html.strong unit.Name
-                                if List.isEmpty commands then Html.span "No authored commands"
-                                for command in commands do
-                                    Html.button [
-                                        prop.type'.button
-                                        prop.ariaPressed (state.SelectedCommand = Some command.Id)
-                                        prop.text (planningCommandLabel command)
-                                        prop.onClick (fun _ ->
-                                            dispatch (
-                                                InvokeTacticalCommand(
-                                                    "planning.timeline.select." + command.Id
-                                                )
-                                            ))
-                                    ]
-                            ]
+                    Html.h3 "Authored commands"
+                    if List.isEmpty state.Commands then Html.p "No authored commands."
+                    for command in state.Commands do
+                        Html.button [
+                            prop.type'.button
+                            prop.ariaPressed (state.SelectedCommand = Some command.Id)
+                            prop.text (planningCommandLabel command)
+                            prop.onClick (fun _ ->
+                                dispatch (InvokeTacticalCommand("planning.timeline.select." + command.Id)))
                         ]
                 ]
             ]
-            Html.section [
+            if panelId = "validation" then Html.section [
                 prop.className "panel planning-validation"
                 prop.ariaLabel "Planning validation navigation"
                 prop.children [
@@ -6750,7 +6637,7 @@ let private planningWorkspace
                         ]
                 ]
             ]
-            Html.details [
+            if panelId = "document" then Html.details [
                 Html.summary "Deterministic plan, conflict, and execution review artifact"
                 Html.pre (PlanningWorkspace.reviewArtifact state)
                 button
@@ -7925,6 +7812,8 @@ let private persistentSceneSvg
                                     Svg.polyline [
                                         svg.key (ScenePrimitiveId.value route.PrimitiveId)
                                         svg.custom ("data-primitive-id", ScenePrimitiveId.value route.PrimitiveId)
+                                        svg.custom ("data-route-kind", route.Kind)
+                                        svg.custom ("aria-label", sceneDisclosureText route.Label)
                                         svg.points (
                                             route.Points
                                             |> Array.chunkBySize 2
@@ -7935,9 +7824,16 @@ let private persistentSceneSvg
                                             |> String.concat " "
                                         )
                                         svg.fill "none"
-                                        svg.stroke "#77bdf2"
-                                        svg.strokeWidth 5
-                                        svg.custom ("stroke-dasharray", "10 6")
+                                        svg.stroke (
+                                            if selected route.PrimitiveId then "#ffd166"
+                                            elif route.Kind = "predicted" then "#e5b8ff"
+                                            else "#77bdf2"
+                                        )
+                                        svg.strokeWidth (if selected route.PrimitiveId then 7 else 5)
+                                        svg.custom (
+                                            "stroke-dasharray",
+                                            if route.Kind = "predicted" then "4 5" else "10 6"
+                                        )
                                     ]
                             | None -> ()
                         ]
@@ -7965,6 +7861,10 @@ let private persistentSceneSvg
                                         svg.custom ("data-unit-id", string visual.Id)
                                         svg.custom ("data-unit-class", UnitClassId.value visual.ClassId)
                                         svg.custom ("data-unit-footprint", string (CellExtent.value visual.FootprintWidth) + "x" + string (CellExtent.value visual.FootprintDepth))
+                                        svg.custom ("data-unit-status", String.concat " " visual.StatusIds)
+                                        match visual.StanceId with
+                                        | Disclosed stance -> svg.custom ("data-unit-stance", stance)
+                                        | _ -> ()
                                         svg.custom ("data-command-available", string available)
                                         svg.tabIndex (if selected unit.PrimitiveId then 0 else -1)
                                         match command with
@@ -8021,6 +7921,50 @@ let private persistentSceneSvg
                                                         visual.ClassId
                                                 ]
                                             ]
+                                            match visual.BodyHeading with
+                                            | Disclosed heading ->
+                                                let centerX = float visual.AnchorColumn * cellSize + width / 2.0
+                                                let centerY = float visual.AnchorRow * cellSize + depth / 2.0
+                                                let radians = HeadingRadians.value heading
+                                                Svg.line [
+                                                    svg.custom ("data-unit-heading", "facing")
+                                                    svg.x1 centerX
+                                                    svg.y1 centerY
+                                                    svg.x2 (centerX + Math.Cos(radians) * 22.0)
+                                                    svg.y2 (centerY + Math.Sin(radians) * 22.0)
+                                                    svg.stroke "#eef7f2"
+                                                    svg.strokeWidth 4
+                                                    svg.custom ("pointer-events", "none")
+                                                ]
+                                            | _ -> ()
+                                            match visual.SecondaryHeading with
+                                            | Disclosed heading ->
+                                                let centerX = float visual.AnchorColumn * cellSize + width / 2.0
+                                                let centerY = float visual.AnchorRow * cellSize + depth / 2.0
+                                                let radians = HeadingRadians.value heading.Radians
+                                                Svg.line [
+                                                    svg.custom ("data-unit-heading", "attention")
+                                                    svg.x1 centerX
+                                                    svg.y1 centerY
+                                                    svg.x2 (centerX + Math.Cos(radians) * 28.0)
+                                                    svg.y2 (centerY + Math.Sin(radians) * 28.0)
+                                                    svg.stroke "#e5b8ff"
+                                                    svg.strokeWidth 3
+                                                    svg.custom ("stroke-dasharray", "3 2")
+                                                    svg.custom ("pointer-events", "none")
+                                                ]
+                                            | _ -> ()
+                                            match visual.StanceId with
+                                            | Disclosed stance ->
+                                                Svg.text [
+                                                    svg.custom ("data-unit-stance-label", stance)
+                                                    svg.x (float visual.AnchorColumn * cellSize + 9.0)
+                                                    svg.y (float visual.AnchorRow * cellSize + depth - 9.0)
+                                                    svg.fill "#8ce99a"
+                                                    svg.fontSize 10
+                                                    svg.text stance
+                                                ]
+                                            | _ -> ()
                                             Svg.text [
                                                 svg.x (float visual.AnchorColumn * cellSize + width - 9.0)
                                                 svg.y (float visual.AnchorRow * cellSize + depth - 9.0)
@@ -8083,9 +8027,21 @@ let private persistentSceneSvg
                                     Svg.text [
                                         svg.key (ScenePrimitiveId.value annotation.PrimitiveId)
                                         svg.custom ("data-primitive-id", ScenePrimitiveId.value annotation.PrimitiveId)
+                                        svg.custom ("data-annotation-kind", annotation.Kind)
+                                        svg.custom ("aria-label", sceneDisclosureText annotation.Text)
                                         svg.x x
                                         svg.y y
-                                        svg.fill "#ffd166"
+                                        svg.fill (
+                                            match annotation.Kind with
+                                            | "validation" -> "#ff6b6b"
+                                            | "prediction" -> "#e5b8ff"
+                                            | "facing"
+                                            | "attention" -> "#9bd1ff"
+                                            | "stance" -> "#8ce99a"
+                                            | "engagement" -> "#ff9f7f"
+                                            | "synchronization" -> "#c3a6ff"
+                                            | _ -> "#ffd166"
+                                        )
                                         svg.fontSize 13
                                         svg.text (sceneDisclosureText annotation.Text)
                                     ]
@@ -8578,7 +8534,22 @@ let private editorOutlinerPanel (state: MapEditorState) dispatch =
     ]
 
 let private tacticalPanelBody panelId model dispatch =
-    if model.Workspace = EditorWorkspace then
+    if model.Workspace = PlanningWorkspace then
+        match model.Planning with
+        | Some planning when
+            panelId = "roster"
+            || panelId = "tools"
+            || panelId = "selection"
+            || panelId = "validation"
+            || panelId = "document"
+            -> planningPanelBody planning panelId dispatch
+        | Some _ ->
+            Html.p [
+                prop.className "tactical-layout-panel-placeholder"
+                prop.text "No Plan capability is assigned to this panel."
+            ]
+        | None -> Html.p "Planner unavailable for the current map revision."
+    elif model.Workspace = EditorWorkspace then
         match panelId with
         | "roster" -> editorOutlinerPanel model.Editor dispatch
         | "tools" ->
@@ -8860,7 +8831,8 @@ let view model dispatch =
                     model
                     dispatch
                     (match model.Planning with
-                     | Some planning -> planningWorkspace model.Editor planning false dispatch
+                     | Some _ ->
+                         Html.none
                      | None ->
                          Html.section [
                              prop.className "panel"

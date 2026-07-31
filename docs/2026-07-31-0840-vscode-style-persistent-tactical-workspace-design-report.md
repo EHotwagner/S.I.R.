@@ -23,7 +23,7 @@ related:
 
 **Report timestamp:** 2026-07-31 08:40:09 CEST (UTC+02:00)
 
-**Status:** design accepted; Milestones 0–4 complete
+**Status:** design accepted; Milestones 0–5 complete
 
 ## Executive decision
 
@@ -470,13 +470,17 @@ review, and legacy-removal proof are recorded in the
 
 ### Milestone 5 — Planner migration
 
-- [ ] Project authored routes, facing, attention, stance, hold, engagement,
+- [x] Project authored routes, facing, attention, stance, hold, engagement,
   synchronization, predictions, and validation annotations into shared layers.
-- [ ] Move roster, plan tools, validation, revision state, and inspector into
+- [x] Move roster, plan tools, validation, revision state, and inspector into
   registered panels.
-- [ ] Preserve exact revision identity, undo/redo, stale-response rejection,
+- [x] Preserve exact revision identity, undo/redo, stale-response rejection,
   Preview → Validate → Commit, and committed-interval protection.
-- [ ] Remove the planning-specific battlefield and page-sized layout.
+- [x] Remove the planning-specific battlefield and page-sized layout.
+
+Milestone 5 projection/control mapping, live worker and revision parity,
+singleton-panel qualification, and legacy-removal proof are recorded in the
+[Planner migration evidence](persistent-tactical-workspace-m5-planner-migration-evidence.md).
 
 ### Milestone 6 — Simulator migration
 

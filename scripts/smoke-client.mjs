@@ -27,6 +27,8 @@ if (
 }
 
 const workerMessages = [];
+let planningWorker;
+let planningValidationCount = 0;
 const reviewProjection = (tick = 0) => ({
   Tick: tick,
   BoardMinimumColumn: 0,
@@ -145,6 +147,7 @@ class SmokeWorker {
   postMessage(message) {
     workerMessages.push(message);
     if (message.Kind === "sir-simulator-session") {
+      planningWorker = this;
       const requestTag = message.Request?.tag;
       let response;
       if (requestTag === 0) {
@@ -158,14 +161,38 @@ class SmokeWorker {
           ],
         };
       } else if (requestTag === 1) {
+        planningValidationCount += 1;
         response = {
           tag: 1,
-          fields: [message.Correlation.PlanRevision, []],
+          fields:
+            planningValidationCount === 1
+              ? [
+                  undefined,
+                  [
+                    {
+                      Code: "SIR.PLAN.SMOKE.REVIEW",
+                      Field: undefined,
+                      CommandId: undefined,
+                      Fields: [],
+                      Detail: "Resolve the live qualification annotation before commit.",
+                    },
+                  ],
+                ]
+              : [message.Correlation.PlanRevision, []],
         };
       } else if (requestTag === 2) {
+        const predicted = reviewProjection(message.Correlation.Tick);
+        predicted.Units = [];
+        predicted.Edges = [];
+        predicted.Events = [];
+        predicted.Checkpoints = [];
         response = {
           tag: 2,
-          fields: [{ tag: 2, fields: [] }, ["intent-only M3 disclosure"], []],
+          fields: [
+            { tag: 2, fields: [] },
+            ["Intent only: M5 authored-plan disclosure"],
+            [{ IsSnapshot: true, Projection: predicted }],
+          ],
         };
       } else if (requestTag === 3) {
         const progressTick = 300;
@@ -745,28 +772,56 @@ for (const source of Object.keys(ownerByModality)) {
 }
 
 await clickModality("Plan", "Plan playback setup");
+for (const panelId of ["roster", "tools", "selection", "validation", "document"]) {
+  if (!shell.querySelector(`[data-panel-id="${panelId}"]`)) {
+    shell.querySelector(`#layout-show-${panelId}`)?.click();
+    await window.happyDOM.waitUntilComplete();
+  }
+  const panel = shell.querySelector(`[data-panel-id="${panelId}"]`);
+  if (panel?.classList.contains("is-collapsed")) {
+    panel.querySelector(`#layout-panel-${panelId}-collapse`)?.click();
+    await window.happyDOM.waitUntilComplete();
+  }
+}
 if (
-  !shell.querySelector('[aria-label="Coordinated planning workspace"]') ||
   !shell.querySelector('[aria-label^="Planning roster"]') ||
-  !shell.querySelector('[aria-label="Planning timeline lanes"]') ||
   !shell.querySelector('[aria-label="Planning inspector"]') ||
   !shell.querySelector('[aria-label="Planning validation navigation"]') ||
+  !shell.querySelector('[aria-label="Planning revision state"]') ||
   !buttonByText(shell, "Preview") ||
-  !buttonByText(shell, "Validate")
+  !buttonByText(shell, "Validate") ||
+  shell.querySelectorAll('[aria-label^="Planning roster"]').length !== 1 ||
+  shell.querySelectorAll('[aria-label="Battlefield planning tools"]').length !== 1 ||
+  shell.querySelectorAll('[aria-label="Planning inspector"]').length !== 1 ||
+  shell.querySelectorAll('[aria-label="Planning validation navigation"]').length !== 1 ||
+  shell.querySelectorAll('[aria-label="Planning revision state"]').length !== 1 ||
+  shell.querySelectorAll(".planning-worker-status").length !== 1 ||
+  shell.querySelector(".planning-owner-status") ||
+  shell.querySelector(".planning-workspace") ||
+  shell.querySelector('[aria-label="Battlefield route authoring"]')
 ) {
-  throw new Error("Plan roster, authoring, validation, inspector, or worker actions were dropped.");
+  throw new Error("Registered Plan panels are incomplete, duplicated, or accompanied by a legacy page renderer.");
 }
-const currentPlanningWorkspace = () =>
-  shell.querySelector('[aria-label="Coordinated planning workspace"]');
 const currentPlanningTools = () =>
   shell.querySelector('[aria-label="Battlefield planning tools"]');
 const currentPlanningTimeline = () =>
-  shell.querySelector('[aria-label="Planning timeline lanes"]');
+  shell.querySelector('[aria-label="Unified tactical timeline"]');
+const currentPlanningInspector = () =>
+  shell.querySelector('[aria-label="Planning inspector"]');
+const currentPlanningValidation = () =>
+  shell.querySelector('[aria-label="Planning validation navigation"]');
+const currentPlanningRevision = () =>
+  shell.querySelector('[aria-label="Planning revision state"]');
 const planningChannel = (label) =>
-  [...(currentPlanningWorkspace()?.querySelectorAll(".planning-status > div") ?? [])]
+  [...(currentPlanningRevision()?.querySelectorAll(".planning-status > div") ?? [])]
     .find((item) => item.querySelector(".eyebrow")?.textContent.trim() === label)
     ?.querySelector("strong")?.textContent.trim();
 
+worksurface
+  .querySelector('#persistent-layer-units [data-unit-id="2"][data-command-available="true"]')
+  ?.dispatchEvent(new window.MouseEvent("click", { bubbles: true, cancelable: true }));
+await window.happyDOM.waitUntilComplete();
+assertSelection("Plan roster selection", 2);
 const authoredBeforeRoute = planningChannel("Authored");
 const planningCell = worksurface.querySelector(
   '#persistent-layer-terrain [aria-label="Activate cell 4,4"][data-command-available="true"]',
@@ -779,6 +834,10 @@ planningCell.dispatchEvent(
 );
 await window.happyDOM.waitUntilComplete();
 const authoredAfterRoute = planningChannel("Authored");
+const routeRevisionIdentity = worksurface.getAttribute("data-scene-revision");
+const routeGeometry = worksurface
+  .querySelector("#persistent-layer-routes polyline")
+  ?.getAttribute("points");
 if (
   !authoredAfterRoute ||
   authoredAfterRoute === authoredBeforeRoute ||
@@ -803,24 +862,182 @@ buttonByText(currentPlanningTools(), "Redo")?.click();
 await window.happyDOM.waitUntilComplete();
 if (
   !currentPlanningTimeline()?.textContent.includes("Route") ||
-  !worksurface.querySelector("#persistent-layer-routes polyline")
+  !worksurface.querySelector("#persistent-layer-routes polyline") ||
+  planningChannel("Authored") !== authoredAfterRoute ||
+  worksurface.getAttribute("data-scene-revision") !== routeRevisionIdentity ||
+  worksurface.querySelector("#persistent-layer-routes polyline")?.getAttribute("points") !== routeGeometry
 ) {
-  throw new Error("Planning Redo did not restore the authored route and shared projection.");
+  throw new Error("Planning Redo did not restore the exact authored revision identity and shared route geometry.");
 }
-const routeCommand = [...currentPlanningTimeline().querySelectorAll("button")].find(
+const routeCommand = [...currentPlanningInspector().querySelectorAll("button")].find(
   (button) => button.textContent.includes("Route"),
 );
 routeCommand?.click();
 await window.happyDOM.waitUntilComplete();
 
+const choosePlanningTool = async (label) => {
+  const target = [...currentPlanningTools().querySelectorAll("button")].find((button) =>
+    button.textContent.startsWith(label),
+  );
+  if (!target) throw new Error(`Planning tool ${label} is not panel-owned.`);
+  target.click();
+  await window.happyDOM.waitUntilComplete();
+};
+const planningInspectorAction = async (label, startsWith = false) => {
+  const target = [...currentPlanningInspector().querySelectorAll("button")].find((button) =>
+    startsWith
+      ? button.textContent.startsWith(label)
+      : button.textContent.trim() === label,
+  );
+  if (!target) throw new Error(`Planning inspector action ${label} is not reachable.`);
+  target.click();
+  await window.happyDOM.waitUntilComplete();
+};
+await choosePlanningTool("Facing");
+await planningInspectorAction("E");
+await choosePlanningTool("Attention");
+await planningInspectorAction("NE");
+await choosePlanningTool("Stance");
+await planningInspectorAction("Crouched");
+await choosePlanningTool("Hold");
+await planningInspectorAction("Add hold");
+await choosePlanningTool("Engage");
+await planningInspectorAction("Engage ", true);
+await choosePlanningTool("Sync");
+await planningInspectorAction("Add synchronization marker");
+const selectedPlanningUnit = worksurface.querySelector('#persistent-layer-units [data-unit-id="2"]');
+for (const kind of ["facing", "attention", "stance", "hold", "engagement", "synchronization"]) {
+  if (!worksurface.querySelector(`#persistent-layer-annotations [data-annotation-kind="${kind}"]`)) {
+    throw new Error(`Authored ${kind} was not projected through the shared annotation layer.`);
+  }
+}
+if (
+  selectedPlanningUnit?.getAttribute("data-unit-stance") !== "crouched" ||
+  !selectedPlanningUnit.querySelector('[data-unit-heading="facing"]') ||
+  !selectedPlanningUnit.querySelector('[data-unit-heading="attention"]') ||
+  !selectedPlanningUnit.getAttribute("data-unit-status")?.includes("hold") ||
+  !selectedPlanningUnit.getAttribute("data-unit-status")?.includes("engagement") ||
+  !selectedPlanningUnit.getAttribute("data-unit-status")?.includes("synchronization")
+) {
+  throw new Error(
+    `Authored unit semantics did not enrich the shared unit layer (stance=${selectedPlanningUnit?.getAttribute("data-unit-stance")}; headings=${selectedPlanningUnit?.querySelectorAll("[data-unit-heading]").length}; status=${selectedPlanningUnit?.getAttribute("data-unit-status")}).`,
+  );
+}
+
+const staleCorrelation = workerMessages.find(
+  (message) => message.Kind === "sir-simulator-session" && message.Request?.tag === 0,
+)?.Correlation;
+const authoredBeforeStale = planningChannel("Authored");
+planningWorker?.onmessage?.({
+  data: structuredClone({
+    Kind: "sir-simulator-session",
+    ProtocolVersion: 1,
+    Correlation: staleCorrelation,
+    CurrentTick: 0,
+    Response: { tag: 1, fields: [staleCorrelation?.PlanRevision, []] },
+  }),
+});
+await window.happyDOM.waitUntilComplete();
+if (
+  planningChannel("Authored") !== authoredBeforeStale ||
+  planningChannel("Accepted") !== "Not validated"
+) {
+  throw new Error("A stale planning worker response crossed the exact revision boundary.");
+}
+
+const validateButton = buttonByText(currentPlanningTools(), "Validate");
+if (!validateButton?.disabled) {
+  throw new Error("Validate became available before the required intent-only Preview step.");
+}
+const previewButton = buttonByText(currentPlanningTools(), "Preview");
+if (!previewButton || previewButton.disabled) {
+  throw new Error("Preview is unavailable at an editable authored revision.");
+}
+previewButton.click();
+await waitFor(
+  "intent-only planning prediction",
+  () => planningChannel("Predicted") !== "Not previewed",
+);
+if (
+  worksurface.querySelector('#persistent-layer-routes [data-route-kind="predicted"]') ||
+  !worksurface.querySelector('#persistent-layer-annotations [data-annotation-kind="prediction"]') ||
+  !worksurface.querySelector('#persistent-layer-annotations [data-annotation-kind="prediction"]')?.textContent.includes("Intent only:")
+) {
+  throw new Error(
+    `Intent-only disclosure was not projected truthfully as annotation-only prediction (routes=${worksurface.querySelectorAll('#persistent-layer-routes [data-route-kind="predicted"]').length}; annotations=${worksurface.querySelectorAll('#persistent-layer-annotations [data-annotation-kind="prediction"]').length}).`,
+  );
+}
+if (buttonByText(currentPlanningTools(), "Validate")?.disabled) {
+  throw new Error("Validate did not become available after Preview for the exact authored revision.");
+}
+const previewRequest = [...workerMessages].reverse().find(
+  (message) => message.Kind === "sir-simulator-session" && message.Request?.tag === 2,
+);
+buttonByText(currentPlanningTools(), "Validate")?.click();
+planningWorker?.onmessage?.({
+  data: structuredClone({
+    Kind: "sir-simulator-session",
+    ProtocolVersion: 1,
+    Correlation: previewRequest?.Correlation,
+    CurrentTick: previewRequest?.Correlation?.Tick ?? 0,
+    Response: {
+      tag: 2,
+      fields: [
+        { tag: 2, fields: [] },
+        ["OUT_OF_ORDER_MUST_REJECT"],
+        [
+          {
+            IsSnapshot: true,
+            Projection: {
+              ...reviewProjection(0),
+              Units: [],
+              Edges: [],
+              Events: [],
+              Checkpoints: [],
+            },
+          },
+        ],
+      ],
+    },
+  }),
+});
+await waitFor(
+  "planning validation annotation",
+  () =>
+    currentPlanningValidation()?.textContent.includes("SIR.PLAN.SMOKE.REVIEW") &&
+    Boolean(worksurface.querySelector('#persistent-layer-annotations [data-annotation-kind="validation"]')),
+);
+if (worksurface.textContent.includes("OUT_OF_ORDER_MUST_REJECT")) {
+  throw new Error("A superseded same-revision preview response overwrote the active validation request.");
+}
+if (planningChannel("Accepted") !== "Not validated") {
+  throw new Error("A plan with live validation issues was accepted for commit.");
+}
+const issueRevision = planningChannel("Authored");
+buttonByText(currentPlanningInspector(), "Remove selected command")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  planningChannel("Authored") === issueRevision ||
+  worksurface.querySelector('#persistent-layer-annotations [data-annotation-kind="validation"]') ||
+  planningChannel("Predicted") !== "Not previewed" ||
+  !buttonByText(currentPlanningTools(), "Validate")?.disabled
+) {
+  throw new Error("Changing the diagnosed authored document did not invalidate its issue, prediction, and validation availability.");
+}
+buttonByText(currentPlanningTools(), "Preview")?.click();
+await waitFor(
+  "changed authored revision preview",
+  () => planningChannel("Predicted") !== "Not previewed",
+);
 buttonByText(currentPlanningTools(), "Validate")?.click();
 await waitFor(
   "worker-accepted planning revision",
   () =>
     planningChannel("Accepted") === planningChannel("Authored") &&
-    currentPlanningWorkspace()?.textContent.includes(
+    currentPlanningRevision()?.textContent.includes(
       "Revision accepted by worker validation",
-    ),
+    ) &&
+    !worksurface.querySelector('#persistent-layer-annotations [data-annotation-kind="validation"]'),
 );
 if (
   !timeline.querySelector('[data-time-channel="Accepted"]') ||
@@ -833,12 +1050,13 @@ if (
 }
 assertSingleWorksurface("Plan accepted");
 
+await choosePlanningTool("Route");
 buttonByText(currentPlanningTools(), "Commit")?.click();
 await waitFor(
   "worker-committed planning revision",
   () =>
     planningChannel("Committed")?.startsWith(planningChannel("Authored")) &&
-    currentPlanningWorkspace()?.textContent.includes(
+    currentPlanningRevision()?.textContent.includes(
       "Plan committed to simulator session",
     ),
 );
@@ -886,13 +1104,13 @@ const committedMutationTargets = [
   ["shared scene cell", planningCell],
   [
     "Waypoint east",
-    buttonByText(currentPlanningWorkspace(), "Waypoint east"),
+    buttonByText(currentPlanningInspector(), "Waypoint east"),
   ],
   ["Undo", buttonByText(currentPlanningTools(), "Undo")],
   ["Redo", buttonByText(currentPlanningTools(), "Redo")],
   [
     "Remove selected command",
-    buttonByText(currentPlanningWorkspace(), "Remove selected command"),
+    buttonByText(currentPlanningInspector(), "Remove selected command"),
   ],
 ];
 for (const [label, target] of committedMutationTargets) {
