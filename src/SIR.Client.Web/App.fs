@@ -6664,12 +6664,12 @@ let private editorGrid state dispatch =
         ]
     ]
 
-let private editorUnitPanel state dispatch =
+let private editorUnitPanel (state: MapEditorState) dispatch =
     let selectedUnits =
         state.SelectedUnits
         |> Set.toList
         |> List.choose (fun id -> Map.tryFind id state.Map.Units)
-    let fieldLabel label projection =
+    let fieldLabel label (projection: EditorUnit -> 'value) =
         let values = selectedUnits |> List.map projection |> List.distinct
         label + if values.Length > 1 then " — Multiple" else ""
 

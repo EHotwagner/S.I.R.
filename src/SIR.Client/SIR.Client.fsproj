@@ -19,6 +19,8 @@
     <Compile Include="UnifiedTacticalWorkspace.fs" />
     <Compile Include="TacticalWorkspaceLayout.fsi" />
     <Compile Include="TacticalWorkspaceLayout.fs" />
+    <Compile Include="TacticalSceneProjection.fsi" />
+    <Compile Include="TacticalSceneProjection.fs" />
     <Compile Include="ExperienceSamples.fs" />
     <Compile Include="Comparison.fs" />
   </ItemGroup>
