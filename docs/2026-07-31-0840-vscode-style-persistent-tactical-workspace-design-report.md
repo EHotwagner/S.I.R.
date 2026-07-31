@@ -23,7 +23,7 @@ related:
 
 **Report timestamp:** 2026-07-31 08:40:09 CEST (UTC+02:00)
 
-**Status:** design accepted; Milestones 0–2 complete
+**Status:** design accepted; Milestones 0–4 complete
 
 ## Executive decision
 
@@ -455,14 +455,18 @@ and specialized parity work remain assigned to Milestones 4–7.
 
 ### Milestone 4 — Editor migration
 
-- [ ] Move editor terrain, edge, region, placement, gesture preview, background,
+- [x] Move editor terrain, edge, region, placement, gesture preview, background,
   guide, and selection layers into the persistent renderer.
-- [ ] Move editor tools, layers, document state, and inspector into registered
+- [x] Move editor tools, layers, document state, and inspector into registered
   side panels.
-- [ ] Preserve undo/redo, clipboard, autosave, import review, validation,
+- [x] Preserve undo/redo, clipboard, autosave, import review, validation,
   camera, modal input, and accessibility parity.
-- [ ] Remove the editor-specific battlefield renderer after parity evidence
+- [x] Remove the editor-specific battlefield renderer after parity evidence
   passes.
+
+Milestone 4 renderer/control mapping, parity qualification, hashed visual
+review, and legacy-removal proof are recorded in the
+[Editor migration evidence](persistent-tactical-workspace-m4-editor-migration-evidence.md).
 
 ### Milestone 5 — Planner migration
 

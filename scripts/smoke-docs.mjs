@@ -149,10 +149,19 @@ if (!application || mount?.querySelector("h1")) {
 const persistentWorksurface = mount?.querySelector(
   "svg#persistent-tactical-svg[role='application']",
 );
+if (!mount.querySelector('[data-panel-id="document"]')) {
+  mount.querySelector("#layout-show-document")?.click();
+  await window.happyDOM.waitUntilComplete();
+}
+const documentPanel = mount.querySelector('[data-panel-id="document"]');
+if (documentPanel?.classList.contains("is-collapsed")) {
+  documentPanel.querySelector("#layout-panel-document-collapse")?.click();
+  await window.happyDOM.waitUntilComplete();
+}
 const simulateButton = [...mount.querySelectorAll(
-  '[aria-label="Map editor quick access"] button',
+  '[aria-label="Map editor document actions"] button',
 )].find(
-  (button) => button.textContent.trim() === "Simulate",
+  (button) => button.textContent.trim() === "Simulate revision",
 );
 if (!simulateButton) {
   throw new Error("The generated shell omitted the registry-routed simulator handoff.");

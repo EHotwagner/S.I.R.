@@ -1024,7 +1024,7 @@ let rec update msg model =
             model
     | RejectInterchangeReview ->
         { model with PendingInterchangeReview = None },
-        Cmd.ofEffect (fun _ -> focusElementAfterRender "editor-map-stage")
+        Cmd.ofEffect (fun _ -> focusElementAfterRender "persistent-tactical-svg")
     | AcceptInterchangeReview ->
         match model.PendingInterchangeReview with
         | Some review ->
@@ -1036,7 +1036,7 @@ let rec update msg model =
                 { next with PendingInterchangeReview = None },
                 Cmd.batch [
                     command
-                    Cmd.ofEffect (fun _ -> focusElementAfterRender "editor-map-stage")
+                    Cmd.ofEffect (fun _ -> focusElementAfterRender "persistent-tactical-svg")
                 ]
             | Error _ -> model, Cmd.none
         | None -> model, Cmd.none
@@ -1707,18 +1707,33 @@ let rec update msg model =
                  |> downloadPlanningReview))
          |> Option.defaultValue Cmd.none)
     | EditorToolPanelChanged panel ->
+        let panelId =
+            match panel with
+            | DocumentTools -> "document"
+            | _ -> "tools"
+        let layout =
+            let placement =
+                model.TacticalLayout.Placements
+                |> List.find (fun placement -> placement.PanelId = panelId)
+            let visible =
+                if placement.Visible then model.TacticalLayout
+                else
+                    model.TacticalLayout
+                    |> TacticalWorkspaceLayout.togglePanelVisibility panelId
+            if placement.Collapsed then
+                visible
+                |> TacticalWorkspaceLayout.togglePanelCollapsed panelId
+            else visible
+        writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
         { model with
             EditorToolPanel = panel
-            EditorToolPanelVisible =
-                not (
-                    model.EditorToolPanelVisible
-                    && Object.Equals(model.EditorToolPanel, panel)
-                ) },
+            EditorToolPanelVisible = true
+            TacticalLayout = layout },
         Cmd.none
     | ToggleEditorToolPanelVisibility ->
-        { model with
-            EditorToolPanelVisible = not model.EditorToolPanelVisible },
-        Cmd.none
+        let panelId =
+            if model.EditorToolPanel = DocumentTools then "document" else "tools"
+        update (ToggleLayoutPanelVisibility panelId) model
     | EditorWorkspaceChanged action ->
         let editorView =
             MapEditorWorkspace.update
@@ -1726,7 +1741,10 @@ let rec update msg model =
                 (MapEditor.selected model.Editor)
                 action
                 model.EditorView
-        { model with EditorView = editorView }, Cmd.none
+        match action with
+        | ToggleEditorInspector ->
+            update (ToggleLayoutPanelVisibility "selection") { model with EditorView = editorView }
+        | _ -> { model with EditorView = editorView }, Cmd.none
     | RecallEditorView name ->
         match Map.tryFind name model.Editor.Authoring.SavedViews with
         | None -> model, Cmd.none
@@ -1768,7 +1786,7 @@ let rec update msg model =
                 focusElementAfterRender "editor-destructive-confirmation"
             | ConfirmDestructiveChange
             | CancelDestructiveChange ->
-                focusElementAfterRender "editor-map-stage"
+                focusElementAfterRender "persistent-tactical-svg"
             | _ -> ())
     | EditorPulse ->
         match model.Simulator with
@@ -4815,130 +4833,14 @@ let private editorLayerDisplay domain state =
 let private editorLayerOpacity domain state =
     if MapEditor.layerState domain state = DimmedLayer then "0.28" else "1"
 
-let private edgeClass state column row direction =
-    state.Map.Edges
-    |> Map.tryFind (column, row, direction)
-    |> Option.map (fun (kind, isOpen) ->
-        let kindName =
-            match kind with
-            | Wall -> "wall"
-            | Door -> if isOpen then "door-open" else "door"
-            | Window -> "window"
-        " edge-"
-        + (match direction with
-           | EastEdge -> "east-"
-           | SouthEdge -> "south-")
-        + kindName)
-    |> Option.defaultValue ""
-
-let private mapCell state dispatch column row =
-    let terrain = MapEditor.terrainAt column row state
-    let unit = MapEditor.unitAt column row state
-    let label =
-        "Cell "
-        + string column
-        + ","
-        + string row
-        + "; "
-        + MapEditor.terrainLabel terrain
-        + (unit
-           |> Option.map (fun value ->
-               "; unit "
-               + string value.Id
-               + ", "
-               + value.ClassId
-               + ", "
-               + MapEditor.controllerLabel value.Controller)
-           |> Option.defaultValue "")
-
-    Html.button [
-        prop.type'.button
-        prop.className (
-            "map-cell terrain-"
-            + MapEditor.terrainLabel terrain
-            + edgeClass state column row EastEdge
-            + edgeClass state column row SouthEdge
-        )
-        prop.custom ("data-map-column", string column)
-        prop.custom ("data-map-row", string row)
-        prop.ariaLabel label
-        prop.onClick (fun _ ->
-            dispatch (EditorChanged(ActivateCell(column, row))))
-    ]
-
-let private mapUnitSymbol (state: MapEditorState) dispatch (unit: EditorUnit) =
-    let palette = ReplayPalettes.accessibleDefault
-    let faction =
-        match unit.Side with
-        | Blue -> palette.HumanFaction
-        | Red -> palette.ArcaneFaction
-        | NeutralSide -> palette.NeutralFaction
-    let selected = Set.contains unit.Id state.SelectedUnits
-
-    Html.button [
-        prop.type'.button
-        prop.className ("map-unit-symbol" + if selected then " is-selected" else "")
-        prop.custom ("data-editor-unit-id", string unit.Id)
-        prop.style [
-            style.custom ("gridColumn", string (unit.Column + 1) + " / span " + string unit.Size)
-            style.custom ("gridRow", string (unit.Row + 1) + " / span " + string unit.Size)
-        ]
-        prop.ariaLabel (
-            "Select unit "
-            + string unit.Id
-            + ", "
-            + unit.ClassId
-            + ", "
-            + string unit.Size
-            + " by "
-            + string unit.Size
-        )
-        prop.onClick (fun event ->
-            if event.shiftKey then
-                dispatch (EditorChanged(ToggleEditorUnitSelection unit.Id))
-            else
-                dispatch (EditorChanged(SelectEditorUnit(Some unit.Id))))
-        prop.children [
-            Svg.svg [
-                svg.viewBox (0, 0, 48, 48)
-                svg.custom ("aria-hidden", "true")
-                svg.children [
-                    Svg.rect [
-                        svg.x 2
-                        svg.y 2
-                        svg.width 44
-                        svg.height 44
-                        svg.rx 3
-                        svg.fill palette.Canvas
-                        svg.stroke faction
-                        svg.strokeWidth (if selected then 4 else 2)
-                    ]
-                    glyphView
-                        palette
-                        24
-                        24
-                        1.0
-                        (UnitClassId.resolve unit.ClassId)
-                ]
-            ]
-            Html.span [
-                prop.className "map-unit-id"
-                prop.text (string unit.Id)
-            ]
-        ]
-    ]
-
 [<Emit("$0.setPointerCapture($1)")>]
 let private capturePointer (target: EventTarget) (pointerId: int) : unit = jsNative
 
 [<Emit("$0.releasePointerCapture($1)")>]
 let private releasePointer (target: EventTarget) (pointerId: int) : unit = jsNative
 
-[<Emit("$0.target.closest('[data-editor-unit-id]')?.getAttribute('data-editor-unit-id') ?? null")>]
+[<Emit("$0.target.closest('[data-unit-id]')?.getAttribute('data-unit-id') ?? null")>]
 let private pointerEditorUnitId (event: Browser.Types.Event) : string = jsNative
-
-[<Emit("(() => { const buttons = Array.from($0.closest('ul').querySelectorAll('button')); const index = buttons.indexOf($0); const target = $1 === -2 ? 0 : ($1 === 2 ? buttons.length - 1 : Math.max(0, Math.min(buttons.length - 1, index + $1))); buttons[target]?.focus(); })()")>]
-let private focusEditorObjectList (target: EventTarget) (movement: int) : unit = jsNative
 
 let private editorPointerKind (value: string) =
     match value with
@@ -4963,1000 +4865,6 @@ let private editorScreenPoint
         height
         (clientX - bounds.left)
         (clientY - bounds.top)
-
-let private editorUnitSvg
-    (state: MapEditorState)
-    (palette: PaletteTokens)
-    dispatch
-    (unit: EditorUnit)
-    =
-    let faction =
-        match unit.Side with
-        | Blue -> palette.HumanFaction
-        | Red -> palette.ArcaneFaction
-        | NeutralSide -> palette.NeutralFaction
-    let selected = Set.contains unit.Id state.SelectedUnits
-    let x = float unit.Column * Battlefield.CellSize
-    let y = float unit.Row * Battlefield.CellSize
-    let size = float unit.Size * Battlefield.CellSize
-
-    Svg.g [
-        svg.key ("editor-unit-" + string unit.Id)
-        svg.custom ("data-editor-object", "unit")
-        svg.custom ("data-editor-unit-id", string unit.Id)
-        svg.custom ("role", "button")
-        svg.custom (
-            "aria-label",
-            "Select unit "
-            + string unit.Id
-            + ", "
-            + unit.ClassId
-            + ", "
-            + string unit.Size
-            + " by "
-            + string unit.Size
-        )
-        svg.tabIndex (if state.SelectedUnit = Some unit.Id then 0 else -1)
-        svg.onClick (fun event ->
-            event.stopPropagation ()
-            if event.shiftKey then
-                dispatch (EditorChanged(ToggleEditorUnitSelection unit.Id))
-            else
-                dispatch (EditorChanged(SelectEditorUnit(Some unit.Id))))
-        svg.onKeyDown (fun event ->
-            match event.key with
-            | "Enter"
-            | " " ->
-                event.preventDefault ()
-                event.stopPropagation ()
-                dispatch (
-                    EditorChanged(
-                        if event.shiftKey then
-                            ToggleEditorUnitSelection unit.Id
-                        else
-                            SelectEditorUnit(Some unit.Id)
-                    )
-                )
-            | "Escape" ->
-                event.preventDefault ()
-                event.stopPropagation ()
-                dispatch (EditorChanged(SelectEditorUnit None))
-            | _ -> ())
-        svg.children [
-            Svg.title (
-                "Unit "
-                + string unit.Id
-                + ": "
-                + unit.ClassId
-                + ", "
-                + string unit.Size
-                + " square"
-            )
-            Svg.rect [
-                svg.x (x + 4.0)
-                svg.y (y + 4.0)
-                svg.width (size - 8.0)
-                svg.height (size - 8.0)
-                svg.rx 5
-                svg.fill palette.Canvas
-                svg.stroke (if selected then palette.Focus else faction)
-                svg.strokeWidth (if selected then 5 else 3)
-                svg.custom ("vector-effect", "non-scaling-stroke")
-            ]
-            glyphView
-                palette
-                (x + size / 2.0)
-                (y + size / 2.0)
-                (max 1.0 ((size - 16.0) / 24.0))
-                (UnitClassId.resolve unit.ClassId)
-            Svg.text [
-                svg.x (x + size - 8.0)
-                svg.y (y + size - 8.0)
-                svg.custom ("text-anchor", "end")
-                svg.fill palette.Text
-                svg.custom ("font-size", 12)
-                svg.custom ("font-weight", 700)
-                svg.text (string unit.Id)
-            ]
-        ]
-    ]
-
-let private editorBattlefield
-    (state: MapEditorState)
-    (view: EditorWorkspaceState)
-    activeDomain
-    spacePressed
-    inputHelpExpanded
-    bindings
-    dispatch
-    =
-    let claimsKeyboardInput phase keyValue controlOrMeta shift alt repeat =
-        let facts =
-            { Editor = state
-              ActiveDomain = activeDomain
-              PanHeld = spacePressed
-              InputHelpExpanded = inputHelpExpanded }
-        match
-            ModalInput.resolve
-                (ModalInput.deriveEditorContexts facts)
-                { Key = NormalizedKey.create keyValue None
-                  Modifiers =
-                    { ControlOrMeta = controlOrMeta
-                      Shift = shift
-                      Alt = alt }
-                  Phase = phase }
-                repeat
-                (ModalInput.editorCatalog facts
-                 |> UnifiedTacticalWorkspace.adaptModalCatalog bindings)
-        with
-        | Resolved _ -> true
-        | NoAvailableMatch _
-        | NoMatch -> false
-
-    let palette = ReplayPalettes.accessibleDefault
-    let boardWidth = float state.Map.Width * Battlefield.CellSize
-    let boardHeight = float state.Map.Height * Battlefield.CellSize
-    let transform =
-        "translate("
-        + string view.Camera.PanX
-        + " "
-        + string view.Camera.PanY
-        + ") scale("
-        + string view.Camera.Zoom
-        + ")"
-    let activateAt screenX screenY =
-        match state.Tool with
-        | Edge(_, kind) ->
-            MapEditorWorkspace.tryHitEdge
-                state.Map.Width
-                state.Map.Height
-                view.Camera
-                MapEditorWorkspace.EdgeTolerancePixels
-                screenX
-                screenY
-            |> Option.iter (fun hit ->
-                dispatch (
-                    EditorChanged(
-                        ActivateEdge(hit.Column, hit.Row, hit.Direction)
-                    )
-                ))
-        | tool ->
-            MapEditorWorkspace.tryHitCell
-                state.Map.Width
-                state.Map.Height
-                view.Camera
-                screenX
-                screenY
-            |> Option.iter (fun hit ->
-                match tool with
-                | Select -> ()
-                | Terrain _ -> ()
-                | _ -> dispatch (EditorChanged(ActivateCell(hit.Column, hit.Row))))
-    let selectionAt screenX screenY action =
-        MapEditorWorkspace.tryHitCell
-            state.Map.Width
-            state.Map.Height
-            view.Camera
-            screenX
-            screenY
-        |> Option.iter (fun hit ->
-            action
-                { CellColumn = hit.Column
-                  CellRow = hit.Row }
-            |> EditorChanged
-            |> dispatch)
-    let terrainAt screenX screenY action =
-        MapEditorWorkspace.tryHitCell
-            state.Map.Width
-            state.Map.Height
-            view.Camera
-            screenX
-            screenY
-        |> Option.iter (fun hit ->
-            action
-                { CellColumn = hit.Column
-                  CellRow = hit.Row }
-            |> EditorChanged
-            |> dispatch)
-
-    Html.section [
-        prop.className "editor-canvas"
-        prop.ariaLabel "SVG tactical map workspace"
-        prop.custom ("data-editor-revision", state.Revision.Digest)
-        prop.custom ("data-editor-revision-state", string state.RevisionState)
-        prop.children [
-            Html.p [
-                prop.className "sr-only"
-                prop.ariaLive.polite
-                prop.ariaAtomic true
-                prop.text state.TerrainAnnouncement
-            ]
-            Html.p [
-                prop.className "sr-only"
-                prop.ariaLive.polite
-                prop.ariaAtomic true
-                prop.text state.UnitAnnouncement
-            ]
-            Html.p [
-                prop.className "sr-only"
-                prop.ariaLive.polite
-                prop.ariaAtomic true
-                prop.text state.EdgeAnnouncement
-            ]
-            Html.p [
-                prop.className "sr-only"
-                prop.ariaLive.polite
-                prop.ariaAtomic true
-                prop.text state.RegionAnnouncement
-            ]
-            Html.div [
-                prop.className (
-                    "editor-context-hud"
-                    + if state.SelectedUnits.IsEmpty then " is-hidden" else ""
-                )
-                prop.role.toolbar
-                prop.ariaHidden state.SelectedUnits.IsEmpty
-                prop.ariaLabel "Selected unit quick actions"
-                prop.children [
-                    button "Move" "Begin a resettable movement preview" state.SelectedUnits.IsEmpty (fun _ ->
-                        dispatch (
-                            EditorChanged(
-                                BeginUnitMove state.KeyboardCursor.Cell
-                            )
-                        ))
-                    button "Duplicate" "Duplicate selected formation" state.SelectedUnits.IsEmpty (fun _ ->
-                        dispatch (EditorChanged DuplicateEditorSelection))
-                    button "Delete" "Delete selected formation" state.SelectedUnits.IsEmpty (fun _ ->
-                        dispatch (EditorChanged DeleteEditorSelection))
-                ]
-            ]
-            Svg.svg [
-                svg.id "editor-map-stage"
-                svg.className (
-                    "editor-battlefield-svg"
-                    + if view.ReducedMotion then " reduced-motion" else ""
-                )
-                svg.custom ("role", "application")
-                svg.tabIndex 0
-                svg.custom ("aria-label", (
-                    "Editable SVG battlefield, "
-                    + string state.Map.Width
-                    + " by "
-                    + string state.Map.Height
-                    + " cells, "
-                    + string state.Map.Units.Count
-                    + " units. Wheel zooms around the pointer; middle or right drag and two-finger touch pan."
-                ))
-                svg.viewBox (
-                    0,
-                    0,
-                    max 1 (int view.ViewportWidth),
-                    max 1 (int view.ViewportHeight)
-                )
-                svg.onContextMenu (fun event -> event.preventDefault ())
-                svg.onKeyDown (fun event ->
-                    let controlOrMeta = event.ctrlKey || event.metaKey
-                    if
-                        claimsKeyboardInput
-                            KeyDown
-                            event.key
-                            controlOrMeta
-                            event.shiftKey
-                            event.altKey
-                            event.repeat
-                    then
-                        event.preventDefault ()
-                    event.stopPropagation ()
-                    dispatch (
-                        KeyPressed(
-                            event.key,
-                            controlOrMeta,
-                            event.shiftKey,
-                            event.altKey,
-                            event.repeat
-                        )
-                    ))
-                svg.onKeyUp (fun event ->
-                    if
-                        claimsKeyboardInput
-                            KeyUp
-                            event.key
-                            false
-                            false
-                            false
-                            false
-                    then
-                        event.preventDefault ()
-                    event.stopPropagation ()
-                    dispatch (KeyReleased event.key))
-                svg.onWheel (fun event ->
-                    event.preventDefault ()
-                    let x, y =
-                        editorScreenPoint
-                            view
-                            event.currentTarget
-                            event.clientX
-                            event.clientY
-                    let factor = if event.deltaY < 0.0 then 1.12 else 1.0 / 1.12
-                    dispatch (EditorWorkspaceChanged(ZoomEditorAt(x, y, factor))))
-                svg.onClick (fun event ->
-                    let x, y =
-                        editorScreenPoint
-                            view
-                            event.currentTarget
-                            event.clientX
-                            event.clientY
-                    activateAt x y
-                    if event.detail >= 2 then
-                        match state.Tool with
-                        | Edge _ ->
-                            event.preventDefault ()
-                            dispatch (EditorChanged FinishEdgePolyline)
-                        | _ -> ())
-                svg.onPointerDown (fun event ->
-                    let kind = editorPointerKind event.pointerType
-                    let terrainToolActive =
-                        match state.Tool with
-                        | Terrain _ -> true
-                        | _ -> false
-                    let requestsPan =
-                        (kind = TouchPointer
-                         && (not terrainToolActive
-                             || not view.CapturedPointers.IsEmpty))
-                        || event.button = 1
-                        || event.button = 2
-                        || spacePressed
-                    let requestsSelection =
-                        state.Tool = Select
-                        && kind <> TouchPointer
-                        && event.button = 0
-                        && not requestsPan
-                    let movementUnit =
-                        if requestsSelection then
-                            match Int32.TryParse(pointerEditorUnitId event) with
-                            | true, unitId -> Some unitId
-                            | _ -> None
-                        else
-                            None
-                    let requestsMovement = movementUnit.IsSome
-                    let requestsTerrain =
-                        match state.Tool with
-                        | Terrain _ ->
-                            event.button = 0
-                            && not requestsPan
-                        | _ -> false
-                    if requestsPan || requestsSelection || requestsTerrain then
-                        event.preventDefault ()
-                        capturePointer event.currentTarget (int event.pointerId)
-                        let x, y =
-                            editorScreenPoint
-                                view
-                                event.currentTarget
-                                event.clientX
-                                event.clientY
-                        dispatch (
-                            EditorWorkspaceChanged(
-                                StartEditorPointer
-                                    { Id = int32 event.pointerId
-                                      Kind = kind
-                                      X = x
-                                      Y = y
-                                      RequestsPan = requestsPan }
-                            )
-                        )
-                        if requestsMovement then
-                            movementUnit
-                            |> Option.iter (fun unitId ->
-                                if not (Set.contains unitId state.SelectedUnits) then
-                                    dispatch (EditorChanged(SelectEditorUnit(Some unitId))))
-                            selectionAt x y BeginUnitMove
-                        elif requestsSelection then
-                            selectionAt x y BeginEditorBoxSelection
-                        elif requestsTerrain then
-                            terrainAt x y BeginTerrainGesture
-                        elif
-                            requestsPan
-                            && kind = TouchPointer
-                            && terrainToolActive
-                        then
-                            dispatch (EditorChanged CancelEditorGesture))
-                svg.onPointerMove (fun event ->
-                    if Map.containsKey (int32 event.pointerId) view.CapturedPointers then
-                        event.preventDefault ()
-                        let x, y =
-                            editorScreenPoint
-                                view
-                                event.currentTarget
-                                event.clientX
-                                event.clientY
-                        let previous = Map.find (int32 event.pointerId) view.CapturedPointers
-                        dispatch (
-                            EditorWorkspaceChanged(
-                                MoveEditorPointer
-                                    { previous with X = x; Y = y }
-                            )
-                        )
-                        if state.Tool = Select && not previous.RequestsPan then
-                            match state.Gesture with
-                            | UnitMoveGesture _ -> selectionAt x y ExtendUnitMove
-                            | _ -> selectionAt x y ExtendEditorBoxSelection
-                        else
-                            match state.Tool with
-                            | Terrain _ when not previous.RequestsPan ->
-                                terrainAt x y ExtendTerrainGesture
-                            | _ -> ()
-                    else
-                        match state.Tool with
-                        | Place _ ->
-                            let x, y =
-                                editorScreenPoint
-                                    view
-                                    event.currentTarget
-                                    event.clientX
-                                    event.clientY
-                            selectionAt x y PreviewUnitPlacement
-                        | _ -> ())
-                svg.onPointerUp (fun event ->
-                    if Map.containsKey (int32 event.pointerId) view.CapturedPointers then
-                        let previous = Map.find (int32 event.pointerId) view.CapturedPointers
-                        let x, y =
-                            editorScreenPoint
-                                view
-                                event.currentTarget
-                                event.clientX
-                                event.clientY
-                        releasePointer event.currentTarget (int event.pointerId)
-                        dispatch (
-                            EditorWorkspaceChanged(
-                                EndEditorPointer(int32 event.pointerId)
-                            )
-                        )
-                        if state.Tool = Select && not previous.RequestsPan then
-                            match state.Gesture with
-                            | UnitMoveGesture _ -> selectionAt x y ExtendUnitMove
-                            | _ -> selectionAt x y ExtendEditorBoxSelection
-                            dispatch (EditorChanged CommitEditorGesture)
-                        else
-                            match state.Tool with
-                            | Terrain _ when not previous.RequestsPan ->
-                                terrainAt x y ExtendTerrainGesture
-                                dispatch (EditorChanged CommitEditorGesture)
-                            | _ -> ())
-                svg.onLostPointerCapture (fun event ->
-                    dispatch (
-                        EditorWorkspaceChanged(
-                            LoseEditorPointerCapture(int32 event.pointerId)
-                        )
-                    )
-                    match state.Tool with
-                    | Select
-                    | Terrain _ -> dispatch (EditorChanged CancelEditorGesture)
-                    | _ -> ())
-                svg.children [
-                    Svg.title "S.I.R. map editor battlefield"
-                    Svg.desc "An SVG square-grid battlefield. Empty cells and semantic objects are also available in the object list after the workspace."
-                    Svg.rect [
-                        svg.width view.ViewportWidth
-                        svg.height view.ViewportHeight
-                        svg.fill palette.Canvas
-                    ]
-                    Svg.g [
-                        svg.custom ("transform", transform)
-                        svg.children [
-                            match view.Background with
-                            | Some background ->
-                                let x, y, width, height =
-                                    MapEditorWorkspace.backgroundRenderBox
-                                        state.Map.Width
-                                        state.Map.Height
-                                        background
-                                match background.Crop with
-                                | Some crop ->
-                                    Svg.svg [
-                                        svg.custom ("data-layer", "local-raster-background")
-                                        svg.custom ("x", string x)
-                                        svg.custom ("y", string y)
-                                        svg.custom ("width", string width)
-                                        svg.custom ("height", string height)
-                                        svg.custom ("viewBox", string crop.Left + " " + string crop.Top + " " + string crop.Width + " " + string crop.Height)
-                                        svg.custom ("overflow", "hidden")
-                                        svg.custom ("opacity", string background.Opacity)
-                                        svg.custom ("pointer-events", "none")
-                                        svg.custom ("aria-hidden", "true")
-                                        svg.children [
-                                            Svg.image [
-                                                svg.custom ("href", background.DataUrl)
-                                                svg.custom ("x", "0")
-                                                svg.custom ("y", "0")
-                                                svg.custom ("width", string background.PixelWidth)
-                                                svg.custom ("height", string background.PixelHeight)
-                                                svg.custom ("preserveAspectRatio", "none")
-                                            ]
-                                        ]
-                                    ]
-                                | None ->
-                                    Svg.image [
-                                        svg.custom ("data-layer", "local-raster-background")
-                                        svg.custom ("href", background.DataUrl)
-                                        svg.custom ("x", string x)
-                                        svg.custom ("y", string y)
-                                        svg.custom ("width", string width)
-                                        svg.custom ("height", string height)
-                                        svg.custom ("opacity", string background.Opacity)
-                                        svg.custom (
-                                            "preserveAspectRatio",
-                                            if background.Fit = FillAndCrop then
-                                                "xMidYMid slice"
-                                            else "none"
-                                        )
-                                        svg.custom ("pointer-events", "none")
-                                        svg.custom ("aria-hidden", "true")
-                                    ]
-                            | None -> ()
-                            Svg.rect [
-                                svg.custom ("data-layer", "terrain")
-                                svg.custom ("display", editorLayerDisplay TerrainDomain state)
-                                svg.custom ("opacity", editorLayerOpacity TerrainDomain state)
-                                svg.width boardWidth
-                                svg.height boardHeight
-                                svg.fill palette.Terrain
-                                if view.Background.IsSome then
-                                    svg.fillOpacity 0.58
-                            ]
-                            for row in 0 .. int state.Map.Height - 1 do
-                                for column in 0 .. int state.Map.Width - 1 do
-                                    let terrain =
-                                        MapEditor.terrainAt (int32 column) (int32 row) state
-                                    if terrain <> Open then
-                                        let fill, opacity =
-                                            match terrain with
-                                            | Rough -> palette.Canvas, 0.72
-                                            | Blocked -> palette.Text, 0.38
-                                            | Objective -> palette.NeutralFaction, 0.55
-                                            | Open -> palette.Terrain, 0.0
-                                        Svg.rect [
-                                            svg.custom (
-                                                "data-terrain",
-                                                MapEditor.terrainLabel terrain
-                                            )
-                                            svg.custom ("display", editorLayerDisplay TerrainDomain state)
-                                            svg.x (float column * Battlefield.CellSize)
-                                            svg.y (float row * Battlefield.CellSize)
-                                            svg.width Battlefield.CellSize
-                                            svg.height Battlefield.CellSize
-                                            svg.fill fill
-                                            svg.custom (
-                                                "opacity",
-                                                if MapEditor.layerState TerrainDomain state = DimmedLayer then opacity * 0.28 else opacity
-                                            )
-                                        ]
-                                        match terrain with
-                                        | Rough ->
-                                            Svg.line [
-                                                svg.custom ("data-terrain-pattern", "diagonal-hatch")
-                                                svg.custom ("display", editorLayerDisplay TerrainDomain state)
-                                                svg.custom ("opacity", editorLayerOpacity TerrainDomain state)
-                                                svg.x1 (float column * Battlefield.CellSize + 8.0)
-                                                svg.y1 (float (row + 1) * Battlefield.CellSize - 8.0)
-                                                svg.x2 (float (column + 1) * Battlefield.CellSize - 8.0)
-                                                svg.y2 (float row * Battlefield.CellSize + 8.0)
-                                                svg.stroke palette.Grid
-                                                svg.strokeWidth 3
-                                                svg.custom ("pointer-events", "none")
-                                            ]
-                                        | Blocked ->
-                                            for first, last in [ 9.0, Battlefield.CellSize - 9.0; Battlefield.CellSize - 9.0, 9.0 ] do
-                                                Svg.line [
-                                                    svg.custom ("data-terrain-pattern", "cross-hatch")
-                                                    svg.custom ("display", editorLayerDisplay TerrainDomain state)
-                                                    svg.custom ("opacity", editorLayerOpacity TerrainDomain state)
-                                                    svg.x1 (float column * Battlefield.CellSize + first)
-                                                    svg.y1 (float row * Battlefield.CellSize + 9.0)
-                                                    svg.x2 (float column * Battlefield.CellSize + last)
-                                                    svg.y2 (float (row + 1) * Battlefield.CellSize - 9.0)
-                                                    svg.stroke palette.HealthActive
-                                                    svg.strokeWidth 3
-                                                    svg.custom ("pointer-events", "none")
-                                                ]
-                                        | Objective ->
-                                            Svg.rect [
-                                                svg.custom ("data-terrain-pattern", "inset-ring")
-                                                svg.custom ("display", editorLayerDisplay TerrainDomain state)
-                                                svg.custom ("opacity", editorLayerOpacity TerrainDomain state)
-                                                svg.x (float column * Battlefield.CellSize + 7.0)
-                                                svg.y (float row * Battlefield.CellSize + 7.0)
-                                                svg.width (Battlefield.CellSize - 14.0)
-                                                svg.height (Battlefield.CellSize - 14.0)
-                                                svg.fill "none"
-                                                svg.stroke palette.NeutralFaction
-                                                svg.strokeWidth 3
-                                                svg.custom ("pointer-events", "none")
-                                            ]
-                                        | Open -> ()
-                            match MapEditor.terrainPreview state with
-                            | Some(terrain, addresses, isValid) ->
-                                Svg.g [
-                                    svg.custom ("data-layer", "terrain-preview")
-                                    svg.custom ("display", editorLayerDisplay TerrainDomain state)
-                                    svg.custom ("opacity", editorLayerOpacity TerrainDomain state)
-                                    svg.custom ("data-preview-valid", string isValid)
-                                    svg.custom ("pointer-events", "none")
-                                    svg.children [
-                                        for address in addresses do
-                                            Svg.rect [
-                                                svg.custom (
-                                                    "data-preview-terrain",
-                                                    MapEditor.terrainLabel terrain
-                                                )
-                                                svg.x (float address.CellColumn * Battlefield.CellSize + 3.0)
-                                                svg.y (float address.CellRow * Battlefield.CellSize + 3.0)
-                                                svg.width (Battlefield.CellSize - 6.0)
-                                                svg.height (Battlefield.CellSize - 6.0)
-                                                svg.fill "none"
-                                                svg.stroke (
-                                                    if isValid then palette.Focus
-                                                    else palette.HealthActive
-                                                )
-                                                svg.strokeWidth 4
-                                                svg.custom ("stroke-dasharray", if isValid then "8 4" else "3 3")
-                                                svg.custom ("vector-effect", "non-scaling-stroke")
-                                            ]
-                                    ]
-                                ]
-                            | None -> ()
-                            match MapEditor.unitPreview state with
-                            | Some(units, isValid) ->
-                                Svg.g [
-                                    svg.custom ("data-layer", "unit-preview")
-                                    svg.custom ("display", editorLayerDisplay UnitDomain state)
-                                    svg.custom ("opacity", editorLayerOpacity UnitDomain state)
-                                    svg.custom ("data-preview-valid", string isValid)
-                                    svg.custom ("pointer-events", "none")
-                                    svg.children [
-                                        for unit in units do
-                                            let size =
-                                                float unit.Size
-                                                * Battlefield.CellSize
-                                            Svg.rect [
-                                                svg.custom (
-                                                    "data-preview-unit",
-                                                    unit.ClassId
-                                                )
-                                                svg.x (
-                                                    float unit.Column
-                                                    * Battlefield.CellSize
-                                                    + 3.0
-                                                )
-                                                svg.y (
-                                                    float unit.Row
-                                                    * Battlefield.CellSize
-                                                    + 3.0
-                                                )
-                                                svg.width (size - 6.0)
-                                                svg.height (size - 6.0)
-                                                svg.fill "none"
-                                                svg.stroke (
-                                                    if isValid then palette.Focus
-                                                    else palette.HealthActive
-                                                )
-                                                svg.strokeWidth 4
-                                                svg.custom (
-                                                    "stroke-dasharray",
-                                                    if isValid then "8 4" else "3 3"
-                                                )
-                                                svg.custom ("vector-effect", "non-scaling-stroke")
-                                            ]
-                                    ]
-                                ]
-                            | None -> ()
-                            match state.Tool with
-                            | Terrain _ ->
-                                Svg.rect [
-                                    svg.custom ("data-terrain-cursor", "true")
-                                    svg.x (float state.TerrainCursor.CellColumn * Battlefield.CellSize + 5.0)
-                                    svg.y (float state.TerrainCursor.CellRow * Battlefield.CellSize + 5.0)
-                                    svg.width (Battlefield.CellSize - 10.0)
-                                    svg.height (Battlefield.CellSize - 10.0)
-                                    svg.fill "none"
-                                    svg.stroke palette.Focus
-                                    svg.strokeWidth 2
-                                    svg.custom ("vector-effect", "non-scaling-stroke")
-                                    svg.custom ("pointer-events", "none")
-                                ]
-                            | Select ->
-                                Svg.rect [
-                                    svg.custom ("data-keyboard-map-cursor", "true")
-                                    svg.x (float state.KeyboardCursor.Cell.CellColumn * Battlefield.CellSize + 5.0)
-                                    svg.y (float state.KeyboardCursor.Cell.CellRow * Battlefield.CellSize + 5.0)
-                                    svg.width (Battlefield.CellSize - 10.0)
-                                    svg.height (Battlefield.CellSize - 10.0)
-                                    svg.fill "none"
-                                    svg.stroke palette.Focus
-                                    svg.strokeWidth 2
-                                    svg.custom ("stroke-dasharray", "5 3")
-                                    svg.custom ("vector-effect", "non-scaling-stroke")
-                                    svg.custom ("pointer-events", "none")
-                                ]
-                            | _ -> ()
-                            Svg.g [
-                                svg.custom ("data-layer", "regions")
-                                svg.custom ("display", editorLayerDisplay RegionDomain state)
-                                svg.custom ("opacity", editorLayerOpacity RegionDomain state)
-                                svg.children [
-                                    for _, region in state.Map.Regions |> Map.toList do
-                                        let selected = state.SelectedRegion = Some region.Id
-                                        let color =
-                                            match region.Purpose with
-                                            | ObjectiveRegion -> palette.NeutralFaction
-                                            | DeploymentZone Blue -> palette.HumanFaction
-                                            | DeploymentZone Red -> palette.ArcaneFaction
-                                            | DeploymentZone NeutralSide -> palette.Text
-                                        let common =
-                                            [ svg.custom ("data-region-id", string region.Id)
-                                              svg.custom ("data-region-purpose", MapEditor.regionPurposeLabel region.Purpose)
-                                              svg.custom ("role", "button")
-                                              svg.custom (
-                                                  "aria-label",
-                                                  "Select region "
-                                                  + string region.Id
-                                                  + ", "
-                                                  + MapEditor.regionPurposeLabel region.Purpose
-                                              )
-                                              svg.tabIndex (if selected then 0 else -1)
-                                              svg.fill color
-                                              svg.custom ("fill-opacity", "0.18")
-                                              svg.stroke (if selected then palette.Focus else color)
-                                              svg.strokeWidth (if selected then 5 else 3)
-                                              svg.custom ("vector-effect", "non-scaling-stroke")
-                                              svg.onClick (fun event ->
-                                                  event.stopPropagation ()
-                                                  dispatch (EditorChanged(SelectEditorRegion(Some region.Id))))
-                                              svg.onKeyDown (fun event ->
-                                                  match event.key with
-                                                  | "Enter"
-                                                  | " " ->
-                                                      event.preventDefault ()
-                                                      event.stopPropagation ()
-                                                      dispatch (EditorChanged(SelectEditorRegion(Some region.Id)))
-                                                  | "Escape" ->
-                                                      event.preventDefault ()
-                                                      event.stopPropagation ()
-                                                      dispatch (EditorChanged(SelectEditorRegion None))
-                                                  | _ -> ()) ]
-                                        match region.Geometry with
-                                        | RegionRectangle(column, row, width, height) ->
-                                            Svg.rect (
-                                                common
-                                                @ [ svg.x (float column * Battlefield.CellSize)
-                                                    svg.y (float row * Battlefield.CellSize)
-                                                    svg.width (float width * Battlefield.CellSize)
-                                                    svg.height (float height * Battlefield.CellSize) ]
-                                            )
-                                        | RegionPolygon vertices ->
-                                            let points =
-                                                vertices
-                                                |> Array.map (fun vertex ->
-                                                    string (float vertex.CellColumn * Battlefield.CellSize)
-                                                    + ","
-                                                    + string (float vertex.CellRow * Battlefield.CellSize))
-                                                |> String.concat " "
-                                            Svg.polygon (common @ [ svg.points points ])
-                                ]
-                            ]
-                            Svg.g [
-                                svg.custom ("data-layer", "grid")
-                                svg.custom ("display", editorLayerDisplay DocumentDomain state)
-                                svg.custom ("opacity", editorLayerOpacity DocumentDomain state)
-                                svg.custom ("pointer-events", "none")
-                                svg.children [
-                                    for column in 0 .. int state.Map.Width do
-                                        Svg.line [
-                                            svg.x1 (float column * Battlefield.CellSize)
-                                            svg.y1 0
-                                            svg.x2 (float column * Battlefield.CellSize)
-                                            svg.y2 boardHeight
-                                            svg.stroke palette.Grid
-                                            svg.strokeWidth 1
-                                            svg.custom ("vector-effect", "non-scaling-stroke")
-                                        ]
-                                    for row in 0 .. int state.Map.Height do
-                                        Svg.line [
-                                            svg.x1 0
-                                            svg.y1 (float row * Battlefield.CellSize)
-                                            svg.x2 boardWidth
-                                            svg.y2 (float row * Battlefield.CellSize)
-                                            svg.stroke palette.Grid
-                                            svg.strokeWidth 1
-                                            svg.custom ("vector-effect", "non-scaling-stroke")
-                                        ]
-                                ]
-                            ]
-                            Svg.g [
-                                svg.custom ("data-layer", "edges")
-                                svg.custom ("display", editorLayerDisplay EdgeDomain state)
-                                svg.custom ("opacity", editorLayerOpacity EdgeDomain state)
-                                svg.custom ("pointer-events", "none")
-                                svg.children [
-                                    for (column, row, direction), (kind, isOpen) in
-                                        state.Map.Edges |> Map.toList do
-                                        let x1, y1, x2, y2 =
-                                            match direction with
-                                            | EastEdge ->
-                                                let x =
-                                                    float (column + 1)
-                                                    * Battlefield.CellSize
-                                                x,
-                                                float row * Battlefield.CellSize,
-                                                x,
-                                                float (row + 1) * Battlefield.CellSize
-                                            | SouthEdge ->
-                                                let y =
-                                                    float (row + 1)
-                                                    * Battlefield.CellSize
-                                                float column * Battlefield.CellSize,
-                                                y,
-                                                float (column + 1) * Battlefield.CellSize,
-                                                y
-                                        let color, dash =
-                                            match kind, isOpen with
-                                            | Wall, _ -> palette.Text, "none"
-                                            | Door, true -> palette.NeutralFaction, "8 5"
-                                            | Door, false -> palette.NeutralFaction, "none"
-                                            | Window, _ -> palette.HumanFaction, "3 3"
-                                        Svg.line [
-                                            svg.custom ("data-edge-kind", string kind)
-                                            svg.custom (
-                                                "data-edge-state",
-                                                if isOpen then "open" else "closed"
-                                            )
-                                            svg.custom ("data-edge-direction", string direction)
-                                            svg.x1 x1
-                                            svg.y1 y1
-                                            svg.x2 x2
-                                            svg.y2 y2
-                                            svg.stroke color
-                                            svg.strokeWidth 5
-                                            svg.custom ("stroke-dasharray", dash)
-                                            svg.custom ("vector-effect", "non-scaling-stroke")
-                                    ]
-                                ]
-                            ]
-                            match state.Gesture with
-                            | EdgePolylineGesture(kind, segments) ->
-                                Svg.g [
-                                    svg.custom ("data-layer", "edge-preview")
-                                    svg.custom ("display", editorLayerDisplay EdgeDomain state)
-                                    svg.custom ("opacity", editorLayerOpacity EdgeDomain state)
-                                    svg.custom ("pointer-events", "none")
-                                    svg.children [
-                                        for column, row, direction in segments do
-                                            let x1, y1, x2, y2 =
-                                                match direction with
-                                                | EastEdge ->
-                                                    let x =
-                                                        float (column + 1)
-                                                        * Battlefield.CellSize
-                                                    x,
-                                                    float row * Battlefield.CellSize,
-                                                    x,
-                                                    float (row + 1) * Battlefield.CellSize
-                                                | SouthEdge ->
-                                                    let y =
-                                                        float (row + 1)
-                                                        * Battlefield.CellSize
-                                                    float column * Battlefield.CellSize,
-                                                    y,
-                                                    float (column + 1) * Battlefield.CellSize,
-                                                    y
-                                            Svg.line [
-                                                svg.custom ("data-edge-preview", string kind)
-                                                svg.x1 x1
-                                                svg.y1 y1
-                                                svg.x2 x2
-                                                svg.y2 y2
-                                                svg.stroke palette.Focus
-                                                svg.strokeWidth 7
-                                                svg.custom ("stroke-dasharray", "7 4")
-                                                svg.custom ("vector-effect", "non-scaling-stroke")
-                                            ]
-                                    ]
-                                ]
-                            | _ -> Html.none
-                            Svg.g [
-                                svg.key ("editor-units-" + state.Revision.Digest)
-                                svg.custom ("data-layer", "units")
-                                svg.custom ("display", editorLayerDisplay UnitDomain state)
-                                svg.custom ("opacity", editorLayerOpacity UnitDomain state)
-                                svg.children (
-                                    state.Map.Units
-                                    |> Map.toList
-                                    |> List.map (fun (_, unit) ->
-                                        editorUnitSvg state palette dispatch unit)
-                                )
-                            ]
-                            match state.ActiveIssue with
-                            | Some index when index >= 0 && index < state.Issues.Length ->
-                                let issue = state.Issues[index]
-                                Svg.g [
-                                    svg.custom ("data-layer", "validation-overlay")
-                                    svg.custom ("pointer-events", "none")
-                                    svg.children [
-                                        Svg.rect [
-                                            svg.x 6
-                                            svg.y 6
-                                            svg.width (min 420.0 (boardWidth - 12.0))
-                                            svg.height 38
-                                            svg.rx 5
-                                            svg.fill palette.Canvas
-                                            svg.stroke palette.HealthActive
-                                            svg.strokeWidth 2
-                                            svg.custom ("vector-effect", "non-scaling-stroke")
-                                        ]
-                                        Svg.text [
-                                            svg.x 18
-                                            svg.y 31
-                                            svg.fill palette.Text
-                                            svg.fontSize 15
-                                            svg.text (issue.Code + " · " + issue.Message)
-                                        ]
-                                    ]
-                                ]
-                            | _ -> Html.none
-                            match state.Gesture with
-                            | BoxSelectionGesture(anchor, current) ->
-                                let firstColumn = min anchor.CellColumn current.CellColumn
-                                let firstRow = min anchor.CellRow current.CellRow
-                                let lastColumn = max anchor.CellColumn current.CellColumn
-                                let lastRow = max anchor.CellRow current.CellRow
-                                Svg.rect [
-                                    svg.custom ("data-editor-gesture", "box-selection")
-                                    svg.custom ("pointer-events", "none")
-                                    svg.x (float firstColumn * Battlefield.CellSize)
-                                    svg.y (float firstRow * Battlefield.CellSize)
-                                    svg.width (float (lastColumn - firstColumn + 1) * Battlefield.CellSize)
-                                    svg.height (float (lastRow - firstRow + 1) * Battlefield.CellSize)
-                                    svg.fill "none"
-                                    svg.stroke palette.Focus
-                                    svg.strokeWidth 2
-                                    svg.custom ("stroke-dasharray", "6 4")
-                                    svg.custom ("vector-effect", "non-scaling-stroke")
-                                ]
-                            | _ -> Html.none
-                        ]
-                    ]
-                ]
-            ]
-            Html.div [
-                prop.className "editor-status-row"
-                prop.role.status
-                prop.ariaLive.polite
-                prop.children [
-                    Html.span ("Active: " + toolLabel state.Tool)
-                    Html.span (
-                        string (int (view.Camera.Zoom * 100.0))
-                        + "% · "
-                        + string state.SelectedUnits.Count
-                        + " selected · "
-                        + string state.Map.Units.Count
-                        + " units · "
-                        + string state.Map.Edges.Count
-                        + " edges"
-                    )
-                    Html.span (
-                        (match state.RevisionState with
-                         | DirtyRevision -> "Dirty"
-                         | SavedRevision -> "Saved"
-                         | SimulatedRevision -> "Simulated"
-                         | RecoveredRevision -> "Recovered")
-                        + " revision "
-                        + string state.Revision.Number
-                        + " · "
-                        + state.Revision.Digest.Substring(0, 12)
-                    )
-                ]
-            ]
-        ]
-    ]
 
 let private editorToolbar
     (state: MapEditorState)
@@ -6015,46 +4923,36 @@ let private editorToolbar
 
     Html.section [
         prop.className (
-            "panel editor-tools editor-ribbon"
+            (if activePanel = DocumentTools then "panel editor-document-panel"
+             else "panel editor-tools editor-ribbon")
             + if panelVisible then "" else " is-collapsed"
         )
-        prop.ariaLabel "Map editing tools"
+        prop.ariaLabel (if activePanel = DocumentTools then "Map document controls" else "Map editing tools")
         prop.children [
-            Html.div [
-                prop.className "editor-section-heading"
-                prop.children [
-                    Html.div [
-                        Html.p [ prop.className "eyebrow"; prop.text "Author" ]
-                        Html.h2 "Map editor"
-                    ]
-                    Html.p [
-                        prop.className "active-tool"
-                        prop.text (
-                            "Active tool: " + toolLabel state.Tool
-                        )
+            if activePanel <> DocumentTools then
+                Html.div [
+                    prop.className "editor-section-heading"
+                    prop.children [
+                        Html.div [
+                            Html.p [ prop.className "eyebrow"; prop.text "Author" ]
+                            Html.h2 "Map editor"
+                        ]
+                        Html.p [
+                            prop.className "active-tool"
+                            prop.text ("Active tool: " + toolLabel state.Tool)
+                        ]
                     ]
                 ]
-            ]
-            Html.nav [
-                prop.className "editor-tool-navigation compact-tool-rail"
-                prop.ariaLabel "Map editor tool groups"
-                prop.children [
-                    choosePanel "Terrain" TerrainTools
-                    choosePanel "Units" UnitTools
-                    choosePanel "Edges" EdgeTools
-                    choosePanel "Zones" ZoneTools
-                    choosePanel "Map file" DocumentTools
-                    button
-                        (if view.InspectorCollapsed then "Show inspector" else "Hide inspector")
-                        "Toggle selected-object inspector"
-                        false
-                        (fun _ ->
-                            dispatch (
-                                EditorWorkspaceChanged
-                                    ToggleEditorInspector
-                            ))
+                Html.nav [
+                    prop.className "editor-tool-navigation compact-tool-rail"
+                    prop.ariaLabel "Map editor tool groups"
+                    prop.children [
+                        choosePanel "Terrain" TerrainTools
+                        choosePanel "Units" UnitTools
+                        choosePanel "Edges" EdgeTools
+                        choosePanel "Zones" ZoneTools
+                    ]
                 ]
-            ]
             if panelVisible then Html.div [
                 prop.className "editor-tool-panel editor-context-palette"
                 prop.children [
@@ -6144,10 +5042,10 @@ let private editorToolbar
                                     event.preventDefault ()
                                     if not event.repeat then
                                         dispatch (EditorChanged ArmUnitPalettePreset)
-                                        document.getElementById("editor-map-stage").focus ()
+                                        document.getElementById("persistent-tactical-svg").focus ()
                                 | "Escape" ->
                                     event.preventDefault ()
-                                    document.getElementById("editor-map-stage").focus ()
+                                    document.getElementById("persistent-tactical-svg").focus ()
                                 | _ -> ())
                         ]
                         Html.div [
@@ -6430,6 +5328,27 @@ let private editorToolbar
                                 ]
                     | DocumentTools ->
                         Html.h3 "Map document"
+                        Html.div [
+                            prop.className "control-row"
+                            prop.role.toolbar
+                            prop.ariaLabel "Map editor document actions"
+                            prop.children [
+                                button "New map" "Create a new empty map" false (fun _ -> dispatch (EditorChanged RequestNewMap))
+                                button "Undo" "Undo last editor command" state.UndoHistory.IsEmpty (fun _ -> dispatch (InvokeTacticalCommand "editor.history.undo"))
+                                button "Redo" "Redo last editor command" state.RedoHistory.IsEmpty (fun _ -> dispatch (InvokeTacticalCommand "editor.history.redo-shift-z"))
+                                button "Copy" "Copy selected units" state.SelectedUnits.IsEmpty (fun _ -> dispatch (InvokeTacticalCommand "editor.selection.copy"))
+                                button "Paste" "Paste copied units" state.Clipboard.IsNone (fun _ -> dispatch (InvokeTacticalCommand "editor.selection.paste"))
+                                button "Duplicate" "Duplicate selected units" state.SelectedUnits.IsEmpty (fun _ -> dispatch (InvokeTacticalCommand "editor.selection.duplicate"))
+                                button "Delete" "Delete selected objects" (state.SelectedUnits.IsEmpty && state.SelectedRegion.IsNone) (fun _ -> dispatch (InvokeTacticalCommand "editor.selection.delete"))
+                                button "Select all" "Select all objects in the active domain" false (fun _ -> dispatch (InvokeTacticalCommand "editor.selection.all"))
+                                button "Zoom out" "Zoom the tactical workscreen out" false (fun _ -> dispatch (InvokeTacticalCommand "scene.camera.zoom-out"))
+                                button "Zoom in" "Zoom the tactical workscreen in" false (fun _ -> dispatch (InvokeTacticalCommand "scene.camera.zoom-in"))
+                                button "Fit" "Fit the complete map" false (fun _ -> dispatch (InvokeTacticalCommand "scene.camera.fit"))
+                                button "Actual size" "Reset map camera to one hundred percent" false (fun _ -> dispatch (EditorWorkspaceChanged ResetEditorCamera))
+                                button "Frame selection" "Frame selected map objects" state.SelectedUnits.IsEmpty (fun _ -> dispatch (EditorWorkspaceChanged FrameEditorSelection))
+                                button "Simulate revision" "Validate and send this revision to Simulator" false (fun _ -> dispatch (InvokeTacticalCommand "editor.scene.create-simulator-handoff"))
+                            ]
+                        ]
                         Html.fieldSet [
                             Html.legend "Local raster background (presentation only)"
                             Html.p [
@@ -6578,42 +5497,6 @@ let private editorToolbar
                                 dispatch (EditorChanged(SetMapName value)))
                         ]
                         Html.div [
-                            prop.id "editor-layer-controls"
-                            prop.tabIndex 0
-                            prop.className "editor-layer-controls"
-                            prop.role.group
-                            prop.ariaLabel "Editing layer states"
-                            prop.children [
-                                for domain in
-                                    [ TerrainDomain
-                                      EdgeDomain
-                                      UnitDomain
-                                      RegionDomain
-                                      DocumentDomain ] do
-                                    Html.fieldSet [
-                                        Html.legend (string domain)
-                                        for value, label in
-                                            [ VisibleLayer, "Visible"
-                                              DimmedLayer, "Dimmed"
-                                              HiddenLayer, "Hidden"
-                                              LockedLayer, "Locked" ] do
-                                            Html.button [
-                                                prop.type'.button
-                                                prop.text label
-                                                prop.ariaPressed (
-                                                    MapEditor.layerState domain state = value
-                                                )
-                                                prop.onClick (fun _ ->
-                                                    dispatch (
-                                                        EditorChanged(
-                                                            SetEditorLayerState(domain, value)
-                                                        )
-                                                    ))
-                                            ]
-                                    ]
-                            ]
-                        ]
-                        Html.div [
                             prop.id "editor-saved-view-controls"
                             prop.tabIndex 0
                             prop.className "control-row"
@@ -6738,170 +5621,8 @@ let private editorToolbar
                                 ]
                             ]
                         | None -> Html.none
-                        Html.section [
-                            prop.className "editor-issues-panel"
-                            prop.ariaLabel "Map validation issues"
-                            prop.children [
-                                Html.h4 ("Issues · " + string state.Issues.Length)
-                                button "Previous" "Previous validation issue" (Array.isEmpty state.Issues) (fun _ ->
-                                    dispatch (EditorChanged SelectPreviousIssue))
-                                button "Next" "Next validation issue" (Array.isEmpty state.Issues) (fun _ ->
-                                    dispatch (EditorChanged SelectNextIssue))
-                                match state.ActiveIssue with
-                                | Some index when index >= 0 && index < state.Issues.Length ->
-                                    let issue = state.Issues[index]
-                                    Html.p [
-                                        prop.role.status
-                                        prop.ariaLive.polite
-                                        prop.text (
-                                            string (index + 1) + " of " + string state.Issues.Length
-                                            + " · " + issue.Code + " · " + issue.Message
-                                        )
-                                    ]
-                                | _ -> Html.p "No validation issues."
-                            ]
-                        ]
                 ]
             ] else Html.none
-        ]
-    ]
-
-let private editorGrid state dispatch =
-    Html.section [
-        prop.className "panel editor-object-list"
-        prop.ariaLabel "Map object list fallback"
-        prop.children [
-            Html.details [
-                Html.summary (
-                    "Keyboard and screen-reader object list · "
-                    + string state.Map.Width
-                    + " × "
-                    + string state.Map.Height
-                    + " cells"
-                )
-                Html.p [
-                    prop.className "keyboard-help"
-                    prop.text "Use the object list to reach authored objects and activate the current tool. Empty cells remain available here without adding hundreds of SVG tab stops. The live Inputs panel lists commands for the current mode."
-                ]
-                Html.h3 "Units"
-                if state.Map.Units.IsEmpty then
-                    Html.p "No units."
-                else
-                    Html.ul [
-                        for _, unit in state.Map.Units |> Map.toList do
-                            Html.li [
-                                Html.button [
-                                    prop.type'.button
-                                    prop.ariaPressed (Set.contains unit.Id state.SelectedUnits)
-                                    prop.text (
-                                        "Unit "
-                                        + string unit.Id
-                                        + " · "
-                                        + unit.ClassId
-                                        + " · "
-                                        + string unit.Size
-                                        + "×"
-                                        + string unit.Size
-                                        + " at "
-                                        + string unit.Column
-                                        + ","
-                                        + string unit.Row
-                                    )
-                                    prop.onClick (fun event ->
-                                        dispatch (
-                                            EditorChanged(
-                                                if event.shiftKey then
-                                                    ToggleEditorUnitSelection unit.Id
-                                                else
-                                                    SelectEditorUnit(Some unit.Id)
-                                            )
-                                        ))
-                                    prop.onKeyDown (fun event ->
-                                        let move amount =
-                                            event.preventDefault ()
-                                            event.stopPropagation ()
-                                            focusEditorObjectList event.currentTarget amount
-                                        match event.key with
-                                        | "ArrowUp" -> move -1
-                                        | "ArrowDown" -> move 1
-                                        | "Home" -> move -2
-                                        | "End" -> move 2
-                                        | "Enter" ->
-                                            event.preventDefault ()
-                                            event.stopPropagation ()
-                                            dispatch (
-                                                EditorChanged(
-                                                    if event.shiftKey then
-                                                        ToggleEditorUnitSelection unit.Id
-                                                    else
-                                                        SelectEditorUnit(Some unit.Id)
-                                                    )
-                                            )
-                                        | " " ->
-                                            event.stopPropagation ()
-                                        | _ -> ())
-                                ]
-                            ]
-                    ]
-                Html.h3 "Regions"
-                if state.Map.Regions.IsEmpty then
-                    Html.p "No regions."
-                else
-                    Html.ul [
-                        prop.ariaLabel "Authoritative map regions"
-                        prop.children [
-                            for _, region in state.Map.Regions |> Map.toList do
-                                Html.li [
-                                    Html.button [
-                                        prop.type'.button
-                                        prop.ariaPressed (state.SelectedRegion = Some region.Id)
-                                        prop.text (
-                                            "Region "
-                                            + string region.Id
-                                            + " · "
-                                            + MapEditor.regionPurposeLabel region.Purpose
-                                            + " · "
-                                            + (match region.Geometry with
-                                               | RegionRectangle(column, row, width, height) ->
-                                                   "rectangle "
-                                                   + string width + "×" + string height
-                                                   + " at " + string column + "," + string row
-                                               | RegionPolygon vertices ->
-                                                   "polygon with " + string vertices.Length + " vertices")
-                                        )
-                                        prop.onClick (fun _ ->
-                                            dispatch (EditorChanged(SelectEditorRegion(Some region.Id))))
-                                        prop.onKeyDown (fun event ->
-                                            let move amount =
-                                                event.preventDefault ()
-                                                event.stopPropagation ()
-                                                focusEditorObjectList event.currentTarget amount
-                                            match event.key with
-                                            | "ArrowUp" -> move -1
-                                            | "ArrowDown" -> move 1
-                                            | "Home" -> move -2
-                                            | "End" -> move 2
-                                            | "Enter" ->
-                                                event.preventDefault ()
-                                                event.stopPropagation ()
-                                                dispatch (EditorChanged(SelectEditorRegion(Some region.Id)))
-                                            | " " ->
-                                                event.stopPropagation ()
-                                            | _ -> ())
-                                    ]
-                                ]
-                        ]
-                    ]
-                Html.h3 "Cells"
-                Html.div [
-                    prop.className "editor-cell-list"
-                    prop.children [
-                        for row in 0 .. int state.Map.Height - 1 do
-                            for column in 0 .. int state.Map.Width - 1 do
-                                mapCell state dispatch (int32 column) (int32 row)
-                    ]
-                ]
-            ]
         ]
     ]
 
@@ -7330,172 +6051,6 @@ let private editorDestructiveConfirmation state dispatch =
                 ]
             ]
         ]
-
-let private editorDesktopChrome
-    (state: MapEditorState)
-    (view: EditorWorkspaceState)
-    (simulator: SimulatorHandoff option)
-    dispatch
-    =
-    let menu
-        (label: string)
-        (children: Fable.React.ReactElement list)
-        =
-        Html.details [
-            prop.className "editor-menu desktop-menu"
-            prop.children [
-                Html.summary [
-                    prop.text label
-                    prop.onClick (fun event ->
-                        closeSiblingDesktopMenus event.currentTarget)
-                ]
-                Html.div [
-                    prop.className "editor-menu-popover"
-                    prop.children children
-                ]
-            ]
-        ]
-    let importMapControl (label: string) =
-        Html.label [
-            prop.className "editor-file-command"
-            prop.children [
-                Html.span label
-                Html.input [
-                    prop.type'.file
-                    prop.accept ".sir-map,.dd2vtt,.uvtt,.json,.xml,text/plain,application/json"
-                    prop.ariaLabel "Import SIR map"
-                    prop.title "Import SIR-MAP directly or review a Universal VTT, Foundry, or Fantasy Grounds export"
-                    prop.onChange (fun (files: File list) ->
-                        closeDesktopMenus ()
-                        files
-                        |> List.tryHead
-                        |> Option.iter (MapFileSelected >> dispatch))
-                ]
-            ]
-        ]
-    let command label aria disabled message =
-        button label aria disabled (fun _ ->
-            closeDesktopMenus ()
-            dispatch message)
-
-    Html.section [
-        prop.className "editor-desktop-chrome"
-        prop.ariaLabel "Map editor menu and toolbar"
-        prop.children [
-            Html.div [
-                prop.className "editor-document-strip"
-                prop.children [
-                    Html.strong state.Authoring.Name
-                    Html.span (
-                        (match state.RevisionState with
-                         | DirtyRevision -> "Modified"
-                         | SavedRevision -> "Saved"
-                         | SimulatedRevision -> "Simulated"
-                         | RecoveredRevision -> "Recovered")
-                        + " · r"
-                        + string state.Revision.Number
-                    )
-                    Html.span (
-                        match simulator with
-                        | None -> "Not in Simulator"
-                        | Some value when
-                            MapEditorSimulator.isBehindDraft state value ->
-                            "Simulator behind"
-                        | Some _ -> "Simulator current"
-                    )
-                ]
-            ]
-            Html.nav [
-                prop.className "editor-menu-bar"
-                prop.ariaLabel "Map editor menus"
-                prop.children [
-                    menu
-                        "File"
-                        [ command
-                              "New map"
-                              "Create a new empty map"
-                              false
-                              (EditorChanged RequestNewMap)
-                          importMapControl "Open / Import…"
-                          command
-                              "Save map file"
-                              "Export the current map document"
-                              false
-                              ExportMap
-                          command
-                              "Repository bundle"
-                              "Download editor and simulator design work for version-controlled import"
-                              false
-                              ExportDesignBundle ]
-                    menu
-                        "Edit"
-                        [ command "Undo" "Undo last editor command" state.UndoHistory.IsEmpty (InvokeTacticalCommand "editor.history.undo")
-                          command "Redo" "Redo last editor command" state.RedoHistory.IsEmpty (InvokeTacticalCommand "editor.history.redo-shift-z")
-                          command "Copy" "Copy selected units" state.SelectedUnits.IsEmpty (InvokeTacticalCommand "editor.selection.copy")
-                          command "Paste" "Paste copied units" state.Clipboard.IsNone (InvokeTacticalCommand "editor.selection.paste")
-                          command "Duplicate" "Duplicate selected units" state.SelectedUnits.IsEmpty (InvokeTacticalCommand "editor.selection.duplicate")
-                          command "Delete" "Delete selected objects" (state.SelectedUnits.IsEmpty && state.SelectedRegion.IsNone) (InvokeTacticalCommand "editor.selection.delete")
-                          command "Select all" "Select all objects in the active domain" false (InvokeTacticalCommand "editor.selection.all") ]
-                    menu
-                        "View"
-                        [ command "Fit map" "Fit the complete map" false (EditorWorkspaceChanged FitEditorBoard)
-                          command "Actual size" "Reset map camera to one hundred percent" false (EditorWorkspaceChanged ResetEditorCamera)
-                          command "Frame selection" "Frame selected map objects" state.SelectedUnits.IsEmpty (EditorWorkspaceChanged FrameEditorSelection)
-                          command "Toggle command panel" "Show or hide the active command panel" false (InvokeTacticalCommand "editor.panel.toggle")
-                          command
-                              (if view.InspectorCollapsed then "Show inspector" else "Hide inspector")
-                              "Show or hide the selected-object inspector"
-                              false
-                              (InvokeTacticalCommand "editor.inspector.toggle") ]
-                    menu
-                        "Map"
-                        [ command "Terrain tools" "Show terrain command panel" false (InvokeTacticalCommand "editor.domain.terrain")
-                          command "Unit tools" "Show unit command panel" false (InvokeTacticalCommand "editor.domain.units")
-                          command "Edge tools" "Show edge command panel" false (InvokeTacticalCommand "editor.domain.edges")
-                          command "Zone tools" "Show zone command panel" false (InvokeTacticalCommand "editor.domain.zones")
-                          command "Map properties" "Show map document command panel" false (InvokeTacticalCommand "editor.domain.document")
-                          command
-                              "Simulate revision"
-                              "Validate and send this revision to Simulator"
-                              false
-                              (InvokeTacticalCommand "editor.scene.create-simulator-handoff") ]
-                ]
-            ]
-            Html.div [
-                prop.className "editor-quick-toolbar"
-                prop.role.toolbar
-                prop.ariaLabel "Map editor quick access"
-                prop.children [
-                    command "New" "Create a new empty map" false (EditorChanged RequestNewMap)
-                    importMapControl "Open"
-                    command "Save" "Export the current map document" false ExportMap
-                    Html.span [ prop.className "toolbar-separator"; prop.ariaHidden true ]
-                    command "Undo" "Undo last editor command" state.UndoHistory.IsEmpty (InvokeTacticalCommand "editor.history.undo")
-                    command "Redo" "Redo last editor command" state.RedoHistory.IsEmpty (InvokeTacticalCommand "editor.history.redo-shift-z")
-                    Html.span [ prop.className "toolbar-separator"; prop.ariaHidden true ]
-                    command "Select" "Activate selection tool" false (InvokeTacticalCommand "editor.mode.select")
-                    command "Pencil" "Activate terrain pencil" false (InvokeTacticalCommand "editor.tool.terrain.pencil")
-                    command "Units" "Toggle unit command panel" false (InvokeTacticalCommand "editor.domain.units")
-                    command "Fit" "Fit the complete map" false (InvokeTacticalCommand "scene.camera.fit")
-                    command
-                        "−"
-                        "Zoom out around workspace center"
-                        false
-                        (InvokeTacticalCommand "scene.camera.zoom-out")
-                    command
-                        "+"
-                        "Zoom in around workspace center"
-                        false
-                        (InvokeTacticalCommand "scene.camera.zoom-in")
-                    command
-                        "Simulate"
-                        "Validate and send this revision to Simulator"
-                        false
-                        (InvokeTacticalCommand "editor.scene.create-simulator-handoff")
-                ]
-            ]
-        ]
-    ]
 
 let private simulatorDesktopChrome
     (editor: MapEditorState)
@@ -8928,13 +7483,6 @@ let private persistentSceneSvg
             [ yield!
                   scene.Selection.SelectedPrimitiveIds
                   |> Array.map ScenePrimitiveId.value
-                  |> Array.filter (fun primitiveId ->
-                      not (
-                          primitiveId.StartsWith(
-                              "unit:",
-                              StringComparison.Ordinal
-                          )
-                      ))
               match scene.Selection.FocusedUnit with
               | Some unitId -> yield "unit:" + string unitId
               | None -> () ]
@@ -8947,6 +7495,17 @@ let private persistentSceneSvg
             |> Array.tryFind (fun layer -> layer.Kind = kind))
         |> Option.map _.Visible
         |> Option.defaultValue true
+    let editorLayerVisible domain =
+        model.Workspace <> EditorWorkspace
+        || MapEditor.layerState domain model.Editor <> HiddenLayer
+    let editorLayerOpacityValue domain =
+        if
+            model.Workspace = EditorWorkspace
+            && MapEditor.layerState domain model.Editor = DimmedLayer
+        then 0.28
+        else 1.0
+    let editorLayerDisplayValue domain sharedKind =
+        if layerVisible sharedKind && editorLayerVisible domain then "inline" else "none"
     let owner =
         projection
         |> Option.map (fun scene -> string scene.Owner)
@@ -8965,6 +7524,20 @@ let private persistentSceneSvg
             dispatch (InvokeTacticalCommand commandId)
     let selected primitiveId =
         Set.contains (ScenePrimitiveId.value primitiveId) selectedPrimitiveIds
+    let editorSelectionAt screenX screenY action =
+        MapEditorWorkspace.tryHitCell
+            model.Editor.Map.Width
+            model.Editor.Map.Height
+            model.EditorView.Camera
+            screenX
+            screenY
+        |> Option.iter (fun hit ->
+            { CellColumn = hit.Column; CellRow = hit.Row }
+            |> action
+            |> EditorChanged
+            |> dispatch)
+    let editorTerrainAt screenX screenY action =
+        editorSelectionAt screenX screenY action
 
     Svg.svg [
         svg.id "persistent-tactical-svg"
@@ -8995,6 +7568,8 @@ let private persistentSceneSvg
             "Persistent shared tactical SVG work surface for " + owner
         )
         svg.tabIndex 0
+        svg.onContextMenu (fun event ->
+            if model.Workspace = EditorWorkspace then event.preventDefault ())
         svg.onKeyDown (fun event ->
             let controlOrMeta = event.ctrlKey || event.metaKey
             if
@@ -9019,6 +7594,129 @@ let private persistentSceneSvg
         svg.onKeyUp (fun event ->
             event.stopPropagation ()
             dispatch (KeyReleased event.key))
+        svg.onWheel (fun event ->
+            if model.Workspace = EditorWorkspace then
+                event.preventDefault ()
+                let x, y =
+                    editorScreenPoint
+                        model.EditorView
+                        event.currentTarget
+                        event.clientX
+                        event.clientY
+                let factor = if event.deltaY < 0.0 then 1.12 else 1.0 / 1.12
+                dispatch (EditorWorkspaceChanged(ZoomEditorAt(x, y, factor))))
+        svg.onPointerDown (fun event ->
+            if model.Workspace = EditorWorkspace then
+                let kind = editorPointerKind event.pointerType
+                let terrainToolActive =
+                    match model.Editor.Tool with
+                    | Terrain _ -> true
+                    | _ -> false
+                let requestsPan =
+                    (kind = TouchPointer
+                     && (not terrainToolActive
+                         || not model.EditorView.CapturedPointers.IsEmpty))
+                    || event.button = 1
+                    || event.button = 2
+                    || editorPanHeld model
+                let requestsSelection =
+                    model.Editor.Tool = Select
+                    && kind <> TouchPointer
+                    && event.button = 0
+                    && not requestsPan
+                let movementUnit =
+                    if requestsSelection then
+                        match Int32.TryParse(pointerEditorUnitId event) with
+                        | true, unitId -> Some unitId
+                        | _ -> None
+                    else None
+                let requestsTerrain =
+                    match model.Editor.Tool with
+                    | Terrain _ -> event.button = 0 && not requestsPan
+                    | _ -> false
+                if requestsPan || requestsSelection || requestsTerrain then
+                    event.preventDefault ()
+                    capturePointer event.currentTarget (int event.pointerId)
+                    let x, y =
+                        editorScreenPoint model.EditorView event.currentTarget event.clientX event.clientY
+                    dispatch (
+                        EditorWorkspaceChanged(
+                            StartEditorPointer
+                                { Id = int32 event.pointerId
+                                  Kind = kind
+                                  X = x
+                                  Y = y
+                                  RequestsPan = requestsPan }
+                        )
+                    )
+                    match movementUnit with
+                    | Some unitId ->
+                        if not (Set.contains unitId model.Editor.SelectedUnits) then
+                            dispatch (EditorChanged(SelectEditorUnit(Some unitId)))
+                        editorSelectionAt x y BeginUnitMove
+                    | None when requestsSelection ->
+                        editorSelectionAt x y BeginEditorBoxSelection
+                    | None when requestsTerrain ->
+                        editorTerrainAt x y BeginTerrainGesture
+                    | _ when requestsPan && kind = TouchPointer && terrainToolActive ->
+                        dispatch (EditorChanged CancelEditorGesture)
+                    | _ -> ())
+        svg.onPointerMove (fun event ->
+            if
+                model.Workspace = EditorWorkspace
+                && Map.containsKey (int32 event.pointerId) model.EditorView.CapturedPointers
+            then
+                event.preventDefault ()
+                let x, y =
+                    editorScreenPoint model.EditorView event.currentTarget event.clientX event.clientY
+                let previous =
+                    Map.find (int32 event.pointerId) model.EditorView.CapturedPointers
+                dispatch (EditorWorkspaceChanged(MoveEditorPointer { previous with X = x; Y = y }))
+                if model.Editor.Tool = Select && not previous.RequestsPan then
+                    match model.Editor.Gesture with
+                    | UnitMoveGesture _ -> editorSelectionAt x y ExtendUnitMove
+                    | _ -> editorSelectionAt x y ExtendEditorBoxSelection
+                else
+                    match model.Editor.Tool with
+                    | Terrain _ when not previous.RequestsPan ->
+                        editorTerrainAt x y ExtendTerrainGesture
+                    | _ -> ()
+            elif model.Workspace = EditorWorkspace then
+                match model.Editor.Tool with
+                | Place _ ->
+                    let x, y =
+                        editorScreenPoint model.EditorView event.currentTarget event.clientX event.clientY
+                    editorSelectionAt x y PreviewUnitPlacement
+                | _ -> ())
+        svg.onPointerUp (fun event ->
+            if
+                model.Workspace = EditorWorkspace
+                && Map.containsKey (int32 event.pointerId) model.EditorView.CapturedPointers
+            then
+                let previous =
+                    Map.find (int32 event.pointerId) model.EditorView.CapturedPointers
+                let x, y =
+                    editorScreenPoint model.EditorView event.currentTarget event.clientX event.clientY
+                releasePointer event.currentTarget (int event.pointerId)
+                dispatch (EditorWorkspaceChanged(EndEditorPointer(int32 event.pointerId)))
+                if model.Editor.Tool = Select && not previous.RequestsPan then
+                    match model.Editor.Gesture with
+                    | UnitMoveGesture _ -> editorSelectionAt x y ExtendUnitMove
+                    | _ -> editorSelectionAt x y ExtendEditorBoxSelection
+                    dispatch (EditorChanged CommitEditorGesture)
+                else
+                    match model.Editor.Tool with
+                    | Terrain _ when not previous.RequestsPan ->
+                        editorTerrainAt x y ExtendTerrainGesture
+                        dispatch (EditorChanged CommitEditorGesture)
+                    | _ -> ())
+        svg.onLostPointerCapture (fun event ->
+            if model.Workspace = EditorWorkspace then
+                dispatch (EditorWorkspaceChanged(LoseEditorPointerCapture(int32 event.pointerId)))
+                match model.Editor.Tool with
+                | Select
+                | Terrain _ -> dispatch (EditorChanged CancelEditorGesture)
+                | _ -> ())
         svg.viewBox (0, 0, max 1 (int boardWidth), max 1 (int boardHeight))
         svg.children [
             Svg.title "Persistent tactical battlefield"
@@ -9038,10 +7736,59 @@ let private persistentSceneSvg
                 )
                 svg.children [
                     Svg.g [
+                        svg.id "persistent-editor-background"
+                        svg.custom ("data-editor-layer", "background")
+                        svg.custom ("pointer-events", "none")
+                        svg.custom ("aria-hidden", "true")
+                        svg.children [
+                            if model.Workspace = EditorWorkspace then
+                                match model.EditorView.Background with
+                                | Some background ->
+                                    let x, y, width, height =
+                                        MapEditorWorkspace.backgroundRenderBox
+                                            model.Editor.Map.Width
+                                            model.Editor.Map.Height
+                                            background
+                                    match background.Crop with
+                                    | Some crop ->
+                                        Svg.svg [
+                                            svg.custom ("data-layer", "local-raster-background")
+                                            svg.custom ("x", string x)
+                                            svg.custom ("y", string y)
+                                            svg.custom ("width", string width)
+                                            svg.custom ("height", string height)
+                                            svg.custom ("viewBox", string crop.Left + " " + string crop.Top + " " + string crop.Width + " " + string crop.Height)
+                                            svg.custom ("overflow", "hidden")
+                                            svg.custom ("opacity", string background.Opacity)
+                                            svg.children [
+                                                Svg.image [
+                                                    svg.custom ("href", background.DataUrl)
+                                                    svg.custom ("width", string background.PixelWidth)
+                                                    svg.custom ("height", string background.PixelHeight)
+                                                    svg.custom ("preserveAspectRatio", "none")
+                                                ]
+                                            ]
+                                        ]
+                                    | None ->
+                                        Svg.image [
+                                            svg.custom ("data-layer", "local-raster-background")
+                                            svg.custom ("href", background.DataUrl)
+                                            svg.custom ("x", string x)
+                                            svg.custom ("y", string y)
+                                            svg.custom ("width", string width)
+                                            svg.custom ("height", string height)
+                                            svg.custom ("opacity", string background.Opacity)
+                                            svg.custom ("preserveAspectRatio", if background.Fit = FillAndCrop then "xMidYMid slice" else "none")
+                                        ]
+                                | None -> ()
+                        ]
+                    ]
+                    Svg.g [
                         svg.id "persistent-layer-terrain"
                         svg.custom ("data-scene-layer", "terrain")
                         svg.custom ("data-layer-visible", string (layerVisible "terrain"))
-                        svg.custom ("display", if layerVisible "terrain" then "inline" else "none")
+                        svg.custom ("display", editorLayerDisplayValue TerrainDomain "terrain")
+                        svg.custom ("opacity", string (editorLayerOpacityValue TerrainDomain))
                         svg.children [
                             match projection with
                             | Some scene ->
@@ -9060,6 +7807,7 @@ let private persistentSceneSvg
                                             "data-primitive-id",
                                             ScenePrimitiveId.value terrain.PrimitiveId
                                         )
+                                        svg.custom ("data-terrain", terrain.Kind)
                                         svg.custom ("data-command-available", string available)
                                         svg.x (float terrain.Column * cellSize)
                                         svg.y (float terrain.Row * cellSize)
@@ -9081,6 +7829,48 @@ let private persistentSceneSvg
                                             svg.onClick (fun _ -> invoke commandId)
                                         | _ -> svg.custom ("aria-hidden", "true")
                                     ]
+                                    match terrain.Kind with
+                                    | "rough" ->
+                                        Svg.line [
+                                            svg.key (ScenePrimitiveId.value terrain.PrimitiveId + ":hatch")
+                                            svg.custom ("data-terrain-pattern", "diagonal-hatch")
+                                            svg.x1 (float terrain.Column * cellSize + 8.0)
+                                            svg.y1 (float (terrain.Row + 1) * cellSize - 8.0)
+                                            svg.x2 (float (terrain.Column + 1) * cellSize - 8.0)
+                                            svg.y2 (float terrain.Row * cellSize + 8.0)
+                                            svg.stroke "#9bb0a5"
+                                            svg.strokeWidth 3
+                                            svg.custom ("pointer-events", "none")
+                                        ]
+                                    | "blocked" ->
+                                        for index, first, last in
+                                            [ 0, 9.0, cellSize - 9.0
+                                              1, cellSize - 9.0, 9.0 ] do
+                                            Svg.line [
+                                                svg.key (ScenePrimitiveId.value terrain.PrimitiveId + ":cross:" + string index)
+                                                svg.custom ("data-terrain-pattern", "cross-hatch")
+                                                svg.x1 (float terrain.Column * cellSize + first)
+                                                svg.y1 (float terrain.Row * cellSize + 9.0)
+                                                svg.x2 (float terrain.Column * cellSize + last)
+                                                svg.y2 (float (terrain.Row + 1) * cellSize - 9.0)
+                                                svg.stroke "#ff6b6b"
+                                                svg.strokeWidth 3
+                                                svg.custom ("pointer-events", "none")
+                                            ]
+                                    | "objective" ->
+                                        Svg.rect [
+                                            svg.key (ScenePrimitiveId.value terrain.PrimitiveId + ":ring")
+                                            svg.custom ("data-terrain-pattern", "inset-ring")
+                                            svg.x (float terrain.Column * cellSize + 7.0)
+                                            svg.y (float terrain.Row * cellSize + 7.0)
+                                            svg.width (cellSize - 14.0)
+                                            svg.height (cellSize - 14.0)
+                                            svg.fill "none"
+                                            svg.stroke "#ffd166"
+                                            svg.strokeWidth 3
+                                            svg.custom ("pointer-events", "none")
+                                        ]
+                                    | _ -> ()
                             | None -> ()
                         ]
                     ]
@@ -9088,7 +7878,8 @@ let private persistentSceneSvg
                         svg.id "persistent-layer-edges"
                         svg.custom ("data-scene-layer", "edges")
                         svg.custom ("data-layer-visible", string (layerVisible "edges"))
-                        svg.custom ("display", if layerVisible "edges" then "inline" else "none")
+                        svg.custom ("display", editorLayerDisplayValue EdgeDomain "edges")
+                        svg.custom ("opacity", string (editorLayerOpacityValue EdgeDomain))
                         svg.custom ("pointer-events", "none")
                         svg.children [
                             match projection with
@@ -9097,12 +7888,26 @@ let private persistentSceneSvg
                                     Svg.line [
                                         svg.key edge.Id
                                         svg.custom ("data-primitive-id", "edge:" + edge.Id)
+                                        svg.custom ("data-edge-kind", edge.Kind)
+                                        svg.custom ("data-edge-state", if edge.State = "open" then "open" else "closed")
                                         svg.x1 (float edge.StartColumn * cellSize)
                                         svg.y1 (float edge.StartRow * cellSize)
                                         svg.x2 (float edge.EndColumn * cellSize)
                                         svg.y2 (float edge.EndRow * cellSize)
-                                        svg.stroke (if edge.State = "open" then "#8cc7a8" else "#d6ded9")
-                                        svg.strokeWidth (if edge.Kind = "wall" then 6 else 4)
+                                        svg.stroke (
+                                            match edge.Kind with
+                                            | "door" -> "#ffd166"
+                                            | "window" -> "#67b7ff"
+                                            | _ -> "#eef7f2"
+                                        )
+                                        svg.strokeWidth (if edge.Kind = "wall" then 6 else 5)
+                                        svg.custom (
+                                            "stroke-dasharray",
+                                            match edge.Kind, edge.State with
+                                            | "door", "open" -> "8 5"
+                                            | "window", _ -> "3 3"
+                                            | _ -> "none"
+                                        )
                                     ]
                             | None -> ()
                         ]
@@ -9141,7 +7946,8 @@ let private persistentSceneSvg
                         svg.id "persistent-layer-units"
                         svg.custom ("data-scene-layer", "units")
                         svg.custom ("data-layer-visible", string (layerVisible "units"))
-                        svg.custom ("display", if layerVisible "units" then "inline" else "none")
+                        svg.custom ("display", editorLayerDisplayValue UnitDomain "units")
+                        svg.custom ("opacity", string (editorLayerOpacityValue UnitDomain))
                         svg.children [
                             match projection with
                             | Some scene ->
@@ -9157,18 +7963,32 @@ let private persistentSceneSvg
                                         svg.key (ScenePrimitiveId.value unit.PrimitiveId)
                                         svg.custom ("data-primitive-id", ScenePrimitiveId.value unit.PrimitiveId)
                                         svg.custom ("data-unit-id", string visual.Id)
+                                        svg.custom ("data-unit-class", UnitClassId.value visual.ClassId)
+                                        svg.custom ("data-unit-footprint", string (CellExtent.value visual.FootprintWidth) + "x" + string (CellExtent.value visual.FootprintDepth))
                                         svg.custom ("data-command-available", string available)
                                         svg.tabIndex (if selected unit.PrimitiveId then 0 else -1)
                                         match command with
                                         | Some commandId when available ->
                                             svg.custom ("role", "button")
-                                            svg.custom ("aria-label", "Select tactical unit " + string visual.Id)
-                                            svg.onClick (fun _ -> invoke commandId)
+                                            svg.custom (
+                                                "aria-label",
+                                                "Select tactical unit " + string visual.Id
+                                                + ", " + UnitClassId.value visual.ClassId
+                                                + ", " + string (CellExtent.value visual.FootprintWidth)
+                                                + " by " + string (CellExtent.value visual.FootprintDepth)
+                                            )
+                                            svg.onClick (fun event ->
+                                                event.stopPropagation ()
+                                                if model.Workspace = EditorWorkspace && event.shiftKey then
+                                                    dispatch (EditorChanged(ToggleEditorUnitSelection visual.Id))
+                                                else invoke commandId)
                                             svg.onKeyDown (fun event ->
                                                 if event.key = "Enter" || event.key = " " then
                                                     event.preventDefault ()
                                                     event.stopPropagation ()
-                                                    invoke commandId)
+                                                    if model.Workspace = EditorWorkspace && event.shiftKey then
+                                                        dispatch (EditorChanged(ToggleEditorUnitSelection visual.Id))
+                                                    else invoke commandId)
                                         | _ -> svg.custom ("aria-hidden", "true")
                                         svg.children [
                                             Svg.rect [
@@ -9189,17 +8009,25 @@ let private persistentSceneSvg
                                                 )
                                                 svg.strokeWidth (if selected unit.PrimitiveId then 5 else 3)
                                             ]
+                                            Svg.g [
+                                                svg.custom ("data-unit-glyph", UnitClassId.value visual.ClassId)
+                                                svg.custom ("pointer-events", "none")
+                                                svg.children [
+                                                    glyphView
+                                                        ReplayPalettes.accessibleDefault
+                                                        (float visual.AnchorColumn * cellSize + width / 2.0)
+                                                        (float visual.AnchorRow * cellSize + depth / 2.0)
+                                                        (max 1.0 ((min width depth - 16.0) / 24.0))
+                                                        visual.ClassId
+                                                ]
+                                            ]
                                             Svg.text [
-                                                svg.x (float visual.AnchorColumn * cellSize + width / 2.0)
-                                                svg.y (float visual.AnchorRow * cellSize + depth / 2.0 + 6.0)
-                                                svg.custom ("text-anchor", "middle")
+                                                svg.x (float visual.AnchorColumn * cellSize + width - 9.0)
+                                                svg.y (float visual.AnchorRow * cellSize + depth - 9.0)
+                                                svg.custom ("text-anchor", "end")
                                                 svg.fill "#eef7f2"
-                                                svg.fontSize 16
-                                                svg.text (
-                                                    match sceneDisclosureText visual.ShortLabel with
-                                                    | "" -> string visual.Id
-                                                    | label -> label
-                                                )
+                                                svg.fontSize 13
+                                                svg.text (string visual.Id)
                                             ]
                                         ]
                                     ]
@@ -9209,6 +8037,8 @@ let private persistentSceneSvg
                     Svg.g [
                         svg.id "persistent-layer-selection"
                         svg.custom ("data-scene-layer", "selection")
+                        svg.custom ("display", if editorLayerVisible UnitDomain then "inline" else "none")
+                        svg.custom ("opacity", string (editorLayerOpacityValue UnitDomain))
                         svg.custom ("pointer-events", "none")
                         svg.children [
                             match projection with
@@ -9235,7 +8065,8 @@ let private persistentSceneSvg
                         svg.id "persistent-layer-annotations"
                         svg.custom ("data-scene-layer", "annotations")
                         svg.custom ("data-layer-visible", string (layerVisible "annotations"))
-                        svg.custom ("display", if layerVisible "annotations" then "inline" else "none")
+                        svg.custom ("display", editorLayerDisplayValue RegionDomain "annotations")
+                        svg.custom ("opacity", string (editorLayerOpacityValue RegionDomain))
                         svg.custom ("pointer-events", "none")
                         svg.children [
                             match projection with
@@ -9261,6 +8092,244 @@ let private persistentSceneSvg
                             | None -> ()
                         ]
                     ]
+                    if model.Workspace = EditorWorkspace then
+                        let state = model.Editor
+                        Svg.g [
+                            svg.id "persistent-editor-migrated-layers"
+                            svg.custom ("data-editor-renderer", "persistent-svg-v1")
+                            svg.children [
+                                Svg.g [
+                                    svg.custom ("data-editor-layer", "guides")
+                                    svg.custom ("display", editorLayerDisplay DocumentDomain state)
+                                    svg.custom ("opacity", editorLayerOpacity DocumentDomain state)
+                                    svg.custom ("pointer-events", "none")
+                                    svg.children [
+                                        for column in 0 .. int state.Map.Width do
+                                            Svg.line [
+                                                svg.x1 (float column * cellSize)
+                                                svg.y1 0
+                                                svg.x2 (float column * cellSize)
+                                                svg.y2 boardHeight
+                                                svg.stroke "#52675d"
+                                                svg.strokeWidth 1
+                                            ]
+                                        for row in 0 .. int state.Map.Height do
+                                            Svg.line [
+                                                svg.x1 0
+                                                svg.y1 (float row * cellSize)
+                                                svg.x2 boardWidth
+                                                svg.y2 (float row * cellSize)
+                                                svg.stroke "#52675d"
+                                                svg.strokeWidth 1
+                                            ]
+                                    ]
+                                ]
+                                Svg.g [
+                                    svg.custom ("data-editor-layer", "regions")
+                                    svg.custom ("display", editorLayerDisplay RegionDomain state)
+                                    svg.custom ("opacity", editorLayerOpacity RegionDomain state)
+                                    svg.children [
+                                        for _, region in state.Map.Regions |> Map.toList do
+                                            let isSelected = state.SelectedRegion = Some region.Id
+                                            let color =
+                                                match region.Purpose with
+                                                | ObjectiveRegion -> "#ffd166"
+                                                | DeploymentZone Blue -> "#67b7ff"
+                                                | DeploymentZone Red -> "#e384ff"
+                                                | DeploymentZone NeutralSide -> "#c9d7d0"
+                                            match region.Geometry with
+                                            | RegionRectangle(column, row, width, height) ->
+                                                Svg.rect [
+                                                    svg.key ("editor-region:" + string region.Id)
+                                                    svg.custom ("data-primitive-id", "region:" + string region.Id)
+                                                    svg.custom ("data-region-id", string region.Id)
+                                                    svg.custom ("data-region-purpose", MapEditor.regionPurposeLabel region.Purpose)
+                                                    svg.custom ("data-selected", string isSelected)
+                                                    svg.custom ("role", "button")
+                                                    svg.custom ("aria-label", "Select region " + string region.Id + ", " + MapEditor.regionPurposeLabel region.Purpose)
+                                                    svg.tabIndex (if isSelected then 0 else -1)
+                                                    svg.x (float column * cellSize)
+                                                    svg.y (float row * cellSize)
+                                                    svg.width (float width * cellSize)
+                                                    svg.height (float height * cellSize)
+                                                    svg.fill color
+                                                    svg.fillOpacity 0.18
+                                                    svg.stroke (if isSelected then "#ffffff" else color)
+                                                    svg.strokeWidth (if isSelected then 5 else 3)
+                                                    svg.onClick (fun event ->
+                                                        event.stopPropagation ()
+                                                        dispatch (EditorChanged(SelectEditorRegion(Some region.Id))))
+                                                    svg.onKeyDown (fun event ->
+                                                        match event.key with
+                                                        | "Enter"
+                                                        | " " ->
+                                                            event.preventDefault ()
+                                                            event.stopPropagation ()
+                                                            dispatch (EditorChanged(SelectEditorRegion(Some region.Id)))
+                                                        | "Escape" ->
+                                                            event.preventDefault ()
+                                                            event.stopPropagation ()
+                                                            dispatch (EditorChanged(SelectEditorRegion None))
+                                                        | _ -> ())
+                                                ]
+                                            | RegionPolygon vertices ->
+                                                Svg.polygon [
+                                                    svg.key ("editor-region:" + string region.Id)
+                                                    svg.custom ("data-primitive-id", "region:" + string region.Id)
+                                                    svg.custom ("data-region-id", string region.Id)
+                                                    svg.custom ("data-region-purpose", MapEditor.regionPurposeLabel region.Purpose)
+                                                    svg.custom ("data-selected", string isSelected)
+                                                    svg.custom ("role", "button")
+                                                    svg.custom ("aria-label", "Select region " + string region.Id + ", " + MapEditor.regionPurposeLabel region.Purpose)
+                                                    svg.tabIndex (if isSelected then 0 else -1)
+                                                    svg.points (
+                                                        vertices
+                                                        |> Array.map (fun vertex -> string (float vertex.CellColumn * cellSize) + "," + string (float vertex.CellRow * cellSize))
+                                                        |> String.concat " "
+                                                    )
+                                                    svg.fill color
+                                                    svg.fillOpacity 0.18
+                                                    svg.stroke (if isSelected then "#ffffff" else color)
+                                                    svg.strokeWidth (if isSelected then 5 else 3)
+                                                    svg.onClick (fun event ->
+                                                        event.stopPropagation ()
+                                                        dispatch (EditorChanged(SelectEditorRegion(Some region.Id))))
+                                                    svg.onKeyDown (fun event ->
+                                                        match event.key with
+                                                        | "Enter"
+                                                        | " " ->
+                                                            event.preventDefault ()
+                                                            event.stopPropagation ()
+                                                            dispatch (EditorChanged(SelectEditorRegion(Some region.Id)))
+                                                        | "Escape" ->
+                                                            event.preventDefault ()
+                                                            event.stopPropagation ()
+                                                            dispatch (EditorChanged(SelectEditorRegion None))
+                                                        | _ -> ())
+                                                ]
+                                    ]
+                                ]
+                                match MapEditor.terrainPreview state with
+                                | Some(terrain, addresses, isValid) ->
+                                    Svg.g [
+                                        svg.custom ("data-editor-layer", "terrain-preview")
+                                        svg.custom ("display", editorLayerDisplay TerrainDomain state)
+                                        svg.custom ("opacity", editorLayerOpacity TerrainDomain state)
+                                        svg.custom ("data-preview-valid", string isValid)
+                                        svg.custom ("pointer-events", "none")
+                                        svg.children [
+                                            for address in addresses do
+                                                Svg.rect [
+                                                    svg.custom ("data-preview-terrain", MapEditor.terrainLabel terrain)
+                                                    svg.x (float address.CellColumn * cellSize + 3.0)
+                                                    svg.y (float address.CellRow * cellSize + 3.0)
+                                                    svg.width (cellSize - 6.0)
+                                                    svg.height (cellSize - 6.0)
+                                                    svg.fill "none"
+                                                    svg.stroke (if isValid then "#ffd166" else "#ff6b6b")
+                                                    svg.strokeWidth 4
+                                                    svg.custom ("stroke-dasharray", if isValid then "8 4" else "3 3")
+                                                ]
+                                        ]
+                                    ]
+                                | None -> ()
+                                match MapEditor.unitPreview state with
+                                | Some(units, isValid) ->
+                                    Svg.g [
+                                        svg.custom ("data-editor-layer", "placement-preview")
+                                        svg.custom ("display", editorLayerDisplay UnitDomain state)
+                                        svg.custom ("opacity", editorLayerOpacity UnitDomain state)
+                                        svg.custom ("data-preview-valid", string isValid)
+                                        svg.custom ("pointer-events", "none")
+                                        svg.children [
+                                            for unit in units do
+                                                let size = float unit.Size * cellSize
+                                                Svg.rect [
+                                                    svg.custom ("data-preview-unit", unit.ClassId)
+                                                    svg.x (float unit.Column * cellSize + 3.0)
+                                                    svg.y (float unit.Row * cellSize + 3.0)
+                                                    svg.width (size - 6.0)
+                                                    svg.height (size - 6.0)
+                                                    svg.fill "none"
+                                                    svg.stroke (if isValid then "#ffd166" else "#ff6b6b")
+                                                    svg.strokeWidth 4
+                                                    svg.custom ("stroke-dasharray", if isValid then "8 4" else "3 3")
+                                                ]
+                                        ]
+                                    ]
+                                | None -> ()
+                                match state.Gesture with
+                                | EdgePolylineGesture(kind, segments) ->
+                                    Svg.g [
+                                        svg.custom ("data-editor-layer", "edge-preview")
+                                        svg.custom ("display", editorLayerDisplay EdgeDomain state)
+                                        svg.custom ("opacity", editorLayerOpacity EdgeDomain state)
+                                        svg.custom ("pointer-events", "none")
+                                        svg.children [
+                                            for column, row, direction in segments do
+                                                let x1, y1, x2, y2 =
+                                                    match direction with
+                                                    | EastEdge ->
+                                                        let x = float (column + 1) * cellSize
+                                                        x, float row * cellSize, x, float (row + 1) * cellSize
+                                                    | SouthEdge ->
+                                                        let y = float (row + 1) * cellSize
+                                                        float column * cellSize, y, float (column + 1) * cellSize, y
+                                                Svg.line [
+                                                    svg.custom ("data-edge-preview", string kind)
+                                                    svg.x1 x1
+                                                    svg.y1 y1
+                                                    svg.x2 x2
+                                                    svg.y2 y2
+                                                    svg.stroke "#ffd166"
+                                                    svg.strokeWidth 7
+                                                    svg.custom ("stroke-dasharray", "7 4")
+                                                ]
+                                        ]
+                                    ]
+                                | BoxSelectionGesture(anchor, current) ->
+                                    Svg.rect [
+                                        svg.custom ("data-editor-layer", "selection-gesture")
+                                        svg.custom ("display", editorLayerDisplay UnitDomain state)
+                                        svg.custom ("opacity", editorLayerOpacity UnitDomain state)
+                                        svg.custom ("data-editor-gesture", "box-selection")
+                                        svg.x (float (min anchor.CellColumn current.CellColumn) * cellSize)
+                                        svg.y (float (min anchor.CellRow current.CellRow) * cellSize)
+                                        svg.width (float (abs (current.CellColumn - anchor.CellColumn) + 1) * cellSize)
+                                        svg.height (float (abs (current.CellRow - anchor.CellRow) + 1) * cellSize)
+                                        svg.fill "none"
+                                        svg.stroke "#ffd166"
+                                        svg.strokeWidth 2
+                                        svg.custom ("stroke-dasharray", "6 4")
+                                    ]
+                                | _ -> ()
+                                Svg.rect [
+                                    svg.custom ("data-editor-layer", "cursor-guide")
+                                    svg.custom ("data-editor-cursor", if state.Tool = Select then "selection" else "authoring")
+                                    let cursor = if state.Tool = Select then state.KeyboardCursor.Cell else state.TerrainCursor
+                                    svg.x (float cursor.CellColumn * cellSize + 5.0)
+                                    svg.y (float cursor.CellRow * cellSize + 5.0)
+                                    svg.width (cellSize - 10.0)
+                                    svg.height (cellSize - 10.0)
+                                    svg.fill "none"
+                                    svg.stroke "#ffd166"
+                                    svg.strokeWidth 2
+                                    svg.custom ("stroke-dasharray", "5 3")
+                                ]
+                                match state.ActiveIssue with
+                                | Some index when index >= 0 && index < state.Issues.Length ->
+                                    let issue = state.Issues[index]
+                                    Svg.text [
+                                        svg.custom ("data-editor-layer", "validation-overlay")
+                                        svg.x 18
+                                        svg.y 31
+                                        svg.fill "#ffb4a2"
+                                        svg.fontSize 15
+                                        svg.text (issue.Code + " · " + issue.Message)
+                                    ]
+                                | _ -> ()
+                            ]
+                        ]
                 ]
             ]
         ]
@@ -9432,6 +8501,118 @@ let private tacticalLayoutToolbar model dispatch =
         ]
     ]
 
+let private editorLayerPanel (state: MapEditorState) dispatch =
+    Html.div [
+        prop.id "editor-layer-controls"
+        prop.tabIndex 0
+        prop.role.group
+        prop.ariaLabel "Editing layer states"
+        prop.children [
+            for domain in
+                [ TerrainDomain
+                  EdgeDomain
+                  UnitDomain
+                  RegionDomain
+                  DocumentDomain ] do
+                Html.fieldSet [
+                    Html.legend (string domain)
+                    for value, label in
+                        [ VisibleLayer, "Visible"
+                          DimmedLayer, "Dimmed"
+                          HiddenLayer, "Hidden"
+                          LockedLayer, "Locked" ] do
+                        Html.button [
+                            prop.type'.button
+                            prop.text label
+                            prop.ariaPressed (MapEditor.layerState domain state = value)
+                            prop.onClick (fun _ ->
+                                dispatch (EditorChanged(SetEditorLayerState(domain, value))))
+                        ]
+                ]
+        ]
+    ]
+
+let private editorValidationPanel (state: MapEditorState) dispatch =
+    Html.section [
+        prop.className "editor-issues-panel"
+        prop.ariaLabel "Map validation issues"
+        prop.children [
+            Html.h4 ("Issues · " + string state.Issues.Length)
+            button "Previous" "Previous validation issue" (Array.isEmpty state.Issues) (fun _ ->
+                dispatch (EditorChanged SelectPreviousIssue))
+            button "Next" "Next validation issue" (Array.isEmpty state.Issues) (fun _ ->
+                dispatch (EditorChanged SelectNextIssue))
+            match state.ActiveIssue with
+            | Some index when index >= 0 && index < state.Issues.Length ->
+                let issue = state.Issues[index]
+                Html.p [
+                    prop.role.status
+                    prop.ariaLive.polite
+                    prop.text (string (index + 1) + " of " + string state.Issues.Length + " · " + issue.Code + " · " + issue.Message)
+                ]
+            | _ -> Html.p "No validation issues."
+        ]
+    ]
+
+let private editorOutlinerPanel (state: MapEditorState) dispatch =
+    Html.div [
+        prop.ariaLabel "Editor object outliner"
+        prop.children [
+            Html.h4 ("Units · " + string state.Map.Units.Count)
+            for _, unit in state.Map.Units |> Map.toList do
+                Html.button [
+                    prop.type'.button
+                    prop.ariaPressed (Set.contains unit.Id state.SelectedUnits)
+                    prop.text (unit.ClassId + " " + string unit.Id + " · " + string unit.Column + "," + string unit.Row)
+                    prop.onClick (fun _ -> dispatch (EditorChanged(SelectEditorUnit(Some unit.Id))))
+                ]
+            Html.h4 ("Regions · " + string state.Map.Regions.Count)
+            for _, region in state.Map.Regions |> Map.toList do
+                Html.button [
+                    prop.type'.button
+                    prop.ariaPressed (state.SelectedRegion = Some region.Id)
+                    prop.text ("Region " + string region.Id + " · " + MapEditor.regionPurposeLabel region.Purpose)
+                    prop.onClick (fun _ -> dispatch (EditorChanged(SelectEditorRegion(Some region.Id))))
+                ]
+        ]
+    ]
+
+let private tacticalPanelBody panelId model dispatch =
+    if model.Workspace = EditorWorkspace then
+        match panelId with
+        | "roster" -> editorOutlinerPanel model.Editor dispatch
+        | "tools" ->
+            let activePanel =
+                match model.EditorToolPanel with
+                | DocumentTools -> TerrainTools
+                | panel -> panel
+            editorToolbar
+                model.Editor
+                model.EditorView
+                activePanel
+                true
+                dispatch
+        | "layers" -> editorLayerPanel model.Editor dispatch
+        | "selection" -> editorUnitPanel model.Editor dispatch
+        | "validation" -> editorValidationPanel model.Editor dispatch
+        | "document" ->
+            editorToolbar
+                model.Editor
+                model.EditorView
+                DocumentTools
+                true
+                dispatch
+        | _ ->
+            Html.p [
+                prop.className "tactical-layout-panel-placeholder"
+                prop.text "No Editor capability is assigned to this panel."
+            ]
+    else
+        Html.p [
+            prop.className "tactical-layout-panel-placeholder"
+            prop.text "Panel host reserved for the active modality migration."
+        ]
+
 let private tacticalSidebar side model dispatch =
     let sideName = if side = Left then "left" else "right"
     let layout = model.TacticalLayout
@@ -9525,8 +8706,8 @@ let private tacticalSidebar side model dispatch =
                             if not placement.Collapsed then
                                 Html.div [
                                     prop.id ("layout-panel-" + panel.Id + "-body")
-                                    prop.className "tactical-layout-panel-placeholder"
-                                    prop.text "Panel host reserved for capability migration."
+                                    prop.className "tactical-layout-panel-body"
+                                    prop.children [ tacticalPanelBody panel.Id model dispatch ]
                                 ]
                         ]
                     ]
@@ -9813,11 +8994,6 @@ let view model dispatch =
                 tacticalShell model dispatch (Html.div [
                     prop.className "editor-workspace"
                     prop.children [
-                        editorDesktopChrome
-                            model.Editor
-                            model.EditorView
-                            model.Simulator
-                            dispatch
                         editorDestructiveConfirmation
                             model.Editor
                             dispatch
@@ -9878,32 +9054,13 @@ let view model dispatch =
                             ]
                         | None -> Html.none
                         Html.div [
-                            prop.className "editor-owner-controls"
-                            prop.ariaLabel "Editor non-workscreen controls"
+                            prop.className "editor-owner-status"
+                            prop.ariaLabel "Editor authoritative status"
                             prop.children [
-                                editorToolbar
-                                    model.Editor
-                                    model.EditorView
-                                    model.EditorToolPanel
-                                    model.EditorToolPanelVisible
-                                    dispatch
-                                if not model.EditorView.InspectorCollapsed then
-                                    Html.aside [
-                                        prop.className "editor-inspector"
-                                        prop.ariaLabel "Map editor inspector"
-                                        prop.children [
-                                            button
-                                                "Hide inspector"
-                                                "Toggle selected-object inspector"
-                                                false
-                                                (fun _ ->
-                                                    dispatch (
-                                                        EditorWorkspaceChanged
-                                                            ToggleEditorInspector
-                                                    ))
-                                            editorUnitPanel model.Editor dispatch
-                                        ]
-                                    ]
+                                Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.TerrainAnnouncement ]
+                                Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.UnitAnnouncement ]
+                                Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.EdgeAnnouncement ]
+                                Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.RegionAnnouncement ]
                                 modalInputStrip
                                     projection
                                     model.InputHelpExpanded

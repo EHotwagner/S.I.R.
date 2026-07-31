@@ -14,26 +14,30 @@ last-updated: 2026-07-30
 > **Corrective implementation status (2026-07-31):** the tactical application
 > now has the versioned Field Focus shell and layout system described by the
 > [persistent-workspace design report](2026-07-31-0840-vscode-style-persistent-tactical-workspace-design-report.md).
-> Its compact toolbar, configurable placeholder sidebars, responsive drawers,
+> Its compact toolbar, configurable sidebars, responsive drawers,
 > and independently visible/collapsible bottom-panel profile surround the
 > existing battlefield paths. Invalid or future persisted layout profiles fail
-> closed to canonical Field Focus with an announced diagnostic. Actual
-> tool-panel migration remains in later sequential milestones. The canonical
+> closed to canonical Field Focus with an announced diagnostic. Editor tools,
+> layers, selection inspector, validation, and document state now occupy real
+> registered panels; later milestones migrate the other modalities. The canonical
 > workscreen is now one retained, keyboard-focusable SVG with stable camera,
 > terrain, edge, route, unit, selection, and annotation layers. Exact SVG and
 > layer references survive modality, panel, timeline, resize, overlay, and
 > playback updates. The labelled compatibility disclosure contains only
 > non-workscreen, registry-routed migration guidance; alternate modality
-> battlefield and grid roots are not mounted. Existing Editor, Plan,
-> Simulator, and Review control panels remain reachable beside the shell while
-> later milestones move them into final sidebar placements. A shared,
+> battlefield and grid roots are not mounted. Existing Plan, Simulator, and
+> Review control panels remain reachable beside the shell while later
+> milestones move them into final sidebar placements. A shared,
 > presentation-only scene projection now gives Editor, Plan, Simulate, and
 > Review stable terrain/unit/route/annotation/layer identities while preserving
 > complete visible semantic selection. A shell-owned semantic unit identity is
 > retained only when visible in the target projection, while each owner keeps
 > its separate authoritative selection. Review accepts only an opaque validated
 > replay owner; relabelled perspective data with hidden entities is rejected.
-> The projection is ready for the later renderer migration.
+> Editor background, regions, guides, previews, selection gestures, validation,
+> pointer handling, and camera interaction now use the retained SVG; the old
+> Editor battlefield/object-grid renderer and CSS were removed after parity
+> qualification. The projection remains ready for later modality migrations.
 
 Editor, Plan, Simulate, and Review are modalities of one tactical workspace.
 Use the four pressed-state buttons or their effective bindings to change tools
