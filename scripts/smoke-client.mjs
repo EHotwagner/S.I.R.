@@ -38,7 +38,7 @@ const reviewProjection = (tick = 0) => ({
   Units: [1, 2, 3, 4].map((Id, index) => ({
     Id,
     Side: Id < 3 ? "Blue" : "Red",
-    Column: index * 2,
+    Column: index * 2 + (Id === 2 ? tick * 2 : 0),
     Row: index,
     Health: 12,
     HealthMaximum: 12,
@@ -66,7 +66,7 @@ const reviewProjection = (tick = 0) => ({
   ],
   Checkpoints: [
     { Tick: 0, StateHash: "000000000000", EventHash: "000000000000" },
-    { Tick: 2, StateHash: "222222222222", EventHash: "222222222222" },
+    { Tick: 4, StateHash: "444444444444", EventHash: "444444444444" },
   ],
   PerspectiveHash: undefined,
 });
@@ -262,12 +262,29 @@ class SmokeWorker {
                   SourceName: "m3-review.sirr",
                   SourceIdentity: "m3-review",
                   EngineIdentity: "010203040506",
-                  FinalTick: 2,
+                  FinalTick: 4,
                   Kind: 0,
                 },
                 { tag: 0 },
                 reviewProjection(0),
               ],
+            },
+          }),
+        }),
+      );
+      return;
+    }
+    if (message.Request?.tag === 1) {
+      const [currentTick, tickCount, finalTick] = message.Request.fields;
+      const target = Math.min(finalTick, currentTick + tickCount);
+      queueMicrotask(() =>
+        this.onmessage?.({
+          data: structuredClone({
+            ProtocolVersion: 3,
+            Operation: message.Operation,
+            Response: {
+              tag: 2,
+              fields: [target, reviewProjection(target)],
             },
           }),
         }),
@@ -533,6 +550,7 @@ assertSelection("non-default Editor selection", 2);
 // authoritative Editor owner when returning.
 modalityButtons.get("Review").click();
 await window.happyDOM.waitUntilComplete();
+await ensurePanelExpanded("tools");
 if (
   viewport.getAttribute("data-active-modality") !== "Review" ||
   worksurface.getAttribute("data-scene-owner") !== "Unavailable"
@@ -831,6 +849,16 @@ await new Promise((resolveWait) => setTimeout(resolveWait, 20));
 await window.happyDOM.waitUntilComplete();
 assertModality("Review", "accepted review sample");
 assertSingleWorksurface("accepted review sample");
+for (const panelId of [
+  "roster",
+  "layers",
+  "selection",
+  "validation",
+  "document",
+  "diagnostics",
+]) {
+  await ensurePanelExpanded(panelId);
+}
 const reviewUnit = worksurface.querySelector(
   '#persistent-layer-units [data-unit-id="2"][data-command-available="true"]',
 );
@@ -845,10 +873,19 @@ assertSelection("accepted review sample", 2);
 if (
   !shell.querySelector('[aria-label="Replay source"]') ||
   !shell.querySelector('[aria-label="Replay controls"]') ||
-  !shell.querySelector('[aria-label="Replay inspector"]') ||
-  !shell.querySelector('[aria-label="Replay verification status"]')
+  !shell.querySelector('[aria-label="Review disclosed roster"]') ||
+  !shell.querySelector('[aria-label="Review projection layers"]') ||
+  !shell.querySelector('[aria-label="Review event inspection"]') ||
+  !shell.querySelector('[aria-label="Review source and verification identity"]') ||
+  !shell.querySelector('[aria-label="Review worker status"]') ||
+  !shell.querySelector('[aria-label="Replay verification status"]') ||
+  shell.querySelectorAll('[aria-label="Replay source"]').length !== 1 ||
+  shell.querySelectorAll('[aria-label="Replay controls"]').length !== 1 ||
+  shell.querySelectorAll('[aria-label="Review event inspection"]').length !== 1 ||
+  shell.querySelector(".dashboard") ||
+  shell.querySelector(".battlefield-panel")
 ) {
-  throw new Error("Review source, transport, verification, or inspector capability was dropped.");
+  throw new Error("Review registered-panel ownership is incomplete, duplicated, or retained the legacy layout.");
 }
 const replayControls = shell.querySelector('[aria-label="Replay controls"]');
 if (
@@ -857,6 +894,9 @@ if (
   !worksurface
     .querySelector("#persistent-layer-annotations")
     ?.textContent.includes("unit 1 attacks unit 3") ||
+  !worksurface
+    .querySelector("#persistent-layer-annotations")
+    ?.textContent.includes("Verification · m3-review · 010203040506") ||
   replayControls?.querySelectorAll(
     '[aria-label^="Seek to checkpoint at tick"]',
   ).length !== 2 ||
@@ -877,6 +917,69 @@ if (
 }
 assertSingleWorksurface("accepted replay step");
 assertSelection("accepted replay step", 2);
+const currentReviewUnit = () =>
+  worksurface.querySelector('#persistent-layer-units [data-unit-id="2"]');
+const currentReviewControls = () =>
+  shell.querySelector('[aria-label="Replay controls"]');
+if (
+  Number(currentReviewUnit()?.getAttribute("data-presentation-column")) !== 4 ||
+  Number(worksurface.getAttribute("data-presentation-alpha")) !== 1
+) {
+  throw new Error("Exact replay Step did not present the committed tick-one unit position.");
+}
+const advanceCountBeforePlay = workerMessages.filter(
+  (message) => message.Request?.tag === 1,
+).length;
+buttonByText(currentReviewControls(), "Play")?.click();
+await waitFor("Review worker-driven interpolated playback", () => {
+  const alpha = Number(worksurface.getAttribute("data-presentation-alpha"));
+  const column = Number(
+    currentReviewUnit()?.getAttribute("data-presentation-column"),
+  );
+  return (
+    worksurface.getAttribute("data-scene-tick") === "2" &&
+    alpha > 0 &&
+    alpha < 1 &&
+    column > 4 &&
+    column < 6
+  );
+});
+assertSingleWorksurface("intermediate Review playback presentation");
+assertCamera("intermediate Review playback presentation");
+assertSelection("intermediate Review playback presentation", 2);
+await waitFor("Review playback convergence on committed frame", () =>
+  worksurface.getAttribute("data-scene-tick") === "2" &&
+  Number(worksurface.getAttribute("data-presentation-alpha")) === 1 &&
+  Number(currentReviewUnit()?.getAttribute("data-presentation-column")) === 6,
+);
+buttonByText(currentReviewControls(), "Pause")?.click();
+await window.happyDOM.waitUntilComplete();
+const advanceCountAfterPause = workerMessages.filter(
+  (message) => message.Request?.tag === 1,
+).length;
+const pausedReviewSnapshot = JSON.stringify({
+  tick: worksurface.getAttribute("data-scene-tick"),
+  alpha: worksurface.getAttribute("data-presentation-alpha"),
+  column: currentReviewUnit()?.getAttribute("data-presentation-column"),
+});
+await new Promise((resolveWait) => setTimeout(resolveWait, 140));
+await window.happyDOM.waitUntilComplete();
+if (
+  advanceCountAfterPause <= advanceCountBeforePlay ||
+  workerMessages.filter((message) => message.Request?.tag === 1).length !==
+    advanceCountAfterPause ||
+  JSON.stringify({
+    tick: worksurface.getAttribute("data-scene-tick"),
+    alpha: worksurface.getAttribute("data-presentation-alpha"),
+    column: currentReviewUnit()?.getAttribute("data-presentation-column"),
+  }) !== pausedReviewSnapshot ||
+  !buttonByText(currentReviewControls(), "Play")
+) {
+  throw new Error("Review Pause did not hold the converged committed frame stable.");
+}
+assertSingleWorksurface("paused converged Review playback");
+assertCamera("paused converged Review playback");
+assertSelection("paused converged Review playback", 2);
 await clickModality("Editor", "return after accepted review sample");
 
 for (const source of Object.keys(ownerByModality)) {

@@ -116,93 +116,6 @@
   border-color: #8fae9e;
   background: linear-gradient(145deg, #1c2c26, #17211e);
 }
-#sir-replay-app .battlefield-panel {
-  margin: 1rem 0;
-  overflow: hidden;
-}
-#sir-replay-app .battlefield-heading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-#sir-replay-app .battlefield-heading .eyebrow { margin: 0 0 .35rem; }
-#sir-replay-app .battlefield-controls {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: .35rem;
-}
-#sir-replay-app .battlefield-controls button { min-width: 2.65rem; }
-#sir-replay-app .battlefield-layout {
-  display: grid;
-  grid-template-columns: minmax(20rem, 3fr) minmax(15rem, 1fr);
-  gap: 1rem;
-  align-items: start;
-}
-#sir-replay-app .battlefield-svg {
-  display: block;
-  width: 100%;
-  max-height: 46rem;
-  border: 2px solid #60776b;
-  border-radius: .4rem;
-  background: #0b100f;
-  touch-action: none;
-}
-#sir-replay-app .battlefield-svg [data-unit-id] { cursor: pointer; }
-#sir-replay-app .battlefield-svg [data-unit-id]:focus { outline: none; }
-#sir-replay-app .battlefield-sidecar {
-  min-width: 0;
-  padding: .8rem;
-  border: 1px solid #43584e;
-  border-radius: .4rem;
-  background: #111a17;
-}
-#sir-replay-app .battlefield-sidecar select { width: 100%; }
-#sir-replay-app .semantic-zoom {
-  color: #d8b36a;
-  font-family: ui-monospace, monospace;
-}
-#sir-replay-app .combat-indicator-legend {
-  display: grid;
-  gap: .35rem;
-  margin-block: .6rem;
-  padding-block: .55rem;
-  border-block: 1px solid #43584e;
-}
-#sir-replay-app .combat-indicator-legend h3 { margin: 0 0 .1rem; }
-#sir-replay-app .combat-indicator-legend > span {
-  display: flex;
-  align-items: center;
-  gap: .45rem;
-  font-size: .82rem;
-}
-#sir-replay-app .combat-swatch {
-  display: inline-block;
-  width: 2.2rem;
-  height: .35rem;
-  background: #ff6b6b;
-}
-#sir-replay-app .combat-swatch.is-projectile {
-  height: .2rem;
-  border-right: .45rem solid #f7f9fa;
-  background: #ffd166;
-}
-#sir-replay-app .combat-swatch.is-melee { transform: rotate(-8deg); }
-#sir-replay-app .combat-swatch.is-area {
-  width: 1rem;
-  height: 1rem;
-  border: .15rem dashed #53b7ff;
-  border-radius: 50%;
-  background: transparent;
-}
-#sir-replay-app .battlefield-legend {
-  border-block: 1px solid #43584e;
-  margin-block: 1rem;
-  padding-block: 1rem;
-}
-#sir-replay-app .battlefield-legend li { margin-bottom: .45rem; }
-#sir-replay-app .battlefield-inspector dd { overflow-wrap: anywhere; }
 #sir-replay-app .comparison-panel { margin-bottom: 1.5rem; }
 #sir-replay-app .comparison-warning {
   border: 2px solid #ffd166;
@@ -250,7 +163,6 @@
   padding-left: .65rem;
 }
 #sir-replay-app .timeline-lanes ul { margin-block: .3rem; padding-left: 1.25rem; }
-#sir-replay-app .battlefield-sidecar > label { display: block; margin-block: .55rem; }
 #sir-replay-app .scenario-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
@@ -1303,9 +1215,6 @@
   }
   #sir-replay-app .inspector-panel,
   #sir-replay-app .lab-results { grid-column: span 1; }
-  #sir-replay-app .battlefield-heading { display: block; }
-  #sir-replay-app .battlefield-controls { justify-content: flex-start; margin-bottom: 1rem; }
-  #sir-replay-app .battlefield-layout { grid-template-columns: 1fr; }
   #sir-replay-app .comparison-viewport { grid-template-columns: 1fr; }
   #sir-replay-app .editor-workspace { grid-template-columns: 1fr; }
   #sir-replay-app .editor-ribbon {

@@ -37,9 +37,17 @@ last-updated: 2026-07-30
 > layer references survive modality, panel, timeline, resize, overlay, and
 > playback updates. The labelled compatibility disclosure contains only
 > non-workscreen, registry-routed migration guidance; alternate modality
-> battlefield and grid roots are not mounted. Existing Review controls remain
-> reachable beside the shell while its later milestone moves them into final
-> sidebar placements. A shared,
+> battlefield and grid roots are not mounted. Review committed frames,
+> disclosed events, inspection selection, and verification identity now use
+> the shared layers. Registered panels uniquely own replay source/transport,
+> disclosed roster/layers, event inspection, verification metadata, and worker
+> status. The former replay battlefield renderer and dashboard layout have
+> been removed; see the
+> [M7 review migration evidence](persistent-tactical-workspace-m7-review-migration-evidence.md).
+> Review playback interpolates only presentation coordinates for the exact
+> semantic units shared by disclosure-compatible committed frames; committed
+> tick, revision, facts, verification, and evidence remain current-frame data.
+> A shared,
 > presentation-only scene projection now gives Editor, Plan, Simulate, and
 > Review stable terrain/unit/route/annotation/layer identities while preserving
 > complete visible semantic selection. A shell-owned semantic unit identity is

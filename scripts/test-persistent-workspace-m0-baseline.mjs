@@ -119,12 +119,10 @@ for (const token of inventory.planningStateTokens) {
   );
 }
 for (const token of [
-  "scene.FocusedUnit = Some unit.Id",
-  "BattlefieldChanged(FocusUnit(Some unit.Id))",
-  "BattlefieldChanged(FocusDirection(-1, 0))",
-  "BattlefieldChanged(FocusDirection(1, 0))",
-  "BattlefieldChanged(FocusDirection(0, -1))",
-  "BattlefieldChanged(FocusDirection(0, 1))",
+  "match scene.Selection.FocusedUnit with",
+  'yield "unit:" + string unitId',
+  "|> Option.bind _.Selection.FocusedUnit",
+  "reconcileTacticalSelectedUnit model.Workspace model",
   "state.FocusedIssue = Some index",
 ]) {
   requireText(
@@ -143,7 +141,6 @@ for (const token of [
   'svg.id "persistent-layer-routes"',
   'svg.id "persistent-layer-annotations"',
   "| SimulatorWorkspace ->",
-  "battlefieldView",
   "| ReplayWorkspace ->",
   "EditorView: EditorWorkspaceState",
   "Battlefield: BattlefieldViewState",
@@ -167,8 +164,10 @@ for (const token of [
   'prop.ariaLabel "Simulator runtime diagnostics"',
   'prop.ariaLabel "Simulator immutable revision state"',
   "planningPanelBody",
-  "sourcePanel shell dispatch",
-  "controls shell dispatch",
+  "reviewPanelBody",
+  "sourcePanel model dispatch",
+  "controls model dispatch",
+  "tacticalShell model dispatch Html.none",
   "inspector shell dispatch",
   '"scene.camera.zoom-out"',
   '"scene.camera.zoom-in"',
