@@ -11,12 +11,19 @@ last-updated: 2026-07-30
 description: Pre-unification ownership, lifecycle, DOM, and keyboard baseline for the four tactical workspaces.
 related:
   - docs/unified-tactical-workspace-roadmap.md
+  - docs/persistent-tactical-workspace-m0-baseline.md
 ---
 
 # Unified Tactical Workspace Baseline
 
 This baseline records the behavior protected while Editor, Planner, Simulator,
 and Replay become modalities of one mounted tactical workspace.
+
+This historical pre-unification baseline is supplemented by the
+[corrective persistent-workspace baseline](persistent-tactical-workspace-m0-baseline.md).
+The newer baseline inventories the current post-first-pass render branches and
+records that only the outer viewport—not the battlefield child or SVG—survives
+modality changes.
 
 | Concern | Authoritative owner | Projection or presentation owner |
 |---|---|---|

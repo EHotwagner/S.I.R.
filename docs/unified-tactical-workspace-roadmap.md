@@ -35,6 +35,19 @@ complete the corrective persistent-workscreen goal defined by the
 That report is the active successor for presentation architecture and release
 acceptance.
 
+### Superseded persistence claim
+
+The first pass's claims that the “battlefield stays mounted,” that it created
+“one mounted tactical shell,” and that browser evidence proved “mode switching
+without remount” apply only to `#tactical-battlefield-viewport`. They are
+superseded as workscreen-lifecycle evidence. The wrapper survives, but
+`editorBattlefield`, `planningBattlefield`, and `battlefieldView` replace its
+actual child. The active acceptance contract retains the SVG node itself and
+asserts strict reference equality across every modality and panel transition.
+
+The historical checkboxes below remain a record of the completed first pass;
+they must not be cited as satisfying the corrective SVG-root identity gate.
+
 The workspace has one time model:
 
 - **authored** commands occupy unit lanes over a bounded planning horizon;

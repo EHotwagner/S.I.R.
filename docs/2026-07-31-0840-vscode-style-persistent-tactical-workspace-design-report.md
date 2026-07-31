@@ -23,7 +23,7 @@ related:
 
 **Report timestamp:** 2026-07-31 08:40:09 CEST (UTC+02:00)
 
-**Status:** design accepted; implementation not started
+**Status:** design accepted; Milestone 0 corrective baseline complete
 
 ## Executive decision
 
@@ -375,14 +375,19 @@ present.
 
 ### Milestone 0 — Corrective baseline
 
-- [ ] Inventory every current Editor, Plan, Simulate, and Review battlefield
+- [x] Inventory every current Editor, Plan, Simulate, and Review battlefield
   element, panel, command, focus target, camera property, and selection path.
-- [ ] Add a failing browser characterization proving that the outer viewport
+- [x] Add a failing browser characterization proving that the outer viewport
   survives while its actual battlefield child changes.
-- [ ] Record current panel and responsive landmarks so migration cannot silently
+- [x] Record current panel and responsive landmarks so migration cannot silently
   drop capability.
-- [ ] Mark the wrapper-level persistence claim in the earlier roadmap as
+- [x] Mark the wrapper-level persistence claim in the earlier roadmap as
   superseded by SVG-root identity qualification.
+
+Milestone 0 evidence is recorded in the
+[corrective baseline](persistent-tactical-workspace-m0-baseline.md). Its
+production-browser characterization is intentionally opt-in and red while the
+known child-remount defect exists; accepted build and smoke gates remain green.
 
 ### Milestone 1 — Shell and layout contracts
 
