@@ -2,7 +2,10 @@ import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { auditPersistentWorkspaceBrowser } from "./lib/persistent-workspace-browser-audit.mjs";
+import {
+  assertPortableReviewMetrics,
+  auditPersistentWorkspaceBrowser,
+} from "./lib/persistent-workspace-browser-audit.mjs";
 
 const clientOutput = resolve(process.argv[2] ?? "artifacts/client");
 const html = await readFile(resolve(clientOutput, "index.html"), "utf8");
@@ -192,11 +195,12 @@ require(
 );
 require(reviewManifest.geometrySvgSha256 === hash(reviewGeometrySvg) && reviewManifest.pngSha256 === hash(reviewPng), "review asset hashes drifted");
 require(reviewPng.readUInt32BE(16) === 1440 && reviewPng.readUInt32BE(20) === 900, "actual Chromium screenshot is not 1440×900");
-require(
-  JSON.stringify(reviewManifest.fieldFocus) === JSON.stringify(liveBrowserAudit.wide) &&
-    JSON.stringify(reviewManifest.narrow400PercentEquivalent) === JSON.stringify(liveBrowserAudit.narrow),
-  "stored review metrics do not exactly match a fresh real-Chromium audit",
-);
+assertPortableReviewMetrics({
+  storedWide: reviewManifest.fieldFocus,
+  storedNarrow: reviewManifest.narrow400PercentEquivalent,
+  liveWide: liveBrowserAudit.wide,
+  liveNarrow: liveBrowserAudit.narrow,
+});
 require(
   reviewManifest.fieldFocus.rectangles.left.width === 208 &&
     reviewManifest.fieldFocus.rectangles.right.width === 224 &&
@@ -218,6 +222,7 @@ require(workspace.includes("M9 acceptance evidence"), "living workspace document
 require(roadmap.includes("Corrective acceptance is complete"), "living roadmap is not closed");
 
 for (const qualification of [
+  "scripts/test-persistent-workspace-browser-audit-portability.mjs",
   "scripts/test-persistent-workspace-m0-baseline.mjs",
   "scripts/test-map-editor-qualification.mjs",
   "scripts/test-planning-workspace-m5-qualification.mjs",

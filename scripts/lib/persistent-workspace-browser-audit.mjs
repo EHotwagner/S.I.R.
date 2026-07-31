@@ -35,6 +35,16 @@ const chromiumCommands = [
   "chrome.exe",
 ];
 
+const inheritedChromiumDbusAddresses = new Set([
+  "DBUS_SESSION_BUS_ADDRESS",
+  "DBUS_SYSTEM_BUS_ADDRESS",
+]);
+
+export const createChromiumChildEnvironment = (environment = process.env) =>
+  Object.fromEntries(
+    Object.entries(environment).filter(([name]) => !inheritedChromiumDbusAddresses.has(name)),
+  );
+
 const executable = async (candidate) => {
   try {
     const info = await stat(candidate);
@@ -316,12 +326,78 @@ const assertNarrow = (audit) => {
   }
 };
 
+const rectangleMeasurementNames = new Set(["x", "y", "width", "height", "right", "bottom"]);
+const rectangleMeasurementParents = new Set([
+  "rect",
+  "toolbarRect",
+  "workscreenRect",
+  "timelineRect",
+  "hostRect",
+]);
+const geometryEpsilon = (path) => {
+  // CDP can round CSS-pixel rectangles differently across Chromium/font runtimes.
+  // Only rectangle fields get a half-pixel allowance; the derived share gets 0.1%.
+  // Every other number, including viewport/document dimensions and counts, is exact.
+  const name = path.at(-1);
+  const parent = path.at(-2);
+  if (
+    rectangleMeasurementNames.has(name) &&
+    (rectangleMeasurementParents.has(parent) || path.at(-3) === "rectangles")
+  ) return 0.5;
+  if (name === "fieldFocusShare") return 0.001;
+  return null;
+};
+
+const comparePortableAuditValue = (stored, live, path = []) => {
+  const location = path.length > 0 ? path.join(".") : "<root>";
+  if (typeof stored === "number" && typeof live === "number") {
+    const epsilon = geometryEpsilon(path);
+    if (epsilon === null ? !Object.is(stored, live) : Math.abs(stored - live) > epsilon) {
+      throw new Error(`stored/live audit mismatch at ${location}: ${stored} !== ${live}`);
+    }
+    return;
+  }
+  if (Array.isArray(stored) || Array.isArray(live)) {
+    if (!Array.isArray(stored) || !Array.isArray(live) || stored.length !== live.length) {
+      throw new Error(`stored/live audit array mismatch at ${location}`);
+    }
+    for (let index = 0; index < stored.length; index += 1) {
+      comparePortableAuditValue(stored[index], live[index], [...path, String(index)]);
+    }
+    return;
+  }
+  if (stored !== null && live !== null && typeof stored === "object" && typeof live === "object") {
+    const storedKeys = Object.keys(stored);
+    const liveKeys = Object.keys(live);
+    if (JSON.stringify(storedKeys) !== JSON.stringify(liveKeys)) {
+      throw new Error(`stored/live audit object-key mismatch at ${location}`);
+    }
+    for (const key of storedKeys) comparePortableAuditValue(stored[key], live[key], [...path, key]);
+    return;
+  }
+  if (!Object.is(stored, live)) {
+    throw new Error(`stored/live audit mismatch at ${location}: ${JSON.stringify(stored)} !== ${JSON.stringify(live)}`);
+  }
+};
+
+export const assertPortableReviewMetrics = ({ storedWide, storedNarrow, liveWide, liveNarrow }) => {
+  assertWide(storedWide);
+  assertNarrow(storedNarrow);
+  assertWide(liveWide);
+  assertNarrow(liveNarrow);
+
+  comparePortableAuditValue(storedWide, liveWide, ["wide"]);
+  comparePortableAuditValue(storedNarrow, liveNarrow, ["narrow"]);
+};
+
 export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/client", screenshotPath } = {}) => {
   const chromiumExecutable = await discoverChromium();
   const { server, port } = await serve(clientRoot);
   const profile = await mkdtemp(join(tmpdir(), "sir-m9-chromium-"));
   const debugPort = await allocateLoopbackPort();
   const browserState = { exited: false, code: null, signal: null, error: null };
+  const chromiumEnvironment = createChromiumChildEnvironment();
+  const sanitizedDbusVariables = Object.keys(process.env).filter((name) => inheritedChromiumDbusAddresses.has(name));
   let browserStderr = "";
   const browser = spawn(chromiumExecutable, [
     "--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars",
@@ -329,7 +405,7 @@ export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/
     "--disable-background-networking", "--disable-default-apps", "--disable-extensions",
     "--force-device-scale-factor=1", "--remote-debugging-address=127.0.0.1",
     `--remote-debugging-port=${debugPort}`, `--user-data-dir=${profile}`,
-  ], { stdio: ["ignore", "ignore", "pipe"] });
+  ], { env: chromiumEnvironment, stdio: ["ignore", "ignore", "pipe"] });
   browser.stderr.on("data", (chunk) => {
     browserStderr = (browserStderr + chunk.toString("utf8")).slice(-16384);
   });
@@ -345,8 +421,11 @@ export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/
     const processText = browserState.error
       ? ` Spawn error: ${browserState.error.message}.`
       : ` Browser exited=${browserState.exited}, code=${String(browserState.code)}, signal=${String(browserState.signal)}.`;
+    const environmentText = sanitizedDbusVariables.length > 0
+      ? ` Sanitized inherited DBus variables: ${sanitizedDbusVariables.join(", ")}.`
+      : " No inherited DBus variables required sanitization.";
     const stderrText = browserStderr.trim() ? ` Chromium stderr (last 16384 bytes):\n${browserStderr.trim()}` : " Chromium stderr was empty.";
-    return new Error(`${message}${causeText}${processText}${stderrText}`);
+    return new Error(`${message}${causeText}${processText}${environmentText}${stderrText}`);
   };
   let cdp;
   try {
