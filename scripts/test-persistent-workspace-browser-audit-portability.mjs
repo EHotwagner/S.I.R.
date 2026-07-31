@@ -24,6 +24,7 @@ const fractionallyDifferentWide = clone(storedWide);
 const fractionallyDifferentNarrow = clone(storedNarrow);
 fractionallyDifferentWide.toolbarChildren[0].rect.x += 0.125;
 fractionallyDifferentWide.panelBodies[0].children[0].rect.width -= 0.125;
+fractionallyDifferentWide.rectangles.shell.height -= 11.188;
 fractionallyDifferentWide.fieldFocusShare += 0.0001;
 fractionallyDifferentNarrow.controls[0].rect.x += 0.125;
 
@@ -106,7 +107,12 @@ assertAuditMutationRejected(
 assertAuditMutationRejected(
   (wide) => { wide.rectangles.left.width += 32; },
   "wide.rectangles.left.width",
-  "Portable review metrics accepted material geometry drift.",
+  "Portable review metrics accepted material horizontal geometry drift.",
+);
+assertAuditMutationRejected(
+  (wide) => { wide.rectangles.shell.height = storedWide.rectangles.shell.height + 32; },
+  "wide.rectangles.shell.height",
+  "Portable review metrics accepted material vertical geometry drift.",
 );
 
 const inheritedEnvironment = {

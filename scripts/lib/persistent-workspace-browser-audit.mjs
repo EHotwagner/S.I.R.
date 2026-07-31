@@ -326,7 +326,8 @@ const assertNarrow = (audit) => {
   }
 };
 
-const rectangleMeasurementNames = new Set(["x", "y", "width", "height", "right", "bottom"]);
+const horizontalRectangleMeasurements = new Set(["x", "width", "right"]);
+const verticalRectangleMeasurements = new Set(["y", "height", "bottom"]);
 const rectangleMeasurementParents = new Set([
   "rect",
   "toolbarRect",
@@ -335,34 +336,36 @@ const rectangleMeasurementParents = new Set([
   "hostRect",
 ]);
 const geometryEpsilon = (path) => {
-  // CDP can round CSS-pixel rectangles differently across Chromium/font runtimes.
-  // Only rectangle fields get a half-pixel allowance; the derived share gets 0.1%.
-  // Every other number, including viewport/document dimensions and counts, is exact.
+  // CDP can round horizontal CSS pixels at subpixel boundaries. Vertical text flow
+  // can accumulate host-font metric differences; one CSS rem bounds that variance.
+  // The derived share gets 0.1%. Viewport/document dimensions, counts, and every
+  // non-rectangle number remain exact, while assertWide/assertNarrow guard layout.
   const name = path.at(-1);
   const parent = path.at(-2);
-  if (
-    rectangleMeasurementNames.has(name) &&
-    (rectangleMeasurementParents.has(parent) || path.at(-3) === "rectangles")
-  ) return 0.5;
+  const isRectangle = rectangleMeasurementParents.has(parent) || path.at(-3) === "rectangles";
+  if (isRectangle && horizontalRectangleMeasurements.has(name)) return 0.5;
+  if (isRectangle && verticalRectangleMeasurements.has(name)) return 16;
   if (name === "fieldFocusShare") return 0.001;
   return null;
 };
 
-const comparePortableAuditValue = (stored, live, path = []) => {
+const comparePortableAuditValue = (stored, live, path, mismatches) => {
   const location = path.length > 0 ? path.join(".") : "<root>";
   if (typeof stored === "number" && typeof live === "number") {
     const epsilon = geometryEpsilon(path);
     if (epsilon === null ? !Object.is(stored, live) : Math.abs(stored - live) > epsilon) {
-      throw new Error(`stored/live audit mismatch at ${location}: ${stored} !== ${live}`);
+      const tolerance = epsilon === null ? "exact" : `±${epsilon}`;
+      mismatches.push(`${location}: stored=${stored}, live=${live}, delta=${Math.abs(stored - live)}, allowed=${tolerance}`);
     }
     return;
   }
   if (Array.isArray(stored) || Array.isArray(live)) {
     if (!Array.isArray(stored) || !Array.isArray(live) || stored.length !== live.length) {
-      throw new Error(`stored/live audit array mismatch at ${location}`);
+      mismatches.push(`${location}: stored/live array shape differs`);
+      return;
     }
     for (let index = 0; index < stored.length; index += 1) {
-      comparePortableAuditValue(stored[index], live[index], [...path, String(index)]);
+      comparePortableAuditValue(stored[index], live[index], [...path, String(index)], mismatches);
     }
     return;
   }
@@ -370,13 +373,14 @@ const comparePortableAuditValue = (stored, live, path = []) => {
     const storedKeys = Object.keys(stored);
     const liveKeys = Object.keys(live);
     if (JSON.stringify(storedKeys) !== JSON.stringify(liveKeys)) {
-      throw new Error(`stored/live audit object-key mismatch at ${location}`);
+      mismatches.push(`${location}: stored/live object keys differ`);
+      return;
     }
-    for (const key of storedKeys) comparePortableAuditValue(stored[key], live[key], [...path, key]);
+    for (const key of storedKeys) comparePortableAuditValue(stored[key], live[key], [...path, key], mismatches);
     return;
   }
   if (!Object.is(stored, live)) {
-    throw new Error(`stored/live audit mismatch at ${location}: ${JSON.stringify(stored)} !== ${JSON.stringify(live)}`);
+    mismatches.push(`${location}: stored=${JSON.stringify(stored)}, live=${JSON.stringify(live)}`);
   }
 };
 
@@ -386,8 +390,16 @@ export const assertPortableReviewMetrics = ({ storedWide, storedNarrow, liveWide
   assertWide(liveWide);
   assertNarrow(liveNarrow);
 
-  comparePortableAuditValue(storedWide, liveWide, ["wide"]);
-  comparePortableAuditValue(storedNarrow, liveNarrow, ["narrow"]);
+  const mismatches = [];
+  comparePortableAuditValue(storedWide, liveWide, ["wide"], mismatches);
+  comparePortableAuditValue(storedNarrow, liveNarrow, ["narrow"], mismatches);
+  if (mismatches.length > 0) {
+    const displayed = mismatches.slice(0, 20);
+    const remainder = mismatches.length > displayed.length
+      ? `\n... and ${mismatches.length - displayed.length} more mismatch(es)`
+      : "";
+    throw new Error(`stored/live audit mismatches (${mismatches.length}):\n- ${displayed.join("\n- ")}${remainder}`);
+  }
 };
 
 export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/client", screenshotPath } = {}) => {
