@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title description"><title id="title">Measured production Field Focus geometry</title><desc id="description">Machine-readable companion to the actual Chromium full-shell screenshot. It is not a reconstructed interface.</desc><rect width="1440" height="900" fill="#101715"/><text x="32" y="48" fill="#ffd166" font-family="sans-serif" font-size="22">Measured production geometry companion</text><foreignObject x="32" y="72" width="1376" height="796"><pre xmlns="http://www.w3.org/1999/xhtml" style="color:#eef7f2;font:12px monospace;white-space:pre-wrap">{
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "devicePixelRatio": 1
+  },
+  "document": {
+    "clientWidth": 1440,
+    "scrollWidth": 1440,
+    "bodyScrollWidth": 1424,
+    "mountClientWidth": 1424,
+    "mountScrollWidth": 1424
+  },
+  "rectangles": {
+    "shell": {
+      "x": 14.391,
+      "y": 14.391,
+      "width": 1411.219,
+      "height": 996.172,
+      "right": 1425.609,
+      "bottom": 1010.563
+    },
+    "toolbar": {
+      "x": 14.391,
+      "y": 14.391,
+      "width": 1411.219,
+      "height": 61.563,
+      "right": 1425.609,
+      "bottom": 75.953
+    },
+    "frame": {
+      "x": 14.391,
+      "y": 83.953,
+      "width": 1411.219,
+      "height": 810.391,
+      "right": 1425.609,
+      "bottom": 894.344
+    },
+    "workscreen": {
+      "x": 228.781,
+      "y": 83.953,
+      "width": 966.438,
+      "height": 652,
+      "right": 1195.219,
+      "bottom": 735.953
+    },
+    "svg": {
+      "x": 229.781,
+      "y": 84.953,
+      "width": 964.438,
+      "height": 650,
+      "right": 1194.219,
+      "bottom": 734.953
+    },
+    "left": {
+      "x": 14.391,
+      "y": 83.953,
+      "width": 208,
+      "height": 652,
+      "right": 222.391,
+      "bottom": 735.953
+    },
+    "right": {
+      "x": 1201.609,
+      "y": 83.953,
+      "width": 224,
+      "height": 652,
+      "right": 1425.609,
+      "bottom": 735.953
+    },
+    "bottom": {
+      "x": 14.391,
+      "y": 742.344,
+      "width": 1411.219,
+      "height": 152,
+      "right": 1425.609,
+      "bottom": 894.344
+    },
+    "timeline": {
+      "x": 14.391,
+      "y": 747.141,
+      "width": 1411.219,
+      "height": 146.078,
+      "right": 1425.609,
+      "bottom": 893.219
+    }
+  },
+  "styles": {
+    "toolsPosition": "static",
+    "leftDisplay": "block",
+    "rightDisplay": "block",
+    "leftVisibility": "visible",
+    "rightVisibility": "visible"
+  },
+  "counts": {
+    "worksurfaceRoots": 1,
+    "applicationLandmarks": 1
+  },
+  "channels": [
+    {
+      "channel": "Authored",
+      "rect": {
+        "x": 19.391,
+        "y": 752.141,
+        "width": 68.797,
+        "height": 16.797,
+        "right": 88.188,
+        "bottom": 768.938
+      },
+      "text": "Authored"
+    },
+    {
+      "channel": "Predicted",
+      "rect": {
+        "x": 100.188,
+        "y": 752.141,
+        "width": 76,
+        "height": 16.797,
+        "right": 176.188,
+        "bottom": 768.938
+      },
+      "text": "Predicted"
+    },
+    {
+      "channel": "Accepted",
+      "rect": {
+        "x": 188.188,
+        "y": 752.141,
+        "width": 68.797,
+        "height": 16.797,
+        "right": 256.984,
+        "bottom": 768.938
+      },
+      "text": "Accepted"
+    },
+    {
+      "channel": "Committed",
+      "rect": {
+        "x": 268.984,
+        "y": 752.141,
+        "width": 76,
+        "height": 16.797,
+        "right": 344.984,
+        "bottom": 768.938
+      },
+      "text": "Committed"
+    }
+  ],
+  "toolbarChildren": [
+    {
+      "label": "Editor",
+      "rect": {
+        "x": 214.813,
+        "y": 23.172,
+        "width": 77.203,
+        "height": 44,
+        "right": 292.016,
+        "bottom": 67.172
+      }
+    },
+    {
+      "label": "Plan",
+      "rect": {
+        "x": 297.609,
+        "y": 23.172,
+        "width": 58,
+        "height": 44,
+        "right": 355.609,
+        "bottom": 67.172
+      }
+    },
+    {
+      "label": "Simulate",
+      "rect": {
+        "x": 361.203,
+        "y": 23.172,
+        "width": 96.406,
+        "height": 44,
+        "right": 457.609,
+        "bottom": 67.172
+      }
+    },
+    {
+      "label": "Review",
+      "rect": {
+        "x": 463.203,
+        "y": 23.172,
+        "width": 77.203,
+        "height": 44,
+        "right": 540.406,
+        "bottom": 67.172
+      }
+    },
+    {
+      "label": "Play or pause active tactical modality",
+      "rect": {
+        "x": 545.203,
+        "y": 23.172,
+        "width": 58,
+        "height": 44,
+        "right": 603.203,
+        "bottom": 67.172
+      }
+    },
+    {
+      "label": "Hide timeline panel",
+      "rect": {
+        "x": 608,
+        "y": 18.578,
+        "width": 96.406,
+        "height": 53.188,
+        "right": 704.406,
+        "bottom": 71.766
+      }
+    },
+    {
+      "label": "Collapse timeline",
+      "rect": {
+        "x": 707.594,
+        "y": 18.578,
+        "width": 178.969,
+        "height": 53.188,
+        "right": 886.563,
+        "bottom": 71.766
+      }
+    },
+    {
+      "label": "Reset layout",
+      "rect": {
+        "x": 889.75,
+        "y": 18.578,
+        "width": 132.094,
+        "height": 53.188,
+        "right": 1021.844,
+        "bottom": 71.766
+      }
+    },
+    {
+      "label": "Rules",
+      "rect": {
+        "x": 1026.641,
+        "y": 23.172,
+        "width": 67.609,
+        "height": 44,
+        "right": 1094.25,
+        "bottom": 67.172
+      }
+    },
+    {
+      "label": "Data",
+      "rect": {
+        "x": 1097.438,
+        "y": 23.172,
+        "width": 58,
+        "height": 44,
+        "right": 1155.438,
+        "bottom": 67.172
+      }
+    },
+    {
+      "label": "Samples",
+      "rect": {
+        "x": 1158.625,
+        "y": 23.172,
+        "width": 86.797,
+        "height": 44,
+        "right": 1245.422,
+        "bottom": 67.172
+      }
+    },
+    {
+      "label": "Panels",
+      "rect": {
+        "x": 1250.219,
+        "y": 23.172,
+        "width": 77.203,
+        "height": 44,
+        "right": 1327.422,
+        "bottom": 67.172
+      }
+    },
+    {
+      "label": "Show contextual tactical actions",
+      "rect": {
+        "x": 1332.219,
+        "y": 23.172,
+        "width": 86.797,
+        "height": 44,
+        "right": 1419.016,
+        "bottom": 67.172
+      }
+    }
+  ],
+  "tools": {
+    "rect": {
+      "x": 15.391,
+      "y": 514.953,
+      "width": 206,
+      "height": 764,
+      "right": 221.391,
+      "bottom": 1278.953
+    },
+    "hostRect": {
+      "x": 15.391,
+      "y": 514.953,
+      "width": 206,
+      "height": 764,
+      "right": 221.391,
+      "bottom": 1278.953
+    }
+  },
+  "panelBodies": [
+    {
+      "panelId": "roster",
+      "rect": {
+        "x": 15.391,
+        "y": 179,
+        "width": 206,
+        "height": 240.906,
+        "right": 221.391,
+        "bottom": 419.906
+      },
+      "children": [
+        {
+          "className": "",
+          "position": "static",
+          "rect": {
+            "x": 15.391,
+            "y": 179,
+            "width": 206,
+            "height": 240.906,
+            "right": 221.391,
+            "bottom": 419.906
+          }
+        }
+      ]
+    },
+    {
+      "panelId": "tools",
+      "rect": {
+        "x": 15.391,
+        "y": 514.953,
+        "width": 206,
+        "height": 764,
+        "right": 221.391,
+        "bottom": 1278.953
+      },
+      "children": [
+        {
+          "className": "panel editor-tools editor-tools-panel",
+          "position": "static",
+          "rect": {
+            "x": 15.391,
+            "y": 514.953,
+            "width": 206,
+            "height": 764,
+            "right": 221.391,
+            "bottom": 1278.953
+          }
+        }
+      ]
+    },
+    {
+      "panelId": "selection",
+      "rect": {
+        "x": 1202.609,
+        "y": 157.734,
+        "width": 222,
+        "height": 561,
+        "right": 1424.609,
+        "bottom": 718.734
+      },
+      "children": [
+        {
+          "className": "panel unit-editor-panel",
+          "position": "static",
+          "rect": {
+            "x": 1202.609,
+            "y": 157.734,
+            "width": 222,
+            "height": 561,
+            "right": 1424.609,
+            "bottom": 718.734
+          }
+        }
+      ]
+    }
+  ],
+  "overlaps": {
+    "toolbarFrame": false,
+    "leftWorkscreen": false,
+    "rightWorkscreen": false,
+    "bottomWorkscreen": false
+  },
+  "fieldFocusShare": 0.685
+}</pre></foreignObject></svg>

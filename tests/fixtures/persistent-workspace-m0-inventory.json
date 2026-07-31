@@ -120,7 +120,7 @@
   "renderAndControlTokens": [
     "prop.className \"planning-panel-content\"",
     "svg.id \"persistent-tactical-svg\"",
-    "prop.id \"tactical-battlefield-viewport\"",
+    "prop.id \"tactical-workscreen-region\"",
     "svg.custom (\"data-scene-owner\"",
     "prop.ariaLabel \"Review disclosed roster\"",
     "prop.ariaLabel \"Review projection layers\"",
@@ -155,8 +155,7 @@
   "responsiveTokens": [
     "#sir-replay-app .inspector-panel,",
     "#sir-replay-app .tactical-sidebar {",
-    "#sir-replay-app .editor-workspace { grid-template-columns: 1fr; }",
-    "#sir-replay-app .editor-ribbon {",
+    "#sir-replay-app .editor-tools-panel {",
     "#sir-replay-app .editor-document-strip { flex-wrap: wrap; }",
     "#sir-replay-app .editor-document-strip strong { flex-basis: 100%; }",
     "#sir-replay-app .editor-menu-bar { overflow-x: auto; }",

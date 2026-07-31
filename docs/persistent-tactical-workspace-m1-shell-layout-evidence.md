@@ -36,8 +36,9 @@ and does not claim SVG-root persistence; those remain later milestones.
 The registry has ten stable IDs. Field Focus defaults place Roster/Outliner,
 Tools, and Layers on the left; Selection, Validation, and Document/Revision on
 the right; and Rules, Data, Samples, and Diagnostics hidden. Sidebars are 208
-and 224 CSS pixels. The timeline is 152 CSS pixels, collapsed in Editor, and
-expanded in Plan, Simulate, and Review.
+and 224 CSS pixels. At this milestone the timeline was 152 CSS pixels and
+collapsed in Editor and expanded in Plan, Simulate, and Review; corrective M9
+acceptance later expanded the shallow timeline by default in every modality.
 
 Export is canonical JSON with deterministic side/order/ID sorting. Import uses
 a strict parser: missing or unknown object fields, duplicate JSON fields,

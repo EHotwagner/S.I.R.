@@ -255,6 +255,7 @@ node scripts/test-planning-workspace-m5-qualification.mjs
 node scripts/test-simulator-workspace-m6-qualification.mjs
 node scripts/test-review-workspace-m7-qualification.mjs
 node scripts/test-timeline-supporting-panels-m8-qualification.mjs
+node scripts/test-persistent-workspace-m9-acceptance.mjs
 worker_measurement=$(node scripts/measure-worker.mjs)
 
 printf 'Conformance passed: %d bytes agree across .NET and Fable/Node.\n' \

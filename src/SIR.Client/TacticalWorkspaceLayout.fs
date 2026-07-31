@@ -87,7 +87,7 @@ module TacticalWorkspaceLayout =
           BottomPanel =
             { Visible = true
               Height = 152
-              CollapsedInEditor = true
+              CollapsedInEditor = false
               CollapsedOutsideEditor = false } }
 
     let private normalize profile =

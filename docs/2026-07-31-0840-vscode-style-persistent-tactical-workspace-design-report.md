@@ -3,10 +3,10 @@ title: VS Code-Style Persistent Tactical Workspace Design Report
 category: Tools & Evidence
 categoryindex: 5
 index: 12
-status: proposed
-decision-status: accepted
+status: implemented
+decision-status: implemented
 document-type: timestamped-design-report
-version: "1.1"
+version: "1.2"
 created-at: 2026-07-31T08:40:09+02:00
 last-updated: 2026-07-31
 description: Corrective design and delivery roadmap for one persistent SVG workscreen with compact chrome, configurable sidebars, and modality-specific projections.
@@ -23,11 +23,11 @@ related:
 
 **Report timestamp:** 2026-07-31 08:40:09 CEST (UTC+02:00)
 
-**Status:** design accepted; Milestones 0–5 complete
+**Status:** implemented; Milestones 0–9 complete
 
 ## Executive decision
 
-S.I.R. will replace the present modality-specific battlefield and workspace
+S.I.R. replaced the modality-specific battlefield and workspace
 render paths with a VS Code-style application shell built around one persistent
 SVG workscreen. Editor, Plan, Simulate, and Review remain modalities, but they
 will no longer select different battlefield components or page-sized content
@@ -56,11 +56,12 @@ arrangements; they are not separate workspaces or modality-specific layouts.
 Implementation is not accepted until it achieves the Field Focus target rather
 than merely reproducing the current interface inside new shell markup.
 
-This decision corrects the presentation boundary accepted in the first unified
-tactical workspace implementation. The current code preserves
-`#tactical-battlefield-viewport`, but conditionally replaces its battlefield
-child and surrounds it with modality-specific workspace trees. That proves a
-persistent wrapper, not a persistent workscreen.
+This decision corrected the presentation boundary accepted in the first unified
+tactical workspace implementation. At the report timestamp, the code preserved
+`#tactical-battlefield-viewport`, but conditionally replaced its battlefield
+child and surrounded it with modality-specific workspace trees. That proved a
+persistent wrapper, not a persistent workscreen; Milestone 9 removed that
+superseded boundary.
 
 ## Context and problem
 
@@ -74,10 +75,10 @@ ownership:
 - the tactical projection owns modality, time cursor, and disclosed timeline
   channels without becoming a second authority.
 
-Those boundaries remain sound. The rendering implementation does not yet
-express them as one spatial workspace. `App.fs` currently branches from
-`WorkspaceMode` into separate Editor, Planning, Simulator, and Replay content.
-Within the retained battlefield wrapper it also selects among
+Those boundaries remain sound. Before this report was implemented, the
+rendering implementation did not yet express them as one spatial workspace.
+`App.fs` branched from `WorkspaceMode` into separate Editor, Planning,
+Simulator, and Replay content. Within the retained battlefield wrapper it also selected among
 `editorBattlefield`, `planningBattlefield`, and `battlefieldView`. Existing
 browser qualification checks the wrapper node by reference, so a test can pass
 while the actual SVG work surface is replaced.
@@ -235,8 +236,7 @@ The application provides **Reset layout**. The default layout is:
 - left: roster/outliner, tools, layers;
 - right: selection inspector, validation, document/revision state;
 - hidden until requested: Rules, Data, Samples, detailed diagnostics; and
-- bottom: timeline collapsed in Editor and expanded in Plan, Simulate, and
-  Review.
+- bottom: the shallow timeline expanded in Editor, Plan, Simulate, and Review.
 
 Hiding a panel removes its controls from tab order and command availability.
 Moving, collapsing, or hiding a panel must not clear battlefield selection,
@@ -251,8 +251,7 @@ work area beneath both sidebars and the workscreen.
 
 The panel:
 
-- is expanded by default in Plan, Simulate, and Review;
-- is available but collapsed by default in Editor;
+- is expanded at its shallow Field Focus height in every modality;
 - persists visibility and height with the layout profile;
 - does not remount the workscreen when resized or toggled;
 - preserves projection-only scrubbing; and
@@ -445,8 +444,8 @@ Milestone 3 renderer structure, compatibility boundary, registry-routed intent,
 spatial continuity, accessibility, and strict production DOM reference evidence
 are recorded in the
 [persistent SVG renderer evidence](persistent-tactical-workspace-m3-svg-renderer-evidence.md).
-The labelled compatibility disclosure contains only non-workscreen,
-registry-routed migration guidance. Existing non-workscreen Editor, Plan,
+At Milestone 3, the labelled compatibility disclosure contained only
+non-workscreen, registry-routed migration guidance. Existing non-workscreen Editor, Plan,
 Simulator, and Review controls remain mounted as companion panels so capability
 is not lost during sequential migration. Shared-camera and simulator-handoff
 surface intents use the command registry. No alternate modality battlefield,
@@ -530,16 +529,21 @@ identity, and legacy-page removal proof are recorded in the
 
 ### Milestone 9 — Legacy removal and acceptance
 
-- [ ] Delete superseded modality-specific battlefield functions, workspace
+- [x] Delete superseded modality-specific battlefield functions, workspace
   branches, CSS layouts, DOM landmarks, and wrapper-only lifecycle assertions.
-- [ ] Prove there is exactly one production renderer and one mounted SVG
+- [x] Prove there is exactly one production renderer and one mounted SVG
   workscreen path.
-- [ ] Complete visual and interaction review against the Field Focus mockup and
+- [x] Complete visual and interaction review against the Field Focus mockup and
   prove the workscreen remains dominant with both default sidebars open.
-- [ ] Run .NET/Fable parity, client conformance, production browser smoke,
+- [x] Run .NET/Fable parity, client conformance, production browser smoke,
   accessibility, documentation, review-image, and sequential FAKE gates.
-- [ ] Update living user and architecture documentation, record migration
+- [x] Update living user and architecture documentation, record migration
   evidence, and mark this report implemented.
+
+Source/bundle/DOM renderer uniqueness, complete legacy removal, all acceptance
+rows, actual-production Chromium Field Focus visual review, accessibility,
+documentation, parity, conformance, and sequential delivery gates are recorded
+in the [Persistent workspace M9 acceptance evidence](persistent-tactical-workspace-m9-acceptance-evidence.md).
 
 ## Acceptance evidence
 
@@ -576,7 +580,7 @@ for (const modality of ["Plan", "Simulate", "Review", "Editor"]) {
 }
 ```
 
-This assertion replaces the current weaker check against
+This assertion replaced the former weaker check against
 `#tactical-battlefield-viewport`.
 
 ## Consequences

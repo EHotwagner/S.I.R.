@@ -45,7 +45,7 @@ for (const required of [
   'prop.ariaLabel "Review event inspection"',
   'prop.ariaLabel "Review source and verification identity"',
   'prop.ariaLabel "Review worker status"',
-  "tacticalShell model dispatch Html.none",
+  "tacticalShell model dispatch transientContent",
   "activePresentedSceneProjection",
   "model.PreviousFrame",
   "TacticalSceneProjection.interpolateReviewPresentation",
