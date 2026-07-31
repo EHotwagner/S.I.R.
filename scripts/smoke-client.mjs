@@ -317,6 +317,15 @@ class SmokeWorker {
 }
 
 const window = new Window({ url: "https://sir.invalid/replay/" });
+let tacticalLayoutWrites = 0;
+const storagePrototype = Object.getPrototypeOf(window.localStorage);
+const originalStorageSetItem = storagePrototype.setItem;
+storagePrototype.setItem = function (key, value) {
+  if (key === "sir.tactical-layout.v1") tacticalLayoutWrites += 1;
+  return originalStorageSetItem.call(this, key, value);
+};
+window.Element.prototype.setPointerCapture ??= function () {};
+window.Element.prototype.releasePointerCapture ??= function () {};
 window.document.head.innerHTML = `<style>${styles}</style>`;
 window.document.body.innerHTML = '<div id="sir-replay-app"></div>';
 let confirmationCalls = 0;
@@ -333,6 +342,7 @@ Object.assign(globalThis, {
   Event: window.Event,
   KeyboardEvent: window.KeyboardEvent,
   MouseEvent: window.MouseEvent,
+  PointerEvent: window.PointerEvent,
   Worker: SmokeWorker,
 });
 
@@ -399,6 +409,10 @@ const assertSingleWorksurface = (operation) => {
     window.document.querySelectorAll("[data-work-surface-root]").length !== 1 ||
     window.document.querySelectorAll("svg[role='application']").length !== 1 ||
     window.document.querySelectorAll("[role='application']").length !== 1 ||
+    window.document.querySelector('[aria-label="Unified tactical timeline"]') !== timeline ||
+    !timeline.isConnected ||
+    window.document.querySelectorAll('[aria-label="Unified tactical timeline"]').length !== 1 ||
+    timeline.querySelectorAll('[aria-label="Authored, predicted, accepted, and committed timeline segments"]').length !== 1 ||
     legacyRootSelectors.some((selector) => window.document.querySelector(selector))
   ) {
     throw new Error(`Shared workscreen singleton contract failed during ${operation}.`);
@@ -1372,6 +1386,94 @@ if (!helpKey.defaultPrevented || !window.document.querySelector("#tactical-input
 }
 assertSingleWorksurface("context-help overlay");
 
+const timelineStateBeforeLayout = JSON.stringify({
+  cursor: timeline.getAttribute("data-time-cursor"),
+  committed: timeline.getAttribute("data-committed-through"),
+  segments: [...timeline.querySelectorAll("[data-segment-id]")].map((segment) => [
+    segment.getAttribute("data-segment-id"),
+    segment.getAttribute("data-time-channel"),
+  ]),
+});
+const resizeHandle = window.document.querySelector(
+  '#tactical-bottom-panel-resize[role="separator"]',
+);
+if (
+  !resizeHandle ||
+  resizeHandle.getAttribute("aria-valuemin") !== "96" ||
+  resizeHandle.getAttribute("aria-valuemax") !== "480"
+) {
+  throw new Error("The unified timeline bottom panel has no bounded accessible resize separator.");
+}
+const writesBeforePointerResize = tacticalLayoutWrites;
+resizeHandle.dispatchEvent(
+  new window.PointerEvent("pointerdown", {
+    bubbles: true,
+    cancelable: true,
+    pointerId: 71,
+    clientY: window.innerHeight - 220,
+  }),
+);
+await window.happyDOM.waitUntilComplete();
+for (const height of [220, 248, 276, 304]) {
+  resizeHandle.dispatchEvent(
+    new window.PointerEvent("pointermove", {
+      bubbles: true,
+      pointerId: 71,
+      clientY: window.innerHeight - height,
+    }),
+  );
+}
+resizeHandle.dispatchEvent(
+  new window.PointerEvent("pointerup", {
+    bubbles: true,
+    pointerId: 71,
+    clientY: window.innerHeight - 304,
+  }),
+);
+await window.happyDOM.waitUntilComplete();
+if (
+  resizeHandle.getAttribute("aria-valuenow") !== "304" ||
+  tacticalLayoutWrites !== writesBeforePointerResize + 1 ||
+  JSON.stringify({
+    cursor: timeline.getAttribute("data-time-cursor"),
+    committed: timeline.getAttribute("data-committed-through"),
+    segments: [...timeline.querySelectorAll("[data-segment-id]")].map((segment) => [
+      segment.getAttribute("data-segment-id"),
+      segment.getAttribute("data-time-channel"),
+    ]),
+  }) !== timelineStateBeforeLayout
+) {
+  throw new Error(
+    `Pointer timeline resize was not coalesced or changed unified timeline authority: height=${resizeHandle.getAttribute("aria-valuenow")}, writes=${tacticalLayoutWrites - writesBeforePointerResize}, timeline=${JSON.stringify({
+      cursor: timeline.getAttribute("data-time-cursor"),
+      committed: timeline.getAttribute("data-committed-through"),
+      segments: [...timeline.querySelectorAll("[data-segment-id]")].map((segment) => [
+        segment.getAttribute("data-segment-id"),
+        segment.getAttribute("data-time-channel"),
+      ]),
+    })}.`,
+  );
+}
+const writesBeforeKeyboardResize = tacticalLayoutWrites;
+resizeHandle.dispatchEvent(
+  new window.KeyboardEvent("keydown", {
+    key: "ArrowUp",
+    bubbles: true,
+    cancelable: true,
+  }),
+);
+await window.happyDOM.waitUntilComplete();
+if (
+  resizeHandle.getAttribute("aria-valuenow") !== "320" ||
+  tacticalLayoutWrites !== writesBeforeKeyboardResize + 1 ||
+  window.document.activeElement !== resizeHandle
+) {
+  throw new Error("Keyboard timeline resize did not persist once and restore separator focus.");
+}
+assertSingleWorksurface("pointer and keyboard timeline resize");
+assertCamera("pointer and keyboard timeline resize");
+assertSelection("pointer and keyboard timeline resize", 2);
+
 window.document.querySelector("#layout-panel-tools-collapse")?.click();
 await window.happyDOM.waitUntilComplete();
 const toolsPanel = window.document.querySelector('[data-panel-id="tools"]');
@@ -1403,27 +1505,86 @@ if (!workerMessages.some((message) => message.Kind === "sir-simulator-session"))
   throw new Error("Plan modality did not initialize through the real worker boundary.");
 }
 
-buttonByText(application, "Rules and data")?.click();
+buttonByText(application, "Rules")?.click();
 await window.happyDOM.waitUntilComplete();
+const rulesPanel = window.document.querySelector('[data-panel-id="rules"]');
 const scenarioCatalog = window.document.querySelector(
   '[aria-label="Design scenario catalog"]',
 );
 const scenarioButtons = scenarioCatalog?.querySelectorAll(
   'button[aria-label^="Simulate design scenario"]',
 );
+if (
+  !rulesPanel ||
+  window.document.activeElement !== rulesPanel.querySelector(".tactical-layout-panel-body") ||
+  viewport.getAttribute("data-active-modality") !== "Plan" ||
+  worksurface.getAttribute("data-scene-owner") !== "PlanningScene"
+) {
+  throw new Error("Rules did not open as a focused registered panel over the retained Plan scene.");
+}
+assertSingleWorksurface("open Rules supporting panel");
+assertCamera("open Rules supporting panel");
+assertSelection("open Rules supporting panel", 2);
+
+buttonByText(application, "Data")?.click();
+await window.happyDOM.waitUntilComplete();
 const rulesTables = window.document.querySelectorAll(
   '[aria-label="Rules data tables"] table',
 );
-if (scenarioButtons?.length !== 6 || rulesTables.length !== 7) {
+if (
+  scenarioButtons?.length !== 6 ||
+  rulesTables.length !== 7 ||
+  !window.document.querySelector('[data-panel-id="data"]') ||
+  window.document.querySelector(".dashboard") ||
+  window.document.querySelector(".samples-workspace")
+) {
   throw new Error(
-    `Rules workspace lost runnable scenarios or data tables: ${scenarioButtons?.length}/${rulesTables.length}.`,
+    `Registered Rules/Data panels lost content or retained a replacement page: ${scenarioButtons?.length}/${rulesTables.length}.`,
   );
 }
+assertSingleWorksurface("open Data supporting panel");
+assertCamera("open Data supporting panel");
+assertSelection("open Data supporting panel", 2);
 scenarioButtons[0].click();
 await window.happyDOM.waitUntilComplete();
 if (!workerMessages.some((message) => message.Request?.tag === 4)) {
-  throw new Error("Rules scenario execution did not cross the worker boundary.");
+  throw new Error("Rules panel scenario execution did not cross the worker boundary.");
 }
+const rulesNativeInput = rulesPanel.querySelector('input[type="number"]');
+const cursorBeforeNativeInput = timeline.getAttribute("data-time-cursor");
+const nativeRulesKey = new window.KeyboardEvent("keydown", {
+  key: "ArrowLeft",
+  bubbles: true,
+  cancelable: true,
+});
+rulesNativeInput?.dispatchEvent(nativeRulesKey);
+await window.happyDOM.waitUntilComplete();
+if (
+  !rulesNativeInput ||
+  nativeRulesKey.defaultPrevented ||
+  timeline.getAttribute("data-time-cursor") !== cursorBeforeNativeInput
+) {
+  throw new Error("Native Rules panel input leaked into tactical shortcuts.");
+}
+assertSingleWorksurface("Rules native input");
+assertCamera("Rules native input");
+assertSelection("Rules native input", 2);
+
+rulesNativeInput.focus();
+const hideRules = [...rulesPanel.querySelectorAll("button")].find(
+  (button) => button.getAttribute("aria-label") === "Hide Rules panel",
+);
+hideRules?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document.querySelector('[data-panel-id="rules"]') ||
+  window.document.activeElement !== window.document.querySelector("#layout-show-rules")
+) {
+  throw new Error("Hiding a focused supporting panel did not restore focus to its toggle.");
+}
+assertSingleWorksurface("hide focused Rules supporting panel");
+assertCamera("hide focused Rules supporting panel");
+assertSelection("hide focused Rules supporting panel", 2);
 
 buttonByText(application, "Samples")?.click();
 await window.happyDOM.waitUntilComplete();
@@ -1440,6 +1601,18 @@ if (
 ) {
   throw new Error("Curated map, simulation, and replay sample coverage is incomplete.");
 }
+window.happyDOM.setInnerWidth(320);
+if (
+  !window.document.querySelector('[data-panel-id="samples"]') ||
+  !window.document.querySelector("#tactical-bottom-panel") ||
+  !window.document.querySelector("#layout-left-drawer-toggle") ||
+  !window.document.querySelector("#layout-right-drawer-toggle")
+) {
+  throw new Error("400% responsive layout lost supporting panels, drawers, or timeline access.");
+}
+assertSingleWorksurface("Samples panel at 400% responsive width");
+assertCamera("Samples panel at 400% responsive width");
+assertSelection("Samples panel at 400% responsive width", 2);
 const firstMapSample = [
   ...samplesWorkspace.querySelectorAll("details.sample-card"),
 ].find((card) => card.textContent.includes("Map · Simulation"));
@@ -1454,8 +1627,8 @@ const reopenedSvg = window.document.querySelector(
   'svg#persistent-tactical-svg[data-work-surface-root="persistent-svg"]',
 );
 if (
-  !reopenedShell ||
-  !reopenedSvg ||
+  reopenedShell !== shell ||
+  reopenedSvg !== worksurface ||
   reopenedSvg.getAttribute("data-scene-owner") !== "EditorScene" ||
   reopenedSvg.querySelectorAll("[data-scene-layer]").length !== 7 ||
   !reopenedShell.querySelector('[data-panel-id="tools"]') ||
@@ -1465,5 +1638,5 @@ if (
 }
 
 console.log(
-  "Browser smoke passed: the retained SVG survived tactical transitions and broad Editor/Plan/Simulator/Review workflows; Rules and Samples remained fully reachable.",
+  "Browser smoke passed: the exact SVG and unified timeline survived tactical transitions, resize/collapse/persistence, and registered Rules/Data/Samples operations; broad Editor/Plan/Simulator/Review workflows remained reachable.",
 );

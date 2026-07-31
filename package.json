@@ -15,6 +15,7 @@
     "test:planning-m5-qualification": "node scripts/test-planning-workspace-m5-qualification.mjs",
     "test:simulator-m6-qualification": "node scripts/test-simulator-workspace-m6-qualification.mjs",
     "test:review-m7-qualification": "node scripts/test-review-workspace-m7-qualification.mjs",
+    "test:timeline-supporting-panels-m8-qualification": "node scripts/test-timeline-supporting-panels-m8-qualification.mjs",
     "test:map-design-transfer": "node scripts/test-map-editor-design-transfer.mjs",
     "test:persistent-workspace-m0": "node scripts/test-persistent-workspace-m0-baseline.mjs",
     "test": "./scripts/test-conformance.sh",

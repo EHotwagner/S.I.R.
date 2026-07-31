@@ -193,6 +193,12 @@ module TacticalWorkspaceLayout =
                     CollapsedOutsideEditor = not profile.BottomPanel.CollapsedOutsideEditor }
         { profile with BottomPanel = bottom }
 
+    let resizeBottomPanel height profile =
+        { profile with
+            BottomPanel =
+                { profile.BottomPanel with
+                    Height = max 96 (min 480 height) } }
+
     let reset (_: TacticalLayoutProfile) = fieldFocus
 
     let private sideText = function Left -> "left" | Right -> "right"
