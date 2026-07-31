@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import { createServer } from "node:http";
 import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { createServer as createNetServer } from "node:net";
 import { tmpdir } from "node:os";
 import { extname, join, normalize, resolve, sep } from "node:path";
 
@@ -13,6 +14,22 @@ const mime = new Map([
   [".svg", "image/svg+xml"],
   [".png", "image/png"],
 ]);
+
+const allocateLoopbackPort = async () => {
+  const reservation = createNetServer();
+  await new Promise((resolveListen, rejectListen) => {
+    reservation.once("error", rejectListen);
+    reservation.listen(0, "127.0.0.1", resolveListen);
+  });
+  const address = reservation.address();
+  if (!address || typeof address === "string") {
+    reservation.close();
+    throw new Error("Could not allocate an explicit Chromium debugging port.");
+  }
+  const port = address.port;
+  await new Promise((resolveClose, rejectClose) => reservation.close((error) => error ? rejectClose(error) : resolveClose()));
+  return port;
+};
 
 const serve = async (root) => {
   const base = resolve(root);
@@ -238,25 +255,62 @@ const assertNarrow = (audit) => {
 export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/client", screenshotPath } = {}) => {
   const { server, port } = await serve(clientRoot);
   const profile = await mkdtemp(join(tmpdir(), "sir-m9-chromium-"));
+  const debugPort = await allocateLoopbackPort();
+  const browserState = { exited: false, code: null, signal: null, error: null };
+  let browserStderr = "";
   const browser = spawn(chromium, [
     "--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars",
+    "--disable-dev-shm-usage", "--no-first-run", "--no-default-browser-check",
     "--disable-background-networking", "--disable-default-apps", "--disable-extensions",
-    "--force-device-scale-factor=1", "--remote-debugging-port=0", `--user-data-dir=${profile}`,
+    "--force-device-scale-factor=1", "--remote-debugging-address=127.0.0.1",
+    `--remote-debugging-port=${debugPort}`, `--user-data-dir=${profile}`,
   ], { stdio: ["ignore", "ignore", "pipe"] });
-  const browserExit = new Promise((resolveExit) => browser.once("exit", resolveExit));
+  browser.stderr.on("data", (chunk) => {
+    browserStderr = (browserStderr + chunk.toString("utf8")).slice(-16384);
+  });
+  browser.once("error", (error) => { browserState.error = error; });
+  const browserExit = new Promise((resolveExit) => browser.once("exit", (code, signal) => {
+    browserState.exited = true;
+    browserState.code = code;
+    browserState.signal = signal;
+    resolveExit();
+  }));
+  const startupFailure = (message, cause) => {
+    const causeText = cause ? ` Last probe: ${cause instanceof Error ? cause.message : String(cause)}.` : "";
+    const processText = browserState.error
+      ? ` Spawn error: ${browserState.error.message}.`
+      : ` Browser exited=${browserState.exited}, code=${String(browserState.code)}, signal=${String(browserState.signal)}.`;
+    const stderrText = browserStderr.trim() ? ` Chromium stderr (last 16384 bytes):\n${browserStderr.trim()}` : " Chromium stderr was empty.";
+    return new Error(`${message}${causeText}${processText}${stderrText}`);
+  };
   let cdp;
   try {
-    let debugPort;
-    for (let attempt = 0; attempt < 120; attempt += 1) {
+    let version;
+    let lastProbeError;
+    for (let attempt = 0; attempt < 300; attempt += 1) {
+      if (browserState.error || browserState.exited) break;
       try {
-        const value = await readFile(join(profile, "DevToolsActivePort"), "utf8");
-        debugPort = Number.parseInt(value.split(/\r?\n/, 1)[0], 10);
-        if (debugPort) break;
-      } catch {}
+        const response = await fetch(`http://127.0.0.1:${debugPort}/json/version`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        version = await response.json();
+        if (version.webSocketDebuggerUrl) break;
+      } catch (error) {
+        lastProbeError = error;
+      }
       await delay(50);
     }
-    if (!debugPort) throw new Error("Chromium did not expose a debugging port.");
-    const page = await fetch(`http://127.0.0.1:${debugPort}/json/new?${encodeURIComponent(`http://127.0.0.1:${port}/`)}`, { method: "PUT" }).then((response) => response.json());
+    if (!version?.webSocketDebuggerUrl) {
+      throw startupFailure(`Chromium did not expose CDP on explicit loopback port ${debugPort}.`, lastProbeError);
+    }
+    let page;
+    try {
+      const response = await fetch(`http://127.0.0.1:${debugPort}/json/new?${encodeURIComponent(`http://127.0.0.1:${port}/`)}`, { method: "PUT" });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      page = await response.json();
+      if (!page.webSocketDebuggerUrl) throw new Error("CDP page response omitted webSocketDebuggerUrl");
+    } catch (error) {
+      throw startupFailure(`Chromium CDP was available on port ${debugPort}, but page creation failed.`, error);
+    }
     cdp = new Cdp(page.webSocketDebuggerUrl);
     await cdp.send("Runtime.enable");
     await cdp.send("Page.enable");
