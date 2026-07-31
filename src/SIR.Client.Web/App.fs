@@ -35,6 +35,14 @@ type Msg =
     | RestoreAllTacticalBindings
     | TacticalBindingImportChanged of string
     | ImportTacticalBindings
+    | ToggleLayoutPanelVisibility of string
+    | ToggleLayoutPanelCollapsed of string
+    | MoveLayoutPanel of panelId: string * side: SidebarSide
+    | ReorderLayoutPanel of panelId: string * delta: int
+    | ToggleLayoutDrawer of SidebarSide
+    | ToggleLayoutBottomPanelVisibility
+    | ToggleLayoutBottomPanel
+    | ResetTacticalLayout
     | InvokeTacticalCommand of string
     | InvokeTacticalValueCommand of commandId: string * value: string
     | ExecuteTacticalCommand of string
@@ -117,6 +125,8 @@ type Model =
       TacticalBindingImport: string
       TacticalBindingDiagnostics: string list
       TacticalBindingsOpen: bool
+      TacticalLayout: TacticalLayoutProfile
+      TacticalLayoutDiagnostics: string list
       Workspace: WorkspaceMode
       EditorToolPanel: EditorToolPanel
       EditorToolPanelVisible: bool
@@ -609,6 +619,12 @@ let private readTacticalBindings () : string = jsNative
 [<Emit("window.localStorage.setItem('sir.tactical-bindings.v1', $0)")>]
 let private writeTacticalBindings (_: string) : unit = jsNative
 
+[<Emit("window.localStorage.getItem('sir.tactical-layout.v1')")>]
+let private readTacticalLayout () : string = jsNative
+
+[<Emit("window.localStorage.setItem('sir.tactical-layout.v1', $0)")>]
+let private writeTacticalLayout (_: string) : unit = jsNative
+
 let private scheduleMapAutosave content =
     emitJsStatement
         content
@@ -795,6 +811,21 @@ let init () =
                 UnifiedTacticalWorkspace.emptyBindingProfile,
                 [ "Stored binding overrides were malformed and defaults were restored: "
                   + string diagnostics ]
+    let tacticalLayout, tacticalLayoutDiagnostics =
+        let stored = readTacticalLayout ()
+        if isNull stored then
+            TacticalWorkspaceLayout.fieldFocus, []
+        else
+            match TacticalWorkspaceLayout.importProfile stored with
+            | Ok profile -> profile, []
+            | Error diagnostics ->
+                writeTacticalLayout (
+                    TacticalWorkspaceLayout.exportProfile
+                        TacticalWorkspaceLayout.fieldFocus
+                )
+                TacticalWorkspaceLayout.fieldFocus,
+                [ "Stored tactical layout was malformed and Field Focus was restored: "
+                  + string diagnostics ]
 
     { Shell = Shell.init ()
       Editor = editor
@@ -808,6 +839,8 @@ let init () =
       TacticalBindingImport = ""
       TacticalBindingDiagnostics = tacticalBindingDiagnostics
       TacticalBindingsOpen = false
+      TacticalLayout = tacticalLayout
+      TacticalLayoutDiagnostics = tacticalLayoutDiagnostics
       Workspace = EditorWorkspace
       EditorToolPanel = TerrainTools
       EditorToolPanelVisible = false
@@ -1194,6 +1227,77 @@ let rec update msg model =
                 TacticalBindingDiagnostics =
                     diagnostics |> List.map string },
             Cmd.none
+    | ToggleLayoutPanelVisibility panelId ->
+        let layout =
+            model.TacticalLayout
+            |> TacticalWorkspaceLayout.togglePanelVisibility panelId
+        writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
+        let visible =
+            layout.Placements
+            |> List.find (fun panel -> panel.PanelId = panelId)
+            |> _.Visible
+        { model with TacticalLayout = layout; TacticalLayoutDiagnostics = [] },
+        Cmd.ofEffect (fun _ ->
+            focusElementAfterRender (
+                if visible then "layout-panel-" + panelId + "-collapse"
+                else "layout-show-" + panelId
+            ))
+    | ToggleLayoutPanelCollapsed panelId ->
+        let layout =
+            model.TacticalLayout
+            |> TacticalWorkspaceLayout.togglePanelCollapsed panelId
+        writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
+        { model with TacticalLayout = layout; TacticalLayoutDiagnostics = [] },
+        Cmd.ofEffect (fun _ ->
+            focusElementAfterRender ("layout-panel-" + panelId + "-collapse"))
+    | MoveLayoutPanel(panelId, side) ->
+        let layout =
+            model.TacticalLayout
+            |> TacticalWorkspaceLayout.movePanel panelId side
+        writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
+        { model with TacticalLayout = layout; TacticalLayoutDiagnostics = [] },
+        Cmd.ofEffect (fun _ ->
+            focusElementAfterRender ("layout-panel-" + panelId + "-collapse"))
+    | ReorderLayoutPanel(panelId, delta) ->
+        let layout =
+            model.TacticalLayout
+            |> TacticalWorkspaceLayout.reorderPanel panelId delta
+        writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
+        { model with TacticalLayout = layout; TacticalLayoutDiagnostics = [] },
+        Cmd.ofEffect (fun _ ->
+            focusElementAfterRender ("layout-panel-" + panelId + "-collapse"))
+    | ToggleLayoutDrawer side ->
+        let layout =
+            model.TacticalLayout
+            |> TacticalWorkspaceLayout.toggleDrawer side
+        writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
+        { model with TacticalLayout = layout; TacticalLayoutDiagnostics = [] },
+        Cmd.ofEffect (fun _ ->
+            focusElementAfterRender (
+                if side = Left then "layout-left-drawer-toggle"
+                else "layout-right-drawer-toggle"
+            ))
+    | ToggleLayoutBottomPanelVisibility ->
+        let layout =
+            model.TacticalLayout
+            |> TacticalWorkspaceLayout.toggleBottomPanelVisibility
+        writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
+        { model with TacticalLayout = layout; TacticalLayoutDiagnostics = [] },
+        Cmd.ofEffect (fun _ ->
+            focusElementAfterRender "layout-timeline-visibility-toggle")
+    | ToggleLayoutBottomPanel ->
+        let layout =
+            model.TacticalLayout
+            |> TacticalWorkspaceLayout.toggleBottomPanel model.Tactical.Modality
+        writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
+        { model with TacticalLayout = layout; TacticalLayoutDiagnostics = [] },
+        Cmd.ofEffect (fun _ ->
+            focusElementAfterRender "layout-timeline-toggle")
+    | ResetTacticalLayout ->
+        let layout = TacticalWorkspaceLayout.reset model.TacticalLayout
+        writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
+        { model with TacticalLayout = layout; TacticalLayoutDiagnostics = [] },
+        Cmd.ofEffect (fun _ -> focusElementAfterRender "layout-reset")
     | ApplicationFocusLost ->
         { model with
             InputHelpExpanded = false
@@ -8527,20 +8631,298 @@ let private tacticalPersistentBattlefield model dispatch =
         ]
     ]
 
+let private tacticalLayoutToolbar model dispatch =
+    let layout = model.TacticalLayout
+    let panelToggle (panel: TacticalPanelDefinition) =
+        let placement =
+            layout.Placements
+            |> List.find (fun placement -> placement.PanelId = panel.Id)
+        Html.button [
+            prop.id ("layout-show-" + panel.Id)
+            prop.type'.button
+            prop.className "tactical-panel-toggle"
+            prop.ariaPressed placement.Visible
+            prop.ariaLabel (
+                (if placement.Visible then "Hide " else "Show ")
+                + panel.Label + " panel"
+            )
+            prop.text panel.Label
+            prop.onClick (fun _ ->
+                dispatch (ToggleLayoutPanelVisibility panel.Id))
+        ]
+
+    Html.header [
+        prop.className "tactical-compact-toolbar"
+        prop.ariaLabel "Tactical workspace toolbar"
+        prop.children [
+            Html.div [
+                prop.className "tactical-document-identity"
+                prop.children [
+                    Html.strong model.Editor.Authoring.Name
+                    Html.span (
+                        " · r" + string model.Editor.Revision.Number
+                        + (if model.Editor.RevisionState = SavedRevision then " · saved" else " · modified")
+                    )
+                ]
+            ]
+            tacticalModalityControls model.Workspace dispatch
+            Html.div [
+                prop.className "tactical-toolbar-transport"
+                prop.children [
+                    Html.button [
+                        prop.type'.button
+                        prop.ariaLabel "Play or pause active tactical modality"
+                        prop.text (if model.Tactical.IsPlaying then "Pause" else "Play")
+                        prop.onClick (fun _ ->
+                            dispatch (InvokeTacticalCommand "timeline.play-toggle"))
+                    ]
+                ]
+            ]
+            Html.div [
+                prop.className "tactical-toolbar-layout"
+                prop.ariaLabel "Panel visibility"
+                prop.children [
+                    Html.button [
+                        prop.id "layout-left-drawer-toggle"
+                        prop.type'.button
+                        prop.className "tactical-drawer-toggle"
+                        prop.ariaExpanded layout.LeftSidebar.DrawerOpen
+                        prop.ariaControls "tactical-sidebar-left"
+                        prop.text "Left"
+                        prop.onClick (fun _ -> dispatch (ToggleLayoutDrawer Left))
+                    ]
+                    Html.button [
+                        prop.id "layout-right-drawer-toggle"
+                        prop.type'.button
+                        prop.className "tactical-drawer-toggle"
+                        prop.ariaExpanded layout.RightSidebar.DrawerOpen
+                        prop.ariaControls "tactical-sidebar-right"
+                        prop.text "Right"
+                        prop.onClick (fun _ -> dispatch (ToggleLayoutDrawer Right))
+                    ]
+                    Html.button [
+                        prop.id "layout-timeline-visibility-toggle"
+                        prop.type'.button
+                        prop.ariaPressed (
+                            TacticalWorkspaceLayout.bottomVisible layout
+                        )
+                        prop.ariaLabel (
+                            (if TacticalWorkspaceLayout.bottomVisible layout then
+                                 "Hide"
+                             else
+                                 "Show")
+                            + " timeline panel"
+                        )
+                        prop.text "Timeline"
+                        prop.onClick (fun _ ->
+                            dispatch ToggleLayoutBottomPanelVisibility)
+                    ]
+                    Html.button [
+                        prop.id "layout-timeline-toggle"
+                        prop.type'.button
+                        prop.disabled (
+                            not (TacticalWorkspaceLayout.bottomVisible layout)
+                        )
+                        prop.ariaExpanded (
+                            not (TacticalWorkspaceLayout.bottomCollapsed model.Tactical.Modality layout)
+                        )
+                        prop.ariaControls "tactical-bottom-panel"
+                        prop.text (
+                            if TacticalWorkspaceLayout.bottomCollapsed model.Tactical.Modality layout then
+                                "Expand timeline"
+                            else
+                                "Collapse timeline"
+                        )
+                        prop.onClick (fun _ -> dispatch ToggleLayoutBottomPanel)
+                    ]
+                    Html.button [
+                        prop.id "layout-reset"
+                        prop.type'.button
+                        prop.text "Reset layout"
+                        prop.onClick (fun _ -> dispatch ResetTacticalLayout)
+                    ]
+                ]
+            ]
+            Html.details [
+                prop.className "tactical-panel-menu"
+                prop.children [
+                    Html.summary "Panels"
+                    Html.div [
+                        prop.className "tactical-panel-menu-items"
+                        prop.children [
+                            for panel in TacticalWorkspaceLayout.panelRegistry do
+                                panelToggle panel
+                        ]
+                    ]
+                ]
+            ]
+            Html.button [
+                prop.type'.button
+                prop.text "Actions"
+                prop.ariaLabel "Show contextual tactical actions"
+                prop.onClick (fun _ ->
+                    dispatch (InvokeTacticalCommand "input.help"))
+            ]
+        ]
+    ]
+
+let private tacticalSidebar side model dispatch =
+    let sideName = if side = Left then "left" else "right"
+    let layout = model.TacticalLayout
+    let drawerOpen =
+        if side = Left then layout.LeftSidebar.DrawerOpen
+        else layout.RightSidebar.DrawerOpen
+    let definition panelId =
+        TacticalWorkspaceLayout.panelRegistry
+        |> List.find (fun panel -> panel.Id = panelId)
+
+    Html.aside [
+        prop.id ("tactical-sidebar-" + sideName)
+        prop.className (
+            "tactical-sidebar tactical-sidebar-" + sideName
+            + if drawerOpen then " is-drawer-open" else ""
+        )
+        prop.ariaLabel ((if side = Left then "Left" else "Right") + " tactical sidebar")
+        prop.children [
+            for placement in TacticalWorkspaceLayout.panelsOn side layout do
+                if placement.Visible then
+                    let panel = definition placement.PanelId
+                    Html.section [
+                        prop.id ("layout-panel-" + panel.Id)
+                        prop.ariaLabel (panel.Label + " tactical panel")
+                        prop.className (
+                            "tactical-layout-panel"
+                            + if placement.Collapsed then " is-collapsed" else ""
+                        )
+                        prop.custom ("data-panel-id", panel.Id)
+                        prop.custom ("data-panel-side", sideName)
+                        prop.custom ("data-panel-order", string placement.Order)
+                        prop.children [
+                            Html.header [
+                                Html.strong panel.Label
+                                Html.div [
+                                    prop.className "tactical-layout-panel-actions"
+                                    prop.children [
+                                        Html.button [
+                                            prop.id ("layout-panel-" + panel.Id + "-collapse")
+                                            prop.type'.button
+                                            prop.ariaExpanded (not placement.Collapsed)
+                                            prop.ariaControls ("layout-panel-" + panel.Id + "-body")
+                                            prop.ariaLabel (
+                                                (if placement.Collapsed then "Expand " else "Collapse ")
+                                                + panel.Label + " panel"
+                                            )
+                                            prop.text (if placement.Collapsed then "Expand" else "Collapse")
+                                            prop.onClick (fun _ ->
+                                                dispatch (ToggleLayoutPanelCollapsed panel.Id))
+                                        ]
+                                        Html.button [
+                                            prop.type'.button
+                                            prop.ariaLabel ("Move " + panel.Label + " panel up")
+                                            prop.text "↑"
+                                            prop.onClick (fun _ ->
+                                                dispatch (ReorderLayoutPanel(panel.Id, -1)))
+                                        ]
+                                        Html.button [
+                                            prop.type'.button
+                                            prop.ariaLabel ("Move " + panel.Label + " panel down")
+                                            prop.text "↓"
+                                            prop.onClick (fun _ ->
+                                                dispatch (ReorderLayoutPanel(panel.Id, 1)))
+                                        ]
+                                        Html.button [
+                                            prop.type'.button
+                                            prop.ariaLabel (
+                                                "Move " + panel.Label + " panel to "
+                                                + (if side = Left then "right" else "left")
+                                                + " sidebar"
+                                            )
+                                            prop.text (if side = Left then "→" else "←")
+                                            prop.onClick (fun _ ->
+                                                dispatch (
+                                                    MoveLayoutPanel(
+                                                        panel.Id,
+                                                        if side = Left then Right else Left
+                                                    )
+                                                ))
+                                        ]
+                                        Html.button [
+                                            prop.type'.button
+                                            prop.ariaLabel ("Hide " + panel.Label + " panel")
+                                            prop.text "×"
+                                            prop.onClick (fun _ ->
+                                                dispatch (ToggleLayoutPanelVisibility panel.Id))
+                                        ]
+                                    ]
+                                ]
+                            ]
+                            if not placement.Collapsed then
+                                Html.div [
+                                    prop.id ("layout-panel-" + panel.Id + "-body")
+                                    prop.className "tactical-layout-panel-placeholder"
+                                    prop.text "Panel host reserved for capability migration."
+                                ]
+                        ]
+                    ]
+        ]
+    ]
+
 let private tacticalShell model dispatch content =
+    let layout = model.TacticalLayout
+    let bottomVisible = TacticalWorkspaceLayout.bottomVisible layout
+    let bottomCollapsed =
+        TacticalWorkspaceLayout.bottomCollapsed model.Tactical.Modality layout
     Html.section [
         prop.id "unified-tactical-workspace"
         prop.className "unified-tactical-workspace"
         prop.ariaLabel "Unified tactical workspace"
         prop.custom ("data-mounted-shell", "persistent")
+        prop.custom ("data-layout-schema", string layout.SchemaVersion)
+        prop.custom ("data-layout-profile", "field-focus")
+        prop.style [
+            style.custom (
+                "--tactical-left-width",
+                string layout.LeftSidebar.Width + "px"
+            )
+            style.custom (
+                "--tactical-right-width",
+                string layout.RightSidebar.Width + "px"
+            )
+            style.custom (
+                "--tactical-bottom-height",
+                string layout.BottomPanel.Height + "px"
+            )
+        ]
         prop.children [
-            tacticalModalityControls model.Workspace dispatch
-            tacticalPersistentBattlefield model dispatch
+            tacticalLayoutToolbar model dispatch
+            Html.div [
+                prop.className "tactical-layout-frame"
+                prop.children [
+                    tacticalSidebar Left model dispatch
+                    tacticalPersistentBattlefield model dispatch
+                    tacticalSidebar Right model dispatch
+                    if bottomVisible then
+                        Html.section [
+                            prop.id "tactical-bottom-panel"
+                            prop.className (
+                                "tactical-bottom-panel"
+                                + if bottomCollapsed then " is-collapsed" else ""
+                            )
+                            prop.ariaLabel "Tactical bottom panel"
+                            prop.children [ tacticalTimeline model dispatch ]
+                        ]
+                ]
+            ]
             Html.div [
                 prop.className "tactical-workspace-content"
                 prop.children [ content ]
             ]
-            tacticalTimeline model dispatch
+            if not (List.isEmpty model.TacticalLayoutDiagnostics) then
+                Html.p [
+                    prop.className "tactical-layout-diagnostics"
+                    prop.role.status
+                    prop.text (String.concat " " model.TacticalLayoutDiagnostics)
+                ]
             tacticalContextHelp model dispatch
             tacticalBindingDialog model dispatch
         ]
