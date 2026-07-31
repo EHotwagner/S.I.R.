@@ -157,9 +157,10 @@
     "prop.ariaLabel \"Planning revision state\"",
     "prop.ariaLabel \"Unified tactical timeline\"",
     "prop.ariaLabel \"Planning validation navigation\"",
-    "prop.ariaLabel \"Simulator menu and toolbar\"",
-    "prop.ariaLabel \"Simulator command panel\"",
-    "prop.ariaLabel \"Simulation controllers\""
+    "prop.ariaLabel \"Simulator runtime tools\"",
+    "prop.ariaLabel \"Simulation controllers\"",
+    "prop.ariaLabel \"Simulator runtime diagnostics\"",
+    "prop.ariaLabel \"Simulator immutable revision state\""
   ],
   "responsiveTokens": [
     "#sir-replay-app .inspector-panel,",

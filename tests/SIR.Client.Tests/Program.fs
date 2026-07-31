@@ -487,6 +487,28 @@ let main _ =
             (PlanCommitted simulatorCorrelation.PlanRevision)
             { simulatorCorrelation with Tick = 1 }
 
+    let staleSessionEnvelope =
+        simulatorEnvelope
+            (PlanCommitted simulatorCorrelation.PlanRevision)
+            { simulatorCorrelation with Session = "session-b" }
+
+    let staleOperationEnvelope =
+        simulatorEnvelope
+            (PlanCommitted simulatorCorrelation.PlanRevision)
+            { simulatorCorrelation with Operation = 102 }
+
+    let wrongKindEnvelope =
+        { simulatorEnvelope
+              (PlanCommitted simulatorCorrelation.PlanRevision)
+              simulatorCorrelation with
+            Kind = "wrong-kind" }
+
+    let wrongVersionEnvelope =
+        { simulatorEnvelope
+              (PlanCommitted simulatorCorrelation.PlanRevision)
+              simulatorCorrelation with
+            ProtocolVersion = SimulatorProtocol.CurrentVersion + 1 }
+
     let supersededGuard =
         SimulatorProtocol.beginOperation
             { simulatorCorrelation with Operation = 102 }
@@ -496,6 +518,10 @@ let main _ =
         (not (SimulatorProtocol.accepts staleMapEnvelope simulatorGuard)
          && not (SimulatorProtocol.accepts stalePlanEnvelope simulatorGuard)
          && not (SimulatorProtocol.accepts staleTickEnvelope simulatorGuard)
+         && not (SimulatorProtocol.accepts staleSessionEnvelope simulatorGuard)
+         && not (SimulatorProtocol.accepts staleOperationEnvelope simulatorGuard)
+         && not (SimulatorProtocol.accepts wrongKindEnvelope simulatorGuard)
+         && not (SimulatorProtocol.accepts wrongVersionEnvelope simulatorGuard)
          && not (
              SimulatorProtocol.accepts
                  (simulatorEnvelope
@@ -503,7 +529,7 @@ let main _ =
                      simulatorCorrelation)
                  supersededGuard
          ))
-        "A stale operation, map, plan revision, or tick response could enter the active workspace."
+        "A stale operation, session, map, plan revision, tick, kind, or protocol response could enter the active workspace."
 
     let completedGuard =
         SimulatorProtocol.completeOperation

@@ -335,6 +335,27 @@ module MapEditorSimulator =
                   Route = route |> List.map fromCell |> List.toArray
                   Collision = collision }))
 
+    let private fromRevision (revision: MapRevision) =
+        let map = revision.Document
+        let kernel = initialKernel map
+        { Revision = revision
+          RuntimeMap = map
+          KernelState = kernel
+          Tick = 0
+          IsRunning = false
+          LastEvents = []
+          LastCombatEvents = []
+          LastCheckpoints = []
+          AttackRecoveryTicks = Map.empty
+          MovementCreditsMillimeters = Map.empty
+          MovementProgress = Map.empty
+          PresentationPositions =
+            map.Units
+            |> Map.map (fun _ unit -> float unit.Column, float unit.Row)
+          MovementIntents = Map.empty
+          PlannedRoutes = Map.empty
+          PreviewDestination = None }
+
     let tryHandoff (state: MapEditorState) =
         let issues =
             MapEditor.validationIssues state.Revision.Document
@@ -343,25 +364,13 @@ module MapEditorSimulator =
             issues |> Array.map (fun issue -> issue.Code + ": " + issue.Message)
             |> String.concat " " |> Error
         else
-            let kernel = initialKernel state.Revision.Document
-            Ok
-                { Revision = state.Revision
-                  RuntimeMap = state.Revision.Document
-                  KernelState = kernel
-                  Tick = 0
-                  IsRunning = false
-                  LastEvents = []
-                  LastCombatEvents = []
-                  LastCheckpoints = []
-                  AttackRecoveryTicks = Map.empty
-                  MovementCreditsMillimeters = Map.empty
-                  MovementProgress = Map.empty
-                  PresentationPositions =
-                    state.Revision.Document.Units
-                    |> Map.map (fun _ unit -> float unit.Column, float unit.Row)
-                  MovementIntents = Map.empty
-                  PlannedRoutes = Map.empty
-                  PreviewDestination = None }
+            Ok(fromRevision state.Revision)
+
+    /// Restores the disposable runtime from the revision pinned by its
+    /// existing handoff. The mutable editor draft is deliberately absent from
+    /// this boundary.
+    let reset (handoff: SimulatorHandoff) =
+        fromRevision handoff.Revision
 
     let isBehindDraft (state: MapEditorState) handoff =
         handoff.Revision.Digest <> state.Revision.Digest
