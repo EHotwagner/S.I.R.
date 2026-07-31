@@ -484,13 +484,18 @@ singleton-panel qualification, and legacy-removal proof are recorded in the
 
 ### Milestone 6 — Simulator migration
 
-- [ ] Project disposable runtime units, movement, route previews, controller
+- [x] Project disposable runtime units, movement, route previews, controller
   state, and simulator disclosure through shared layers.
-- [ ] Move simulator tools, controller configuration, diagnostics, and revision
+- [x] Move simulator tools, controller configuration, diagnostics, and revision
   state into registered panels.
-- [ ] Preserve immutable handoff, run/step/reset, worker correlation,
+- [x] Preserve immutable handoff, run/step/reset, worker correlation,
   authoritative runtime tick, and projection-only scrubbing.
-- [ ] Remove the simulator-specific battlefield and map-stage layout.
+- [x] Remove the simulator-specific battlefield and map-stage layout.
+
+Milestone 6 shared runtime projection, registered-panel ownership, immutable
+handoff/time boundaries, real-worker correlation, singleton browser trace, and
+legacy-removal proof are recorded in the
+[Simulator migration evidence](persistent-tactical-workspace-m6-simulator-migration-evidence.md).
 
 ### Milestone 7 — Review migration
 

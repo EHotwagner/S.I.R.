@@ -22,16 +22,24 @@ last-updated: 2026-07-30
 > registered panels. Plan roster, tools, inspector, validation, and exact
 > revision state are also registered-panel capabilities; authored intent,
 > annotation-only intent prediction, and validation disclosure render through the shared SVG
-> layers. The old planning battlefield and page layout have been removed. The
-> canonical
+> layers. The old planning battlefield and page layout have been removed.
+> Simulate runtime positions, movement, queued and preview routes, controller
+> state, events, and explicit Sandbox disclosure now use those same shared
+> layers. Registered panels uniquely own simulator tools, controller
+> configuration, diagnostics, samples, and immutable revision state. Timeline
+> scrubbing changes only the projection cursor, never the simulator-owned
+> runtime tick. The former simulator desktop chrome, command dock, and
+> map-stage layout have been removed; see the
+> [M6 simulator migration evidence](persistent-tactical-workspace-m6-simulator-migration-evidence.md).
+> The canonical
 > workscreen is now one retained, keyboard-focusable SVG with stable camera,
 > terrain, edge, route, unit, selection, and annotation layers. Exact SVG and
 > layer references survive modality, panel, timeline, resize, overlay, and
 > playback updates. The labelled compatibility disclosure contains only
 > non-workscreen, registry-routed migration guidance; alternate modality
-> battlefield and grid roots are not mounted. Existing Simulator and Review
-> control panels remain reachable beside the shell while later
-> milestones move them into final sidebar placements. A shared,
+> battlefield and grid roots are not mounted. Existing Review controls remain
+> reachable beside the shell while its later milestone moves them into final
+> sidebar placements. A shared,
 > presentation-only scene projection now gives Editor, Plan, Simulate, and
 > Review stable terrain/unit/route/annotation/layer identities while preserving
 > complete visible semantic selection. A shell-owned semantic unit identity is

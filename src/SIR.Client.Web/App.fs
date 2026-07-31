@@ -57,8 +57,6 @@ type Msg =
     | CancelSimulatorControllerSelection
     | RequestSimulatorReset
     | ResetSimulator
-    | SimulatorPanelChanged of SimulatorToolPanel
-    | ToggleSimulatorToolPanelVisibility
     | PlanningChanged of PlanningAction
     | InitializePlanningWorker
     | ValidatePlanningRevision
@@ -107,11 +105,6 @@ and EditorToolPanel =
     | ZoneTools
     | DocumentTools
 
-and SimulatorToolPanel =
-    | ControllerTools
-    | EventTools
-    | SimulatorSampleTools
-
 type Model =
     { Shell: SIR.Client.Model
       Editor: MapEditorState
@@ -131,8 +124,6 @@ type Model =
       Workspace: WorkspaceMode
       EditorToolPanel: EditorToolPanel
       EditorToolPanelVisible: bool
-      SimulatorToolPanel: SimulatorToolPanel
-      SimulatorToolPanelVisible: bool
       SampleReplayFrames: InspectionProjection array option
       EditorView: EditorWorkspaceState
       HeldInputs: HeldInputSession
@@ -971,8 +962,6 @@ let init () =
       Workspace = EditorWorkspace
       EditorToolPanel = TerrainTools
       EditorToolPanelVisible = false
-      SimulatorToolPanel = ControllerTools
-      SimulatorToolPanelVisible = false
       SampleReplayFrames = None
       EditorView = editorView
       HeldInputs = HeldInputSession.empty
@@ -1097,8 +1086,6 @@ let rec update msg model =
                         model.Tactical
                         |> UnifiedTacticalWorkspace.switchModality Simulate
                     HeldInputs = HeldInputSession.recover model.HeldInputs
-                    SimulatorToolPanel = ControllerTools
-                    SimulatorToolPanelVisible = false
                     SampleReplayFrames = None
                     Battlefield =
                         Battlefield.reconcile frame model.Battlefield
@@ -1544,39 +1531,32 @@ let rec update msg model =
         Cmd.ofEffect (fun dispatch ->
             if
                 window.confirm
-                    "Reset runtime-only simulator progress to the immutable editor revision?"
+                    "Reset runtime-only simulator progress to this handoff's pinned immutable revision?"
             then
                 dispatch ResetSimulator)
     | ResetSimulator ->
-        match MapEditorSimulator.tryHandoff model.Editor with
-        | Error message ->
-            { model with
-                Editor = { model.Editor with Validation = Some message } },
-            Cmd.none
-        | Ok simulator ->
+        match model.Simulator with
+        | None -> model, Cmd.none
+        | Some current ->
+            let simulator = MapEditorSimulator.reset current
+            let selected =
+                model.SimulatorSelectedUnit
+                |> Option.filter (fun unitId ->
+                    Map.containsKey unitId simulator.RuntimeMap.Units)
             let frame =
-                MapEditorSimulator.frame model.SimulatorSelectedUnit simulator
+                MapEditorSimulator.frame selected simulator
             { model with
                 Simulator = Some simulator
+                SimulatorSelectedUnit = selected
                 SimulatorControllerSelection = None
+                Tactical =
+                    model.Tactical
+                    |> UnifiedTacticalWorkspace.scrub 0L
+                    |> UnifiedTacticalWorkspace.setPlaying false
                 Battlefield = Battlefield.reconcile frame model.Battlefield
                 PreviousFrame = None
                 PresentationAlpha = 1.0 },
             Cmd.none
-    | SimulatorPanelChanged panel ->
-        { model with
-            SimulatorToolPanel = panel
-            SimulatorToolPanelVisible =
-                not (
-                    model.SimulatorToolPanelVisible
-                    && Object.Equals(model.SimulatorToolPanel, panel)
-                ) },
-        Cmd.none
-    | ToggleSimulatorToolPanelVisibility ->
-        { model with
-            SimulatorToolPanelVisible =
-                not model.SimulatorToolPanelVisible },
-        Cmd.none
     | PlanningChanged action ->
         match model.Planning with
         | None -> model, Cmd.none
@@ -2351,16 +2331,29 @@ let rec update msg model =
         | ToggleEditorCommandPanel ->
             update ToggleEditorToolPanelVisibility model
         | ChooseSimulatorPanel panel ->
-            { model with
-                SimulatorToolPanel =
-                    match panel with
-                    | ControllerPanel -> ControllerTools
-                    | EventPanel -> EventTools
-                    | SimulatorSamplePanel -> SimulatorSampleTools
-                SimulatorToolPanelVisible = true },
+            let panelId =
+                match panel with
+                | ControllerPanel -> "selection"
+                | EventPanel -> "validation"
+                | SimulatorSamplePanel -> "samples"
+            let placement =
+                model.TacticalLayout.Placements
+                |> List.find (fun placement -> placement.PanelId = panelId)
+            let visible =
+                if placement.Visible then model.TacticalLayout
+                else
+                    model.TacticalLayout
+                    |> TacticalWorkspaceLayout.togglePanelVisibility panelId
+            let layout =
+                if placement.Collapsed then
+                    visible
+                    |> TacticalWorkspaceLayout.togglePanelCollapsed panelId
+                else visible
+            writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
+            { model with TacticalLayout = layout },
             Cmd.none
         | ToggleSimulatorCommandPanel ->
-            update ToggleSimulatorToolPanelVisibility model
+            update (ToggleLayoutPanelVisibility "selection") model
         | SimulatorCommand action -> update (SimulatorChanged action) model
         | TraverseSimulatorUnit delta ->
             match model.Simulator with
@@ -5946,47 +5939,6 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                         ]
                     | None -> Html.none
                 | None -> Html.p "No route preview."
-            Html.div [
-                prop.className "control-row simulation-controls"
-                prop.children [
-                    button
-                        (if state.IsRunning then "Pause" else "Run")
-                        (if state.IsRunning then "Pause map simulation" else "Run map simulation")
-                        false
-                        (fun _ -> dispatch (InvokeTacticalCommand "simulator.run.toggle-k"))
-                    button "Step" "Advance the map simulation one tick" state.IsRunning (fun _ ->
-                        dispatch (InvokeTacticalCommand "simulator.step"))
-                ]
-            ]
-            state.Validation
-            |> Option.map (fun error ->
-                Html.p [
-                    prop.className "validation-error"
-                    prop.role.alert
-                    prop.text error
-                ])
-            |> Option.defaultValue Html.none
-            Html.h3 "Perspective and visibility"
-            Html.p [
-                prop.className "validation-error"
-                prop.role.status
-                prop.text MapEditorSimulator.PerspectiveUnavailableReason
-            ]
-            button "Player perspective unavailable" MapEditorSimulator.PerspectiveUnavailableReason true ignore
-            Html.p [
-                prop.className "validation-error"
-                prop.role.status
-                prop.text MapEditorSimulator.VisibilityUnavailableReason
-            ]
-            button "Visibility overlays unavailable" MapEditorSimulator.VisibilityUnavailableReason true ignore
-            Html.h3 "Latest tick"
-            if List.isEmpty state.LastEvents then
-                Html.p "No actions resolved."
-            else
-                Html.ul [
-                    for event in state.LastEvents do
-                        Html.li event
-                ]
         ]
     ]
 
@@ -6065,239 +6017,6 @@ let private editorDestructiveConfirmation state dispatch =
                 ]
             ]
         ]
-
-let private simulatorDesktopChrome
-    (editor: MapEditorState)
-    (state: MapEditorState)
-    (handoff: SimulatorHandoff)
-    panelVisible
-    (dispatch: Msg -> unit)
-    =
-    let menu (label: string) (children: Fable.React.ReactElement list) =
-        Html.details [
-            prop.className "editor-menu desktop-menu"
-            prop.children [
-                Html.summary [
-                    prop.text label
-                    prop.onClick (fun event ->
-                        closeSiblingDesktopMenus event.currentTarget)
-                ]
-                Html.div [
-                    prop.className "editor-menu-popover"
-                    prop.children children
-                ]
-            ]
-        ]
-    let command (label: string) (aria: string) disabled message =
-        button label aria disabled (fun _ ->
-            closeDesktopMenus ()
-            dispatch message)
-
-    Html.section [
-        prop.className "editor-desktop-chrome simulator-desktop-chrome"
-        prop.ariaLabel "Simulator menu and toolbar"
-        prop.children [
-            Html.div [
-                prop.className "editor-document-strip"
-                prop.children [
-                    Html.strong editor.Authoring.Name
-                    Html.span (
-                        "Simulation tick "
-                        + string handoff.Tick
-                        + " · "
-                        + if state.IsRunning then "Running" else "Paused"
-                    )
-                    Html.span (
-                        "Revision "
-                        + string handoff.Revision.Number
-                        + " · "
-                        + handoff.Revision.Digest.Substring(0, 12)
-                    )
-                ]
-            ]
-            Html.nav [
-                prop.className "editor-menu-bar"
-                prop.ariaLabel "Simulator menus"
-                prop.children [
-                    menu
-                        "File"
-                        [ command "Open map in Editor" "Open the simulated map in Editor" false (WorkspaceChanged EditorWorkspace)
-                          command "Repository bundle" "Download editor and simulator design work" false ExportDesignBundle ]
-                    menu
-                        "View"
-                        [ command "Reset camera" "Reset battlefield camera" false (InvokeTacticalCommand "scene.camera.fit")
-                          command "Zoom in" "Zoom battlefield in" false (InvokeTacticalCommand "scene.camera.zoom-in")
-                          command "Zoom out" "Zoom battlefield out" false (InvokeTacticalCommand "scene.camera.zoom-out")
-                          command
-                              (if panelVisible then "Hide command panel" else "Show command panel")
-                              "Show or hide the active simulator command panel"
-                              false
-                              ToggleSimulatorToolPanelVisibility ]
-                    menu
-                        "Simulation"
-                        [ command
-                              (if state.IsRunning then "Pause" else "Run")
-                              "Run or pause deterministic simulation"
-                              false
-                              (InvokeTacticalCommand "simulator.run.toggle-k")
-                          command "Step" "Advance simulation one tick" state.IsRunning (InvokeTacticalCommand "simulator.step")
-                          command "Reset simulation" "Reset runtime state to the immutable editor revision" state.IsRunning (InvokeTacticalCommand "simulator.reset.request") ]
-                    menu
-                        "Samples"
-                        [ for sample in ExperienceSamples.maps do
-                              command
-                                  sample.Title
-                                  ("Load simulation sample: " + sample.Summary)
-                                  false
-                                  (LoadSimulationSample sample.Id) ]
-                ]
-            ]
-            Html.div [
-                prop.className "editor-quick-toolbar"
-                prop.role.toolbar
-                prop.ariaLabel "Simulator quick access"
-                prop.children [
-                    command
-                        (if state.IsRunning then "Pause" else "Run")
-                        "Run or pause deterministic simulation"
-                        false
-                        (InvokeTacticalCommand "simulator.run.toggle-k")
-                    command "Step" "Advance simulation one tick" state.IsRunning (InvokeTacticalCommand "simulator.step")
-                    command "Reset" "Reset simulation to its immutable revision" state.IsRunning (InvokeTacticalCommand "simulator.reset.request")
-                    Html.span [ prop.className "toolbar-separator"; prop.ariaHidden true ]
-                    command "Controls" "Toggle simulator controls panel" false (InvokeTacticalCommand "simulator.panel.controls")
-                    command "Events" "Toggle simulator events panel" false (InvokeTacticalCommand "simulator.panel.events")
-                    command "Samples" "Toggle simulator samples panel" false (InvokeTacticalCommand "simulator.panel.samples")
-                    Html.span [ prop.className "toolbar-separator"; prop.ariaHidden true ]
-                    command "−" "Zoom battlefield out" false (InvokeTacticalCommand "scene.camera.zoom-out")
-                    command "+" "Zoom battlefield in" false (InvokeTacticalCommand "scene.camera.zoom-in")
-                    command "Fit" "Reset battlefield camera" false (InvokeTacticalCommand "scene.camera.fit")
-                ]
-            ]
-        ]
-    ]
-
-let private simulatorDock
-    (handoff: SimulatorHandoff)
-    (state: MapEditorState)
-    (activePanel: SimulatorToolPanel)
-    panelVisible
-    (dispatch: Msg -> unit)
-    =
-    let choose (label: string) (panel: SimulatorToolPanel) =
-        let commandId =
-            match panel with
-            | ControllerTools -> "simulator.panel.controls"
-            | EventTools -> "simulator.panel.events"
-            | SimulatorSampleTools -> "simulator.panel.samples"
-        Html.button [
-            prop.type'.button
-            prop.text label
-            prop.ariaPressed (
-                panelVisible && Object.Equals(activePanel, panel)
-            )
-            prop.onClick (fun _ ->
-                dispatch (InvokeTacticalCommand commandId))
-        ]
-    Html.section [
-        prop.className (
-            "panel editor-tools editor-ribbon simulator-ribbon"
-            + if panelVisible then "" else " is-collapsed"
-        )
-        prop.ariaLabel "Simulator command panel"
-        prop.children [
-            Html.nav [
-                prop.className "editor-tool-navigation compact-tool-rail"
-                prop.ariaLabel "Simulator command groups"
-                prop.children [
-                    choose "Controls" ControllerTools
-                    choose "Events" EventTools
-                    choose "Samples" SimulatorSampleTools
-                    button
-                        (if panelVisible then "Close" else "Open")
-                        "Show or hide the active simulator command panel"
-                        false
-                        (fun _ ->
-                            dispatch (InvokeTacticalCommand "simulator.panel.toggle"))
-                ]
-            ]
-            if panelVisible then
-                Html.div [
-                    prop.className "editor-tool-panel editor-context-palette simulator-context-palette"
-                    prop.children [
-                        match activePanel with
-                        | ControllerTools ->
-                            controllerPanel handoff state dispatch
-                        | EventTools ->
-                            Html.h3 ("Tick " + string handoff.Tick + " events")
-                            if List.isEmpty state.LastEvents then
-                                Html.p "No actions resolved on the latest tick."
-                            else
-                                Html.ol [
-                                    prop.ariaLabel "Latest deterministic simulation events"
-                                    prop.children [
-                                        for event in state.LastEvents do
-                                            Html.li event
-                                    ]
-                                ]
-                            if not (List.isEmpty handoff.LastCombatEvents) then
-                                Html.h3 "Recent combat"
-                                Html.ol [
-                                    prop.ariaLabel "Recent combat events"
-                                    prop.children [
-                                        for combat in handoff.LastCombatEvents do
-                                            Html.li (
-                                                "Tick "
-                                                + string combat.Tick
-                                                + " · "
-                                                + combat.Summary
-                                            )
-                                    ]
-                                ]
-                            Html.h3 "Runtime roster"
-                            Html.ul [
-                                prop.ariaLabel "Simulation unit health"
-                                prop.children [
-                                    for _, unit in state.Map.Units |> Map.toList do
-                                        Html.li (
-                                            "Unit "
-                                            + string unit.Id
-                                            + " · "
-                                            + unit.ClassId
-                                            + " · "
-                                            + string unit.Health
-                                            + "/"
-                                            + string unit.HealthMaximum
-                                            + " HP · "
-                                            + string (
-                                                (MapEditorSimulator.movementProfileFor unit)
-                                                    .SpeedMillimetersPerSecond
-                                            )
-                                            + " mm/s"
-                                        )
-                                ]
-                            ]
-                        | SimulatorSampleTools ->
-                            Html.h3 "Simulation samples"
-                            Html.p "Loading a sample replaces the current editor draft and simulator sandbox."
-                            for sample in ExperienceSamples.maps do
-                                Html.article [
-                                    prop.className "sample-compact-card"
-                                    prop.children [
-                                        Html.h4 sample.Title
-                                        Html.p sample.Summary
-                                        button
-                                            "Load"
-                                            ("Load simulation sample " + sample.Title)
-                                            false
-                                            (fun _ ->
-                                                dispatch (LoadSimulationSample sample.Id))
-                                    ]
-                                ]
-                    ]
-                ]
-        ]
-    ]
 
 let private sampleCatalogView (dispatch: Msg -> unit) =
     let mapCard (sample: ExperienceMapSample) =
@@ -7432,6 +7151,12 @@ let private persistentSceneSvg
         svg.custom ("data-render-contract", "shared-scene-projection-v1")
         svg.custom ("data-scene-owner", owner)
         svg.custom (
+            "data-scene-disclosure",
+            projection
+            |> Option.map (fun scene -> string scene.Disclosure.Source)
+            |> Option.defaultValue "unavailable"
+        )
+        svg.custom (
             "data-scene-revision",
             projection
             |> Option.map _.RevisionIdentity
@@ -7849,6 +7574,8 @@ let private persistentSceneSvg
                             | Some scene ->
                                 for unit in scene.Units do
                                     let visual = unit.Visual
+                                    let presentationX = unit.PresentationColumn * cellSize
+                                    let presentationY = unit.PresentationRow * cellSize
                                     let width = float (CellExtent.value visual.FootprintWidth) * cellSize
                                     let depth = float (CellExtent.value visual.FootprintDepth) * cellSize
                                     let command = sharedSceneUnitCommand model visual.Id
@@ -7862,6 +7589,8 @@ let private persistentSceneSvg
                                         svg.custom ("data-unit-class", UnitClassId.value visual.ClassId)
                                         svg.custom ("data-unit-footprint", string (CellExtent.value visual.FootprintWidth) + "x" + string (CellExtent.value visual.FootprintDepth))
                                         svg.custom ("data-unit-status", String.concat " " visual.StatusIds)
+                                        svg.custom ("data-presentation-column", string unit.PresentationColumn)
+                                        svg.custom ("data-presentation-row", string unit.PresentationRow)
                                         match visual.StanceId with
                                         | Disclosed stance -> svg.custom ("data-unit-stance", stance)
                                         | _ -> ()
@@ -7892,8 +7621,8 @@ let private persistentSceneSvg
                                         | _ -> svg.custom ("aria-hidden", "true")
                                         svg.children [
                                             Svg.rect [
-                                                svg.x (float visual.AnchorColumn * cellSize + 5.0)
-                                                svg.y (float visual.AnchorRow * cellSize + 5.0)
+                                                svg.x (presentationX + 5.0)
+                                                svg.y (presentationY + 5.0)
                                                 svg.width (width - 10.0)
                                                 svg.height (depth - 10.0)
                                                 svg.rx 6
@@ -7915,16 +7644,16 @@ let private persistentSceneSvg
                                                 svg.children [
                                                     glyphView
                                                         ReplayPalettes.accessibleDefault
-                                                        (float visual.AnchorColumn * cellSize + width / 2.0)
-                                                        (float visual.AnchorRow * cellSize + depth / 2.0)
+                                                        (presentationX + width / 2.0)
+                                                        (presentationY + depth / 2.0)
                                                         (max 1.0 ((min width depth - 16.0) / 24.0))
                                                         visual.ClassId
                                                 ]
                                             ]
                                             match visual.BodyHeading with
                                             | Disclosed heading ->
-                                                let centerX = float visual.AnchorColumn * cellSize + width / 2.0
-                                                let centerY = float visual.AnchorRow * cellSize + depth / 2.0
+                                                let centerX = presentationX + width / 2.0
+                                                let centerY = presentationY + depth / 2.0
                                                 let radians = HeadingRadians.value heading
                                                 Svg.line [
                                                     svg.custom ("data-unit-heading", "facing")
@@ -7939,8 +7668,8 @@ let private persistentSceneSvg
                                             | _ -> ()
                                             match visual.SecondaryHeading with
                                             | Disclosed heading ->
-                                                let centerX = float visual.AnchorColumn * cellSize + width / 2.0
-                                                let centerY = float visual.AnchorRow * cellSize + depth / 2.0
+                                                let centerX = presentationX + width / 2.0
+                                                let centerY = presentationY + depth / 2.0
                                                 let radians = HeadingRadians.value heading.Radians
                                                 Svg.line [
                                                     svg.custom ("data-unit-heading", "attention")
@@ -7958,16 +7687,16 @@ let private persistentSceneSvg
                                             | Disclosed stance ->
                                                 Svg.text [
                                                     svg.custom ("data-unit-stance-label", stance)
-                                                    svg.x (float visual.AnchorColumn * cellSize + 9.0)
-                                                    svg.y (float visual.AnchorRow * cellSize + depth - 9.0)
+                                                    svg.x (presentationX + 9.0)
+                                                    svg.y (presentationY + depth - 9.0)
                                                     svg.fill "#8ce99a"
                                                     svg.fontSize 10
                                                     svg.text stance
                                                 ]
                                             | _ -> ()
                                             Svg.text [
-                                                svg.x (float visual.AnchorColumn * cellSize + width - 9.0)
-                                                svg.y (float visual.AnchorRow * cellSize + depth - 9.0)
+                                                svg.x (presentationX + width - 9.0)
+                                                svg.y (presentationY + depth - 9.0)
                                                 svg.custom ("text-anchor", "end")
                                                 svg.fill "#eef7f2"
                                                 svg.fontSize 13
@@ -7992,8 +7721,8 @@ let private persistentSceneSvg
                                         Svg.rect [
                                             svg.key ("selection:" + ScenePrimitiveId.value unit.PrimitiveId)
                                             svg.custom ("data-selection-for", ScenePrimitiveId.value unit.PrimitiveId)
-                                            svg.x (float unit.Visual.AnchorColumn * cellSize + 1.0)
-                                            svg.y (float unit.Visual.AnchorRow * cellSize + 1.0)
+                                            svg.x (unit.PresentationColumn * cellSize + 1.0)
+                                            svg.y (unit.PresentationRow * cellSize + 1.0)
                                             svg.width (float (CellExtent.value unit.Visual.FootprintWidth) * cellSize - 2.0)
                                             svg.height (float (CellExtent.value unit.Visual.FootprintDepth) * cellSize - 2.0)
                                             svg.rx 8
@@ -8533,6 +8262,157 @@ let private editorOutlinerPanel (state: MapEditorState) dispatch =
         ]
     ]
 
+let private simulatorPanelBody
+    (editor: MapEditorState)
+    (handoff: SimulatorHandoff)
+    (selectedUnit: int32 option)
+    panelId
+    dispatch
+    =
+    let state = MapEditorSimulator.viewState selectedUnit handoff
+    let stale = MapEditorSimulator.isBehindDraft editor handoff
+    match panelId with
+    | "roster" ->
+        Html.div [
+            prop.ariaLabel "Simulator runtime roster"
+            prop.children [
+                Html.h4 ("Disposable runtime units · " + string handoff.RuntimeMap.Units.Count)
+                for _, unit in handoff.RuntimeMap.Units |> Map.toList do
+                    Html.button [
+                        prop.type'.button
+                        prop.ariaPressed (Option.contains unit.Id selectedUnit)
+                        prop.text (
+                            "Unit " + string unit.Id + " · " + unit.ClassId
+                            + " · HP " + string unit.Health
+                            + " · " + MapEditor.controllerLabel unit.Controller
+                        )
+                        prop.onClick (fun _ ->
+                            dispatch (SimulatorUnitSelectionChanged(Some unit.Id)))
+                    ]
+            ]
+        ]
+    | "tools" ->
+        Html.section [
+            prop.className "simulator-registered-tools"
+            prop.ariaLabel "Simulator runtime tools"
+            prop.children [
+                Html.h4 "Runtime transport"
+                Html.p (
+                    "Authoritative runtime tick " + string handoff.Tick
+                    + " · " + if handoff.IsRunning then "Running" else "Paused"
+                )
+                Html.div [
+                    prop.className "control-row simulation-controls"
+                    prop.children [
+                        button
+                            (if handoff.IsRunning then "Pause" else "Run")
+                            (if handoff.IsRunning then "Pause map simulation" else "Run map simulation")
+                            false
+                            (fun _ -> dispatch (InvokeTacticalCommand "simulator.run.toggle-k"))
+                        button "Step" "Advance the map simulation one tick" handoff.IsRunning (fun _ ->
+                            dispatch (InvokeTacticalCommand "simulator.step"))
+                        button "Reset" "Reset simulation to its immutable revision" handoff.IsRunning (fun _ ->
+                            dispatch (InvokeTacticalCommand "simulator.reset.request"))
+                    ]
+                ]
+                Html.h4 "Shared camera"
+                Html.div [
+                    prop.className "control-row"
+                    prop.children [
+                        button "−" "Zoom battlefield out" false (fun _ -> dispatch (InvokeTacticalCommand "scene.camera.zoom-out"))
+                        button "+" "Zoom battlefield in" false (fun _ -> dispatch (InvokeTacticalCommand "scene.camera.zoom-in"))
+                        button "Fit" "Reset battlefield camera" false (fun _ -> dispatch (InvokeTacticalCommand "scene.camera.fit"))
+                    ]
+                ]
+            ]
+        ]
+    | "layers" ->
+        Html.div [
+            prop.ariaLabel "Simulator shared layer ownership"
+            prop.children [
+                Html.p "Runtime positions and controller state use Units."
+                Html.p "Queued and preview paths use Routes."
+                Html.p "Disclosed runtime events use Annotations."
+            ]
+        ]
+    | "selection" -> controllerPanel handoff state dispatch
+    | "validation"
+    | "diagnostics" ->
+        Html.section [
+            prop.className "simulator-registered-diagnostics"
+            prop.ariaLabel "Simulator runtime diagnostics"
+            prop.children [
+                Html.h4 ("Tick " + string handoff.Tick + " diagnostics")
+                if List.isEmpty state.LastEvents then
+                    Html.p "No actions resolved on the latest authoritative tick."
+                else
+                    Html.ol [
+                        prop.ariaLabel "Latest deterministic simulation events"
+                        prop.children [ for event in state.LastEvents do Html.li event ]
+                    ]
+                if not (List.isEmpty handoff.LastCombatEvents) then
+                    Html.h4 "Recent combat"
+                    Html.ol [
+                        prop.ariaLabel "Recent combat events"
+                        prop.children [
+                            for combat in handoff.LastCombatEvents do
+                                Html.li ("Tick " + string combat.Tick + " · " + combat.Summary)
+                        ]
+                    ]
+                Html.h4 "Disclosure boundary"
+                Html.p [
+                    prop.role.status
+                    prop.text MapEditorSimulator.PerspectiveUnavailableReason
+                ]
+                Html.p [
+                    prop.role.status
+                    prop.text MapEditorSimulator.VisibilityUnavailableReason
+                ]
+            ]
+        ]
+    | "document" ->
+        Html.section [
+            prop.className "simulator-registered-revision"
+            prop.role.status
+            prop.ariaLive.polite
+            prop.ariaLabel "Simulator immutable revision state"
+            prop.children [
+                Html.h4 (
+                    if stale then "Simulator behind editor draft"
+                    else "Simulator matches editor draft"
+                )
+                Html.p (
+                    "Immutable revision " + string handoff.Revision.Number
+                    + " · " + handoff.Revision.Digest.Substring(0, 12)
+                )
+                Html.p (
+                    "Runtime tick " + string handoff.Tick
+                    + "; timeline cursor "
+                    + "is projection-only and cannot mutate this value."
+                )
+                if stale then
+                    Html.p "Editor changes remain separate. Create a new handoff from Editor to replace this disposable sandbox."
+                button "Open Editor" "Open the map editor" false (fun _ ->
+                    dispatch (WorkspaceChanged EditorWorkspace))
+                button "Repository bundle" "Download editor and simulator design work" false (fun _ ->
+                    dispatch ExportDesignBundle)
+            ]
+        ]
+    | "samples" ->
+        Html.div [
+            prop.ariaLabel "Simulator samples"
+            prop.children [
+                for sample in ExperienceSamples.maps do
+                    button sample.Title ("Load simulation sample: " + sample.Summary) false (fun _ ->
+                        dispatch (LoadSimulationSample sample.Id))
+            ]
+        ]
+    | _ ->
+        Html.p [
+            prop.className "tactical-layout-panel-placeholder"
+            prop.text "No Simulator capability is assigned to this panel."
+        ]
+
 let private tacticalPanelBody panelId model dispatch =
     if model.Workspace = PlanningWorkspace then
         match model.Planning with
@@ -8549,6 +8429,17 @@ let private tacticalPanelBody panelId model dispatch =
                 prop.text "No Plan capability is assigned to this panel."
             ]
         | None -> Html.p "Planner unavailable for the current map revision."
+    elif model.Workspace = SimulatorWorkspace then
+        match model.Simulator with
+        | Some simulator ->
+            simulatorPanelBody
+                model.Editor
+                simulator
+                model.SimulatorSelectedUnit
+                panelId
+                dispatch
+        | None ->
+            Html.p "Create an immutable simulator handoff from the Editor."
     elif model.Workspace = EditorWorkspace then
         match panelId with
         | "roster" -> editorOutlinerPanel model.Editor dispatch
@@ -8843,118 +8734,7 @@ let view model dispatch =
                         ]
                     )
             | SimulatorWorkspace ->
-                tacticalShell
-                    model
-                    dispatch
-                    (match model.Simulator with
-                     | None ->
-                        let facts =
-                            { SimulatorHandoffPresent = false
-                              SimulatorIsRunning = false
-                              SimulatorHasRoutePreview = false
-                              SimulatorControllerSelection = None
-                              SimulatorRevisionIsStale = false
-                              InputHelpExpanded = model.InputHelpExpanded }
-                        let catalog =
-                            ModalInput.simulatorCatalog
-                                model.SimulatorSelectedUnit
-                                None
-                                model.SimulatorControllerSelection
-                        let projection =
-                            ModalInput.projectSimulator
-                                facts
-                                model.SimulatorSelectedUnit
-                                None
-                                catalog
-                        Html.section [
-                            prop.className "panel simulator-workspace"
-                            prop.ariaLabel "Simulator revision handoff"
-                            prop.children [
-                                Html.h2 "No simulated revision"
-                                Html.p "Return to the editor and choose Simulate to create an immutable sandbox handoff."
-                                button "Open Editor" "Open the map editor" false (fun _ ->
-                                    dispatch (WorkspaceChanged EditorWorkspace))
-                                button "Browse samples" "Open curated map and simulation samples" false (fun _ ->
-                                    dispatch (WorkspaceChanged SamplesWorkspace))
-                                modalInputStrip projection model.InputHelpExpanded dispatch
-                            ]
-                             ]
-                     | Some simulator ->
-                        let simulatorState =
-                            MapEditorSimulator.viewState
-                                model.SimulatorSelectedUnit
-                                simulator
-                        let stale =
-                            MapEditorSimulator.isBehindDraft model.Editor simulator
-                        let facts =
-                            { SimulatorHandoffPresent = true
-                              SimulatorIsRunning = simulator.IsRunning
-                              SimulatorHasRoutePreview = simulator.PreviewDestination.IsSome
-                              SimulatorControllerSelection =
-                                model.SimulatorControllerSelection
-                              SimulatorRevisionIsStale = stale
-                              InputHelpExpanded = model.InputHelpExpanded }
-                        let catalog =
-                            ModalInput.simulatorCatalog
-                                model.SimulatorSelectedUnit
-                                (Some simulator)
-                                model.SimulatorControllerSelection
-                            |> UnifiedTacticalWorkspace.adaptModalCatalog
-                                model.TacticalBindings
-                        let projection =
-                            ModalInput.projectSimulator
-                                facts
-                                model.SimulatorSelectedUnit
-                                (Some simulator)
-                                catalog
-                        Html.div [
-                            prop.className "simulator-workspace"
-                            prop.children [
-                                simulatorDesktopChrome
-                                    model.Editor
-                                    simulatorState
-                                    simulator
-                                    model.SimulatorToolPanelVisible
-                                    dispatch
-                                Html.section [
-                                    prop.className "panel simulator-revision-status"
-                                    prop.role.status
-                                    prop.ariaLive.polite
-                                    prop.children [
-                                        Html.h2 (
-                                            if stale then
-                                                "Simulator behind editor draft"
-                                            else
-                                                "Simulator matches editor draft"
-                                        )
-                                        Html.p (
-                                            "Simulating immutable revision "
-                                            + string simulator.Revision.Number
-                                            + " · "
-                                            + simulator.Revision.Digest.Substring(0, 12)
-                                        )
-                                        if stale then
-                                            Html.p "Editor changes are preserved separately. Choose Simulate in Editor to reset this sandbox."
-                                    ]
-                                ]
-                                Html.div [
-                                    prop.className "simulator-owner-controls"
-                                    prop.ariaLabel "Simulator non-workscreen controls"
-                                    prop.children [
-                                        simulatorDock
-                                            simulator
-                                            simulatorState
-                                            model.SimulatorToolPanel
-                                            model.SimulatorToolPanelVisible
-                                            dispatch
-                                        modalInputStrip
-                                            projection
-                                            model.InputHelpExpanded
-                                            dispatch
-                                    ]
-                                ]
-                            ]
-                         ])
+                tacticalShell model dispatch Html.none
             | EditorWorkspace ->
                 let facts =
                     { Editor = model.Editor

@@ -20,7 +20,9 @@ type SceneTerrainProjection =
 
 type SceneUnitProjection =
     { PrimitiveId: ScenePrimitiveId
-      Visual: UnitVisual }
+      Visual: UnitVisual
+      PresentationColumn: float
+      PresentationRow: float }
 
 type SceneRouteProjection =
     { PrimitiveId: ScenePrimitiveId

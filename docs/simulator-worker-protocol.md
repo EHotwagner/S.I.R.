@@ -20,6 +20,12 @@ The browser simulator uses the `sir-simulator-session` protocol. It is distinct
 from replay inspection even though both protocols share the same retained
 engine worker. The simulator protocol version starts at `1`.
 
+The persistent workspace keeps the interactive map sandbox and this retained
+worker session boundary explicit. Map sandbox run, step, and reset use the
+shared deterministic kernel over a disposable immutable-revision copy.
+Planning and session transport uses this worker protocol. The UI does not
+describe local map-sandbox ticks as worker-produced ticks.
+
 The browser boundary and session state machine are qualified. Workspace-only
 validation covers the canonical plan envelope, bounds, horizon, and preview
 classification. Authoritative validation is owned by the native `SirPlan`
@@ -39,6 +45,11 @@ the active tuple and pending operation set, and drops a response before
 dispatch if any identity is stale. Worker rejection and browser filtering are
 both required: rejection explains invalid work, while filtering prevents a
 late response from changing a replacement workspace.
+
+The runner also requires the exact protocol kind and version. Equality is
+checked for all five correlation fields, not merely the operation number.
+Terminal responses remove the operation from the pending set, so duplicates
+fail closed; progress remains pending until a terminal response.
 
 ## Operations
 

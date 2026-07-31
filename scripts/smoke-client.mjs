@@ -427,6 +427,31 @@ const assertSelection = (operation, expectedUnit) => {
     );
   }
 };
+const ensurePanelExpanded = async (panelId) => {
+  if (!shell.querySelector(`[data-panel-id="${panelId}"]`)) {
+    shell.querySelector(`#layout-show-${panelId}`)?.click();
+    await window.happyDOM.waitUntilComplete();
+  }
+  const panel = shell.querySelector(`[data-panel-id="${panelId}"]`);
+  if (panel?.classList.contains("is-collapsed")) {
+    panel.querySelector(`#layout-panel-${panelId}-collapse`)?.click();
+    await window.happyDOM.waitUntilComplete();
+  }
+  return shell.querySelector(`[data-panel-id="${panelId}"]`);
+};
+const simulatorProjectionSnapshot = () =>
+  JSON.stringify({
+    revision: worksurface.getAttribute("data-scene-revision"),
+    tick: worksurface.getAttribute("data-scene-tick"),
+    disclosure: worksurface.getAttribute("data-scene-disclosure"),
+    selectedUnit: worksurface.getAttribute("data-semantic-selection-unit"),
+    terrain: worksurface.querySelector("#persistent-layer-terrain")?.innerHTML,
+    edges: worksurface.querySelector("#persistent-layer-edges")?.innerHTML,
+    routes: worksurface.querySelector("#persistent-layer-routes")?.innerHTML,
+    units: worksurface.querySelector("#persistent-layer-units")?.innerHTML,
+    selection: worksurface.querySelector("#persistent-layer-selection")?.innerHTML,
+    annotations: worksurface.querySelector("#persistent-layer-annotations")?.innerHTML,
+  });
 const ownerByModality = {
   Editor: ["Editor", "EditorScene"],
   Plan: ["Plan", "PlanningScene"],
@@ -535,26 +560,40 @@ await window.happyDOM.waitUntilComplete();
 assertModality("Simulate", "simulator handoff");
 assertSingleWorksurface("simulator handoff");
 assertSelection("simulator handoff", 2);
-const simulatorToolbar = shell.querySelector(
-  '[aria-label="Simulator quick access"]',
-);
-const currentSimulatorToolbar = () =>
-  shell.querySelector('[aria-label="Simulator quick access"]');
-if (
-  !simulatorToolbar ||
-  !shell.querySelector('[aria-label="Simulator menu and toolbar"]') ||
-  !shell.querySelector('[aria-label="Simulator command panel"]') ||
-  !shell.querySelector(".simulator-revision-status[role='status']")
-) {
-  throw new Error("Simulator non-workscreen controls or revision diagnostics were dropped.");
+const pinnedSimulatorRevision = worksurface.getAttribute("data-scene-revision");
+const pinnedSimulatorBaseline = simulatorProjectionSnapshot();
+const pinnedControllerStatus = worksurface
+  .querySelector('[data-unit-id="2"]')
+  ?.getAttribute("data-unit-status");
+for (const panelId of ["roster", "tools", "selection", "validation", "document"]) {
+  await ensurePanelExpanded(panelId);
 }
-buttonByText(simulatorToolbar, "Controls")?.click();
-await window.happyDOM.waitUntilComplete();
-const controllerPanel = shell.querySelector(
-  '[aria-label="Simulation controllers"]',
-);
+const currentSimulatorTools = () =>
+  shell.querySelector('[aria-label="Simulator runtime tools"]');
 const currentControllerPanel = () =>
   shell.querySelector('[aria-label="Simulation controllers"]');
+const currentSimulatorDiagnostics = () =>
+  shell.querySelector('[aria-label="Simulator runtime diagnostics"]');
+const currentSimulatorRevision = () =>
+  shell.querySelector('[aria-label="Simulator immutable revision state"]');
+if (
+  !shell.querySelector('[aria-label="Simulator runtime roster"]') ||
+  !currentSimulatorTools() ||
+  !currentControllerPanel() ||
+  !currentSimulatorDiagnostics() ||
+  !currentSimulatorRevision() ||
+  shell.querySelectorAll('[aria-label="Simulator runtime tools"]').length !== 1 ||
+  shell.querySelectorAll('[aria-label="Simulation controllers"]').length !== 1 ||
+  shell.querySelectorAll('[aria-label="Simulator runtime diagnostics"]').length !== 1 ||
+  shell.querySelectorAll('[aria-label="Simulator immutable revision state"]').length !== 1 ||
+  shell.querySelector(".simulator-workspace") ||
+  shell.querySelector(".simulator-owner-controls") ||
+  shell.querySelector('[aria-label="Simulator menu and toolbar"]') ||
+  worksurface.getAttribute("data-scene-disclosure") !== "SandboxDisclosure"
+) {
+  throw new Error("Registered Simulator panels or sandbox disclosure are incomplete, duplicated, or accompanied by legacy layout.");
+}
+const controllerPanel = currentControllerPanel();
 if (
   !controllerPanel?.textContent.includes("Manual") ||
   !controllerPanel.textContent.includes("Scripted AI") ||
@@ -580,13 +619,16 @@ if (nativeKey.defaultPrevented) {
 unitController.value = "Scripted AI";
 unitController.dispatchEvent(new window.Event("change", { bubbles: true }));
 await window.happyDOM.waitUntilComplete();
-if (unitController.value !== "Scripted AI") {
-  throw new Error("Simulator controller selection did not route through its registry command.");
+if (
+  currentControllerPanel()?.querySelector("#unit-controller")?.value !== "Scripted AI" ||
+  !worksurface.querySelector('[data-unit-id="2"]')?.getAttribute("data-unit-status")?.includes("scripted")
+) {
+  throw new Error("Simulator controller state did not route through the registry and shared units layer.");
 }
 buttonByLabel(currentControllerPanel(), "Move route preview right")?.click();
 await window.happyDOM.waitUntilComplete();
 if (
-  !worksurface.querySelector("#persistent-layer-routes polyline") ||
+  !worksurface.querySelector('#persistent-layer-routes [data-route-kind^="route-preview"]') ||
   !currentControllerPanel()?.textContent.includes("route clear")
 ) {
   throw new Error("Simulator route preview did not render in the persistent routes layer.");
@@ -601,28 +643,53 @@ if (!currentControllerPanel()?.textContent.includes("Distance 0 steps")) {
 buttonByText(currentControllerPanel(), "Cancel route")?.click();
 await window.happyDOM.waitUntilComplete();
 if (
-  worksurface.querySelector("#persistent-layer-routes polyline") ||
+  worksurface.querySelector('#persistent-layer-routes [data-route-kind^="route-preview"]') ||
   !currentControllerPanel()?.textContent.includes("No route preview.")
 ) {
   throw new Error("Simulator route cancel did not clear the persistent route layer.");
 }
-const simulatorTickBefore = Number(worksurface.getAttribute("data-scene-tick"));
-buttonByText(simulatorToolbar, "Step")?.click();
+buttonByLabel(currentControllerPanel(), "Move route preview right")?.click();
+await window.happyDOM.waitUntilComplete();
+buttonByText(currentControllerPanel(), "Commit route")?.click();
 await window.happyDOM.waitUntilComplete();
 if (
-  Number(worksurface.getAttribute("data-scene-tick")) !==
-  simulatorTickBefore + 1
+  !worksurface.querySelector('[data-route-kind="route-planned"]') ||
+  !worksurface
+    .querySelector('[data-unit-id="2"]')
+    ?.getAttribute("data-unit-status")
+    ?.includes("route-planned")
 ) {
+  throw new Error("Simulator committed route did not enter the shared route/unit projection.");
+}
+const simulatorTickBefore = Number(worksurface.getAttribute("data-scene-tick"));
+buttonByText(currentSimulatorTools(), "Step")?.click();
+await window.happyDOM.waitUntilComplete();
+if (Number(worksurface.getAttribute("data-scene-tick")) !== simulatorTickBefore + 1) {
   throw new Error("Simulator Step did not update the persistent runtime projection.");
+}
+const authoritativeTickBeforeScrub = Number(
+  worksurface.getAttribute("data-scene-tick"),
+);
+buttonByText(timeline, "Home")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  Number(worksurface.getAttribute("data-scene-tick")) !== authoritativeTickBeforeScrub ||
+  Number(timeline.getAttribute("data-time-cursor")) !== 0 ||
+  timeline.getAttribute("data-scrub-semantics") !==
+    "projection-only-runtime-tick-unchanged"
+) {
+  throw new Error(
+    `Simulator timeline scrubbing mutated the authoritative runtime tick: scene=${worksurface.getAttribute("data-scene-tick")}, expected=${authoritativeTickBeforeScrub}, cursor=${timeline.getAttribute("data-time-cursor")}, semantics=${timeline.getAttribute("data-scrub-semantics")}.`,
+  );
 }
 const simulatorTickBeforeRun = Number(
   worksurface.getAttribute("data-scene-tick"),
 );
-buttonByText(currentSimulatorToolbar(), "Run")?.click();
+buttonByText(currentSimulatorTools(), "Run")?.click();
 await waitFor(
   "Simulator Run state and runtime progression",
   () =>
-    Boolean(buttonByText(currentSimulatorToolbar(), "Pause")) &&
+    Boolean(buttonByText(currentSimulatorTools(), "Pause")) &&
     Number(worksurface.getAttribute("data-scene-tick")) > simulatorTickBeforeRun,
 );
 const simulatorTickWhileRunning = Number(
@@ -631,10 +698,10 @@ const simulatorTickWhileRunning = Number(
 assertSingleWorksurface("Simulator running");
 assertCamera("Simulator running");
 assertSelection("Simulator running", 2);
-buttonByText(currentSimulatorToolbar(), "Pause")?.click();
+buttonByText(currentSimulatorTools(), "Pause")?.click();
 await waitFor(
   "Simulator paused state",
-  () => Boolean(buttonByText(currentSimulatorToolbar(), "Run")),
+  () => Boolean(buttonByText(currentSimulatorTools(), "Run")),
 );
 const simulatorPausedTick = Number(
   worksurface.getAttribute("data-scene-tick"),
@@ -649,35 +716,85 @@ if (
 assertSingleWorksurface("Simulator paused");
 assertCamera("Simulator paused");
 assertSelection("Simulator paused", 2);
-buttonByText(simulatorToolbar, "Events")?.click();
-await window.happyDOM.waitUntilComplete();
-if (!shell.textContent.includes("Runtime roster")) {
-  throw new Error("Simulator event and runtime diagnostics are not reachable.");
+if (
+  !currentSimulatorDiagnostics()?.textContent.includes("diagnostics") ||
+  !currentSimulatorDiagnostics()?.textContent.includes("Disclosure boundary")
+) {
+  throw new Error("Simulator runtime and disclosure diagnostics are not reachable.");
 }
 const simulatorZoomBefore = Number(
   worksurface.getAttribute("data-camera-zoom"),
 );
-buttonByText(simulatorToolbar, "+")?.click();
+buttonByText(currentSimulatorTools(), "+")?.click();
 await window.happyDOM.waitUntilComplete();
-if (
-  Number(worksurface.getAttribute("data-camera-zoom")) <= simulatorZoomBefore
-) {
+if (Number(worksurface.getAttribute("data-camera-zoom")) <= simulatorZoomBefore) {
   throw new Error("Simulator camera alternative did not route to the shared camera.");
 }
-buttonByText(simulatorToolbar, "Fit")?.click();
+buttonByText(currentSimulatorTools(), "Fit")?.click();
 await window.happyDOM.waitUntilComplete();
 expectedCamera = [
   worksurface.getAttribute("data-camera-pan-x"),
   worksurface.getAttribute("data-camera-pan-y"),
   worksurface.getAttribute("data-camera-zoom"),
 ];
-// Reset is availability-guarded and uses the existing explicit confirmation.
-buttonByText(simulatorToolbar, "Reset")?.click();
+const runtimeBeforeCancelledReset = simulatorProjectionSnapshot();
+buttonByText(currentSimulatorTools(), "Reset")?.click();
 await window.happyDOM.waitUntilComplete();
-if (confirmationCalls !== 1) {
-  throw new Error("Simulator reset confirmation workflow is unreachable.");
+if (
+  confirmationCalls !== 1 ||
+  simulatorProjectionSnapshot() !== runtimeBeforeCancelledReset
+) {
+  throw new Error("Cancelling Simulator reset changed the exact projected runtime snapshot.");
 }
-await clickModality("Editor", "return after simulator handoff");
+assertSingleWorksurface("cancelled Simulator reset");
+assertCamera("cancelled Simulator reset");
+assertSelection("cancelled Simulator reset", 2);
+
+await clickModality("Editor", "mutate Editor behind simulator handoff");
+await ensurePanelExpanded("selection");
+const editorController = shell.querySelector("#editor-unit-controller");
+if (!editorController) {
+  throw new Error("Editor controller input was unavailable for stale-handoff reset qualification.");
+}
+editorController.value = "General AI";
+editorController.dispatchEvent(new window.Event("change", { bubbles: true }));
+await window.happyDOM.waitUntilComplete();
+const newerEditorRevision = worksurface.getAttribute("data-scene-revision");
+if (newerEditorRevision === pinnedSimulatorRevision) {
+  throw new Error("Editor mutation did not create a revision newer than the simulator handoff.");
+}
+await clickModality("Simulate", "return to stale simulator handoff");
+if (
+  worksurface.getAttribute("data-scene-revision") !== pinnedSimulatorRevision ||
+  !currentSimulatorRevision()?.textContent.includes("behind editor draft")
+) {
+  throw new Error("Existing Simulator handoff adopted or hid the newer Editor revision before reset.");
+}
+window.confirm = () => {
+  confirmationCalls += 1;
+  return true;
+};
+buttonByText(currentSimulatorTools(), "Reset")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  confirmationCalls !== 2 ||
+  simulatorProjectionSnapshot() !== pinnedSimulatorBaseline ||
+  worksurface.getAttribute("data-scene-revision") !== pinnedSimulatorRevision ||
+  worksurface.getAttribute("data-scene-tick") !== "0" ||
+  worksurface.querySelector("#persistent-layer-routes polyline") ||
+  worksurface
+    .querySelector('[data-unit-id="2"]')
+    ?.getAttribute("data-unit-status") !== pinnedControllerStatus ||
+  !currentSimulatorRevision()?.textContent.includes("behind editor draft")
+) {
+  throw new Error(
+    "Accepted Simulator reset did not restore the exact pinned baseline while preserving the newer Editor separately.",
+  );
+}
+assertSingleWorksurface("accepted pinned Simulator reset");
+assertCamera("accepted pinned Simulator reset");
+assertSelection("accepted pinned Simulator reset", 2);
+await clickModality("Editor", "return after pinned simulator reset");
 
 modalityButtons.get("Review").click();
 await window.happyDOM.waitUntilComplete();

@@ -316,6 +316,61 @@ let run () =
     let simulatorBase =
         MapEditorSimulator.tryHandoff editor
         |> Result.defaultWith failwith
+    let pinnedUnit = simulatorBase.RuntimeMap.Units[firstUnit]
+    let mutatedRuntimeMap =
+        { simulatorBase.RuntimeMap with
+            Units =
+                simulatorBase.RuntimeMap.Units
+                |> Map.add
+                    firstUnit
+                    { pinnedUnit with
+                        Controller = General
+                        Column = pinnedUnit.Column + 1
+                        Script = [ North; East ]
+                        ScriptIndex = 1 } }
+    let runtimeMutation =
+        { simulatorBase with
+            RuntimeMap = mutatedRuntimeMap
+            KernelState = { simulatorBase.KernelState with Tick = 17 }
+            Tick = 17
+            IsRunning = true
+            LastEvents = [ "runtime event" ]
+            AttackRecoveryTicks = Map.ofList [ firstUnit, 3 ]
+            MovementCreditsMillimeters = Map.ofList [ firstUnit, 250 ]
+            MovementProgress =
+                Map.ofList
+                    [ firstUnit,
+                      { Origin =
+                            { CellColumn = pinnedUnit.Column
+                              CellRow = pinnedUnit.Row }
+                        Destination =
+                            { CellColumn = pinnedUnit.Column + 1
+                              CellRow = pinnedUnit.Row }
+                        ProgressMillimeters = 250
+                        CostMillimeters = 500 } ]
+            PresentationPositions =
+                simulatorBase.PresentationPositions
+                |> Map.add
+                    firstUnit
+                    (float pinnedUnit.Column + 0.5, float pinnedUnit.Row)
+            MovementIntents = Map.ofList [ firstUnit, East ]
+            PlannedRoutes =
+                Map.ofList
+                    [ firstUnit,
+                      [ { CellColumn = pinnedUnit.Column + 1
+                          CellRow = pinnedUnit.Row } ] ]
+            PreviewDestination =
+                Some
+                    { CellColumn = pinnedUnit.Column + 2
+                      CellRow = pinnedUnit.Row } }
+    let resetRuntime = MapEditorSimulator.reset runtimeMutation
+    require
+        (resetRuntime = simulatorBase
+         && obj.ReferenceEquals(
+             resetRuntime.Revision.Document,
+             simulatorBase.Revision.Document
+         ))
+        "Simulator reset did not restore the exact pinned immutable handoff baseline."
     let routeDestination unitId columnDelta =
         let unit = editor.Map.Units[unitId]
         { CellColumn = unit.Column + columnDelta
@@ -349,6 +404,43 @@ let run () =
         (simulator.PlannedRoutes[firstUnit] = simulatorRouteSource
          && repeatedSimulatorProjection.Routes[0].Points[0] <> 999.0)
         "Simulator projection shared mutable route geometry with its handoff or a later projection."
+    let runtimeUnit = simulator.RuntimeMap.Units[firstUnit]
+    let runtimeMovement =
+        { Origin =
+            { CellColumn = runtimeUnit.Column
+              CellRow = runtimeUnit.Row }
+          Destination = routeDestination firstUnit 1
+          ProgressMillimeters = 125
+          CostMillimeters = 500 }
+    let movingProjection =
+        TacticalSceneProjection.simulator
+            { simulatorInput with
+                SimulatorHandoff =
+                    { simulator with
+                        PresentationPositions =
+                            Map.add
+                                firstUnit
+                                (float runtimeUnit.Column + 0.25, float runtimeUnit.Row)
+                                simulator.PresentationPositions
+                        MovementProgress = Map.add firstUnit runtimeMovement Map.empty } }
+    let movingUnit =
+        movingProjection.Units
+        |> Array.find (fun unit -> unit.Visual.Id = firstUnit)
+    require
+        (movingUnit.PresentationColumn = float runtimeUnit.Column + 0.25
+         && movingUnit.PresentationRow = float runtimeUnit.Row
+         && Array.contains "moving" movingUnit.Visual.StatusIds
+         && movingUnit.Visual.StatusIds
+            |> Array.exists (fun status -> status = "manual")
+         && movingProjection.Disclosure.Source = SandboxDisclosure
+         && movingProjection.Annotations
+            |> Array.exists (fun annotation ->
+                annotation.Kind = "simulator-state"
+                && annotation.Text
+                   = Disclosed(
+                       "Unit " + string firstUnit + " · manual · moving · route-planned"
+                   )))
+        "Simulator movement, controller state, or sandbox disclosure did not cross the shared projection boundary."
 
     let projectedUnit : UnitProjection =
         { Id = firstUnit
@@ -540,12 +632,15 @@ let run () =
                         LastCombatEvents = [] } }
     let firstOccurrence = repeatedSummaryAt 41
     let secondOccurrence = repeatedSummaryAt 42
-    let firstEventId =
-        firstOccurrence.Annotations[0].PrimitiveId
+    let eventId projection =
+        projection.Annotations
+        |> Array.find (fun annotation ->
+            ScenePrimitiveId.value annotation.PrimitiveId
+            |> _.StartsWith("simulator-event:"))
+        |> _.PrimitiveId
         |> ScenePrimitiveId.value
-    let secondEventId =
-        secondOccurrence.Annotations[0].PrimitiveId
-        |> ScenePrimitiveId.value
+    let firstEventId = eventId firstOccurrence
+    let secondEventId = eventId secondOccurrence
     let sameOccurrenceDifferentCamera =
         TacticalSceneProjection.simulator
             { simulatorInput with
@@ -559,8 +654,7 @@ let run () =
     require
         (firstEventId <> secondEventId
          && firstEventId =
-            (sameOccurrenceDifferentCamera.Annotations[0].PrimitiveId
-             |> ScenePrimitiveId.value))
+            eventId sameOccurrenceDifferentCamera)
         "Simulator event occurrences collided across ticks or changed with camera/focus."
 
     let changedFullModel =

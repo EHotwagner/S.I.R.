@@ -23,7 +23,9 @@ type SceneTerrainProjection =
 
 type SceneUnitProjection =
     { PrimitiveId: ScenePrimitiveId
-      Visual: UnitVisual }
+      Visual: UnitVisual
+      PresentationColumn: float
+      PresentationRow: float }
 
 type SceneRouteProjection =
     { PrimitiveId: ScenePrimitiveId
@@ -190,7 +192,9 @@ module TacticalSceneProjection =
         frame.Units
         |> Array.map (fun unit ->
             { PrimitiveId = primitive "unit" (invariant unit.Id)
-              Visual = copyVisual unit })
+              Visual = copyVisual unit
+              PresentationColumn = float unit.AnchorColumn
+              PresentationRow = float unit.AnchorRow })
 
     let private camera (value: BattlefieldCamera) =
         { PanX = value.PanX
@@ -405,6 +409,8 @@ module TacticalSceneProjection =
                if commands |> List.exists (fun command -> command.UnitId = member'.UnitId && match command.Kind with PlannedSynchronization _ -> true | _ -> false) then
                    yield "synchronization" |]
         { PrimitiveId = primitive "unit" (invariant member'.UnitId)
+          PresentationColumn = float member'.Column
+          PresentationRow = float member'.Row
           Visual =
             { Id = member'.UnitId
               AnchorColumn = member'.Column
@@ -603,7 +609,29 @@ module TacticalSceneProjection =
             MapEditorSimulator.frame
                 input.SimulatorSelectedUnit
                 input.SimulatorHandoff
-        let units = unitsOfFrame frame
+        let units =
+            unitsOfFrame frame
+            |> Array.map (fun projected ->
+                let visual = projected.Visual
+                let column, row =
+                    input.SimulatorHandoff.PresentationPositions
+                    |> Map.tryFind visual.Id
+                    |> Option.defaultValue (
+                        float visual.AnchorColumn,
+                        float visual.AnchorRow
+                    )
+                let runtimeStatus =
+                    [| yield! visual.StatusIds
+                       if Map.containsKey visual.Id input.SimulatorHandoff.MovementProgress then
+                           yield "moving"
+                       if Map.containsKey visual.Id input.SimulatorHandoff.MovementIntents then
+                           yield "movement-intent"
+                       if Map.containsKey visual.Id input.SimulatorHandoff.PlannedRoutes then
+                           yield "route-planned" |]
+                { projected with
+                    PresentationColumn = column
+                    PresentationRow = row
+                    Visual = { visual with StatusIds = runtimeStatus } })
         let selected, focused =
             selectedUnits
                 (input.SimulatorSelectedUnit |> Option.toList)
@@ -617,7 +645,21 @@ module TacticalSceneProjection =
           Edges = frame.Edges |> Array.map copyEdge
           Units = units
           Routes = frame.Overlays |> Array.map simulatorOverlayRoute
-          Annotations = eventAnnotations "simulator-event" frame.Events
+          Annotations =
+            Array.append
+                (units
+                 |> Array.map (fun unit ->
+                     let visual = unit.Visual
+                     { PrimitiveId = primitive "simulator-state" (invariant visual.Id)
+                       Kind = "simulator-state"
+                       Column = Some visual.AnchorColumn
+                       Row = Some visual.AnchorRow
+                       Text =
+                           Disclosed(
+                               "Unit " + invariant visual.Id + " · "
+                               + String.concat " · " visual.StatusIds
+                           ) }))
+                (eventAnnotations "simulator-event" frame.Events)
           Disclosure = disclosure SandboxDisclosure
           Camera = camera input.SimulatorCamera
           Selection =
