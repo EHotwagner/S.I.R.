@@ -15,6 +15,7 @@ const styles = await readFile(
   resolve(clientOutput, stylesMatch[1].replace(/^\.\//, "")),
   "utf8",
 );
+const appSource = await readFile(resolve("src/SIR.Client.Web/App.fs"), "utf8");
 const window = new Window({ url: "https://sir.invalid/qualification/" });
 window.document.body.innerHTML = '<div id="sir-replay-app"></div>';
 class QualificationWorker {
@@ -32,6 +33,8 @@ Object.assign(globalThis, {
   MouseEvent: window.MouseEvent,
   Worker: QualificationWorker,
 });
+window.Element.prototype.setPointerCapture = () => {};
+window.Element.prototype.releasePointerCapture = () => {};
 await import(
   pathToFileURL(resolve(clientOutput, scriptMatch[1].replace(/^\.\//, "")))
 );
@@ -45,8 +48,25 @@ const buttonByText = (text, root = window.document) =>
   [...root.querySelectorAll("button")].find(
     (button) => button.textContent.trim() === text,
   );
+const setFile = (input, file) => {
+  Object.defineProperty(input, "files", {
+    configurable: true,
+    value: { 0: file, length: 1, item: (index) => (index === 0 ? file : null) },
+  });
+  input.dispatchEvent(new window.Event("change", { bubbles: true }));
+};
+const settleFile = async () => {
+  await new Promise((done) => setTimeout(done, 20));
+  await window.happyDOM.waitUntilComplete();
+};
 const worksurface = window.document.querySelector(
   'svg#persistent-tactical-svg[role="application"]',
+);
+const stableSceneLayers = new Map(
+  ["terrain", "edges", "routes", "units", "selection", "annotations"].map((layer) => [
+    layer,
+    worksurface?.querySelector(`[data-scene-layer="${layer}"]`),
+  ]),
 );
 require(Boolean(worksurface?.querySelector("title")), "workspace title is missing");
 require(Boolean(worksurface?.querySelector("desc")), "workspace description is missing");
@@ -86,6 +106,91 @@ require(
   ),
   "persistent Editor projection is missing a stable semantic layer",
 );
+require(
+  Boolean(worksurface?.querySelector("#persistent-editor-background")) &&
+    Boolean(worksurface?.querySelector("#persistent-editor-migrated-layers")) &&
+    [...["guides", "regions", "cursor-guide"]].every(
+      (layer) => worksurface?.querySelector(`[data-editor-layer="${layer}"]`),
+    ),
+  "persistent SVG does not own its stable Editor-specific visual layers",
+);
+require(
+  !window.document.querySelector(".editor-owner-controls") &&
+    !window.document.querySelector(".tactical-compatibility-surface [aria-label='Map editor tool groups']"),
+  "Editor controls remain mounted in the compatibility surface",
+);
+for (const [panelId, ownedSelector] of [
+  ["tools", "[aria-label='Map editor tool groups']"],
+  ["layers", "#editor-layer-controls"],
+  ["selection", "[aria-label='Selected unit properties']"],
+  ["validation", "[aria-label='Map validation issues']"],
+  ["document", "[aria-label='Map document controls']"],
+]) {
+  if (!window.document.querySelector(`[data-panel-id="${panelId}"]`)) {
+    window.document.querySelector(`#layout-show-${panelId}`)?.click();
+    await window.happyDOM.waitUntilComplete();
+  }
+  const panel = window.document.querySelector(`[data-panel-id="${panelId}"]`);
+  if (panel?.classList.contains("is-collapsed")) {
+    panel.querySelector(`#layout-panel-${panelId}-collapse`)?.click();
+    await window.happyDOM.waitUntilComplete();
+  }
+  require(
+    Boolean(window.document.querySelector(`#layout-panel-${panelId}-body ${ownedSelector}`)) &&
+      !window.document.querySelector(`#layout-panel-${panelId}-body .tactical-layout-panel-placeholder`),
+    `registered ${panelId} panel does not own its Editor capability`,
+  );
+}
+for (const selector of [
+  "#editor-layer-controls",
+  "#map-name",
+  '[aria-label="Map validation issues"]',
+  '[aria-label="Map editor tool groups"]',
+  '[aria-label="Map document controls"]',
+  '[aria-label="Map editor document actions"]',
+]) {
+  require(
+    window.document.querySelectorAll(selector).length === 1,
+    `Editor capability is duplicated outside its registered panel: ${selector}`,
+  );
+}
+require(
+  !window.document.querySelector(".editor-desktop-chrome") &&
+    !window.document.querySelector('[aria-label="Map editor quick access"]') &&
+    !window.document.querySelector('[aria-label="Map editor menus"]'),
+  "legacy document/menu/quick-action chrome remains below the tactical shell",
+);
+const layerChoice = (domain, label) => {
+  const fieldset = [...window.document.querySelectorAll("#editor-layer-controls fieldset")]
+    .find((candidate) => candidate.querySelector("legend")?.textContent.trim() === domain);
+  return buttonByText(label, fieldset);
+};
+require(
+  worksurface.querySelectorAll("#persistent-layer-units [data-unit-glyph]").length === 4 &&
+    [...worksurface.querySelectorAll("#persistent-layer-units [data-unit-id]")].every((unit) =>
+      unit.getAttribute("aria-label")?.includes(unit.getAttribute("data-unit-class")) &&
+      unit.getAttribute("aria-label")?.includes(" by "),
+    ),
+  "canonical unit glyphs or class/footprint accessible names are missing",
+);
+layerChoice("TerrainDomain", "Dimmed")?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  worksurface.querySelector("#persistent-layer-terrain")?.getAttribute("opacity") === "0.28",
+  "Dimmed terrain layer did not affect the shared terrain projection",
+);
+layerChoice("TerrainDomain", "Visible")?.click();
+await window.happyDOM.waitUntilComplete();
+for (const token of [
+  "let private editorBattlefield",
+  "let private editorGrid",
+  'svg.id "editor-map-stage"',
+]) {
+  require(!appSource.includes(token), `dead Editor renderer source remains: ${token}`);
+}
+for (const token of [".editor-battlefield-svg", ".editor-map-stage", ".editor-canvas", ".map-unit-symbol", ".map-cell"]) {
+  require(!styles.includes(token), `dead Editor renderer CSS remains: ${token}`);
+}
 require(
   Boolean(window.document.querySelector('[aria-live="polite"]')),
   "editor changes have no polite announcement channel",
@@ -162,6 +267,26 @@ const sendEditorKey = async (key, options = {}) => {
   );
   await window.happyDOM.waitUntilComplete();
 };
+const sendPointer = async (target, type, options) => {
+  const event = new window.MouseEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    button: options.button ?? 0,
+    clientX: options.clientX,
+    clientY: options.clientY,
+    shiftKey: options.shiftKey ?? false,
+  });
+  Object.defineProperties(event, {
+    pointerId: { value: options.pointerId ?? 41 },
+    pointerType: { value: options.pointerType ?? "mouse" },
+  });
+  target.dispatchEvent(event);
+  await window.happyDOM.waitUntilComplete();
+};
+worksurface.getBoundingClientRect = () => ({
+  x: 0, y: 0, left: 0, top: 0, right: 960, bottom: 640,
+  width: 960, height: 640, toJSON: () => ({}),
+});
 require(
   modalRegion()?.textContent.includes("EDITOR / SELECT"),
   "the mounted Editor controls do not project the live Select mode",
@@ -190,6 +315,25 @@ await sendEditorKey("r");
 await sendEditorKey("Enter");
 await sendEditorKey("ArrowRight");
 await sendEditorKey("ArrowDown", { shiftKey: true });
+require(
+  Boolean(worksurface.querySelector('[data-editor-layer="terrain-preview"]')),
+  "terrain rectangle did not mount a live persistent preview layer",
+);
+layerChoice("TerrainDomain", "Dimmed")?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  worksurface.querySelector('[data-editor-layer="terrain-preview"]')?.getAttribute("opacity") === "0.28",
+  "terrain preview did not honor the Dimmed domain state",
+);
+layerChoice("TerrainDomain", "Hidden")?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  worksurface.querySelector("#persistent-layer-terrain")?.getAttribute("display") === "none" &&
+    worksurface.querySelector('[data-editor-layer="terrain-preview"]')?.getAttribute("display") === "none",
+  "terrain and its active preview did not fail closed when the domain was hidden",
+);
+layerChoice("TerrainDomain", "Visible")?.click();
+await window.happyDOM.waitUntilComplete();
 await sendEditorKey("Backspace");
 require(
   modalRegion()?.textContent.includes("anchor A1, endpoint A1"),
@@ -216,6 +360,29 @@ require(
   modalRegion()?.textContent.includes("EDITOR / EDGES"),
   "keyboard E did not enter edge authoring",
 );
+buttonByText("East wall", window.document.querySelector("#layout-panel-tools-body"))?.click();
+await window.happyDOM.waitUntilComplete();
+await sendEditorKey("Enter");
+require(
+  Boolean(worksurface.querySelector('[data-editor-layer="edge-preview"] [data-edge-preview]')),
+  "edge authoring did not mount a live persistent polyline preview",
+);
+layerChoice("EdgeDomain", "Dimmed")?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  worksurface.querySelector('[data-editor-layer="edge-preview"]')?.getAttribute("opacity") === "0.28",
+  "edge preview did not honor the Dimmed domain state",
+);
+layerChoice("EdgeDomain", "Hidden")?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  worksurface.querySelector("#persistent-layer-edges")?.getAttribute("display") === "none" &&
+    worksurface.querySelector('[data-editor-layer="edge-preview"]')?.getAttribute("display") === "none",
+  "edge layer and preview did not fail closed when hidden",
+);
+layerChoice("EdgeDomain", "Visible")?.click();
+await window.happyDOM.waitUntilComplete();
+await sendEditorKey("Escape");
 const edgeCountBefore = worksurface.querySelectorAll(
   "#persistent-layer-edges line",
 ).length;
@@ -287,11 +454,115 @@ require(
     worksurface.getAttribute("data-scene-revision") === regionRevisionAfter,
   "region redo did not restore the exact authored revision",
 );
+const regionNode = worksurface.querySelector(
+  '[data-editor-layer="regions"] [data-region-id]',
+);
+regionNode?.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+await window.happyDOM.waitUntilComplete();
+require(
+  regionNode?.getAttribute("data-selected") === "false",
+  "region Escape did not clear semantic selection",
+);
+regionNode?.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+await window.happyDOM.waitUntilComplete();
+require(
+  regionNode?.isConnected && regionNode === worksurface.querySelector(`[data-region-id="${regionNode?.getAttribute("data-region-id")}"]`) &&
+    regionNode?.getAttribute("data-selected") === "true",
+  "region Enter did not select through a stable keyed semantic primitive",
+);
+regionNode?.dispatchEvent(new window.KeyboardEvent("keydown", { key: " ", bubbles: true }));
+await window.happyDOM.waitUntilComplete();
+require(regionNode?.getAttribute("data-selected") === "true", "region Space did not preserve selection");
+const regionGeometryLayer = worksurface.querySelector('[data-editor-layer="regions"]');
+const regionAnnotationLayer = worksurface.querySelector("#persistent-layer-annotations");
+layerChoice("RegionDomain", "Dimmed")?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  regionGeometryLayer?.getAttribute("opacity") === "0.28" &&
+    regionAnnotationLayer?.getAttribute("opacity") === "0.28",
+  "Dimmed region domain did not consistently affect region geometry and annotations",
+);
+layerChoice("RegionDomain", "Hidden")?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  regionGeometryLayer?.getAttribute("display") === "none" &&
+    regionAnnotationLayer?.getAttribute("display") === "none",
+  "Hidden region domain did not fail closed for region geometry and annotations",
+);
+layerChoice("RegionDomain", "Visible")?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  regionGeometryLayer?.getAttribute("display") === "inline" &&
+    regionGeometryLayer?.getAttribute("opacity") === "1" &&
+    regionAnnotationLayer?.getAttribute("display") === "inline" &&
+    regionAnnotationLayer?.getAttribute("opacity") === "1",
+  "Visible region domain did not restore region geometry and annotations",
+);
 await sendEditorKey("Escape");
 await sendEditorKey("Escape");
 
 await sendEditorKey("t");
 await sendEditorKey("v");
+let pointerUnit = worksurface.querySelector('#persistent-layer-units [data-unit-id="1"]');
+pointerUnit?.dispatchEvent(new window.MouseEvent("click", { bubbles: true, cancelable: true }));
+await window.happyDOM.waitUntilComplete();
+const pointerRect = pointerUnit?.querySelector("rect");
+const pointerOriginalX = Number(pointerRect?.getAttribute("x"));
+const pointerStartX = Number(pointerRect?.getAttribute("x")) + 12;
+const pointerStartY = Number(pointerRect?.getAttribute("y")) + 12;
+const pointerRevision = worksurface.getAttribute("data-scene-revision");
+await sendPointer(pointerUnit, "pointerdown", { clientX: pointerStartX, clientY: pointerStartY });
+await sendPointer(worksurface, "pointermove", { clientX: pointerStartX + 64, clientY: pointerStartY });
+require(
+  Boolean(worksurface.querySelector('[data-editor-layer="placement-preview"] [data-preview-unit]')),
+  "pointer drag did not project a real unit movement preview",
+);
+layerChoice("UnitDomain", "Dimmed")?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  worksurface.querySelector("#persistent-layer-units")?.getAttribute("opacity") === "0.28" &&
+    worksurface.querySelector('[data-editor-layer="placement-preview"]')?.getAttribute("opacity") === "0.28",
+  "unit movement preview did not honor Dimmed layer state",
+);
+layerChoice("UnitDomain", "Hidden")?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  worksurface.querySelector("#persistent-layer-units")?.getAttribute("display") === "none" &&
+    worksurface.querySelector('[data-editor-layer="placement-preview"]')?.getAttribute("display") === "none",
+  "unit layer and movement preview did not fail closed when hidden",
+);
+layerChoice("UnitDomain", "Visible")?.click();
+await window.happyDOM.waitUntilComplete();
+await sendPointer(worksurface, "pointerup", { clientX: pointerStartX + 64, clientY: pointerStartY });
+pointerUnit = worksurface.querySelector('#persistent-layer-units [data-unit-id="1"]');
+require(
+  worksurface.getAttribute("data-scene-revision") !== pointerRevision &&
+    Number(pointerUnit?.querySelector("rect")?.getAttribute("x")) > pointerOriginalX,
+  "pointer unit movement did not commit an authored revision",
+);
+const stableUnitOne = pointerUnit;
+const unitTwo = worksurface.querySelector('#persistent-layer-units [data-unit-id="2"]');
+unitTwo?.dispatchEvent(new window.MouseEvent("click", { bubbles: true, cancelable: true, shiftKey: true }));
+await window.happyDOM.waitUntilComplete();
+require(
+  worksurface.querySelectorAll("#persistent-layer-selection [data-selection-for]").length === 2 &&
+    stableUnitOne === worksurface.querySelector('#persistent-layer-units [data-unit-id="1"]'),
+  "Shift-click did not add a second unit without replacing stable unit identity",
+);
+unitTwo?.dispatchEvent(new window.KeyboardEvent("keydown", { key: " ", bubbles: true, shiftKey: true }));
+await window.happyDOM.waitUntilComplete();
+require(
+  worksurface.querySelectorAll("#persistent-layer-selection [data-selection-for]").length === 1,
+  "Shift-Space did not toggle multi-selection through the unit keyboard handler",
+);
+await sendEditorKey("z", { ctrlKey: true });
+await sendPointer(worksurface, "pointerdown", { pointerId: 42, clientX: 610, clientY: 420 });
+await sendPointer(worksurface, "pointermove", { pointerId: 42, clientX: 690, clientY: 485 });
+require(
+  Boolean(worksurface.querySelector('[data-editor-layer="selection-gesture"][data-editor-gesture="box-selection"]')),
+  "pointer box selection did not mount its persistent gesture layer",
+);
+await sendPointer(worksurface, "pointerup", { pointerId: 42, clientX: 690, clientY: 485 });
 for (let index = 0; index < 12; index += 1) {
   await sendEditorKey("ArrowLeft");
   await sendEditorKey("ArrowUp");
@@ -327,10 +598,44 @@ require(
   `Space key-up did not restore Select mode (${modalRegion()?.textContent})`,
 );
 
+const unitCountBeforeClipboard = worksurface.querySelectorAll(
+  "#persistent-layer-units [data-unit-id]",
+).length;
+buttonByText("Copy")?.click();
+await window.happyDOM.waitUntilComplete();
+buttonByText("Paste")?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  Boolean(worksurface.querySelector('[data-editor-layer="placement-preview"]')),
+  "pasting the Editor clipboard did not project its placement preview",
+);
+await sendEditorKey("Enter");
+require(
+  worksurface.querySelectorAll("#persistent-layer-units [data-unit-id]").length ===
+    unitCountBeforeClipboard + 1,
+  "clipboard paste did not commit through the persistent renderer",
+);
+await sendEditorKey("z", { ctrlKey: true });
+require(
+  worksurface.querySelectorAll("#persistent-layer-units [data-unit-id]").length ===
+    unitCountBeforeClipboard,
+  "clipboard paste did not remain one undoable transaction",
+);
+const autosaveName = window.document.querySelector("#map-name");
+autosaveName.value = "Autosave qualification";
+autosaveName.dispatchEvent(new window.Event("input", { bubbles: true }));
+autosaveName.dispatchEvent(new window.Event("change", { bubbles: true }));
+await window.happyDOM.waitUntilComplete();
+await new Promise((done) => setTimeout(done, 700));
+require(
+  /^SIR-MAP [123]\n/.test(window.localStorage.getItem("sir.map-editor.autosave.v1") ?? ""),
+  `authored changes did not reach observed autosave storage (timer ${Boolean(window.__sirMapAutosaveTimer)}, name ${window.document.querySelector("#map-name")?.value})`,
+);
+
 const cameraBefore = Number(worksurface.getAttribute("data-camera-zoom"));
 buttonByText(
-  "+",
-  window.document.querySelector('[aria-label="Map editor quick access"]'),
+  "Zoom in",
+  window.document.querySelector('[aria-label="Map editor document actions"]'),
 )?.click();
 await window.happyDOM.waitUntilComplete();
 require(
@@ -339,12 +644,10 @@ require(
 );
 buttonByText(
   "Fit",
-  window.document.querySelector('[aria-label="Map editor quick access"]'),
+  window.document.querySelector('[aria-label="Map editor document actions"]'),
 )?.click();
 await window.happyDOM.waitUntilComplete();
 
-buttonByText("Map file")?.click();
-await window.happyDOM.waitUntilComplete();
 require(
   Boolean(window.document.querySelector('[aria-label="Editing layer states"]')),
   "editing layer states are not reachable beside the persistent workscreen",
@@ -383,6 +686,113 @@ require(
 );
 buttonByText("Cancel")?.click();
 await window.happyDOM.waitUntilComplete();
+
+buttonByText("Clear")?.click();
+await window.happyDOM.waitUntilComplete();
+buttonByText("Confirm")?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  worksurface.querySelectorAll("#persistent-layer-units [data-unit-id]").length === 0,
+  "destructive confirmation did not execute the confirmed clear",
+);
+const gapMap = `SIR-MAP 2
+size 6 4
+edge 1 0 east wall closed
+edge 1 2 east wall closed
+unit 1 blue rifleman 0 0 1 12 12 manual -
+`;
+setFile(
+  window.document.querySelector('input[aria-label="Import SIR map"]'),
+  new window.File([gapMap], "gap.sir-map", { type: "text/plain" }),
+);
+await settleFile();
+buttonByText("Next", window.document.querySelector('[aria-label="Map validation issues"]'))?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  worksurface.querySelector('[data-editor-layer="validation-overlay"]')?.textContent.includes("EDGE-GAP"),
+  "active validation did not mount a live persistent validation overlay",
+);
+
+const universalVtt = `{
+  "format": 0.3,
+  "resolution": {
+    "map_size": { "x": 6, "y": 4 },
+    "pixels_per_grid": 100,
+    "map_origin": { "x": 0, "y": 0 }
+  },
+  "line_of_sight": [[{"x":100,"y":0},{"x":100,"y":200}]],
+  "portals": [{"bounds":[{"x":100,"y":200},{"x":200,"y":200}],"closed":false,"secret":true}],
+  "lights": [{"position":{"x":50,"y":50},"range":300}]
+}`;
+const revisionBeforeReview = worksurface.getAttribute("data-scene-revision");
+setFile(
+  window.document.querySelector('input[aria-label="Import SIR map"]'),
+  new window.File([universalVtt], "review.dd2vtt", { type: "application/json" }),
+);
+await settleFile();
+require(
+  Boolean(window.document.querySelector('[aria-label="Interchange import review"]')),
+  "non-native import bypassed the required review surface",
+);
+buttonByText("Cancel import")?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  !window.document.querySelector('[aria-label="Interchange import review"]') &&
+    worksurface.getAttribute("data-scene-revision") === revisionBeforeReview,
+  "cancelled reviewed import changed the authoritative map",
+);
+setFile(
+  window.document.querySelector('input[aria-label="Import SIR map"]'),
+  new window.File([universalVtt], "review.dd2vtt", { type: "application/json" }),
+);
+await settleFile();
+buttonByText("Accept reviewed import")?.click();
+await window.happyDOM.waitUntilComplete();
+require(
+  !window.document.querySelector('[aria-label="Interchange import review"]') &&
+    worksurface.getAttribute("data-scene-revision") !== revisionBeforeReview,
+  "accepted reviewed import did not commit its deterministic candidate",
+);
+const visualMap = `SIR-MAP 2
+size 8 4
+terrain 1 1 rough
+terrain 2 1 blocked
+terrain 3 1 objective
+edge 1 0 east wall closed
+edge 2 0 east door closed
+edge 3 0 east door open
+edge 4 0 east window closed
+unit 1 blue rifleman 0 0 1 12 12 manual -
+`;
+setFile(
+  window.document.querySelector('input[aria-label="Import SIR map"]'),
+  new window.File([visualMap], "visual-parity.sir-map", { type: "text/plain" }),
+);
+await settleFile();
+require(
+  [...["diagonal-hatch", "cross-hatch", "inset-ring"]].every((pattern) =>
+    worksurface.querySelector(`[data-terrain-pattern="${pattern}"]`),
+  ),
+  "authored terrain hatch/ring patterns are absent from the live SVG",
+);
+const wall = worksurface.querySelector('#persistent-layer-edges [data-edge-kind="wall"]');
+const closedDoor = worksurface.querySelector('#persistent-layer-edges [data-edge-kind="door"][data-edge-state="closed"]');
+const openDoor = worksurface.querySelector('#persistent-layer-edges [data-edge-kind="door"][data-edge-state="open"]');
+const windowEdge = worksurface.querySelector('#persistent-layer-edges [data-edge-kind="window"]');
+require(
+  Boolean(wall && closedDoor && openDoor && windowEdge) &&
+    wall.getAttribute("stroke") !== closedDoor.getAttribute("stroke") &&
+    closedDoor.getAttribute("stroke-dasharray") === "none" &&
+    openDoor.getAttribute("stroke-dasharray") === "8 5" &&
+    windowEdge.getAttribute("stroke-dasharray") === "3 3",
+  "wall, closed/open door, and window rendering are not semantically distinct",
+);
+require(
+  [...stableSceneLayers].every(([layer, reference]) =>
+    reference === worksurface.querySelector(`[data-scene-layer="${layer}"]`),
+  ),
+  "a stable shared scene layer remounted during Editor parity workflows",
+);
 
 for (const control of window.document.querySelectorAll(
   "#sir-replay-app button, #sir-replay-app input, #sir-replay-app select",
@@ -448,6 +858,6 @@ if (failures.length > 0) {
   throw new Error(`Map-editor qualification failed: ${failures.join("; ")}.`);
 }
 console.log(
-  "Map-editor automated qualification passed at the M3 boundary: one accessible persistent application workscreen, atomic terrain/edge/region editing with undo-redo, selection/Pan and native-input boundaries, shared camera controls, modal help/focus behavior, reachable layers/validation/document/destructive workflows, no connected legacy Editor roots, accessibility CSS, and seven domain-truthful hashed review boards.",
+  "Map-editor M4 qualification passed: one accessible persistent SVG owns all Editor layers and pointer intent; registered tools/layers/selection/validation/document panels own Editor controls; atomic editing, undo-redo, camera, modal input, validation, import and accessibility parity remain intact; legacy renderer source/CSS is absent; and seven domain-truthful review boards are hash-bound to the production bundle.",
 );
 window.happyDOM.close();

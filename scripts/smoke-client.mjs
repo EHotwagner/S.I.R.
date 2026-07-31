@@ -432,7 +432,7 @@ const clickModality = async (label, operation, expectedSelection = 2) => {
   assertSelection(operation, expectedSelection);
 };
 const buttonByText = (container, text) =>
-  [...container.querySelectorAll("button")].find(
+  [...(container?.querySelectorAll("button") ?? [])].find(
     (button) => button.textContent.trim() === text,
   );
 const buttonByLabel = (container, label) =>
@@ -491,9 +491,18 @@ assertSingleWorksurface("stale selection filtering");
 assertSelection("stale selection filtering", null);
 await clickModality("Editor", "return from unavailable Review");
 
+if (!shell.querySelector('[data-panel-id="document"]')) {
+  shell.querySelector("#layout-show-document")?.click();
+  await window.happyDOM.waitUntilComplete();
+}
+const editorDocumentPanel = shell.querySelector('[data-panel-id="document"]');
+if (editorDocumentPanel?.classList.contains("is-collapsed")) {
+  editorDocumentPanel.querySelector("#layout-panel-document-collapse")?.click();
+  await window.happyDOM.waitUntilComplete();
+}
 buttonByText(
-  shell.querySelector('[aria-label="Map editor quick access"]'),
-  "Simulate",
+  shell.querySelector('[aria-label="Map editor document actions"]'),
+  "Simulate revision",
 )?.click();
 await window.happyDOM.waitUntilComplete();
 assertModality("Simulate", "simulator handoff");
@@ -1011,7 +1020,8 @@ if (
   !reopenedSvg ||
   reopenedSvg.getAttribute("data-scene-owner") !== "EditorScene" ||
   reopenedSvg.querySelectorAll("[data-scene-layer]").length !== 7 ||
-  !reopenedShell.querySelector('[aria-label="Map editor menu and toolbar"]')
+  !reopenedShell.querySelector('[data-panel-id="tools"]') ||
+  !reopenedShell.querySelector('[data-panel-id="document"]')
 ) {
   throw new Error("Opening a curated map did not return to the persistent Editor workscreen.");
 }

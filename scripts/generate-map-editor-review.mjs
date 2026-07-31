@@ -65,21 +65,31 @@ const settleFile = async () => {
   await window.happyDOM.waitUntilComplete();
 };
 const ensureDocumentPanel = async () => {
-  let validation = window.document.querySelector(
+  if (!window.document.querySelector('[data-panel-id="document"]')) {
+    window.document.querySelector("#layout-show-document")?.click();
+    await window.happyDOM.waitUntilComplete();
+  }
+  const documentPanel = window.document.querySelector('[data-panel-id="document"]');
+  if (documentPanel?.classList.contains("is-collapsed")) {
+    documentPanel.querySelector("#layout-panel-document-collapse")?.click();
+    await window.happyDOM.waitUntilComplete();
+  }
+  if (!window.document.querySelector('[data-panel-id="validation"]')) {
+    window.document.querySelector("#layout-show-validation")?.click();
+    await window.happyDOM.waitUntilComplete();
+  }
+  const validationPanel = window.document.querySelector(
+    '[data-panel-id="validation"]',
+  );
+  if (validationPanel?.classList.contains("is-collapsed")) {
+    validationPanel.querySelector("#layout-panel-validation-collapse")?.click();
+    await window.happyDOM.waitUntilComplete();
+  }
+  const validation = window.document.querySelector(
     '[aria-label="Map validation issues"]',
   );
-  if (!validation) {
-    buttonByText(
-      "Map file",
-      window.document.querySelector('[aria-label="Map editor tool groups"]'),
-    )?.click();
-    await window.happyDOM.waitUntilComplete();
-    validation = window.document.querySelector(
-      '[aria-label="Map validation issues"]',
-    );
-  }
-  if (!validation) {
-    throw new Error("Map file controls did not expose the validation region.");
+  if (!validation || !window.document.querySelector("#map-name")) {
+    throw new Error("Registered document and validation panels are unavailable.");
   }
   return validation;
 };
@@ -168,12 +178,12 @@ await settleFile();
 await writeBoard(
   "terrain",
   ["terrain"],
-  "Shared authored terrain projected through the persistent M3 renderer.",
+  "Authored terrain projected through the persistent Editor renderer.",
 );
 await writeBoard(
   "edges",
   ["edges"],
-  "Shared semantic edges projected through the persistent M3 renderer.",
+  "Semantic edges projected through the persistent Editor renderer.",
 );
 await writeBoard(
   "units",
@@ -197,13 +207,17 @@ setFile(
   new window.File([png], "qualification.png", { type: "image/png" }),
 );
 await settleFile();
-const backgroundState =
-  window.document.querySelector('[aria-label="Editor non-workscreen controls"]')
-    ?.textContent ?? "";
+const persistentBackground = worksurface()?.querySelector(
+  '#persistent-editor-background [data-layer="local-raster-background"]',
+);
+if (!persistentBackground) {
+  throw new Error("The validated raster background did not enter the persistent SVG.");
+}
+const backgroundState = `Persistent raster layer: ${persistentBackground.tagName.toLowerCase()} · opacity ${persistentBackground.getAttribute("opacity")}`;
 await writeBoard(
   "background",
   ["terrain", "annotations"],
-  "Signature-validated local background control state beside the retained authored projection; raster drawing migrates in M4.",
+  "Signature-validated local background rendered by the retained persistent SVG.",
   backgroundState,
 );
 
@@ -214,11 +228,10 @@ unit?.dispatchEvent(
   new window.MouseEvent("click", { bubbles: true, cancelable: true }),
 );
 await window.happyDOM.waitUntilComplete();
-[...window.document.querySelectorAll(
-  '[aria-label="Map editor quick access"] button',
-)]
-  .find((button) => button.textContent.trim() === "Simulate")
-  ?.click();
+buttonByText(
+  "Simulate revision",
+  window.document.querySelector('[aria-label="Map editor document actions"]'),
+)?.click();
 await window.happyDOM.waitUntilComplete();
 if (worksurface()?.getAttribute("data-scene-owner") !== "SimulatorScene") {
   throw new Error("The registry-routed simulator handoff did not project.");
@@ -257,7 +270,7 @@ await writeBoard(
 
 const manifest = {
   format: "sir-map-editor-review-v1",
-  generatedFrom: "production persistent Fable/React SVG workscreen at the M3 boundary",
+  generatedFrom: "production persistent Fable/React SVG workscreen after the M4 Editor migration",
   productionBundleSha256,
   rasterizer: "rsvg-convert 2.62.3",
   width: 960,
@@ -275,12 +288,12 @@ await writeFile(
 
 These deterministic SVG/PNG pairs are generated from the production retained
 Fable/React workscreen by \`node scripts/generate-map-editor-review.mjs\`.
-The manifest pins the production bundle and every artifact hash. At Milestone 3
-the boards prove the renderer boundary and shared layers; full Editor parity is
-assigned to Milestone 4.
+The manifest pins the production bundle and every artifact hash. At Milestone 4
+the boards prove the persistent Editor renderer, registered control ownership,
+and migrated visual semantics.
 
 Domains: imported terrain, semantic edges, units, positioned regions,
-signature-validated background control state, imported validation state, and
+signature-validated background rendering, imported validation state, and
 immutable simulator handoff.
 `,
   "utf8",
