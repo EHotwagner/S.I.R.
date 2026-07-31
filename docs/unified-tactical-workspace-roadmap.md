@@ -6,13 +6,14 @@ index: 10
 status: accepted
 decision-status: accepted
 document-type: design-decision
-version: "1.0"
-last-updated: 2026-07-30
+version: "1.1"
+last-updated: 2026-07-31
 description: Unify map authoring, plan authoring, prediction, execution, and replay around one persistent battlefield and one scrub-able timeline.
 related:
   - docs/planning-workspace.md
   - docs/svg-replay-player.md
   - docs/keyboardInput/editor-simulator-modal-input-proposal.md
+  - docs/2026-07-31-0840-vscode-style-persistent-tactical-workspace-design-report.md
 ---
 
 # Unified Tactical Workspace Roadmap
@@ -27,6 +28,12 @@ rules without replacing the user's spatial context.
 
 Rules, data, and samples remain supporting application sections. They are not
 battlefield modalities.
+
+The completed milestones below record the first unification pass. They do not
+complete the corrective persistent-workscreen goal defined by the
+[VS Code-Style Persistent Tactical Workspace Design Report](2026-07-31-0840-vscode-style-persistent-tactical-workspace-design-report.md).
+That report is the active successor for presentation architecture and release
+acceptance.
 
 The workspace has one time model:
 
@@ -100,6 +107,33 @@ gestures cannot be captured silently.
 
 On narrow viewports the panels become in-flow drawers, but battlefield,
 timeline, mode selector, time cursor, and contextual state remain available.
+
+## Mandatory corrective goal — Field Focus
+
+**Field Focus** is the accepted default layout and MUST be achieved before the
+corrective redesign is considered complete. The implementation must provide:
+
+- one exact persistent SVG workscreen across Editor, Plan, Simulate, and Review;
+- a compact top toolbar rather than page-sized or modality-specific chrome;
+- narrow, configurable left and right sidebars that can be moved, reordered,
+  collapsed, shown, and hidden;
+- a shallow, resizable bottom timeline;
+- a workscreen that remains visually and dimensionally dominant with both
+  default sidebars open; and
+- richer analysis layouts through the same persisted panel system, never
+  through another workspace or renderer.
+
+The [interactive Field Focus mockup](assets/persistent-workspace-mockups/index.html)
+is the selected visual-density reference. It is not a substitute for
+accessibility or browser qualification, but divergence from its spatial
+priority requires a new accepted design decision.
+
+- [ ] Complete Milestones 0–9 in the corrective design report.
+- [ ] Pass strict SVG reference-identity qualification across modality, panel,
+  timeline, overlay, resize, and playback transitions.
+- [ ] Pass Field Focus visual review at the reference desktop viewport with
+  both default sidebars open.
+- [ ] Remove all legacy modality-specific battlefield render paths.
 
 ## Milestones
 
