@@ -1,13 +1,13 @@
 ---
 title: SVG Player and Visual Catalog
-status: accepted
+status: implemented
 decision-status: canonical
 document-type: living-architecture
 category: Tools & Evidence
 categoryindex: 5
 index: 7
-version: "1.0"
-last-updated: 2026-07-29
+version: "1.1"
+last-updated: 2026-07-31
 description: Durable boundaries, disclosure-safe render contract, initial element inventory, glyph coverage, and palettes for the documentation SVG replay player.
 related:
   - docs/2026-07-29-0200-svg-replay-simulation-player-design-report.md
@@ -17,6 +17,10 @@ related:
 ---
 
 # SVG Replay Player Contract and Visual Catalog
+
+Final single-renderer, committed-state, disclosure, spatial-continuity, and
+Field Focus acceptance is recorded in the
+[M9 acceptance evidence](persistent-tactical-workspace-m9-acceptance-evidence.md).
 
 ## Accepted decision
 

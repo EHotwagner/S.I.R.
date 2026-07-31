@@ -55,7 +55,7 @@ require(
 );
 
 for (const required of [
-  "CollapsedInEditor = true",
+  "CollapsedInEditor = false",
   "CollapsedOutsideEditor = false",
   "Height = 152",
   "let resizeBottomPanel height profile",
@@ -103,7 +103,7 @@ for (const required of [
   "window.document.activeElement !== resizeHandle",
   'window.document.querySelector(\'[aria-label="Unified tactical timeline"]\') !== timeline',
   "!timeline.isConnected",
-  'viewport.getAttribute("data-active-modality") !== "Plan"',
+  'workscreenRegion.getAttribute("data-active-modality") !== "Plan"',
   'window.document.activeElement !== rulesPanel.querySelector(".tactical-layout-panel-body")',
   'window.document.activeElement !== window.document.querySelector("#layout-show-rules")',
   'window.happyDOM.setInnerWidth(320)',

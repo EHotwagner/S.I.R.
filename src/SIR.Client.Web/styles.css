@@ -3,13 +3,13 @@
   background: #101715;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   font-synthesis: none;
-  min-width: 320px;
+  min-width: 0;
   width: 100%;
   max-width: 100%;
   clear: both;
   position: relative;
   isolation: isolate;
-  overflow-x: auto;
+  overflow-x: hidden;
   min-height: inherit;
 }
 
@@ -55,18 +55,10 @@
 #sir-replay-app h3 { margin-block: .6rem; }
 #sir-replay-app p { line-height: 1.5; }
 
-#sir-replay-app .workspace-navigation {
-  position: sticky;
-  top: 0;
-  z-index: 5;
+#sir-replay-app .tactical-supporting-controls {
   display: flex;
   flex-wrap: wrap;
   gap: .2rem;
-  margin-bottom: .35rem;
-  padding: .25rem;
-  border: 1px solid #43584e;
-  border-radius: .55rem;
-  background: rgba(16, 23, 21, .96);
 }
 #sir-replay-app .editor-tool-navigation {
   display: grid;
@@ -295,12 +287,6 @@
 #sir-replay-app .chart-row { display: grid; grid-template-columns: 3rem 1fr 3rem; gap: .6rem; align-items: center; }
 #sir-replay-app .chart-row meter { width: 100%; }
 
-#sir-replay-app .editor-workspace {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: .35rem;
-  min-height: calc(100vh - 4.5rem);
-}
 #sir-replay-app .editor-desktop-chrome {
   position: relative;
   z-index: 10;
@@ -419,46 +405,23 @@
   padding: 1rem;
   box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, .7);
 }
-#sir-replay-app .editor-ribbon {
-  position: absolute;
-  top: .35rem;
-  right: .35rem;
-  z-index: 8;
+#sir-replay-app .editor-tools-panel {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 6rem;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: .25rem;
-  width: min(26rem, calc(100% - .7rem));
-  max-height: calc(100% - .7rem);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow: auto;
   padding: .4rem;
-  background: rgba(23, 33, 30, .97);
-  box-shadow: 0 .6rem 1.5rem rgba(0, 0, 0, .4);
+  background: #17211e;
 }
-#sir-replay-app .editor-ribbon > .editor-section-heading {
-  grid-column: 1;
-  grid-row: 1;
-}
-#sir-replay-app .editor-ribbon > .editor-tool-navigation {
-  grid-column: 2;
-  grid-row: 1 / span 2;
+#sir-replay-app .editor-tools-panel > .editor-tool-navigation {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-content: start;
 }
-#sir-replay-app .editor-ribbon > .editor-context-palette {
-  grid-column: 1;
-  grid-row: 2;
+#sir-replay-app .editor-tools-panel > .editor-context-palette {
   min-width: 0;
-}
-#sir-replay-app .editor-ribbon.is-collapsed {
-  display: block;
-  width: 6rem;
-}
-#sir-replay-app .editor-ribbon.is-collapsed .editor-section-heading { display: none; }
-#sir-replay-app .editor-ribbon.is-collapsed .editor-tool-navigation {
-  grid-template-columns: 1fr;
-  margin: 0;
-  padding: 0;
-  border-bottom: 0;
 }
 #sir-replay-app .compact-tool-rail {
   display: grid;
@@ -641,6 +604,7 @@
 #sir-replay-app .tactical-toolbar-layout,
 #sir-replay-app .tactical-toolbar-transport {
   display: flex;
+  flex-wrap: wrap;
   gap: .2rem;
 }
 #sir-replay-app .tactical-drawer-toggle { display: none; }
@@ -682,10 +646,11 @@
   gap: .4rem;
   min-width: 0;
 }
-#sir-replay-app .tactical-battlefield-viewport {
+#sir-replay-app .tactical-workscreen-region {
   grid-area: workscreen;
   min-width: 0;
   min-height: 32rem;
+  height: clamp(32rem, calc(100vh - 15.5rem), 44rem);
   overflow: hidden;
   border: 1px solid #43584e;
   border-radius: .4rem;
@@ -694,8 +659,9 @@
 #sir-replay-app #persistent-tactical-svg {
   display: block;
   width: 100%;
-  min-height: 32rem;
-  max-height: 44rem;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
   background: #16211d;
   touch-action: none;
 }
@@ -703,23 +669,10 @@
   outline: 3px solid #ffd166;
   outline-offset: -4px;
 }
-#sir-replay-app .tactical-compatibility-surface {
-  border-top: 1px solid #43584e;
-  background: #111a17;
-}
-#sir-replay-app .tactical-compatibility-surface > summary {
-  min-height: 2.75rem;
-  padding: .65rem;
-  color: #c9d7d0;
-  cursor: pointer;
-}
-#sir-replay-app .tactical-compatibility-surface > div {
-  max-height: 36rem;
-  overflow: auto;
-}
 #sir-replay-app .tactical-sidebar {
   min-width: 0;
-  max-height: 44rem;
+  height: clamp(32rem, calc(100vh - 15.5rem), 44rem);
+  max-height: none;
   overflow: auto;
   border: 1px solid #43584e;
   border-radius: .4rem;
@@ -769,7 +722,7 @@
   position: sticky;
   top: 0;
   z-index: 3;
-  height: .65rem;
+  height: .3rem;
   border-block: 1px solid #60776b;
   background: #26372f;
   cursor: ns-resize;
@@ -804,15 +757,29 @@
   min-width: 2.75rem;
   min-height: 2.75rem;
 }
-#sir-replay-app .tactical-workspace-content { min-width: 0; }
+#sir-replay-app .tactical-transient-layer { min-width: 0; }
 #sir-replay-app .tactical-timeline {
   display: grid;
-  gap: .35rem;
+  gap: .15rem;
   min-width: 0;
-  padding: .55rem;
+  padding: .25rem;
   border: 1px solid #43584e;
   border-radius: .4rem;
   background: #111a17;
+}
+#sir-replay-app .tactical-timeline-channel-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem .75rem;
+  margin: 0;
+  padding: 0;
+  font: 700 .75rem/1.4 ui-monospace, monospace;
+  list-style: none;
+}
+#sir-replay-app .tactical-timeline-channel-legend li {
+  min-width: 0;
+  padding-inline-start: .45rem;
+  border-inline-start: .3rem solid currentColor;
 }
 #sir-replay-app .tactical-transport label {
   display: flex;
@@ -844,6 +811,15 @@
 #sir-replay-app [data-time-channel="Predicted"] { color: #e5b8ff; }
 #sir-replay-app [data-time-channel="Accepted"] { color: #8ce99a; }
 #sir-replay-app [data-time-channel="Committed"] { color: #ffd166; }
+
+@media (min-width: 48.01rem) {
+  #sir-replay-app .tactical-modality-controls,
+  #sir-replay-app .tactical-supporting-controls,
+  #sir-replay-app .tactical-toolbar-layout,
+  #sir-replay-app .tactical-toolbar-transport {
+    flex-wrap: nowrap;
+  }
+}
 #sir-replay-app .tactical-binding-dialog {
   position: fixed;
   z-index: 40;
@@ -1108,7 +1084,7 @@
   #sir-replay-app button,
   #sir-replay-app input,
   #sir-replay-app select,
-  #sir-replay-app .editor-ribbon {
+  #sir-replay-app .editor-tools-panel {
     border: 1px solid ButtonText;
     forced-color-adjust: auto;
   }
@@ -1169,8 +1145,21 @@
     top: 0;
     z-index: 20;
     flex-wrap: wrap;
+    max-width: 100%;
+    overflow: hidden;
   }
   #sir-replay-app .tactical-document-identity { flex: 1 1 100%; }
+  #sir-replay-app .tactical-modality-controls,
+  #sir-replay-app .tactical-supporting-controls,
+  #sir-replay-app .tactical-toolbar-layout,
+  #sir-replay-app .tactical-toolbar-transport {
+    max-width: 100%;
+  }
+  #sir-replay-app .tactical-compact-toolbar button,
+  #sir-replay-app .tactical-compact-toolbar summary,
+  #sir-replay-app .tactical-sidebar button {
+    min-height: 2.75rem;
+  }
   #sir-replay-app .tactical-drawer-toggle { display: inline-flex; }
   #sir-replay-app .tactical-layout-frame {
     grid-template-columns: minmax(0, 1fr);
@@ -1200,7 +1189,11 @@
     pointer-events: auto;
     transform: translateX(0);
   }
-  #sir-replay-app .tactical-battlefield-viewport { min-height: 22rem; }
+  #sir-replay-app .tactical-workscreen-region {
+    height: 22rem;
+    min-height: 22rem;
+  }
+  #sir-replay-app #persistent-tactical-svg { height: 22rem; }
   #sir-replay-app .tactical-bottom-panel { height: min(var(--tactical-bottom-height, 152px), 35vh); }
   #sir-replay-app .tactical-modality-controls {
     position: static;
@@ -1228,11 +1221,7 @@
   #sir-replay-app .inspector-panel,
   #sir-replay-app .lab-results { grid-column: span 1; }
   #sir-replay-app .comparison-viewport { grid-template-columns: 1fr; }
-  #sir-replay-app .editor-workspace { grid-template-columns: 1fr; }
-  #sir-replay-app .editor-ribbon {
-    position: absolute;
-    max-height: calc(100% - .7rem);
-  }
+  #sir-replay-app .editor-tools-panel { max-height: none; }
   #sir-replay-app .editor-document-strip { flex-wrap: wrap; }
   #sir-replay-app .editor-document-strip strong { flex-basis: 100%; }
   #sir-replay-app .editor-menu-bar { overflow-x: auto; }

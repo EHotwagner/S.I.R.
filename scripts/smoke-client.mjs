@@ -317,6 +317,7 @@ class SmokeWorker {
 }
 
 const window = new Window({ url: "https://sir.invalid/replay/" });
+window.happyDOM.setInnerWidth(1440);
 let tacticalLayoutWrites = 0;
 const storagePrototype = Object.getPrototypeOf(window.localStorage);
 const originalStorageSetItem = storagePrototype.setItem;
@@ -356,10 +357,10 @@ const application = window.document.querySelector(
 const shell = window.document.querySelector(
   '#unified-tactical-workspace[data-mounted-shell="persistent"]',
 );
-const viewport = window.document.querySelector(
-  '#tactical-battlefield-viewport[data-viewport-lifecycle="shared"]',
+const workscreenRegion = window.document.querySelector(
+  '#tactical-workscreen-region[data-active-modality]',
 );
-const worksurface = viewport?.querySelector(
+const worksurface = workscreenRegion?.querySelector(
   'svg#persistent-tactical-svg[data-work-surface-root="persistent-svg"]',
 );
 const layers = new Map(
@@ -379,14 +380,16 @@ const modalityButtons = new Map(
 if (
   !application ||
   !shell ||
-  !viewport ||
+  !workscreenRegion ||
   !worksurface ||
   !timeline ||
   [...layers.values()].some((layer) => !layer) ||
   JSON.stringify([...modalityButtons.keys()]) !==
     JSON.stringify(["Editor", "Plan", "Simulate", "Review"])
 ) {
-  throw new Error("The persistent tactical shell, SVG layers, modality controls, or timeline did not mount.");
+  throw new Error(
+    `The persistent tactical shell, SVG layers, modality controls, or timeline did not mount: ${JSON.stringify({ application: Boolean(application), shell: Boolean(shell), workscreenRegion: Boolean(workscreenRegion), worksurface: Boolean(worksurface), timeline: Boolean(timeline), layers: [...layers.entries()].filter(([, layer]) => !layer).map(([name]) => name), modalities: [...modalityButtons.keys()] })}.`,
+  );
 }
 
 const legacyRootSelectors = [
@@ -403,7 +406,7 @@ const legacyRootSelectors = [
 const assertSingleWorksurface = (operation) => {
   if (
     window.document.querySelector("#unified-tactical-workspace") !== shell ||
-    window.document.querySelector("#tactical-battlefield-viewport") !== viewport ||
+    window.document.querySelector("#tactical-workscreen-region") !== workscreenRegion ||
     window.document.querySelector("#persistent-tactical-svg") !== worksurface ||
     !worksurface.isConnected ||
     window.document.querySelectorAll("[data-work-surface-root]").length !== 1 ||
@@ -493,12 +496,12 @@ const assertModality = (label, operation) => {
   const [modality, owner] = ownerByModality[label];
   if (
     modalityButtons.get(label)?.getAttribute("aria-pressed") !== "true" ||
-    viewport.getAttribute("data-active-modality") !== modality ||
+    workscreenRegion.getAttribute("data-active-modality") !== modality ||
     worksurface.getAttribute("data-scene-owner") !== owner
   ) {
     throw new Error(
       `Directed ${operation} did not activate ${modality}/${owner}: ` +
-        `${viewport.getAttribute("data-active-modality")}/${worksurface.getAttribute("data-scene-owner")}.`,
+        `${workscreenRegion.getAttribute("data-active-modality")}/${worksurface.getAttribute("data-scene-owner")}.`,
     );
   }
 };
@@ -532,20 +535,32 @@ const waitFor = async (description, predicate, timeoutMilliseconds = 1500) => {
 assertSingleWorksurface("initial mount");
 assertModality("Editor", "initial mount");
 
-const disclosure = viewport.querySelector(
-  "details.tactical-compatibility-surface",
-);
-if (!disclosure) {
-  throw new Error("The non-workscreen compatibility disclosure is missing.");
+const leftSidebar = shell.querySelector(".tactical-sidebar-left");
+const rightSidebar = shell.querySelector(".tactical-sidebar-right");
+const bottomPanel = shell.querySelector("#tactical-bottom-panel");
+const referenceContentWidth = 1440 - 2 * 6.4;
+const defaultSidebarWidth = 208 + 224;
+const defaultGridGaps = 2 * 6.4;
+const defaultWorkscreenWidth =
+  referenceContentWidth - defaultSidebarWidth - defaultGridGaps;
+if (
+  shell.getAttribute("data-layout-profile") !== "field-focus" ||
+  shell.style.getPropertyValue("--tactical-left-width") !== "208px" ||
+  shell.style.getPropertyValue("--tactical-right-width") !== "224px" ||
+  shell.style.getPropertyValue("--tactical-bottom-height") !== "152px" ||
+  !leftSidebar?.querySelector('[data-panel-id="roster"]') ||
+  !rightSidebar?.querySelector('[data-panel-id="selection"]') ||
+  leftSidebar.nextElementSibling !== workscreenRegion ||
+  workscreenRegion.nextElementSibling !== rightSidebar ||
+  defaultWorkscreenWidth <= defaultSidebarWidth ||
+  defaultWorkscreenWidth / referenceContentWidth < 0.68 ||
+  512 <= 3 * 152 ||
+  !bottomPanel
+) {
+  throw new Error(
+    "Field Focus defaults do not keep the workscreen dimensionally dominant with both sidebars open.",
+  );
 }
-disclosure.querySelector("summary")?.click();
-await window.happyDOM.waitUntilComplete();
-if (!disclosure.open) throw new Error("Compatibility disclosure did not open.");
-assertSingleWorksurface("compatibility disclosure open");
-disclosure.querySelector("summary")?.click();
-await window.happyDOM.waitUntilComplete();
-if (disclosure.open) throw new Error("Compatibility disclosure did not close.");
-assertSingleWorksurface("compatibility disclosure close");
 
 const nonDefaultUnit = worksurface.querySelector(
   '#persistent-layer-units [data-unit-id="2"][data-command-available="true"]',
@@ -566,7 +581,7 @@ modalityButtons.get("Review").click();
 await window.happyDOM.waitUntilComplete();
 await ensurePanelExpanded("tools");
 if (
-  viewport.getAttribute("data-active-modality") !== "Review" ||
+  workscreenRegion.getAttribute("data-active-modality") !== "Review" ||
   worksurface.getAttribute("data-scene-owner") !== "Unavailable"
 ) {
   throw new Error("Empty Review did not expose its unavailable projection explicitly.");
@@ -831,7 +846,7 @@ await clickModality("Editor", "return after pinned simulator reset");
 modalityButtons.get("Review").click();
 await window.happyDOM.waitUntilComplete();
 if (
-  viewport.getAttribute("data-active-modality") !== "Review" ||
+  workscreenRegion.getAttribute("data-active-modality") !== "Review" ||
   worksurface.getAttribute("data-scene-owner") !== "Unavailable"
 ) {
   throw new Error("Review file setup did not remain on its unavailable projection.");
@@ -1385,6 +1400,49 @@ if (!helpKey.defaultPrevented || !window.document.querySelector("#tactical-input
   throw new Error("Shared SVG keyboard intent bypassed registry availability.");
 }
 assertSingleWorksurface("context-help overlay");
+const helpPanel = window.document.querySelector("#tactical-input-panel");
+if (window.document.activeElement !== helpPanel) {
+  throw new Error("Context help did not receive focus when opened from the workscreen.");
+}
+buttonByText(helpPanel, "Configure bindings")?.click();
+await window.happyDOM.waitUntilComplete();
+const bindingDialog = window.document.querySelector("#tactical-binding-dialog");
+if (
+  !bindingDialog ||
+  bindingDialog.getAttribute("aria-modal") !== "true" ||
+  window.document.activeElement !== bindingDialog
+) {
+  throw new Error("The command-binding modal did not establish modal focus.");
+}
+buttonByText(bindingDialog, "Close")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document.querySelector("#tactical-binding-dialog") ||
+  window.document.activeElement !==
+    window.document.querySelector("#tactical-configure-bindings")
+) {
+  throw new Error("Closing the command-binding modal did not restore its invoking focus.");
+}
+buttonByText(helpPanel, "Close")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document.querySelector("#tactical-input-panel") ||
+  window.document.activeElement !==
+    window.document.querySelector("#tactical-input-toggle")
+) {
+  throw new Error("Closing contextual help did not restore focus to its toggle.");
+}
+
+const planAuthorityBeforeLayout = JSON.stringify({
+  owner: worksurface.getAttribute("data-scene-owner"),
+  revision: worksurface.getAttribute("data-scene-revision"),
+  tick: worksurface.getAttribute("data-scene-tick"),
+  disclosure: worksurface.getAttribute("data-scene-disclosure"),
+  terrain: worksurface.querySelector("#persistent-layer-terrain")?.innerHTML,
+  edges: worksurface.querySelector("#persistent-layer-edges")?.innerHTML,
+  routes: worksurface.querySelector("#persistent-layer-routes")?.innerHTML,
+  units: worksurface.querySelector("#persistent-layer-units")?.innerHTML,
+});
 
 const timelineStateBeforeLayout = JSON.stringify({
   cursor: timeline.getAttribute("data-time-cursor"),
@@ -1517,7 +1575,7 @@ const scenarioButtons = scenarioCatalog?.querySelectorAll(
 if (
   !rulesPanel ||
   window.document.activeElement !== rulesPanel.querySelector(".tactical-layout-panel-body") ||
-  viewport.getAttribute("data-active-modality") !== "Plan" ||
+  workscreenRegion.getAttribute("data-active-modality") !== "Plan" ||
   worksurface.getAttribute("data-scene-owner") !== "PlanningScene"
 ) {
   throw new Error("Rules did not open as a focused registered panel over the retained Plan scene.");
@@ -1613,6 +1671,25 @@ if (
 assertSingleWorksurface("Samples panel at 400% responsive width");
 assertCamera("Samples panel at 400% responsive width");
 assertSelection("Samples panel at 400% responsive width", 2);
+if (
+  !modalityControl.isConnected ||
+  !worksurface.isConnected ||
+  !timeline.isConnected ||
+  JSON.stringify({
+    owner: worksurface.getAttribute("data-scene-owner"),
+    revision: worksurface.getAttribute("data-scene-revision"),
+    tick: worksurface.getAttribute("data-scene-tick"),
+    disclosure: worksurface.getAttribute("data-scene-disclosure"),
+    terrain: worksurface.querySelector("#persistent-layer-terrain")?.innerHTML,
+    edges: worksurface.querySelector("#persistent-layer-edges")?.innerHTML,
+    routes: worksurface.querySelector("#persistent-layer-routes")?.innerHTML,
+    units: worksurface.querySelector("#persistent-layer-units")?.innerHTML,
+  }) !== planAuthorityBeforeLayout
+) {
+  throw new Error(
+    "Layout/supporting-panel/400% operations changed Plan authority or lost modality, workscreen, or timeline access.",
+  );
+}
 const firstMapSample = [
   ...samplesWorkspace.querySelectorAll("details.sample-card"),
 ].find((card) => card.textContent.includes("Map · Simulation"));

@@ -19,7 +19,7 @@ let run () =
          && baseline.RightSidebar.Width = 224
          && baseline.BottomPanel.Height = 152
          && TacticalWorkspaceLayout.bottomVisible baseline
-         && TacticalWorkspaceLayout.bottomCollapsed Editor baseline
+         && not (TacticalWorkspaceLayout.bottomCollapsed Editor baseline)
          && not (TacticalWorkspaceLayout.bottomCollapsed Plan baseline)
          && (TacticalWorkspaceLayout.panelsOn Left baseline
              |> List.map _.PanelId
@@ -82,7 +82,7 @@ let run () =
              |> List.find (fun panel -> panel.PanelId = "validation"))
              .Side = Left
          && configured.LeftSidebar.DrawerOpen
-         && not (TacticalWorkspaceLayout.bottomCollapsed Editor configured)
+         && TacticalWorkspaceLayout.bottomCollapsed Editor configured
          && TacticalWorkspaceLayout.reset configured = baseline)
         "Panel show/hide, collapse, move, order, drawer, timeline, or reset diverged."
 
@@ -92,7 +92,7 @@ let run () =
             .Replace(",\"leftSidebar\":{\"width\":208,\"drawerOpen\":false}", ",\"leftWidth\":208")
             .Replace(",\"rightSidebar\":{\"width\":224,\"drawerOpen\":false}", ",\"rightWidth\":224")
             .Replace(
-                ",\"bottomPanel\":{\"visible\":true,\"height\":152,\"collapsedInEditor\":true,\"collapsedOutsideEditor\":false}",
+                ",\"bottomPanel\":{\"visible\":true,\"height\":152,\"collapsedInEditor\":false,\"collapsedOutsideEditor\":false}",
                 ",\"timelineHeight\":152"
             )
     let migrated =

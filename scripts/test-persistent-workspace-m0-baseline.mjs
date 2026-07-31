@@ -133,7 +133,7 @@ for (const token of [
 }
 
 for (const token of [
-  'prop.id "tactical-battlefield-viewport"',
+  'prop.id "tactical-workscreen-region"',
   "| EditorWorkspace ->",
   'svg.id "persistent-tactical-svg"',
   'svg.id "persistent-editor-migrated-layers"',
@@ -167,7 +167,7 @@ for (const token of [
   "reviewPanelBody",
   "sourcePanel model dispatch",
   "controls model dispatch",
-  "tacticalShell model dispatch Html.none",
+  "tacticalShell model dispatch transientContent",
   "OpenSupportingPanel panelId",
   '"scene.camera.zoom-out"',
   '"scene.camera.zoom-in"',
@@ -208,11 +208,9 @@ requireText(
   "Superseded persistence claim",
   "Earlier roadmap does not mark wrapper persistence as superseded.",
 );
-requireText(
-  packageJson,
-  '"characterize:persistent-workscreen"',
-  "Persistent-workscreen characterization command is not exposed.",
-);
+if (packageJson.includes('"characterize:persistent-workscreen"')) {
+  throw new Error("The obsolete wrapper-era persistent-workscreen characterization remains exposed.");
+}
 requireText(
   smoke,
   'querySelector("#persistent-tactical-svg")',

@@ -3,8 +3,8 @@ title: Unified Tactical Workspace Roadmap
 category: Engineering
 categoryindex: 6
 index: 10
-status: accepted
-decision-status: accepted
+status: implemented
+decision-status: implemented
 document-type: design-decision
 version: "1.1"
 last-updated: 2026-07-31
@@ -26,24 +26,25 @@ selection, camera, time cursor, and timeline stay mounted. Changing modality
 changes the available tools, inspectors, command bindings, and timeline editing
 rules without replacing the user's spatial context.
 
-Rules, data, and samples remain supporting application sections. They are not
+Rules, Data, and Samples are registered supporting panels. They are not
 battlefield modalities.
 
-The completed milestones below record the first unification pass. They do not
-complete the corrective persistent-workscreen goal defined by the
-[VS Code-Style Persistent Tactical Workspace Design Report](2026-07-31-0840-vscode-style-persistent-tactical-workspace-design-report.md).
-That report is the active successor for presentation architecture and release
-acceptance.
+The completed milestones below record the first unification pass. The
+corrective persistent-workscreen goal defined by the
+[VS Code-Style Persistent Tactical Workspace Design Report](2026-07-31-0840-vscode-style-persistent-tactical-workspace-design-report.md)
+is now implemented and is the presentation architecture and release contract.
 
 ### Superseded persistence claim
 
 The first pass's claims that the “battlefield stays mounted,” that it created
 “one mounted tactical shell,” and that browser evidence proved “mode switching
 without remount” apply only to `#tactical-battlefield-viewport`. They are
-superseded as workscreen-lifecycle evidence. The wrapper survives, but
-`editorBattlefield`, `planningBattlefield`, and `battlefieldView` replace its
-actual child. The active acceptance contract retains the SVG node itself and
-asserts strict reference equality across every modality and panel transition.
+superseded as workscreen-lifecycle evidence. At that historical boundary the
+wrapper survived while `editorBattlefield`, `planningBattlefield`, and
+`battlefieldView` replaced its actual child. The implemented acceptance
+contract retains the SVG node itself and asserts strict reference equality
+across every modality and panel transition; the old wrapper landmark and
+renderers are absent.
 
 The historical checkboxes below remain a record of the completed first pass;
 they must not be cited as satisfying the corrective SVG-root identity gate.
@@ -141,12 +142,16 @@ is the selected visual-density reference. It is not a substitute for
 accessibility or browser qualification, but divergence from its spatial
 priority requires a new accepted design decision.
 
-- [ ] Complete Milestones 0–9 in the corrective design report.
-- [ ] Pass strict SVG reference-identity qualification across modality, panel,
+- [x] Complete Milestones 0–9 in the corrective design report.
+- [x] Pass strict SVG reference-identity qualification across modality, panel,
   timeline, overlay, resize, and playback transitions.
-- [ ] Pass Field Focus visual review at the reference desktop viewport with
+- [x] Pass Field Focus visual review at the reference desktop viewport with
   both default sidebars open.
-- [ ] Remove all legacy modality-specific battlefield render paths.
+- [x] Remove all legacy modality-specific battlefield render paths.
+
+Corrective acceptance is complete. The source/bundle/DOM removal audit,
+actual-production Chromium Field Focus review, and full acceptance matrix are recorded
+in the [M9 acceptance evidence](persistent-tactical-workspace-m9-acceptance-evidence.md).
 
 ## Milestones
 
@@ -262,7 +267,7 @@ focused tests, documentation, and roadmap evidence are present.
 - `./fake.sh build -t Dev`, `Test`, and `Verify`: passed sequentially.
 - Seven deterministic map-editor SVG/PNG review pairs were regenerated from the
   current production bundle.
-- Corrective review coverage proves that `#tactical-battlefield-viewport`
+- Corrective review coverage proves that `svg#persistent-tactical-svg`
   remains the same DOM node across Editor, Plan, Simulate, and Review; the
   shared ruler seeks the loaded Replay projection; and planner-worker Validate
   and Commit responses populate the shared tactical Accepted and Committed

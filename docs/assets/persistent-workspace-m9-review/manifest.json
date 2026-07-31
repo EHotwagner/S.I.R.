@@ -1,0 +1,558 @@
+{
+  "schema": "sir-persistent-workspace-m9-live-review-v2",
+  "captureKind": "actual-production-shell-chromium-screenshot",
+  "productionBundleSha256": "650c7084067de41efe39d7572ecb205900b3b24215722457aa4499ebfc5d6092",
+  "productionStylesSha256": "6cda8579d9048bc41b7b07619de171a838dfaa7eafbde7f45e684d45b344d7ea",
+  "acceptedMockupSha256": "b2b0d444202aa9c76235fa7277ba2c6a4e89d3d7dc0dd009abb8e73c72c82270",
+  "chromiumExecutable": "/usr/sbin/chromium",
+  "chromiumUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+  "fieldFocus": {
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "devicePixelRatio": 1
+    },
+    "document": {
+      "clientWidth": 1440,
+      "scrollWidth": 1440,
+      "bodyScrollWidth": 1424,
+      "mountClientWidth": 1424,
+      "mountScrollWidth": 1424
+    },
+    "rectangles": {
+      "shell": {
+        "x": 14.391,
+        "y": 14.391,
+        "width": 1411.219,
+        "height": 996.172,
+        "right": 1425.609,
+        "bottom": 1010.563
+      },
+      "toolbar": {
+        "x": 14.391,
+        "y": 14.391,
+        "width": 1411.219,
+        "height": 61.563,
+        "right": 1425.609,
+        "bottom": 75.953
+      },
+      "frame": {
+        "x": 14.391,
+        "y": 83.953,
+        "width": 1411.219,
+        "height": 810.391,
+        "right": 1425.609,
+        "bottom": 894.344
+      },
+      "workscreen": {
+        "x": 228.781,
+        "y": 83.953,
+        "width": 966.438,
+        "height": 652,
+        "right": 1195.219,
+        "bottom": 735.953
+      },
+      "svg": {
+        "x": 229.781,
+        "y": 84.953,
+        "width": 964.438,
+        "height": 650,
+        "right": 1194.219,
+        "bottom": 734.953
+      },
+      "left": {
+        "x": 14.391,
+        "y": 83.953,
+        "width": 208,
+        "height": 652,
+        "right": 222.391,
+        "bottom": 735.953
+      },
+      "right": {
+        "x": 1201.609,
+        "y": 83.953,
+        "width": 224,
+        "height": 652,
+        "right": 1425.609,
+        "bottom": 735.953
+      },
+      "bottom": {
+        "x": 14.391,
+        "y": 742.344,
+        "width": 1411.219,
+        "height": 152,
+        "right": 1425.609,
+        "bottom": 894.344
+      },
+      "timeline": {
+        "x": 14.391,
+        "y": 747.141,
+        "width": 1411.219,
+        "height": 146.078,
+        "right": 1425.609,
+        "bottom": 893.219
+      }
+    },
+    "styles": {
+      "toolsPosition": "static",
+      "leftDisplay": "block",
+      "rightDisplay": "block",
+      "leftVisibility": "visible",
+      "rightVisibility": "visible"
+    },
+    "counts": {
+      "worksurfaceRoots": 1,
+      "applicationLandmarks": 1
+    },
+    "channels": [
+      {
+        "channel": "Authored",
+        "rect": {
+          "x": 19.391,
+          "y": 752.141,
+          "width": 68.797,
+          "height": 16.797,
+          "right": 88.188,
+          "bottom": 768.938
+        },
+        "text": "Authored"
+      },
+      {
+        "channel": "Predicted",
+        "rect": {
+          "x": 100.188,
+          "y": 752.141,
+          "width": 76,
+          "height": 16.797,
+          "right": 176.188,
+          "bottom": 768.938
+        },
+        "text": "Predicted"
+      },
+      {
+        "channel": "Accepted",
+        "rect": {
+          "x": 188.188,
+          "y": 752.141,
+          "width": 68.797,
+          "height": 16.797,
+          "right": 256.984,
+          "bottom": 768.938
+        },
+        "text": "Accepted"
+      },
+      {
+        "channel": "Committed",
+        "rect": {
+          "x": 268.984,
+          "y": 752.141,
+          "width": 76,
+          "height": 16.797,
+          "right": 344.984,
+          "bottom": 768.938
+        },
+        "text": "Committed"
+      }
+    ],
+    "toolbarChildren": [
+      {
+        "label": "Editor",
+        "rect": {
+          "x": 214.813,
+          "y": 23.172,
+          "width": 77.203,
+          "height": 44,
+          "right": 292.016,
+          "bottom": 67.172
+        }
+      },
+      {
+        "label": "Plan",
+        "rect": {
+          "x": 297.609,
+          "y": 23.172,
+          "width": 58,
+          "height": 44,
+          "right": 355.609,
+          "bottom": 67.172
+        }
+      },
+      {
+        "label": "Simulate",
+        "rect": {
+          "x": 361.203,
+          "y": 23.172,
+          "width": 96.406,
+          "height": 44,
+          "right": 457.609,
+          "bottom": 67.172
+        }
+      },
+      {
+        "label": "Review",
+        "rect": {
+          "x": 463.203,
+          "y": 23.172,
+          "width": 77.203,
+          "height": 44,
+          "right": 540.406,
+          "bottom": 67.172
+        }
+      },
+      {
+        "label": "Play or pause active tactical modality",
+        "rect": {
+          "x": 545.203,
+          "y": 23.172,
+          "width": 58,
+          "height": 44,
+          "right": 603.203,
+          "bottom": 67.172
+        }
+      },
+      {
+        "label": "Hide timeline panel",
+        "rect": {
+          "x": 608,
+          "y": 18.578,
+          "width": 96.406,
+          "height": 53.188,
+          "right": 704.406,
+          "bottom": 71.766
+        }
+      },
+      {
+        "label": "Collapse timeline",
+        "rect": {
+          "x": 707.594,
+          "y": 18.578,
+          "width": 178.969,
+          "height": 53.188,
+          "right": 886.563,
+          "bottom": 71.766
+        }
+      },
+      {
+        "label": "Reset layout",
+        "rect": {
+          "x": 889.75,
+          "y": 18.578,
+          "width": 132.094,
+          "height": 53.188,
+          "right": 1021.844,
+          "bottom": 71.766
+        }
+      },
+      {
+        "label": "Rules",
+        "rect": {
+          "x": 1026.641,
+          "y": 23.172,
+          "width": 67.609,
+          "height": 44,
+          "right": 1094.25,
+          "bottom": 67.172
+        }
+      },
+      {
+        "label": "Data",
+        "rect": {
+          "x": 1097.438,
+          "y": 23.172,
+          "width": 58,
+          "height": 44,
+          "right": 1155.438,
+          "bottom": 67.172
+        }
+      },
+      {
+        "label": "Samples",
+        "rect": {
+          "x": 1158.625,
+          "y": 23.172,
+          "width": 86.797,
+          "height": 44,
+          "right": 1245.422,
+          "bottom": 67.172
+        }
+      },
+      {
+        "label": "Panels",
+        "rect": {
+          "x": 1250.219,
+          "y": 23.172,
+          "width": 77.203,
+          "height": 44,
+          "right": 1327.422,
+          "bottom": 67.172
+        }
+      },
+      {
+        "label": "Show contextual tactical actions",
+        "rect": {
+          "x": 1332.219,
+          "y": 23.172,
+          "width": 86.797,
+          "height": 44,
+          "right": 1419.016,
+          "bottom": 67.172
+        }
+      }
+    ],
+    "tools": {
+      "rect": {
+        "x": 15.391,
+        "y": 514.953,
+        "width": 206,
+        "height": 764,
+        "right": 221.391,
+        "bottom": 1278.953
+      },
+      "hostRect": {
+        "x": 15.391,
+        "y": 514.953,
+        "width": 206,
+        "height": 764,
+        "right": 221.391,
+        "bottom": 1278.953
+      }
+    },
+    "panelBodies": [
+      {
+        "panelId": "roster",
+        "rect": {
+          "x": 15.391,
+          "y": 179,
+          "width": 206,
+          "height": 240.906,
+          "right": 221.391,
+          "bottom": 419.906
+        },
+        "children": [
+          {
+            "className": "",
+            "position": "static",
+            "rect": {
+              "x": 15.391,
+              "y": 179,
+              "width": 206,
+              "height": 240.906,
+              "right": 221.391,
+              "bottom": 419.906
+            }
+          }
+        ]
+      },
+      {
+        "panelId": "tools",
+        "rect": {
+          "x": 15.391,
+          "y": 514.953,
+          "width": 206,
+          "height": 764,
+          "right": 221.391,
+          "bottom": 1278.953
+        },
+        "children": [
+          {
+            "className": "panel editor-tools editor-tools-panel",
+            "position": "static",
+            "rect": {
+              "x": 15.391,
+              "y": 514.953,
+              "width": 206,
+              "height": 764,
+              "right": 221.391,
+              "bottom": 1278.953
+            }
+          }
+        ]
+      },
+      {
+        "panelId": "selection",
+        "rect": {
+          "x": 1202.609,
+          "y": 157.734,
+          "width": 222,
+          "height": 561,
+          "right": 1424.609,
+          "bottom": 718.734
+        },
+        "children": [
+          {
+            "className": "panel unit-editor-panel",
+            "position": "static",
+            "rect": {
+              "x": 1202.609,
+              "y": 157.734,
+              "width": 222,
+              "height": 561,
+              "right": 1424.609,
+              "bottom": 718.734
+            }
+          }
+        ]
+      }
+    ],
+    "overlaps": {
+      "toolbarFrame": false,
+      "leftWorkscreen": false,
+      "rightWorkscreen": false,
+      "bottomWorkscreen": false
+    },
+    "fieldFocusShare": 0.685
+  },
+  "narrow400PercentEquivalent": {
+    "viewport": {
+      "width": 320,
+      "height": 900
+    },
+    "document": {
+      "clientWidth": 320,
+      "scrollWidth": 320,
+      "bodyScrollWidth": 304,
+      "mountClientWidth": 304,
+      "mountScrollWidth": 304
+    },
+    "toolbarRect": {
+      "x": 12,
+      "right": 308,
+      "y": 12,
+      "bottom": 441.328125,
+      "width": 296,
+      "height": 429.328125
+    },
+    "toolbarScroll": {
+      "clientWidth": 294,
+      "scrollWidth": 294,
+      "clientHeight": 427,
+      "scrollHeight": 427
+    },
+    "workscreenRect": {
+      "x": 12,
+      "right": 308,
+      "y": 449.328125,
+      "bottom": 801.328125,
+      "width": 296,
+      "height": 352
+    },
+    "timelineRect": {
+      "x": 12,
+      "right": 308,
+      "y": 807.71875,
+      "bottom": 959.71875,
+      "width": 296,
+      "height": 152
+    },
+    "controls": [
+      {
+        "label": "Editor modality",
+        "selector": ".tactical-modality-controls button:first-child",
+        "exists": true,
+        "rect": {
+          "x": 18.59375,
+          "right": 95.796875,
+          "y": 53.984375,
+          "bottom": 97.984375,
+          "width": 77.203125,
+          "height": 44
+        }
+      },
+      {
+        "label": "Left drawer",
+        "selector": "#layout-left-drawer-toggle",
+        "exists": true,
+        "rect": {
+          "x": 18.59375,
+          "right": 76.59375,
+          "y": 201.171875,
+          "bottom": 245.171875,
+          "width": 58,
+          "height": 44
+        }
+      },
+      {
+        "label": "Right drawer",
+        "selector": "#layout-right-drawer-toggle",
+        "exists": true,
+        "rect": {
+          "x": 79.78125,
+          "right": 147.390625,
+          "y": 201.171875,
+          "bottom": 245.171875,
+          "width": 67.609375,
+          "height": 44
+        }
+      },
+      {
+        "label": "Timeline visibility",
+        "selector": "#layout-timeline-visibility-toggle",
+        "exists": true,
+        "rect": {
+          "x": 150.578125,
+          "right": 246.984375,
+          "y": 201.171875,
+          "bottom": 245.171875,
+          "width": 96.40625,
+          "height": 44
+        }
+      },
+      {
+        "label": "Rules panel",
+        "selector": ".tactical-supporting-controls button:nth-child(1)",
+        "exists": true,
+        "rect": {
+          "x": 18.59375,
+          "right": 86.203125,
+          "y": 344.34375,
+          "bottom": 388.34375,
+          "width": 67.609375,
+          "height": 44
+        }
+      },
+      {
+        "label": "Data panel",
+        "selector": ".tactical-supporting-controls button:nth-child(2)",
+        "exists": true,
+        "rect": {
+          "x": 89.390625,
+          "right": 147.390625,
+          "y": 344.34375,
+          "bottom": 388.34375,
+          "width": 58,
+          "height": 44
+        }
+      },
+      {
+        "label": "Samples panel",
+        "selector": ".tactical-supporting-controls button:nth-child(3)",
+        "exists": true,
+        "rect": {
+          "x": 150.578125,
+          "right": 237.375,
+          "y": 344.34375,
+          "bottom": 388.34375,
+          "width": 86.796875,
+          "height": 44
+        }
+      },
+      {
+        "label": "Panel menu",
+        "selector": ".tactical-panel-menu > summary",
+        "exists": true,
+        "rect": {
+          "x": 18.59375,
+          "right": 95.796875,
+          "y": 393.140625,
+          "bottom": 437.140625,
+          "width": 77.203125,
+          "height": 44
+        }
+      }
+    ]
+  },
+  "png": "field-focus.png",
+  "geometrySvg": "field-focus-geometry.svg",
+  "pngSha256": "db74361f7b486b88b4e4f01807748d6be24c9f6b86319f59541a842a44162b85",
+  "geometrySvgSha256": "2a694bad82fd9dfcccecb94466a599b2bf4bab707ae240f10264cf1f2ae99e7f"
+}

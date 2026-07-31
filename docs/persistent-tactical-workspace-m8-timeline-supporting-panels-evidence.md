@@ -21,8 +21,10 @@ Review add committed runtime projections to that same list rather than
 creating modality-specific lanes. Cursor and committed-through values remain
 attributes of this one timeline landmark.
 
-Field Focus defaults the bottom panel to 152 CSS pixels, collapsed in Editor,
-and expanded in Plan, Simulate, and Review. Height is persisted in the strict
+Field Focus defaults the bottom panel to 152 CSS pixels and expanded in every
+modality, including Editor. Milestone 9 corrected the earlier collapsed-Editor
+default so the shallow real channels are visible in the accepted initial
+arrangement. Height is persisted in the strict
 versioned layout profile and clamps to 96–480 pixels. The native-focusable
 horizontal separator supports pointer drag, Arrow Up/Down, Page Up/Down, Home,
 and End. Pointer moves update presentation immediately but coalesce storage to

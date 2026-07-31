@@ -18,6 +18,7 @@ node scripts/test-planning-workspace-m5-qualification.mjs
 node scripts/test-simulator-workspace-m6-qualification.mjs
 node scripts/test-review-workspace-m7-qualification.mjs
 node scripts/test-timeline-supporting-panels-m8-qualification.mjs
+node scripts/test-persistent-workspace-m9-acceptance.mjs "$client_output"
 
 if [[ -d "$repo_root/.fsdocs" ]]; then
   rm -rf -- "$repo_root/.fsdocs"

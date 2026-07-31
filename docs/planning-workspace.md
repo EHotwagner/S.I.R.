@@ -3,11 +3,17 @@ title: Coordinated Planning Workspace
 category: architecture
 categoryindex: 3
 index: 8
-status: proposed
+status: implemented
 decision-status: implemented
+version: "1.0"
+last-updated: 2026-07-31
 ---
 
 # Coordinated Planning Workspace
+
+Final single-renderer, state-authority, disclosure, timeline, responsive, and
+Field Focus acceptance is recorded in the
+[M9 acceptance evidence](persistent-tactical-workspace-m9-acceptance-evidence.md).
 
 The browser planning workspace authors coordinated intent against an immutable
 map revision. It is a client of the retained simulator worker protocol, not a

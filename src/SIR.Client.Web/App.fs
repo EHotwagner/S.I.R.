@@ -1264,10 +1264,16 @@ let rec update msg model =
             | _ -> UnifiedTacticalWorkspace.pulse model.Tactical
         { model with Tactical = tactical }, Cmd.none
     | ToggleTacticalBindings ->
+        let opening = not model.TacticalBindingsOpen
         { model with
-            TacticalBindingsOpen = not model.TacticalBindingsOpen
+            TacticalBindingsOpen = opening
             TacticalBindingDiagnostics = [] },
-        Cmd.none
+        Cmd.ofEffect (fun _ ->
+            focusElementAfterRender (
+                if opening then "tactical-binding-dialog"
+                elif model.InputHelpExpanded then "tactical-configure-bindings"
+                else "tactical-input-toggle"
+            ))
     | TacticalBindingDraftChanged(commandId, gesture) ->
         { model with
             TacticalBindingDrafts =
@@ -4284,7 +4290,7 @@ let private editorToolbar
     Html.section [
         prop.className (
             (if activePanel = DocumentTools then "panel editor-document-panel"
-             else "panel editor-tools editor-ribbon")
+             else "panel editor-tools editor-tools-panel")
             + if panelVisible then "" else " is-collapsed"
         )
         prop.ariaLabel (if activePanel = DocumentTools then "Map document controls" else "Map editing tools")
@@ -5721,7 +5727,7 @@ let private planningPanelBody
         ]
     ]
 
-let private workspaceNavigation (model: Model) dispatch =
+let private supportingPanelControls (model: Model) dispatch =
     let item (label: string) panelId =
         let placement =
             model.TacticalLayout.Placements
@@ -5735,7 +5741,7 @@ let private workspaceNavigation (model: Model) dispatch =
         ]
 
     Html.nav [
-        prop.className "workspace-navigation"
+        prop.className "tactical-supporting-controls"
         prop.ariaLabel "Supporting application sections"
         prop.children [
             item "Rules" "rules"
@@ -5806,6 +5812,17 @@ let private tacticalTimeline model dispatch =
             else "projection-only"
         )
         prop.children [
+            Html.ul [
+                prop.className "tactical-timeline-channel-legend"
+                prop.ariaLabel "Timeline channel legend"
+                prop.children [
+                    for channel in [ Authored; Predicted; Accepted; Committed ] do
+                        Html.li [
+                            prop.custom ("data-time-channel", string channel)
+                            prop.text (string channel)
+                        ]
+                ]
+            ]
             Html.div [
                 prop.className "tactical-transport"
                 prop.children [
@@ -5930,8 +5947,10 @@ let private tacticalBindingDialog model dispatch =
                     )
                 ))
         Html.section [
+            prop.id "tactical-binding-dialog"
             prop.className "tactical-binding-dialog"
             prop.role.dialog
+            prop.tabIndex -1
             prop.custom ("aria-modal", "true")
             prop.ariaLabel "Configure tactical command bindings"
             prop.children [
@@ -6242,6 +6261,7 @@ let private tacticalContextHelp model dispatch =
                             prop.children [
                                 Html.h3 "Executable actions"
                                 Html.button [
+                                    prop.id "tactical-configure-bindings"
                                     prop.type'.button
                                     prop.text "Configure bindings"
                                     prop.onClick (fun _ -> dispatch ToggleTacticalBindings)
@@ -7387,35 +7407,14 @@ let private persistentSceneSvg
         ]
     ]
 
-let private tacticalPersistentBattlefield model dispatch =
+let private tacticalWorkscreenRegion model dispatch =
     let projection, presentationAlpha = activePresentedSceneProjection model
     Html.section [
-        prop.id "tactical-battlefield-viewport"
-        prop.className "tactical-battlefield-viewport"
-        prop.ariaLabel "Persistent tactical battlefield viewport"
-        prop.custom ("data-viewport-lifecycle", "shared")
+        prop.id "tactical-workscreen-region"
+        prop.className "tactical-workscreen-region"
+        prop.ariaLabel "Tactical workscreen region"
         prop.custom ("data-active-modality", string model.Tactical.Modality)
-        prop.children [
-            persistentSceneSvg model projection presentationAlpha dispatch
-            Html.details [
-                prop.className "tactical-compatibility-surface"
-                prop.children [
-                    Html.summary "Modality-specific compatibility tools"
-                    Html.div [
-                        prop.custom ("data-migration-boundary", "milestones-4-through-7")
-                        prop.children [
-                            Html.p "Specialized owner controls migrate in Milestones 4–7. The retained shared SVG is the only tactical workscreen."
-                            Html.button [
-                                prop.type'.button
-                                prop.text "Open active command help"
-                                prop.onClick (fun _ ->
-                                    dispatch (InvokeTacticalCommand "input.help"))
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ]
+        prop.children [ persistentSceneSvg model projection presentationAlpha dispatch ]
     ]
 
 let private tacticalLayoutToolbar model dispatch =
@@ -7530,6 +7529,7 @@ let private tacticalLayoutToolbar model dispatch =
                     ]
                 ]
             ]
+            supportingPanelControls model dispatch
             Html.details [
                 prop.className "tactical-panel-menu"
                 prop.children [
@@ -7961,7 +7961,7 @@ let private tacticalSidebar side model dispatch =
         ]
     ]
 
-let private tacticalShell model dispatch content =
+let private tacticalShell model dispatch transientContent =
     let layout = model.TacticalLayout
     let bottomVisible = TacticalWorkspaceLayout.bottomVisible layout
     let bottomCollapsed =
@@ -7993,7 +7993,7 @@ let private tacticalShell model dispatch content =
                 prop.className "tactical-layout-frame"
                 prop.children [
                     tacticalSidebar Left model dispatch
-                    tacticalPersistentBattlefield model dispatch
+                    tacticalWorkscreenRegion model dispatch
                     tacticalSidebar Right model dispatch
                     Html.section [
                             prop.id "tactical-bottom-panel"
@@ -8065,8 +8065,8 @@ let private tacticalShell model dispatch content =
                 ]
             ]
             Html.div [
-                prop.className "tactical-workspace-content"
-                prop.children [ content ]
+                prop.className "tactical-transient-layer"
+                prop.children [ transientContent ]
             ]
             if not (List.isEmpty model.TacticalLayoutDiagnostics) then
                 Html.p [
@@ -8150,6 +8150,99 @@ let private editorDomain = function
 
 let view model dispatch =
     let shell = model.Shell
+    let transientContent =
+        match model.Workspace with
+        | PlanningWorkspace when model.Planning.IsNone ->
+            Html.section [
+                prop.className "panel"
+                prop.children [
+                    Html.h2 "Planner unavailable"
+                    Html.p "Open the planner again to create an authored revision from the current map."
+                ]
+            ]
+        | EditorWorkspace ->
+            let facts =
+                { Editor = model.Editor
+                  ActiveDomain = editorDomain model.EditorToolPanel
+                  PanHeld = editorPanHeld model
+                  InputHelpExpanded = model.InputHelpExpanded }
+            let catalog = ModalInput.editorCatalog facts
+            let projection = ModalInput.projectEditor facts catalog
+            Html.div [
+                prop.children [
+                    editorDestructiveConfirmation model.Editor dispatch
+                    match model.PendingInterchangeReview with
+                    | Some review ->
+                        Html.section [
+                            prop.id "editor-interchange-review"
+                            prop.tabIndex -1
+                            prop.className "panel editor-interchange-review"
+                            prop.ariaLabel "Interchange import review"
+                            prop.role.alert
+                            prop.children [
+                                Html.h2 ("Review " + string review.Format + " import")
+                                Html.p (
+                                    review.SourceName + " · "
+                                    + string (review.Fields |> Array.filter (fun field -> field.Disposition = Mapped) |> Array.length)
+                                    + " mapped · "
+                                    + string (review.Fields |> Array.filter (fun field -> field.Disposition = Ignored) |> Array.length)
+                                    + " ignored · "
+                                    + string (review.Fields |> Array.filter (fun field -> field.Disposition = Lossy) |> Array.length)
+                                    + " lossy"
+                                )
+                                if not (Array.isEmpty review.Errors) then
+                                    Html.ul [
+                                        prop.ariaLabel "Import errors"
+                                        prop.children [
+                                            for error in review.Errors do Html.li error
+                                        ]
+                                    ]
+                                Html.table [
+                                    prop.ariaLabel "Mapped, ignored, lossy, and rejected source fields"
+                                    prop.children [
+                                        Html.thead [
+                                            Html.tr [
+                                                Html.th "Source field"
+                                                Html.th "Disposition"
+                                                Html.th "Meaning"
+                                            ]
+                                        ]
+                                        Html.tbody [
+                                            for field in review.Fields do
+                                                Html.tr [
+                                                    Html.td field.Path
+                                                    Html.td (string field.Disposition)
+                                                    Html.td field.Meaning
+                                                ]
+                                        ]
+                                    ]
+                                ]
+                                button
+                                    "Accept reviewed import"
+                                    "Accept the reviewed deterministic semantic mappings"
+                                    (not (MapEditorInterchange.canAccept review))
+                                    (fun _ -> dispatch AcceptInterchangeReview)
+                                button "Cancel import" "Cancel interchange import without changing the map" false (fun _ ->
+                                    dispatch RejectInterchangeReview)
+                            ]
+                        ]
+                    | None -> Html.none
+                    Html.div [
+                        prop.className "editor-owner-status"
+                        prop.ariaLabel "Editor authoritative status"
+                        prop.children [
+                            Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.TerrainAnnouncement ]
+                            Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.UnitAnnouncement ]
+                            Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.EdgeAnnouncement ]
+                            Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.RegionAnnouncement ]
+                            modalInputStrip projection model.InputHelpExpanded dispatch
+                        ]
+                    ]
+                ]
+            ]
+        | PlanningWorkspace
+        | SimulatorWorkspace
+        | ReplayWorkspace -> Html.none
 
     Html.main [
         prop.className "app-shell"
@@ -8157,114 +8250,7 @@ let view model dispatch =
         prop.onClick (fun event ->
             dismissDesktopMenus event.target)
         prop.children [
-            workspaceNavigation model dispatch
-            match model.Workspace with
-            | PlanningWorkspace ->
-                tacticalShell
-                    model
-                    dispatch
-                    (match model.Planning with
-                     | Some _ ->
-                         Html.none
-                     | None ->
-                         Html.section [
-                             prop.className "panel"
-                             prop.children [
-                                 Html.h2 "Planner unavailable"
-                                 Html.p "Open the planner again to create an authored revision from the current map."
-                             ]
-                        ]
-                    )
-            | SimulatorWorkspace ->
-                tacticalShell model dispatch Html.none
-            | EditorWorkspace ->
-                let facts =
-                    { Editor = model.Editor
-                      ActiveDomain = editorDomain model.EditorToolPanel
-                      PanHeld = editorPanHeld model
-                      InputHelpExpanded = model.InputHelpExpanded }
-                let catalog = ModalInput.editorCatalog facts
-                let projection = ModalInput.projectEditor facts catalog
-                tacticalShell model dispatch (Html.div [
-                    prop.className "editor-workspace"
-                    prop.children [
-                        editorDestructiveConfirmation
-                            model.Editor
-                            dispatch
-                        match model.PendingInterchangeReview with
-                        | Some review ->
-                            Html.section [
-                                prop.id "editor-interchange-review"
-                                prop.tabIndex -1
-                                prop.className "panel editor-interchange-review"
-                                prop.ariaLabel "Interchange import review"
-                                prop.role.alert
-                                prop.children [
-                                    Html.h2 ("Review " + string review.Format + " import")
-                                    Html.p (
-                                        review.SourceName + " · "
-                                        + string (review.Fields |> Array.filter (fun field -> field.Disposition = Mapped) |> Array.length)
-                                        + " mapped · "
-                                        + string (review.Fields |> Array.filter (fun field -> field.Disposition = Ignored) |> Array.length)
-                                        + " ignored · "
-                                        + string (review.Fields |> Array.filter (fun field -> field.Disposition = Lossy) |> Array.length)
-                                        + " lossy"
-                                    )
-                                    if not (Array.isEmpty review.Errors) then
-                                        Html.ul [
-                                            prop.ariaLabel "Import errors"
-                                            prop.children [
-                                                for error in review.Errors do Html.li error
-                                            ]
-                                        ]
-                                    Html.table [
-                                        prop.ariaLabel "Mapped, ignored, lossy, and rejected source fields"
-                                        prop.children [
-                                            Html.thead [
-                                                Html.tr [
-                                                    Html.th "Source field"
-                                                    Html.th "Disposition"
-                                                    Html.th "Meaning"
-                                                ]
-                                            ]
-                                            Html.tbody [
-                                                for field in review.Fields do
-                                                    Html.tr [
-                                                        Html.td field.Path
-                                                        Html.td (string field.Disposition)
-                                                        Html.td field.Meaning
-                                                    ]
-                                            ]
-                                        ]
-                                    ]
-                                    button
-                                        "Accept reviewed import"
-                                        "Accept the reviewed deterministic semantic mappings"
-                                        (not (MapEditorInterchange.canAccept review))
-                                        (fun _ -> dispatch AcceptInterchangeReview)
-                                    button "Cancel import" "Cancel interchange import without changing the map" false (fun _ ->
-                                        dispatch RejectInterchangeReview)
-                                ]
-                            ]
-                        | None -> Html.none
-                        Html.div [
-                            prop.className "editor-owner-status"
-                            prop.ariaLabel "Editor authoritative status"
-                            prop.children [
-                                Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.TerrainAnnouncement ]
-                                Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.UnitAnnouncement ]
-                                Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.EdgeAnnouncement ]
-                                Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.RegionAnnouncement ]
-                                modalInputStrip
-                                    projection
-                                    model.InputHelpExpanded
-                                    dispatch
-                            ]
-                        ]
-                    ]
-                ])
-            | ReplayWorkspace ->
-                tacticalShell model dispatch Html.none
+            tacticalShell model dispatch transientContent
             Html.p [
                 prop.className "sr-only"
                 prop.role.status

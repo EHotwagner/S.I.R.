@@ -108,30 +108,16 @@ require(
     ),
   "a legacy Editor workscreen remains in the accessibility tree",
 );
-
-const disclosure = window.document.querySelector(
-  "#sir-replay-app details.tactical-compatibility-surface",
-);
-disclosure?.querySelector("summary")?.click();
-await window.happyDOM.waitUntilComplete();
-require(disclosure?.open, "the compatibility disclosure is not operable");
 require(
-  window.document.querySelectorAll("#sir-replay-app [role='application']").length === 1 &&
-    !disclosure?.querySelector("[role='application']"),
-  "opening compatibility controls introduced a second application region",
-);
-require(
-  Boolean(
-    disclosure?.querySelector(
-      '[data-migration-boundary="milestones-4-through-7"]',
-    ),
-  ),
-  "the non-workscreen compatibility boundary is not disclosed",
+  Boolean(window.document.querySelector("#tactical-workscreen-region")) &&
+    !window.document.querySelector(".tactical-compatibility-surface") &&
+    !window.document.querySelector("[data-migration-boundary]"),
+  "the accepted workscreen region is absent or obsolete migration UI remains",
 );
 if (failures.length > 0) {
   throw new Error(`Accessibility gate failed: ${failures.join("; ")}.`);
 }
 console.log(
-  "Documentation accessibility passed at the M3 boundary: language, title, fallback, polite status, named controls and sections, one titled/described application workscreen, four named roving units, seven semantic layers, no legacy Editor root, and a non-workscreen compatibility disclosure.",
+  "Documentation accessibility passed: language, title, fallback, polite status, named controls and sections, one titled/described application workscreen, four named roving units, seven semantic layers, and no legacy Editor or migration UI.",
 );
 window.happyDOM.close();

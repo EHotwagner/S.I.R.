@@ -3,11 +3,11 @@ title: Map Editor Reference
 category: Tools & Evidence
 categoryindex: 5
 index: 2
-status: accepted
+status: implemented
 decision-status: implemented
 document-type: reference
-version: "1.11"
-last-updated: 2026-07-29
+version: "1.12"
+last-updated: 2026-07-31
 description: Map records, terrain, semantic edges, square unit footprints, controller modes, and deterministic execution.
 related:
   - docs/interactive-rules-lab.md
@@ -16,6 +16,10 @@ related:
 ---
 
 # Map Editor Reference
+
+Final persistent-workspace source, bundle, DOM, responsive, focus, and visual
+acceptance is recorded in the
+[M9 acceptance evidence](persistent-tactical-workspace-m9-acceptance-evidence.md).
 
 The browser application presents **Editor**, **Plan**, **Simulate**, and
 **Review** as modalities of one
