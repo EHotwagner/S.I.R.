@@ -20,17 +20,20 @@ const expectFailure = (action, expectedDiagnostic, message) => {
 
 const storedWide = clone(manifest.fieldFocus);
 const storedNarrow = clone(manifest.narrow400PercentEquivalent);
-const fractionallyDifferentWide = clone(storedWide);
-const fractionallyDifferentNarrow = clone(storedNarrow);
-fractionallyDifferentWide.toolbarChildren[0].rect.x += 0.125;
-fractionallyDifferentWide.panelBodies[0].children[0].rect.width -= 0.125;
-fractionallyDifferentWide.rectangles.shell.height -= 11.188;
-fractionallyDifferentWide.fieldFocusShare += 0.0001;
-fractionallyDifferentNarrow.controls[0].rect.x += 0.125;
+const hostDifferentWide = clone(storedWide);
+const hostDifferentNarrow = clone(storedNarrow);
+hostDifferentWide.rectangles.shell.height -= 11.188;
+hostDifferentWide.toolbarChildren[0].rect.x += 87.89;
+hostDifferentWide.toolbarChildren[0].rect.width -= 10.25;
+hostDifferentWide.toolbarChildren[0].rect.right =
+  hostDifferentWide.toolbarChildren[0].rect.x + hostDifferentWide.toolbarChildren[0].rect.width;
+hostDifferentWide.channels[0].rect.y += 0.75;
+hostDifferentNarrow.controls[0].rect.x += 0.125;
+hostDifferentNarrow.toolbarScroll.scrollWidth -= 10;
 
 if (
-  JSON.stringify(storedWide) === JSON.stringify(fractionallyDifferentWide) ||
-  JSON.stringify(storedNarrow) === JSON.stringify(fractionallyDifferentNarrow)
+  JSON.stringify(storedWide) === JSON.stringify(hostDifferentWide) ||
+  JSON.stringify(storedNarrow) === JSON.stringify(hostDifferentNarrow)
 ) {
   throw new Error("Portability fixture did not differ from the stored raw Chromium metrics.");
 }
@@ -38,30 +41,30 @@ if (
 assertPortableReviewMetrics({
   storedWide,
   storedNarrow,
-  liveWide: fractionallyDifferentWide,
-  liveNarrow: fractionallyDifferentNarrow,
+  liveWide: hostDifferentWide,
+  liveNarrow: hostDifferentNarrow,
 });
 
-const semanticallyDifferentWide = clone(fractionallyDifferentWide);
+const semanticallyDifferentWide = clone(hostDifferentWide);
 semanticallyDifferentWide.counts.worksurfaceRoots = 2;
 expectFailure(
   () => assertPortableReviewMetrics({
     storedWide,
     storedNarrow,
     liveWide: semanticallyDifferentWide,
-    liveNarrow: fractionallyDifferentNarrow,
+    liveNarrow: hostDifferentNarrow,
   }),
   "live shell is not a singleton workscreen",
   "Portable review metrics accepted a non-singleton worksurface.",
 );
 
-const overflowingNarrow = clone(fractionallyDifferentNarrow);
+const overflowingNarrow = clone(hostDifferentNarrow);
 overflowingNarrow.document.scrollWidth = 321;
 expectFailure(
   () => assertPortableReviewMetrics({
     storedWide,
     storedNarrow,
-    liveWide: fractionallyDifferentWide,
+    liveWide: hostDifferentWide,
     liveNarrow: overflowingNarrow,
   }),
   "320px shell has horizontal overflow",
@@ -69,8 +72,8 @@ expectFailure(
 );
 
 const assertAuditMutationRejected = (mutate, expectedDiagnostic, message) => {
-  const liveWide = clone(fractionallyDifferentWide);
-  const liveNarrow = clone(fractionallyDifferentNarrow);
+  const liveWide = clone(hostDifferentWide);
+  const liveNarrow = clone(hostDifferentNarrow);
   mutate(liveWide, liveNarrow);
   expectFailure(
     () => assertPortableReviewMetrics({ storedWide, storedNarrow, liveWide, liveNarrow }),
@@ -110,9 +113,29 @@ assertAuditMutationRejected(
   "Portable review metrics accepted material horizontal geometry drift.",
 );
 assertAuditMutationRejected(
-  (wide) => { wide.rectangles.shell.height = storedWide.rectangles.shell.height + 32; },
-  "wide.rectangles.shell.height",
-  "Portable review metrics accepted material vertical geometry drift.",
+  (wide) => { wide.rectangles.right.width += 32; },
+  "wide.rectangles.right.width",
+  "Portable review metrics accepted material sidebar geometry drift.",
+);
+assertAuditMutationRejected(
+  (wide) => { wide.rectangles.bottom.height += 32; },
+  "wide.rectangles.bottom.height",
+  "Portable review metrics accepted material bottom-panel geometry drift.",
+);
+assertAuditMutationRejected(
+  (wide) => { wide.toolbarChildren[0].rect.right = wide.rectangles.toolbar.right + 2; },
+  "compact toolbar clips a control",
+  "Portable review metrics accepted toolbar clipping.",
+);
+assertAuditMutationRejected(
+  (wide) => { wide.overlaps.toolbarFrame = true; },
+  "1440 shell landmarks overlap",
+  "Portable review metrics accepted landmark overlap.",
+);
+assertAuditMutationRejected(
+  (_wide, narrow) => { narrow.controls[0].rect.width = 43; },
+  "narrow access control is smaller than 44px",
+  "Portable review metrics accepted an undersized touch target.",
 );
 
 const inheritedEnvironment = {
@@ -133,5 +156,5 @@ if (
 }
 
 console.log(
-  "Persistent workspace browser-audit portability passed: fractional cross-runtime metric drift is accepted, semantic/geometry regressions fail closed, and inherited DBus variables are isolated from Chromium.",
+  "Persistent workspace browser-audit portability passed: cross-host font/layout drift is accepted, semantic/critical-geometry regressions fail closed, and inherited DBus variables are isolated from Chromium.",
 );
