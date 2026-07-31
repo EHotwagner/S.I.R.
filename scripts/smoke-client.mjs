@@ -369,6 +369,14 @@ const persistentTacticalShell = window.document.querySelector(
 const persistentBattlefieldViewport = window.document.querySelector(
   '#tactical-battlefield-viewport[data-viewport-lifecycle="shared"]',
 );
+// Milestone 0 deliberately keeps this stronger characterization opt-in while
+// the known defect exists. The normal smoke gate documents the current
+// wrapper contract; `npm run characterize:persistent-workscreen` turns on the
+// successor SVG-root contract and is expected to fail until Milestone 3.
+const characterizePersistentWorkscreen =
+  process.env.SIR_CHARACTERIZE_PERSISTENT_WORKSCREEN === "1";
+const initialEditorWorksurface =
+  persistentBattlefieldViewport?.querySelector("svg#editor-map-stage");
 const initialTimeline = persistentTacticalShell?.querySelector(
   '[aria-label="Unified tactical timeline"]',
 );
@@ -380,6 +388,9 @@ const modalityLabels = [
 if (
   !persistentTacticalShell ||
   !persistentBattlefieldViewport ||
+  !initialEditorWorksurface ||
+  !initialEditorWorksurface.isConnected ||
+  !persistentBattlefieldViewport.contains(initialEditorWorksurface) ||
   window.document.querySelectorAll("#tactical-battlefield-viewport").length !== 1 ||
   !initialTimeline ||
   JSON.stringify(modalityLabels) !==
@@ -429,6 +440,35 @@ await window.happyDOM.waitUntilComplete();
 const planner = window.document.querySelector(
   '[aria-label="Coordinated planning workspace"]',
 );
+if (characterizePersistentWorkscreen) {
+  const currentViewport = window.document.querySelector(
+    "#tactical-battlefield-viewport",
+  );
+  const planningWorksurface =
+    currentViewport?.querySelector(".planning-cell-grid");
+  if (currentViewport !== persistentBattlefieldViewport) {
+    throw new Error(
+      "Corrective characterization setup failed: the outer tactical viewport did not survive Editor → Plan.",
+    );
+  }
+  if (
+    !planningWorksurface ||
+    !planningWorksurface.isConnected ||
+    !currentViewport.contains(planningWorksurface)
+  ) {
+    throw new Error(
+      "Corrective characterization setup failed: Plan did not mount its exact .planning-cell-grid work surface inside the retained viewport.",
+    );
+  }
+  if (initialEditorWorksurface === planningWorksurface) {
+    throw new Error(
+      "Corrective characterization setup failed: unlike work-surface roots compared as equal.",
+    );
+  }
+  throw new Error(
+    "KNOWN M0 FAILURE: #tactical-battlefield-viewport survived Editor → Plan, but its actual work-surface root was replaced (svg#editor-map-stage → .planning-cell-grid).",
+  );
+}
 const stateLabels = [...planner?.querySelectorAll(".planning-status .eyebrow") ?? []]
   .map((element) => element.textContent.trim());
 if (

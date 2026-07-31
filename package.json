@@ -5,6 +5,7 @@
   "scripts": {
     "build:client": "./scripts/build-client.sh",
     "build:docs": "./scripts/build-docs.sh",
+    "characterize:persistent-workscreen": "npm run build:client && SIR_CHARACTERIZE_PERSISTENT_WORKSCREEN=1 node scripts/smoke-client.mjs",
     "dev:client": "vite --config src/SIR.Client.Web/vite.config.js",
     "import:map-design": "node scripts/import-map-editor-design.mjs",
     "measure:worker": "node scripts/measure-worker.mjs",
@@ -12,6 +13,7 @@
     "review:map-editor": "node scripts/generate-map-editor-review.mjs",
     "test:map-editor-qualification": "node scripts/test-map-editor-qualification.mjs",
     "test:map-design-transfer": "node scripts/test-map-editor-design-transfer.mjs",
+    "test:persistent-workspace-m0": "node scripts/test-persistent-workspace-m0-baseline.mjs",
     "test": "./scripts/test-conformance.sh",
     "verify:baseline": "node scripts/verify-fable-client-baseline.mjs"
   },
