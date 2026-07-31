@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>S.I.R. Persistent Workspace Mockups</title>
+    <link rel="stylesheet" href="mockups.css">
+  </head>
+  <body>
+    <main class="review-page">
+      <header class="review-header">
+        <div>
+          <p class="kicker">S.I.R. interface study · 31 July 2026</p>
+          <h1>One battlefield. Three shell directions.</h1>
+          <p class="lede">
+            Compare layout density, then switch modality inside each direction.
+            The tactical SVG below is never replaced.
+          </p>
+        </div>
+        <div class="concept-switcher" role="group" aria-label="Mockup direction">
+          <button type="button" data-concept="balanced" aria-pressed="true">
+            <span>A</span>
+            Balanced
+          </button>
+          <button type="button" data-concept="focus" aria-pressed="false">
+            <span>B</span>
+            Field focus
+          </button>
+          <button type="button" data-concept="analysis" aria-pressed="false">
+            <span>C</span>
+            Ops analysis
+          </button>
+        </div>
+      </header>
+
+      <section class="concept-note" aria-live="polite">
+        <div>
+          <span class="concept-letter">A</span>
+          <div>
+            <strong id="concept-title">Balanced command desk</strong>
+            <p id="concept-summary">
+              A compact default with both sidebars visible and a shallow timeline.
+            </p>
+          </div>
+        </div>
+        <p class="identity-proof">
+          Workscreen identity
+          <strong id="identity-status">retained · 0 transitions</strong>
+        </p>
+      </section>
+
+      <section id="sir-mockup" class="sir-shell concept-balanced modality-editor">
+        <header class="topbar">
+          <div class="brand-mark" aria-label="S.I.R.">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <path d="M5 5h22v22H5z"></path>
+              <path d="M10 10h12v12H10z"></path>
+              <circle cx="16" cy="16" r="2.5"></circle>
+            </svg>
+          </div>
+          <div class="document">
+            <strong>crossroads.sirmap</strong>
+            <span>revision 42 · saved</span>
+          </div>
+          <nav class="modality-switcher" aria-label="Tactical modality">
+            <button type="button" data-modality="editor" aria-pressed="true">
+              <kbd>1</kbd> Editor
+            </button>
+            <button type="button" data-modality="plan" aria-pressed="false">
+              <kbd>2</kbd> Plan
+            </button>
+            <button type="button" data-modality="simulate" aria-pressed="false">
+              <kbd>3</kbd> Simulate
+            </button>
+            <button type="button" data-modality="review" aria-pressed="false">
+              <kbd>4</kbd> Review
+            </button>
+          </nav>
+          <div class="quick-actions">
+            <button type="button" title="Undo">↶</button>
+            <button type="button" title="Redo">↷</button>
+            <button type="button" id="toggle-left" title="Toggle left sidebar">◧</button>
+            <button type="button" id="toggle-right" title="Toggle right sidebar">◨</button>
+            <button type="button" id="toggle-timeline" title="Toggle timeline">▤</button>
+            <button type="button" title="Command palette">⌘</button>
+          </div>
+        </header>
+
+        <div class="workspace-grid">
+          <aside class="sidebar sidebar-left" aria-label="Left sidebar">
+            <div class="activity-rail" aria-label="Panel shortcuts">
+              <button type="button" class="active" title="Roster">♟</button>
+              <button type="button" title="Tools">⌁</button>
+              <button type="button" title="Layers">▱</button>
+              <button type="button" title="Rules and data">⌘</button>
+              <button type="button" title="Samples">◇</button>
+              <span></span>
+              <button type="button" title="Settings">⚙</button>
+            </div>
+            <div class="sidebar-content">
+              <div class="sidebar-heading">
+                <div>
+                  <span class="eyebrow">Force</span>
+                  <strong>Alpha company</strong>
+                </div>
+                <div>
+                  <button type="button" title="Move panel right" data-move="left">→</button>
+                  <button type="button" title="Hide panel" data-hide="left">×</button>
+                </div>
+              </div>
+
+              <label class="search">
+                <span>⌕</span>
+                <input type="search" value="" placeholder="Filter 18 units">
+              </label>
+
+              <div class="panel-section">
+                <button class="section-title" type="button">
+                  <span>⌄ ALPHA / FIRETEAM 1</span><small>6</small>
+                </button>
+                <button class="unit-row selected" type="button">
+                  <span class="unit-glyph blue">A1</span>
+                  <span><strong>Sgt. Vale</strong><small>Leader · Ready</small></span>
+                  <span class="health">8</span>
+                </button>
+                <button class="unit-row" type="button">
+                  <span class="unit-glyph blue">R</span>
+                  <span><strong>Rifle 12</strong><small>Moving · 2.1 s</small></span>
+                  <span class="health">6</span>
+                </button>
+                <button class="unit-row" type="button">
+                  <span class="unit-glyph blue">MG</span>
+                  <span><strong>Gunner 03</strong><small>Set · Overwatch</small></span>
+                  <span class="health">7</span>
+                </button>
+              </div>
+
+              <div class="panel-section">
+                <button class="section-title" type="button">
+                  <span>› ALPHA / FIRETEAM 2</span><small>6</small>
+                </button>
+                <button class="section-title" type="button">
+                  <span>› SUPPORT</span><small>6</small>
+                </button>
+              </div>
+
+              <div class="mode-tools">
+                <span class="eyebrow">Active tools</span>
+                <div class="tool-grid editor-tools">
+                  <button type="button" class="active">↖ Select</button>
+                  <button type="button">▦ Terrain</button>
+                  <button type="button">╫ Edges</button>
+                  <button type="button">◌ Regions</button>
+                </div>
+                <div class="tool-grid plan-tools">
+                  <button type="button" class="active">↝ Route</button>
+                  <button type="button">◒ Facing</button>
+                  <button type="button">⌾ Attention</button>
+                  <button type="button">⏱ Hold</button>
+                </div>
+                <div class="tool-grid simulate-tools">
+                  <button type="button" class="active">▶ Run</button>
+                  <button type="button">↦ Step</button>
+                  <button type="button">↺ Reset</button>
+                  <button type="button">◎ Preview</button>
+                </div>
+                <div class="tool-grid review-tools">
+                  <button type="button" class="active">◀ Event</button>
+                  <button type="button">Event ▶</button>
+                  <button type="button">⌖ Inspect</button>
+                  <button type="button">⇩ Export</button>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <section class="workbench" aria-label="Persistent tactical workbench">
+            <div class="canvas-toolbar">
+              <div>
+                <button type="button">−</button>
+                <span>78%</span>
+                <button type="button">+</button>
+                <button type="button">Fit</button>
+              </div>
+              <div class="view-chips">
+                <button type="button" class="active">Grid</button>
+                <button type="button" class="active">Units</button>
+                <button type="button" class="overlay-chip">Intent</button>
+                <button type="button">Fog</button>
+              </div>
+              <span class="cursor-position">C 08 · R 05</span>
+            </div>
+
+            <div class="workscreen-wrap">
+              <svg
+                id="tactical-workscreen"
+                class="tactical-workscreen"
+                viewBox="0 0 1200 720"
+                role="application"
+                aria-label="Tactical workscreen"
+                data-identity="persistent"
+              >
+                <title>Persistent S.I.R. tactical workscreen</title>
+                <desc>
+                  A grid battlefield whose editing, planning, simulation, and review
+                  layers change without replacing this SVG element.
+                </desc>
+                <defs>
+                  <pattern id="minor-grid" width="60" height="60" patternUnits="userSpaceOnUse">
+                    <path d="M60 0H0V60" fill="none" stroke="#263832" stroke-width="1"></path>
+                  </pattern>
+                  <pattern id="major-grid" width="300" height="300" patternUnits="userSpaceOnUse">
+                    <rect width="300" height="300" fill="url(#minor-grid)"></rect>
+                    <path d="M300 0H0V300" fill="none" stroke="#40554c" stroke-width="2"></path>
+                  </pattern>
+                  <linearGradient id="floor-light" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#1a2823"></stop>
+                    <stop offset="1" stop-color="#101815"></stop>
+                  </linearGradient>
+                  <filter id="soft-glow">
+                    <feGaussianBlur stdDeviation="6" result="blur"></feGaussianBlur>
+                    <feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+                  </filter>
+                  <marker id="route-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                    <path d="M0 0l10 5-10 5z" fill="#79c9ff"></path>
+                  </marker>
+                  <marker id="enemy-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                    <path d="M0 0l10 5-10 5z" fill="#ff847c"></path>
+                  </marker>
+                </defs>
+
+                <g id="terrain-layer">
+                  <rect width="1200" height="720" fill="url(#floor-light)"></rect>
+                  <rect width="1200" height="720" fill="url(#major-grid)"></rect>
+                  <path d="M0 520h420v200H0z" fill="#19333a"></path>
+                  <path d="M0 520h420" stroke="#3d7a86" stroke-width="5"></path>
+                  <path d="M420 0v240h180v180h300v-120h300" fill="none" stroke="#727a70" stroke-width="22" stroke-linejoin="round"></path>
+                  <path d="M420 0v240h180m0 0v180m0 0h300m0 0v-120m0 0h300" fill="none" stroke="#a6a99b" stroke-width="4" stroke-linejoin="round"></path>
+                  <path d="M600 240h95" stroke="#171d1a" stroke-width="28"></path>
+                  <path d="M600 240l82-50" stroke="#d8b36a" stroke-width="7"></path>
+                  <rect x="70" y="70" width="230" height="150" rx="8" fill="#22322c" stroke="#65756d" stroke-width="4"></rect>
+                  <rect x="760" y="500" width="310" height="150" rx="8" fill="#222d29" stroke="#65756d" stroke-width="4"></rect>
+                  <path d="M110 105h150M110 145h150M110 185h90" stroke="#384a43" stroke-width="16"></path>
+                  <path d="M800 545h225M800 590h160" stroke="#35443e" stroke-width="18"></path>
+                  <text x="30" y="690" class="map-label">DRAINAGE CHANNEL</text>
+                  <text x="775" y="630" class="map-label">SERVICE YARD</text>
+                  <text x="82" y="205" class="map-label">SUBSTATION</text>
+                </g>
+
+                <g id="editor-layer" class="modality-layer editor-layer">
+                  <rect x="420" y="240" width="180" height="180" fill="#f7c85e" opacity=".1" stroke="#f7c85e" stroke-width="3" stroke-dasharray="10 8"></rect>
+                  <circle cx="690" cy="240" r="13" fill="#ffd166"></circle>
+                  <path d="M690 215v50M665 240h50" stroke="#111715" stroke-width="4"></path>
+                  <g class="editor-handles">
+                    <rect x="474" y="294" width="12" height="12"></rect>
+                    <rect x="534" y="294" width="12" height="12"></rect>
+                    <rect x="474" y="354" width="12" height="12"></rect>
+                    <rect x="534" y="354" width="12" height="12"></rect>
+                  </g>
+                </g>
+
+                <g id="plan-layer" class="modality-layer plan-layer">
+                  <path d="M235 395 C360 390 405 330 505 330 S690 365 770 290 S900 235 1025 205" class="route friendly" marker-end="url(#route-arrow)"></path>
+                  <path d="M295 455 C410 470 520 480 615 435 S800 370 930 395" class="route support" marker-end="url(#route-arrow)"></path>
+                  <path d="M505 330l85-70 95 60" fill="#79c9ff" opacity=".12" stroke="#79c9ff" stroke-width="2"></path>
+                  <g class="waypoint"><circle cx="505" cy="330" r="12"></circle><text x="505" y="335">1</text></g>
+                  <g class="waypoint"><circle cx="770" cy="290" r="12"></circle><text x="770" y="295">2</text></g>
+                  <g class="waypoint"><circle cx="1025" cy="205" r="12"></circle><text x="1025" y="210">3</text></g>
+                  <text x="695" y="262" class="overlay-label">PREDICTED · 12.4 s</text>
+                </g>
+
+                <g id="simulation-layer" class="modality-layer simulation-layer">
+                  <path d="M910 160 C820 200 760 260 720 345" class="route hostile" marker-end="url(#enemy-arrow)"></path>
+                  <circle cx="720" cy="345" r="95" fill="#ff756d" opacity=".08" stroke="#ff756d" stroke-width="3" stroke-dasharray="7 10"></circle>
+                  <path d="M270 390l200-95a220 220 0 0 1 5 190z" fill="#6fc3ff" opacity=".12" stroke="#6fc3ff" stroke-width="2"></path>
+                  <text x="740" y="465" class="overlay-label danger">CONTACT · 0.8 s OLD</text>
+                </g>
+
+                <g id="review-layer" class="modality-layer review-layer">
+                  <path d="M160 570h860" stroke="#ffd166" stroke-width="3" opacity=".45"></path>
+                  <circle cx="725" cy="570" r="12" fill="#ffd166" filter="url(#soft-glow)"></circle>
+                  <path d="M690 205l30 120" stroke="#ffcf70" stroke-width="4" stroke-dasharray="6 7"></path>
+                  <rect x="735" y="185" width="235" height="58" rx="8" fill="#151b18" stroke="#ffd166" stroke-width="2"></rect>
+                  <text x="754" y="210" class="overlay-label">EVENT 0142 · DOOR OPENED</text>
+                  <text x="754" y="230" class="small-svg-text">12.400 s · verified replay</text>
+                </g>
+
+                <g id="unit-layer">
+                  <g class="unit friendly-unit selected-unit" transform="translate(210 370)">
+                    <rect x="-24" y="-24" width="48" height="48" rx="5"></rect>
+                    <path d="M0-40L9-27H-9z" class="facing"></path>
+                    <text y="5">A1</text>
+                    <text y="39" class="unit-name">VALE · 8</text>
+                  </g>
+                  <g class="unit friendly-unit" transform="translate(285 450)">
+                    <rect x="-22" y="-22" width="44" height="44" rx="5"></rect>
+                    <path d="M0-38L9-25H-9z" class="facing"></path>
+                    <text y="5">R</text>
+                    <text y="37" class="unit-name">R12 · 6</text>
+                  </g>
+                  <g class="unit friendly-unit" transform="translate(315 340)">
+                    <rect x="-25" y="-25" width="50" height="50" rx="5"></rect>
+                    <path d="M0-41L9-28H-9z" class="facing"></path>
+                    <text y="5">MG</text>
+                    <text y="40" class="unit-name">G03 · 7</text>
+                  </g>
+                  <g class="unit hostile-unit" transform="translate(940 160)">
+                    <rect x="-27" y="-27" width="54" height="54" rx="5"></rect>
+                    <path d="M0 43L9 30H-9z" class="facing"></path>
+                    <text y="5">?</text>
+                    <text y="-38" class="unit-name">CONTACT</text>
+                  </g>
+                  <g class="unit hostile-unit muted-hostile" transform="translate(1020 265)">
+                    <rect x="-22" y="-22" width="44" height="44" rx="5"></rect>
+                    <text y="5">?</text>
+                  </g>
+                </g>
+
+                <g id="selection-layer">
+                  <circle cx="210" cy="370" r="42" fill="none" stroke="#ffd166" stroke-width="3" stroke-dasharray="4 6"></circle>
+                  <path d="M180 338h-12v12M240 338h12v12M180 402h-12v-12M240 402h12v-12" fill="none" stroke="#ffd166" stroke-width="3"></path>
+                </g>
+              </svg>
+
+              <div class="canvas-status">
+                <span><i class="status-dot"></i><strong id="mode-readout">EDITOR</strong></span>
+                <span id="mode-detail">Authored map · revision 42</span>
+                <span>Selection: Sgt. Vale</span>
+                <span class="coordinates">x 08.4 · y 05.1</span>
+              </div>
+            </div>
+          </section>
+
+          <aside class="sidebar sidebar-right" aria-label="Right sidebar">
+            <div class="sidebar-content">
+              <div class="sidebar-heading">
+                <div>
+                  <span class="eyebrow">Inspector</span>
+                  <strong>Sgt. Vale · A1</strong>
+                </div>
+                <div>
+                  <button type="button" title="Move panel left" data-move="right">←</button>
+                  <button type="button" title="Hide panel" data-hide="right">×</button>
+                </div>
+              </div>
+
+              <div class="inspector-card identity-card">
+                <div class="large-glyph">A1</div>
+                <div>
+                  <strong>Squad leader</strong>
+                  <span>Human · Alpha company</span>
+                  <div class="condition"><i style="width: 82%"></i></div>
+                  <small>8 / 10 HP · Ready</small>
+                </div>
+              </div>
+
+              <div class="properties editor-properties">
+                <label>Cell <span>C08 / R05</span></label>
+                <label>Facing <span>North-east</span></label>
+                <label>Stance <span>Standing</span></label>
+                <label>Layer <span>Friendly units</span></label>
+              </div>
+              <div class="properties plan-properties">
+                <label>Command <span>Route</span></label>
+                <label>Start <span>08.000 s</span></label>
+                <label>Arrival <span>12.400 s</span></label>
+                <label>Validation <span class="good">Accepted</span></label>
+              </div>
+              <div class="properties simulate-properties">
+                <label>Controller <span>Advance / cover</span></label>
+                <label>Runtime <span>12.400 s</span></label>
+                <label>Preparation <span>63%</span></label>
+                <label>Worker <span class="good">Synchronized</span></label>
+              </div>
+              <div class="properties review-properties">
+                <label>Event <span>#0142</span></label>
+                <label>Time <span>12.400 s</span></label>
+                <label>Disclosure <span>Friendly view</span></label>
+                <label>Verification <span class="good">Verified</span></label>
+              </div>
+
+              <div class="panel-tabs" role="tablist" aria-label="Inspector details">
+                <button type="button" class="active">Properties</button>
+                <button type="button">Issues <b>2</b></button>
+                <button type="button">History</button>
+              </div>
+
+              <div class="diagnostic">
+                <span class="diagnostic-icon">!</span>
+                <div>
+                  <strong>Route crosses a watched edge</strong>
+                  <small>Predicted exposure from 10.8–11.4 s</small>
+                </div>
+              </div>
+              <div class="diagnostic info">
+                <span class="diagnostic-icon">i</span>
+                <div>
+                  <strong>Formation spacing relaxed</strong>
+                  <small>One subordinate is 2 cells beyond doctrine.</small>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <section class="timeline-panel" aria-label="Shared tactical timeline">
+            <div class="transport">
+              <button type="button">|◀</button>
+              <button type="button">◀</button>
+              <button type="button" class="play">▶</button>
+              <button type="button">▶</button>
+              <button type="button">▶|</button>
+              <strong>00:12.400</strong>
+            </div>
+            <div class="timeline-main">
+              <div class="timeline-ruler">
+                <span>0</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span>
+                <i style="left:49.6%"></i>
+              </div>
+              <div class="lane">
+                <strong>A1</strong>
+                <div><span class="segment authored" style="left:8%;width:21%">Route</span><span class="segment predicted" style="left:29%;width:22%">Predicted</span><span class="segment committed" style="left:0;width:8%"></span></div>
+              </div>
+              <div class="lane">
+                <strong>R12</strong>
+                <div><span class="segment authored" style="left:17%;width:15%">Hold</span><span class="segment predicted" style="left:32%;width:14%">Cover</span><span class="segment committed" style="left:0;width:17%"></span></div>
+              </div>
+              <div class="lane">
+                <strong>G03</strong>
+                <div><span class="segment authored" style="left:13%;width:24%">Set weapon</span><span class="segment accepted" style="left:37%;width:19%">Accepted</span><span class="segment committed" style="left:0;width:13%"></span></div>
+              </div>
+            </div>
+            <button class="timeline-collapse" type="button" title="Collapse timeline">⌄</button>
+          </section>
+        </div>
+
+        <footer class="statusbar">
+          <span><b>◈</b> local sandbox</span>
+          <span>✓ map valid</span>
+          <span>worker v3</span>
+          <span class="status-spacer"></span>
+          <span>Ln C08, R05</span>
+          <span>UTF-8</span>
+          <span>Inputs <kbd>?</kbd></span>
+        </footer>
+      </section>
+
+      <footer class="review-footer">
+        <p>
+          These are interaction mockups, not separate application pages. Concept
+          switching changes shell proportions only; modality switching updates layers
+          inside the retained SVG.
+        </p>
+        <div class="legend">
+          <span><i class="swatch authored"></i>Authored</span>
+          <span><i class="swatch predicted"></i>Predicted</span>
+          <span><i class="swatch accepted"></i>Accepted</span>
+          <span><i class="swatch committed"></i>Committed</span>
+        </div>
+      </footer>
+    </main>
+    <script src="mockups.js"></script>
+  </body>
+</html>

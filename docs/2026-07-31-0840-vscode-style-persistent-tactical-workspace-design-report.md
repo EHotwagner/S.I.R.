@@ -6,7 +6,7 @@ index: 12
 status: proposed
 decision-status: accepted
 document-type: timestamped-design-report
-version: "1.0"
+version: "1.1"
 created-at: 2026-07-31T08:40:09+02:00
 last-updated: 2026-07-31
 description: Corrective design and delivery roadmap for one persistent SVG workscreen with compact chrome, configurable sidebars, and modality-specific projections.
@@ -48,6 +48,14 @@ configurable sidebar panels or temporary overlay panels and do not replace the
 workscreen. After feature parity is proven, the legacy Editor, Planner,
 Simulator, and Review render paths will be removed.
 
+The accepted visual and density target is **Field Focus**: the battlefield
+receives the maximum practical area, supporting sidebars are narrow by default,
+the toolbar remains compact, and the shared timeline opens at a shallow useful
+height. Wider sidebars and a deeper timeline remain user-configurable analysis
+arrangements; they are not separate workspaces or modality-specific layouts.
+Implementation is not accepted until it achieves the Field Focus target rather
+than merely reproducing the current interface inside new shell markup.
+
 This decision corrects the presentation boundary accepted in the first unified
 tactical workspace implementation. The current code preserves
 `#tactical-battlefield-viewport`, but conditionally replaces its battlefield
@@ -88,6 +96,34 @@ The target is not one merged domain model. It is one stable presentation
 surface over deliberately separate domain owners.
 
 ## Binding decisions
+
+### Field Focus is the canonical goal
+
+The [interactive Field Focus mockup](assets/persistent-workspace-mockups/index.html)
+is the selected baseline for information density and spatial priority. It is a
+design target, not a pixel-exact specification, but the following outcomes are
+mandatory:
+
+- the workscreen is visually and dimensionally dominant at the reference
+  desktop viewport;
+- both sidebars can remain open without reducing the workscreen to a secondary
+  pane;
+- default sidebars are narrow and show compact, task-relevant information;
+- the top toolbar fits document, modality, essential transport, view, and
+  command access without becoming a ribbon;
+- the default timeline is shallow enough to preserve battlefield height while
+  keeping its cursor and primary lanes readable;
+- expanding panels or the timeline produces the Operations Analysis
+  arrangement through the same persisted layout system;
+- hiding supporting panels produces a more canvas-focused arrangement without
+  entering another workspace; and
+- changing density, panel width, timeline height, or modality never remounts
+  the SVG.
+
+The implementation may refine type, spacing, icons, and exact dimensions
+through accessibility and browser qualification. It may not use those
+refinements to revert to wide permanent panels, page-sized modality content, or
+a battlefield that is subordinate to application chrome.
 
 ### One exact workscreen identity
 
@@ -356,6 +392,9 @@ present.
   migration, and reset.
 - [ ] Render the compact top toolbar and empty configurable sidebars around the
   existing battlefield without duplicating command authority.
+- [ ] Establish Field Focus as the deterministic default layout: narrow left
+  and right sidebars, dominant workscreen, compact toolbar, and shallow
+  timeline.
 - [ ] Qualify panel show/hide, move, reorder, collapse, focus restoration, and
   responsive drawer behavior.
 
@@ -438,6 +477,8 @@ present.
   branches, CSS layouts, DOM landmarks, and wrapper-only lifecycle assertions.
 - [ ] Prove there is exactly one production renderer and one mounted SVG
   workscreen path.
+- [ ] Complete visual and interaction review against the Field Focus mockup and
+  prove the workscreen remains dominant with both default sidebars open.
 - [ ] Run .NET/Fable parity, client conformance, production browser smoke,
   accessibility, documentation, review-image, and sequential FAKE gates.
 - [ ] Update living user and architecture documentation, record migration
@@ -451,6 +492,7 @@ The redesign is accepted only when all of the following are demonstrated:
 |---|---|
 | Workscreen identity | one retained SVG object remains strictly equal across all four modalities |
 | Renderer uniqueness | source and bundle inspection find no alternate production battlefield root |
+| Field Focus goal | compact toolbar, narrow default sidebars, shallow timeline, and a dimensionally dominant workscreen match the accepted target |
 | Spatial continuity | camera transform and valid selection survive every modality round trip |
 | State authority | modality and layout changes do not mutate map, plan, runtime, or replay ownership |
 | Disclosure | Plan, Simulate, and Review projections expose only allowed knowledge |
@@ -552,5 +594,7 @@ S.I.R. will have one VS Code-style tactical shell and one persistent SVG
 workscreen. Modality changes will alter projection, layers, tools, commands,
 inspectors, and editability inside that stable surface. Side panels and the
 timeline will be configurable and persisted. Supporting content will appear in
-panels or overlays. Legacy modality-specific render paths will be deleted after
-measured parity, and strict SVG reference identity will be a release gate.
+panels or overlays. Field Focus is the mandatory default density and spatial
+goal: the workscreen dominates while compact supporting chrome stays available.
+Legacy modality-specific render paths will be deleted after measured parity,
+and strict SVG reference identity plus Field Focus review will be release gates.
