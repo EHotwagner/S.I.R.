@@ -817,6 +817,137 @@
   gap: .5rem;
   min-width: 0;
 }
+#sir-replay-app .tactical-compact-toolbar {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  min-height: 2.9rem;
+  padding: .2rem .35rem;
+  border: 1px solid #43584e;
+  border-radius: .4rem;
+  background: #111a17;
+}
+#sir-replay-app .tactical-compact-toolbar button,
+#sir-replay-app .tactical-compact-toolbar summary {
+  min-height: 2.75rem;
+  padding: .35rem .55rem;
+}
+#sir-replay-app .tactical-document-identity {
+  min-width: 10rem;
+  margin-inline-end: auto;
+  line-height: 1.2;
+}
+#sir-replay-app .tactical-document-identity span {
+  display: block;
+  color: #b9c9c0;
+  font-size: .72rem;
+}
+#sir-replay-app .tactical-toolbar-layout,
+#sir-replay-app .tactical-toolbar-transport {
+  display: flex;
+  gap: .2rem;
+}
+#sir-replay-app .tactical-drawer-toggle { display: none; }
+#sir-replay-app .tactical-panel-menu { position: relative; }
+#sir-replay-app .tactical-panel-menu > summary {
+  display: flex;
+  align-items: center;
+  border: 1px solid #8fae9e;
+  border-radius: .35rem;
+  background: #18241f;
+  cursor: pointer;
+  list-style: none;
+}
+#sir-replay-app .tactical-panel-menu > summary::-webkit-details-marker { display: none; }
+#sir-replay-app .tactical-panel-menu-items {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + .2rem);
+  right: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(9rem, 1fr));
+  gap: .2rem;
+  width: min(25rem, 90vw);
+  padding: .35rem;
+  border: 1px solid #60776b;
+  border-radius: .4rem;
+  background: #111a17;
+  box-shadow: 0 .7rem 1.8rem rgba(0, 0, 0, .55);
+}
+#sir-replay-app .tactical-layout-frame {
+  display: grid;
+  grid-template-columns:
+    var(--tactical-left-width, 208px)
+    minmax(32rem, 1fr)
+    var(--tactical-right-width, 224px);
+  grid-template-areas:
+    "left workscreen right"
+    "bottom bottom bottom";
+  gap: .4rem;
+  min-width: 0;
+}
+#sir-replay-app .tactical-battlefield-viewport {
+  grid-area: workscreen;
+  min-width: 0;
+  min-height: 32rem;
+}
+#sir-replay-app .tactical-sidebar {
+  min-width: 0;
+  max-height: 44rem;
+  overflow: auto;
+  border: 1px solid #43584e;
+  border-radius: .4rem;
+  background: #111a17;
+}
+#sir-replay-app .tactical-sidebar-left { grid-area: left; }
+#sir-replay-app .tactical-sidebar-right { grid-area: right; }
+#sir-replay-app .tactical-layout-panel {
+  border-bottom: 1px solid #33473e;
+  background: #151f1c;
+}
+#sir-replay-app .tactical-layout-panel > header {
+  display: grid;
+  gap: .2rem;
+  padding: .3rem;
+}
+#sir-replay-app .tactical-layout-panel > header strong {
+  overflow-wrap: anywhere;
+  font-size: .78rem;
+}
+#sir-replay-app .tactical-layout-panel-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) repeat(4, 2.75rem);
+  gap: .15rem;
+}
+#sir-replay-app .tactical-layout-panel-actions button {
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: .25rem;
+  font-size: .72rem;
+}
+#sir-replay-app .tactical-layout-panel-placeholder {
+  padding: .35rem .45rem .55rem;
+  color: #aebfb6;
+  font-size: .73rem;
+}
+#sir-replay-app .tactical-layout-panel.is-collapsed > header {
+  background: #101715;
+}
+#sir-replay-app .tactical-bottom-panel {
+  grid-area: bottom;
+  height: var(--tactical-bottom-height, 152px);
+  min-height: 0;
+  overflow: auto;
+}
+#sir-replay-app .tactical-bottom-panel.is-collapsed {
+  height: .3rem;
+  overflow: hidden;
+  border-top: 1px solid #43584e;
+}
+#sir-replay-app .tactical-layout-diagnostics {
+  margin: 0;
+  color: #ffd166;
+}
 #sir-replay-app .tactical-modality-controls,
 #sir-replay-app .tactical-transport {
   display: flex;
@@ -1307,6 +1438,12 @@
   #sir-replay-app .tactical-binding-list li {
     grid-template-columns: 1fr;
   }
+  #sir-replay-app .tactical-compact-toolbar,
+  #sir-replay-app .tactical-sidebar,
+  #sir-replay-app .tactical-layout-panel {
+    border-color: CanvasText;
+    forced-color-adjust: auto;
+  }
 
   #sir-replay-app .planning-workspace,
   #sir-replay-app .planning-workspace .panel,
@@ -1326,10 +1463,46 @@
 
 @media (max-width: 48rem) {
   #sir-replay-app .app-shell { padding: .25rem; }
-  #sir-replay-app .tactical-modality-controls {
+  #sir-replay-app .tactical-compact-toolbar {
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 20;
+    flex-wrap: wrap;
+  }
+  #sir-replay-app .tactical-document-identity { flex: 1 1 100%; }
+  #sir-replay-app .tactical-drawer-toggle { display: inline-flex; }
+  #sir-replay-app .tactical-layout-frame {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "workscreen" "bottom";
+  }
+  #sir-replay-app .tactical-sidebar {
+    position: fixed;
+    z-index: 18;
+    top: 6rem;
+    bottom: .25rem;
+    width: min(20rem, calc(100vw - 2rem));
+    max-height: none;
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform .16s ease;
+  }
+  #sir-replay-app .tactical-sidebar-left {
+    left: .25rem;
+    transform: translateX(calc(-100% - .5rem));
+  }
+  #sir-replay-app .tactical-sidebar-right {
+    right: .25rem;
+    transform: translateX(calc(100% + .5rem));
+  }
+  #sir-replay-app .tactical-sidebar.is-drawer-open {
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+  #sir-replay-app .tactical-battlefield-viewport { min-height: 22rem; }
+  #sir-replay-app .tactical-bottom-panel { height: min(var(--tactical-bottom-height, 152px), 35vh); }
+  #sir-replay-app .tactical-modality-controls {
+    position: static;
     background: #0d1512;
   }
   #sir-replay-app .tactical-timeline,

@@ -11,6 +11,16 @@ last-updated: 2026-07-30
 
 # Unified Tactical Workspace
 
+> **Corrective implementation status (2026-07-31):** the tactical application
+> now has the versioned Field Focus shell and layout system described by the
+> [persistent-workspace design report](2026-07-31-0840-vscode-style-persistent-tactical-workspace-design-report.md).
+> Its compact toolbar, configurable placeholder sidebars, responsive drawers,
+> and independently visible/collapsible bottom-panel profile surround the
+> existing battlefield paths. Invalid or future persisted layout profiles fail
+> closed to canonical Field Focus with an announced diagnostic. Actual
+> tool-panel migration and the single persistent SVG are later sequential
+> milestones; the present shell does not claim either.
+
 Editor, Plan, Simulate, and Review are modalities of one tactical workspace.
 Use the four pressed-state buttons or their effective bindings to change tools
 without discarding the battlefield, selection, camera, or current time. Rules

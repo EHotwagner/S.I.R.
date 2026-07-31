@@ -142,7 +142,7 @@ const application = mount?.querySelector(
 );
 const status = mount?.querySelector('[role="status"]');
 
-if (!application || mount?.querySelector("header, h1")) {
+if (!application || mount?.querySelector("h1")) {
   throw new Error("The Fable application did not mount inside the fsdocs page.");
 }
 

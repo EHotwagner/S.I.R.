@@ -39,8 +39,31 @@ if (
     "Modal input acceptance styles lost reduced-motion, forced-colors, 400%-reflow, or 44px target-size safeguards.",
   );
 }
+if (
+  !/\.tactical-layout-frame\{[^}]*grid-template-columns:var\(--tactical-left-width,208px\) minmax\(32rem,\s*1fr\) var\(--tactical-right-width,224px\)/.test(
+    styles,
+  ) ||
+  !/\.tactical-drawer-toggle\{display:none\}/.test(styles) ||
+  !/@media\s*\((?:max-width:48rem|width<=48rem)\)[\s\S]*?\.tactical-drawer-toggle\{display:inline-flex\}/.test(
+    styles,
+  ) ||
+  !/@media\s*\((?:max-width:48rem|width<=48rem)\)[\s\S]*?\.tactical-layout-frame\{[^}]*grid-template-columns:minmax\(0,1fr\)/.test(
+    styles,
+  ) ||
+  !/@media\s*\((?:max-width:48rem|width<=48rem)\)[\s\S]*?\.tactical-sidebar\{[^}]*visibility:hidden[^}]*pointer-events:none/.test(
+    styles,
+  ) ||
+  !/@media\s*\((?:max-width:48rem|width<=48rem)\)[\s\S]*?\.tactical-sidebar\.is-drawer-open\{[^}]*visibility:visible[^}]*pointer-events:auto[^}]*transform:translate(?:X)?\(0\)/.test(
+    styles,
+  )
+) {
+  throw new Error(
+    "Field Focus desktop columns or responsive sidebar drawer safeguards are missing.",
+  );
+}
 
 const window = new Window({ url: "https://sir.invalid/replay/" });
+window.document.head.innerHTML = `<style>${styles}</style>`;
 window.document.body.innerHTML = '<div id="sir-replay-app"></div>';
 
 const workerMessages = [];
@@ -339,19 +362,114 @@ class SmokeWorker {
   terminate() {}
 }
 
-Object.assign(globalThis, {
-  window,
-  document: window.document,
-  Node: window.Node,
-  Element: window.Element,
-  HTMLElement: window.HTMLElement,
-  Event: window.Event,
-  KeyboardEvent: window.KeyboardEvent,
-  MouseEvent: window.MouseEvent,
+const bundle = resolve(output, scriptMatch[1].replace(/^\.\//, ""));
+const installBrowserGlobals = (browserWindow) => Object.assign(globalThis, {
+  window: browserWindow,
+  document: browserWindow.document,
+  Node: browserWindow.Node,
+  Element: browserWindow.Element,
+  HTMLElement: browserWindow.HTMLElement,
+  Event: browserWindow.Event,
+  KeyboardEvent: browserWindow.KeyboardEvent,
+  MouseEvent: browserWindow.MouseEvent,
   Worker: SmokeWorker,
 });
 
-const bundle = resolve(output, scriptMatch[1].replace(/^\.\//, ""));
+const fieldFocusProfile = {
+  schemaVersion: 1,
+  placements: [
+    { panelId: "roster", side: "left", order: 0, visible: true, collapsed: false },
+    { panelId: "tools", side: "left", order: 1, visible: true, collapsed: false },
+    { panelId: "layers", side: "left", order: 2, visible: true, collapsed: true },
+    { panelId: "samples", side: "left", order: 3, visible: false, collapsed: false },
+    { panelId: "selection", side: "right", order: 0, visible: true, collapsed: false },
+    { panelId: "validation", side: "right", order: 1, visible: true, collapsed: true },
+    { panelId: "document", side: "right", order: 2, visible: true, collapsed: true },
+    { panelId: "rules", side: "right", order: 3, visible: false, collapsed: false },
+    { panelId: "data", side: "right", order: 4, visible: false, collapsed: false },
+    { panelId: "diagnostics", side: "right", order: 5, visible: false, collapsed: true },
+  ],
+  leftSidebar: { width: 208, drawerOpen: false },
+  rightSidebar: { width: 224, drawerOpen: false },
+  bottomPanel: {
+    visible: true,
+    height: 152,
+    collapsedInEditor: true,
+    collapsedOutsideEditor: false,
+  },
+};
+
+const mountLayoutCase = async (name, storedProfile) => {
+  const isolated = new Window({ url: `https://sir.invalid/layout-${name}/` });
+  isolated.document.head.innerHTML = `<style>${styles}</style>`;
+  isolated.document.body.innerHTML = '<div id="sir-replay-app"></div>';
+  isolated.localStorage.setItem("sir.tactical-layout.v1", storedProfile);
+  installBrowserGlobals(isolated);
+  await import(`${pathToFileURL(bundle).href}?layout-case=${name}`);
+  await isolated.happyDOM.waitUntilComplete();
+  return isolated;
+};
+
+const customizedProfile = structuredClone(fieldFocusProfile);
+customizedProfile.leftSidebar.width = 260;
+customizedProfile.rightSidebar.width = 280;
+customizedProfile.bottomPanel.visible = false;
+customizedProfile.bottomPanel.collapsedInEditor = false;
+const customizedLayoutWindow = await mountLayoutCase(
+  "customized",
+  JSON.stringify(customizedProfile),
+);
+const customizedShell = customizedLayoutWindow.document.querySelector(
+  '[aria-label="Unified tactical workspace"]',
+);
+if (
+  customizedShell?.style.getPropertyValue("--tactical-left-width") !== "260px" ||
+  customizedShell?.style.getPropertyValue("--tactical-right-width") !== "280px" ||
+  customizedLayoutWindow.document.querySelector("#tactical-bottom-panel") ||
+  customizedLayoutWindow.document
+    .querySelector("#layout-timeline-visibility-toggle")
+    ?.getAttribute("aria-pressed") !== "false" ||
+  !customizedLayoutWindow.document
+    .querySelector("#layout-timeline-toggle")
+    ?.hasAttribute("disabled")
+) {
+  throw new Error(
+    "A fresh mount did not apply customized persisted dimensions and hidden bottom-panel state.",
+  );
+}
+customizedLayoutWindow.close();
+
+for (const [name, storedProfile] of [
+  ["malformed", '{"schemaVersion":1,}'],
+  [
+    "future",
+    JSON.stringify({ ...fieldFocusProfile, schemaVersion: 99 }),
+  ],
+]) {
+  const fallbackWindow = await mountLayoutCase(name, storedProfile);
+  const fallbackShell = fallbackWindow.document.querySelector(
+    '[aria-label="Unified tactical workspace"]',
+  );
+  const canonicalFallback = JSON.parse(
+    fallbackWindow.localStorage.getItem("sir.tactical-layout.v1"),
+  );
+  if (
+    fallbackShell?.style.getPropertyValue("--tactical-left-width") !== "208px" ||
+    !fallbackWindow.document.querySelector("#tactical-bottom-panel") ||
+    !fallbackWindow.document
+      .querySelector(".tactical-layout-diagnostics")
+      ?.textContent.includes("Field Focus was restored") ||
+    canonicalFallback.schemaVersion !== 1 ||
+    canonicalFallback.bottomPanel.visible !== true
+  ) {
+    throw new Error(
+      `The ${name} persisted layout did not fail closed to diagnostic, canonical Field Focus state.`,
+    );
+  }
+  fallbackWindow.close();
+}
+
+installBrowserGlobals(window);
 await import(pathToFileURL(bundle));
 await window.happyDOM.waitUntilComplete();
 
@@ -359,7 +477,7 @@ const application = window.document.querySelector(
   'main[aria-label="S.I.R. simulator and editor"]',
 );
 
-if (!application || application.querySelector("header, h1")) {
+if (!application || application.querySelector("h1")) {
   throw new Error("The React simulator did not mount.");
 }
 
@@ -401,11 +519,250 @@ if (
     "The mounted tactical shell, four native modality controls, or unified time ruler is missing.",
   );
 }
+const compactToolbar = persistentTacticalShell.querySelector(
+  '[aria-label="Tactical workspace toolbar"]',
+);
+const leftSidebar = persistentTacticalShell.querySelector(
+  '#tactical-sidebar-left[aria-label="Left tactical sidebar"]',
+);
+const rightSidebar = persistentTacticalShell.querySelector(
+  '#tactical-sidebar-right[aria-label="Right tactical sidebar"]',
+);
+const bottomPanel = persistentTacticalShell.querySelector(
+  '#tactical-bottom-panel[aria-label="Tactical bottom panel"]',
+);
+if (
+  !compactToolbar ||
+  leftSidebar?.querySelectorAll("[data-panel-id]").length !== 3 ||
+  rightSidebar?.querySelectorAll("[data-panel-id]").length !== 3 ||
+  !bottomPanel?.classList.contains("is-collapsed") ||
+  persistentTacticalShell.style.getPropertyValue("--tactical-left-width") !==
+    "208px" ||
+  persistentTacticalShell.style.getPropertyValue("--tactical-right-width") !==
+    "224px" ||
+  persistentTacticalShell.style.getPropertyValue("--tactical-bottom-height") !==
+    "152px"
+) {
+  throw new Error(
+    "Field Focus did not mount a compact toolbar, narrow 3+3 sidebars, dominant workscreen frame, and shallow collapsed Editor timeline.",
+  );
+}
+
+const toolsCollapse = window.document.querySelector(
+  "#layout-panel-tools-collapse",
+);
+toolsCollapse?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document.querySelector("#layout-panel-tools-collapse")?.getAttribute(
+    "aria-expanded",
+  ) !== "false" ||
+  window.document.activeElement?.id !== "layout-panel-tools-collapse"
+) {
+  throw new Error("Panel collapse did not update state and restore header focus.");
+}
+[
+  ...window.document.querySelectorAll("#layout-panel-tools button"),
+]
+  .find((button) => button.getAttribute("aria-label") === "Move Tools panel to right sidebar")
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+const movedTools = window.document.querySelector('[data-panel-id="tools"]');
+if (
+  movedTools?.getAttribute("data-panel-side") !== "right" ||
+  window.document.activeElement?.id !== "layout-panel-tools-collapse"
+) {
+  throw new Error("Panel move did not preserve its identity or restore focus.");
+}
+const movedOrder = Number(movedTools.getAttribute("data-panel-order"));
+[
+  ...movedTools.querySelectorAll("button"),
+]
+  .find((button) => button.getAttribute("aria-label") === "Move Tools panel up")
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  Number(
+    window.document
+      .querySelector('[data-panel-id="tools"]')
+      ?.getAttribute("data-panel-order"),
+  ) >= movedOrder ||
+  window.document.activeElement?.id !== "layout-panel-tools-collapse"
+) {
+  throw new Error(
+    "Non-drag panel reordering did not change deterministic order and restore focus.",
+  );
+}
+[
+  ...window.document.querySelectorAll('[data-panel-id="tools"] button'),
+]
+  .find((button) => button.getAttribute("aria-label") === "Hide Tools panel")
+  ?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document.querySelector('[data-panel-id="tools"]') ||
+  window.document.activeElement?.id !== "layout-show-tools"
+) {
+  throw new Error("Panel hide did not remove controls from the DOM and restore toggle focus.");
+}
+window.document.querySelector("#layout-show-tools")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document.querySelector('[data-panel-id="tools"]') ||
+  window.document.activeElement?.id !== "layout-panel-tools-collapse"
+) {
+  throw new Error("Panel show did not restore the panel and focus its header.");
+}
+const leftDrawerToggle = window.document.querySelector(
+  "#layout-left-drawer-toggle.tactical-drawer-toggle",
+);
+window.happyDOM.setInnerWidth(1200);
+if (
+  window.getComputedStyle(leftDrawerToggle).display !== "none" ||
+  leftDrawerToggle?.getAttribute("aria-controls") !== "tactical-sidebar-left"
+) {
+  throw new Error(
+    "Responsive drawer disclosure was exposed in the desktop layout or lost its controlled region.",
+  );
+}
+window.happyDOM.setInnerWidth(600);
+if (!window.matchMedia("(max-width: 48rem)").matches) {
+  throw new Error("The drawer qualification did not enter the mobile viewport.");
+}
+leftDrawerToggle?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document
+    .querySelector("#layout-left-drawer-toggle")
+    ?.getAttribute("aria-expanded") !== "true" ||
+  !window.document
+    .querySelector("#tactical-sidebar-left")
+    ?.classList.contains("is-drawer-open") ||
+  window.document.activeElement?.id !== "layout-left-drawer-toggle"
+) {
+  throw new Error("Responsive left drawer open state, disclosure, or focus diverged.");
+}
+leftDrawerToggle?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document
+    .querySelector("#layout-left-drawer-toggle")
+    ?.getAttribute("aria-expanded") !== "false" ||
+  window.document
+    .querySelector("#tactical-sidebar-left")
+    ?.classList.contains("is-drawer-open") ||
+  window.document.activeElement?.id !== "layout-left-drawer-toggle"
+) {
+  throw new Error(
+    "Responsive left drawer close did not remove availability and preserve toggle focus.",
+  );
+}
+window.happyDOM.setInnerWidth(1200);
+if (
+  window.matchMedia("(max-width: 48rem)").matches ||
+  window.getComputedStyle(leftDrawerToggle).display !== "none"
+) {
+  throw new Error("Closed drawer disclosure did not leave the desktop accessibility layout.");
+}
+window.document.querySelector("#layout-timeline-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document
+    .querySelector("#layout-timeline-toggle")
+    ?.getAttribute("aria-expanded") !== "true" ||
+  window.document
+    .querySelector("#tactical-bottom-panel")
+    ?.classList.contains("is-collapsed") ||
+  window.document.activeElement?.id !== "layout-timeline-toggle"
+) {
+  throw new Error("Bottom-panel expand state or focus restoration diverged.");
+}
+window.document.querySelector("#layout-timeline-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document
+    .querySelector("#layout-timeline-toggle")
+    ?.getAttribute("aria-expanded") !== "false" ||
+  !window.document
+    .querySelector("#tactical-bottom-panel")
+    ?.classList.contains("is-collapsed") ||
+  window.document.activeElement?.id !== "layout-timeline-toggle"
+) {
+  throw new Error("Bottom-panel collapse state or focus restoration diverged.");
+}
+window.document.querySelector("#layout-timeline-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document
+    .querySelector("#layout-timeline-toggle")
+    ?.getAttribute("aria-expanded") !== "true" ||
+  window.document
+    .querySelector("#tactical-bottom-panel")
+    ?.classList.contains("is-collapsed") ||
+  window.document.activeElement?.id !== "layout-timeline-toggle"
+) {
+  throw new Error("Bottom-panel collapse round trip did not restore expansion and focus.");
+}
+window.document.querySelector("#layout-timeline-visibility-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  window.document.querySelector("#tactical-bottom-panel") ||
+  window.document
+    .querySelector("#layout-timeline-visibility-toggle")
+    ?.getAttribute("aria-pressed") !== "false" ||
+  window.document.activeElement?.id !== "layout-timeline-visibility-toggle" ||
+  JSON.parse(
+    window.localStorage.getItem("sir.tactical-layout.v1"),
+  ).bottomPanel.visible !== false
+) {
+  throw new Error(
+    "Bottom-panel hide did not remove its subtree, restore focus, and persist false visibility.",
+  );
+}
+window.document.querySelector("#layout-timeline-visibility-toggle")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document.querySelector("#tactical-bottom-panel") ||
+  window.document
+    .querySelector("#layout-timeline-visibility-toggle")
+    ?.getAttribute("aria-pressed") !== "true" ||
+  window.document.activeElement?.id !== "layout-timeline-visibility-toggle" ||
+  JSON.parse(
+    window.localStorage.getItem("sir.tactical-layout.v1"),
+  ).bottomPanel.visible !== true
+) {
+  throw new Error(
+    "Bottom-panel show did not restore its subtree, focus, and persisted true visibility.",
+  );
+}
+window.document.querySelector("#layout-reset")?.click();
+await window.happyDOM.waitUntilComplete();
+if (
+  !window.document
+    .querySelector("#tactical-bottom-panel")
+    ?.classList.contains("is-collapsed") ||
+  window.document
+    .querySelector("#tactical-sidebar-left")
+    ?.classList.contains("is-drawer-open") ||
+  window.document.querySelector('[data-panel-id="tools"]')?.getAttribute(
+    "data-panel-side",
+  ) !== "left" ||
+  window.document.activeElement?.id !== "layout-reset" ||
+  JSON.parse(
+    window.localStorage.getItem("sir.tactical-layout.v1"),
+  ).bottomPanel.visible !== true
+) {
+  throw new Error(
+    "Reset layout did not restore focus and persist deterministic visible Field Focus.",
+  );
+}
 const editorRevisionBeforeScrub = window.document
   .querySelector('[aria-label="SVG tactical map workspace"]')
   ?.getAttribute("data-editor-revision");
 const timelineStepForward = [
-  ...initialTimeline.querySelectorAll("button"),
+  ...window.document
+    .querySelector('[aria-label="Unified tactical timeline"]')
+    .querySelectorAll("button"),
 ].find((button) => button.textContent.trim() === "+1");
 for (let index = 0; index < 17; index += 1) {
   timelineStepForward.click();
@@ -1536,7 +1893,10 @@ if (
 window.document.querySelector("#tactical-input-panel button:last-child")?.click();
 await window.happyDOM.waitUntilComplete();
 
-const status = window.document.querySelector('[role="status"]');
+const status = [...window.document.querySelectorAll('[role="status"]')].find(
+  (element) =>
+    element.textContent.includes("Ready — choose a scenario or load a replay"),
+);
 const fileInput = window.document.querySelector(
   'input[aria-label="Choose replay package"]',
 );

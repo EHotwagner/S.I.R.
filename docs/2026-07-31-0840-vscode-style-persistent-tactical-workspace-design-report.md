@@ -23,7 +23,7 @@ related:
 
 **Report timestamp:** 2026-07-31 08:40:09 CEST (UTC+02:00)
 
-**Status:** design accepted; Milestone 0 corrective baseline complete
+**Status:** design accepted; Milestones 0–1 complete
 
 ## Executive decision
 
@@ -391,17 +391,26 @@ known child-remount defect exists; accepted build and smoke gates remain green.
 
 ### Milestone 1 — Shell and layout contracts
 
-- [ ] Add versioned panel registry, placement, sidebar, bottom-panel, and layout
+- [x] Add versioned panel registry, placement, sidebar, bottom-panel, and layout
   profile contracts.
-- [ ] Implement strict deterministic layout import, export, persistence,
+- [x] Implement strict deterministic layout import, export, persistence,
   migration, and reset.
-- [ ] Render the compact top toolbar and empty configurable sidebars around the
+- [x] Render the compact top toolbar and empty configurable sidebars around the
   existing battlefield without duplicating command authority.
-- [ ] Establish Field Focus as the deterministic default layout: narrow left
+- [x] Establish Field Focus as the deterministic default layout: narrow left
   and right sidebars, dominant workscreen, compact toolbar, and shallow
   timeline.
-- [ ] Qualify panel show/hide, move, reorder, collapse, focus restoration, and
+- [x] Qualify panel show/hide, move, reorder, collapse, focus restoration, and
   responsive drawer behavior.
+
+Milestone 1 contracts, boundary rationale, focused tests, browser
+qualification, and review evidence are recorded in the
+[shell and layout evidence](persistent-tactical-workspace-m1-shell-layout-evidence.md).
+Independent review corrections additionally qualify trailing-comma and
+truncated-JSON rejection, strict ASCII JSON integer grammar, bottom-panel
+visibility as distinct from collapse, fresh-mount persistence/fallback,
+responsive-only drawer disclosures, and focus restoration for reorder, reset,
+timeline collapse, and responsive drawer close.
 
 ### Milestone 2 — Shared scene projection
 

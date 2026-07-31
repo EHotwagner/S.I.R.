@@ -5,6 +5,7 @@
   <ItemGroup>
     <Compile Include="ModalInputCatalogAuthority.fs" />
     <Compile Include="UnifiedTacticalWorkspaceQualification.fs" />
+    <Compile Include="TacticalWorkspaceLayoutQualification.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
