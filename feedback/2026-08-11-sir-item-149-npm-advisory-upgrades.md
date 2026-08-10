@@ -5,16 +5,16 @@ workspace: S.I.R
 cycle: item-149-npm-advisory-upgrades
 lane: none
 toolVersion: n/a
-commit: 17623d2d71ae633272ded1659852ee81b3923267
+commit: 4665e438ec51722d6f8ceac01f3a251186392e78
 ---
 
 ## §1 Provenance and confidence
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 4
+- **material events:** 5
 - **zero-event reason:** n/a
-- Checkpoint file: `feedback/checkpoints/item-149-npm-advisory-upgrades.jsonl` (4 events).
+- Checkpoint file: `feedback/checkpoints/item-149-npm-advisory-upgrades.jsonl` (5 events).
 - The delivery route was `lightweight`; no SDD package was authored for this bounded dependency update.
 - Confidence is limited to local command outcomes and the current PR head; GitHub CI remained pending at report time.
 
@@ -24,7 +24,7 @@ The source-bound delivery-route receipt made the lightweight/no-SDD decision exp
 
 ## §3 What did not
 
-The normal minted-identity advisory was initially easy to misread as a stop condition. The feedback tool was not discoverable from the repository’s skill tree and had to be supplied externally.
+The normal minted-identity advisory was initially easy to misread as a stop condition. The feedback tool was not discoverable from the repository’s skill tree and had to be supplied externally. Initial independent review found that the first audit-policy version accepted an operational E403 response as clean; the repair added report validation and deterministic regressions.
 
 ## §4 Findings
 
@@ -80,6 +80,19 @@ The normal minted-identity advisory was initially easy to misread as a stop cond
 - **Avoidable cost:** one blocked handoff iteration
 - **Disposition:** skill fix
 
+#### §4.5 Audit endpoint failures must not be read as clean reports
+
+- **Kind:** defect
+- **Impact:** The CI audit policy could report success after an audit endpoint or authentication failure.
+- **Expected:** An npm audit result must contain a valid successful-report schema before the policy decides that no advisories are actionable.
+- **Observed:** The first checker parsed an E403-shaped JSON response and treated missing vulnerabilities as an empty set. The repaired checker rejects error-shaped, malformed, missing-vulnerabilities, invalid-metadata, and invalid-schema reports.
+- **Evidence:** pr:https://github.com/EHotwagner/S.I.R./pull/167#issuecomment-5247328495; command:node .github/scripts/test-npm-audit.mjs
+- **Version:** npm audit report schema v2
+- **Owner:** S.I.R dependency policy
+- **Recurrence:** first seen PR #167 review; no separate issue because repaired in this PR
+- **Avoidable cost:** one repair round
+- **Disposition:** product fix
+
 ## §5 Did not exercise
 
 No live-compositor performance target applied to this dependency-only item. The production browser suite was exercised, but no new gameplay route was added.
@@ -94,7 +107,7 @@ None observed.
 
 ## §8 Friction and avoidable cost
 
-Two orchestration iterations were avoidable: identity-output verification and discovery of the external feedback tool. One temporary dependency-lock mutation was intentional verification work.
+Two orchestration iterations were avoidable: identity-output verification and discovery of the external feedback tool. One repair round corrected an audit-policy fail-open condition. One temporary dependency-lock mutation was intentional verification work.
 
 ## §9 Skill value and gaps
 
@@ -102,7 +115,7 @@ Two orchestration iterations were avoidable: identity-output verification and di
 
 ## §10 Outcome markers
 
-The authoritative audit changed from three high advisories to zero. The local CI-equivalent `./build.sh` completed successfully, including the existing Playwright browser suite and scaffold verification. GitHub CI was pending when this report was drafted.
+The authoritative audit changed from three high advisories to zero. The local CI-equivalent `./build.sh` completed successfully after the repair, including the existing Playwright browser suite and scaffold verification. GitHub CI was pending when this report was drafted.
 
 ## §11 Falsifiable improvements
 
