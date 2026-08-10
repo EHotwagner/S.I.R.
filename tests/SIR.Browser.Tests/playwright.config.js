@@ -6,7 +6,9 @@ const executablePath = process.env.PLAYWRIGHT_EXECUTABLE_PATH;
 
 export default defineConfig({
   testDir: ".",
-  reporter: [["junit", { outputFile: resolve(repoRoot, "artifacts/test-results/browser.junit.xml") }]],
+  reporter: [[resolve(import.meta.dirname, "deterministic-junit-reporter.js"), {
+    outputFile: resolve(repoRoot, "artifacts/test-results/browser.junit.xml"),
+  }]],
   use: {
     baseURL: "http://127.0.0.1:5100",
     launchOptions: executablePath ? { executablePath } : {},
