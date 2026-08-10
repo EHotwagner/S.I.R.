@@ -83,6 +83,15 @@ module LiveSession =
                 ignore
                 (fun error -> dispatch (ConnectionFailed(string error)))
 
+    let disconnect dispatch state =
+        match state.Connection with
+        | None -> ()
+        | Some active ->
+            thenBoth
+                (active.stop())
+                (fun () -> dispatch ConnectionClosed)
+                (fun error -> dispatch (ConnectionFailed(string error)))
+
     let reconnect dispatch state =
         match state.Connection with
         | None -> ()

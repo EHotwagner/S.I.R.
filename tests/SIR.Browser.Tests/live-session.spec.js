@@ -37,6 +37,8 @@ test("authorized player journey advances and reconnects without credentials in r
 
   const advancedTick = Number(await live.getAttribute("data-tick"));
   const resyncBeforeReconnect = Number(await live.getAttribute("data-resync-count"));
+  await page.getByRole("button", { name: "Disconnect the player-visible live session" }).click();
+  await expect(live).toHaveAttribute("data-status", "disconnected");
   await page.getByRole("button", { name: "Reconnect and request the authoritative live snapshot" }).click();
 
   await expect.poll(async () => Number(await live.getAttribute("data-resync-count")), { timeout: 30_000 }).toBeGreaterThan(resyncBeforeReconnect);

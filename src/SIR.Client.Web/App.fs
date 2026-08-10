@@ -99,6 +99,7 @@ type Msg =
     | LiveStarted
     | LiveAction of LiveSession.Action
     | AdvanceLiveSession
+    | DisconnectLiveSession
     | ReconnectLiveSession
 
 and WorkspaceMode =
@@ -1033,6 +1034,9 @@ let rec update msg model =
     | AdvanceLiveSession ->
         let next = { model.Live with NextSequence = model.Live.NextSequence + 1 }
         { model with Live = next }, Cmd.ofEffect (fun dispatch -> LiveSession.advance (LiveAction >> dispatch) model.Live)
+    | DisconnectLiveSession ->
+        { model with Live = { model.Live with Status = "disconnecting" } },
+        Cmd.ofEffect (fun dispatch -> LiveSession.disconnect (LiveAction >> dispatch) model.Live)
     | ReconnectLiveSession ->
         { model with Live = { model.Live with Status = "reconnecting" } },
         Cmd.ofEffect (fun dispatch -> LiveSession.reconnect (LiveAction >> dispatch) model.Live)
@@ -8375,6 +8379,7 @@ let view model dispatch =
                     Html.h2 "Authoritative live session"
                     Html.p ("live " + model.Live.Status)
                     button "Advance live session" "Send the next player-visible live advance command" (model.Live.Connection.IsNone) (fun _ -> dispatch AdvanceLiveSession)
+                    button "Disconnect live session" "Disconnect the player-visible live session" (model.Live.Connection.IsNone) (fun _ -> dispatch DisconnectLiveSession)
                     button "Reconnect live session" "Reconnect and request the authoritative live snapshot" (model.Live.Connection.IsNone) (fun _ -> dispatch ReconnectLiveSession)
                 ]
             ]
