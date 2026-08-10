@@ -22,6 +22,12 @@
         "fsgg-sdd"
       ],
       "rollForward": false
+    },
+    "fs.gg.coord.cli": {
+      "version": "0.21.1",
+      "commands": [
+        "fsgg-coord-engine"
+      ]
     }
   }
 }

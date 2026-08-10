@@ -1,0 +1,4 @@
+[shell_environment_policy.set]
+FSGG_COORD_OWNER_TYPE = "user"
+FSGG_COORD_OWNER = "EHotwagner"
+FSGG_COORD_PROJECT = "S.I.R."
