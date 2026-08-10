@@ -491,7 +491,7 @@ let private tacticalCommandAvailable model (command: TacticalCommandDefinition) 
             match model.Workspace with
             | ReplayWorkspace
             | SimulatorWorkspace -> transportReady
-            | _ -> true
+            | _ -> false
         | "timeline.step-back"
         | "timeline.home" -> currentTick > 0L
         | "timeline.step-forward"
@@ -5773,6 +5773,17 @@ let private tacticalModalityControls (workspace: WorkspaceMode) dispatch =
 
 let private tacticalTimeline model dispatch =
     let state = model.Tactical
+    let playUnavailableReason =
+        match model.Workspace with
+        | EditorWorkspace ->
+            Some "Create a simulator handoff, then switch to Simulate."
+        | PlanningWorkspace ->
+            Some "Create a simulator handoff to run this plan."
+        | SimulatorWorkspace when model.Simulator.IsNone ->
+            Some "Create a simulator handoff from the Editor."
+        | ReplayWorkspace when model.Shell.Playback.FinalTick <= 0 ->
+            Some "Load a replay package to start playback."
+        | _ -> None
     let available commandId =
         activeTacticalRegistry model
         |> List.exists (fun command ->
@@ -5907,6 +5918,9 @@ let private tacticalTimeline model dispatch =
                     + string state.Cursor
                     + " · next editable "
                     + string (UnifiedTacticalWorkspace.nextEditableBoundary state)
+                    + (playUnavailableReason
+                       |> Option.map (fun reason -> " · Play unavailable: " + reason)
+                       |> Option.defaultValue "")
                 )
             ]
             Html.ol [

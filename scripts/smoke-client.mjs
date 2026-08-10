@@ -523,6 +523,12 @@ const buttonByText = (container, text) =>
   );
 const buttonByLabel = (container, label) =>
   container?.querySelector(`button[aria-label="${label}"]`);
+const assertUnavailablePlay = (operation, reason) => {
+  const play = buttonByText(timeline, "Play");
+  if (!play?.disabled || !timeline.textContent.includes(reason)) {
+    throw new Error(`${operation} left Play enabled or did not expose its actionable reason.`);
+  }
+};
 const waitFor = async (description, predicate, timeoutMilliseconds = 1500) => {
   const deadline = Date.now() + timeoutMilliseconds;
   while (Date.now() < deadline) {
@@ -534,6 +540,10 @@ const waitFor = async (description, predicate, timeoutMilliseconds = 1500) => {
 
 assertSingleWorksurface("initial mount");
 assertModality("Editor", "initial mount");
+assertUnavailablePlay(
+  "Editor without a simulator handoff",
+  "Create a simulator handoff, then switch to Simulate.",
+);
 
 const leftSidebar = shell.querySelector(".tactical-sidebar-left");
 const rightSidebar = shell.querySelector(".tactical-sidebar-right");
@@ -586,9 +596,21 @@ if (
 ) {
   throw new Error("Empty Review did not expose its unavailable projection explicitly.");
 }
+assertUnavailablePlay("Review without a replay", "Load a replay package to start playback.");
 assertSingleWorksurface("stale selection filtering");
 assertSelection("stale selection filtering", null);
 await clickModality("Editor", "return from unavailable Review");
+
+modalityButtons.get("Simulate").click();
+await window.happyDOM.waitUntilComplete();
+if (workscreenRegion.getAttribute("data-active-modality") !== "Simulate") {
+  throw new Error("Empty Simulate did not activate the simulator modality.");
+}
+assertUnavailablePlay(
+  "Simulate without a handoff",
+  "Create a simulator handoff from the Editor.",
+);
+await clickModality("Editor", "return from unavailable Simulate");
 
 if (!shell.querySelector('[data-panel-id="document"]')) {
   shell.querySelector("#layout-show-document")?.click();
@@ -1378,15 +1400,15 @@ for (const [label, target] of committedMutationTargets) {
 }
 
 const play = buttonByText(timeline, "Play");
-if (!play) throw new Error("The unified timeline did not expose Plan playback.");
-play.click();
-await new Promise((resolveWait) => setTimeout(resolveWait, 130));
-await window.happyDOM.waitUntilComplete();
-buttonByText(timeline, "Pause")?.click();
-await window.happyDOM.waitUntilComplete();
-assertSingleWorksurface("Plan playback update");
-assertCamera("Plan playback update");
-assertSelection("Plan playback update", 2);
+if (
+  !play?.disabled ||
+  !timeline.textContent.includes("Create a simulator handoff to run this plan.")
+) {
+  throw new Error("Plan Play remained enabled without a runnable simulator or actionable reason.");
+}
+assertSingleWorksurface("Plan unavailable transport");
+assertCamera("Plan unavailable transport");
+assertSelection("Plan unavailable transport", 2);
 
 const helpKey = new window.KeyboardEvent("keydown", {
   key: "?",

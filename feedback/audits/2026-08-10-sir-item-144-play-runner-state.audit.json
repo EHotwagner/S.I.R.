@@ -1,0 +1,55 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-10-sir-item-144-play-runner-state.md",
+  "reportSha256": "b8f8d831af50ca5bfb0e3e4f75ddb8d577b8f7e5777018da2b783f4e11b64002",
+  "criticMode": "separated-critic-pass",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:npm run build:client && node scripts/smoke-client.mjs",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The report records headless browser evidence, not live-compositor measurement."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#144",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node scripts/test-map-editor-qualification.mjs",
+          "result": "verified"
+        },
+        {
+          "locator": "command:npm run build:client && node scripts/smoke-client.mjs",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:node scripts/test-persistent-workspace-m9-acceptance.mjs artifacts/client",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    }
+  ]
+}
