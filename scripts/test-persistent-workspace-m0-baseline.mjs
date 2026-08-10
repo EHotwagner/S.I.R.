@@ -2,7 +2,14 @@ import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 
 const [
-  app,
+  appRoot,
+  appTypes,
+  appShell,
+  commandRegistry,
+  modeAdapters,
+  sceneAdapters,
+  browserInfrastructure,
+  panelViews,
   styles,
   smoke,
   modalInput,
@@ -16,6 +23,13 @@ const [
 ] =
   await Promise.all([
     readFile("src/SIR.Client.Web/App.fs", "utf8"),
+    readFile("src/SIR.Client.Web/AppTypes.fs", "utf8"),
+    readFile("src/SIR.Client.Web/AppShell.fs", "utf8"),
+    readFile("src/SIR.Client.Web/CommandRegistry.fs", "utf8"),
+    readFile("src/SIR.Client.Web/ModeAdapters.fs", "utf8"),
+    readFile("src/SIR.Client.Web/SceneAdapters.fs", "utf8"),
+    readFile("src/SIR.Client.Web/BrowserInfrastructure.fs", "utf8"),
+    readFile("src/SIR.Client.Web/PanelViews.fs", "utf8"),
     readFile("src/SIR.Client.Web/styles.css", "utf8"),
     readFile("scripts/smoke-client.mjs", "utf8"),
     readFile("src/SIR.Client/ModalInput.fs", "utf8"),
@@ -31,6 +45,10 @@ const [
     ),
   ]);
 const inventory = JSON.parse(inventoryText);
+// View ownership is deliberately split from the Elmish root. M0 assertions
+// inspect the composed source surface so moving a view cannot mask a removed
+// player control while App.fs remains the shell/program owner.
+const app = `${appRoot}\n${appTypes}\n${appShell}\n${commandRegistry}\n${modeAdapters}\n${sceneAdapters}\n${browserInfrastructure}\n${panelViews}`;
 
 const requireText = (source, token, message) => {
   if (!source.includes(token)) throw new Error(message);

@@ -12,448 +12,14 @@ open SIR.Client
 open SIR.Domain
 open SIR.Protocol.Http
 open SIR.Protocol.Realtime
+open SIR.Client.Web.BrowserInfrastructure
+open SIR.Client.Web.AppTypes
+open SIR.Client.Web.AppShell
 
-type Msg =
-    | ShellMsg of SIR.Client.Msg
-    | BattlefieldChanged of BattlefieldAction
-    | FileSelected of File
-    | MapFileSelected of File
-    | MapTextRead of sourceName: string * text: string
-    | BackgroundFileSelected of File
-    | BackgroundBytesRead of fileName: string * mediaType: string * bytes: byte array
-    | AcceptInterchangeReview
-    | RejectInterchangeReview
-    | PlaybackPulse
-    | TacticalTimeChanged of int64
-    | TacticalTimeStepped of int64
-    | TacticalPlaybackToggled
-    | TacticalPulse
-    | ToggleTacticalBindings
-    | TacticalBindingDraftChanged of commandId: string * gesture: string
-    | ApplyTacticalBinding of commandId: string * replaceConflict: bool
-    | ClearTacticalBinding of commandId: string
-    | RestoreTacticalBinding of commandId: string
-    | RestoreTacticalModalityBindings
-    | RestoreAllTacticalBindings
-    | TacticalBindingImportChanged of string
-    | ImportTacticalBindings
-    | ToggleLayoutPanelVisibility of string
-    | ToggleLayoutPanelCollapsed of string
-    | MoveLayoutPanel of panelId: string * side: SidebarSide
-    | ReorderLayoutPanel of panelId: string * delta: int
-    | ToggleLayoutDrawer of SidebarSide
-    | ToggleLayoutBottomPanelVisibility
-    | ToggleLayoutBottomPanel
-    | BeginLayoutBottomPanelResize
-    | ResizeLayoutBottomPanel of height: int
-    | EndLayoutBottomPanelResize
-    | ResizeLayoutBottomPanelKeyboard of delta: int
-    | OpenSupportingPanel of panelId: string
-    | ResetTacticalLayout
-    | InvokeTacticalCommand of string
-    | InvokeTacticalValueCommand of commandId: string * value: string
-    | ExecuteTacticalCommand of string
-    | ExecuteModalCommand of ModalCommand
-    | EditorPulse
-    | SimulateEditorRevision
-    | SimulatorChanged of SimulatorAction
-    | SimulatorUnitSelectionChanged of int32 option
-    | BeginSimulatorControllerSelection
-    | ChooseSimulatorController of MapController
-    | CommitSimulatorControllerSelection
-    | CancelSimulatorControllerSelection
-    | RequestSimulatorReset
-    | ResetSimulator
-    | PlanningChanged of PlanningAction
-    | InitializePlanningWorker
-    | ValidatePlanningRevision
-    | PreviewPlanningRevision
-    | CommitPlanningRevision
-    | PlanningWorkerResponded of SimulatorResponseEnvelope
-    | ExportPlanningReview
-    | LoadMapSample of string
-    | LoadSimulationSample of string
-    | LoadReplaySample of string
-    | KeyPressed of
-        key: string *
-        controlOrMeta: bool *
-        shift: bool *
-        alt: bool *
-        repeat: bool
-    | KeyReleased of string
-    | ToggleInputHelp of focusPanel: bool
-    | ApplicationFocusLost
-    | WorkspaceChanged of WorkspaceMode
-    | EditorToolPanelChanged of EditorToolPanel
-    | ToggleEditorToolPanelVisibility
-    | EditorWorkspaceChanged of EditorWorkspaceAction
-    | RecallEditorView of string
-    | EditorChanged of MapEditorAction
-    | ExportMap
-    | ExportDesignBundle
-    | ExportExperiment
-    | AddComparisonBookmark
-    | ComparisonViewChanged of ComparisonView
-    | ExportEvidenceSvg
-    | ExportEvidencePng
-    | LiveStarted
-    | LiveAction of LiveSession.Action
-    | AdvanceLiveSession
-    | DisconnectLiveSession
-    | ReconnectLiveSession
-
-and WorkspaceMode =
-    | SimulatorWorkspace
-    | PlanningWorkspace
-    | EditorWorkspace
-    | ReplayWorkspace
-
-and EditorToolPanel =
-    | TerrainTools
-    | UnitTools
-    | EdgeTools
-    | ZoneTools
-    | DocumentTools
-
-type Model =
-    { Shell: SIR.Client.Model
-      Editor: MapEditorState
-      Simulator: SimulatorHandoff option
-      SimulatorSelectedUnit: int32 option
-      SimulatorControllerSelection: MapController option
-      Planning: PlanningWorkspaceState option
-      Tactical: TacticalTimelineState
-      TacticalBindings: TacticalBindingProfile
-      TacticalBindingDrafts: Map<string, string>
-      TacticalBindingImport: string
-      TacticalBindingDiagnostics: string list
-      TacticalBindingsOpen: bool
-      TacticalLayout: TacticalLayoutProfile
-      TacticalLayoutDiagnostics: string list
-      BottomPanelResizeActive: bool
-      TacticalSelectedUnit: int32 option
-      Workspace: WorkspaceMode
-      EditorToolPanel: EditorToolPanel
-      EditorToolPanelVisible: bool
-      SampleReplayFrames: InspectionProjection array option
-      EditorView: EditorWorkspaceState
-      HeldInputs: HeldInputSession
-      InputHelpExpanded: bool
-      PendingInterchangeReview: InterchangeReview option
-      Battlefield: BattlefieldViewState
-      PreviousFrame: RenderFrame option
-      PresentationAlpha: float
-      ComparisonBookmarks: ComparisonBookmark list
-      ComparisonView: ComparisonView
-      Live: LiveSession.State }
-
-let private editorPanHeld model =
-    HeldInputSession.contains EditorPan model.HeldInputs
-
-let private tacticalUnitIds workspace (model: Model) =
-    match workspace with
-    | EditorWorkspace
-    | PlanningWorkspace ->
-        model.Editor.Map.Units
-        |> Map.toSeq
-        |> Seq.map fst
-        |> Set.ofSeq
-    | SimulatorWorkspace ->
-        model.Simulator
-        |> Option.map (fun simulator ->
-            simulator.RuntimeMap.Units
-            |> Map.toSeq
-            |> Seq.map fst
-            |> Set.ofSeq)
-        |> Option.defaultValue Set.empty
-    | ReplayWorkspace ->
-        model.Shell.Inspection
-        |> Option.map (fun inspection ->
-            inspection.Units
-            |> Seq.map _.Id
-            |> Set.ofSeq)
-        |> Option.defaultValue Set.empty
-
-let private reconcileTacticalSelectedUnit workspace (model: Model) =
-    let visible = tacticalUnitIds workspace model
-    let keep candidate =
-        candidate
-        |> Option.filter (fun unitId -> Set.contains unitId visible)
-    keep model.TacticalSelectedUnit
-    |> Option.orElseWith (fun () ->
-        match workspace with
-        | EditorWorkspace -> keep model.Editor.SelectedUnit
-        | PlanningWorkspace ->
-            model.Planning
-            |> Option.bind _.SelectedUnit
-            |> keep
-        | SimulatorWorkspace -> keep model.SimulatorSelectedUnit
-        | ReplayWorkspace -> keep model.Shell.Selection.Unit
-        )
-    |> Option.orElseWith (fun () ->
-        visible |> Set.toSeq |> Seq.tryHead)
-
-let private activeTacticalRegistry model =
-    let pointerCommand id label category modality =
-        { Id = id
-          Label = label
-          Category = category
-          Modalities = Set.singleton modality
-          DefaultGesture = None
-          PointerAvailable = true
-          Precedence = 300
-          ModalContext = None
-          ModalPhase = None
-          Availability = AlwaysAvailable }
-    let modal =
-        match model.Workspace with
-        | EditorWorkspace ->
-            let facts =
-                { Editor = model.Editor
-                  ActiveDomain =
-                    match model.EditorToolPanel with
-                    | TerrainTools -> TerrainDomain
-                    | UnitTools -> UnitDomain
-                    | EdgeTools -> EdgeDomain
-                    | ZoneTools -> RegionDomain
-                    | DocumentTools -> DocumentDomain
-                  PanHeld = editorPanHeld model
-                  InputHelpExpanded = model.InputHelpExpanded }
-            ModalInput.editorCatalog facts
-            |> UnifiedTacticalWorkspace.modalCommandDefinitions Editor
-        | SimulatorWorkspace ->
-            ModalInput.simulatorCatalog
-                model.SimulatorSelectedUnit
-                model.Simulator
-                model.SimulatorControllerSelection
-            |> UnifiedTacticalWorkspace.modalCommandDefinitions Simulate
-        | _ -> []
-    let contextual =
-        match model.Workspace, model.Planning with
-        | EditorWorkspace, _ ->
-            [ yield
-                  pointerCommand
-                      "editor.scene.create-simulator-handoff"
-                      "Create simulator handoff from authored revision"
-                      "Editor shared scene"
-                      Editor
-              yield!
-                  model.Editor.Map.Units
-                  |> Map.toList
-                  |> List.map (fun (unitId, _) ->
-                      pointerCommand
-                          ("editor.scene.select.unit." + string unitId)
-                          ("Select shared-scene unit " + string unitId)
-                          "Editor shared scene"
-                          Editor)
-              for row in 0 .. int model.Editor.Map.Height - 1 do
-                  for column in 0 .. int model.Editor.Map.Width - 1 do
-                      yield
-                          pointerCommand
-                              ("editor.scene.cell."
-                               + string column + "." + string row)
-                              ("Activate shared-scene cell "
-                               + string column + "," + string row)
-                              "Editor shared scene"
-                              Editor ]
-        | PlanningWorkspace, Some planning ->
-            let selectionActions =
-                [ yield!
-                      planning.Roster
-                      |> Array.map (fun unit ->
-                          pointerCommand
-                              ("planning.roster.select." + string unit.UnitId)
-                              ("Select " + unit.Name)
-                              "Plan roster"
-                              Plan)
-                      |> Array.toList
-                  yield!
-                      planning.Commands
-                      |> List.map (fun command ->
-                          pointerCommand
-                              ("planning.timeline.select." + command.Id)
-                              ("Select timeline command " + command.Id)
-                              "Plan timeline"
-                              Plan)
-                  yield!
-                      planning.Issues
-                      |> Array.mapi (fun index issue ->
-                          pointerCommand
-                              ("planning.issue.focus." + string index)
-                              ("Focus issue " + issue.Code)
-                              "Plan validation"
-                              Plan)
-                      |> Array.toList ]
-            let battlefieldActions =
-                [ for row in 0 .. int model.Editor.Map.Height - 1 do
-                      for column in 0 .. int model.Editor.Map.Width - 1 do
-                          yield
-                              pointerCommand
-                                  ("planning.battlefield.cell."
-                                   + string column + "." + string row)
-                                  ("Add route waypoint "
-                                   + string column + "," + string row)
-                                  "Plan battlefield cells"
-                                  Plan ]
-            if planning.SelectedUnit.IsNone then selectionActions
-            else
-            let directions =
-                [ "north"; "north-east"; "east"; "south-east"
-                  "south"; "south-west"; "west"; "north-west" ]
-            let inspectorActions =
-              match planning.Tool with
-              | RouteTool ->
-                [ "west"; "north"; "south"; "east" ]
-                |> List.map (fun direction ->
-                    pointerCommand
-                        ("planning.inspector.waypoint." + direction)
-                        ("Add waypoint " + direction)
-                        "Plan inspector"
-                        Plan)
-              | FacingTool
-              | AttentionTool ->
-                directions
-                |> List.map (fun direction ->
-                    let channel =
-                        if planning.Tool = FacingTool then "facing" else "attention"
-                    pointerCommand
-                        ("planning.inspector." + channel + "." + direction)
-                        ("Set " + channel + " " + direction)
-                        "Plan inspector"
-                        Plan)
-              | StanceTool ->
-                [ "standing"; "crouched"; "prone" ]
-                |> List.map (fun stance ->
-                    pointerCommand
-                        ("planning.inspector.stance." + stance)
-                        ("Set stance " + stance)
-                        "Plan inspector"
-                        Plan)
-              | HoldTool ->
-                [ pointerCommand "planning.inspector.hold" "Add hold" "Plan inspector" Plan ]
-              | EngagementTool ->
-                [ pointerCommand "planning.inspector.engagement" "Add disclosed engagement" "Plan inspector" Plan ]
-              | SynchronizationTool ->
-                [ pointerCommand "planning.inspector.synchronization" "Add synchronization marker" "Plan inspector" Plan ]
-            selectionActions @ battlefieldActions @ inspectorActions
-        | SimulatorWorkspace, _ ->
-            let selectionActions =
-                model.Simulator
-                |> Option.map _.RuntimeMap.Units
-                |> Option.defaultValue Map.empty
-                |> Map.toList
-                |> List.map (fun (unitId, _) ->
-                    pointerCommand
-                        ("simulator.scene.select.unit." + string unitId)
-                        ("Select shared-scene unit " + string unitId)
-                        "Simulator shared scene"
-                        Simulate)
-            let controllerActions =
-                [ "manual", "Manual"; "scripted", "Scripted AI"
-                  "general", "General AI" ]
-                |> List.map (fun (id, label) ->
-                    pointerCommand
-                        ("simulator.pointer.controller." + id)
-                        ("Set controller " + label)
-                        "Simulator controllers"
-                        Simulate)
-            let scriptAction =
-                pointerCommand
-                    "simulator.pointer.script.set"
-                    "Set selected unit direction script"
-                    "Simulator controllers"
-                    Simulate
-            let movementActions =
-                [ "north-west", "NW"; "north", "N"; "north-east", "NE"
-                  "west", "W"; "east", "E"
-                  "south-west", "SW"; "south", "S"; "south-east", "SE" ]
-                |> List.map (fun (id, label) ->
-                    pointerCommand
-                        ("simulator.pointer.movement." + id)
-                        ("Move selected unit " + label)
-                        "Simulator movement"
-                        Simulate)
-            selectionActions @ (scriptAction :: controllerActions @ movementActions)
-        | ReplayWorkspace, _ ->
-            [ yield!
-                  model.Shell.Inspection
-                  |> Option.map _.Units
-                  |> Option.defaultValue []
-                  |> List.map (fun unit ->
-                      pointerCommand
-                          ("review.scene.select.unit." + string unit.Id)
-                          ("Select disclosed unit " + string unit.Id)
-                          "Review shared scene"
-                          Review)
-              yield!
-                  model.Shell.Inspection
-                  |> Option.map _.Events
-                  |> Option.defaultValue []
-                  |> List.map (fun event ->
-                      pointerCommand
-                          ("review.scene.select.event." + string event.Id)
-                          ("Select disclosed event " + string event.Id)
-                          "Review shared scene"
-                          Review) ]
-        | _ -> []
-    let cameraCommands =
-        [ pointerCommand
-              "scene.camera.zoom-out"
-              "Zoom shared workscreen out"
-              "Shared camera"
-              model.Tactical.Modality
-          pointerCommand
-              "scene.camera.zoom-in"
-              "Zoom shared workscreen in"
-              "Shared camera"
-              model.Tactical.Modality
-          pointerCommand
-              "scene.camera.fit"
-              "Fit shared workscreen"
-              "Shared camera"
-              model.Tactical.Modality ]
-    UnifiedTacticalWorkspace.commandRegistry @ modal @ contextual @ cameraCommands
-    |> List.distinctBy _.Id
-
-let private projectPlanningSegments (state: PlanningWorkspaceState) =
-    [ for command in state.Commands do
-          let authored =
-              { Id = command.Id
-                UnitId = Some command.UnitId
-                StartTick = int64 command.EarliestTick
-                EndTick = int64 command.EarliestTick + 1L
-                Channel = Authored
-                Label = string command.Kind
-                Issue =
-                    state.Issues
-                    |> Array.tryFind (fun issue -> issue.CommandId = Some command.Id)
-                    |> Option.map _.Detail }
-          yield authored
-          if state.AcceptedRevision = Some state.Revision then
-              yield
-                  { authored with
-                      Id = "accepted:" + command.Id
-                      Channel = Accepted
-                      Label = "Worker-accepted " + string command.Kind
-                      Issue = None }
-          if state.CommittedRevision = Some state.Revision then
-              yield
-                  { authored with
-                      Id = "committed:" + command.Id
-                      Channel = Committed
-                      Label = "Committed " + string command.Kind
-                      Issue = None }
-      match state.Predicted with
-      | Some prediction ->
-          yield
-              { Id = "prediction-" + string prediction.Revision
-                UnitId = None
-                StartTick = 0L
-                EndTick = 1L
-                Channel = Predicted
-                Label = "Intent-only predicted state"
-                Issue = None }
-      | None -> () ]
+open SIR.Client.Web.CommandRegistry
+open SIR.Client.Web.ModeAdapters
+open SIR.Client.Web.SceneAdapters
+open SIR.Client.Web.PanelViews
 
 let private tacticalCommandAvailable model (command: TacticalCommandDefinition) =
     let availability =
@@ -611,62 +177,6 @@ setTimeout(() => {
 """)>]
 let private openFilePickerAfterRender (id: string) : unit = jsNative
 
-let private fileBytes (file: File) =
-    async {
-        let! buffer = file.arrayBuffer () |> Async.AwaitPromise
-        let typed = JS.Constructors.Uint8Array.Create(buffer)
-        return file.name, Array.init typed.length (fun index -> typed[index])
-    }
-
-let private fileText (file: File) =
-    async {
-        let! text = file.text () |> Async.AwaitPromise
-        return file.name, text
-    }
-
-let private rasterBytes (file: File) =
-    async {
-        let! buffer = file.arrayBuffer () |> Async.AwaitPromise
-        let typed = JS.Constructors.Uint8Array.Create(buffer)
-        return file.name, file.``type``, Array.init typed.length (fun index -> typed[index])
-    }
-
-let private runEffect effect =
-    match effect with
-    | Run(operation, request) ->
-        Runner.post operation request
-
-let private effectsToCmd effects =
-    Cmd.ofEffect (fun _ -> effects |> List.iter runEffect)
-
-let private downloadExperiment report =
-    let content = Lab.export report
-    emitJsStatement
-        content
-        """
-        const blob = new Blob([$0], { type: "text/plain;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-        anchor.href = url;
-        anchor.download = "sir-lab-experiment.sir-lab";
-        anchor.click();
-        URL.revokeObjectURL(url);
-        """
-
-let private downloadMap state =
-    let content = MapEditor.export state
-    emitJsStatement
-        content
-        """
-        const blob = new Blob([$0], { type: "text/plain;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-        anchor.href = url;
-        anchor.download = "battlefield.sir-map";
-        anchor.click();
-        URL.revokeObjectURL(url);
-        """
-
 [<Emit("""
 const blob = new Blob([$0], { type: "text/plain;charset=utf-8" });
 const url = URL.createObjectURL(blob);
@@ -735,21 +245,6 @@ let private downloadDesignBundle (state: MapEditorState) (simulator: SimulatorHa
         simulatorMap
         simulatorDigest
         simulatorTick
-
-[<Emit("window.localStorage.getItem('sir.map-editor.autosave.v1')")>]
-let private readMapAutosave () : string = jsNative
-
-[<Emit("window.localStorage.getItem('sir.tactical-bindings.v1')")>]
-let private readTacticalBindings () : string = jsNative
-
-[<Emit("window.localStorage.setItem('sir.tactical-bindings.v1', $0)")>]
-let private writeTacticalBindings (_: string) : unit = jsNative
-
-[<Emit("window.localStorage.getItem('sir.tactical-layout.v1')")>]
-let private readTacticalLayout () : string = jsNative
-
-[<Emit("window.localStorage.setItem('sir.tactical-layout.v1', $0)")>]
-let private writeTacticalLayout (_: string) : unit = jsNative
 
 let private scheduleMapAutosave content =
     emitJsStatement
@@ -2638,7 +2133,7 @@ let rec update msg model =
                     model.TacticalBindings
                     command
                 |> Option.exists (fun binding ->
-                    binding.Trim().ToUpperInvariant() = producedGesture))
+                    ClientModuleBoundaries.canonicalGesture binding = producedGesture))
 
         let applyTacticalCommand (command: TacticalCommandDefinition) =
             update (InvokeTacticalCommand command.Id) model
@@ -2807,7 +2302,7 @@ let subscriptions model =
                         model.TacticalBindings
                         command
                     |> Option.exists (fun value ->
-                        value.Trim().ToUpperInvariant() = produced)))
+                        ClientModuleBoundaries.canonicalGesture value = produced)))
 
         let downHandler =
             fun (event: Event) ->
@@ -3435,35 +2930,6 @@ let private reviewRosterPanel (model: SIR.Client.Model) dispatch =
         ]
     ]
 
-let private reviewLayersPanel (model: SIR.Client.Model) =
-    let inspection = model.Inspection
-    let count select = inspection |> Option.map select |> Option.defaultValue 0
-    Html.section [
-        prop.ariaLabel "Review projection layers"
-        prop.children [
-            Html.p (
-                "Committed frame · tick "
-                + string model.Playback.CurrentTick
-                + " · read-only"
-            )
-            Html.dl [
-                Html.dt "Units"
-                Html.dd (string (count (fun value -> value.Units.Length)))
-                Html.dt "Edges"
-                Html.dd (string (count (fun value -> value.Edges.Length)))
-                Html.dt "Disclosed events"
-                Html.dd (string (count (fun value -> value.Events.Length)))
-                Html.dt "Perspective"
-                Html.dd (
-                    inspection
-                    |> Option.bind _.PerspectiveHash
-                    |> Option.map (fun hash -> "Filtered · " + hash)
-                    |> Option.defaultValue "Full replay disclosure"
-                )
-            ]
-        ]
-    ]
-
 let private reviewSelectionPanel (model: SIR.Client.Model) dispatch =
     let inspection = model.Inspection
     let selectedUnit =
@@ -3531,31 +2997,6 @@ let private reviewSelectionPanel (model: SIR.Client.Model) dispatch =
         ]
     ]
 
-let private reviewDocumentPanel (model: SIR.Client.Model) =
-    Html.section [
-        prop.ariaLabel "Review source and verification identity"
-        prop.children [
-            match model.Source with
-            | Loaded metadata ->
-                Html.dl [
-                    Html.dt "Source"
-                    Html.dd metadata.SourceName
-                    Html.dt "Source identity"
-                    Html.dd metadata.SourceIdentity
-                    Html.dt "Engine identity"
-                    Html.dd metadata.EngineIdentity
-                    Html.dt "Replay kind"
-                    Html.dd (string metadata.Kind)
-                    Html.dt "Committed ticks"
-                    Html.dd (string metadata.FinalTick)
-                ]
-            | Reading sourceName -> Html.p ("Reading " + sourceName + ".")
-            | Rejected(sourceName, reason) ->
-                Html.p (sourceName + " rejected: " + reason)
-            | NoSource -> Html.p "No replay package is loaded."
-        ]
-    ]
-
 let private reviewPanelBody panelId (model: SIR.Client.Model) dispatch =
     match panelId with
     | "roster" -> reviewRosterPanel model dispatch
@@ -3564,10 +3005,10 @@ let private reviewPanelBody panelId (model: SIR.Client.Model) dispatch =
             prop.ariaLabel "Review sources and transport"
             prop.children [ sourcePanel model dispatch; controls model dispatch ]
         ]
-    | "layers" -> reviewLayersPanel model
+    | "layers" -> PanelViews.reviewLayersPanel model
     | "selection" -> reviewSelectionPanel model dispatch
     | "validation" -> statusView model
-    | "document" -> reviewDocumentPanel model
+    | "document" -> PanelViews.reviewDocumentPanel model
     | "diagnostics" -> workerStatus model
     | _ ->
         Html.p [
@@ -6486,36 +5927,7 @@ let private sharedSceneClaimsKeyboard
                 model.TacticalBindings
                 command
             |> Option.exists (fun gesture ->
-                gesture.Trim().ToUpperInvariant() = produced)))
-
-let private sharedSceneUnitCommand model unitId =
-    match model.Workspace with
-    | EditorWorkspace ->
-        Some("editor.scene.select.unit." + string unitId)
-    | PlanningWorkspace ->
-        Some("planning.roster.select." + string unitId)
-    | SimulatorWorkspace ->
-        Some("simulator.scene.select.unit." + string unitId)
-    | ReplayWorkspace ->
-        Some("review.scene.select.unit." + string unitId)
-
-let private sharedSceneCellCommand model column row =
-    match model.Workspace with
-    | EditorWorkspace ->
-        Some(
-            "editor.scene.cell."
-            + string column
-            + "."
-            + string row
-        )
-    | PlanningWorkspace ->
-        Some(
-            "planning.battlefield.cell."
-            + string column
-            + "."
-            + string row
-        )
-    | _ -> None
+                ClientModuleBoundaries.canonicalGesture gesture = produced)))
 
 let private persistentSceneSvg
     (model: Model)
