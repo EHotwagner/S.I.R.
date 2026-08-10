@@ -1,5 +1,16 @@
 import { expect, test } from "@playwright/test";
 
+test("bootstrap fails closed for absent and cross-actor credentials", async ({ request }) => {
+  const body = { version: 1, actorName: "alpha" };
+  const absent = await request.post("/api/bootstrap", { data: body });
+  expect(absent.status()).toBe(401);
+  const crossActor = await request.post("/api/bootstrap", {
+    data: body,
+    headers: { "X-SIR-Development-Actor": "beta" },
+  });
+  expect(crossActor.status()).toBe(400);
+});
+
 test("authorized player journey advances and reconnects without credentials in runtime URLs", async ({ page }) => {
   const credentialUrls = [];
   page.on("request", (request) => {
