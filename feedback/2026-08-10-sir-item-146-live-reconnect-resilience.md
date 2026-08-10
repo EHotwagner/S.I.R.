@@ -11,16 +11,16 @@ commit: f02a5596849ae116dba4cb35239ad7e9836cb8d7
 ## §1 Provenance and confidence
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 2
+- **material events:** 3
 - **zero-event reason:** n/a
-- **checkpoint:** `feedback/checkpoints/item-146-live-reconnect-resilience.jsonl` (two validated events)
+- **checkpoint:** `feedback/checkpoints/item-146-live-reconnect-resilience.jsonl` (three validated events)
 - **confidence limits:** M9 and generated-view obligations are explicit deferrals because their scripts do not emit an SDD-observable machine receipt.
 
 ## §2 What worked
 The typed SDD lifecycle and production Chromium journey exposed the separate DOM live slice and verified the Elmish replacement.
 
 ## §3 What did not
-The route reader crashes for a noncanonical repository ref. An initial SDD generated-view failure was resolved by correcting the authored `DEC-###:` grammar.
+The route reader crashes for a noncanonical repository ref. An initial SDD generated-view failure was resolved by correcting the authored `DEC-###:` grammar. Stock Playwright JUnit receipts also varied across equivalent runs; the browser suite now owns a deterministic JUnit projection so observed evidence remains reproducible.
 
 ## §4 Findings
 #### §4.1 Noncanonical delivery-route ref crashes the coordinator reader
@@ -63,7 +63,7 @@ Route normalization and browser provisioning each required one recovery loop.
 SDD, pnext-item, and intra-repo coordination were exercised; the repository-local feedback package is absent.
 
 ## §10 Outcome markers
-Solution build, Fable/Vite build, M4/M9 qualifications, and the system-Chromium browser journey passed. Mutation of `data-live-tick` made the journey red.
+Solution build, Fable/Vite build, M4/M9 qualifications, and the system-Chromium browser journey passed. Mutations of `data-live-tick` and the visible Disconnect dispatch made the journey red. The deterministic JUnit report records failure counts and failure nodes while omitting run-varying clock and duration data.
 
 ## §11 Falsifiable improvements
 Coordinator input validation must return a typed refusal for a repository without its trailing dot; clarification guidance should emphasize the list-leading `DEC-###:` grammar that generated views require.
