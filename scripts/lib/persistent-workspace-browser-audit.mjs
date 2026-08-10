@@ -7,6 +7,8 @@ import { homedir, tmpdir } from "node:os";
 import { delimiter, extname, isAbsolute, join, normalize, resolve, sep } from "node:path";
 
 const delay = (milliseconds) => new Promise((resolveDelay) => setTimeout(resolveDelay, milliseconds));
+const chromiumStartupProbeIntervalMilliseconds = 50;
+const chromiumStartupTimeoutMilliseconds = 60_000;
 const mime = new Map([
   [".html", "text/html; charset=utf-8"],
   [".js", "text/javascript; charset=utf-8"],
@@ -459,7 +461,10 @@ export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/
   try {
     let version;
     let lastProbeError;
-    for (let attempt = 0; attempt < 300; attempt += 1) {
+    const maximumStartupAttempts = Math.ceil(
+      chromiumStartupTimeoutMilliseconds / chromiumStartupProbeIntervalMilliseconds,
+    );
+    for (let attempt = 0; attempt < maximumStartupAttempts; attempt += 1) {
       if (browserState.error || browserState.exited) break;
       try {
         const response = await fetch(`http://127.0.0.1:${debugPort}/json/version`);
@@ -469,7 +474,7 @@ export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/
       } catch (error) {
         lastProbeError = error;
       }
-      await delay(50);
+      await delay(chromiumStartupProbeIntervalMilliseconds);
     }
     if (!version?.webSocketDebuggerUrl) {
       throw startupFailure(`Chromium did not expose CDP on explicit loopback port ${debugPort}.`, lastProbeError);
