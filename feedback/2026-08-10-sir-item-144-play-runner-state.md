@@ -12,10 +12,10 @@ commit: 9e465cdc8505b359825db1661d30e8746ca16439
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 1
+- **material events:** 2
 - **zero-event reason:** n/a
 
-The checkpoint is `feedback/checkpoints/item-144-play-runner-state.jsonl` (one event). The delivery route was lightweight, so lifecycle authoring was not used. Confidence is bounded to the built headless browser route; live compositor measurement was not required by the producer performance intent for this transport-only change.
+The checkpoint is `feedback/checkpoints/item-144-play-runner-state.jsonl` (two events). The delivery route was lightweight, so lifecycle authoring was not used. Confidence is bounded to the built headless browser route; live compositor measurement was not required by the producer performance intent for this transport-only change.
 
 ## §2 What worked
 
@@ -23,7 +23,7 @@ The existing `smoke-client` route booted the built product, reached simulator an
 
 ## §3 What did not
 
-The fresh worktree initially lacked locked Node dependencies, so the first production build stopped before Vite. `npm ci` restored the pinned route.
+The fresh worktree initially lacked locked Node dependencies, so the first production build stopped before Vite. `npm ci` restored the pinned route. Independent review also found incomplete unavailable-route coverage and a stale production-bundle review manifest; both were repaired in the same PR.
 
 ## §4 Findings
 
@@ -39,6 +39,19 @@ The fresh worktree initially lacked locked Node dependencies, so the first produ
 - **Recurrence:** new; S.I.R.#144
 - **Avoidable cost:** none
 - **Disposition:** accepted
+
+#### §4.2 Initial review exposed missing unavailable-route coverage and stale generated bundle binding
+
+- **Kind:** quality-gap
+- **Impact:** Exact-head CI could fail after a client bundle change, and enabled/no-op behavior could reappear in Editor, empty Simulate, or empty Review without the focused journey detecting it.
+- **Expected:** The built player route asserts every unavailable Play surface and checked-in map-editor review artifacts bind the current production bundle.
+- **Observed:** The initial journey asserted only Plan; `node scripts/test-map-editor-qualification.mjs` rejected the old manifest as not regenerated from the current bundle.
+- **Evidence:** issue:EHotwagner/S.I.R.#144; command:node scripts/test-map-editor-qualification.mjs; command:npm run build:client && node scripts/smoke-client.mjs
+- **Version:** PR #163 repair round 1
+- **Owner:** EHotwagner/S.I.R. `scripts/smoke-client.mjs` and `docs/assets/map-editor-review`
+- **Recurrence:** first seen PR #163 initial review; related closed PR #160
+- **Avoidable cost:** one repair round and production review regeneration
+- **Disposition:** product fix
 
 ## §5 Did not exercise
 

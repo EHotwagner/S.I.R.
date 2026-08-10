@@ -523,6 +523,12 @@ const buttonByText = (container, text) =>
   );
 const buttonByLabel = (container, label) =>
   container?.querySelector(`button[aria-label="${label}"]`);
+const assertUnavailablePlay = (operation, reason) => {
+  const play = buttonByText(timeline, "Play");
+  if (!play?.disabled || !timeline.textContent.includes(reason)) {
+    throw new Error(`${operation} left Play enabled or did not expose its actionable reason.`);
+  }
+};
 const waitFor = async (description, predicate, timeoutMilliseconds = 1500) => {
   const deadline = Date.now() + timeoutMilliseconds;
   while (Date.now() < deadline) {
@@ -534,6 +540,10 @@ const waitFor = async (description, predicate, timeoutMilliseconds = 1500) => {
 
 assertSingleWorksurface("initial mount");
 assertModality("Editor", "initial mount");
+assertUnavailablePlay(
+  "Editor without a simulator handoff",
+  "Create a simulator handoff from the Editor, then switch to Simulate to run it.",
+);
 
 const leftSidebar = shell.querySelector(".tactical-sidebar-left");
 const rightSidebar = shell.querySelector(".tactical-sidebar-right");
@@ -586,9 +596,21 @@ if (
 ) {
   throw new Error("Empty Review did not expose its unavailable projection explicitly.");
 }
+assertUnavailablePlay("Review without a replay", "Load a replay package before starting playback.");
 assertSingleWorksurface("stale selection filtering");
 assertSelection("stale selection filtering", null);
 await clickModality("Editor", "return from unavailable Review");
+
+modalityButtons.get("Simulate").click();
+await window.happyDOM.waitUntilComplete();
+if (workscreenRegion.getAttribute("data-active-modality") !== "Simulate") {
+  throw new Error("Empty Simulate did not activate the simulator modality.");
+}
+assertUnavailablePlay(
+  "Simulate without a handoff",
+  "Create an immutable simulator handoff from the Editor before starting simulation.",
+);
+await clickModality("Editor", "return from unavailable Simulate");
 
 if (!shell.querySelector('[data-panel-id="document"]')) {
   shell.querySelector("#layout-show-document")?.click();

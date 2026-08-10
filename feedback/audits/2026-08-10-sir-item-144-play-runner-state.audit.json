@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-10-sir-item-144-play-runner-state.md",
-  "reportSha256": "150b40e3db1903eaf4f485f1013d737a4e96314bc225947aaafa75abb243ab08",
+  "reportSha256": "f62da8fe0fc1dafc11b96183e407e87ed224d3f73460ad7bfa40018d012402b0",
   "criticMode": "separated-critic-pass",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -18,6 +18,26 @@
       "confidenceLimits": [
         "The report records headless browser evidence, not live-compositor measurement."
       ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "issue:EHotwagner/S.I.R.#144",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node scripts/test-map-editor-qualification.mjs",
+          "result": "verified"
+        },
+        {
+          "locator": "command:npm run build:client && node scripts/smoke-client.mjs",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
     }
   ]
 }
