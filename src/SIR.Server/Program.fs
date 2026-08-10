@@ -18,29 +18,33 @@ type Program() = class end
 
 module Program =
 
+    let private maximumBootstrapBodyBytes = 16 * 1024
+
     let private mapRoutes (app: WebApplication) =
         app.MapPost(
             "/api/bootstrap",
             Func<HttpRequest, Task<IResult>>(fun request ->
                 task {
-                    use reader = new StreamReader(request.Body)
-                    let! body = reader.ReadToEndAsync()
-
-                    match BootstrapV1.requestFromJson body with
-                    | Error error -> return Results.BadRequest {| error = error |}
-                    | Ok parsed when parsed.Version <> 1 ->
-                        return Results.BadRequest {| error = "unsupported bootstrap version" |}
-                    | Ok parsed ->
-                        let principal =
-                            match request.HttpContext.User.Identity with
-                            | null -> ""
-                            | identity when identity.IsAuthenticated -> identity.Name |> Option.ofObj |> Option.defaultValue ""
-                            | _ -> ""
-
-                        match LiveAuthority.bootstrap principal parsed.ActorName with
-                        | Error error -> return Results.BadRequest {| error = error |}
-                        | Ok response ->
-                            return Results.Text(BootstrapV1.encodeResponse response, "application/json")
+                    if request.ContentLength.HasValue && request.ContentLength.Value > int64 maximumBootstrapBodyBytes then
+                        return Results.BadRequest {| error = "SIR.LIVE.BOOTSTRAP.BODY_TOO_LARGE" |}
+                    else
+                        use reader = new StreamReader(request.Body)
+                        let! body = reader.ReadToEndAsync().WaitAsync(TimeSpan.FromSeconds 5.0)
+                        if System.Text.Encoding.UTF8.GetByteCount body > maximumBootstrapBodyBytes then
+                            return Results.BadRequest {| error = "SIR.LIVE.BOOTSTRAP.BODY_TOO_LARGE" |}
+                        else
+                            match BootstrapV1.requestFromJson body with
+                            | Error error -> return Results.BadRequest {| error = error |}
+                            | Ok parsed when parsed.Version <> 1 -> return Results.BadRequest {| error = "unsupported bootstrap version" |}
+                            | Ok parsed ->
+                                let principal =
+                                    match request.HttpContext.User.Identity with
+                                    | null -> ""
+                                    | identity when identity.IsAuthenticated -> identity.Name |> Option.ofObj |> Option.defaultValue ""
+                                    | _ -> ""
+                                match LiveAuthority.bootstrap principal parsed.ActorName with
+                                | Error error -> return Results.BadRequest {| error = error |}
+                                | Ok response -> return Results.Text(BootstrapV1.encodeResponse response, "application/json")
                 })
         )
             .RequireAuthorization()

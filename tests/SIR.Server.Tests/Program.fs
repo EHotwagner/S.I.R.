@@ -138,6 +138,17 @@ type LiveSessionAuthenticationTests() =
         let session = LiveAuthority.bootstrap "expiry-player" "expiry-player" |> Result.defaultWith failwith
         clock.Advance(TimeSpan.FromMinutes 2.0)
         require (LiveAuthority.authorize session.AccessToken "expired" |> Option.isNone) "the injected TimeProvider must expire admissions"
+        require (LiveAuthority.activeSessionCount() = 0) "expired sessions must release their process record"
+
+    [<Fact>]
+    member _.``bootstrap bounds actor names and global session admission``() =
+        let clock = MutableTimeProvider(DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero))
+        LiveAuthority.configure clock (TimeSpan.FromMinutes 1.0)
+        require (LiveAuthority.bootstrap "alpha" (String.replicate 129 "a") = Error "SIR.LIVE.BOOTSTRAP.ACTOR_REQUIRED") "oversized actor names must be rejected before session allocation"
+        for index in 1 .. 64 do
+            let actor = $"player-{index}"
+            LiveAuthority.bootstrap actor actor |> Result.defaultWith failwith |> ignore
+        require (LiveAuthority.bootstrap "overflow" "overflow" = Error "SIR.LIVE.BOOTSTRAP.CAPACITY_REJECTED") "global admission must reject capacity overflow"
 
     [<Fact>]
     member _.``takeover rejects superseded connection and keeps deterministic work``() =

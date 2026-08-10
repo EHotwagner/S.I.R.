@@ -15,7 +15,9 @@ type private SessionState =
       mutable LastInputSequence: int
       mutable FrameIndex: int
       mutable Revoked: bool
-      mutable ConnectionId: string option }
+      mutable ConnectionId: string option
+      mutable DisconnectedAt: DateTimeOffset option
+      Gate: obj }
 
 /// Concurrency-safe host shell around S.I.R.'s existing deterministic live slice.
 /// The replay and admission rules remain consumer-owned in SIR.Match; this module
@@ -25,7 +27,10 @@ module LiveAuthority =
 
     let private qualification = lazy (LiveIntegration.qualify ())
     let private sessions = ConcurrentDictionary<string, SessionState>()
-    let private gate = obj ()
+    let private countersGate = obj ()
+    let private maximumSessions = 64
+    let private maximumActorNameLength = 128
+    let private disconnectGrace = TimeSpan.FromMinutes 2.0
 
     let mutable private timeProvider = TimeProvider.System
     let mutable private tokenLifetime = TimeSpan.FromMinutes 15.0
@@ -36,16 +41,28 @@ module LiveAuthority =
     let configure (clock: TimeProvider) lifetime =
         timeProvider <- clock
         tokenLifetime <- lifetime
+        sessions.Clear()
 
     /// Resets deterministic admission work counters used by the focused transport baseline.
     let resetStructuralCounters () =
-        lock gate (fun () ->
+        lock countersGate (fun () ->
             tokenValidationCount <- 0
             sessionLookupCount <- 0)
 
     /// Returns (token validations, session lookups) for the current live-process baseline.
     let structuralCounters () =
-        lock gate (fun () -> tokenValidationCount, sessionLookupCount)
+        lock countersGate (fun () -> tokenValidationCount, sessionLookupCount)
+
+    let activeSessionCount () = sessions.Count
+
+    let private removeExpired () =
+        let now = timeProvider.GetUtcNow()
+        sessions
+        |> Seq.filter (fun pair -> pair.Value.ExpiresAt <= now || pair.Value.DisconnectedAt |> Option.exists (fun disconnected -> disconnected.Add disconnectGrace <= now))
+        |> Seq.iter (fun pair -> sessions.TryRemove pair.Key |> ignore)
+
+    let private countLookup () = lock countersGate (fun () -> sessionLookupCount <- sessionLookupCount + 1)
+    let private countValidation () = lock countersGate (fun () -> tokenValidationCount <- tokenValidationCount + 1)
 
     let private hex (bytes: byte array) = Convert.ToHexString(bytes).ToLowerInvariant()
 
@@ -75,10 +92,12 @@ module LiveAuthority =
         CryptographicOperations.FixedTimeEquals(System.Text.Encoding.UTF8.GetBytes(stored), System.Text.Encoding.UTF8.GetBytes(provided))
 
     let bootstrap principalId actorName =
-        if String.IsNullOrWhiteSpace principalId || String.IsNullOrWhiteSpace actorName then
+        removeExpired ()
+        if String.IsNullOrWhiteSpace principalId || String.IsNullOrWhiteSpace actorName || actorName.Length > maximumActorNameLength then
             Error "SIR.LIVE.BOOTSTRAP.ACTOR_REQUIRED"
         elif principalId <> actorName then
             Error "SIR.LIVE.BOOTSTRAP.ACTOR_FORBIDDEN"
+        elif sessions.Count >= maximumSessions then Error "SIR.LIVE.BOOTSTRAP.CAPACITY_REJECTED"
         else
             let sessionId = Guid.NewGuid().ToString "N"
             let actorId = Guid.NewGuid().ToString "N"
@@ -88,10 +107,9 @@ module LiveAuthority =
             match LiveIntegration.admit sessionId actorId slice.Artifact slice.Artifact with
             | Error error -> Error error
             | Ok admission ->
-                lock gate (fun () ->
-                    sessions.Values
-                    |> Seq.filter (fun existing -> existing.PrincipalId = principalId && not existing.Revoked)
-                    |> Seq.iter (fun existing -> existing.Revoked <- true))
+                sessions.Values
+                |> Seq.filter (fun existing -> existing.PrincipalId = principalId && not existing.Revoked)
+                |> Seq.iter (fun existing -> lock existing.Gate (fun () -> existing.Revoked <- true))
 
                 let state =
                     { ActorId = actorId
@@ -102,7 +120,9 @@ module LiveAuthority =
                       LastInputSequence = 0
                       FrameIndex = 0
                       Revoked = false
-                      ConnectionId = None }
+                      ConnectionId = None
+                      DisconnectedAt = None
+                      Gate = obj () }
 
                 sessions[sessionId] <- state
 
@@ -117,26 +137,20 @@ module LiveAuthority =
                 Ok response
 
     let authorize accessToken connectionId =
-        lock gate (fun () ->
-            tokenValidationCount <- tokenValidationCount + 1
-            sessionLookupCount <- sessionLookupCount + 1
-            sessions
-            |> Seq.tryPick (fun pair ->
-                let state = pair.Value
-
-                if not state.Revoked
-                   && state.ExpiresAt > timeProvider.GetUtcNow()
-                     && validToken state.AccessToken accessToken then
-                    state.ConnectionId <- Some connectionId
-                    Some(pair.Key, state.ActorId, snapshotAt state.FrameIndex)
-                else
-                    None))
+        removeExpired (); countValidation (); countLookup ()
+        sessions
+        |> Seq.tryPick (fun pair ->
+            let state = pair.Value
+            lock state.Gate (fun () ->
+                if not state.Revoked && state.ExpiresAt > timeProvider.GetUtcNow() && validToken state.AccessToken accessToken then
+                    state.ConnectionId <- Some connectionId; state.DisconnectedAt <- None; Some(pair.Key, state.ActorId, snapshotAt state.FrameIndex)
+                else None))
 
     let advance sessionId actorId accessToken connectionId sequence =
-        lock gate (fun () ->
-            tokenValidationCount <- tokenValidationCount + 1
-            sessionLookupCount <- sessionLookupCount + 1
-            match sessions.TryGetValue sessionId with
+        removeExpired (); countValidation (); countLookup ()
+        match sessions.TryGetValue sessionId with
+        | true, state -> lock state.Gate (fun () ->
+            match true, state with
             | true, state
                 when state.ActorId = actorId
                      && state.ConnectionId = Some connectionId
@@ -148,12 +162,13 @@ module LiveAuthority =
                 state.FrameIndex <- min (state.FrameIndex + 1) (qualification.Value.Replay.Frames.Length - 1)
                 Some(snapshotAt state.FrameIndex)
             | _ -> None)
+        | _ -> None
 
     let reconnect sessionId actorId accessToken connectionId lastServerSequence lastProjectionRevision =
-        lock gate (fun () ->
-            tokenValidationCount <- tokenValidationCount + 1
-            sessionLookupCount <- sessionLookupCount + 1
-            match sessions.TryGetValue sessionId with
+        removeExpired (); countValidation (); countLookup ()
+        match sessions.TryGetValue sessionId with
+        | true, state -> lock state.Gate (fun () ->
+            match true, state with
             | true, state
                 when state.ActorId = actorId
                      && state.ConnectionId = Some connectionId
@@ -170,3 +185,9 @@ module LiveAuthority =
                 | Error error -> Error error
                 | Ok _ -> Ok(snapshotAt state.FrameIndex)
             | _ -> Error "SIR.LIVE.RECONNECT.SESSION_UNKNOWN")
+        | _ -> Error "SIR.LIVE.RECONNECT.SESSION_UNKNOWN"
+
+    let disconnected sessionId connectionId =
+        match sessions.TryGetValue sessionId with
+        | true, state -> lock state.Gate (fun () -> if state.ConnectionId = Some connectionId then state.DisconnectedAt <- Some(timeProvider.GetUtcNow()); state.ConnectionId <- None)
+        | _ -> ()
