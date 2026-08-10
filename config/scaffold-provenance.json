@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "workId": "138-sir-fable-game-scaffold",
+  "template": {
+    "package": "FS.GG.Workspace.Template",
+    "version": "0.8.0",
+    "provider": "fable-game",
+    "templateId": "fs-gg-fable-game",
+    "contractVersion": "1.1.0",
+    "tag": "fs-gg-templates/v0.8.0",
+    "commit": "fef78f5b96280a235770712439571367517956ed",
+    "nugetOrgSha256": "11b57ac61e2c3eadaefae0d20ae427e4ca6f7593585cf79e5f6e89565b93c473"
+  },
+  "sdd": {
+    "package": "FS.GG.SDD.Cli",
+    "version": "1.0.0",
+    "materializerReceipt": "FS-GG/FS.GG.SDD#817",
+    "receiverCommit": "9aebd97dee55c0e4b31390e2fd6b79317b48acdd"
+  },
+  "gameSkills": {
+    "package": "FS.GG.Game.Skills",
+    "version": "0.7.0",
+    "tag": "skills/v0.7.0",
+    "commit": "7fa79f29023468a6bcd4ef7ef5b696abeba508ec",
+    "skillId": "fs-gg-game-fable",
+    "resolvablePath": ".agents/skills/fs-gg-game-fable/SKILL.md",
+    "sha256": "443a82d24a0b4bbd21f4499b06f6e3d12b95a36a858f3880b414b74cae1a5c50"
+  },
+  "gameCore": {
+    "package": "FS.GG.Game.Core",
+    "version": "0.13.0",
+    "profile": "fs-gg-game-core-fable-lockstep-v1",
+    "fixtureSchemaVersion": 1,
+    "oracleSha256": "9c0d7128f7b9558ef7e985618b1165199f83a0bb4af7533b175cc95b340c4a24",
+    "packageSha256": "9a661c14cc5d182726a356b72897c375c18fd49f905097de3dc3b8902efc5a54"
+  }
+}

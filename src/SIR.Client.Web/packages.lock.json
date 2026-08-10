@@ -15,6 +15,15 @@
           "Fable.Core": "3.2.8"
         }
       },
+      "Fable.Core": {
+        "type": "Direct",
+        "requested": "[5.2.0, 5.2.0]",
+        "resolved": "5.2.0",
+        "contentHash": "3+HVoyYMjPGeKJEhMzRti0coDS6AkLVOWXmGwSvqokeTuwdZLyiKMoNgQrE6ZeJ0cSy9qHBB4VBpw5RAfb6zmQ==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2"
+        }
+      },
       "Fable.Elmish": {
         "type": "Direct",
         "requested": "[5.0.2, 5.0.2]",
@@ -53,6 +62,16 @@
         "requested": "[10.1.302, 10.1.302]",
         "resolved": "10.1.302",
         "contentHash": "bN7XMQrAQg1dyHScJ7FcsznERBkvm74LtIo1O6C5mUzgbDqSwNbDpb3+nBGaJAjDmtC/suK5Vx5pFysKY6Hm+Q=="
+      },
+      "Thoth.Json": {
+        "type": "Direct",
+        "requested": "[10.5.1, 10.5.1]",
+        "resolved": "10.5.1",
+        "contentHash": "HMh+zRyOhz7ASGNLgcSQFsrZWv4mcMZfqIsya0aQ2ixFWZpav9RRvYR5C9tL33qmRDX4n+73Bpo6brSfUQ4nQA==",
+        "dependencies": {
+          "FSharp.Core": "10.1.203",
+          "Fable.Core": "5.0.0"
+        }
       },
       "Fable.AST": {
         "type": "Transitive",
@@ -96,11 +115,6 @@
           "Fable.Browser.Event": "1.6.0",
           "Fable.Core": "3.2.8"
         }
-      },
-      "Fable.Core": {
-        "type": "Transitive",
-        "resolved": "4.5.0",
-        "contentHash": "ZcX8XN5sQZGCbrS8VYnsa/ynhrCBfpDyqDkTl33GTXOpgfKibxoq0+W0hCSbRzuukVNoLtqGL/B6+8yTNDXbNA=="
       },
       "Fable.React.Types": {
         "type": "Transitive",

@@ -8260,6 +8260,8 @@ let view model dispatch =
         ]
     ]
 
+LiveSession.start ()
+
 if not (isNull (document.getElementById "sir-replay-app")) then
     Program.mkProgram init update view
     |> Program.withSubscription subscriptions

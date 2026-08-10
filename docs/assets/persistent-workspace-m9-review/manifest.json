@@ -1,11 +1,11 @@
 {
   "schema": "sir-persistent-workspace-m9-live-review-v2",
   "captureKind": "actual-production-shell-chromium-screenshot",
-  "productionBundleSha256": "650c7084067de41efe39d7572ecb205900b3b24215722457aa4499ebfc5d6092",
+  "productionBundleSha256": "fba607ff425c64152e619ae95cefde13eaf9a9d2b34ea66305cdd928ffb89536",
   "productionStylesSha256": "6cda8579d9048bc41b7b07619de171a838dfaa7eafbde7f45e684d45b344d7ea",
   "acceptedMockupSha256": "b2b0d444202aa9c76235fa7277ba2c6a4e89d3d7dc0dd009abb8e73c72c82270",
   "chromiumExecutable": "/usr/sbin/chromium",
-  "chromiumUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+  "chromiumUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
   "fieldFocus": {
     "viewport": {
       "width": 1440,
@@ -553,6 +553,6 @@
   },
   "png": "field-focus.png",
   "geometrySvg": "field-focus-geometry.svg",
-  "pngSha256": "db74361f7b486b88b4e4f01807748d6be24c9f6b86319f59541a842a44162b85",
+  "pngSha256": "87c4614614c930b6e9fbe74e240fbbcb497bba81370fa47bef090543dc8627cf",
   "geometrySvgSha256": "2a694bad82fd9dfcccecb94466a599b2bf4bab707ae240f10264cf1f2ae99e7f"
 }

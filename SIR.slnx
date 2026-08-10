@@ -4,6 +4,8 @@
     <Project Path="src/SIR.Client.Web/SIR.Client.Web.fsproj" />
     <Project Path="src/SIR.Domain/SIR.Domain.fsproj" />
     <Project Path="src/SIR.Match/SIR.Match.fsproj" />
+    <Project Path="src/SIR.Protocol/SIR.Protocol.fsproj" />
+    <Project Path="src/SIR.Server/SIR.Server.fsproj" />
     <Project Path="src/SIR.Simulation/SIR.Simulation.fsproj" />
   </Folder>
   <Folder Name="/tests/">
