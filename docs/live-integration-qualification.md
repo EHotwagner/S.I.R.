@@ -113,3 +113,15 @@ and replay re-execution for this representative slice.
 Still proposed: distributed token persistence, multi-process resume buffers,
 real network authentication/takeover, every ruleset capability, and production
 telemetry at fleet scale.
+
+## Single-process live-session posture
+
+Live admission is deliberately process-local. A restart, a request routed to a
+different process, or an absent session record fails closed as an unknown live
+session; the server never recreates a session from a bearer token. The host
+enforces bounded bootstrap bodies and actor names, per-principal admission
+rate limits, and global session capacity. It records active-session,
+rejected-admission, eviction, expiry, and contention counters for host
+diagnostics. Durable multi-process lifecycle and fleet telemetry remain
+explicitly out of scope until a shared session store and protected metrics
+export are designed together.

@@ -41,6 +41,12 @@ type GameHub() =
                     )
         }
 
+    override this.OnDisconnectedAsync(error: System.Exception) : Task =
+        let sessionId, _ = binding this
+        if not (System.String.IsNullOrWhiteSpace sessionId) then
+            LiveAuthority.disconnected sessionId this.Context.ConnectionId
+        base.OnDisconnectedAsync(error)
+
     member this.SendMessage(json: string) : Task =
         task {
             let sessionId, actorId = binding this

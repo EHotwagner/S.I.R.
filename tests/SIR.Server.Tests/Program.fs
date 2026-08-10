@@ -122,6 +122,18 @@ type LiveSessionAuthenticationTests() =
             require (response.StatusCode = HttpStatusCode.BadRequest) "authenticated principals must not bootstrap another actor")
 
     [<Fact>]
+    member _.``chunked bootstrap body is rejected before parsing``() =
+        withProductionClient (fun client ->
+            let request = new HttpRequestMessage(HttpMethod.Post, "/api/bootstrap")
+            request.Headers.Authorization <- Headers.AuthenticationHeaderValue("Bearer", productionToken "chunked")
+            let content = new StringContent(String.replicate 17000 "x", Encoding.UTF8, "application/json")
+            content.Headers.ContentLength <- Nullable()
+            request.Content <- content
+            let response = client.SendAsync(request).GetAwaiter().GetResult()
+            let body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+            require (response.StatusCode = HttpStatusCode.BadRequest && body.Contains("SIR.LIVE.BOOTSTRAP.BODY_TOO_LARGE")) "chunked oversized bootstrap bodies must be refused by the streaming bound before parsing")
+
+    [<Fact>]
     member _.``query only credentials and revoked sessions are denied``() =
         let clock = MutableTimeProvider(DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero))
         LiveAuthority.configure clock (TimeSpan.FromMinutes 1.0)
@@ -138,6 +150,70 @@ type LiveSessionAuthenticationTests() =
         let session = LiveAuthority.bootstrap "expiry-player" "expiry-player" |> Result.defaultWith failwith
         clock.Advance(TimeSpan.FromMinutes 2.0)
         require (LiveAuthority.authorize session.AccessToken "expired" |> Option.isNone) "the injected TimeProvider must expire admissions"
+        require (LiveAuthority.activeSessionCount() = 0) "expired sessions must release their process record"
+
+    [<Fact>]
+    member _.``bootstrap bounds actor names and global session admission``() =
+        let clock = MutableTimeProvider(DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero))
+        LiveAuthority.configure clock (TimeSpan.FromMinutes 1.0)
+        require (LiveAuthority.bootstrap "alpha" (String.replicate 129 "a") = Error "SIR.LIVE.BOOTSTRAP.ACTOR_REQUIRED") "oversized actor names must be rejected before session allocation"
+        for index in 1 .. 64 do
+            let actor = $"player-{index}"
+            LiveAuthority.bootstrap actor actor |> Result.defaultWith failwith |> ignore
+        require (LiveAuthority.bootstrap "overflow" "overflow" = Error "SIR.LIVE.BOOTSTRAP.CAPACITY_REJECTED") "global admission must reject capacity overflow"
+
+    [<Fact>]
+    member _.``bootstrap rate limiting and lifecycle metrics are observable``() =
+        let clock = MutableTimeProvider(DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero))
+        LiveAuthority.configure clock (TimeSpan.FromMinutes 1.0)
+        for _ in 1 .. 8 do LiveAuthority.bootstrap "rate-player" "rate-player" |> Result.defaultWith failwith |> ignore
+        require (LiveAuthority.bootstrap "rate-player" "rate-player" = Error "SIR.LIVE.BOOTSTRAP.RATE_REJECTED") "per-principal admission floods must be rate rejected"
+        let snapshot = LiveAuthority.metrics()
+        require (snapshot.RejectedAdmissions = 1 && snapshot.Evictions = 7) "metrics must expose rejected admissions and superseded-session evictions"
+
+    [<Fact>]
+    member _.``concurrent admissions never exceed capacity``() =
+        let clock = MutableTimeProvider(DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero))
+        LiveAuthority.configure clock (TimeSpan.FromHours 1.0)
+        let admitted =
+            [| 1 .. 256 |]
+            |> Array.Parallel.map (fun index -> let actor = $"parallel-{index}" in LiveAuthority.bootstrap actor actor |> Result.isOk)
+            |> Array.filter id
+            |> Array.length
+        require (admitted = 64 && LiveAuthority.activeSessionCount() = 64) "global capacity must remain atomic under concurrent admission"
+
+    [<Fact>]
+    member _.``disconnect grace expires and releases a session``() =
+        let clock = MutableTimeProvider(DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero))
+        LiveAuthority.configure clock (TimeSpan.FromHours 1.0)
+        let session = LiveAuthority.bootstrap "grace" "grace" |> Result.defaultWith failwith
+        LiveAuthority.authorize session.AccessToken "connection" |> ignore
+        LiveAuthority.disconnected session.SessionId "connection"
+        clock.Advance(TimeSpan.FromMinutes 3.0)
+        require (LiveAuthority.advance session.SessionId session.ActorId session.AccessToken "connection" 1 |> Option.isNone) "expired disconnect grace must return the stable unknown-session result"
+        require (LiveAuthority.activeSessionCount() = 0 && (LiveAuthority.metrics()).Expiries = 1) "disconnect grace expiry must release the session record and increment expiry metrics"
+
+    [<Fact>]
+    member _.``superseded admission releases capacity with stable denial``() =
+        let clock = MutableTimeProvider(DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero))
+        LiveAuthority.configure clock (TimeSpan.FromHours 1.0)
+        let first = LiveAuthority.bootstrap "evict" "evict" |> Result.defaultWith failwith
+        let second = LiveAuthority.bootstrap "evict" "evict" |> Result.defaultWith failwith
+        require (LiveAuthority.activeSessionCount() = 1 && (LiveAuthority.metrics()).Evictions = 1) "superseded admissions must remove their prior record"
+        require (LiveAuthority.authorize first.AccessToken "old" |> Option.isNone) "evicted credentials must receive the stable authorization denial"
+        require (LiveAuthority.authorize second.AccessToken "new" |> Option.isSome) "replacement admission must remain usable"
+
+    [<Fact>]
+    member _.``independent sessions mutate concurrently``() =
+        let clock = MutableTimeProvider(DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero))
+        LiveAuthority.configure clock (TimeSpan.FromHours 1.0)
+        let left = LiveAuthority.bootstrap "left" "left" |> Result.defaultWith failwith
+        let right = LiveAuthority.bootstrap "right" "right" |> Result.defaultWith failwith
+        LiveAuthority.authorize left.AccessToken "left-c" |> ignore
+        LiveAuthority.authorize right.AccessToken "right-c" |> ignore
+        require (LiveAuthority.independentSessionGates left.SessionId right.SessionId) "independent sessions must retain distinct synchronization gates"
+        let results = [| left, "left-c"; right, "right-c" |] |> Array.Parallel.map (fun (session, connection) -> LiveAuthority.advance session.SessionId session.ActorId session.AccessToken connection 1 |> Option.isSome)
+        require (results = [| true; true |]) "independent sessions must mutate concurrently without a shared authority lock"
 
     [<Fact>]
     member _.``takeover rejects superseded connection and keeps deterministic work``() =
