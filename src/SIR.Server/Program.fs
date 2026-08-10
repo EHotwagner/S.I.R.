@@ -14,6 +14,19 @@ type Program() = class end
 
 module Program =
 
+    let createApp (args: string array) =
+        let builder = WebApplication.CreateBuilder args
+        builder.Services.AddSignalR() |> ignore
+        builder.Services.AddSingleton<TimeProvider>(TimeProvider.System) |> ignore
+        builder.Services
+            .AddAuthentication("sir-live")
+            .AddScheme<AuthenticationSchemeOptions, LiveAuthenticationHandler>("sir-live", null)
+            |> ignore
+        builder.Services.AddAuthorization() |> ignore
+        let app = builder.Build()
+        LiveAuthority.configure (app.Services.GetRequiredService<TimeProvider>()) (TimeSpan.FromMinutes 15.0)
+        app
+
     [<EntryPoint>]
     let main args =
         let builder = WebApplication.CreateBuilder args
