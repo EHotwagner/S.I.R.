@@ -77,7 +77,7 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:d995fa902b330b50f10178d262ff0f5bc1016ffd1fbb45f27ed64c904aa28173"
+      digest: "sha256:83bdf1a3ba800d5042d3d1aec8d1117c8402f26698cc06f24fd39fba8e6a0634"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -177,7 +177,7 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:d995fa902b330b50f10178d262ff0f5bc1016ffd1fbb45f27ed64c904aa28173"
+      digest: "sha256:83bdf1a3ba800d5042d3d1aec8d1117c8402f26698cc06f24fd39fba8e6a0634"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -302,7 +302,7 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:d995fa902b330b50f10178d262ff0f5bc1016ffd1fbb45f27ed64c904aa28173"
+      digest: "sha256:83bdf1a3ba800d5042d3d1aec8d1117c8402f26698cc06f24fd39fba8e6a0634"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -352,7 +352,7 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:d995fa902b330b50f10178d262ff0f5bc1016ffd1fbb45f27ed64c904aa28173"
+      digest: "sha256:83bdf1a3ba800d5042d3d1aec8d1117c8402f26698cc06f24fd39fba8e6a0634"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
