@@ -14,7 +14,7 @@ type GameHub() =
             let authorization = string http.Request.Headers.Authorization
             let token =
                 if authorization.StartsWith("Bearer ", System.StringComparison.OrdinalIgnoreCase) then authorization.Substring("Bearer ".Length)
-                else string http.Request.Query["access_token"]
+                else ""
             token
 
     let binding (hub: GameHub) =

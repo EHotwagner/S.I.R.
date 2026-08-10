@@ -24,6 +24,10 @@ module SignalR =
 
     let build url accessToken =
         HubConnectionBuilder()
-            .withUrl(url, createObj [ "accessTokenFactory" ==> (fun () -> accessToken) ])
+            .withUrl(
+                url,
+                createObj
+                    [ "accessTokenFactory" ==> (fun () -> accessToken)
+                      "transport" ==> 4 ])
             .withAutomaticReconnect()
             .build()

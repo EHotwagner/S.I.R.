@@ -70,6 +70,11 @@ module LiveAuthority =
             match LiveIntegration.admit sessionId actorId slice.Artifact slice.Artifact with
             | Error error -> Error error
             | Ok admission ->
+                lock gate (fun () ->
+                    sessions.Values
+                    |> Seq.filter (fun existing -> existing.PrincipalId = principalId && not existing.Revoked)
+                    |> Seq.iter (fun existing -> existing.Revoked <- true))
+
                 let state =
                     { ActorId = actorId
                       PrincipalId = principalId

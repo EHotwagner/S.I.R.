@@ -33,6 +33,27 @@ module LiveSession =
             element
         | element -> element
 
+    let private ensureControls advanceAction reconnectAction =
+        let controls =
+            match document.getElementById "sir-live-controls" with
+            | null ->
+                let element = document.createElement "nav"
+                element.id <- "sir-live-controls"
+                document.body.appendChild element |> ignore
+                element
+            | element -> element
+
+        let addButton id label action =
+            if isNull (document.getElementById id) then
+                let button = document.createElement "button"
+                button.id <- id
+                button.textContent <- label
+                button.addEventListener("click", fun _ -> action ())
+                controls.appendChild button |> ignore
+
+        addButton "sir-live-advance" "Advance live session" advanceAction
+        addButton "sir-live-reconnect" "Reconnect live session" reconnectAction
+
     let private render () =
         let element = ensureStatusElement ()
         let tick = lastSnapshot |> Option.map _.Tick |> Option.defaultValue 0
@@ -101,8 +122,7 @@ module LiveSession =
 
     let start () =
         render ()
-        window?__sirLiveAdvance <- advance
-        window?__sirLiveReconnect <- reconnect
+        ensureControls advance reconnect
         let request: BootstrapV1.Request = { Version = 1; ActorName = "browser-commander" }
         Async.StartImmediate(async {
             try

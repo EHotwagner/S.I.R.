@@ -6,6 +6,7 @@ open System.Threading.Tasks
 open System.Security.Claims
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Http
+open Microsoft.AspNetCore.Authentication
 open Microsoft.Extensions.DependencyInjection
 open SIR.Protocol.Http
 
@@ -17,28 +18,14 @@ module Program =
     let main args =
         let builder = WebApplication.CreateBuilder args
         builder.Services.AddSignalR() |> ignore
+        builder.Services
+            .AddAuthentication("sir-live")
+            .AddScheme<AuthenticationSchemeOptions, LiveAuthenticationHandler>("sir-live", null)
+            |> ignore
+        builder.Services.AddAuthorization() |> ignore
         let app = builder.Build()
-
-        app.Use(
-            Func<HttpContext, Func<Task>, Task>(fun context next ->
-                let allowDevelopmentAnonymous =
-                    String.Equals(app.Environment.EnvironmentName, "Development", StringComparison.OrdinalIgnoreCase)
-                    && String.Equals(builder.Configuration["SIR_ALLOW_ANONYMOUS_LIVE_SESSIONS"], "true", StringComparison.OrdinalIgnoreCase)
-
-                let authenticated =
-                    match context.User.Identity with
-                    | null -> false
-                    | identity -> identity.IsAuthenticated
-
-                if allowDevelopmentAnonymous && not authenticated then
-                    let actor = string context.Request.Headers["X-SIR-Development-Actor"]
-
-                    if not (String.IsNullOrWhiteSpace actor) then
-                        let identity = ClaimsIdentity([ Claim(ClaimTypes.Name, actor) ], "sir-development")
-                        context.User <- ClaimsPrincipal identity
-
-                next.Invoke()))
-        |> ignore
+        app.UseAuthentication() |> ignore
+        app.UseAuthorization() |> ignore
 
         app.MapPost(
             "/api/bootstrap",
@@ -64,6 +51,7 @@ module Program =
                             return Results.Text(BootstrapV1.encodeResponse response, "application/json")
                 })
         )
+            .RequireAuthorization()
         |> ignore
 
         app.MapHub<GameHub>("/hub/game") |> ignore
