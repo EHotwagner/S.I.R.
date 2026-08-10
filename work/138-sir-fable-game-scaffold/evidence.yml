@@ -1,0 +1,308 @@
+schemaVersion: 1
+workId: 138-sir-fable-game-scaffold
+stage: evidence
+status: evidenceReady
+sourceSpec: work/138-sir-fable-game-scaffold/spec.md
+sourceClarifications: work/138-sir-fable-game-scaffold/clarifications.md
+sourceChecklist: work/138-sir-fable-game-scaffold/checklist.md
+sourcePlan: work/138-sir-fable-game-scaffold/plan.md
+sourceTasks: work/138-sir-fable-game-scaffold/tasks.yml
+sourceAnalysis: readiness/138-sir-fable-game-scaffold/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/138-sir-fable-game-scaffold/analysis.json
+    digest: ba5238e87ca8f37d52405715ebc13ac16346669ff7cb0e1dec7d4225ec023092
+    schemaVersion: 1
+  - label: checklist
+    path: work/138-sir-fable-game-scaffold/checklist.md
+    digest: e1b92f850da930f9423e8d5ebe3d5309ad1aa79b2e9e30a13fffe785611b1fbe
+    schemaVersion: 1
+  - label: clarifications
+    path: work/138-sir-fable-game-scaffold/clarifications.md
+    digest: c1b19c71457a578485e01d457186870ded06d4e67f825cbd1ac3c7c33d9be0df
+    schemaVersion: 1
+  - label: plan
+    path: work/138-sir-fable-game-scaffold/plan.md
+    digest: 0804061ef861113fc5ac8ca72861ae1c1e608659a33691d6dfc6a1f321f347c4
+    schemaVersion: 1
+  - label: spec
+    path: work/138-sir-fable-game-scaffold/spec.md
+    digest: 4611c424ccb2c68a9986016a944c74348c733a7c90e404a88501d6c3d374fe99
+    schemaVersion: 1
+  - label: tasks
+    path: work/138-sir-fable-game-scaffold/tasks.yml
+    digest: 19909e2e250f235d40890adbf25945d5f85dc6b29ea9fff94a32a5408954e5e3
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV001]
+    artifacts: [docs/issue-138-fable-game-integration-report.md, src/SIR.Client/SIR.Client.fsproj, src/SIR.Domain/SIR.Domain.fsproj]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:4dd084921381a6abee69e8477c0b585439349ba3cd089aa4486d1b7ad6c4da95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV002]
+    artifacts: [src/SIR.Protocol/SIR.Protocol.fsproj, src/SIR.Server/SIR.Server.fsproj]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:4dd084921381a6abee69e8477c0b585439349ba3cd089aa4486d1b7ad6c4da95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV003]
+    artifacts: [artifacts/test-results/browser.junit.xml, tests/SIR.Browser.Tests/live-session.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:4dd084921381a6abee69e8477c0b585439349ba3cd089aa4486d1b7ad6c4da95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV004]
+    artifacts: [config/scaffold-provenance.json, scripts/test-conformance.sh]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:4dd084921381a6abee69e8477c0b585439349ba3cd089aa4486d1b7ad6c4da95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV005]
+    artifacts: [".agents/skills/fs-gg-game-fable/SKILL.md", config/scaffold-provenance.json]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:4dd084921381a6abee69e8477c0b585439349ba3cd089aa4486d1b7ad6c4da95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV006]
+    artifacts: [".github/workflows/ci.yml", artifacts/test-results/browser.junit.xml, build.sh]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:4dd084921381a6abee69e8477c0b585439349ba3cd089aa4486d1b7ad6c4da95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-003]
+    obligationRefs: [EV007]
+    artifacts: [src/SIR.Protocol/Http.fs, src/SIR.Protocol/Realtime.fs, src/SIR.Server/GameHub.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:4dd084921381a6abee69e8477c0b585439349ba3cd089aa4486d1b7ad6c4da95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-003, PD-004, PD-005, PD-006]
+    obligationRefs: [EV008]
+    artifacts: [artifacts/test-results/browser.junit.xml, scripts/test-conformance.sh]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:4dd084921381a6abee69e8477c0b585439349ba3cd089aa4486d1b7ad6c4da95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: [".fsgg/scaffold-provenance.json", docs/issue-138-fable-game-integration-report.md]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:4dd084921381a6abee69e8477c0b585439349ba3cd089aa4486d1b7ad6c4da95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-005]
+    obligationRefs: [EV010]
+    artifacts: [config/scaffold-provenance.json, readiness/138-sir-fable-game-scaffold/analysis.json]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:4dd084921381a6abee69e8477c0b585439349ba3cd089aa4486d1b7ad6c4da95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

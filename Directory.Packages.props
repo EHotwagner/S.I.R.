@@ -5,11 +5,14 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Fable.Browser.Dom" Version="[2.20.0]" />
+    <PackageVersion Include="Fable.Core" Version="[5.2.0]" />
     <PackageVersion Include="Fable.Elmish" Version="[5.0.2]" />
     <PackageVersion Include="Fable.Elmish.React" Version="[5.6.0]" />
     <PackageVersion Include="Feliz" Version="[3.3.3]" />
     <PackageVersion Include="FSharp.Core" Version="[10.1.302]" />
     <PackageVersion Include="FS.GG.Game.Core" Version="[0.13.0]" />
+    <PackageVersion Include="Thoth.Json" Version="[10.5.1]" />
+    <PackageVersion Include="Thoth.Json.Net" Version="[12.0.0]" />
     <PackageVersion Include="Wasmtime" Version="[44.0.0]" />
   </ItemGroup>
 </Project>

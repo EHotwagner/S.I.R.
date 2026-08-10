@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <Compile Include="LiveAuthority.fs" />
+    <Compile Include="GameHub.fs" />
+    <Compile Include="Program.fs" />
+    <Content Include="../../artifacts/client/**" Link="wwwroot/%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../SIR.Match/SIR.Match.fsproj" />
+    <ProjectReference Include="../SIR.Protocol/SIR.Protocol.fsproj" />
+  </ItemGroup>
+</Project>

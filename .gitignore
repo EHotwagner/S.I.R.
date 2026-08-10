@@ -6,6 +6,8 @@ output/
 .fsdocs/
 tmp/
 node_modules/
+test-results/
+.nuget/
 src/SIR.Client.Web/.fable/
 src/SIR.Client.Web/fable/
 

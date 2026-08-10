@@ -21,14 +21,18 @@
     "test:map-design-transfer": "node scripts/test-map-editor-design-transfer.mjs",
     "test:persistent-workspace-m0": "node scripts/test-persistent-workspace-m0-baseline.mjs",
     "test": "./scripts/test-conformance.sh",
+    "test:browser": "playwright test --config tests/SIR.Browser.Tests/playwright.config.js",
+    "verify:scaffold": "node scripts/verify-scaffold-provenance.mjs",
     "verify:baseline": "node scripts/verify-fable-client-baseline.mjs"
   },
   "dependencies": {
     "@fable-org/fable-library-js": "2.5.1",
+    "@microsoft/signalr": "10.0.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@playwright/test": "1.55.0",
     "happy-dom": "20.11.1",
     "vite": "8.1.5"
   },

@@ -1,0 +1,324 @@
+{
+  "schemaVersion": 1,
+  "generator": {
+    "id": "FS.GG.SDD.Artifacts",
+    "version": "1.0.0"
+  },
+  "requiredMinimumCliVersion": "0.6.0",
+  "providerName": "fable-game",
+  "providerContractVersion": "1.1.0",
+  "templateRef": "FS.GG.Workspace.Template::0.8.0#fs-gg-fable-game",
+  "outcome": "consumerMigration",
+  "producedPaths": [
+    {
+      "path": "build.sh",
+      "owner": "generatedProduct"
+    },
+    {
+      "path": "config/scaffold-provenance.json",
+      "owner": "generatedProduct"
+    },
+    {
+      "path": "docs/issue-138-fable-game-integration-report.md",
+      "owner": "generatedProduct"
+    },
+    {
+      "path": "src/SIR.Client.Web/LiveApi.fs",
+      "owner": "generatedProduct"
+    },
+    {
+      "path": "src/SIR.Client.Web/LiveSession.fs",
+      "owner": "generatedProduct"
+    },
+    {
+      "path": "src/SIR.Client.Web/SignalR.fs",
+      "owner": "generatedProduct"
+    },
+    {
+      "path": "src/SIR.Protocol/Http.fs",
+      "owner": "generatedProduct"
+    },
+    {
+      "path": "src/SIR.Protocol/Realtime.fs",
+      "owner": "generatedProduct"
+    },
+    {
+      "path": "src/SIR.Protocol/SIR.Protocol.fsproj",
+      "owner": "generatedProduct"
+    },
+    {
+      "path": "src/SIR.Server/GameHub.fs",
+      "owner": "generatedProduct"
+    },
+    {
+      "path": "src/SIR.Server/LiveAuthority.fs",
+      "owner": "generatedProduct"
+    },
+    {
+      "path": "src/SIR.Server/Program.fs",
+      "owner": "generatedProduct"
+    },
+    {
+      "path": "src/SIR.Server/SIR.Server.fsproj",
+      "owner": "generatedProduct"
+    },
+    {
+      "path": "tests/SIR.Browser.Tests/live-session.spec.js",
+      "owner": "generatedProduct"
+    },
+    {
+      "path": "tests/SIR.Browser.Tests/playwright.config.js",
+      "owner": "generatedProduct"
+    }
+  ],
+  "mirroredPaths": [
+    {
+      "path": ".claude/skills/fs-gg-game-fable/SKILL.md",
+      "owner": "generatedProduct"
+    }
+  ],
+  "sddOwnedPaths": [
+    {
+      "path": "readiness/138-sir-fable-game-scaffold",
+      "owner": "sdd"
+    },
+    {
+      "path": "work/138-sir-fable-game-scaffold",
+      "owner": "sdd"
+    }
+  ],
+  "driverPaths": [
+    {
+      "path": ".agents/skills/padd-item/SKILL.md",
+      "owner": "driver",
+      "sha256": "f77540a387627a13ed88133e259eee6fc8d956213a23b18097977bcc07520aca"
+    },
+    {
+      "path": ".agents/skills/padd-item/agents/openai.yaml",
+      "owner": "driver",
+      "sha256": "b5e453d33a40ed8aa0a14a34b01b01fbe72f351d6269208a77e883b7efac02f8"
+    },
+    {
+      "path": ".agents/skills/work-board-best/SKILL.md",
+      "owner": "driver",
+      "sha256": "2b0577726f7cab6aa27169888c0f47370ad26ddadbcb6fda300acf1a00e754e3"
+    },
+    {
+      "path": ".agents/skills/work-board-best/agents/openai.yaml",
+      "owner": "driver",
+      "sha256": "9d85ffa0636c28f3d4a6713217640b3572bb003ec5759ac5a00a3851a10ff548"
+    },
+    {
+      "path": ".agents/skills/work-board-normal/SKILL.md",
+      "owner": "driver",
+      "sha256": "4649b17f1e05e2302626927b77462eee91ba41ceb3eb7b72df8d933fbd5863db"
+    },
+    {
+      "path": ".agents/skills/work-board-normal/agents/openai.yaml",
+      "owner": "driver",
+      "sha256": "2058fafb85ceaf1b6bed448a4cb4f6b51bfdbee05c9eb062af0647cb27dc1ec0"
+    },
+    {
+      "path": ".agents/skills/work-board/SKILL.md",
+      "owner": "driver",
+      "sha256": "0e44ecccfb46537cdb40296c7351dd08a0e5494ea6144ff13ceefd27872a8855"
+    },
+    {
+      "path": ".agents/skills/work-board/agents/openai.yaml",
+      "owner": "driver",
+      "sha256": "a4d2b19cde3fd490c669da9a007b16620a106586efc30c32a02efd92f58d0433"
+    },
+    {
+      "path": ".agents/skills/work-board/references/backlog-triage.md",
+      "owner": "driver",
+      "sha256": "6e9601d6e752be4ca3f3e5f5a2a5837b6fb5e0b6f4a1722aac8a6731ad0ebc44"
+    },
+    {
+      "path": ".agents/skills/work-board/references/deep-detail.md",
+      "owner": "driver",
+      "sha256": "4fb060eef5a291f53118aefa546b187d4b1c929703ce56910030af0f066180ad"
+    },
+    {
+      "path": ".agents/skills/work-board/references/feedback-contract.md",
+      "owner": "driver",
+      "sha256": "cca471febecbd3f63cd29a5ec81c3af3ea1542a4e40ba1075208ec8416632f86"
+    },
+    {
+      "path": ".agents/skills/work-board/references/host-loop.md",
+      "owner": "driver",
+      "sha256": "66b3c7763aeeaf7d30e872cc31dea31fa5c4515b7637bc9eb397acbde1d70ed9"
+    },
+    {
+      "path": ".agents/skills/work-board/references/workspace-scope.md",
+      "owner": "driver",
+      "sha256": "9435aa1fcc975aba3c3f22066b708a3061b13e9181f4c03fce6dc0526807e245"
+    },
+    {
+      "path": ".agents/skills/work-board/scripts/validate-feedback-state.py",
+      "owner": "driver",
+      "sha256": "8a28ff24719a11204f168456974b4941026111d498039bf88a679cbca5f11a07"
+    },
+    {
+      "path": ".agents/skills/work-roadmap/SKILL.md",
+      "owner": "driver",
+      "sha256": "7eb9f056104bdbcfdcbd6a73cc82199f481b46864f762a8f0f041d6757529c4f"
+    },
+    {
+      "path": ".agents/skills/work-roadmap/agents/openai.yaml",
+      "owner": "driver",
+      "sha256": "d15ec5205fcd2d3698bcfb5b82237036ed115c1a28bf4acd03aa4a8dd55def22"
+    },
+    {
+      "path": ".agents/skills/work-roadmap/references/deep-detail.md",
+      "owner": "driver",
+      "sha256": "b0d8ebf3ae0a3209b4879f88396f17871a6b3dd702b87e2df82659a835565b11"
+    },
+    {
+      "path": ".agents/skills/work-roadmap/references/feedback-contract.md",
+      "owner": "driver",
+      "sha256": "2baee136dbcad2e40a51d28b8389feb7dfe7e1f7c85774c04ad78b0230012f02"
+    },
+    {
+      "path": ".agents/skills/work-roadmap/references/host-loop.md",
+      "owner": "driver",
+      "sha256": "daac46a07bc1eece70cf60c89d8739ec9c9c0899ddff26b25ed9afd163a04b44"
+    },
+    {
+      "path": ".agents/skills/work-roadmap/references/roadmap-ledger.md",
+      "owner": "driver",
+      "sha256": "1c06635c0a51dc5d1decae33231b93157647672d2c5c3ae791fb6b750682981f"
+    },
+    {
+      "path": ".agents/skills/work-roadmap/scripts/validate-feedback-state.py",
+      "owner": "driver",
+      "sha256": "8a28ff24719a11204f168456974b4941026111d498039bf88a679cbca5f11a07"
+    },
+    {
+      "path": ".claude/skills/padd-item/SKILL.md",
+      "owner": "driver",
+      "sha256": "f77540a387627a13ed88133e259eee6fc8d956213a23b18097977bcc07520aca"
+    },
+    {
+      "path": ".claude/skills/padd-item/agents/openai.yaml",
+      "owner": "driver",
+      "sha256": "b5e453d33a40ed8aa0a14a34b01b01fbe72f351d6269208a77e883b7efac02f8"
+    },
+    {
+      "path": ".claude/skills/work-board-best/SKILL.md",
+      "owner": "driver",
+      "sha256": "2b0577726f7cab6aa27169888c0f47370ad26ddadbcb6fda300acf1a00e754e3"
+    },
+    {
+      "path": ".claude/skills/work-board-best/agents/openai.yaml",
+      "owner": "driver",
+      "sha256": "9d85ffa0636c28f3d4a6713217640b3572bb003ec5759ac5a00a3851a10ff548"
+    },
+    {
+      "path": ".claude/skills/work-board-normal/SKILL.md",
+      "owner": "driver",
+      "sha256": "4649b17f1e05e2302626927b77462eee91ba41ceb3eb7b72df8d933fbd5863db"
+    },
+    {
+      "path": ".claude/skills/work-board-normal/agents/openai.yaml",
+      "owner": "driver",
+      "sha256": "2058fafb85ceaf1b6bed448a4cb4f6b51bfdbee05c9eb062af0647cb27dc1ec0"
+    },
+    {
+      "path": ".claude/skills/work-board/SKILL.md",
+      "owner": "driver",
+      "sha256": "0e44ecccfb46537cdb40296c7351dd08a0e5494ea6144ff13ceefd27872a8855"
+    },
+    {
+      "path": ".claude/skills/work-board/agents/openai.yaml",
+      "owner": "driver",
+      "sha256": "a4d2b19cde3fd490c669da9a007b16620a106586efc30c32a02efd92f58d0433"
+    },
+    {
+      "path": ".claude/skills/work-board/references/backlog-triage.md",
+      "owner": "driver",
+      "sha256": "6e9601d6e752be4ca3f3e5f5a2a5837b6fb5e0b6f4a1722aac8a6731ad0ebc44"
+    },
+    {
+      "path": ".claude/skills/work-board/references/deep-detail.md",
+      "owner": "driver",
+      "sha256": "4fb060eef5a291f53118aefa546b187d4b1c929703ce56910030af0f066180ad"
+    },
+    {
+      "path": ".claude/skills/work-board/references/feedback-contract.md",
+      "owner": "driver",
+      "sha256": "cca471febecbd3f63cd29a5ec81c3af3ea1542a4e40ba1075208ec8416632f86"
+    },
+    {
+      "path": ".claude/skills/work-board/references/host-loop.md",
+      "owner": "driver",
+      "sha256": "66b3c7763aeeaf7d30e872cc31dea31fa5c4515b7637bc9eb397acbde1d70ed9"
+    },
+    {
+      "path": ".claude/skills/work-board/references/workspace-scope.md",
+      "owner": "driver",
+      "sha256": "9435aa1fcc975aba3c3f22066b708a3061b13e9181f4c03fce6dc0526807e245"
+    },
+    {
+      "path": ".claude/skills/work-board/scripts/validate-feedback-state.py",
+      "owner": "driver",
+      "sha256": "8a28ff24719a11204f168456974b4941026111d498039bf88a679cbca5f11a07"
+    },
+    {
+      "path": ".claude/skills/work-roadmap/SKILL.md",
+      "owner": "driver",
+      "sha256": "7eb9f056104bdbcfdcbd6a73cc82199f481b46864f762a8f0f041d6757529c4f"
+    },
+    {
+      "path": ".claude/skills/work-roadmap/agents/openai.yaml",
+      "owner": "driver",
+      "sha256": "d15ec5205fcd2d3698bcfb5b82237036ed115c1a28bf4acd03aa4a8dd55def22"
+    },
+    {
+      "path": ".claude/skills/work-roadmap/references/deep-detail.md",
+      "owner": "driver",
+      "sha256": "b0d8ebf3ae0a3209b4879f88396f17871a6b3dd702b87e2df82659a835565b11"
+    },
+    {
+      "path": ".claude/skills/work-roadmap/references/feedback-contract.md",
+      "owner": "driver",
+      "sha256": "2baee136dbcad2e40a51d28b8389feb7dfe7e1f7c85774c04ad78b0230012f02"
+    },
+    {
+      "path": ".claude/skills/work-roadmap/references/host-loop.md",
+      "owner": "driver",
+      "sha256": "daac46a07bc1eece70cf60c89d8739ec9c9c0899ddff26b25ed9afd163a04b44"
+    },
+    {
+      "path": ".claude/skills/work-roadmap/references/roadmap-ledger.md",
+      "owner": "driver",
+      "sha256": "1c06635c0a51dc5d1decae33231b93157647672d2c5c3ae791fb6b750682981f"
+    },
+    {
+      "path": ".claude/skills/work-roadmap/scripts/validate-feedback-state.py",
+      "owner": "driver",
+      "sha256": "8a28ff24719a11204f168456974b4941026111d498039bf88a679cbca5f11a07"
+    }
+  ],
+  "gameSkillPaths": [
+    {
+      "path": ".agents/skills/fs-gg-game-fable/SKILL.md",
+      "owner": "generatedProduct",
+      "sha256": "443a82d24a0b4bbd21f4499b06f6e3d12b95a36a858f3880b414b74cae1a5c50"
+    },
+    {
+      "path": ".claude/skills/fs-gg-game-fable/SKILL.md",
+      "owner": "generatedProduct",
+      "sha256": "443a82d24a0b4bbd21f4499b06f6e3d12b95a36a858f3880b414b74cae1a5c50"
+    }
+  ],
+  "effectiveParameters": [
+    {
+      "key": "productName",
+      "value": "S.I.R."
+    },
+    {
+      "key": "rootNamespace",
+      "value": "SIR"
+    }
+  ]
+}
