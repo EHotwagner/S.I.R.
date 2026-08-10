@@ -2638,7 +2638,7 @@ let rec update msg model =
                     model.TacticalBindings
                     command
                 |> Option.exists (fun binding ->
-                    binding.Trim().ToUpperInvariant() = producedGesture))
+                    ClientModuleBoundaries.canonicalGesture binding = producedGesture))
 
         let applyTacticalCommand (command: TacticalCommandDefinition) =
             update (InvokeTacticalCommand command.Id) model
@@ -2807,7 +2807,7 @@ let subscriptions model =
                         model.TacticalBindings
                         command
                     |> Option.exists (fun value ->
-                        value.Trim().ToUpperInvariant() = produced)))
+                        ClientModuleBoundaries.canonicalGesture value = produced)))
 
         let downHandler =
             fun (event: Event) ->
@@ -6486,7 +6486,7 @@ let private sharedSceneClaimsKeyboard
                 model.TacticalBindings
                 command
             |> Option.exists (fun gesture ->
-                gesture.Trim().ToUpperInvariant() = produced)))
+                ClientModuleBoundaries.canonicalGesture gesture = produced)))
 
 let private sharedSceneUnitCommand model unitId =
     match model.Workspace with
