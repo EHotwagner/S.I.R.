@@ -19,6 +19,13 @@ type private SessionState =
       mutable DisconnectedAt: DateTimeOffset option
       Gate: obj }
 
+type LiveSessionMetrics =
+    { ActiveSessions: int
+      RejectedAdmissions: int
+      Evictions: int
+      Expiries: int
+      Contention: int }
+
 /// Concurrency-safe host shell around S.I.R.'s existing deterministic live slice.
 /// The replay and admission rules remain consumer-owned in SIR.Match; this module
 /// only adapts them to the scaffold's transport boundary.
@@ -30,18 +37,26 @@ module LiveAuthority =
     let private countersGate = obj ()
     let private maximumSessions = 64
     let private maximumActorNameLength = 128
+    let private maximumAdmissionsPerMinute = 8
+    let private admissions = ConcurrentDictionary<string, DateTimeOffset list>()
     let private disconnectGrace = TimeSpan.FromMinutes 2.0
 
     let mutable private timeProvider = TimeProvider.System
     let mutable private tokenLifetime = TimeSpan.FromMinutes 15.0
     let mutable private tokenValidationCount = 0
     let mutable private sessionLookupCount = 0
+    let mutable private rejectedAdmissions = 0
+    let mutable private evictions = 0
+    let mutable private expiries = 0
+    let mutable private contention = 0
 
     /// Configures the host-owned lifetime policy; production supplies DI's TimeProvider.
     let configure (clock: TimeProvider) lifetime =
         timeProvider <- clock
         tokenLifetime <- lifetime
         sessions.Clear()
+        admissions.Clear()
+        lock countersGate (fun () -> rejectedAdmissions <- 0; evictions <- 0; expiries <- 0; contention <- 0)
 
     /// Resets deterministic admission work counters used by the focused transport baseline.
     let resetStructuralCounters () =
@@ -55,11 +70,13 @@ module LiveAuthority =
 
     let activeSessionCount () = sessions.Count
 
+    let metrics () = lock countersGate (fun () -> { ActiveSessions = sessions.Count; RejectedAdmissions = rejectedAdmissions; Evictions = evictions; Expiries = expiries; Contention = contention })
+
     let private removeExpired () =
         let now = timeProvider.GetUtcNow()
         sessions
         |> Seq.filter (fun pair -> pair.Value.ExpiresAt <= now || pair.Value.DisconnectedAt |> Option.exists (fun disconnected -> disconnected.Add disconnectGrace <= now))
-        |> Seq.iter (fun pair -> sessions.TryRemove pair.Key |> ignore)
+        |> Seq.iter (fun pair -> if sessions.TryRemove pair.Key |> fst then lock countersGate (fun () -> expiries <- expiries + 1))
 
     let private countLookup () = lock countersGate (fun () -> sessionLookupCount <- sessionLookupCount + 1)
     let private countValidation () = lock countersGate (fun () -> tokenValidationCount <- tokenValidationCount + 1)
@@ -93,11 +110,21 @@ module LiveAuthority =
 
     let bootstrap principalId actorName =
         removeExpired ()
+        let now = timeProvider.GetUtcNow()
+        let recent = admissions.GetOrAdd(principalId, []) |> List.filter (fun admitted -> admitted.AddMinutes 1.0 > now)
+        admissions[principalId] <- now :: recent
         if String.IsNullOrWhiteSpace principalId || String.IsNullOrWhiteSpace actorName || actorName.Length > maximumActorNameLength then
+            lock countersGate (fun () -> rejectedAdmissions <- rejectedAdmissions + 1)
             Error "SIR.LIVE.BOOTSTRAP.ACTOR_REQUIRED"
         elif principalId <> actorName then
+            lock countersGate (fun () -> rejectedAdmissions <- rejectedAdmissions + 1)
             Error "SIR.LIVE.BOOTSTRAP.ACTOR_FORBIDDEN"
-        elif sessions.Count >= maximumSessions then Error "SIR.LIVE.BOOTSTRAP.CAPACITY_REJECTED"
+        elif recent.Length >= maximumAdmissionsPerMinute then
+            lock countersGate (fun () -> rejectedAdmissions <- rejectedAdmissions + 1)
+            Error "SIR.LIVE.BOOTSTRAP.RATE_REJECTED"
+        elif sessions.Count >= maximumSessions then
+            lock countersGate (fun () -> rejectedAdmissions <- rejectedAdmissions + 1)
+            Error "SIR.LIVE.BOOTSTRAP.CAPACITY_REJECTED"
         else
             let sessionId = Guid.NewGuid().ToString "N"
             let actorId = Guid.NewGuid().ToString "N"
@@ -109,7 +136,7 @@ module LiveAuthority =
             | Ok admission ->
                 sessions.Values
                 |> Seq.filter (fun existing -> existing.PrincipalId = principalId && not existing.Revoked)
-                |> Seq.iter (fun existing -> lock existing.Gate (fun () -> existing.Revoked <- true))
+                |> Seq.iter (fun existing -> lock existing.Gate (fun () -> existing.Revoked <- true); lock countersGate (fun () -> evictions <- evictions + 1))
 
                 let state =
                     { ActorId = actorId

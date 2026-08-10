@@ -54,10 +54,10 @@ evidence:
     synthetic: false
     observedRun:
       source: tests/SIR.Server.Tests/TestResults/147-server.trx
-      digest: "sha256:f8ab8c05a141795350d94b4f95e464bec1c66dc000f73ccb835ac6b0d0007bf5"
+      digest: "sha256:48a8dd47c67cbf56b1ab9544c354e18072eb3c2a086ffa254e9c5c85a4124920"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 9
+      passed: 10
       failed: 0
       skipped: 0
     notes: [Release server regression suite covers admission and lifecycle behavior.]
@@ -81,10 +81,10 @@ evidence:
     synthetic: false
     observedRun:
       source: tests/SIR.Server.Tests/TestResults/147-server.trx
-      digest: "sha256:f8ab8c05a141795350d94b4f95e464bec1c66dc000f73ccb835ac6b0d0007bf5"
+      digest: "sha256:48a8dd47c67cbf56b1ab9544c354e18072eb3c2a086ffa254e9c5c85a4124920"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 9
+      passed: 10
       failed: 0
       skipped: 0
     notes: [Release server regression suite covers admission and lifecycle behavior.]
@@ -108,10 +108,10 @@ evidence:
     synthetic: false
     observedRun:
       source: tests/SIR.Server.Tests/TestResults/147-server.trx
-      digest: "sha256:f8ab8c05a141795350d94b4f95e464bec1c66dc000f73ccb835ac6b0d0007bf5"
+      digest: "sha256:48a8dd47c67cbf56b1ab9544c354e18072eb3c2a086ffa254e9c5c85a4124920"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 9
+      passed: 10
       failed: 0
       skipped: 0
     notes: [Release server regression suite covers admission and lifecycle behavior.]
@@ -135,10 +135,10 @@ evidence:
     synthetic: false
     observedRun:
       source: tests/SIR.Server.Tests/TestResults/147-server.trx
-      digest: "sha256:f8ab8c05a141795350d94b4f95e464bec1c66dc000f73ccb835ac6b0d0007bf5"
+      digest: "sha256:48a8dd47c67cbf56b1ab9544c354e18072eb3c2a086ffa254e9c5c85a4124920"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 9
+      passed: 10
       failed: 0
       skipped: 0
     notes: [Release server regression suite covers admission and lifecycle behavior.]
@@ -162,10 +162,10 @@ evidence:
     synthetic: false
     observedRun:
       source: tests/SIR.Server.Tests/TestResults/147-server.trx
-      digest: "sha256:f8ab8c05a141795350d94b4f95e464bec1c66dc000f73ccb835ac6b0d0007bf5"
+      digest: "sha256:48a8dd47c67cbf56b1ab9544c354e18072eb3c2a086ffa254e9c5c85a4124920"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 9
+      passed: 10
       failed: 0
       skipped: 0
     notes: [Release server regression suite covers admission and lifecycle behavior.]

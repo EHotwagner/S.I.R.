@@ -151,6 +151,15 @@ type LiveSessionAuthenticationTests() =
         require (LiveAuthority.bootstrap "overflow" "overflow" = Error "SIR.LIVE.BOOTSTRAP.CAPACITY_REJECTED") "global admission must reject capacity overflow"
 
     [<Fact>]
+    member _.``bootstrap rate limiting and lifecycle metrics are observable``() =
+        let clock = MutableTimeProvider(DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero))
+        LiveAuthority.configure clock (TimeSpan.FromMinutes 1.0)
+        for _ in 1 .. 8 do LiveAuthority.bootstrap "rate-player" "rate-player" |> Result.defaultWith failwith |> ignore
+        require (LiveAuthority.bootstrap "rate-player" "rate-player" = Error "SIR.LIVE.BOOTSTRAP.RATE_REJECTED") "per-principal admission floods must be rate rejected"
+        let snapshot = LiveAuthority.metrics()
+        require (snapshot.RejectedAdmissions = 1 && snapshot.Evictions = 7) "metrics must expose rejected admissions and superseded-session evictions"
+
+    [<Fact>]
     member _.``takeover rejects superseded connection and keeps deterministic work``() =
         let clock = MutableTimeProvider(DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero))
         LiveAuthority.configure clock (TimeSpan.FromMinutes 1.0)

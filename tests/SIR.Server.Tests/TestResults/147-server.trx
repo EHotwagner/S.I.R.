@@ -1,75 +1,81 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TestRun id="09d7ecf6-4b93-4224-acdf-b4a3623d8fc1" name="@60c9e64cc8e0 2026-08-11 00:30:05" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
-  <Times creation="2026-08-11T00:30:05.2272163+02:00" queuing="2026-08-11T00:30:05.2272164+02:00" start="2026-08-11T00:30:04.4533765+02:00" finish="2026-08-11T00:30:05.2314428+02:00" />
-  <TestSettings name="default" id="b4821636-d6b3-4db9-8dfd-75f1da8956e4">
-    <Deployment runDeploymentRoot="_60c9e64cc8e0_2026-08-11_00_30_05" />
+<TestRun id="6042ab5d-769c-4ddc-9176-8f5650951e42" name="@60c9e64cc8e0 2026-08-11 00:33:27" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-08-11T00:33:27.2320075+02:00" queuing="2026-08-11T00:33:27.2320075+02:00" start="2026-08-11T00:33:26.4899572+02:00" finish="2026-08-11T00:33:27.2554245+02:00" />
+  <TestSettings name="default" id="fb393abe-0067-4ae1-acb1-95039d8a886b">
+    <Deployment runDeploymentRoot="_60c9e64cc8e0_2026-08-11_00_33_27" />
   </TestSettings>
   <Results>
-    <UnitTestResult executionId="3d4a1057-acf3-46af-acb0-0cc0dbfed464" testId="ca8f4372-1632-3c49-4d63-e8521ad1ed66" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.framework diagnostics suppress rejected query credentials" computerName="60c9e64cc8e0" duration="00:00:00.1474266" startTime="2026-08-11T00:30:04.7607293+02:00" endTime="2026-08-11T00:30:04.9118408+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3d4a1057-acf3-46af-acb0-0cc0dbfed464" />
-    <UnitTestResult executionId="e3999ac4-061a-4cf6-9d3b-b1d3eafd612b" testId="e353a7da-dd6c-8e9f-80d4-fe76f65eafb0" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.bootstrap bounds actor names and global session admission" computerName="60c9e64cc8e0" duration="00:00:00.0019170" startTime="2026-08-11T00:30:05.1136749+02:00" endTime="2026-08-11T00:30:05.1151347+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e3999ac4-061a-4cf6-9d3b-b1d3eafd612b" />
-    <UnitTestResult executionId="29ebc879-9c34-4368-b3ed-ef2818b50fe1" testId="5305a7ec-baca-aaa7-160d-107e16210613" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.production rejects spoofed header and admits signed identity" computerName="60c9e64cc8e0" duration="00:00:00.2013337" startTime="2026-08-11T00:30:04.9174304+02:00" endTime="2026-08-11T00:30:05.1132219+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="29ebc879-9c34-4368-b3ed-ef2818b50fe1" />
-    <UnitTestResult executionId="ff808ba1-66e3-48e7-9250-0bc55651484b" testId="a39e13bc-e383-7706-8a25-94b466af6129" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.takeover rejects superseded connection and keeps deterministic work" computerName="60c9e64cc8e0" duration="00:00:00.0020078" startTime="2026-08-11T00:30:05.1265914+02:00" endTime="2026-08-11T00:30:05.1285691+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ff808ba1-66e3-48e7-9250-0bc55651484b" />
-    <UnitTestResult executionId="a0661d32-d95c-4ec6-947d-d97a00481b4d" testId="e6fe9cf1-af0c-218e-31e5-d371329fcd45" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.query only credentials and revoked sessions are denied" computerName="60c9e64cc8e0" duration="00:00:00.0002966" startTime="2026-08-11T00:30:05.1565204+02:00" endTime="2026-08-11T00:30:05.1567244+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a0661d32-d95c-4ec6-947d-d97a00481b4d" />
-    <UnitTestResult executionId="6c40f691-60f6-4b56-a338-2706083591a8" testId="282154bb-dfa9-0af3-2a56-88d71f13ed8b" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.injected clock expires admission" computerName="60c9e64cc8e0" duration="00:00:00.0008137" startTime="2026-08-11T00:30:05.1257930+02:00" endTime="2026-08-11T00:30:05.1265185+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6c40f691-60f6-4b56-a338-2706083591a8" />
-    <UnitTestResult executionId="d07fbe80-7169-4042-aa9c-9eab7599805e" testId="23d70a59-7169-d804-981b-a6f6a78aaf8d" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.production rejects absent bearer identity" computerName="60c9e64cc8e0" duration="00:00:00.0104996" startTime="2026-08-11T00:30:05.1152141+02:00" endTime="2026-08-11T00:30:05.1256808+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d07fbe80-7169-4042-aa9c-9eab7599805e" />
-    <UnitTestResult executionId="35ef1a87-388e-4a7a-b56c-401c682089eb" testId="f4589aac-bcc3-f6bd-2938-b6c46193a520" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.bootstrap rejects cross actor identity" computerName="60c9e64cc8e0" duration="00:00:00.0194755" startTime="2026-08-11T00:30:05.1286533+02:00" endTime="2026-08-11T00:30:05.1480905+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="35ef1a87-388e-4a7a-b56c-401c682089eb" />
-    <UnitTestResult executionId="45456bbf-101c-470f-9a22-9d729b9f4249" testId="af97fa3e-3cd5-8a58-fc28-01633b7a4ef8" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.production rejects development identity header" computerName="60c9e64cc8e0" duration="00:00:00.0082814" startTime="2026-08-11T00:30:05.1481914+02:00" endTime="2026-08-11T00:30:05.1564137+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="45456bbf-101c-470f-9a22-9d729b9f4249" />
+    <UnitTestResult executionId="25c49164-7a29-41a1-ad5b-96658dfb037c" testId="a39e13bc-e383-7706-8a25-94b466af6129" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.takeover rejects superseded connection and keeps deterministic work" computerName="60c9e64cc8e0" duration="00:00:00.0018068" startTime="2026-08-11T00:33:27.1659815+02:00" endTime="2026-08-11T00:33:27.1676991+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="25c49164-7a29-41a1-ad5b-96658dfb037c" />
+    <UnitTestResult executionId="4ad6154e-cc2b-4f8f-b701-d3da29e583e0" testId="da0ebd1a-9d30-e029-67e8-33a0c59bbf71" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.bootstrap rate limiting and lifecycle metrics are observable" computerName="60c9e64cc8e0" duration="00:00:00.0008683" startTime="2026-08-11T00:33:27.1650467+02:00" endTime="2026-08-11T00:33:27.1658835+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4ad6154e-cc2b-4f8f-b701-d3da29e583e0" />
+    <UnitTestResult executionId="4d88e991-7170-4b22-a521-d828e8181c37" testId="5305a7ec-baca-aaa7-160d-107e16210613" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.production rejects spoofed header and admits signed identity" computerName="60c9e64cc8e0" duration="00:00:00.2008831" startTime="2026-08-11T00:33:26.9553026+02:00" endTime="2026-08-11T00:33:27.1509488+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4d88e991-7170-4b22-a521-d828e8181c37" />
+    <UnitTestResult executionId="ab10d0d0-a971-4c38-ae8e-a294044775ce" testId="282154bb-dfa9-0af3-2a56-88d71f13ed8b" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.injected clock expires admission" computerName="60c9e64cc8e0" duration="00:00:00.0008235" startTime="2026-08-11T00:33:27.1642644+02:00" endTime="2026-08-11T00:33:27.1649636+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ab10d0d0-a971-4c38-ae8e-a294044775ce" />
+    <UnitTestResult executionId="7c7118fa-46cf-487d-80b4-297cc3218007" testId="23d70a59-7169-d804-981b-a6f6a78aaf8d" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.production rejects absent bearer identity" computerName="60c9e64cc8e0" duration="00:00:00.0112279" startTime="2026-08-11T00:33:27.1529295+02:00" endTime="2026-08-11T00:33:27.1641135+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7c7118fa-46cf-487d-80b4-297cc3218007" />
+    <UnitTestResult executionId="b7bfcec4-36ca-43a5-a27a-ff749bfb7f90" testId="af97fa3e-3cd5-8a58-fc28-01633b7a4ef8" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.production rejects development identity header" computerName="60c9e64cc8e0" duration="00:00:00.0091241" startTime="2026-08-11T00:33:27.1877366+02:00" endTime="2026-08-11T00:33:27.1967767+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b7bfcec4-36ca-43a5-a27a-ff749bfb7f90" />
+    <UnitTestResult executionId="e8e22465-d71f-4da4-98bb-2df17d4d384c" testId="e353a7da-dd6c-8e9f-80d4-fe76f65eafb0" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.bootstrap bounds actor names and global session admission" computerName="60c9e64cc8e0" duration="00:00:00.0019170" startTime="2026-08-11T00:33:27.1514449+02:00" endTime="2026-08-11T00:33:27.1528447+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e8e22465-d71f-4da4-98bb-2df17d4d384c" />
+    <UnitTestResult executionId="caeac22a-b827-49a7-97ee-f0a568ec2b27" testId="ca8f4372-1632-3c49-4d63-e8521ad1ed66" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.framework diagnostics suppress rejected query credentials" computerName="60c9e64cc8e0" duration="00:00:00.1512474" startTime="2026-08-11T00:33:26.7947444+02:00" endTime="2026-08-11T00:33:26.9499814+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="caeac22a-b827-49a7-97ee-f0a568ec2b27" />
+    <UnitTestResult executionId="7d0b6b16-4b5c-4ab2-89d9-ff32d7d82a4d" testId="f4589aac-bcc3-f6bd-2938-b6c46193a520" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.bootstrap rejects cross actor identity" computerName="60c9e64cc8e0" duration="00:00:00.0198594" startTime="2026-08-11T00:33:27.1677739+02:00" endTime="2026-08-11T00:33:27.1876160+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7d0b6b16-4b5c-4ab2-89d9-ff32d7d82a4d" />
+    <UnitTestResult executionId="36b49972-5aa6-41c9-ab94-72e32eb6bc08" testId="e6fe9cf1-af0c-218e-31e5-d371329fcd45" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.query only credentials and revoked sessions are denied" computerName="60c9e64cc8e0" duration="00:00:00.0002279" startTime="2026-08-11T00:33:27.2118672+02:00" endTime="2026-08-11T00:33:27.2119160+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="36b49972-5aa6-41c9-ab94-72e32eb6bc08" />
   </Results>
   <TestDefinitions>
     <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.takeover rejects superseded connection and keeps deterministic work" storage="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/sir.server.tests/bin/release/net10.0/sir.server.tests.dll" id="a39e13bc-e383-7706-8a25-94b466af6129">
-      <Execution id="ff808ba1-66e3-48e7-9250-0bc55651484b" />
+      <Execution id="25c49164-7a29-41a1-ad5b-96658dfb037c" />
       <TestMethod codeBase="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/SIR.Server.Tests/bin/Release/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="takeover rejects superseded connection and keeps deterministic work" />
     </UnitTest>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.bootstrap rate limiting and lifecycle metrics are observable" storage="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/sir.server.tests/bin/release/net10.0/sir.server.tests.dll" id="da0ebd1a-9d30-e029-67e8-33a0c59bbf71">
+      <Execution id="4ad6154e-cc2b-4f8f-b701-d3da29e583e0" />
+      <TestMethod codeBase="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/SIR.Server.Tests/bin/Release/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="bootstrap rate limiting and lifecycle metrics are observable" />
+    </UnitTest>
     <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.production rejects absent bearer identity" storage="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/sir.server.tests/bin/release/net10.0/sir.server.tests.dll" id="23d70a59-7169-d804-981b-a6f6a78aaf8d">
-      <Execution id="d07fbe80-7169-4042-aa9c-9eab7599805e" />
+      <Execution id="7c7118fa-46cf-487d-80b4-297cc3218007" />
       <TestMethod codeBase="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/SIR.Server.Tests/bin/Release/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="production rejects absent bearer identity" />
     </UnitTest>
     <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.bootstrap bounds actor names and global session admission" storage="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/sir.server.tests/bin/release/net10.0/sir.server.tests.dll" id="e353a7da-dd6c-8e9f-80d4-fe76f65eafb0">
-      <Execution id="e3999ac4-061a-4cf6-9d3b-b1d3eafd612b" />
+      <Execution id="e8e22465-d71f-4da4-98bb-2df17d4d384c" />
       <TestMethod codeBase="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/SIR.Server.Tests/bin/Release/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="bootstrap bounds actor names and global session admission" />
     </UnitTest>
     <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.query only credentials and revoked sessions are denied" storage="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/sir.server.tests/bin/release/net10.0/sir.server.tests.dll" id="e6fe9cf1-af0c-218e-31e5-d371329fcd45">
-      <Execution id="a0661d32-d95c-4ec6-947d-d97a00481b4d" />
+      <Execution id="36b49972-5aa6-41c9-ab94-72e32eb6bc08" />
       <TestMethod codeBase="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/SIR.Server.Tests/bin/Release/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="query only credentials and revoked sessions are denied" />
     </UnitTest>
     <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.bootstrap rejects cross actor identity" storage="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/sir.server.tests/bin/release/net10.0/sir.server.tests.dll" id="f4589aac-bcc3-f6bd-2938-b6c46193a520">
-      <Execution id="35ef1a87-388e-4a7a-b56c-401c682089eb" />
+      <Execution id="7d0b6b16-4b5c-4ab2-89d9-ff32d7d82a4d" />
       <TestMethod codeBase="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/SIR.Server.Tests/bin/Release/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="bootstrap rejects cross actor identity" />
     </UnitTest>
     <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.production rejects development identity header" storage="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/sir.server.tests/bin/release/net10.0/sir.server.tests.dll" id="af97fa3e-3cd5-8a58-fc28-01633b7a4ef8">
-      <Execution id="45456bbf-101c-470f-9a22-9d729b9f4249" />
+      <Execution id="b7bfcec4-36ca-43a5-a27a-ff749bfb7f90" />
       <TestMethod codeBase="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/SIR.Server.Tests/bin/Release/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="production rejects development identity header" />
     </UnitTest>
     <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.framework diagnostics suppress rejected query credentials" storage="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/sir.server.tests/bin/release/net10.0/sir.server.tests.dll" id="ca8f4372-1632-3c49-4d63-e8521ad1ed66">
-      <Execution id="3d4a1057-acf3-46af-acb0-0cc0dbfed464" />
+      <Execution id="caeac22a-b827-49a7-97ee-f0a568ec2b27" />
       <TestMethod codeBase="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/SIR.Server.Tests/bin/Release/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="framework diagnostics suppress rejected query credentials" />
     </UnitTest>
     <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.production rejects spoofed header and admits signed identity" storage="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/sir.server.tests/bin/release/net10.0/sir.server.tests.dll" id="5305a7ec-baca-aaa7-160d-107e16210613">
-      <Execution id="29ebc879-9c34-4368-b3ed-ef2818b50fe1" />
+      <Execution id="4d88e991-7170-4b22-a521-d828e8181c37" />
       <TestMethod codeBase="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/SIR.Server.Tests/bin/Release/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="production rejects spoofed header and admits signed identity" />
     </UnitTest>
     <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.injected clock expires admission" storage="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/sir.server.tests/bin/release/net10.0/sir.server.tests.dll" id="282154bb-dfa9-0af3-2a56-88d71f13ed8b">
-      <Execution id="6c40f691-60f6-4b56-a338-2706083591a8" />
+      <Execution id="ab10d0d0-a971-4c38-ae8e-a294044775ce" />
       <TestMethod codeBase="/home/developer/worktrees/item-147-live-session-resource-lifecycle/tests/SIR.Server.Tests/bin/Release/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="injected clock expires admission" />
     </UnitTest>
   </TestDefinitions>
   <TestEntries>
-    <TestEntry testId="ca8f4372-1632-3c49-4d63-e8521ad1ed66" executionId="3d4a1057-acf3-46af-acb0-0cc0dbfed464" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
-    <TestEntry testId="e353a7da-dd6c-8e9f-80d4-fe76f65eafb0" executionId="e3999ac4-061a-4cf6-9d3b-b1d3eafd612b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
-    <TestEntry testId="5305a7ec-baca-aaa7-160d-107e16210613" executionId="29ebc879-9c34-4368-b3ed-ef2818b50fe1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
-    <TestEntry testId="a39e13bc-e383-7706-8a25-94b466af6129" executionId="ff808ba1-66e3-48e7-9250-0bc55651484b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
-    <TestEntry testId="e6fe9cf1-af0c-218e-31e5-d371329fcd45" executionId="a0661d32-d95c-4ec6-947d-d97a00481b4d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
-    <TestEntry testId="282154bb-dfa9-0af3-2a56-88d71f13ed8b" executionId="6c40f691-60f6-4b56-a338-2706083591a8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
-    <TestEntry testId="23d70a59-7169-d804-981b-a6f6a78aaf8d" executionId="d07fbe80-7169-4042-aa9c-9eab7599805e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
-    <TestEntry testId="f4589aac-bcc3-f6bd-2938-b6c46193a520" executionId="35ef1a87-388e-4a7a-b56c-401c682089eb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
-    <TestEntry testId="af97fa3e-3cd5-8a58-fc28-01633b7a4ef8" executionId="45456bbf-101c-470f-9a22-9d729b9f4249" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a39e13bc-e383-7706-8a25-94b466af6129" executionId="25c49164-7a29-41a1-ad5b-96658dfb037c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="da0ebd1a-9d30-e029-67e8-33a0c59bbf71" executionId="4ad6154e-cc2b-4f8f-b701-d3da29e583e0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5305a7ec-baca-aaa7-160d-107e16210613" executionId="4d88e991-7170-4b22-a521-d828e8181c37" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="282154bb-dfa9-0af3-2a56-88d71f13ed8b" executionId="ab10d0d0-a971-4c38-ae8e-a294044775ce" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="23d70a59-7169-d804-981b-a6f6a78aaf8d" executionId="7c7118fa-46cf-487d-80b4-297cc3218007" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="af97fa3e-3cd5-8a58-fc28-01633b7a4ef8" executionId="b7bfcec4-36ca-43a5-a27a-ff749bfb7f90" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e353a7da-dd6c-8e9f-80d4-fe76f65eafb0" executionId="e8e22465-d71f-4da4-98bb-2df17d4d384c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ca8f4372-1632-3c49-4d63-e8521ad1ed66" executionId="caeac22a-b827-49a7-97ee-f0a568ec2b27" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f4589aac-bcc3-f6bd-2938-b6c46193a520" executionId="7d0b6b16-4b5c-4ab2-89d9-ff32d7d82a4d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e6fe9cf1-af0c-218e-31e5-d371329fcd45" executionId="36b49972-5aa6-41c9-ab94-72e32eb6bc08" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
   </TestEntries>
   <TestLists>
     <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
     <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
   </TestLists>
   <ResultSummary outcome="Completed">
-    <Counters total="9" executed="9" passed="9" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Counters total="10" executed="10" passed="10" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
     <Output>
       <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.10)
 [xUnit.net 00:00:00.04]   Discovering: SIR.Server.Tests
@@ -160,7 +166,7 @@ info: Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler[12]
       AuthenticationScheme: Bearer was challenged.
 info: Microsoft.Hosting.Lifetime[0]
       Application is shutting down...
-[xUnit.net 00:00:00.48]   Finished:    SIR.Server.Tests
+[xUnit.net 00:00:00.50]   Finished:    SIR.Server.Tests
 </StdOut>
     </Output>
   </ResultSummary>
