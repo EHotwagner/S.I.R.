@@ -9,18 +9,28 @@ type GameHub() =
 
     let identity (hub: GameHub) =
         match hub.Context.GetHttpContext() with
-        | null -> "", ""
-        | http -> string http.Request.Query["sessionId"], string http.Request.Query["actorId"]
+        | null -> ""
+        | http ->
+            let authorization = string http.Request.Headers.Authorization
+            let token =
+                if authorization.StartsWith("Bearer ", System.StringComparison.OrdinalIgnoreCase) then authorization.Substring("Bearer ".Length)
+                else string http.Request.Query["access_token"]
+            token
+
+    let binding (hub: GameHub) =
+        match hub.Context.Items.TryGetValue "sessionId", hub.Context.Items.TryGetValue "actorId" with
+        | (true, sessionId), (true, actorId) -> string sessionId, string actorId
+        | _ -> "", ""
 
     override this.OnConnectedAsync() : Task =
         task {
-            let sessionId, actorId = identity this
+            let accessToken = identity this
 
-            match LiveAuthority.trySnapshot sessionId actorId with
+            match LiveAuthority.authorize accessToken this.Context.ConnectionId with
             | None ->
                 this.Context.Abort()
                 return raise (HubException "unknown S.I.R. live session")
-            | Some snapshot ->
+            | Some(sessionId, actorId, snapshot) ->
                 this.Context.Items["sessionId"] <- sessionId
                 this.Context.Items["actorId"] <- actorId
                 do! this.Groups.AddToGroupAsync(this.Context.ConnectionId, sessionId)
@@ -33,14 +43,15 @@ type GameHub() =
 
     member this.SendMessage(json: string) : Task =
         task {
-            let sessionId, actorId = identity this
+            let sessionId, actorId = binding this
+            let accessToken = identity this
 
             match RealtimeV1.messageFromJson json with
             | Error error -> raise (HubException($"rejected realtime message: {error}"))
             | Ok(RealtimeV1.AdvanceInputMessage input) when input.Version <> 1 ->
                 raise (HubException "unsupported realtime version")
             | Ok(RealtimeV1.AdvanceInputMessage input) ->
-                match LiveAuthority.advance sessionId actorId input.Sequence with
+                match LiveAuthority.advance sessionId actorId accessToken this.Context.ConnectionId input.Sequence with
                 | None -> raise (HubException "stale input or unknown S.I.R. live session")
                 | Some snapshot ->
                     do!
@@ -52,9 +63,7 @@ type GameHub() =
                 raise (HubException "unsupported realtime version")
             | Ok(RealtimeV1.ResyncRequestMessage request) ->
                 match
-                    LiveAuthority.reconnect
-                        sessionId
-                        actorId
+                    LiveAuthority.reconnect sessionId actorId accessToken this.Context.ConnectionId
                         request.LastServerSequence
                         request.LastProjectionRevision
                 with

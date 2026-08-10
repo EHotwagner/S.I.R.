@@ -34,6 +34,7 @@ module BootstrapV1 =
         { Version: int
           SessionId: string
           ActorId: string
+          AccessToken: string
           MatchLock: string
           Snapshot: Snapshot }
 
@@ -87,6 +88,7 @@ module BootstrapV1 =
             [ "version", Encode.int value.Version
               "sessionId", Encode.string value.SessionId
               "actorId", Encode.string value.ActorId
+              "accessToken", Encode.string value.AccessToken
               "matchLock", Encode.string value.MatchLock
               "snapshot", encodeSnapshot value.Snapshot ]
         |> Encode.toString 0
@@ -96,6 +98,7 @@ module BootstrapV1 =
             { Version = get.Required.Field "version" Decode.int
               SessionId = get.Required.Field "sessionId" Decode.string
               ActorId = get.Required.Field "actorId" Decode.string
+              AccessToken = get.Required.Field "accessToken" Decode.string
               MatchLock = get.Required.Field "matchLock" Decode.string
               Snapshot = get.Required.Field "snapshot" decodeSnapshot })
 

@@ -73,7 +73,7 @@ module LiveSession =
             (fun _ -> ())
 
     let private connect (response: BootstrapV1.Response) =
-        let active = SignalR.build $"/hub/game?sessionId={response.SessionId}&actorId={response.ActorId}"
+        let active = SignalR.build "/hub/game" response.AccessToken
         active.on("Message", receive)
         active.onreconnected(fun _ -> sendResync active)
         active.onclose(fun _ -> status <- "disconnected"; render ())

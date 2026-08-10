@@ -18,8 +18,12 @@ module SignalR =
 
     [<Import("HubConnectionBuilder", "@microsoft/signalr")>]
     type HubConnectionBuilder() =
-        member _.withUrl(url: string) : HubConnectionBuilder = jsNative
+        member _.withUrl(url: string, options: obj) : HubConnectionBuilder = jsNative
         member _.withAutomaticReconnect() : HubConnectionBuilder = jsNative
         member _.build() : HubConnection = jsNative
 
-    let build url = HubConnectionBuilder().withUrl(url).withAutomaticReconnect().build()
+    let build url accessToken =
+        HubConnectionBuilder()
+            .withUrl(url, createObj [ "accessTokenFactory" ==> (fun () -> accessToken) ])
+            .withAutomaticReconnect()
+            .build()
