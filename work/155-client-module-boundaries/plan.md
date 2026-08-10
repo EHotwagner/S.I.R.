@@ -16,9 +16,9 @@ publicOrToolFacingImpact: true
 Prose status: planned
 
 ## Source Snapshot
-- spec: work/155-client-module-boundaries/spec.md sha256:4e3231ed38e1269b7742d7b0ce3291f4c14874c47ab016b672155c72f2eea689 schemaVersion:1
+- spec: work/155-client-module-boundaries/spec.md sha256:ce4a19d0cef05e307efadd2a10f12d10b662998eaf4af5a5fa3fcb20402c1048 schemaVersion:1
 - clarifications: work/155-client-module-boundaries/clarifications.md sha256:be3e529b1a41224909daff2f533a46085e658991b59fdf319c949c4effb26e2b schemaVersion:1
-- checklist: work/155-client-module-boundaries/checklist.md sha256:51f44d28e7e88f1605bbb1bff01c261ffde07c1d95d6678bb595acbf87e4af94 schemaVersion:1
+- checklist: work/155-client-module-boundaries/checklist.md sha256:6199b419ca25a0ed446bfa2007c4790d21ed102d2378ca0c0e29195c7748124a schemaVersion:1
 
 ## Plan Scope
 - Retain `App.fs` as the only root Elmish composition/program owner while moving public model
@@ -36,9 +36,10 @@ Prose status: planned
 - PD-002 [AC-002] [FR-002] complete: Compile MapEditor types, history, revision, and validation
   before the remaining update/projection implementation, documenting `MapEditorInterchange` as
   the existing serialization boundary.
-- PD-003 [AC-003] [FR-003] complete: Keep JUnit/report ownership in a dedicated test module and
-  make the production qualification script inspect App and MapEditor source ceilings; prove each
-  check red by mutating its subject, then restore and run the real test/player routes.
+- PD-003 [AC-003] [FR-003] complete: Keep JUnit/report and dense performance qualification in
+  dedicated precompiled test modules with narrow shared-fixture arguments; inspect App, MapEditor,
+  and Program source ceilings in production qualification. Prove each check red by mutating its
+  real subject, then restore and run the real test/player routes.
 
 ## Contract Impact
 - PC-001 [PD-001] F# module contract: App boundary modules use explicit module names and compile
@@ -54,8 +55,8 @@ Prose status: planned
   generated report to SDD evidence.
 - VO-002 [PD-002] [PC-002] semanticTest: Run the map-editor qualification and deterministic
   interchange/client tests after compilation-order changes.
-- VO-003 [PD-003] semanticTest: Mutate App and MapEditor source subjects past their unchanged
-  ceilings and confirm qualification fails, then restore the exact production source.
+- VO-003 [PD-003] semanticTest: Mutate App, MapEditor, and Program source subjects past their
+  unchanged ceilings and confirm qualification fails, then restore the exact production source.
 
 ## Performance Intent
 No performance intent is declared for this work item.

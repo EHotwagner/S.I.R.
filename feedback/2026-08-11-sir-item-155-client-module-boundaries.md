@@ -11,13 +11,13 @@ commit: pending-pr-head
 ## §1 Provenance and confidence
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 6
+- **material events:** 8
 - **zero-event reason:** n/a
-- **checkpoint:** `feedback/checkpoints/item-155-client-module-boundaries.jsonl` (six validated events)
+- **checkpoint:** `feedback/checkpoints/item-155-client-module-boundaries.jsonl` (eight validated events)
 - **confidence limits:** The executable emits one suite-level JUnit testcase; individual legacy assertions remain grouped under the production qualification run.
 
 ## §2 What worked
-The existing deterministic client executable already exercised the production qualification route and became valid SDD evidence once it emitted a stable JUnit receipt. The existing 200-unit route also supplied the retained performance target without inventing a benchmark. Compilation-ordered App and MapEditor ownership modules made the repair reviewable without replacing the root Elmish program.
+The existing deterministic client executable already exercised the production qualification route and became valid SDD evidence once it emitted a stable JUnit receipt. The existing 200-unit route also supplied the retained performance target without inventing a benchmark. Compilation-ordered App, MapEditor, and owned performance-suite modules make the repair reviewable without replacing the root Elmish program.
 
 ## §3 What did not
 The executable had no machine-readable test result before this item, so SDD correctly refused authored pass claims without an observed-run receipt. The initial narrow seam was insufficient for the requested module decomposition; the repair moved real shell, browser, command, scene, panel, and editor-domain ownership and added subject-based anti-regrowth checks.
@@ -65,7 +65,7 @@ Any new executable test harness should expose a deterministic JUnit or TRX outpu
 | sdd-authoring | exercised | Charter through ship completed. |
 | implementation-apis | exercised | App shell/mode/scene/command/panel/browser and MapEditor type/history/revision/validation ownership extracted. |
 | dependencies-build | exercised | Web Release build passed. |
-| testing | exercised | Production executable emits deterministic JUnit, malformed path fails before qualification, and App/MapEditor subject-growth mutations fail unchanged ceilings. |
+| testing | exercised | Production executable emits deterministic JUnit, owned dense performance qualification, malformed path fails before qualification, and App/MapEditor/Program subject-growth mutations fail unchanged ceilings. |
 | evidence | exercised | JUnit observed-run receipt bound to five obligations. |
 | runtime-playtest | not-exercised | No browser-route change. |
 | performance | exercised | Existing 200-unit production qualification retained its budget. |

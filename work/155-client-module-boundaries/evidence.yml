@@ -11,11 +11,11 @@ sourceAnalysis: readiness/155-client-module-boundaries/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/155-client-module-boundaries/analysis.json
-    digest: 26c4c40e0d0327e21b6d39118725a1f3297df04b1c405f476355d05260c7665d
+    digest: 2cfd1ce70c7f676af22f4e5a301ff5d30a6e9d3678cd26e91be183d380f79f14
     schemaVersion: 1
   - label: checklist
     path: work/155-client-module-boundaries/checklist.md
-    digest: 51f44d28e7e88f1605bbb1bff01c261ffde07c1d95d6678bb595acbf87e4af94
+    digest: 6199b419ca25a0ed446bfa2007c4790d21ed102d2378ca0c0e29195c7748124a
     schemaVersion: 1
   - label: clarifications
     path: work/155-client-module-boundaries/clarifications.md
@@ -23,15 +23,15 @@ sourceSnapshots:
     schemaVersion: 1
   - label: plan
     path: work/155-client-module-boundaries/plan.md
-    digest: 20c7cc71c19f43ba350230227b8b92b2eed0233bfe7d3fdce86a80f3f8b94dc0
+    digest: 6ec1c36b23b3dff149d02436eb5fadc982c465ec99cbaa391dfa589e4e66e451
     schemaVersion: 1
   - label: spec
     path: work/155-client-module-boundaries/spec.md
-    digest: 4e3231ed38e1269b7742d7b0ce3291f4c14874c47ab016b672155c72f2eea689
+    digest: ce4a19d0cef05e307efadd2a10f12d10b662998eaf4af5a5fa3fcb20402c1048
     schemaVersion: 1
   - label: tasks
     path: work/155-client-module-boundaries/tasks.yml
-    digest: 02d700e9d6cea016ba6a2861ee86a478a83adb277c2d0838c3f9f1961345fb28
+    digest: 63604e824077f4815fc63a9b68443b8e04980bdf146692844e6b9b432e58e53a
     schemaVersion: 1
 evidence:
   - id: EV001

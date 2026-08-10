@@ -53,7 +53,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "51f44d28e7e88f1605bbb1bff01c261ffde07c1d95d6678bb595acbf87e4af94"
+        "value": "6199b419ca25a0ed446bfa2007c4790d21ed102d2378ca0c0e29195c7748124a"
       }
     },
     {
@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "693b8fa1605cef7e7a4b68d891cb21efcc77d84f54b1e43428e68e92bc212ef0"
+        "value": "4cef64081a052cbbf297a60452fd3511ea930ad77f9363a6438418fd744620a1"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "20c7cc71c19f43ba350230227b8b92b2eed0233bfe7d3fdce86a80f3f8b94dc0"
+        "value": "6ec1c36b23b3dff149d02436eb5fadc982c465ec99cbaa391dfa589e4e66e451"
       }
     },
     {
@@ -101,7 +101,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "4e3231ed38e1269b7742d7b0ce3291f4c14874c47ab016b672155c72f2eea689"
+        "value": "ce4a19d0cef05e307efadd2a10f12d10b662998eaf4af5a5fa3fcb20402c1048"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "02d700e9d6cea016ba6a2861ee86a478a83adb277c2d0838c3f9f1961345fb28"
+        "value": "63604e824077f4815fc63a9b68443b8e04980bdf146692844e6b9b432e58e53a"
       }
     }
   ],
@@ -170,8 +170,8 @@
     },
     {
       "id": "FR-003",
-      "title": "Client qualification MUST expose a deterministic JUnit report mode that rejects a missing/blank path before running qualifications, split report-contract ownership from the broad test executable, and enforce App/MapEditor anti-regrowth ceilings by inspecting production subjects. (covers AC-003)",
-      "text": "Client qualification MUST expose a deterministic JUnit report mode that rejects a missing/blank path before running qualifications, split report-contract ownership from the broad test executable, and enforce App/MapEditor anti-regrowth ceilings by inspecting production subjects. (covers AC-003)",
+      "title": "Client qualification MUST expose a deterministic JUnit report mode that rejects a missing/blank path before running qualifications, split report and dense performance qualification ownership from the broad test executable while retaining narrow shared fixtures, and enforce App/MapEditor/test-composition anti-regrowth ceilings by inspecting real subjects. (covers AC-003)",
+      "text": "Client qualification MUST expose a deterministic JUnit report mode that rejects a missing/blank path before running qualifications, split report and dense performance qualification ownership from the broad test executable while retaining narrow shared fixtures, and enforce App/MapEditor/test-composition anti-regrowth ceilings by inspecting real subjects. (covers AC-003)",
       "acceptanceCriteria": [
         "AC-003"
       ],
@@ -811,7 +811,7 @@
           "path": "work/155-client-module-boundaries/checklist.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "51f44d28e7e88f1605bbb1bff01c261ffde07c1d95d6678bb595acbf87e4af94"
+            "value": "6199b419ca25a0ed446bfa2007c4790d21ed102d2378ca0c0e29195c7748124a"
           },
           "schemaVersion": 1
         },
@@ -827,7 +827,7 @@
           "path": "work/155-client-module-boundaries/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "693b8fa1605cef7e7a4b68d891cb21efcc77d84f54b1e43428e68e92bc212ef0"
+            "value": "4cef64081a052cbbf297a60452fd3511ea930ad77f9363a6438418fd744620a1"
           },
           "schemaVersion": 1
         },
@@ -835,7 +835,7 @@
           "path": "work/155-client-module-boundaries/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "20c7cc71c19f43ba350230227b8b92b2eed0233bfe7d3fdce86a80f3f8b94dc0"
+            "value": "6ec1c36b23b3dff149d02436eb5fadc982c465ec99cbaa391dfa589e4e66e451"
           },
           "schemaVersion": 1
         },
@@ -843,7 +843,7 @@
           "path": "work/155-client-module-boundaries/spec.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "4e3231ed38e1269b7742d7b0ce3291f4c14874c47ab016b672155c72f2eea689"
+            "value": "ce4a19d0cef05e307efadd2a10f12d10b662998eaf4af5a5fa3fcb20402c1048"
           },
           "schemaVersion": 1
         },
@@ -851,14 +851,14 @@
           "path": "work/155-client-module-boundaries/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "02d700e9d6cea016ba6a2861ee86a478a83adb277c2d0838c3f9f1961345fb28"
+            "value": "63604e824077f4815fc63a9b68443b8e04980bdf146692844e6b9b432e58e53a"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "c24aea56c7c9315e5ccaab17e9ade44dac08c9b4da2bb73d6fb78467ecaa8432"
+        "value": "4087270db250d03a46915415bd05f28b3b71f664d2ff830a5701c408ac30603f"
       },
       "currency": "current"
     }

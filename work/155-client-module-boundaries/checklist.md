@@ -21,7 +21,7 @@ Prose status: checklistReady
 - work/155-client-module-boundaries/clarifications.md
 
 ## Source Snapshot
-- spec: work/155-client-module-boundaries/spec.md sha256:4e3231ed38e1269b7742d7b0ce3291f4c14874c47ab016b672155c72f2eea689 schemaVersion:1
+- spec: work/155-client-module-boundaries/spec.md sha256:ce4a19d0cef05e307efadd2a10f12d10b662998eaf4af5a5fa3fcb20402c1048 schemaVersion:1
 - clarifications: work/155-client-module-boundaries/clarifications.md sha256:be3e529b1a41224909daff2f533a46085e658991b59fdf319c949c4effb26e2b schemaVersion:1
 
 ## Checklist Items

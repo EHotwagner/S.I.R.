@@ -17,6 +17,10 @@ const styles = await readFile(
 );
 const appSource = await readFile(resolve("src/SIR.Client.Web/App.fs"), "utf8");
 const mapEditorSource = await readFile(resolve("src/SIR.Client/MapEditor.fs"), "utf8");
+const testCompositionSource = await readFile(
+  resolve("tests/SIR.Client.Tests/Program.fs"),
+  "utf8",
+);
 const window = new Window({ url: "https://sir.invalid/qualification/" });
 window.document.body.innerHTML = '<div id="sir-replay-app"></div>';
 class QualificationWorker {
@@ -52,6 +56,10 @@ require(
 require(
   mapEditorSource.split("\n").length <= 4500,
   "MapEditor domain implementation exceeded its 4,500-line ownership ceiling; extract validation, history, revision, or projection logic",
+);
+require(
+  testCompositionSource.split("\n").length <= 4100,
+  "Client test composition exceeded its 4,100-line ownership ceiling; extract an owned qualification suite instead of regrowing Program.fs",
 );
 const buttonByText = (text, root = window.document) =>
   [...root.querySelectorAll("button")].find(

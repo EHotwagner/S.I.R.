@@ -13,7 +13,7 @@ work:
 sources:
   - label: spec
     path: work/155-client-module-boundaries/spec.md
-    digest: 4e3231ed38e1269b7742d7b0ce3291f4c14874c47ab016b672155c72f2eea689
+    digest: ce4a19d0cef05e307efadd2a10f12d10b662998eaf4af5a5fa3fcb20402c1048
     schemaVersion: 1
   - label: clarifications
     path: work/155-client-module-boundaries/clarifications.md
@@ -21,11 +21,11 @@ sources:
     schemaVersion: 1
   - label: checklist
     path: work/155-client-module-boundaries/checklist.md
-    digest: 51f44d28e7e88f1605bbb1bff01c261ffde07c1d95d6678bb595acbf87e4af94
+    digest: 6199b419ca25a0ed446bfa2007c4790d21ed102d2378ca0c0e29195c7748124a
     schemaVersion: 1
   - label: plan
     path: work/155-client-module-boundaries/plan.md
-    digest: 20c7cc71c19f43ba350230227b8b92b2eed0233bfe7d3fdce86a80f3f8b94dc0
+    digest: 6ec1c36b23b3dff149d02436eb5fadc982c465ec99cbaa391dfa589e4e66e451
     schemaVersion: 1
 tasks:
   - id: T001

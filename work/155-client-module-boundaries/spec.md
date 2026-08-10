@@ -33,7 +33,7 @@ Client changes can be made across explicit application, mode, browser, editor-do
 ## Functional Requirements
 - FR-001: The client MUST retain one root Elmish model/program while App delegates shell state, per-mode adaptation, shared scene commands, command registry, review panels, and browser file/persistence/worker/live effects to explicit compilation-ordered modules. (covers AC-001)
 - FR-002: MapEditor MUST separate public types, history/revision and validation ownership while preserving MapEditorInterchange serialization and deterministic projection/update behavior. (covers AC-002)
-- FR-003: Client qualification MUST expose a deterministic JUnit report mode that rejects a missing/blank path before running qualifications, split report-contract ownership from the broad test executable, and enforce App/MapEditor anti-regrowth ceilings by inspecting production subjects. (covers AC-003)
+- FR-003: Client qualification MUST expose a deterministic JUnit report mode that rejects a missing/blank path before running qualifications, split report and dense performance qualification ownership from the broad test executable while retaining narrow shared fixtures, and enforce App/MapEditor/test-composition anti-regrowth ceilings by inspecting real subjects. (covers AC-003)
 
 ## Ambiguities
 No material ambiguities recorded.
