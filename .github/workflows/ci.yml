@@ -26,8 +26,9 @@ jobs:
       - run: dotnet restore SIR.slnx --locked-mode
       - run: npm run verify:scaffold
       - run: dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release --no-restore -o artifacts/publish
-      - run: npx playwright install --with-deps --only-shell chromium
       - run: npm run test:browser
+        env:
+          PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium
       - run: dotnet fsgg-sdd evidence --work 138-sir-fable-game-scaffold --sync-observed-run artifacts/test-results/browser.junit.xml --root . --text
       - run: dotnet fsgg-sdd verify --work 138-sir-fable-game-scaffold --root . --text
       - run: dotnet fsgg-sdd doctor --root . --text
