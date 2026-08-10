@@ -25,9 +25,11 @@ if (invalid.length > 0) {
 }
 
 let audit;
+let auditCommandFailed = false;
 try {
   audit = JSON.parse(execFileSync("npm", ["audit", "--json"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }));
 } catch (error) {
+  auditCommandFailed = true;
   try {
     audit = JSON.parse(error.stdout);
   } catch {
@@ -36,8 +38,29 @@ try {
   }
 }
 
+const isObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
+const vulnerabilityCounts = audit?.metadata?.vulnerabilities;
+const validAuditReport =
+  isObject(audit) &&
+  Number.isInteger(audit.auditReportVersion) && audit.auditReportVersion > 0 &&
+  isObject(audit.vulnerabilities) &&
+  isObject(audit.metadata) &&
+  isObject(vulnerabilityCounts) &&
+  ["high", "critical"].every((severity) => Number.isInteger(vulnerabilityCounts[severity]) && vulnerabilityCounts[severity] >= 0) &&
+  !("error" in audit);
+
+if (!validAuditReport) {
+  console.error("dependency-audit policy received an invalid npm audit report");
+  process.exit(2);
+}
+
+if (auditCommandFailed && Object.keys(audit.vulnerabilities).length === 0) {
+  console.error("dependency-audit policy received a nonzero npm audit result without actionable advisories");
+  process.exit(2);
+}
+
 const allowed = new Set(exceptions.map(({ id }) => id));
-const actionable = Object.values(audit.vulnerabilities ?? {}).filter((vulnerability) =>
+const actionable = Object.values(audit.vulnerabilities).filter((vulnerability) =>
   ["high", "critical"].includes(vulnerability.severity) && !allowed.has(vulnerability.name)
 );
 

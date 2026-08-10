@@ -23,6 +23,7 @@ jobs:
           cache: npm
       - run: dotnet tool restore
       - run: npm ci
+      - run: node .github/scripts/test-npm-audit.mjs
       - run: node .github/scripts/check-npm-audit.mjs
       - run: ./scripts/test-conformance.sh
       - run: dotnet restore SIR.slnx --locked-mode
