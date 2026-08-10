@@ -491,7 +491,7 @@ let private tacticalCommandAvailable model (command: TacticalCommandDefinition) 
             match model.Workspace with
             | ReplayWorkspace
             | SimulatorWorkspace -> transportReady
-            | _ -> true
+            | _ -> false
         | "timeline.step-back"
         | "timeline.home" -> currentTick > 0L
         | "timeline.step-forward"
@@ -5773,6 +5773,17 @@ let private tacticalModalityControls (workspace: WorkspaceMode) dispatch =
 
 let private tacticalTimeline model dispatch =
     let state = model.Tactical
+    let playUnavailableReason =
+        match model.Workspace with
+        | EditorWorkspace ->
+            Some "Create a simulator handoff from the Editor, then switch to Simulate to run it."
+        | PlanningWorkspace ->
+            Some "Create a simulator handoff from the Editor to run the authored plan."
+        | SimulatorWorkspace when model.Simulator.IsNone ->
+            Some "Create an immutable simulator handoff from the Editor before starting simulation."
+        | ReplayWorkspace when model.Shell.Playback.FinalTick <= 0 ->
+            Some "Load a replay package before starting playback."
+        | _ -> None
     let available commandId =
         activeTacticalRegistry model
         |> List.exists (fun command ->
@@ -5833,6 +5844,16 @@ let private tacticalTimeline model dispatch =
                         prop.ariaLabel (if state.IsPlaying then "Pause tactical timeline" else "Play tactical timeline")
                         prop.onClick (fun _ -> dispatch (InvokeTacticalCommand "timeline.play-toggle"))
                     ]
+                    match playUnavailableReason with
+                    | Some reason ->
+                        Html.p [
+                            prop.className "tactical-transport-unavailable"
+                            prop.role.status
+                            prop.ariaLive.polite
+                            prop.ariaLabel "Play unavailable reason"
+                            prop.text reason
+                        ]
+                    | None -> Html.none
                     Html.button [
                         prop.type'.button
                         prop.text "Home"

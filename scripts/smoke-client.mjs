@@ -1378,15 +1378,15 @@ for (const [label, target] of committedMutationTargets) {
 }
 
 const play = buttonByText(timeline, "Play");
-if (!play) throw new Error("The unified timeline did not expose Plan playback.");
-play.click();
-await new Promise((resolveWait) => setTimeout(resolveWait, 130));
-await window.happyDOM.waitUntilComplete();
-buttonByText(timeline, "Pause")?.click();
-await window.happyDOM.waitUntilComplete();
-assertSingleWorksurface("Plan playback update");
-assertCamera("Plan playback update");
-assertSelection("Plan playback update", 2);
+if (
+  !play?.disabled ||
+  !timeline.textContent.includes("Create a simulator handoff from the Editor to run the authored plan.")
+) {
+  throw new Error("Plan Play remained enabled without a runnable simulator or actionable reason.");
+}
+assertSingleWorksurface("Plan unavailable transport");
+assertCamera("Plan unavailable transport");
+assertSelection("Plan unavailable transport", 2);
 
 const helpKey = new window.KeyboardEvent("keydown", {
   key: "?",
