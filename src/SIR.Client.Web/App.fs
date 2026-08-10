@@ -10,6 +10,8 @@ open Fable.Core.JsInterop
 open Feliz
 open SIR.Client
 open SIR.Domain
+open SIR.Protocol.Http
+open SIR.Protocol.Realtime
 
 type Msg =
     | ShellMsg of SIR.Client.Msg
@@ -94,6 +96,10 @@ type Msg =
     | ComparisonViewChanged of ComparisonView
     | ExportEvidenceSvg
     | ExportEvidencePng
+    | LiveStarted
+    | LiveAction of LiveSession.Action
+    | AdvanceLiveSession
+    | ReconnectLiveSession
 
 and WorkspaceMode =
     | SimulatorWorkspace
@@ -137,7 +143,8 @@ type Model =
       PreviousFrame: RenderFrame option
       PresentationAlpha: float
       ComparisonBookmarks: ComparisonBookmark list
-      ComparisonView: ComparisonView }
+      ComparisonView: ComparisonView
+      Live: LiveSession.State }
 
 let private editorPanHeld model =
     HeldInputSession.contains EditorPan model.HeldInputs
@@ -976,11 +983,59 @@ let init () =
       PreviousFrame = None
       PresentationAlpha = 1.0
       ComparisonBookmarks = []
-      ComparisonView = Split },
-    Cmd.none
+      ComparisonView = Split
+      Live = LiveSession.initial },
+    Cmd.ofEffect (fun dispatch -> LiveSession.start (LiveAction >> dispatch))
 
 let rec update msg model =
     match msg with
+    | LiveStarted ->
+        model, Cmd.ofEffect (fun dispatch -> LiveSession.start (LiveAction >> dispatch))
+    | LiveAction action ->
+        match action with
+        | LiveSession.Bootstrapped response ->
+            let live =
+                { model.Live with
+                    Bootstrap = Some response
+                    Snapshot = Some response.Snapshot
+                    Status = "connecting" }
+            { model with Live = live },
+            Cmd.ofEffect (fun dispatch ->
+                let connection = LiveSession.connect (LiveAction >> dispatch) response
+                dispatch (LiveAction (LiveSession.Connected connection)))
+        | LiveSession.Connected connection ->
+            { model with Live = { model.Live with Connection = Some connection } }, Cmd.none
+        | LiveSession.ConnectionOpened ->
+            let next = { model.Live with Status = "connected" }
+            { model with Live = next },
+            Cmd.ofEffect (fun dispatch -> LiveSession.requestResync (LiveAction >> dispatch) next)
+        | LiveSession.ConnectionClosed ->
+            { model with Live = { model.Live with Status = "disconnected" } }, Cmd.none
+        | LiveSession.BootstrapFailed error ->
+            { model with Live = { model.Live with Status = "bootstrap-error:" + error } }, Cmd.none
+        | LiveSession.ConnectionFailed error ->
+            { model with Live = { model.Live with Status = "connection-error:" + error } }, Cmd.none
+        | LiveSession.DecodeFailed error ->
+            { model with Live = { model.Live with Status = "decode-error:" + error } }, Cmd.none
+        | LiveSession.Received message ->
+            match message with
+            | RealtimeV1.SnapshotMessage snapshot ->
+                { model with Live = { model.Live with Snapshot = Some snapshot; Status = "connected" } }, Cmd.none
+            | RealtimeV1.ResyncSnapshotMessage snapshot ->
+                { model with
+                    Live =
+                        { model.Live with
+                            Snapshot = Some snapshot
+                            ResyncCount = model.Live.ResyncCount + 1
+                            Status = "connected" } }, Cmd.none
+            | RealtimeV1.AdvanceInputMessage _
+            | RealtimeV1.ResyncRequestMessage _ -> model, Cmd.none
+    | AdvanceLiveSession ->
+        let next = { model.Live with NextSequence = model.Live.NextSequence + 1 }
+        { model with Live = next }, Cmd.ofEffect (fun dispatch -> LiveSession.advance (LiveAction >> dispatch) model.Live)
+    | ReconnectLiveSession ->
+        { model with Live = { model.Live with Status = "reconnecting" } },
+        Cmd.ofEffect (fun dispatch -> LiveSession.reconnect (LiveAction >> dispatch) model.Live)
     | FileSelected file ->
         { model with SampleReplayFrames = None },
         Cmd.OfAsync.perform
@@ -6563,6 +6618,10 @@ let private persistentSceneSvg
             |> Option.defaultValue "unavailable"
         )
         svg.custom ("data-scene-tick", projection |> Option.map _.Tick |> Option.defaultValue 0 |> string)
+        svg.custom ("data-live-status", model.Live.Status)
+        svg.custom ("data-live-tick", model.Live.Snapshot |> Option.map _.Tick |> Option.defaultValue 0 |> string)
+        svg.custom ("data-live-server-sequence", model.Live.Snapshot |> Option.map _.ServerSequence |> Option.defaultValue 0 |> string)
+        svg.custom ("data-live-projection-revision", model.Live.Snapshot |> Option.map _.ProjectionRevision |> Option.defaultValue 0 |> string)
         svg.custom ("data-presentation-alpha", string presentationAlpha)
         svg.custom ("data-camera-pan-x", string camera.PanX)
         svg.custom ("data-camera-pan-y", string camera.PanY)
@@ -6748,6 +6807,44 @@ let private persistentSceneSvg
                     + ")"
                 )
                 svg.children [
+                    Svg.g [
+                        svg.id "persistent-live-authority-layer"
+                        svg.custom ("data-live-layer", "live-authority")
+                        svg.custom ("data-live-projection", "accepted-server-snapshot")
+                        svg.custom ("pointer-events", "none")
+                        svg.children [
+                            match model.Live.Snapshot with
+                            | Some snapshot ->
+                                for unit in snapshot.VisibleUnits do
+                                    Svg.g [
+                                        svg.key ("live-unit:" + string unit.UnitId)
+                                        svg.custom ("data-primitive-id", "live-unit:" + string unit.UnitId)
+                                        svg.custom ("data-live-unit-id", string unit.UnitId)
+                                        svg.custom ("data-live-health", string unit.Health)
+                                        svg.custom ("data-live-column", string unit.Column)
+                                        svg.custom ("data-live-row", string unit.Row)
+                                        svg.children [
+                                            Svg.circle [
+                                                svg.cx (float unit.Column * cellSize + cellSize / 2.0)
+                                                svg.cy (float unit.Row * cellSize + cellSize / 2.0)
+                                                svg.r (cellSize / 4.0)
+                                                svg.fill "#ff8c42"
+                                                svg.stroke "#fff4e6"
+                                                svg.strokeWidth 2
+                                            ]
+                                            Svg.text [
+                                                svg.x (float unit.Column * cellSize + cellSize / 2.0)
+                                                svg.y (float unit.Row * cellSize + cellSize / 2.0 + 5.0)
+                                                svg.custom ("text-anchor", "middle")
+                                                svg.fill "#101916"
+                                                svg.fontSize 13
+                                                svg.children [ Html.text (string unit.UnitId) ]
+                                            ]
+                                        ]
+                                    ]
+                            | None -> ()
+                        ]
+                    ]
                     Svg.g [
                         svg.id "persistent-editor-background"
                         svg.custom ("data-editor-layer", "background")
@@ -8265,6 +8362,22 @@ let view model dispatch =
             dismissDesktopMenus event.target)
         prop.children [
             tacticalShell model dispatch transientContent
+            Html.section [
+                prop.id "sir-live-session"
+                prop.className "panel"
+                prop.ariaLabel "Authoritative live session"
+                prop.custom ("data-status", model.Live.Status)
+                prop.custom ("data-tick", model.Live.Snapshot |> Option.map _.Tick |> Option.defaultValue 0 |> string)
+                prop.custom ("data-server-sequence", model.Live.Snapshot |> Option.map _.ServerSequence |> Option.defaultValue 0 |> string)
+                prop.custom ("data-resync-count", string model.Live.ResyncCount)
+                prop.custom ("data-session-id", model.Live.Bootstrap |> Option.map _.SessionId |> Option.defaultValue "")
+                prop.children [
+                    Html.h2 "Authoritative live session"
+                    Html.p ("live " + model.Live.Status)
+                    button "Advance live session" "Send the next player-visible live advance command" (model.Live.Connection.IsNone) (fun _ -> dispatch AdvanceLiveSession)
+                    button "Reconnect live session" "Reconnect and request the authoritative live snapshot" (model.Live.Connection.IsNone) (fun _ -> dispatch ReconnectLiveSession)
+                ]
+            ]
             Html.p [
                 prop.className "sr-only"
                 prop.role.status
@@ -8273,8 +8386,6 @@ let view model dispatch =
             ]
         ]
     ]
-
-LiveSession.start ()
 
 if not (isNull (document.getElementById "sir-replay-app")) then
     Program.mkProgram init update view
