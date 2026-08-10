@@ -10,7 +10,7 @@ commit: f02a5596849ae116dba4cb35239ad7e9836cb8d7
 
 ## §1 Provenance and confidence
 - **activation:** active
-- **phases:** onboarding-first-build, lifecycle-authoring, implementation-test-evidence, verify-ship-pr
+- **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
 - **material events:** 2
 - **zero-event reason:** n/a
 - **checkpoint:** `feedback/checkpoints/item-146-live-reconnect-resilience.jsonl` (two validated events)
