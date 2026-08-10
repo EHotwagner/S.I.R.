@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "e338f859af5e23aa95eaf026ed010b78b52c78d5be23ce126965f40320c5379f"
+        "value": "2b87580671835b5dac56ea59120c0a9607b93e1b1e52b115baef00ac62f2ba73"
       }
     },
     {
@@ -143,9 +143,7 @@
       "linkedTaskIds": [
         "T001"
       ],
-      "linkedEvidenceIds": [
-        "EV001"
-      ]
+      "linkedEvidenceIds": []
     },
     {
       "id": "FR-002",
@@ -164,9 +162,7 @@
       "linkedTaskIds": [
         "T002"
       ],
-      "linkedEvidenceIds": [
-        "EV002"
-      ]
+      "linkedEvidenceIds": []
     },
     {
       "id": "FR-003",
@@ -185,9 +181,7 @@
       "linkedTaskIds": [
         "T003"
       ],
-      "linkedEvidenceIds": [
-        "EV003"
-      ]
+      "linkedEvidenceIds": []
     },
     {
       "id": "FR-004",
@@ -206,9 +200,7 @@
       "linkedTaskIds": [
         "T004"
       ],
-      "linkedEvidenceIds": [
-        "EV004"
-      ]
+      "linkedEvidenceIds": []
     },
     {
       "id": "FR-005",
@@ -227,9 +219,7 @@
       "linkedTaskIds": [
         "T005"
       ],
-      "linkedEvidenceIds": [
-        "EV005"
-      ]
+      "linkedEvidenceIds": []
     },
     {
       "id": "FR-006",
@@ -248,9 +238,7 @@
       "linkedTaskIds": [
         "T006"
       ],
-      "linkedEvidenceIds": [
-        "EV006"
-      ]
+      "linkedEvidenceIds": []
     },
     {
       "id": "FR-007",
@@ -269,9 +257,7 @@
       "linkedTaskIds": [
         "T007"
       ],
-      "linkedEvidenceIds": [
-        "EV007"
-      ]
+      "linkedEvidenceIds": []
     }
   ],
   "decisions": [
@@ -727,17 +713,17 @@
   "evidence": [
     {
       "id": "EV001",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T001",
       "taskRefs": [
         "T001"
       ],
-      "requirementRefs": [
-        "FR-001"
+      "requirementRefs": [],
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -751,17 +737,17 @@
     },
     {
       "id": "EV002",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T002",
       "taskRefs": [
         "T002"
       ],
-      "requirementRefs": [
-        "FR-002"
+      "requirementRefs": [],
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -775,17 +761,17 @@
     },
     {
       "id": "EV003",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T003",
       "taskRefs": [
         "T003"
       ],
-      "requirementRefs": [
-        "FR-003"
+      "requirementRefs": [],
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -799,17 +785,17 @@
     },
     {
       "id": "EV004",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T004",
       "taskRefs": [
         "T004"
       ],
-      "requirementRefs": [
-        "FR-004"
+      "requirementRefs": [],
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -823,17 +809,17 @@
     },
     {
       "id": "EV005",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T005",
       "taskRefs": [
         "T005"
       ],
-      "requirementRefs": [
-        "FR-005"
+      "requirementRefs": [],
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -847,17 +833,17 @@
     },
     {
       "id": "EV006",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T006",
       "taskRefs": [
         "T006"
       ],
-      "requirementRefs": [
-        "FR-006"
+      "requirementRefs": [],
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -871,17 +857,17 @@
     },
     {
       "id": "EV007",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T007",
       "taskRefs": [
         "T007"
       ],
-      "requirementRefs": [
-        "FR-007"
+      "requirementRefs": [],
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -895,15 +881,17 @@
     },
     {
       "id": "EV008",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T008",
       "taskRefs": [
         "T008"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -917,15 +905,17 @@
     },
     {
       "id": "EV009",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T009",
       "taskRefs": [
         "T009"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -939,15 +929,17 @@
     },
     {
       "id": "EV010",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T010",
       "taskRefs": [
         "T010"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -961,15 +953,17 @@
     },
     {
       "id": "EV011",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T011",
       "taskRefs": [
         "T011"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -983,15 +977,17 @@
     },
     {
       "id": "EV012",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T012",
       "taskRefs": [
         "T012"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1005,15 +1001,17 @@
     },
     {
       "id": "EV013",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T013",
       "taskRefs": [
         "T013"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1027,15 +1025,17 @@
     },
     {
       "id": "EV014",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T014",
       "taskRefs": [
         "T014"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1102,7 +1102,7 @@
           "path": "work/148-live-session-authentication/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "e338f859af5e23aa95eaf026ed010b78b52c78d5be23ce126965f40320c5379f"
+            "value": "2b87580671835b5dac56ea59120c0a9607b93e1b1e52b115baef00ac62f2ba73"
           },
           "schemaVersion": 1
         },
@@ -1133,7 +1133,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "8595cc62865119d0762e44f63f948c0879fe2534b0ed9c342eba165207e3b3e9"
+        "value": "d67480645e454af77cf58567c51c539986e6bac3ff73432a815f732b1ea1c2f4"
       },
       "currency": "current"
     }
