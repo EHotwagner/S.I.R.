@@ -27,7 +27,13 @@ module LiveAuthority =
     let private sessions = ConcurrentDictionary<string, SessionState>()
     let private gate = obj ()
 
-    let private tokenLifetime = TimeSpan.FromMinutes 15.0
+    let mutable private timeProvider = TimeProvider.System
+    let mutable private tokenLifetime = TimeSpan.FromMinutes 15.0
+
+    /// Configures the host-owned lifetime policy; production supplies DI's TimeProvider.
+    let configure (clock: TimeProvider) lifetime =
+        timeProvider <- clock
+        tokenLifetime <- lifetime
 
     let private hex (bytes: byte array) = Convert.ToHexString(bytes).ToLowerInvariant()
 
@@ -79,7 +85,7 @@ module LiveAuthority =
                     { ActorId = actorId
                       PrincipalId = principalId
                       AccessToken = accessToken
-                      ExpiresAt = DateTimeOffset.UtcNow.Add tokenLifetime
+                      ExpiresAt = timeProvider.GetUtcNow().Add tokenLifetime
                       Admission = admission
                       LastInputSequence = 0
                       FrameIndex = 0
@@ -105,7 +111,7 @@ module LiveAuthority =
                 let state = pair.Value
 
                 if not state.Revoked
-                   && state.ExpiresAt > DateTimeOffset.UtcNow
+                   && state.ExpiresAt > timeProvider.GetUtcNow()
                      && validToken state.AccessToken accessToken then
                     state.ConnectionId <- Some connectionId
                     Some(pair.Key, state.ActorId, snapshotAt state.FrameIndex)
@@ -119,7 +125,7 @@ module LiveAuthority =
                 when state.ActorId = actorId
                      && state.ConnectionId = Some connectionId
                      && not state.Revoked
-                     && state.ExpiresAt > DateTimeOffset.UtcNow
+                     && state.ExpiresAt > timeProvider.GetUtcNow()
                      && validToken state.AccessToken accessToken
                      && sequence > state.LastInputSequence ->
                 state.LastInputSequence <- sequence
@@ -134,7 +140,7 @@ module LiveAuthority =
                 when state.ActorId = actorId
                      && state.ConnectionId = Some connectionId
                      && not state.Revoked
-                     && state.ExpiresAt > DateTimeOffset.UtcNow
+                     && state.ExpiresAt > timeProvider.GetUtcNow()
                      && validToken state.AccessToken accessToken ->
                 match
                     LiveIntegration.reconnect
