@@ -21,32 +21,117 @@ const worker = new Worker(
   { type: "module" },
 );
 
-const nextMessage = () =>
-  new Promise((resolveMessage, reject) => {
-    const onError = (error) => {
-      clearTimeout(timeout);
-      worker.off("message", onMessage);
-      reject(error);
-    };
-    const onMessage = (message) => {
-      clearTimeout(timeout);
-      worker.off("error", onError);
-      resolveMessage(message);
-    };
-    const timeout = setTimeout(
-      () => {
-        worker.off("message", onMessage);
-        worker.off("error", onError);
-        reject(new Error("The worker round trip timed out."));
-      },
-      5_000,
-    );
+const startedAt = performance.now();
+const queuedMessages = [];
+const observedMessages = [];
+let workerError;
+let workerExit;
+let pendingRead;
 
-    worker.once("message", onMessage);
-    worker.once("error", onError);
+const describeMessage = (message) => {
+  const data = message?.data;
+  return {
+    kind: message?.kind,
+    operation: data?.Correlation?.Operation ?? data?.Operation,
+    response: data?.Response?.tag,
+  };
+};
+
+const diagnostic = (expectation) =>
+  `${expectation}; observed=${JSON.stringify(observedMessages)}; queued=${JSON.stringify(
+    queuedMessages.map(describeMessage),
+  )}; workerExit=${workerExit ?? "running"}; elapsed=${(
+    performance.now() - startedAt
+  ).toFixed(1)}ms`;
+
+const deliver = () => {
+  if (!pendingRead || queuedMessages.length === 0) return;
+  const { resolve, timeout } = pendingRead;
+  pendingRead = undefined;
+  clearTimeout(timeout);
+  resolve(queuedMessages.shift());
+};
+
+const onMessage = (message) => {
+  observedMessages.push(describeMessage(message));
+  queuedMessages.push(message);
+  deliver();
+};
+const onError = (error) => {
+  workerError = error;
+  if (pendingRead) {
+    const { reject, timeout } = pendingRead;
+    pendingRead = undefined;
+    clearTimeout(timeout);
+    reject(new Error(`${error.message}; ${diagnostic("worker error")}`));
+  }
+};
+const onExit = (code) => {
+  workerExit = code;
+  if (pendingRead) {
+    const { reject, timeout } = pendingRead;
+    pendingRead = undefined;
+    clearTimeout(timeout);
+    reject(new Error(`Worker exited with ${code}; ${diagnostic("awaiting response")}`));
+  }
+};
+
+// Register exactly once, before the worker can emit ready/progress/completion.
+worker.on("message", onMessage);
+worker.on("error", onError);
+worker.on("exit", onExit);
+
+const nextMessage = (expectation = "worker response") =>
+  new Promise((resolveMessage, reject) => {
+    if (workerError) {
+      reject(new Error(`${workerError.message}; ${diagnostic(expectation)}`));
+      return;
+    }
+    if (workerExit !== undefined) {
+      reject(new Error(`Worker exited with ${workerExit}; ${diagnostic(expectation)}`));
+      return;
+    }
+    if (queuedMessages.length > 0) {
+      resolveMessage(queuedMessages.shift());
+      return;
+    }
+    const timeout = setTimeout(() => {
+      if (pendingRead?.timeout === timeout) pendingRead = undefined;
+      reject(new Error(`The worker round trip timed out: ${diagnostic(expectation)}`));
+    }, 5_000);
+    pendingRead = { resolve: resolveMessage, reject, timeout };
   });
 
-const ready = await nextMessage();
+const responseFor = async (operation, responseTag, expectation) => {
+  const message = await nextMessage(expectation);
+  const actualOperation = message.data?.Correlation?.Operation ?? message.data?.Operation;
+  const actualTag = message.data?.Response?.tag;
+  // Exercise the gate's red path in CI/authoring without changing production
+  // worker behavior: a response tag mismatch must never be accepted.
+  const expectedTag =
+    process.env.SIR_WORKER_ROUNDTRIP_INJECT_RESPONSE_TAG === "1"
+      ? -1
+      : responseTag;
+  if (
+    message.kind !== "response" ||
+    actualOperation !== operation ||
+    (expectedTag !== null && actualTag !== expectedTag)
+  ) {
+    throw new Error(
+      `Unexpected worker response: expected operation=${operation}, response=${expectedTag}; received ${JSON.stringify(describeMessage(message))}; ${diagnostic(expectation)}`,
+    );
+  }
+  return message;
+};
+
+const cleanup = () => {
+  worker.off("message", onMessage);
+  worker.off("error", onError);
+  worker.off("exit", onExit);
+};
+
+try {
+const ready = await nextMessage("worker ready handshake");
 if (ready.kind !== "ready") {
   throw new Error("The worker did not initialize.");
 }
@@ -72,7 +157,7 @@ const perspectiveFixture = Uint8Array.from(
 );
 
 worker.postMessage(envelope(10, request(0, ["full.sirr", fullFixture])));
-const fullLoaded = await nextMessage();
+const fullLoaded = await responseFor(10, 0, "load full replay");
 if (
   fullLoaded.kind !== "response" ||
   fullLoaded.data?.Operation !== 10 ||
@@ -87,8 +172,11 @@ if (
 
 const seek = async (operation, tick) => {
   worker.postMessage(envelope(operation, request(2, [tick, 4])));
-  const progress = await nextMessage();
-  const completed = await nextMessage();
+  const progress = await responseFor(operation, 1, `seek ${operation} progress`);
+  // The worker emits completion immediately after yielding. Let it arrive before
+  // the next read to prove the persistent listener buffers back-to-back replies.
+  await new Promise((resolveTurn) => setTimeout(resolveTurn, 0));
+  const completed = await responseFor(operation, 2, `seek ${operation} completion`);
   if (
     progress.data?.Operation !== operation ||
     progress.data?.Response?.tag !== 1 ||
@@ -114,7 +202,7 @@ if (
 worker.postMessage(
   envelope(20, request(0, ["perspective.sirr", perspectiveFixture])),
 );
-const perspectiveLoaded = await nextMessage();
+const perspectiveLoaded = await responseFor(20, 0, "load perspective replay");
 if (
   perspectiveLoaded.data?.Operation !== 20 ||
   perspectiveLoaded.data?.Response?.tag !== 0 ||
@@ -136,7 +224,7 @@ if (
 }
 
 worker.postMessage(envelope(1, request(4, ["adjacent-duel"])));
-const loaded = await nextMessage();
+const loaded = await responseFor(1, 4, "load lab scenario");
 
 if (
   loaded.kind !== "response" ||
@@ -158,7 +246,7 @@ worker.postMessage(
     ]),
   ),
 );
-const experimented = await nextMessage();
+const experimented = await responseFor(2, 5, "run lab experiment");
 const forkMetrics = experimented.data?.Response?.fields[1]?.Fork?.Metrics;
 const damage = forkMetrics?.find((entry) => entry.Key === "total-damage")?.Value;
 
@@ -198,7 +286,7 @@ const postSimulator = async (operation, tag, fields = [], tick = 0) => {
       simulatorRequest(tag, fields),
     ),
   );
-  const message = await nextMessage();
+  const message = await responseFor(operation, null, `simulator operation ${operation}`);
   if (
     message.kind !== "response" ||
     message.data?.Kind !== "sir-simulator-session" ||
@@ -333,7 +421,7 @@ worker.postMessage(
     simulatorRequest(5, [6_000]),
   ),
 );
-const firstRunProgress = await nextMessage();
+const firstRunProgress = await responseFor(110, 5, "first simulator run-to progress");
 if (
   firstRunProgress.data?.Response?.tag !== 5 ||
   firstRunProgress.data.Response.fields[0] !== 1 ||
@@ -363,7 +451,7 @@ while (
         message.data?.Response?.tag === 8,
     ))
 ) {
-  const message = await nextMessage();
+  const message = await nextMessage("simulator cancellation acknowledgement");
   cancellationMessages.push(message);
   if (
     message.data?.Correlation?.Operation === 110 &&
@@ -451,7 +539,7 @@ worker.postMessage(
 );
 const runMessages = [];
 while (true) {
-  const message = await nextMessage();
+  const message = await nextMessage("authoritative simulator run progress");
   if (message.data?.Correlation?.Operation !== 120) {
     throw new Error("Normal-horizon run emitted an uncorrelated response.");
   }
@@ -476,7 +564,7 @@ worker.postMessage(
     simulatorRequest(4, [1]),
   ),
 );
-const staleRejected = (await nextMessage()).data;
+const staleRejected = (await responseFor(130, 9, "reject stale map revision")).data;
 if (staleRejected.Response?.tag !== 9) {
   throw new Error("A stale simulator request was not explicitly rejected.");
 }
@@ -487,7 +575,7 @@ worker.postMessage(
     simulatorRequest(4, [1]),
   ),
 );
-const stalePlanRejected = (await nextMessage()).data;
+const stalePlanRejected = (await responseFor(131, 9, "reject stale plan revision")).data;
 if (
   stalePlanRejected.Response?.tag !== 9 ||
   stalePlanRejected.Response?.fields?.[0] !== "SIR.SIMULATOR.PLAN.STALE"
@@ -504,7 +592,7 @@ worker.postMessage(
     simulatorRequest(7, [120]),
   ),
 );
-const foreignCancelRejected = (await nextMessage()).data;
+const foreignCancelRejected = (await responseFor(132, 9, "reject foreign cancellation")).data;
 if (
   foreignCancelRejected.Response?.tag !== 9 ||
   foreignCancelRejected.Response?.fields?.[0] !==
@@ -513,8 +601,10 @@ if (
   throw new Error("A foreign simulator workspace could cancel an operation.");
 }
 
-await worker.terminate();
-
 console.log(
-  `Worker round-trip smoke passed: replay/lab and all simulator session requests/responses crossed structured clone; a pinned authoritative run loaded, cancellation stopped run-to, stale revisions were rejected, intent-only prediction disclosed only its authored intent text and no entity/event state, and 6,000 ticks used ${runMessages.length} projection messages in ${runElapsedMilliseconds.toFixed(3)} ms.`,
+  `Worker round-trip smoke passed: persistent correlation-checked listener buffered back-to-back replay progress/completion; replay/lab and all simulator session requests/responses crossed structured clone; a pinned authoritative run loaded, cancellation stopped run-to, stale revisions were rejected, intent-only prediction disclosed only its authored intent text and no entity/event state, and 6,000 ticks used ${runMessages.length} projection messages in ${runElapsedMilliseconds.toFixed(3)} ms.`,
 );
+} finally {
+  cleanup();
+  await worker.terminate();
+}

@@ -253,6 +253,7 @@ node scripts/smoke-client.mjs
 node scripts/test-map-editor-qualification.mjs
 node scripts/test-planning-workspace-m5-qualification.mjs
 node scripts/test-simulator-workspace-m6-qualification.mjs
+node scripts/test-worker-roundtrip-race.mjs
 node scripts/test-review-workspace-m7-qualification.mjs
 node scripts/test-timeline-supporting-panels-m8-qualification.mjs
 node scripts/test-persistent-workspace-m9-acceptance.mjs
