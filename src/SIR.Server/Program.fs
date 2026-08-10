@@ -20,6 +20,23 @@ module Program =
 
     let private maximumBootstrapBodyBytes = 16 * 1024
 
+    let private readBootstrapBody (stream: Stream) =
+        task {
+            use output = new MemoryStream()
+            let buffer = Array.zeroCreate<byte> 4096
+            let mutable total = 0
+            let mutable complete = false
+            let mutable tooLarge = false
+            while not complete && not tooLarge do
+                let! count = stream.ReadAsync(buffer.AsMemory())
+                if count = 0 then complete <- true
+                elif total + count > maximumBootstrapBodyBytes then tooLarge <- true
+                else
+                    output.Write(buffer, 0, count)
+                    total <- total + count
+            return if tooLarge then Error "SIR.LIVE.BOOTSTRAP.BODY_TOO_LARGE" else Ok(Encoding.UTF8.GetString(output.ToArray()))
+        }
+
     let private mapRoutes (app: WebApplication) =
         app.MapPost(
             "/api/bootstrap",
@@ -28,11 +45,10 @@ module Program =
                     if request.ContentLength.HasValue && request.ContentLength.Value > int64 maximumBootstrapBodyBytes then
                         return Results.BadRequest {| error = "SIR.LIVE.BOOTSTRAP.BODY_TOO_LARGE" |}
                     else
-                        use reader = new StreamReader(request.Body)
-                        let! body = reader.ReadToEndAsync().WaitAsync(TimeSpan.FromSeconds 5.0)
-                        if System.Text.Encoding.UTF8.GetByteCount body > maximumBootstrapBodyBytes then
-                            return Results.BadRequest {| error = "SIR.LIVE.BOOTSTRAP.BODY_TOO_LARGE" |}
-                        else
+                        let! boundedBody = readBootstrapBody request.Body
+                        match boundedBody with
+                        | Error error -> return Results.BadRequest {| error = error |}
+                        | Ok body ->
                             match BootstrapV1.requestFromJson body with
                             | Error error -> return Results.BadRequest {| error = error |}
                             | Ok parsed when parsed.Version <> 1 -> return Results.BadRequest {| error = "unsupported bootstrap version" |}

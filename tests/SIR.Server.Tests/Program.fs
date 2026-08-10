@@ -160,6 +160,17 @@ type LiveSessionAuthenticationTests() =
         require (snapshot.RejectedAdmissions = 1 && snapshot.Evictions = 7) "metrics must expose rejected admissions and superseded-session evictions"
 
     [<Fact>]
+    member _.``concurrent admissions never exceed capacity``() =
+        let clock = MutableTimeProvider(DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero))
+        LiveAuthority.configure clock (TimeSpan.FromHours 1.0)
+        let admitted =
+            [| 1 .. 256 |]
+            |> Array.Parallel.map (fun index -> let actor = $"parallel-{index}" in LiveAuthority.bootstrap actor actor |> Result.isOk)
+            |> Array.filter id
+            |> Array.length
+        require (admitted = 64 && LiveAuthority.activeSessionCount() = 64) "global capacity must remain atomic under concurrent admission"
+
+    [<Fact>]
     member _.``takeover rejects superseded connection and keeps deterministic work``() =
         let clock = MutableTimeProvider(DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero))
         LiveAuthority.configure clock (TimeSpan.FromMinutes 1.0)

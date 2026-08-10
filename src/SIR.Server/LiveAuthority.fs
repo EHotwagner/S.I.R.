@@ -35,6 +35,7 @@ module LiveAuthority =
     let private qualification = lazy (LiveIntegration.qualify ())
     let private sessions = ConcurrentDictionary<string, SessionState>()
     let private countersGate = obj ()
+    let private admissionGate = obj ()
     let private maximumSessions = 64
     let private maximumActorNameLength = 128
     let private maximumAdmissionsPerMinute = 8
@@ -80,6 +81,11 @@ module LiveAuthority =
 
     let private countLookup () = lock countersGate (fun () -> sessionLookupCount <- sessionLookupCount + 1)
     let private countValidation () = lock countersGate (fun () -> tokenValidationCount <- tokenValidationCount + 1)
+    let private withContention gate action =
+        if not (System.Threading.Monitor.TryEnter gate) then
+            lock countersGate (fun () -> contention <- contention + 1)
+            System.Threading.Monitor.Enter gate
+        try action () finally System.Threading.Monitor.Exit gate
 
     let private hex (bytes: byte array) = Convert.ToHexString(bytes).ToLowerInvariant()
 
@@ -109,6 +115,7 @@ module LiveAuthority =
         CryptographicOperations.FixedTimeEquals(System.Text.Encoding.UTF8.GetBytes(stored), System.Text.Encoding.UTF8.GetBytes(provided))
 
     let bootstrap principalId actorName =
+      withContention admissionGate (fun () ->
         removeExpired ()
         let now = timeProvider.GetUtcNow()
         let recent = admissions.GetOrAdd(principalId, []) |> List.filter (fun admitted -> admitted.AddMinutes 1.0 > now)
@@ -134,9 +141,9 @@ module LiveAuthority =
             match LiveIntegration.admit sessionId actorId slice.Artifact slice.Artifact with
             | Error error -> Error error
             | Ok admission ->
-                sessions.Values
-                |> Seq.filter (fun existing -> existing.PrincipalId = principalId && not existing.Revoked)
-                |> Seq.iter (fun existing -> lock existing.Gate (fun () -> existing.Revoked <- true); lock countersGate (fun () -> evictions <- evictions + 1))
+                sessions
+                |> Seq.filter (fun pair -> pair.Value.PrincipalId = principalId && not pair.Value.Revoked)
+                |> Seq.iter (fun pair -> if sessions.TryRemove pair.Key |> fst then lock countersGate (fun () -> evictions <- evictions + 1))
 
                 let state =
                     { ActorId = actorId
@@ -161,7 +168,7 @@ module LiveAuthority =
                       MatchLock = hex admission.MatchLock
                       Snapshot = snapshotAt 0 }
 
-                Ok response
+                Ok response)
 
     let authorize accessToken connectionId =
         removeExpired (); countValidation (); countLookup ()
@@ -176,7 +183,7 @@ module LiveAuthority =
     let advance sessionId actorId accessToken connectionId sequence =
         removeExpired (); countValidation (); countLookup ()
         match sessions.TryGetValue sessionId with
-        | true, state -> lock state.Gate (fun () ->
+        | true, state -> withContention state.Gate (fun () ->
             match true, state with
             | true, state
                 when state.ActorId = actorId
@@ -194,7 +201,7 @@ module LiveAuthority =
     let reconnect sessionId actorId accessToken connectionId lastServerSequence lastProjectionRevision =
         removeExpired (); countValidation (); countLookup ()
         match sessions.TryGetValue sessionId with
-        | true, state -> lock state.Gate (fun () ->
+        | true, state -> withContention state.Gate (fun () ->
             match true, state with
             | true, state
                 when state.ActorId = actorId
@@ -216,5 +223,5 @@ module LiveAuthority =
 
     let disconnected sessionId connectionId =
         match sessions.TryGetValue sessionId with
-        | true, state -> lock state.Gate (fun () -> if state.ConnectionId = Some connectionId then state.DisconnectedAt <- Some(timeProvider.GetUtcNow()); state.ConnectionId <- None)
+        | true, state -> withContention state.Gate (fun () -> if state.ConnectionId = Some connectionId then state.DisconnectedAt <- Some(timeProvider.GetUtcNow()); state.ConnectionId <- None)
         | _ -> ()
