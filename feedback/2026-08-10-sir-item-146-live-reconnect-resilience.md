@@ -35,17 +35,17 @@ The route reader crashes for a noncanonical repository ref. An initial SDD gener
 - **Avoidable cost:** one route-read recovery
 - **Disposition:** product fix
 
-#### §4.2 SDD generated-view friction was resolved by authored decision grammar
+#### §4.2 SDD hides malformed decision references behind unlocated derived diagnostics
 - **Kind:** documentation
-- **Impact:** hidden derived diagnostics initially obscured the malformed decision grammar and delayed generated guidance.
-- **Expected:** decision declarations are list-leading `DEC-###:` entries so the work model resolves them.
-- **Observed:** changing `DEC-001..003` to `DEC-###:` resolved unknown references; refresh now succeeds with current work model and guidance.
+- **Impact:** an author must perform producer-source archaeology to resolve an otherwise unlocated generated-view failure.
+- **Expected:** diagnostics identify the malformed authored decision reference and its source location.
+- **Observed:** verify/ship collapsed three malformed decision references into `unknownReference` and `workModelInconsistent` counts without locations; changing `DEC-001..003` to list-leading `DEC-###:` resolved the current item and refresh now succeeds.
 - **Evidence:** command:fsgg-sdd refresh --work 146-authoritative-live-snapshots --text
 - **Version:** fsgg-sdd 1.0.0
 - **Owner:** S.I.R SDD authoring guidance
 - **Recurrence:** new
 - **Avoidable cost:** repeated generator attempts
-- **Disposition:** accepted
+- **Disposition:** doc fix
 
 ## §5 Did not exercise
 Scaffolding and packaging upgrades were out of scope.
