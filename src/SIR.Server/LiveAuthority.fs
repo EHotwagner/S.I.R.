@@ -2,14 +2,20 @@ namespace SIR.Server
 
 open System
 open System.Collections.Concurrent
+open System.Security.Cryptography
 open SIR.Match
 open SIR.Protocol.Http
 
 type private SessionState =
     { ActorId: string
+      PrincipalId: string
+      AccessToken: string
+      ExpiresAt: DateTimeOffset
       Admission: LiveAdmission
       mutable LastInputSequence: int
-      mutable FrameIndex: int }
+      mutable FrameIndex: int
+      mutable Revoked: bool
+      mutable ConnectionId: string option }
 
 /// Concurrency-safe host shell around S.I.R.'s existing deterministic live slice.
 /// The replay and admission rules remain consumer-owned in SIR.Match; this module
@@ -20,6 +26,26 @@ module LiveAuthority =
     let private qualification = lazy (LiveIntegration.qualify ())
     let private sessions = ConcurrentDictionary<string, SessionState>()
     let private gate = obj ()
+
+    let mutable private timeProvider = TimeProvider.System
+    let mutable private tokenLifetime = TimeSpan.FromMinutes 15.0
+    let mutable private tokenValidationCount = 0
+    let mutable private sessionLookupCount = 0
+
+    /// Configures the host-owned lifetime policy; production supplies DI's TimeProvider.
+    let configure (clock: TimeProvider) lifetime =
+        timeProvider <- clock
+        tokenLifetime <- lifetime
+
+    /// Resets deterministic admission work counters used by the focused transport baseline.
+    let resetStructuralCounters () =
+        lock gate (fun () ->
+            tokenValidationCount <- 0
+            sessionLookupCount <- 0)
+
+    /// Returns (token validations, session lookups) for the current live-process baseline.
+    let structuralCounters () =
+        lock gate (fun () -> tokenValidationCount, sessionLookupCount)
 
     let private hex (bytes: byte array) = Convert.ToHexString(bytes).ToLowerInvariant()
 
@@ -40,22 +66,43 @@ module LiveAuthority =
             |> Array.toList
           StateIdentity = hex frame.StateIdentity }
 
-    let bootstrap actorName =
-        if String.IsNullOrWhiteSpace actorName then
+    let private createToken () =
+        RandomNumberGenerator.GetBytes 32
+        |> Convert.ToBase64String
+        |> fun value -> value.TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+    let private validToken (stored: string) (provided: string) =
+        CryptographicOperations.FixedTimeEquals(System.Text.Encoding.UTF8.GetBytes(stored), System.Text.Encoding.UTF8.GetBytes(provided))
+
+    let bootstrap principalId actorName =
+        if String.IsNullOrWhiteSpace principalId || String.IsNullOrWhiteSpace actorName then
             Error "SIR.LIVE.BOOTSTRAP.ACTOR_REQUIRED"
+        elif principalId <> actorName then
+            Error "SIR.LIVE.BOOTSTRAP.ACTOR_FORBIDDEN"
         else
             let sessionId = Guid.NewGuid().ToString "N"
             let actorId = Guid.NewGuid().ToString "N"
+            let accessToken = createToken ()
             let slice = qualification.Value
 
             match LiveIntegration.admit sessionId actorId slice.Artifact slice.Artifact with
             | Error error -> Error error
             | Ok admission ->
+                lock gate (fun () ->
+                    sessions.Values
+                    |> Seq.filter (fun existing -> existing.PrincipalId = principalId && not existing.Revoked)
+                    |> Seq.iter (fun existing -> existing.Revoked <- true))
+
                 let state =
                     { ActorId = actorId
+                      PrincipalId = principalId
+                      AccessToken = accessToken
+                      ExpiresAt = timeProvider.GetUtcNow().Add tokenLifetime
                       Admission = admission
                       LastInputSequence = 0
-                      FrameIndex = 0 }
+                      FrameIndex = 0
+                      Revoked = false
+                      ConnectionId = None }
 
                 sessions[sessionId] <- state
 
@@ -63,30 +110,56 @@ module LiveAuthority =
                     { Version = 1
                       SessionId = sessionId
                       ActorId = actorId
+                      AccessToken = accessToken
                       MatchLock = hex admission.MatchLock
                       Snapshot = snapshotAt 0 }
 
                 Ok response
 
-    let trySnapshot sessionId actorId =
+    let authorize accessToken connectionId =
         lock gate (fun () ->
-            match sessions.TryGetValue sessionId with
-            | true, state when state.ActorId = actorId -> Some(snapshotAt state.FrameIndex)
-            | _ -> None)
+            tokenValidationCount <- tokenValidationCount + 1
+            sessionLookupCount <- sessionLookupCount + 1
+            sessions
+            |> Seq.tryPick (fun pair ->
+                let state = pair.Value
 
-    let advance sessionId actorId sequence =
+                if not state.Revoked
+                   && state.ExpiresAt > timeProvider.GetUtcNow()
+                     && validToken state.AccessToken accessToken then
+                    state.ConnectionId <- Some connectionId
+                    Some(pair.Key, state.ActorId, snapshotAt state.FrameIndex)
+                else
+                    None))
+
+    let advance sessionId actorId accessToken connectionId sequence =
         lock gate (fun () ->
+            tokenValidationCount <- tokenValidationCount + 1
+            sessionLookupCount <- sessionLookupCount + 1
             match sessions.TryGetValue sessionId with
-            | true, state when state.ActorId = actorId && sequence > state.LastInputSequence ->
+            | true, state
+                when state.ActorId = actorId
+                     && state.ConnectionId = Some connectionId
+                     && not state.Revoked
+                     && state.ExpiresAt > timeProvider.GetUtcNow()
+                     && validToken state.AccessToken accessToken
+                     && sequence > state.LastInputSequence ->
                 state.LastInputSequence <- sequence
                 state.FrameIndex <- min (state.FrameIndex + 1) (qualification.Value.Replay.Frames.Length - 1)
                 Some(snapshotAt state.FrameIndex)
             | _ -> None)
 
-    let reconnect sessionId actorId lastServerSequence lastProjectionRevision =
+    let reconnect sessionId actorId accessToken connectionId lastServerSequence lastProjectionRevision =
         lock gate (fun () ->
+            tokenValidationCount <- tokenValidationCount + 1
+            sessionLookupCount <- sessionLookupCount + 1
             match sessions.TryGetValue sessionId with
-            | true, state when state.ActorId = actorId ->
+            | true, state
+                when state.ActorId = actorId
+                     && state.ConnectionId = Some connectionId
+                     && not state.Revoked
+                     && state.ExpiresAt > timeProvider.GetUtcNow()
+                     && validToken state.AccessToken accessToken ->
                 match
                     LiveIntegration.reconnect
                         state.Admission

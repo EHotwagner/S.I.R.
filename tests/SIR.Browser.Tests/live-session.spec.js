@@ -1,6 +1,22 @@
 import { expect, test } from "@playwright/test";
 
-test("real S.I.R. projection advances authoritatively and fully resyncs after reconnect", async ({ page }) => {
+test("bootstrap fails closed for absent and cross-actor credentials", async ({ request }) => {
+  const body = { version: 1, actorName: "alpha" };
+  const absent = await request.post("/api/bootstrap", { data: body });
+  expect(absent.status()).toBe(401);
+  const crossActor = await request.post("/api/bootstrap", {
+    data: body,
+    headers: { "X-SIR-Development-Actor": "beta" },
+  });
+  expect(crossActor.status()).toBe(400);
+});
+
+test("authorized player journey advances and reconnects without credentials in runtime URLs", async ({ page }) => {
+  const credentialUrls = [];
+  page.on("request", (request) => {
+    if (/access_token|sessionId|actorId/i.test(request.url())) credentialUrls.push(request.url());
+  });
+
   await page.goto("/");
 
   const live = page.locator("#sir-live-session");
@@ -10,16 +26,18 @@ test("real S.I.R. projection advances authoritatively and fully resyncs after re
 
   const initialTick = Number(await live.getAttribute("data-tick"));
   const initialSequence = Number(await live.getAttribute("data-server-sequence"));
-  await page.evaluate(() => window.__sirLiveAdvance());
+  await page.getByRole("button", { name: "Advance live session" }).click();
 
   await expect.poll(async () => Number(await live.getAttribute("data-tick"))).toBeGreaterThan(initialTick);
   await expect.poll(async () => Number(await live.getAttribute("data-server-sequence"))).toBeGreaterThan(initialSequence);
 
   const advancedTick = Number(await live.getAttribute("data-tick"));
   const resyncBeforeReconnect = Number(await live.getAttribute("data-resync-count"));
-  await page.evaluate(() => window.__sirLiveReconnect());
+  await page.getByRole("button", { name: "Reconnect live session" }).click();
 
   await expect.poll(async () => Number(await live.getAttribute("data-resync-count")), { timeout: 30_000 }).toBeGreaterThan(resyncBeforeReconnect);
   await expect(live).toHaveAttribute("data-status", "connected");
   await expect(live).toHaveAttribute("data-tick", String(advancedTick));
+  expect(credentialUrls).toEqual([]);
+  await expect(page.locator("body")).not.toContainText("accessToken");
 });

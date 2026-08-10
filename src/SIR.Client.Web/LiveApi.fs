@@ -10,12 +10,15 @@ module LiveApi =
     [<Global>]
     let private fetch (url: string, options: obj) : JS.Promise<obj> = jsNative
 
-    let bootstrap request =
+    let bootstrap (request: BootstrapV1.Request) =
         async {
             let options =
                 createObj
                     [ "method" ==> "POST"
-                      "headers" ==> createObj [ "Content-Type" ==> "application/json" ]
+                      "headers" ==>
+                        createObj
+                            [ "Content-Type" ==> "application/json"
+                              "X-SIR-Development-Actor" ==> request.ActorName ]
                       "body" ==> BootstrapV1.encodeRequest request ]
 
             let! response = fetch ("/api/bootstrap", options) |> Async.AwaitPromise

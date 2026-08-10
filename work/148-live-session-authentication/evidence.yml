@@ -1,0 +1,388 @@
+schemaVersion: 1
+workId: 148-live-session-authentication
+stage: evidence
+status: evidenceReady
+sourceSpec: work/148-live-session-authentication/spec.md
+sourceClarifications: work/148-live-session-authentication/clarifications.md
+sourceChecklist: work/148-live-session-authentication/checklist.md
+sourcePlan: work/148-live-session-authentication/plan.md
+sourceTasks: work/148-live-session-authentication/tasks.yml
+sourceAnalysis: readiness/148-live-session-authentication/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/148-live-session-authentication/analysis.json
+    digest: 0b910102d9e2726f56fc25202e76b2b4e03feafb53cff27869b4bba2eedddf48
+    schemaVersion: 1
+  - label: checklist
+    path: work/148-live-session-authentication/checklist.md
+    digest: 4dab4d82d0dc13a893e3b4de7308531b8f0185e00d28b0902cd1cd3e55a26fc0
+    schemaVersion: 1
+  - label: clarifications
+    path: work/148-live-session-authentication/clarifications.md
+    digest: 4c66db51dac206c49ad024e4b2fbd97a72a436ab9596a5895548e37b230e3f20
+    schemaVersion: 1
+  - label: plan
+    path: work/148-live-session-authentication/plan.md
+    digest: 15348202930ed764739026baf6b3672222951ad177d2660fcf6921ed60a9340e
+    schemaVersion: 1
+  - label: spec
+    path: work/148-live-session-authentication/spec.md
+    digest: b136f96004c5dad7982dd7130ddf1d87c85d5cc941888dd4d80c20a92be9450f
+    schemaVersion: 1
+  - label: tasks
+    path: work/148-live-session-authentication/tasks.yml
+    digest: 1ea8b8edd5cb923b24f38d55891c296b9766caf7e946989cd0b55487861a58d8
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: [AC-001]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: []
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:a654fa70619586378b468dd74c64361d115100350a79b38919ebc16398083beb"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: [AC-002]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: []
+    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:d995fa902b330b50f10178d262ff0f5bc1016ffd1fbb45f27ed64c904aa28173"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 2
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: [AC-003]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: []
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:a654fa70619586378b468dd74c64361d115100350a79b38919ebc16398083beb"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: [AC-004]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: []
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:a654fa70619586378b468dd74c64361d115100350a79b38919ebc16398083beb"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: [AC-005]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: []
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:a654fa70619586378b468dd74c64361d115100350a79b38919ebc16398083beb"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: [AC-006]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: []
+    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:d995fa902b330b50f10178d262ff0f5bc1016ffd1fbb45f27ed64c904aa28173"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 2
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: [AC-007]
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: []
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:a654fa70619586378b468dd74c64361d115100350a79b38919ebc16398083beb"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-001]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: []
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:a654fa70619586378b468dd74c64361d115100350a79b38919ebc16398083beb"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-002]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-004]
+    obligationRefs: []
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:a654fa70619586378b468dd74c64361d115100350a79b38919ebc16398083beb"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-003]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: []
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:a654fa70619586378b468dd74c64361d115100350a79b38919ebc16398083beb"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: []
+    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:d995fa902b330b50f10178d262ff0f5bc1016ffd1fbb45f27ed64c904aa28173"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 2
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-003, PD-004, PD-005]
+    obligationRefs: []
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:a654fa70619586378b468dd74c64361d115100350a79b38919ebc16398083beb"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: []
+    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:d995fa902b330b50f10178d262ff0f5bc1016ffd1fbb45f27ed64c904aa28173"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 2
+      failed: 0
+      skipped: 0
+    notes: []
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: []
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:a654fa70619586378b468dd74c64361d115100350a79b38919ebc16398083beb"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: []
+lifecycleNotes:
+  - "Next lifecycle action: verify."

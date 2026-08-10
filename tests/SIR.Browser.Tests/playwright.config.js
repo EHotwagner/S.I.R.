@@ -13,6 +13,11 @@ export default defineConfig({
   },
   webServer: {
     command: "dotnet SIR.Server.dll --urls http://127.0.0.1:5100",
+    env: {
+      ...process.env,
+      ASPNETCORE_ENVIRONMENT: "Development",
+      SIR_ALLOW_ANONYMOUS_LIVE_SESSIONS: "true",
+    },
     cwd: resolve(repoRoot, "artifacts/publish"),
     url: "http://127.0.0.1:5100/",
     reuseExistingServer: false,
