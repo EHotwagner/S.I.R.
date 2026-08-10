@@ -51,8 +51,8 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/live-session-current.junit.xml
-      digest: "sha256:9164ee87f95e308fccdfc301a0760ef6446a8293b9bcab4bf4fd2e9a5bb05fde"
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -76,8 +76,8 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/live-session-current.junit.xml
-      digest: "sha256:9164ee87f95e308fccdfc301a0760ef6446a8293b9bcab4bf4fd2e9a5bb05fde"
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -101,8 +101,8 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/live-session-current.junit.xml
-      digest: "sha256:9164ee87f95e308fccdfc301a0760ef6446a8293b9bcab4bf4fd2e9a5bb05fde"
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -126,8 +126,8 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/live-session-current.junit.xml
-      digest: "sha256:9164ee87f95e308fccdfc301a0760ef6446a8293b9bcab4bf4fd2e9a5bb05fde"
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -151,8 +151,8 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/live-session-current.junit.xml
-      digest: "sha256:9164ee87f95e308fccdfc301a0760ef6446a8293b9bcab4bf4fd2e9a5bb05fde"
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -176,8 +176,8 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/live-session-current.junit.xml
-      digest: "sha256:9164ee87f95e308fccdfc301a0760ef6446a8293b9bcab4bf4fd2e9a5bb05fde"
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -201,8 +201,8 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/live-session-current.junit.xml
-      digest: "sha256:9164ee87f95e308fccdfc301a0760ef6446a8293b9bcab4bf4fd2e9a5bb05fde"
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -226,8 +226,8 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/live-session-current.junit.xml
-      digest: "sha256:9164ee87f95e308fccdfc301a0760ef6446a8293b9bcab4bf4fd2e9a5bb05fde"
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -251,8 +251,8 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/live-session-current.junit.xml
-      digest: "sha256:9164ee87f95e308fccdfc301a0760ef6446a8293b9bcab4bf4fd2e9a5bb05fde"
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -276,8 +276,8 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/live-session-current.junit.xml
-      digest: "sha256:9164ee87f95e308fccdfc301a0760ef6446a8293b9bcab4bf4fd2e9a5bb05fde"
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -301,8 +301,8 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/live-session-current.junit.xml
-      digest: "sha256:9164ee87f95e308fccdfc301a0760ef6446a8293b9bcab4bf4fd2e9a5bb05fde"
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -326,8 +326,8 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/live-session-current.junit.xml
-      digest: "sha256:9164ee87f95e308fccdfc301a0760ef6446a8293b9bcab4bf4fd2e9a5bb05fde"
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -351,8 +351,8 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/live-session-current.junit.xml
-      digest: "sha256:9164ee87f95e308fccdfc301a0760ef6446a8293b9bcab4bf4fd2e9a5bb05fde"
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -376,8 +376,8 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/live-session-current.junit.xml
-      digest: "sha256:9164ee87f95e308fccdfc301a0760ef6446a8293b9bcab4bf4fd2e9a5bb05fde"
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2

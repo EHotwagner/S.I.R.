@@ -29,11 +29,23 @@ module LiveAuthority =
 
     let mutable private timeProvider = TimeProvider.System
     let mutable private tokenLifetime = TimeSpan.FromMinutes 15.0
+    let mutable private tokenValidationCount = 0
+    let mutable private sessionLookupCount = 0
 
     /// Configures the host-owned lifetime policy; production supplies DI's TimeProvider.
     let configure (clock: TimeProvider) lifetime =
         timeProvider <- clock
         tokenLifetime <- lifetime
+
+    /// Resets deterministic admission work counters used by the focused transport baseline.
+    let resetStructuralCounters () =
+        lock gate (fun () ->
+            tokenValidationCount <- 0
+            sessionLookupCount <- 0)
+
+    /// Returns (token validations, session lookups) for the current live-process baseline.
+    let structuralCounters () =
+        lock gate (fun () -> tokenValidationCount, sessionLookupCount)
 
     let private hex (bytes: byte array) = Convert.ToHexString(bytes).ToLowerInvariant()
 
@@ -106,6 +118,8 @@ module LiveAuthority =
 
     let authorize accessToken connectionId =
         lock gate (fun () ->
+            tokenValidationCount <- tokenValidationCount + 1
+            sessionLookupCount <- sessionLookupCount + 1
             sessions
             |> Seq.tryPick (fun pair ->
                 let state = pair.Value
@@ -120,6 +134,8 @@ module LiveAuthority =
 
     let advance sessionId actorId accessToken connectionId sequence =
         lock gate (fun () ->
+            tokenValidationCount <- tokenValidationCount + 1
+            sessionLookupCount <- sessionLookupCount + 1
             match sessions.TryGetValue sessionId with
             | true, state
                 when state.ActorId = actorId
@@ -135,6 +151,8 @@ module LiveAuthority =
 
     let reconnect sessionId actorId accessToken connectionId lastServerSequence lastProjectionRevision =
         lock gate (fun () ->
+            tokenValidationCount <- tokenValidationCount + 1
+            sessionLookupCount <- sessionLookupCount + 1
             match sessions.TryGetValue sessionId with
             | true, state
                 when state.ActorId = actorId

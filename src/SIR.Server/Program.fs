@@ -14,34 +14,7 @@ type Program() = class end
 
 module Program =
 
-    let createApp (args: string array) =
-        let builder = WebApplication.CreateBuilder args
-        builder.Services.AddSignalR() |> ignore
-        builder.Services.AddSingleton<TimeProvider>(TimeProvider.System) |> ignore
-        builder.Services
-            .AddAuthentication("sir-live")
-            .AddScheme<AuthenticationSchemeOptions, LiveAuthenticationHandler>("sir-live", null)
-            |> ignore
-        builder.Services.AddAuthorization() |> ignore
-        let app = builder.Build()
-        LiveAuthority.configure (app.Services.GetRequiredService<TimeProvider>()) (TimeSpan.FromMinutes 15.0)
-        app
-
-    [<EntryPoint>]
-    let main args =
-        let builder = WebApplication.CreateBuilder args
-        builder.Services.AddSignalR() |> ignore
-        builder.Services.AddSingleton<TimeProvider>(TimeProvider.System) |> ignore
-        builder.Services
-            .AddAuthentication("sir-live")
-            .AddScheme<AuthenticationSchemeOptions, LiveAuthenticationHandler>("sir-live", null)
-            |> ignore
-        builder.Services.AddAuthorization() |> ignore
-        let app = builder.Build()
-        LiveAuthority.configure (app.Services.GetRequiredService<TimeProvider>()) (TimeSpan.FromMinutes 15.0)
-        app.UseAuthentication() |> ignore
-        app.UseAuthorization() |> ignore
-
+    let private mapRoutes (app: WebApplication) =
         app.MapPost(
             "/api/bootstrap",
             Func<HttpRequest, Task<IResult>>(fun request ->
@@ -73,5 +46,25 @@ module Program =
         app.UseDefaultFiles() |> ignore
         app.UseStaticFiles() |> ignore
         app.MapFallbackToFile("index.html") |> ignore
+
+    let createApp (args: string array) =
+        let builder = WebApplication.CreateBuilder args
+        builder.Services.AddSignalR() |> ignore
+        builder.Services.AddSingleton<TimeProvider>(TimeProvider.System) |> ignore
+        builder.Services
+            .AddAuthentication("sir-live")
+            .AddScheme<AuthenticationSchemeOptions, LiveAuthenticationHandler>("sir-live", null)
+            |> ignore
+        builder.Services.AddAuthorization() |> ignore
+        let app = builder.Build()
+        LiveAuthority.configure (app.Services.GetRequiredService<TimeProvider>()) (TimeSpan.FromMinutes 15.0)
+        app.UseAuthentication() |> ignore
+        app.UseAuthorization() |> ignore
+        mapRoutes app
+        app
+
+    [<EntryPoint>]
+    let main args =
+        let app = createApp args
         app.Run()
         0

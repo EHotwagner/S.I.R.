@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "2b87580671835b5dac56ea59120c0a9607b93e1b1e52b115baef00ac62f2ba73"
+        "value": "44b997cd22e60a4714f267a71a3b8594f94991749d1833f6b1404bae0f4ef989"
       }
     },
     {
@@ -1102,7 +1102,7 @@
           "path": "work/148-live-session-authentication/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "2b87580671835b5dac56ea59120c0a9607b93e1b1e52b115baef00ac62f2ba73"
+            "value": "44b997cd22e60a4714f267a71a3b8594f94991749d1833f6b1404bae0f4ef989"
           },
           "schemaVersion": 1
         },
@@ -1133,7 +1133,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "d67480645e454af77cf58567c51c539986e6bac3ff73432a815f732b1ea1c2f4"
+        "value": "c5a1efab84eba940f5fa39a42813e5e0da706d1a1683fdc797a2d682d06d669d"
       },
       "currency": "current"
     }
