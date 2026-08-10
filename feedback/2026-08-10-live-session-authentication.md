@@ -5,14 +5,14 @@ workspace: S.I.R
 cycle: item-148-live-session-authentication
 lane: sdd
 toolVersion: 1.0.0
-commit: 69b1729fbdac795b3eda99c8bdde1a6f7deb73e6
+commit: f083820c43a9727427f9442277a89bc07bfde5b0
 ---
 
 ## §1 Provenance and confidence
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring, implementation-test-evidence, verify-ship-pr
-- **material events:** 1
+- **material events:** 2
 - **zero-event reason:** n/a
 - **checkpoint:** `feedback/checkpoints/item-148-live-session-authentication.jsonl` (one validated event)
 - **boundary:** fresh repair phase for issue #148 after PR #160 exhausted its ordinary review rounds.
@@ -24,7 +24,7 @@ The SDD cascade reconstructed a current `implementationReady` package from the c
 
 ## §3 What did not
 
-The product’s declared workflow requires schema-v2 feedback, but the repository does not include the referenced `fs-gg-feedback-report` tool. Completing the required report therefore needed a separate discovery step.
+The product’s declared workflow requires schema-v2 feedback, but the repository does not include the referenced `fs-gg-feedback-report` tool. Completing the required report therefore needed a separate discovery step. The first independent review also found that a changed production bundle had not been rebound into the Persistent workspace M9 review manifest, blocking both required CI jobs until regeneration.
 
 ## §4 Findings
 
@@ -41,6 +41,19 @@ The product’s declared workflow requires schema-v2 feedback, but the repositor
 - **Avoidable cost:** one repository-wide tool discovery and use of the shared canonical template.
 - **Disposition:** skill fix
 
+#### §4.2 Hash-bound M9 review evidence was stale after the production bundle changed
+
+- **Kind:** orchestration
+- **Impact:** the documentation and cross-runtime-conformance CI jobs failed, blocking releaseability.
+- **Expected:** every required production-bundle-bound review manifest is regenerated with the client change.
+- **Observed:** `docs/assets/persistent-workspace-m9-review/manifest.json` retained the prior bundle digest until the repair phase regenerated it.
+- **Evidence:** command:node scripts/test-persistent-workspace-m9-acceptance.mjs; file:docs/assets/persistent-workspace-m9-review/manifest.json
+- **Version:** current repair branch production client bundle.
+- **Owner:** S.I.R review artifact generation
+- **Recurrence:** seen again #148; same existing bundle-binding regression cause, repaired in this PR.
+- **Avoidable cost:** one critic repair round, one production client rebuild, and review-artifact regeneration.
+- **Disposition:** product fix
+
 ## §5 Did not exercise
 
 Scaffolding and package-upgrade workflows were not exercised because this was a repair branch based on an existing product workspace.
@@ -55,7 +68,7 @@ None observed. The shared feedback tool was used only to author this durable rep
 
 ## §8 Friction and avoidable cost
 
-The missing packaged feedback skill required one discovery/recovery loop. Browser execution also required selecting the system Chromium because Playwright’s headless-shell binary was unavailable; that environment selection is recorded by the passing command rather than committed as a product workaround.
+The missing packaged feedback skill required one discovery/recovery loop. Stale M9 bundle-bound evidence required one critic repair round, client rebuild, and review-artifact regeneration. Browser execution also required selecting the system Chromium because Playwright’s headless-shell binary was unavailable; that environment selection is recorded by the passing command rather than committed as a product workaround.
 
 ## §9 Skill value and gaps
 
