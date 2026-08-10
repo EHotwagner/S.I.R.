@@ -17,15 +17,15 @@ sources:
     schemaVersion: 1
   - label: clarifications
     path: work/146-authoritative-live-snapshots/clarifications.md
-    digest: e327637ace906ea66e39f17815a7e6a33cf022fb28d5f78480b255984798bd7f
+    digest: 83a717999c46423fc5473cb2afc01e6001449c9ca6064e57d8e8f36b5c2bca3e
     schemaVersion: 1
   - label: checklist
     path: work/146-authoritative-live-snapshots/checklist.md
-    digest: e2ca0a4a8923c0e979674e8d8249459cff2e1b15b185d3e0535a894a89678582
+    digest: bfe60b73adc304d62309acd5fac0b7da96cab36282e871440f5d21f1dafbd295
     schemaVersion: 1
   - label: plan
     path: work/146-authoritative-live-snapshots/plan.md
-    digest: eb18050b28b34fd03bb20833206f518c373a133c8ee0eafeb1894391003f5bba
+    digest: 380018fc7c32a4d8b504258f4f8fc28d19be266e46433ff833f5e730b8990ebf
     schemaVersion: 1
 tasks:
   - id: T001

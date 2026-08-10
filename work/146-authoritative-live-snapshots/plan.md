@@ -17,8 +17,8 @@ Prose status: planned
 
 ## Source Snapshot
 - spec: work/146-authoritative-live-snapshots/spec.md sha256:56b3a112e86af462d03eca5fe7487296cb2282ab5f1d63b32a76dc658ba53614 schemaVersion:1
-- clarifications: work/146-authoritative-live-snapshots/clarifications.md sha256:e327637ace906ea66e39f17815a7e6a33cf022fb28d5f78480b255984798bd7f schemaVersion:1
-- checklist: work/146-authoritative-live-snapshots/checklist.md sha256:e2ca0a4a8923c0e979674e8d8249459cff2e1b15b185d3e0535a894a89678582 schemaVersion:1
+- clarifications: work/146-authoritative-live-snapshots/clarifications.md sha256:83a717999c46423fc5473cb2afc01e6001449c9ca6064e57d8e8f36b5c2bca3e schemaVersion:1
+- checklist: work/146-authoritative-live-snapshots/checklist.md sha256:bfe60b73adc304d62309acd5fac0b7da96cab36282e871440f5d21f1dafbd295 schemaVersion:1
 
 ## Plan Scope
 - Move the existing SignalR slice behind Elmish effects and project accepted authority through the shared persistent tactical renderer.
@@ -41,7 +41,7 @@ Prose status: planned
 - VO-003 [PD-001] [PD-003] regression: Add focused client/server/browser coverage and demonstrate the new regression gate reds when its live subject is mutated.
 
 ## Performance Intent
-No producer-owned typed performance intent or target FPS is declared for this work item. The implementation will retain existing structural counters and report the absence rather than inventing a timing target; the required player journey remains production-route evidence, not a performance substitute.
+No performance intent is declared for this work item.
 
 ## Migration Posture
 - PM-001 [PC-001] complete: The former global live slice is removed in the same change; no dual routing or silent fallback remains.

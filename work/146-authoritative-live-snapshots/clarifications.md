@@ -23,9 +23,9 @@ publicOrToolFacingImpact: true
 - CQ-002: Reuse the shared tactical projection/disclosure boundary and render a deterministic diagnostic rather than raw transport or snapshot content.
 
 ## Decisions
-- DEC-001 [CQ-001] [FR-002] accepted: Browser evidence follows the visible product command route through live connection and server authority.
-- DEC-002 [CQ-002] [FR-001] [FR-003] accepted: Live snapshots enter Elmish as decoded messages and project through the existing shared tactical scene/disclosure seam.
-- DEC-003 [FR-004] accepted: Remove the out-of-tree DOM mount, mutable module session, and test-only global hooks instead of retaining a parallel compatibility path.
+- DEC-001: [CQ-001] [FR-002] accepted: Browser evidence follows the visible product command route through live connection and server authority.
+- DEC-002: [CQ-002] [FR-001] [FR-003] accepted: Live snapshots enter Elmish as decoded messages and project through the existing shared tactical scene/disclosure seam.
+- DEC-003: [FR-004] accepted: Remove the out-of-tree DOM mount, mutable module session, and test-only global hooks instead of retaining a parallel compatibility path.
 
 ## Accepted Deferrals
 No accepted deferrals recorded.
