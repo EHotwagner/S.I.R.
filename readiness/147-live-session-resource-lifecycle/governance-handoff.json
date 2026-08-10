@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/147-live-session-resource-lifecycle/ship.json",
-      "digest": "sha256:1a67a92c78098f422e495f7894b2aae3bdfb858bffb9ce5044118541ff5f2186",
+      "digest": "sha256:508d90263c5f76b4050a809c1787d56e9f6f0c744ed150862eeeaa368f1ecdb2",
       "schemaVersion": 1
     },
     {
       "path": "readiness/147-live-session-resource-lifecycle/verify.json",
-      "digest": "sha256:50686f2767876060057759f1062194a31c28634057750e8f685408b879cf2a2b",
+      "digest": "sha256:3dcab4531910bd4c76aca6b90ee1aedae2f889b508d738217f3f00ef4d814fdc",
       "schemaVersion": 1
     },
     {
       "path": "readiness/147-live-session-resource-lifecycle/work-model.json",
-      "digest": "sha256:d641d15e961d873e30becebe8ba1edde008a16ab2cc67abbed46d53dce4ea188",
+      "digest": "sha256:d1c2a8c3bf6fa2ee35b8f32664f9cbf23770abf29db15f8fe665026a2eea0a90",
       "schemaVersion": 1
     }
   ],
