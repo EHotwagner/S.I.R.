@@ -1,7 +1,7 @@
 schemaVersion: 1
 workId: 146-authoritative-live-snapshots
 stage: evidence
-status: evidenceReady
+status: needsEvidenceCorrection
 sourceSpec: work/146-authoritative-live-snapshots/spec.md
 sourceClarifications: work/146-authoritative-live-snapshots/clarifications.md
 sourceChecklist: work/146-authoritative-live-snapshots/checklist.md
@@ -487,10 +487,10 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    rationale: "Generated review bindings are current by their generator and CI qualification, while fsgg-sdd refresh is independently blocked on a work-model currency inconsistency."
-    owner: FS.GG SDD generated-view tooling
-    scope: Machine-readable generated-view currency receipt for the M9 binding and SDD refresh repair.
-    laterLifecycleVisibility: "The generated manifests and CI qualification remain checked; the refresh generator defect is retained in feedback for the next SDD tooling release."
+    rationale: "Generated-view currency is established by the generator and qualification command, not by an observed test receipt; refresh is currently successful."
+    owner: S.I.R review artifact generation
+    scope: Generated map-editor and persistent-workspace-M9 review binding currency.
+    laterLifecycleVisibility: CI runs the generator and qualification commands whenever the client bundle changes.
     notes: []
 lifecycleNotes:
   - "Next lifecycle action: verify."

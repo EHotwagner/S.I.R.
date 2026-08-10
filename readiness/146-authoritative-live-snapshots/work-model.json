@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "bfd58360e3481aeca196a7cf0bade906c1a4c8279718c7ee0925586bc7dd617a"
+        "value": "a081891683740fe9498b428a959849ddd5974afad85d1333e4265a262d475848"
       }
     },
     {
@@ -1212,7 +1212,7 @@
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
       "performanceMeasurements": [],
-      "rationale": "Generated review bindings are current by their generator and CI qualification, while fsgg-sdd refresh is independently blocked on a work-model currency inconsistency.",
+      "rationale": "Generated-view currency is established by the generator and qualification command, not by an observed test receipt; refresh is currently successful.",
       "source": "work/146-authoritative-live-snapshots/evidence.yml",
       "sourceLocation": {
         "line": 18,
@@ -1274,7 +1274,7 @@
           "path": "work/146-authoritative-live-snapshots/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "bfd58360e3481aeca196a7cf0bade906c1a4c8279718c7ee0925586bc7dd617a"
+            "value": "a081891683740fe9498b428a959849ddd5974afad85d1333e4265a262d475848"
           },
           "schemaVersion": 1
         },
@@ -1305,7 +1305,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "105c49a984c3fdbf8bb91f7164f9b79cb871e1109112c10a9676a85a11258149"
+        "value": "00c100bba038c89072f19a97dfab0ac1ff4556019c848565451b0e0f1876b49e"
       },
       "currency": "current"
     }

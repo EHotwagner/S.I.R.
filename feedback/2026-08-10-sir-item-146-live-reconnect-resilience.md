@@ -20,7 +20,7 @@ commit: f02a5596849ae116dba4cb35239ad7e9836cb8d7
 The typed SDD lifecycle and production Chromium journey exposed the separate DOM live slice and verified the Elmish replacement.
 
 ## §3 What did not
-The route reader crashes for a noncanonical repository ref, and the SDD refresh generator remains inconsistent after ship readiness.
+The route reader crashes for a noncanonical repository ref. An initial SDD generated-view failure was resolved by correcting the authored `DEC-###:` grammar.
 
 ## §4 Findings
 #### §4.1 Noncanonical delivery-route ref crashes the coordinator reader
@@ -35,17 +35,17 @@ The route reader crashes for a noncanonical repository ref, and the SDD refresh 
 - **Avoidable cost:** one route-read recovery
 - **Disposition:** product fix
 
-#### §4.2 SDD refresh remains blocked after shipReady
-- **Kind:** defect
-- **Impact:** generated guidance cannot be refreshed for an otherwise ship-ready work item.
-- **Expected:** refresh recognizes the work model created by verify/ship.
-- **Observed:** refresh says analysis waits for work-model while ship reports generated views current.
+#### §4.2 SDD generated-view friction was resolved by authored decision grammar
+- **Kind:** documentation
+- **Impact:** hidden derived diagnostics initially obscured the malformed decision grammar and delayed generated guidance.
+- **Expected:** decision declarations are list-leading `DEC-###:` entries so the work model resolves them.
+- **Observed:** changing `DEC-001..003` to `DEC-###:` resolved unknown references; refresh now succeeds with current work model and guidance.
 - **Evidence:** command:fsgg-sdd refresh --work 146-authoritative-live-snapshots --text
 - **Version:** fsgg-sdd 1.0.0
-- **Owner:** FS.GG SDD generated-view tooling
+- **Owner:** S.I.R SDD authoring guidance
 - **Recurrence:** new
 - **Avoidable cost:** repeated generator attempts
-- **Disposition:** product fix
+- **Disposition:** accepted
 
 ## §5 Did not exercise
 Scaffolding and packaging upgrades were out of scope.
@@ -66,7 +66,7 @@ SDD, pnext-item, and intra-repo coordination were exercised; the repository-loca
 Solution build, Fable/Vite build, M4/M9 qualifications, and the system-Chromium browser journey passed. Mutation of `data-live-tick` made the journey red.
 
 ## §11 Falsifiable improvements
-Coordinator input validation must return a typed refusal for a repository without its trailing dot; SDD refresh must emit generated guidance after ship.
+Coordinator input validation must return a typed refusal for a repository without its trailing dot; clarification guidance should emphasize the list-leading `DEC-###:` grammar that generated views require.
 
 ## §12 Development-surface coverage
 | Surface | Status | Evidence and result |
