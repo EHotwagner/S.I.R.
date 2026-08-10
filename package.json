@@ -8,6 +8,7 @@
     "dev:client": "vite --config src/SIR.Client.Web/vite.config.js",
     "import:map-design": "node scripts/import-map-editor-design.mjs",
     "measure:worker": "node scripts/measure-worker.mjs",
+    "test:worker-roundtrip-race": "node scripts/test-worker-roundtrip-race.mjs",
     "review:battlefield": "node scripts/generate-battlefield-review.mjs",
     "review:map-editor": "node scripts/generate-map-editor-review.mjs",
     "review:persistent-workspace-m9": "node scripts/generate-persistent-workspace-m9-review.mjs",

@@ -138,8 +138,7 @@ for (const required of [
 }
 
 await import("./smoke-client.mjs");
-await import("./smoke-worker-roundtrip.mjs");
 
 console.log(
-  "Review M7 qualification passed: the singleton shared worksurface projects accepted committed frames, disclosed events, selection, and verification identity; registered panels uniquely own replay source/transport, disclosed roster/layers, event inspection, verification metadata, and worker state; worker-driven Play visibly interpolates only matching unit presentation coordinates before exact committed convergence, Pause remains stable, and Step remains exact; cancellation and the independent unit/edge/event/checkpoint/each-board-bound/hash/kind/mode/verification perspective rejection matrix remain fail closed; real compiled-worker full and perspective fixtures passed; legacy replay battlefield renderer/CSS is absent.",
+  "Review M7 qualification passed: the singleton shared worksurface projects accepted committed frames, disclosed events, selection, and verification identity; registered panels uniquely own replay source/transport, disclosed roster/layers, event inspection, verification metadata, and worker state; worker-driven Play visibly interpolates only matching unit presentation coordinates before exact committed convergence, Pause remains stable, and Step remains exact; cancellation and the independent unit/edge/event/checkpoint/each-board-bound/hash/kind/mode/verification perspective rejection matrix remain fail closed; the adjacent worker gate owns execution of the compiled full and perspective fixtures; legacy replay battlefield renderer/CSS is absent.",
 );
