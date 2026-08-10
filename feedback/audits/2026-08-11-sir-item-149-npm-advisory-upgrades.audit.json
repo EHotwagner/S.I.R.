@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-11-sir-item-149-npm-advisory-upgrades.md",
-  "reportSha256": "9ccd4d8a612fb6d0d4fa36939458df73c03469510d047734b90b1b58623f0210",
+  "reportSha256": "a7aaed08e1c03f4e737c9b255b757b422085dd97e19b8bf21c03266a1a023537",
   "criticMode": "separated-critic-pass",
   "criticPromptVersion": "actionability-v1",
   "findings": [

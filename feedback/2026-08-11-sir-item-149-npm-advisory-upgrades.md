@@ -97,6 +97,8 @@ The normal minted-identity advisory was initially easy to misread as a stop cond
 
 No live-compositor performance target applied to this dependency-only item. The production browser suite was exercised, but no new gameplay route was added.
 
+A workspace-wide feedback invalidation scan against `origin/main` was not a valid item-bound check: it reported an existing #148 audit binding for `docs/assets/persistent-workspace-m9-review/manifest.json`, a path outside this lane and owned by the active map/M9 closeout. The item-bound scan is limited to this cycle’s three feedback artifacts.
+
 ## §6 Doc-versus-behavior contradictions
 
 None observed.
