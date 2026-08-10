@@ -7,9 +7,6 @@
     <Content Include="../../artifacts/client/**" Link="wwwroot/%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="../SIR.Match/SIR.Match.fsproj" />
     <ProjectReference Include="../SIR.Protocol/SIR.Protocol.fsproj" />
   </ItemGroup>
