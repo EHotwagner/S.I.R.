@@ -26,12 +26,17 @@ type LiveAuthenticationHandler
         task {
             let environment = context.RequestServices.GetRequiredService<IHostEnvironment>()
             let configuration = context.RequestServices.GetRequiredService<IConfiguration>()
-            let allowed =
+            let developmentAllowed =
                 String.Equals(environment.EnvironmentName, "Development", StringComparison.OrdinalIgnoreCase)
                 && String.Equals(configuration["SIR_ALLOW_ANONYMOUS_LIVE_SESSIONS"], "true", StringComparison.OrdinalIgnoreCase)
-            let actor = string request.Headers["X-SIR-Development-Actor"]
+            let trustedProxyAllowed =
+                String.Equals(configuration["LiveAuthentication:TrustedProxyActorHeader"], "true", StringComparison.OrdinalIgnoreCase)
+            let actor =
+                if developmentAllowed then string request.Headers["X-SIR-Development-Actor"]
+                elif trustedProxyAllowed then string request.Headers["X-SIR-Authenticated-Actor"]
+                else ""
 
-            if allowed && not (String.IsNullOrWhiteSpace actor) then
+            if not (String.IsNullOrWhiteSpace actor) then
                 let identity = ClaimsIdentity([ Claim(ClaimTypes.Name, actor) ], scheme.Name)
                 let ticket = AuthenticationTicket(ClaimsPrincipal identity, scheme.Name)
                 return AuthenticateResult.Success ticket
