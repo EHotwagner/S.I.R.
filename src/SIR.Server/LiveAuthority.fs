@@ -71,6 +71,12 @@ module LiveAuthority =
 
     let activeSessionCount () = sessions.Count
 
+    /// Confirms two live records own distinct synchronization gates.
+    let independentSessionGates firstSessionId secondSessionId =
+        match sessions.TryGetValue firstSessionId, sessions.TryGetValue secondSessionId with
+        | (true, first), (true, second) -> not (Object.ReferenceEquals(first.Gate, second.Gate))
+        | _ -> false
+
     let metrics () = lock countersGate (fun () -> { ActiveSessions = sessions.Count; RejectedAdmissions = rejectedAdmissions; Evictions = evictions; Expiries = expiries; Contention = contention })
 
     let private removeExpired () =

@@ -54,7 +54,7 @@ evidence:
     synthetic: false
     observedRun:
       source: tests/SIR.Server.Tests/TestResults/147-server.trx
-      digest: "sha256:119a7e18a95f440d423fdddf89aae431c7a88c4727923cffca6a1090ad5ce168"
+      digest: "sha256:166c06325bf57b42c7677457be162c36517b56b1727b9c07cedf1e208caf4560"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -81,7 +81,7 @@ evidence:
     synthetic: false
     observedRun:
       source: tests/SIR.Server.Tests/TestResults/147-server.trx
-      digest: "sha256:119a7e18a95f440d423fdddf89aae431c7a88c4727923cffca6a1090ad5ce168"
+      digest: "sha256:166c06325bf57b42c7677457be162c36517b56b1727b9c07cedf1e208caf4560"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -108,7 +108,7 @@ evidence:
     synthetic: false
     observedRun:
       source: tests/SIR.Server.Tests/TestResults/147-server.trx
-      digest: "sha256:119a7e18a95f440d423fdddf89aae431c7a88c4727923cffca6a1090ad5ce168"
+      digest: "sha256:166c06325bf57b42c7677457be162c36517b56b1727b9c07cedf1e208caf4560"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -135,7 +135,7 @@ evidence:
     synthetic: false
     observedRun:
       source: tests/SIR.Server.Tests/TestResults/147-server.trx
-      digest: "sha256:119a7e18a95f440d423fdddf89aae431c7a88c4727923cffca6a1090ad5ce168"
+      digest: "sha256:166c06325bf57b42c7677457be162c36517b56b1727b9c07cedf1e208caf4560"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -162,7 +162,7 @@ evidence:
     synthetic: false
     observedRun:
       source: tests/SIR.Server.Tests/TestResults/147-server.trx
-      digest: "sha256:119a7e18a95f440d423fdddf89aae431c7a88c4727923cffca6a1090ad5ce168"
+      digest: "sha256:166c06325bf57b42c7677457be162c36517b56b1727b9c07cedf1e208caf4560"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15

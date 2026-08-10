@@ -130,7 +130,8 @@ type LiveSessionAuthenticationTests() =
             content.Headers.ContentLength <- Nullable()
             request.Content <- content
             let response = client.SendAsync(request).GetAwaiter().GetResult()
-            require (response.StatusCode = HttpStatusCode.BadRequest) "chunked oversized bootstrap bodies must be refused by the streaming bound")
+            let body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+            require (response.StatusCode = HttpStatusCode.BadRequest && body.Contains("SIR.LIVE.BOOTSTRAP.BODY_TOO_LARGE")) "chunked oversized bootstrap bodies must be refused by the streaming bound before parsing")
 
     [<Fact>]
     member _.``query only credentials and revoked sessions are denied``() =
@@ -210,6 +211,7 @@ type LiveSessionAuthenticationTests() =
         let right = LiveAuthority.bootstrap "right" "right" |> Result.defaultWith failwith
         LiveAuthority.authorize left.AccessToken "left-c" |> ignore
         LiveAuthority.authorize right.AccessToken "right-c" |> ignore
+        require (LiveAuthority.independentSessionGates left.SessionId right.SessionId) "independent sessions must retain distinct synchronization gates"
         let results = [| left, "left-c"; right, "right-c" |] |> Array.Parallel.map (fun (session, connection) -> LiveAuthority.advance session.SessionId session.ActorId session.AccessToken connection 1 |> Option.isSome)
         require (results = [| true; true |]) "independent sessions must mutate concurrently without a shared authority lock"
 
