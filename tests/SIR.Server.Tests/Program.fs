@@ -5,6 +5,7 @@ open System.IO
 open System.Net
 open System.Net.Http
 open System.Text
+open System.Security.Cryptography
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.Mvc.Testing
 open SIR.Protocol.Http
@@ -24,43 +25,58 @@ type ServerFactory() =
     override _.ConfigureWebHost(builder) =
         builder.UseContentRoot(Path.GetFullPath("../../src/SIR.Server", __SOURCE_DIRECTORY__)) |> ignore
 
-let post (client: HttpClient) actor (header: string option) (developmentHeader: string option) =
+let base64Url (bytes: byte array) = Convert.ToBase64String(bytes).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+
+let productionToken actor =
+    let encode (text: string) = Encoding.UTF8.GetBytes(text) |> base64Url
+    let header = encode "{\"alg\":\"HS256\",\"typ\":\"JWT\"}"
+    let payload = encode $"{{\"iss\":\"sir-tests\",\"aud\":\"sir-live-tests\",\"sub\":\"{actor}\",\"exp\":{DateTimeOffset.UtcNow.AddMinutes(10.0).ToUnixTimeSeconds()}}}"
+    let unsignedToken = $"{header}.{payload}"
+    use hmac = new HMACSHA256(Encoding.UTF8.GetBytes("sir-tests-signing-key-must-be-at-least-32-bytes"))
+    $"{unsignedToken}.{hmac.ComputeHash(Encoding.UTF8.GetBytes(unsignedToken)) |> base64Url}"
+
+let post (client: HttpClient) actor (bearer: string option) (spoofedHeader: string option) (developmentHeader: string option) =
     let request = new HttpRequestMessage(HttpMethod.Post, "/api/bootstrap?access_token=query-only-token")
     request.Content <- new StringContent(BootstrapV1.encodeRequest { Version = 1; ActorName = actor }, Encoding.UTF8, "application/json")
-    header |> Option.iter (fun value -> request.Headers.Add("X-SIR-Authenticated-Actor", value))
+    bearer |> Option.iter (fun value -> request.Headers.Authorization <- Headers.AuthenticationHeaderValue("Bearer", value))
+    spoofedHeader |> Option.iter (fun value -> request.Headers.Add("X-SIR-Authenticated-Actor", value))
     developmentHeader |> Option.iter (fun value -> request.Headers.Add("X-SIR-Development-Actor", value))
     client.SendAsync(request).GetAwaiter().GetResult()
 
 let withProductionClient assertion =
     Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Production")
-    Environment.SetEnvironmentVariable("LiveAuthentication__TrustedProxyActorHeader", "true")
+    Environment.SetEnvironmentVariable("LiveAuthentication__Jwt__Issuer", "sir-tests")
+    Environment.SetEnvironmentVariable("LiveAuthentication__Jwt__Audience", "sir-live-tests")
+    Environment.SetEnvironmentVariable("LiveAuthentication__Jwt__SigningKey", "sir-tests-signing-key-must-be-at-least-32-bytes")
     use factory = new ServerFactory()
     use client = factory.CreateClient()
     assertion client
 
 type LiveSessionAuthenticationTests() =
     [<Fact>]
-    member _.``production rejects absent trusted proxy identity``() =
+    member _.``production rejects absent bearer identity``() =
         withProductionClient (fun client ->
-            let response = post client "proxy-player" None None
-            require (response.StatusCode = HttpStatusCode.Unauthorized) "production bootstrap must reject an absent trusted-proxy identity")
+            let response = post client "proxy-player" None None None
+            require (response.StatusCode = HttpStatusCode.Unauthorized) "production bootstrap must reject an absent bearer identity")
 
     [<Fact>]
     member _.``production rejects development identity header``() =
         withProductionClient (fun client ->
-            let response = post client "proxy-player" None (Some "proxy-player")
+            let response = post client "proxy-player" None None (Some "proxy-player")
             require (response.StatusCode = HttpStatusCode.Unauthorized) "production bootstrap must reject the development identity header")
 
     [<Fact>]
-    member _.``production admits configured matching proxy identity``() =
+    member _.``production rejects spoofed header and admits signed identity``() =
         withProductionClient (fun client ->
-            let response = post client "proxy-player" (Some "proxy-player") None
-            require (response.StatusCode = HttpStatusCode.OK) "configured trusted-proxy identity must admit the matching actor")
+            let spoofed = post client "proxy-player" None (Some "proxy-player") None
+            require (spoofed.StatusCode = HttpStatusCode.Unauthorized) "direct callers must not forge an actor with the retired proxy header"
+            let response = post client "proxy-player" (Some(productionToken "proxy-player")) None None
+            require (response.StatusCode = HttpStatusCode.OK) $"a configured signed identity must admit the matching actor (got {response.StatusCode})")
 
     [<Fact>]
     member _.``bootstrap rejects cross actor identity``() =
         withProductionClient (fun client ->
-            let response = post client "other-player" (Some "proxy-player") None
+            let response = post client "other-player" (Some(productionToken "proxy-player")) None None
             require (response.StatusCode = HttpStatusCode.BadRequest) "authenticated principals must not bootstrap another actor")
 
     [<Fact>]

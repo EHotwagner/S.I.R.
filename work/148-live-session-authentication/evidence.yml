@@ -40,22 +40,22 @@ evidence:
       type: task
       id: T001
     taskRefs: [T001]
-    requirementRefs: []
-    acceptanceScenarioRefs: []
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: [AC-001]
     clarificationDecisionRefs: []
     checklistResultRefs: []
-    planDecisionRefs: []
+    planDecisionRefs: [PD-001]
     obligationRefs: []
-    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
     sourceRefs: []
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:edafb0614ce5d49432e8e8c17ea1b6a89cf11ce2cde8475da307b9b76d01b7fc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 7
       failed: 0
       skipped: 0
     notes: []
@@ -65,11 +65,11 @@ evidence:
       type: task
       id: T002
     taskRefs: [T002]
-    requirementRefs: []
-    acceptanceScenarioRefs: []
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: [AC-002]
     clarificationDecisionRefs: []
     checklistResultRefs: []
-    planDecisionRefs: []
+    planDecisionRefs: [PD-002]
     obligationRefs: []
     artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
     sourceRefs: []
@@ -77,7 +77,7 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
+      digest: "sha256:2c2fb6fcd7ef61d103ab49bca813d66b4cbf5a26e94dcca242cec2f79a7e0f44"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -90,22 +90,22 @@ evidence:
       type: task
       id: T003
     taskRefs: [T003]
-    requirementRefs: []
-    acceptanceScenarioRefs: []
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: [AC-003]
     clarificationDecisionRefs: []
     checklistResultRefs: []
-    planDecisionRefs: []
+    planDecisionRefs: [PD-003]
     obligationRefs: []
-    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
     sourceRefs: []
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:edafb0614ce5d49432e8e8c17ea1b6a89cf11ce2cde8475da307b9b76d01b7fc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 7
       failed: 0
       skipped: 0
     notes: []
@@ -115,22 +115,22 @@ evidence:
       type: task
       id: T004
     taskRefs: [T004]
-    requirementRefs: []
-    acceptanceScenarioRefs: []
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: [AC-004]
     clarificationDecisionRefs: []
     checklistResultRefs: []
-    planDecisionRefs: []
+    planDecisionRefs: [PD-004]
     obligationRefs: []
-    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
     sourceRefs: []
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:edafb0614ce5d49432e8e8c17ea1b6a89cf11ce2cde8475da307b9b76d01b7fc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 7
       failed: 0
       skipped: 0
     notes: []
@@ -140,22 +140,22 @@ evidence:
       type: task
       id: T005
     taskRefs: [T005]
-    requirementRefs: []
-    acceptanceScenarioRefs: []
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: [AC-005]
     clarificationDecisionRefs: []
     checklistResultRefs: []
-    planDecisionRefs: []
+    planDecisionRefs: [PD-005]
     obligationRefs: []
-    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
     sourceRefs: []
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:edafb0614ce5d49432e8e8c17ea1b6a89cf11ce2cde8475da307b9b76d01b7fc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 7
       failed: 0
       skipped: 0
     notes: []
@@ -165,11 +165,11 @@ evidence:
       type: task
       id: T006
     taskRefs: [T006]
-    requirementRefs: []
-    acceptanceScenarioRefs: []
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: [AC-006]
     clarificationDecisionRefs: []
     checklistResultRefs: []
-    planDecisionRefs: []
+    planDecisionRefs: [PD-006]
     obligationRefs: []
     artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
     sourceRefs: []
@@ -177,7 +177,7 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
+      digest: "sha256:2c2fb6fcd7ef61d103ab49bca813d66b4cbf5a26e94dcca242cec2f79a7e0f44"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -190,22 +190,22 @@ evidence:
       type: task
       id: T007
     taskRefs: [T007]
-    requirementRefs: []
-    acceptanceScenarioRefs: []
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: [AC-007]
     clarificationDecisionRefs: []
     checklistResultRefs: []
-    planDecisionRefs: []
+    planDecisionRefs: [PD-007]
     obligationRefs: []
-    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
     sourceRefs: []
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:edafb0614ce5d49432e8e8c17ea1b6a89cf11ce2cde8475da307b9b76d01b7fc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 7
       failed: 0
       skipped: 0
     notes: []
@@ -217,20 +217,20 @@ evidence:
     taskRefs: [T008]
     requirementRefs: []
     acceptanceScenarioRefs: []
-    clarificationDecisionRefs: []
+    clarificationDecisionRefs: [DEC-001]
     checklistResultRefs: []
-    planDecisionRefs: []
+    planDecisionRefs: [PD-001]
     obligationRefs: []
-    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
     sourceRefs: []
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:edafb0614ce5d49432e8e8c17ea1b6a89cf11ce2cde8475da307b9b76d01b7fc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 7
       failed: 0
       skipped: 0
     notes: []
@@ -242,20 +242,20 @@ evidence:
     taskRefs: [T009]
     requirementRefs: []
     acceptanceScenarioRefs: []
-    clarificationDecisionRefs: []
+    clarificationDecisionRefs: [DEC-002]
     checklistResultRefs: []
-    planDecisionRefs: []
+    planDecisionRefs: [PD-003, PD-004]
     obligationRefs: []
-    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
     sourceRefs: []
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:edafb0614ce5d49432e8e8c17ea1b6a89cf11ce2cde8475da307b9b76d01b7fc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 7
       failed: 0
       skipped: 0
     notes: []
@@ -267,20 +267,20 @@ evidence:
     taskRefs: [T010]
     requirementRefs: []
     acceptanceScenarioRefs: []
-    clarificationDecisionRefs: []
+    clarificationDecisionRefs: [DEC-003]
     checklistResultRefs: []
-    planDecisionRefs: []
+    planDecisionRefs: [PD-007]
     obligationRefs: []
-    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
     sourceRefs: []
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:edafb0614ce5d49432e8e8c17ea1b6a89cf11ce2cde8475da307b9b76d01b7fc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 7
       failed: 0
       skipped: 0
     notes: []
@@ -294,7 +294,7 @@ evidence:
     acceptanceScenarioRefs: []
     clarificationDecisionRefs: []
     checklistResultRefs: []
-    planDecisionRefs: []
+    planDecisionRefs: [PD-001, PD-002]
     obligationRefs: []
     artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
     sourceRefs: []
@@ -302,7 +302,7 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
+      digest: "sha256:2c2fb6fcd7ef61d103ab49bca813d66b4cbf5a26e94dcca242cec2f79a7e0f44"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -319,18 +319,18 @@ evidence:
     acceptanceScenarioRefs: []
     clarificationDecisionRefs: []
     checklistResultRefs: []
-    planDecisionRefs: []
+    planDecisionRefs: [PD-001, PD-003, PD-004, PD-005]
     obligationRefs: []
-    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
     sourceRefs: []
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:edafb0614ce5d49432e8e8c17ea1b6a89cf11ce2cde8475da307b9b76d01b7fc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 7
       failed: 0
       skipped: 0
     notes: []
@@ -344,7 +344,7 @@ evidence:
     acceptanceScenarioRefs: []
     clarificationDecisionRefs: []
     checklistResultRefs: []
-    planDecisionRefs: []
+    planDecisionRefs: [PD-001, PD-002]
     obligationRefs: []
     artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
     sourceRefs: []
@@ -352,7 +352,7 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
+      digest: "sha256:2c2fb6fcd7ef61d103ab49bca813d66b4cbf5a26e94dcca242cec2f79a7e0f44"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -369,18 +369,18 @@ evidence:
     acceptanceScenarioRefs: []
     clarificationDecisionRefs: []
     checklistResultRefs: []
-    planDecisionRefs: []
+    planDecisionRefs: [PD-001]
     obligationRefs: []
-    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
+    artifacts: [tests/SIR.Server.Tests/Program.fs]
     sourceRefs: []
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:98638b39de295ce41a4d72024c03219ebc782d669b8af9544dfaf10cdc268f5b"
+      source: artifacts/test-results/live-session-server.trx
+      digest: "sha256:edafb0614ce5d49432e8e8c17ea1b6a89cf11ce2cde8475da307b9b76d01b7fc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 7
       failed: 0
       skipped: 0
     notes: []

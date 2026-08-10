@@ -29,11 +29,8 @@ type LiveAuthenticationHandler
             let developmentAllowed =
                 String.Equals(environment.EnvironmentName, "Development", StringComparison.OrdinalIgnoreCase)
                 && String.Equals(configuration["SIR_ALLOW_ANONYMOUS_LIVE_SESSIONS"], "true", StringComparison.OrdinalIgnoreCase)
-            let trustedProxyAllowed =
-                String.Equals(configuration["LiveAuthentication:TrustedProxyActorHeader"], "true", StringComparison.OrdinalIgnoreCase)
             let actor =
                 if developmentAllowed then string request.Headers["X-SIR-Development-Actor"]
-                elif trustedProxyAllowed then string request.Headers["X-SIR-Authenticated-Actor"]
                 else ""
 
             if not (String.IsNullOrWhiteSpace actor) then

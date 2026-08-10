@@ -7,6 +7,7 @@
     <Content Include="../../artifacts/client/**" Link="wwwroot/%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <ProjectReference Include="../SIR.Match/SIR.Match.fsproj" />
     <ProjectReference Include="../SIR.Protocol/SIR.Protocol.fsproj" />
   </ItemGroup>

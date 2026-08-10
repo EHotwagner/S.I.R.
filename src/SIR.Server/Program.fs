@@ -7,7 +7,10 @@ open System.Security.Claims
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Authentication
+open Microsoft.AspNetCore.Authentication.JwtBearer
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.IdentityModel.Tokens
+open System.Text
 open SIR.Protocol.Http
 
 type Program() = class end
@@ -51,9 +54,38 @@ module Program =
         let builder = WebApplication.CreateBuilder args
         builder.Services.AddSignalR() |> ignore
         builder.Services.AddSingleton<TimeProvider>(TimeProvider.System) |> ignore
+        let jwtIssuer = builder.Configuration["LiveAuthentication:Jwt:Issuer"] |> Option.ofObj |> Option.defaultValue ""
+        let jwtAudience = builder.Configuration["LiveAuthentication:Jwt:Audience"] |> Option.ofObj |> Option.defaultValue ""
+        let jwtSigningKey = builder.Configuration["LiveAuthentication:Jwt:SigningKey"] |> Option.ofObj |> Option.defaultValue ""
+        let unavailableKey = "unconfigured-live-authentication-signing-key"
         builder.Services
             .AddAuthentication("sir-live")
-            .AddScheme<AuthenticationSchemeOptions, LiveAuthenticationHandler>("sir-live", null)
+            .AddPolicyScheme(
+                "sir-live",
+                "Development-only live identity or configured JWT bearer identity",
+                (fun options ->
+                    options.ForwardDefaultSelector <-
+                        Func<HttpContext, string>(fun context ->
+                            let developmentAllowed =
+                                String.Equals(context.RequestServices.GetRequiredService<Microsoft.Extensions.Hosting.IHostEnvironment>().EnvironmentName, "Development", StringComparison.OrdinalIgnoreCase)
+                                && String.Equals(context.RequestServices.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>()["SIR_ALLOW_ANONYMOUS_LIVE_SESSIONS"], "true", StringComparison.OrdinalIgnoreCase)
+                            if developmentAllowed then "sir-development" else JwtBearerDefaults.AuthenticationScheme)))
+            .AddScheme<AuthenticationSchemeOptions, LiveAuthenticationHandler>("sir-development", null)
+            .AddJwtBearer(
+                JwtBearerDefaults.AuthenticationScheme,
+                (fun options ->
+                    options.MapInboundClaims <- false
+                    options.TokenValidationParameters <-
+                        TokenValidationParameters(
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = SymmetricSecurityKey(Encoding.UTF8.GetBytes(if String.IsNullOrWhiteSpace jwtSigningKey then unavailableKey else jwtSigningKey)),
+                            ValidateIssuer = true,
+                            ValidIssuer = jwtIssuer,
+                            ValidateAudience = true,
+                            ValidAudience = jwtAudience,
+                            NameClaimType = "sub",
+                            ValidateLifetime = true,
+                            ClockSkew = TimeSpan.Zero)))
             |> ignore
         builder.Services.AddAuthorization() |> ignore
         let app = builder.Build()
