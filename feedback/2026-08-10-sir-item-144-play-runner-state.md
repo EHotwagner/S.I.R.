@@ -12,10 +12,10 @@ commit: 9e465cdc8505b359825db1661d30e8746ca16439
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 2
+- **material events:** 3
 - **zero-event reason:** n/a
 
-The checkpoint is `feedback/checkpoints/item-144-play-runner-state.jsonl` (two events). The delivery route was lightweight, so lifecycle authoring was not used. Confidence is bounded to the built headless browser route; live compositor measurement was not required by the producer performance intent for this transport-only change.
+The checkpoint is `feedback/checkpoints/item-144-play-runner-state.jsonl` (three events). The delivery route was lightweight, so lifecycle authoring was not used. Confidence is bounded to the built headless browser route; live compositor measurement was not required by the producer performance intent for this transport-only change.
 
 ## §2 What worked
 
@@ -51,6 +51,19 @@ The fresh worktree initially lacked locked Node dependencies, so the first produ
 - **Owner:** EHotwagner/S.I.R. `scripts/smoke-client.mjs` and `docs/assets/map-editor-review`
 - **Recurrence:** first seen PR #163 initial review; related closed PR #160
 - **Avoidable cost:** one repair round and production review regeneration
+- **Disposition:** product fix
+
+#### §4.3 Compact presentation is required for Field Focus viewport safety
+
+- **Kind:** quality-gap
+- **Impact:** An in-flow unavailable-reason element pushed the expanded timeline outside the 1440×900 review viewport and failed both CI lanes.
+- **Expected:** The actionable reason remains visible without increasing the compact transport row's height.
+- **Observed:** Reintroducing an in-flow paragraph caused `test-persistent-workspace-m9-acceptance` to reject the clipped Field Focus timeline; the compact status-line form passes.
+- **Evidence:** command:node scripts/test-persistent-workspace-m9-acceptance.mjs artifacts/client
+- **Version:** PR #163 repair round 2
+- **Owner:** EHotwagner/S.I.R. `src/SIR.Client.Web/App.fs`
+- **Recurrence:** first seen PR #163 round-1 confirmation
+- **Avoidable cost:** one repair round and regeneration of both bundle-bound review artifact sets
 - **Disposition:** product fix
 
 ## §5 Did not exercise

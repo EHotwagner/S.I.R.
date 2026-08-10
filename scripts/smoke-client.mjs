@@ -542,7 +542,7 @@ assertSingleWorksurface("initial mount");
 assertModality("Editor", "initial mount");
 assertUnavailablePlay(
   "Editor without a simulator handoff",
-  "Create a simulator handoff from the Editor, then switch to Simulate to run it.",
+  "Create a simulator handoff, then switch to Simulate.",
 );
 
 const leftSidebar = shell.querySelector(".tactical-sidebar-left");
@@ -596,7 +596,7 @@ if (
 ) {
   throw new Error("Empty Review did not expose its unavailable projection explicitly.");
 }
-assertUnavailablePlay("Review without a replay", "Load a replay package before starting playback.");
+assertUnavailablePlay("Review without a replay", "Load a replay package to start playback.");
 assertSingleWorksurface("stale selection filtering");
 assertSelection("stale selection filtering", null);
 await clickModality("Editor", "return from unavailable Review");
@@ -608,7 +608,7 @@ if (workscreenRegion.getAttribute("data-active-modality") !== "Simulate") {
 }
 assertUnavailablePlay(
   "Simulate without a handoff",
-  "Create an immutable simulator handoff from the Editor before starting simulation.",
+  "Create a simulator handoff from the Editor.",
 );
 await clickModality("Editor", "return from unavailable Simulate");
 
@@ -1402,7 +1402,7 @@ for (const [label, target] of committedMutationTargets) {
 const play = buttonByText(timeline, "Play");
 if (
   !play?.disabled ||
-  !timeline.textContent.includes("Create a simulator handoff from the Editor to run the authored plan.")
+  !timeline.textContent.includes("Create a simulator handoff to run this plan.")
 ) {
   throw new Error("Plan Play remained enabled without a runnable simulator or actionable reason.");
 }
