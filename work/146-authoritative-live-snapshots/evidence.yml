@@ -1,7 +1,7 @@
 schemaVersion: 1
 workId: 146-authoritative-live-snapshots
 stage: evidence
-status: needsEvidenceCorrection
+status: evidenceReady
 sourceSpec: work/146-authoritative-live-snapshots/spec.md
 sourceClarifications: work/146-authoritative-live-snapshots/clarifications.md
 sourceChecklist: work/146-authoritative-live-snapshots/checklist.md
@@ -52,10 +52,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -77,10 +77,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -102,10 +102,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -127,10 +127,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -152,10 +152,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -177,10 +177,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -202,10 +202,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -227,10 +227,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -252,10 +252,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -277,10 +277,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -302,10 +302,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -327,10 +327,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -352,10 +352,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -377,10 +377,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -402,10 +402,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     rationale: "The M9 qualification command passed, but it emits no machine-readable test receipt that the SDD observed-run contract can bind without falsely claiming browser-JUnit coverage."
@@ -431,10 +431,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -456,10 +456,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -481,10 +481,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:16d7583669bd9356e3016174c59f7906eb454a007cdef151f25986062822ab6b"
+      digest: "sha256:c58486e8fb47311eea8c5d161b999feb02d2670aed98997416f1c1ad1c4461c1"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
     rationale: "Generated-view currency is established by the generator and qualification command, not by an observed test receipt; refresh is currently successful."
