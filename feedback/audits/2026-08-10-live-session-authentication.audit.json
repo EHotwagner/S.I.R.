@@ -1,0 +1,28 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-10-live-session-authentication.md",
+  "reportSha256": "57831c7d88177b1081a29d060348fa742a6818a926c35df83db38e1b02ba6b19",
+  "criticMode": "separated-critic-pass",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:.agents/skills/work-roadmap/references/feedback-contract.md",
+          "result": "verified",
+          "sha256": "2baee136dbcad2e40a51d28b8389feb7dfe7e1f7c85774c04ad78b0230012f02"
+        },
+        {
+          "locator": "command:find .agents/skills -maxdepth 1 -type d",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The feedback tool was recovered from the shared canonical template because the documented local package is absent."
+      ]
+    }
+  ]
+}
