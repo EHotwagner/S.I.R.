@@ -11,16 +11,16 @@ commit: df78105
 ## §1 Provenance and confidence
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 2
+- **material events:** 3
 - **zero-event reason:** n/a
-- **checkpoint:** `feedback/checkpoints/item-147-live-session-resource-lifecycle.jsonl` (two validated events)
+- **checkpoint:** `feedback/checkpoints/item-147-live-session-resource-lifecycle.jsonl` (three validated events)
 - **confidence limits:** no protected-host runtime/compositor route was required for this server-only change.
 
 ## §2 What worked
 The typed lifecycle made a missing plan decision visible before implementation and the Release server test suite gave fast, repeatable admission and lifecycle evidence.
 
 ## §3 What did not
-The initial scaffolded plan could pass early stage generation but blocked `analyze` until every generated placeholder was replaced with a real decision. Independent review also exposed missing executable resource-lifecycle coverage, repaired in round 1.
+The initial scaffolded plan could pass early stage generation but blocked `analyze` until every generated placeholder was replaced with a real decision. Independent review also exposed missing executable resource-lifecycle coverage and a decorative concurrency gate; both were repaired with executable and structural mutations.
 
 ## §4 Findings
 #### §4.1 Scaffolded plan placeholders require a correction loop before readiness
