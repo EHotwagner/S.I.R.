@@ -37,11 +37,21 @@
       "schemaStatus": "current"
     },
     {
+      "path": "readiness/155-client-module-boundaries/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "ac2b218eb7e019bcb5a897825a745e217d80bec592b6ac5a7051e035d6e682b0"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
       "path": "work/155-client-module-boundaries/checklist.md",
       "kind": "checklist",
       "digest": {
         "algorithm": "sha256",
-        "value": "18011c6aeaf35f7f461c6b9ade7cfa4d516e91146294dd86447cb08092e8bcf8"
+        "value": "51f44d28e7e88f1605bbb1bff01c261ffde07c1d95d6678bb595acbf87e4af94"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -61,7 +71,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "e2768dda1a12dd7cc0cf6b59a9a345b06a34cc86d19aa34526658e7e61184b97"
+        "value": "20c7cc71c19f43ba350230227b8b92b2eed0233bfe7d3fdce86a80f3f8b94dc0"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -71,7 +81,7 @@
       "kind": "specification",
       "digest": {
         "algorithm": "sha256",
-        "value": "67ec4bd04a4972a95014780647c7f0f1eab90bfa6bf7dbc79e078e11cde9f501"
+        "value": "4e3231ed38e1269b7742d7b0ce3291f4c14874c47ab016b672155c72f2eea689"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "3d517a3857f4c27ae6018e17ddf0bdcf12b5f74f9e2cefcff502dbb67cc2b5ef"
+        "value": "02d700e9d6cea016ba6a2861ee86a478a83adb277c2d0838c3f9f1961345fb28"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -152,6 +162,16 @@
       "id": "AR007",
       "sourcePath": "work/155-client-module-boundaries/plan.md",
       "targetPath": "work/155-client-module-boundaries/tasks.yml",
+      "sourceId": "PC-002",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR008",
+      "sourcePath": "work/155-client-module-boundaries/plan.md",
+      "targetPath": "work/155-client-module-boundaries/tasks.yml",
       "sourceId": "GV-001",
       "targetId": null,
       "relationship": "generatedViewDisposition",
@@ -159,7 +179,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR008",
+      "id": "AR009",
       "sourcePath": "work/155-client-module-boundaries/plan.md",
       "targetPath": "work/155-client-module-boundaries/tasks.yml",
       "sourceId": "PM-001",
@@ -169,7 +189,17 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR009",
+      "id": "AR010",
+      "sourcePath": "work/155-client-module-boundaries/plan.md",
+      "targetPath": "work/155-client-module-boundaries/tasks.yml",
+      "sourceId": "PM-002",
+      "targetId": null,
+      "relationship": "migrationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR011",
       "sourcePath": "work/155-client-module-boundaries/plan.md",
       "targetPath": "work/155-client-module-boundaries/tasks.yml",
       "sourceId": "PD-001",
@@ -179,7 +209,27 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR010",
+      "id": "AR012",
+      "sourcePath": "work/155-client-module-boundaries/plan.md",
+      "targetPath": "work/155-client-module-boundaries/tasks.yml",
+      "sourceId": "PD-002",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR013",
+      "sourcePath": "work/155-client-module-boundaries/plan.md",
+      "targetPath": "work/155-client-module-boundaries/tasks.yml",
+      "sourceId": "PD-003",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR014",
       "sourcePath": "work/155-client-module-boundaries/plan.md",
       "targetPath": "work/155-client-module-boundaries/tasks.yml",
       "sourceId": null,
@@ -189,7 +239,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR011",
+      "id": "AR015",
       "sourcePath": "work/155-client-module-boundaries/plan.md",
       "targetPath": "work/155-client-module-boundaries/tasks.yml",
       "sourceId": "VO-001",
@@ -199,7 +249,27 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR012",
+      "id": "AR016",
+      "sourcePath": "work/155-client-module-boundaries/plan.md",
+      "targetPath": "work/155-client-module-boundaries/tasks.yml",
+      "sourceId": "VO-002",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR017",
+      "sourcePath": "work/155-client-module-boundaries/plan.md",
+      "targetPath": "work/155-client-module-boundaries/tasks.yml",
+      "sourceId": "VO-003",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR018",
       "sourcePath": "work/155-client-module-boundaries/spec.md",
       "targetPath": "work/155-client-module-boundaries/tasks.yml",
       "sourceId": "AC-001",
@@ -209,7 +279,27 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR013",
+      "id": "AR019",
+      "sourcePath": "work/155-client-module-boundaries/spec.md",
+      "targetPath": "work/155-client-module-boundaries/tasks.yml",
+      "sourceId": "AC-002",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR020",
+      "sourcePath": "work/155-client-module-boundaries/spec.md",
+      "targetPath": "work/155-client-module-boundaries/tasks.yml",
+      "sourceId": "AC-003",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR021",
       "sourcePath": "work/155-client-module-boundaries/spec.md",
       "targetPath": "work/155-client-module-boundaries/checklist.md",
       "sourceId": null,
@@ -219,7 +309,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR014",
+      "id": "AR022",
       "sourcePath": "work/155-client-module-boundaries/spec.md",
       "targetPath": "work/155-client-module-boundaries/plan.md",
       "sourceId": null,
@@ -229,7 +319,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR015",
+      "id": "AR023",
       "sourcePath": "work/155-client-module-boundaries/spec.md",
       "targetPath": "work/155-client-module-boundaries/tasks.yml",
       "sourceId": "FR-001",
@@ -239,7 +329,27 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR016",
+      "id": "AR024",
+      "sourcePath": "work/155-client-module-boundaries/spec.md",
+      "targetPath": "work/155-client-module-boundaries/tasks.yml",
+      "sourceId": "FR-002",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR025",
+      "sourcePath": "work/155-client-module-boundaries/spec.md",
+      "targetPath": "work/155-client-module-boundaries/tasks.yml",
+      "sourceId": "FR-003",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR026",
       "sourcePath": "work/155-client-module-boundaries/spec.md",
       "targetPath": "work/155-client-module-boundaries/clarifications.md",
       "sourceId": null,
@@ -249,7 +359,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR017",
+      "id": "AR027",
       "sourcePath": "work/155-client-module-boundaries/spec.md",
       "targetPath": "work/155-client-module-boundaries/tasks.yml",
       "sourceId": null,
@@ -259,7 +369,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR018",
+      "id": "AR028",
       "sourcePath": "work/155-client-module-boundaries/tasks.yml",
       "targetPath": "work/155-client-module-boundaries/tasks.yml",
       "sourceId": "T002",
@@ -269,7 +379,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR019",
+      "id": "AR029",
       "sourcePath": "work/155-client-module-boundaries/tasks.yml",
       "targetPath": "work/155-client-module-boundaries/tasks.yml",
       "sourceId": "T003",
@@ -279,7 +389,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR020",
+      "id": "AR030",
       "sourcePath": "work/155-client-module-boundaries/tasks.yml",
       "targetPath": "work/155-client-module-boundaries/tasks.yml",
       "sourceId": "T004",
@@ -289,10 +399,50 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR021",
+      "id": "AR031",
       "sourcePath": "work/155-client-module-boundaries/tasks.yml",
       "targetPath": "work/155-client-module-boundaries/tasks.yml",
       "sourceId": "T005",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR032",
+      "sourcePath": "work/155-client-module-boundaries/tasks.yml",
+      "targetPath": "work/155-client-module-boundaries/tasks.yml",
+      "sourceId": "T008",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR033",
+      "sourcePath": "work/155-client-module-boundaries/tasks.yml",
+      "targetPath": "work/155-client-module-boundaries/tasks.yml",
+      "sourceId": "T009",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR034",
+      "sourcePath": "work/155-client-module-boundaries/tasks.yml",
+      "targetPath": "work/155-client-module-boundaries/tasks.yml",
+      "sourceId": "T010",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR035",
+      "sourcePath": "work/155-client-module-boundaries/tasks.yml",
+      "targetPath": "work/155-client-module-boundaries/tasks.yml",
+      "sourceId": "T011",
       "targetId": "T001",
       "relationship": "taskDependency",
       "state": "current",
@@ -301,7 +451,7 @@
   ],
   "readiness": {
     "status": "implementationReady",
-    "readyCount": 21,
+    "readyCount": 35,
     "advisoryCount": 0,
     "warningCount": 0,
     "blockingCount": 0,
@@ -316,7 +466,7 @@
     {
       "path": "readiness/155-client-module-boundaries/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
+      "currency": "current",
       "diagnosticIds": []
     }
   ],

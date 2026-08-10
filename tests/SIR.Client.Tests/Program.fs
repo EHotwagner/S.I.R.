@@ -41,30 +41,11 @@ let private projection tick : InspectionProjection =
       Checkpoints = []
       PerspectiveHash = None }
 
-let private junitPath (arguments: string array) =
-    arguments
-    |> Array.tryFindIndex ((=) "--junit")
-    |> Option.bind (fun index -> arguments |> Array.tryItem (index + 1))
-
-let private writeJunit (path: string) (failure: string option) =
-    let escaped value = System.Security.SecurityElement.Escape value
-    match Path.GetDirectoryName path with
-    | null -> ()
-    | directory when String.IsNullOrWhiteSpace directory -> ()
-    | directory -> Directory.CreateDirectory directory |> ignore
-
-    let body =
-        match failure with
-        | None ->
-            "<testsuite name=\"SIR.Client.Tests\" tests=\"1\" failures=\"0\" errors=\"0\" skipped=\"0\"><testcase name=\"production-client-qualification\" /></testsuite>"
-        | Some message ->
-            sprintf "<testsuite name=\"SIR.Client.Tests\" tests=\"1\" failures=\"1\" errors=\"0\" skipped=\"0\"><testcase name=\"production-client-qualification\"><failure message=\"%s\" /></testcase></testsuite>" (escaped message)
-
-    File.WriteAllText(path, "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + body)
-
 [<EntryPoint>]
 let main arguments =
-    let report = junitPath arguments
+    let report = SIR.Client.TestsClientBoundaryQualification.junitPath arguments
+
+    SIR.Client.TestsClientBoundaryQualification.requireJunitArgumentContract ()
 
     match report with
     | Some path ->
@@ -74,7 +55,7 @@ let main arguments =
                 | :? exn as error -> error.ToString()
                 | value -> string value
 
-            writeJunit path (Some message))
+            SIR.Client.TestsClientBoundaryQualification.writeJunit path (Some message))
     | None -> ()
 
     require
@@ -4209,5 +4190,5 @@ let main arguments =
         p95StressExport
 
     printfn "Elmish, map-editor, laboratory, render-contract, glyph-catalog, palette, and static-battlefield tests passed: deterministic map import/export, manual/scripted/general controllers, placement validation, deterministic update, modes, bounded worker batches, compact progress, failure revocation, immutable baseline, typed validation, deterministic sweep, reproducible fixture export, sandbox, stale responses, cancellation, disclosure-safe transport, complete initial class coverage, safe placeholder, three accessible palette modes, orthographic footprints, twelve-segment health, elevation, stance, semantic-zoom hysteresis, roving focus, exact committed evidence, and a 200-unit view under the node budget."
-    report |> Option.iter (fun path -> writeJunit path None)
+    report |> Option.iter (fun path -> SIR.Client.TestsClientBoundaryQualification.writeJunit path None)
     0

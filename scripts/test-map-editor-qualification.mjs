@@ -16,6 +16,7 @@ const styles = await readFile(
   "utf8",
 );
 const appSource = await readFile(resolve("src/SIR.Client.Web/App.fs"), "utf8");
+const mapEditorSource = await readFile(resolve("src/SIR.Client/MapEditor.fs"), "utf8");
 const window = new Window({ url: "https://sir.invalid/qualification/" });
 window.document.body.innerHTML = '<div id="sir-replay-app"></div>';
 class QualificationWorker {
@@ -44,6 +45,14 @@ const failures = [];
 const require = (condition, message) => {
   if (!condition) failures.push(message);
 };
+require(
+  appSource.split("\n").length <= 8200,
+  "App composition exceeded its 8,200-line ownership ceiling; extract a typed boundary instead of regrowing it",
+);
+require(
+  mapEditorSource.split("\n").length <= 4500,
+  "MapEditor domain implementation exceeded its 4,500-line ownership ceiling; extract validation, history, revision, or projection logic",
+);
 const buttonByText = (text, root = window.document) =>
   [...root.querySelectorAll("button")].find(
     (button) => button.textContent.trim() === text,

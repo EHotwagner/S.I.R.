@@ -13,7 +13,7 @@ work:
 sources:
   - label: spec
     path: work/155-client-module-boundaries/spec.md
-    digest: 67ec4bd04a4972a95014780647c7f0f1eab90bfa6bf7dbc79e078e11cde9f501
+    digest: 4e3231ed38e1269b7742d7b0ce3291f4c14874c47ab016b672155c72f2eea689
     schemaVersion: 1
   - label: clarifications
     path: work/155-client-module-boundaries/clarifications.md
@@ -21,11 +21,11 @@ sources:
     schemaVersion: 1
   - label: checklist
     path: work/155-client-module-boundaries/checklist.md
-    digest: 18011c6aeaf35f7f461c6b9ade7cfa4d516e91146294dd86447cb08092e8bcf8
+    digest: 51f44d28e7e88f1605bbb1bff01c261ffde07c1d95d6678bb595acbf87e4af94
     schemaVersion: 1
   - label: plan
     path: work/155-client-module-boundaries/plan.md
-    digest: e2768dda1a12dd7cc0cf6b59a9a345b06a34cc86d19aa34526658e7e61184b97
+    digest: 20c7cc71c19f43ba350230227b8b92b2eed0233bfe7d3fdce86a80f3f8b94dc0
     schemaVersion: 1
 tasks:
   - id: T001
@@ -78,6 +78,66 @@ tasks:
     sourceIds: [GV-001, PD-001]
     requiredSkills: [deterministic-json]
     requiredEvidence: [EV005]
+  - id: T006
+    title: Implement requirement FR-002
+    status: pending
+    owner: sdd
+    dependencies: []
+    requirements: [FR-002]
+    decisions: []
+    sourceIds: [AC-002, FR-002, PD-002]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV006]
+  - id: T007
+    title: Implement requirement FR-003
+    status: pending
+    owner: sdd
+    dependencies: []
+    requirements: [FR-003]
+    decisions: []
+    sourceIds: [AC-003, FR-003, PD-003]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV007]
+  - id: T008
+    title: Update contract surface PC-002
+    status: pending
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-002, PD-002]
+    requiredSkills: [fsharp]
+    requiredEvidence: [EV008]
+  - id: T009
+    title: Record verification evidence VO-002
+    status: pending
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-002, PD-002, VO-002]
+    requiredSkills: [automated-tests, readiness-evidence]
+    requiredEvidence: [EV009]
+  - id: T010
+    title: Record verification evidence VO-003
+    status: pending
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PD-003, VO-003]
+    requiredSkills: [automated-tests, readiness-evidence]
+    requiredEvidence: [EV010]
+  - id: T011
+    title: Handle migration posture PM-002
+    status: pending
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-002, PM-002]
+    requiredSkills: [schema-versioning]
+    requiredEvidence: [EV011]
 acceptedDeferrals: []
 findings: []
 advisoryNotes:

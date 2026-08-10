@@ -11,11 +11,11 @@ sourceAnalysis: readiness/155-client-module-boundaries/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/155-client-module-boundaries/analysis.json
-    digest: 199f007ad37631740fab98718546b349bb3320235cec00959d74be090d222ad5
+    digest: 26c4c40e0d0327e21b6d39118725a1f3297df04b1c405f476355d05260c7665d
     schemaVersion: 1
   - label: checklist
     path: work/155-client-module-boundaries/checklist.md
-    digest: 18011c6aeaf35f7f461c6b9ade7cfa4d516e91146294dd86447cb08092e8bcf8
+    digest: 51f44d28e7e88f1605bbb1bff01c261ffde07c1d95d6678bb595acbf87e4af94
     schemaVersion: 1
   - label: clarifications
     path: work/155-client-module-boundaries/clarifications.md
@@ -23,15 +23,15 @@ sourceSnapshots:
     schemaVersion: 1
   - label: plan
     path: work/155-client-module-boundaries/plan.md
-    digest: e2768dda1a12dd7cc0cf6b59a9a345b06a34cc86d19aa34526658e7e61184b97
+    digest: 20c7cc71c19f43ba350230227b8b92b2eed0233bfe7d3fdce86a80f3f8b94dc0
     schemaVersion: 1
   - label: spec
     path: work/155-client-module-boundaries/spec.md
-    digest: 67ec4bd04a4972a95014780647c7f0f1eab90bfa6bf7dbc79e078e11cde9f501
+    digest: 4e3231ed38e1269b7742d7b0ce3291f4c14874c47ab016b672155c72f2eea689
     schemaVersion: 1
   - label: tasks
     path: work/155-client-module-boundaries/tasks.yml
-    digest: 3d517a3857f4c27ae6018e17ddf0bdcf12b5f74f9e2cefcff502dbb67cc2b5ef
+    digest: 02d700e9d6cea016ba6a2861ee86a478a83adb277c2d0838c3f9f1961345fb28
     schemaVersion: 1
 evidence:
   - id: EV001
@@ -159,5 +159,155 @@ evidence:
       failed: 0
       skipped: 0
     notes: [Generated readiness was refreshed after authored lifecycle and implementation evidence.]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV006]
+    artifacts: [src/SIR.Client/MapEditor.fs, src/SIR.Client/MapEditorHistory.fs, src/SIR.Client/MapEditorRevision.fs, src/SIR.Client/MapEditorTypes.fs, src/SIR.Client/MapEditorValidation.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: TestResults/client-boundary.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Release client build and deterministic map-editor qualification preserve the split domain surface.]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV007]
+    artifacts: [scripts/test-map-editor-qualification.mjs, tests/SIR.Client.Tests/ClientBoundaryQualification.fs, tests/SIR.Client.Tests/Program.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: TestResults/client-boundary.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Missing JUnit paths fail before qualification and source-subject mutations red unchanged App and MapEditor ceilings.]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV008]
+    artifacts: [src/SIR.Client/MapEditorInterchange.fs, src/SIR.Client/SIR.Client.fsproj]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: TestResults/client-boundary.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Compilation order preserves MapEditorInterchange as the serialization contract.]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV009]
+    artifacts: [TestResults/client-boundary.junit.xml, scripts/test-map-editor-qualification.mjs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: TestResults/client-boundary.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Map-editor M4 qualification and production client report passed after the split.]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV010]
+    artifacts: [scripts/test-map-editor-qualification.mjs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: TestResults/client-boundary.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Temporary production App and MapEditor source growth caused the unchanged ownership ceilings to fail.]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV011]
+    artifacts: [src/SIR.Client/MapEditorInterchange.fs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: TestResults/client-boundary.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Existing import/export compatibility surface was retained rather than copied.]
 lifecycleNotes:
   - "Next lifecycle action: verify."

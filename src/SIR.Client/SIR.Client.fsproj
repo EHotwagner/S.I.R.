@@ -5,6 +5,10 @@
     <Compile Include="UnitGlyphCatalog.fs" />
     <Compile Include="Battlefield.fs" />
     <Compile Include="ClientModuleBoundaries.fs" />
+    <Compile Include="MapEditorTypes.fs" />
+    <Compile Include="MapEditorHistory.fs" />
+    <Compile Include="MapEditorValidation.fs" />
+    <Compile Include="MapEditorRevision.fs" />
     <Compile Include="MapEditor.fs" />
     <Compile Include="MapEditorSimulator.fs" />
     <Compile Include="MapEditorInterchange.fs" />

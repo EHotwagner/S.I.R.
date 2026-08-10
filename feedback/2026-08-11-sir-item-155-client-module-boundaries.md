@@ -11,16 +11,16 @@ commit: pending-pr-head
 ## §1 Provenance and confidence
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 4
+- **material events:** 6
 - **zero-event reason:** n/a
-- **checkpoint:** `feedback/checkpoints/item-155-client-module-boundaries.jsonl` (four validated events)
+- **checkpoint:** `feedback/checkpoints/item-155-client-module-boundaries.jsonl` (six validated events)
 - **confidence limits:** The executable emits one suite-level JUnit testcase; individual legacy assertions remain grouped under the production qualification run.
 
 ## §2 What worked
-The existing deterministic client executable already exercised the production qualification route and became valid SDD evidence once it emitted a stable JUnit receipt. The existing 200-unit route also supplied the retained performance target without inventing a benchmark.
+The existing deterministic client executable already exercised the production qualification route and became valid SDD evidence once it emitted a stable JUnit receipt. The existing 200-unit route also supplied the retained performance target without inventing a benchmark. Compilation-ordered App and MapEditor ownership modules made the repair reviewable without replacing the root Elmish program.
 
 ## §3 What did not
-The executable had no machine-readable test result before this item, so SDD correctly refused authored pass claims without an observed-run receipt.
+The executable had no machine-readable test result before this item, so SDD correctly refused authored pass claims without an observed-run receipt. The initial narrow seam was insufficient for the requested module decomposition; the repair moved real shell, browser, command, scene, panel, and editor-domain ownership and added subject-based anti-regrowth checks.
 
 ## §4 Findings
 #### §4.1 Production client qualification lacked an observable test receipt
@@ -51,7 +51,7 @@ The first lifecycle pass stopped at the truthful observed-run gate; adding the d
 SDD evidence and verification gates correctly rejected self-attested tests and made the missing reporter actionable.
 
 ## §10 Outcome markers
-The client qualification, Web Release build, observed JUnit binding, mutation failure receipt, verify, ship, refresh, and generated agent guidance are green.
+The client qualification, Web Release build, production browser/player route, observed JUnit binding, JUnit malformed-path mutation, App/MapEditor subject-growth mutation receipts, both review-asset bindings, verify, ship, refresh, and generated agent guidance are green.
 
 ## §11 Falsifiable improvements
 Any new executable test harness should expose a deterministic JUnit or TRX output mode before its results are used as SDD verification evidence.
@@ -63,9 +63,9 @@ Any new executable test harness should expose a deterministic JUnit or TRX outpu
 | onboarding-guidance | exercised | Claimed route and baseline qualification. |
 | skills | exercised | SDD, coordination, and feedback contracts. |
 | sdd-authoring | exercised | Charter through ship completed. |
-| implementation-apis | exercised | Runtime-neutral gesture boundary extracted. |
+| implementation-apis | exercised | App shell/mode/scene/command/panel/browser and MapEditor type/history/revision/validation ownership extracted. |
 | dependencies-build | exercised | Web Release build passed. |
-| testing | exercised | Production executable emits deterministic JUnit; subject mutation failed. |
+| testing | exercised | Production executable emits deterministic JUnit, malformed path fails before qualification, and App/MapEditor subject-growth mutations fail unchanged ceilings. |
 | evidence | exercised | JUnit observed-run receipt bound to five obligations. |
 | runtime-playtest | not-exercised | No browser-route change. |
 | performance | exercised | Existing 200-unit production qualification retained its budget. |
