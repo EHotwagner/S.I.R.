@@ -24,7 +24,7 @@
       "rollForward": false
     },
     "fs.gg.coord.cli": {
-      "version": "0.21.1",
+      "version": "0.22.1",
       "commands": [
         "fsgg-coord-engine"
       ]
