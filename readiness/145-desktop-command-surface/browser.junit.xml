@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites tests="3" failures="0" skipped="0">
- <testsuite name="sir-browser" tests="3" failures="0" skipped="0">
+<testsuites tests="4" failures="0" skipped="0">
+ <testsuite name="sir-browser" tests="4" failures="0" skipped="0">
+  <testcase classname="desktop-command-surface.spec.js" name="an intentionally empty toolbar persists until reset"></testcase>
   <testcase classname="desktop-command-surface.spec.js" name="compact desktop chrome keeps a reachable overflow menu"></testcase>
   <testcase classname="desktop-command-surface.spec.js" name="desktop menu exposes registry-backed commands and Escape dismisses it"></testcase>
   <testcase classname="desktop-command-surface.spec.js" name="toolbar customization persists, reorders, and resets through the production route"></testcase>

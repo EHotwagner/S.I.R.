@@ -169,6 +169,16 @@ document.querySelectorAll("details.desktop-menu[open]").forEach(menu => {
 let private closeSiblingDesktopMenus (summary: EventTarget) : unit = jsNative
 
 [<Emit("""
+const menu = $0.closest("details.desktop-menu");
+if (menu) {
+  menu.removeAttribute("open");
+  const trigger = menu.querySelector("summary");
+  if (trigger && typeof trigger.focus === "function") trigger.focus();
+}
+""")>]
+let private closeDesktopMenuAndRestoreTrigger (target: EventTarget) : unit = jsNative
+
+[<Emit("""
 document.querySelectorAll("details.desktop-menu[open]").forEach(menu => menu.removeAttribute("open"));
 """)>]
 let private closeDesktopMenus () : unit = jsNative
@@ -179,6 +189,7 @@ if (!desktopMenu) return;
 const desktopMenuItems = Array.from(desktopMenu.querySelectorAll('[role=menuitem]:not([disabled])'));
 const desktopMenuCurrent = desktopMenuItems.indexOf(document.activeElement);
 const desktopMenuNext = desktopMenuItems[(desktopMenuCurrent + $1 + desktopMenuItems.length) % desktopMenuItems.length] || desktopMenuItems[0];
+desktopMenuItems.forEach(item => item.tabIndex = item === desktopMenuNext ? 0 : -1);
 if (desktopMenuNext) desktopMenuNext.focus();
 """)>]
 let private focusNextDesktopMenuItem (target: EventTarget) (delta: int) : unit = jsNative
@@ -432,7 +443,10 @@ let init () =
         [ "workspace.editor"; "workspace.plan"; "workspace.simulate"; "workspace.review"; "timeline.play-toggle"; "input.help" ]
     let desktopToolbarCommands =
         let stored = readDesktopToolbar ()
-        if String.IsNullOrWhiteSpace stored then defaultDesktopToolbarCommands
+        if isNull stored then defaultDesktopToolbarCommands
+        elif stored.StartsWith("v1:", StringComparison.Ordinal) then
+            let payload = stored.Substring("v1:".Length)
+            if payload = "" then [] else payload.Split('|') |> Array.toList |> List.distinct
         else
             let requested = stored.Split('|') |> Array.toList
             let known = UnifiedTacticalWorkspace.commandRegistry |> List.map _.Id |> Set.ofList
@@ -1106,11 +1120,11 @@ let rec update msg model =
         { model with DesktopToolbarCustomizationOpen = not model.DesktopToolbarCustomizationOpen }, Cmd.none
     | AddDesktopToolbarCommand commandId ->
         let commands = if List.contains commandId model.DesktopToolbarCommands then model.DesktopToolbarCommands else model.DesktopToolbarCommands @ [ commandId ]
-        writeDesktopToolbar (String.concat "|" commands)
+        writeDesktopToolbar ("v1:" + String.concat "|" commands)
         { model with DesktopToolbarCommands = commands }, Cmd.none
     | RemoveDesktopToolbarCommand commandId ->
         let commands = model.DesktopToolbarCommands |> List.filter ((<>) commandId)
-        writeDesktopToolbar (String.concat "|" commands)
+        writeDesktopToolbar ("v1:" + String.concat "|" commands)
         { model with DesktopToolbarCommands = commands }, Cmd.none
     | ReorderDesktopToolbarCommand(commandId, delta) ->
         let commands =
@@ -1118,11 +1132,11 @@ let rec update msg model =
             | Some current when current + delta >= 0 && current + delta < List.length model.DesktopToolbarCommands ->
                 model.DesktopToolbarCommands |> List.mapi (fun i value -> if i = current then model.DesktopToolbarCommands[current + delta] elif i = current + delta then commandId else value)
             | _ -> model.DesktopToolbarCommands
-        writeDesktopToolbar (String.concat "|" commands)
+        writeDesktopToolbar ("v1:" + String.concat "|" commands)
         { model with DesktopToolbarCommands = commands }, Cmd.none
     | ResetDesktopToolbar ->
         let commands = [ "workspace.editor"; "workspace.plan"; "workspace.simulate"; "workspace.review"; "timeline.play-toggle"; "input.help" ]
-        writeDesktopToolbar (String.concat "|" commands)
+        writeDesktopToolbar ("v1:" + String.concat "|" commands)
         { model with DesktopToolbarCommands = commands; DesktopToolbarCustomizationOpen = false }, Cmd.none
     | ApplicationFocusLost ->
         { model with
@@ -7080,6 +7094,7 @@ let private tacticalLayoutToolbar model dispatch =
         commandButton [
             prop.type'.button
             prop.custom ("role", "menuitem")
+            prop.tabIndex -1
             prop.disabled (not (tacticalCommandAvailable model command))
             prop.ariaLabel (command.Label + " · " + UnifiedTacticalWorkspace.displayGestureFor shortcutPlatform effective)
             match UnifiedTacticalWorkspace.accessibleGestureFor shortcutPlatform effective with
@@ -7110,16 +7125,26 @@ let private tacticalLayoutToolbar model dispatch =
                             focusNextDesktopMenuItem event.target -1
                         elif event.key = "Escape" then
                             event.preventDefault ()
-                            closeDesktopMenus ())
+                            event.stopPropagation ()
+                            closeDesktopMenuAndRestoreTrigger event.target)
                 ]
                 Html.div [
                     prop.className "desktop-menu-popover tactical-desktop-menu-popover"
                     prop.role.menu
                     prop.ariaLabel (label + " commands")
                     prop.onKeyDown (fun event ->
-                        if event.key = "Escape" then
+                        if event.key = "ArrowDown" then
                             event.preventDefault ()
-                            closeDesktopMenus ())
+                            event.stopPropagation ()
+                            focusNextDesktopMenuItem event.target 1
+                        elif event.key = "ArrowUp" then
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            focusNextDesktopMenuItem event.target -1
+                        elif event.key = "Escape" then
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            closeDesktopMenuAndRestoreTrigger event.target)
                     prop.children [ for command in commands do commandEntry command ]
                 ]
             ]
@@ -7167,7 +7192,7 @@ let private tacticalLayoutToolbar model dispatch =
                     for commandId in model.DesktopToolbarCommands do
                         match registry |> List.tryFind (fun command -> command.Id = commandId) with
                         | Some command ->
-                            tacticalCommandButton model command.Id command.Label command.Label (not (tacticalCommandAvailable model command)) (fun _ -> dispatch (InvokeTacticalCommand command.Id))
+                            tacticalCommandButton model command.Id command.Label command.Label (not (Set.contains model.Tactical.Modality command.Modalities && tacticalCommandAvailable model command)) (fun _ -> dispatch (InvokeTacticalCommand command.Id))
                         | None -> ()
                     commandButton [
                         prop.type'.button

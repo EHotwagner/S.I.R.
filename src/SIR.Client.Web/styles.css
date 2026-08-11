@@ -579,6 +579,7 @@
 #sir-replay-app .tactical-compact-toolbar {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: .3rem;
   min-height: 2.9rem;
   padding: .2rem .35rem;

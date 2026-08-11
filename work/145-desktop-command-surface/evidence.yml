@@ -54,10 +54,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/145-desktop-command-surface/browser.junit.xml
-      digest: "sha256:11147aeab5e4cab9293238d1cdae8b49c9e16c53898bebab7c34bc6cf986959c"
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 4
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -81,10 +81,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/145-desktop-command-surface/browser.junit.xml
-      digest: "sha256:11147aeab5e4cab9293238d1cdae8b49c9e16c53898bebab7c34bc6cf986959c"
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 4
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -108,10 +108,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/145-desktop-command-surface/browser.junit.xml
-      digest: "sha256:11147aeab5e4cab9293238d1cdae8b49c9e16c53898bebab7c34bc6cf986959c"
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 4
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -135,10 +135,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/145-desktop-command-surface/browser.junit.xml
-      digest: "sha256:11147aeab5e4cab9293238d1cdae8b49c9e16c53898bebab7c34bc6cf986959c"
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 4
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -162,10 +162,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/145-desktop-command-surface/browser.junit.xml
-      digest: "sha256:11147aeab5e4cab9293238d1cdae8b49c9e16c53898bebab7c34bc6cf986959c"
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 4
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -189,10 +189,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/145-desktop-command-surface/browser.junit.xml
-      digest: "sha256:11147aeab5e4cab9293238d1cdae8b49c9e16c53898bebab7c34bc6cf986959c"
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 4
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -216,10 +216,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/145-desktop-command-surface/browser.junit.xml
-      digest: "sha256:11147aeab5e4cab9293238d1cdae8b49c9e16c53898bebab7c34bc6cf986959c"
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 4
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -243,10 +243,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/145-desktop-command-surface/browser.junit.xml
-      digest: "sha256:11147aeab5e4cab9293238d1cdae8b49c9e16c53898bebab7c34bc6cf986959c"
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 4
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -270,10 +270,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/145-desktop-command-surface/browser.junit.xml
-      digest: "sha256:11147aeab5e4cab9293238d1cdae8b49c9e16c53898bebab7c34bc6cf986959c"
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 4
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -297,10 +297,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/145-desktop-command-surface/browser.junit.xml
-      digest: "sha256:11147aeab5e4cab9293238d1cdae8b49c9e16c53898bebab7c34bc6cf986959c"
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 4
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -324,10 +324,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/145-desktop-command-surface/browser.junit.xml
-      digest: "sha256:11147aeab5e4cab9293238d1cdae8b49c9e16c53898bebab7c34bc6cf986959c"
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 4
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -351,10 +351,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/145-desktop-command-surface/browser.junit.xml
-      digest: "sha256:11147aeab5e4cab9293238d1cdae8b49c9e16c53898bebab7c34bc6cf986959c"
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 4
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -378,10 +378,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/145-desktop-command-surface/browser.junit.xml
-      digest: "sha256:11147aeab5e4cab9293238d1cdae8b49c9e16c53898bebab7c34bc6cf986959c"
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 3
+      passed: 4
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]

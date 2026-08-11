@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "fb736a70a522b36d0a54b90df755d6bc03bf1e40862276901931762ae3c65f11"
+        "value": "f4924eb171c821df653b553b6c7d21ab78c388efbe5e10fe3256e2c464387ff2"
       }
     },
     {
@@ -1105,7 +1105,7 @@
           "path": "work/145-desktop-command-surface/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "fb736a70a522b36d0a54b90df755d6bc03bf1e40862276901931762ae3c65f11"
+            "value": "f4924eb171c821df653b553b6c7d21ab78c388efbe5e10fe3256e2c464387ff2"
           },
           "schemaVersion": 1
         },
@@ -1136,7 +1136,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "25c5adda241ab56965bcfbbf18d73b2fe0d348cb1f7c4d1d22bed88d690ef7b9"
+        "value": "884a4f877c832eb8b00554f82084f636601038e3926e2ef0c716d32f416e4fe4"
       },
       "currency": "current"
     }
