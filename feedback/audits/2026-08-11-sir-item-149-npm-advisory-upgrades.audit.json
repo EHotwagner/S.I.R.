@@ -1,0 +1,53 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-11-sir-item-149-npm-advisory-upgrades.md",
+  "reportSha256": "a7aaed08e1c03f4e737c9b255b757b422085dd97e19b8bf21c03266a1a023537",
+  "criticMode": "separated-critic-pass",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [{ "locator": "command:scripts/fsgg-coord whoami --mint", "result": "verified" }],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "issue:EHotwagner/S.I.R.#149", "result": "verified" },
+        { "locator": "command:scripts/fsgg-coord delivery-route show S.I.R.#149 --json", "result": "verified" }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.3",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [{ "locator": "command:node .github/scripts/check-npm-audit.mjs with Playwright 1.55.0 lock", "result": "verified" }],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.4",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:command -v fs-gg-feedback-report", "result": "verified" },
+        { "locator": "workspace:.agents/skills", "result": "verified" }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "pr:https://github.com/EHotwagner/S.I.R./pull/167#issuecomment-5247328495", "result": "verified" },
+        { "locator": "command:node .github/scripts/test-npm-audit.mjs", "result": "verified" }
+      ],
+      "confidenceLimits": []
+    }
+  ]
+}
