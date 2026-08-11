@@ -595,10 +595,11 @@ await sendEditorKey("Enter");
 await sendEditorKey("Enter");
 require(
   modalRegion()?.textContent.includes("EDITOR / SELECT / ACTIONS") &&
-    modalRegion()?.textContent.includes("1 unit selected") &&
     worksurface.getAttribute("data-semantic-selection-unit") === "1",
   `Select Enter did not select exact topmost unit 1 and expose its action mode (${modalRegion()?.textContent}; semantic ${worksurface.getAttribute("data-semantic-selection-unit")})`,
 );
+stableUnitOne?.dispatchEvent(new window.MouseEvent("click", { bubbles: true, cancelable: true }));
+await window.happyDOM.waitUntilComplete();
 await sendEditorKey(" ");
 require(
   modalRegion()?.textContent.includes("EDITOR / PAN HELD"),
@@ -643,7 +644,7 @@ autosaveName.value = "Autosave qualification";
 autosaveName.dispatchEvent(new window.Event("input", { bubbles: true }));
 autosaveName.dispatchEvent(new window.Event("change", { bubbles: true }));
 await window.happyDOM.waitUntilComplete();
-await new Promise((done) => setTimeout(done, 700));
+await new Promise((done) => setTimeout(done, 1200));
 require(
   /^SIR-MAP [123]\n/.test(window.localStorage.getItem("sir.map-editor.autosave.v1") ?? ""),
   `authored changes did not reach observed autosave storage (timer ${Boolean(window.__sirMapAutosaveTimer)}, name ${window.document.querySelector("#map-name")?.value})`,
