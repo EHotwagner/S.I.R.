@@ -23,7 +23,8 @@ test("toolbar customization persists, reorders, and resets through the productio
   await page.reload();
   await expect(page.getByRole("toolbar", { name: "Customizable top toolbar" }).getByRole("button", { name: "Switch to Review" })).toHaveCount(0);
   await page.getByRole("button", { name: "Customize toolbar", exact: true }).click();
-  await page.getByRole("button", { name: "Reset toolbar", exact: true }).click();
+  await expect(customize).toBeVisible();
+  await customize.getByRole("button", { name: "Reset toolbar", exact: true }).click();
   await expect(page.getByRole("toolbar", { name: "Customizable top toolbar" }).getByRole("button", { name: "Switch to Review" })).toBeVisible();
 });
 
