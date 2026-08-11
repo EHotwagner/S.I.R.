@@ -74,6 +74,8 @@ test("map and raster pickers reject oversized metadata before reads", async ({ p
   await selectOversizedFile(page, "#editor-map-import", "at-limit.sir-map", 2_000_000);
   await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(1);
   await expect(page.getByRole("alert")).toHaveCount(0);
+  await selectOversizedFile(page, "#editor-background-file", "at-limit.png", 10_000_000);
+  await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(2);
 });
 
 test("bootstrap fails closed for absent and cross-actor credentials", async ({ request }) => {
