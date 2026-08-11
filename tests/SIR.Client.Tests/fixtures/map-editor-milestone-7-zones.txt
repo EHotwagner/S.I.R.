@@ -1,23 +1,44 @@
-SIR-MAP 3
-size 12 8
-terrain 4 3 rough
-terrain 4 4 rough
-terrain 5 3 objective
-terrain 5 4 objective
-terrain 6 3 rough
-terrain 6 4 rough
-edge 5 2 south wall closed
-edge 6 2 south door closed
-edge 7 2 south window closed
+SIR-MAP 4
+size 24 16
+terrain 8 6 rough
+terrain 8 7 rough
+terrain 8 8 rough
+terrain 8 9 rough
+terrain 9 6 rough
+terrain 9 7 rough
+terrain 9 8 rough
+terrain 9 9 rough
+terrain 10 6 objective
+terrain 10 7 objective
+terrain 10 8 objective
+terrain 10 9 objective
+terrain 11 6 objective
+terrain 11 7 objective
+terrain 11 8 objective
+terrain 11 9 objective
+terrain 12 6 rough
+terrain 12 7 rough
+terrain 12 8 rough
+terrain 12 9 rough
+terrain 13 6 rough
+terrain 13 7 rough
+terrain 13 8 rough
+terrain 13 9 rough
+edge 10 4 south wall closed
+edge 11 4 south wall closed
+edge 12 4 south door closed
+edge 13 4 south door closed
+edge 14 4 south window closed
+edge 15 4 south window closed
 zone 1 deployment blue rectangle 3 2 3 2
 zone 2 deployment red polygon 6,1 9,1 7,4
-unit 1 blue rifleman 1 1 2 12 12 manual - N N
-unit 2 blue medic 1 5 2 12 12 scripted E,E,N N N
-unit 3 red goblin 9 1 1 12 12 general - N N
-unit 4 red troll 8 5 3 12 12 general - N N
+unit 1 blue rifleman 2 2 4 12 12 manual - N N
+unit 2 blue medic 2 10 4 12 12 scripted E,E,N N N
+unit 3 red goblin 16 2 2 12 12 general - N N
+unit 4 red troll 18 10 6 12 12 general - N N
 round-trip=True
 v1-load=True
-v1-canonical-header=SIR-MAP 3
+v1-canonical-header=SIR-MAP 4
 invalid-codes=REGION-POLYGON-AREA,REGION-POLYGON-SELF-INTERSECTION
 locked-preserved=True
 undo-redo=True

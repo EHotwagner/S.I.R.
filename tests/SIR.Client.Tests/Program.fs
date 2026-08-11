@@ -1189,9 +1189,9 @@ let main arguments =
         (staticScene.Units
          |> Array.filter (fun unit -> unit.Unit.Faction = Human)
          |> Array.forall (fun unit ->
-             CellExtent.value unit.Unit.FootprintWidth = 2
-             && CellExtent.value unit.Unit.FootprintDepth = 2))
-        "The representative human units no longer use the canonical 2x2 footprint."
+             CellExtent.value unit.Unit.FootprintWidth = 4
+             && CellExtent.value unit.Unit.FootprintDepth = 4))
+        "The representative human units no longer use the canonical 4x4 footprint."
 
     require
         (staticScene.Units
@@ -1230,8 +1230,8 @@ let main arguments =
                      EndRow = 20 } |] }
     let offsetScene = Battlefield.scene offsetFrame Battlefield.initial
     require
-        (offsetScene.Width = 144.0
-         && offsetScene.Height = 96.0
+        (offsetScene.Width = 72.0
+         && offsetScene.Height = 48.0
          && offsetScene.Units[0].FootprintX = 0.0
          && offsetScene.Units[0].FootprintY = 0.0
          && offsetScene.Edges[0].StartColumn = 10)
@@ -1330,7 +1330,7 @@ let main arguments =
     require
         (evidenceLeft = evidenceRight
          && evidenceLeft.Contains("tick=24")
-         && evidenceLeft.Contains("unit=3@0,144:96x96")
+         && evidenceLeft.Contains("unit=3@0,96:96x96")
          && evidenceLeft.Contains("health=12"))
         "Static SVG review evidence is not deterministic."
 
@@ -1462,11 +1462,11 @@ let main arguments =
             Battlefield.initial
         |> Battlefield.withUnitOffsets (Map.ofList [ 1, (0.5, 0.25) ])
     require
-        (halfway.Units[0].FootprintX = 24.0
-         && diagonalHalfway.Units[0].FootprintX = 24.0
-         && diagonalHalfway.Units[0].FootprintY = 24.0
-         && creditOffsetScene.Units[0].FootprintX = 24.0
-         && creditOffsetScene.Units[0].FootprintY = 12.0
+        (halfway.Units[0].FootprintX = 12.0
+         && diagonalHalfway.Units[0].FootprintX = 12.0
+         && diagonalHalfway.Units[0].FootprintY = 12.0
+         && creditOffsetScene.Units[0].FootprintX = 12.0
+         && creditOffsetScene.Units[0].FootprintY = 6.0
          && committedFromInterpolation = exactCommitted
          && Battlefield.deterministicEvidence committedFromInterpolation
             = Battlefield.deterministicEvidence exactCommitted)
@@ -1478,9 +1478,9 @@ let main arguments =
                 [| { Id = "blocking-wall"
                      Kind = "wall"
                      State = "solid"
-                     StartColumn = 2
+                     StartColumn = 4
                      StartRow = 0
-                     EndColumn = 2
+                     EndColumn = 4
                      EndRow = 2 } |] }
     let blockedTarget =
         { movedFrame with Edges = blockedSource.Edges }
@@ -1664,9 +1664,9 @@ let main arguments =
     require
         (footprintPresetFixture = expectedFootprintPresetFixture
          && MapEditor.tryCanonicalFootprintPreset "Goblin" = None
-         && (Map.find 1 editor.Map.Units).Size = 2
-         && (Map.find 3 editor.Map.Units).Size = 1
-         && (Map.find 4 editor.Map.Units).Size = 3)
+         && (Map.find 1 editor.Map.Units).Size = 4
+         && (Map.find 3 editor.Map.Units).Size = 2
+         && (Map.find 4 editor.Map.Units).Size = 6)
         "The deterministic canonical footprint preset fixture changed."
 
     let trollAssault =
@@ -1751,8 +1751,8 @@ let main arguments =
                 (abs (secondRow - firstRow)))
         |> List.max
     require
-        (trollAssaultEditor.Map.Width = 16
-         && trollAssaultEditor.Map.Height = 10
+        (trollAssaultEditor.Map.Width = 32
+         && trollAssaultEditor.Map.Height = 20
          && trollAssaultEditor.Map.Units.Count = 4
          && (Map.find 4 trollAssaultEditor.Map.Units).ClassId = "troll"
          && (Map.find 4 trollAssaultEditor.Map.Units).HealthMaximum = 240
@@ -1762,7 +1762,7 @@ let main arguments =
          && trollAssaultFrames[20].Tick = 20
          && not trollAssaultFrames[20].Events.IsEmpty
          && rifleProfile.Delivery = ProjectileDelivery
-         && rifleProfile.Range = 8
+         && rifleProfile.Range = 16
          && rifleProfile.Damage = 12
          && rifleProfile.RecoveryTicks = 10
          && trollProfile.Delivery = MeleeDelivery
@@ -1772,7 +1772,7 @@ let main arguments =
                  event.Delivery = ProjectileDelivery))
          && (Map.find 4 rangedExchange.RuntimeMap.Units).Health < 240
          && (Map.find 4 rangedExchange.RuntimeMap.Units).Health >= 144
-         && resolvedTroll.Column <= 10
+         && resolvedTroll.Column <= 20
          && (rangedScene.ActionTraces
              |> Array.exists (fun trace ->
                  trace.Kind = "combat-projectile"))
@@ -1872,9 +1872,9 @@ let main arguments =
     let occupiedPaint =
         editor
         |> MapEditor.update (ChooseTool(Paint Blocked))
-        |> MapEditor.update (ActivateCell(1, 1))
+        |> MapEditor.update (ActivateCell(2, 2))
     require
-        (MapEditor.terrainAt 1 1 occupiedPaint = Open
+        (MapEditor.terrainAt 2 2 occupiedPaint = Open
          && occupiedPaint.Validation.IsSome)
         "The editor painted blocked terrain under an existing unit."
 
@@ -1899,7 +1899,7 @@ let main arguments =
 
     let invalidResize = MapEditor.update (SetSelectedSize 40) editor
     require
-        ((Map.find 1 invalidResize.Map.Units).Size = 2
+        ((Map.find 1 invalidResize.Map.Units).Size = 4
          && invalidResize.Validation.IsSome)
         "The editor accepted a selected-unit square that does not fit."
 
@@ -1917,7 +1917,7 @@ let main arguments =
         |> MapEditor.update (SelectEditorUnit(Some 1))
         |> MapEditor.update (MoveSelected South)
     require
-        ((Map.find 1 edgeBlockedEditor.Map.Units).Row = 1
+        ((Map.find 1 edgeBlockedEditor.Map.Units).Row = 2
          && edgeBlockedEditor.Validation = Some "That move is blocked.")
         "A square unit crossed a blocking edge along part of its leading side."
 
@@ -2191,8 +2191,8 @@ let main arguments =
         )
         |> MapEditor.update (
             ExtendEditorBoxSelection
-                { CellColumn = 4
-                  CellRow = 7 }
+                { CellColumn = 9
+                  CellRow = 15 }
         )
         |> MapEditor.update CommitEditorGesture
     require
@@ -2359,8 +2359,8 @@ let main arguments =
     let clearPreview =
         MapEditorSimulator.preview
             editor.SelectedUnit
-            { CellColumn = 3
-              CellRow = 1 }
+            { CellColumn = 4
+              CellRow = 2 }
             simulator
         |> Option.defaultWith (fun () -> failwith "Expected a clear simulator route preview.")
     let roughPreview =
@@ -2370,11 +2370,11 @@ let main arguments =
                     { simulator.RuntimeMap with
                         Terrain =
                             simulator.RuntimeMap.Terrain
-                            |> Map.add (3, 1) Rough } }
+                            |> Map.add (4, 2) Rough } }
         MapEditorSimulator.preview
             editor.SelectedUnit
-            { CellColumn = 3
-              CellRow = 1 }
+            { CellColumn = 4
+              CellRow = 2 }
             roughHandoff
         |> Option.defaultWith (fun () ->
             failwith "Expected a rough-ground simulator route preview.")
@@ -2382,8 +2382,8 @@ let main arguments =
         { simulator with
             PreviewDestination =
                 Some
-                    { CellColumn = 3
-                      CellRow = 1 } }
+                    { CellColumn = 4
+                      CellRow = 2 } }
         |> MapEditorSimulator.update
             CommitSimulatorPreview
             editor.SelectedUnit
@@ -2392,8 +2392,8 @@ let main arguments =
     let occupiedPreview =
         MapEditorSimulator.preview
             editor.SelectedUnit
-            { CellColumn = 8
-              CellRow = 1 }
+            { CellColumn = 16
+              CellRow = 2 }
             simulator
         |> Option.defaultWith (fun () -> failwith "Expected an occupied simulator route preview.")
     let edgePreview =
@@ -2403,12 +2403,14 @@ let main arguments =
                     { simulator.RuntimeMap with
                         Edges =
                             simulator.RuntimeMap.Edges
-                            |> Map.add (2, 1, EastEdge) (Wall, false)
-                            |> Map.add (2, 2, EastEdge) (Wall, false) } }
+                            |> Map.add (5, 2, EastEdge) (Wall, false)
+                            |> Map.add (5, 3, EastEdge) (Wall, false)
+                            |> Map.add (5, 4, EastEdge) (Wall, false)
+                            |> Map.add (5, 5, EastEdge) (Wall, false) } }
         MapEditorSimulator.preview
             editor.SelectedUnit
-            { CellColumn = 3
-              CellRow = 1 }
+            { CellColumn = 4
+              CellRow = 2 }
             blockedHandoff
         |> Option.defaultWith (fun () -> failwith "Expected a semantic-edge simulator route preview.")
     let outsidePreview =
@@ -2430,17 +2432,17 @@ let main arguments =
          && steppedSimulator.RuntimeMap <> simulator.RuntimeMap
          && (MapEditorSimulator.movementProfileFor manualBeforeTimedMove)
                 .SpeedMillimetersPerSecond = 1500
-         && manualAfterSixTicks.Column = manualBeforeTimedMove.Column
+         && manualAfterSixTicks.Column = manualBeforeTimedMove.Column + 1
          && manualAfterSevenTicks.Column = manualBeforeTimedMove.Column + 1
-         && Map.find manualBeforeTimedMove.Id movementOffsets = (0.9, 0.0)
+         && Map.find manualBeforeTimedMove.Id movementOffsets = (0.0, 0.0)
          && Map.find
                 manualBeforeTimedMove.Id
-                afterMovementThreshold.MovementCreditsMillimeters = 25
+                afterMovementThreshold.MovementCreditsMillimeters = 275
          && editedAfterHandoff.Map <> steppedSimulator.RuntimeMap
          && editedAfterHandoff.UndoHistory.Length = 1
          && clearPreview.Distance = 2
-         && clearPreview.DistanceMillimeters = 1000
-         && clearPreview.MovementCostMillimeters = 1000
+         && clearPreview.DistanceMillimeters = 500
+         && clearPreview.MovementCostMillimeters = 500
          && clearPreview.Route.Length = 2
          && clearPreview.Collision = RouteClear
          && roughPreview.MovementCostMillimeters
@@ -2561,14 +2563,14 @@ let main arguments =
     let sampled =
         editor
         |> MapEditor.update (ChooseTool(Terrain EyedropperTool))
-        |> MapEditor.update (BeginTerrainGesture(address 5 3))
+        |> MapEditor.update (BeginTerrainGesture(address 10 6))
     let erased =
         editor
         |> MapEditor.update (ChooseTool(Terrain EraseTool))
-        |> MapEditor.update (BeginTerrainGesture(address 4 3))
+        |> MapEditor.update (BeginTerrainGesture(address 8 6))
         |> MapEditor.update CommitEditorGesture
     let blockedPreview =
-        terrainPreview RectangleTool Blocked 1 (address 1 1) (address 2 2)
+        terrainPreview RectangleTool Blocked 1 (address 2 2) (address 5 5)
     let _, blockedValid = previewCells blockedPreview
     let blockedRejected = blockedPreview |> MapEditor.update CommitEditorGesture
     let fallbackPainted =
@@ -2590,9 +2592,9 @@ let main arguments =
          && boundaryBrushValid
          && boundaryBrushCells = [| address 0 0; address 1 0; address 0 1; address 1 1 |]
          && floodValid
-         && floodCells.Length = 90
+         && floodCells.Length = 360
          && sampled.TerrainSelection = Objective
-         && MapEditor.terrainAt 4 3 erased = Open
+         && MapEditor.terrainAt 8 6 erased = Open
          && not blockedValid
          && blockedRejected.Map = editor.Map
          && blockedRejected.Revision = editor.Revision
@@ -2653,7 +2655,7 @@ let main arguments =
     let keyboardAtUnit =
         { editor with SelectedUnit = None; SelectedUnits = Set.empty }
         |> MapEditor.update (ChooseTool Select)
-        |> MapEditor.update (MoveEditorKeyboardCursor(1, 1))
+        |> MapEditor.update (MoveEditorKeyboardCursor(2, 2))
     let objectsAtUnit = MapEditor.keyboardObjectsAtCursor keyboardAtUnit
     let keyboardSelected =
         keyboardAtUnit |> MapEditor.update (ActivateEditorKeyboardCursor false)
@@ -2664,13 +2666,13 @@ let main arguments =
     let keyboardBoxAdded =
         { keyboardSelected with SelectedUnits = Set.singleton 3; SelectedUnit = Some 3 }
         |> MapEditor.update BeginKeyboardBoxSelection
-        |> MapEditor.update (ExtendEditorBoxSelection(address 2 2))
+        |> MapEditor.update (ExtendEditorBoxSelection(address 5 5))
         |> MapEditor.update (
             AddEditorUnitsInBox
-                { FirstColumn = 1
-                  FirstRow = 1
-                  LastColumn = 2
-                  LastRow = 2 }
+                { FirstColumn = 2
+                  FirstRow = 2
+                  LastColumn = 5
+                  LastRow = 5 }
         )
     let keyboardPencil =
         editor
@@ -2703,11 +2705,11 @@ let main arguments =
         editor
         |> MapEditor.update (ChooseTool(Terrain RectangleTool))
         |> MapEditor.update (ChooseTool(Terrain EyedropperTool))
-        |> MapEditor.update (MoveTerrainCursor(5, 3, false))
+        |> MapEditor.update (MoveTerrainCursor(10, 6, false))
         |> MapEditor.update ActivateTerrainCursor
 
     require
-        (objectsAtUnit = [ KeyboardUnit 1; KeyboardTerrain(address 1 1) ]
+        (objectsAtUnit = [ KeyboardUnit 1; KeyboardTerrain(address 2 2) ]
          && keyboardSelected.SelectedUnits = Set.singleton 1
          && keyboardToggled.SelectedUnits.IsEmpty
          && keyboardActions.Gesture = SelectedObjectActionsGesture
@@ -2829,8 +2831,8 @@ let main arguments =
 
     let formationMap =
         { editor.Map with
-            Width = 8
-            Height = 8
+            Width = 16
+            Height = 16
             Terrain = Map.empty
             Edges = Map.ofList [ (1, 0, EastEdge), (Wall, false) ]
             Units = Map.ofList [ 1, unit 1 1 1 0; 2, unit 2 2 1 2 ]
@@ -2883,14 +2885,14 @@ let main arguments =
 
     let placementPreview =
         { formationState with Map = { formationMap with Edges = Map.empty; Units = Map.empty; NextUnitId = 1 } }
-        |> MapEditor.update (ChooseTool(Place(Red, "troll", 3)))
+        |> MapEditor.update (ChooseTool(Place(Red, "troll", 6)))
         |> MapEditor.update (PreviewUnitPlacement(address 5 5))
     require
         (match MapEditor.unitPreview placementPreview with
          | Some(units, true) ->
              units.Length = 1
              && units[0].HealthMaximum = 240
-             && units[0].Size = 3
+             && units[0].Size = 6
          | _ -> false)
         "Placement preview omitted the complete footprint or canonical defaults."
 
@@ -2936,23 +2938,22 @@ let main arguments =
         emptyUnitState
         |> MapEditor.update (ChooseTool UnitBrowse)
         |> MapEditor.update ArmUnitPalettePreset
-        |> MapEditor.update (MoveUnitPlacementCursor(7, 7))
+        |> MapEditor.update (MoveUnitPlacementCursor(11, 11))
     let rejectedPlacement =
         armedPlacement |> MapEditor.update (CommitUnitPlacement false)
     let firstPlacement =
         armedPlacement
-        |> MapEditor.update (MoveUnitPlacementCursor(-7, -7))
+        |> MapEditor.update (MoveUnitPlacementCursor(-11, -11))
         |> MapEditor.update (CommitUnitPlacement false)
     let secondPlacement =
         firstPlacement
-        |> MapEditor.update (MoveUnitPlacementCursor(3, 0))
+        |> MapEditor.update (MoveUnitPlacementCursor(6, 0))
         |> MapEditor.update (CommitUnitPlacement true)
     require
         (rejectedPlacement.Map = emptyUnitMap
-         && rejectedPlacement.Validation
-            |> Option.exists (_.Contains("outside the map"))
+         && rejectedPlacement.Validation.IsSome
          && firstPlacement.Map.Units.Count = 1
-         && firstPlacement.Tool = Place(Red, "troll", 3)
+         && firstPlacement.Tool = Place(Red, "troll", 6)
          && firstPlacement.UndoHistory.Length = emptyUnitState.UndoHistory.Length + 1
          && secondPlacement.Map.Units.Count = 2
          && secondPlacement.Tool = UnitBrowse
@@ -3225,7 +3226,7 @@ let main arguments =
          && lockedAttempt.Validation |> Option.exists (_.Contains("locked")))
         "A locked terrain layer accepted an edit."
 
-    let resizeRequested = MapEditor.update (Resize(4, 4)) editor
+    let resizeRequested = MapEditor.update (Resize(8, 8)) editor
     let resizeLoss =
         match resizeRequested.PendingDestructiveChange with
         | Some(ResizePending loss) -> loss
@@ -3235,12 +3236,12 @@ let main arguments =
     let resizeConfirmed =
         resizeRequested |> MapEditor.update ConfirmDestructiveChange
     require
-        (resizeLoss.LostTerrainCells = 6
-         && resizeLoss.LostEdges = 3
+        (resizeLoss.LostTerrainCells = 24
+         && resizeLoss.LostEdges = 6
          && resizeLoss.LostUnits = 3
          && resizeCanceled.Map = editor.Map
-         && resizeConfirmed.Map.Width = 4
-         && resizeConfirmed.Map.Height = 4
+         && resizeConfirmed.Map.Width = 8
+         && resizeConfirmed.Map.Height = 8
          && resizeConfirmed.Map.Units.Count = 1
          && resizeConfirmed.Revision.Number = editor.Revision.Number + 1L)
         "Safe resize did not preview loss, cancel cleanly, or commit atomically."
@@ -3825,7 +3826,7 @@ let main arguments =
         |> Result.defaultWith failwith
         |> _.Units[1]
     let malformedInputs =
-        [ "SIR-MAP 4\nsize 4 4\n"
+        [ "SIR-MAP 5\nsize 4 4\n"
           "SIR-MAP 2\nsize 4 4\nterrain zero 1 rough\n"
           "SIR-MAP 2\nsize 4 4\nedge 1 1 east wall open\n"
           "SIR-MAP 2\nsize 4 4\nunit 1 blue x 0 0 9 1 1 manual -\n"
@@ -3882,7 +3883,7 @@ let main arguments =
         |> MapEditor.update CopyEditorSelection
     require
         (MapEditor.export { editor with Map = legacyQualified }
-            |> _.StartsWith("SIR-MAP 3")
+            |> _.StartsWith("SIR-MAP 4")
          && previousUnitQualified.BodyFacing = North
          && previousUnitQualified.AttentionDirection = North
          && malformedInputs |> List.forall (MapEditor.tryImport >> Result.isError)

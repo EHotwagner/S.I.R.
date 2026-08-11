@@ -1,0 +1,12 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/item-136-grid-resolution-footprint.md",
+  "reportSha256": "617d1471b57202a46621b2764d2cbdaca74f5cec09f484fb0b46c7e04f8dbb11",
+  "criticMode": "separated-critic-pass",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {"id":"§4.1","status":"actionable","missingFacts":[],"checkedEvidence":[{"locator":"claim:S.I.R.#136 worker=curlew-4bd9","result":"verified"}],"confidenceLimits":["independent critic pending"]},
+    {"id":"§4.2","status":"actionable","missingFacts":[],"checkedEvidence":[{"locator":"command:fsgg-sdd refresh --work 136-grid-resolution-footprint --text","result":"verified"}],"confidenceLimits":["independent critic pending"]},
+    {"id":"§4.3","status":"positive-pattern","missingFacts":[],"checkedEvidence":[{"locator":"mutation:MapScale.TicksPerSecond=19 rejected","result":"verified"}],"confidenceLimits":["independent critic pending"]}
+  ]
+}

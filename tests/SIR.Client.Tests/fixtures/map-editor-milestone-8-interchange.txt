@@ -3,12 +3,12 @@ background-dimensions=1024x512
 background-bytes=24
 background-id=sha256:f1aad65e5f5761344476c08f855d4c8b3f4537576c622c05e470e527a570778d
 background-defaults=True,0.65,FitInside
-background-aligned=100,-3.8,-10.6
+background-aligned=100,-1.4,-5.8
 background-crop=Some({ Left = 10
   Top = 10
   Width = 800
   Height = 400 })
-background-box=(-3.8, -10.6, 384, 192)
+background-box=(-1.4, -5.8, 192, 96)
 svg-rejected=True
 oversized-dimensions-rejected=True
 oversized-bytes-rejected=True
