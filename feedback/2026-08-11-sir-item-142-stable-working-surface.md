@@ -11,7 +11,7 @@ commit: pending-pr-head
 ## §1 Provenance and confidence
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 2
+- **material events:** 3
 - **zero-event reason:** n/a
 - **checkpoint:** `feedback/checkpoints/item-142-stable-working-surface.jsonl`
 - **confidence limits:** Chromium was exercised on the locally published production route.
@@ -46,6 +46,18 @@ A fresh isolated worktree did not contain restored server assets or the Playwrig
 - **Recurrence:** resolved in review round 1
 - **Avoidable cost:** one independent-review repair round
 - **Disposition:** product fix with production browser evidence
+
+#### §4.3 Hash-bound review assets caught stale smoke semantics
+- **Kind:** positive-pattern
+- **Impact:** CI-facing review artifacts remained bound to the changed production bundle instead of silently accepting stale expectations.
+- **Expected:** Smoke and review manifests describe the retained EditorScene fallback for empty Simulate and Review.
+- **Observed:** The map-editor and M9 generators detected the changed bundle, regenerated their manifests, and M9 acceptance passed after the smoke assertion was updated.
+- **Evidence:** command:npm run review:map-editor && npm run review:persistent-workspace-m9 && npm run test:persistent-workspace-m9-acceptance
+- **Version:** current
+- **Owner:** S.I.R workspace delivery
+- **Recurrence:** resolved in review round 2
+- **Avoidable cost:** none
+- **Disposition:** regenerated deterministic review assets
 
 ## §5 Did not exercise
 No typed performance intent applies.
