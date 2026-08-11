@@ -11,7 +11,7 @@ commit: pending-pr-head
 ## §1 Provenance and confidence
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 1
+- **material events:** 2
 - **zero-event reason:** n/a
 - **checkpoint:** `feedback/checkpoints/item-156-oversized-imports.jsonl` (one validated event)
 - **confidence limits:** Browser coverage uses Chromium on the production server route.
@@ -34,6 +34,18 @@ The former import paths allocated content before applying their existing size li
 - **Recurrence:** observed in this isolated worktree
 - **Avoidable cost:** one local verification retry
 - **Disposition:** environment limitation; hosted CI is authoritative
+
+#### §4.2 Replay cancellation effect was initially discarded
+- **Kind:** defect
+- **Impact:** A pre-read replay rejection cancelled model state but did not send the worker cancellation request.
+- **Expected:** The cancellation effects are dispatched through the production `effectsToCmd` path.
+- **Observed:** The error branch discarded the effects returned by `Shell.update CancelRequested` until F2R repair.
+- **Evidence:** command:npm run test:browser-import-preflight-wiring
+- **Version:** current
+- **Owner:** S.I.R browser client
+- **Recurrence:** resolved in this item
+- **Avoidable cost:** one review repair round
+- **Disposition:** product fix
 
 ## §5 Did not exercise
 No new performance target was declared for this bounded browser safety fix.
