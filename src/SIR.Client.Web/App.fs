@@ -5889,6 +5889,13 @@ let private tacticalContextHelp model dispatch =
                             prop.ariaLabel "Open simulator samples"
                             prop.onClick (fun _ -> dispatch (OpenSupportingPanel "samples"))
                         ]
+                    if model.Workspace = SimulatorWorkspace && model.Simulator.IsSome then
+                        commandButton [
+                            prop.type'.button
+                            prop.text "Reset simulation"
+                            prop.ariaLabel "Reset simulation to its immutable revision"
+                            prop.onClick (fun _ -> dispatch (InvokeTacticalCommand "simulator.reset.request"))
+                        ]
                 ]
             ]
             Html.p [

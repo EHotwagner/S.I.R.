@@ -26,7 +26,7 @@ test("a curated sample creates a visible simulator handoff and playback can rese
   await expect(page.getByRole("button", { name: "Play tactical timeline", exact: true })).toBeDisabled();
   await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
   await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
-  await page.getByRole("button", { name: /^Run .+ in Simulator$/ }).first().click();
+  await page.getByRole("button", { name: /^Load simulation sample:/ }).first().click();
 
   const play = page.getByRole("button", { name: "Play tactical timeline", exact: true });
   await expect(play).toBeEnabled();
@@ -35,8 +35,9 @@ test("a curated sample creates a visible simulator handoff and playback can rese
   await expect(pause).toBeVisible();
   await pause.click();
   await page.getByRole("button", { name: "Step tactical timeline forward", exact: true }).click();
-  await page.getByRole("button", { name: "Go to tactical timeline start", exact: true }).click();
-  await expect(page.getByRole("slider", { name: "Current tactical time" })).toHaveValue("0");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Reset simulation to its immutable revision", exact: true }).filter({ hasText: "Reset simulation" }).click();
+  await expect(page.getByText(/Authoritative runtime tick 0/)).toBeVisible();
 });
 
 test("live authority reconnect remains visible through the production command surface", async ({ page }) => {
