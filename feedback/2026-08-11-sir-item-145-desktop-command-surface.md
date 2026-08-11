@@ -11,7 +11,7 @@ commit: pending-pr-head
 ## §1 Provenance and confidence
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 2
+- **material events:** 3
 - **zero-event reason:** n/a
 - **checkpoint:** `feedback/checkpoints/item-145-desktop-command-surface.jsonl`
 - **confidence limits:** Chromium was exercised through the locally published production server; CI has not yet run on the candidate PR.
@@ -35,6 +35,18 @@ The reset assertion used visible text even though the reset control deliberately
 - **Avoidable cost:** one focused reproduction and one locator correction
 - **Disposition:** product test fix
 
+#### §4.2 Command chrome must have a fixed layout budget at Field Focus dimensions
+- **Kind:** quality-gap
+- **Impact:** The expanded timeline crossed the 1440×900 review viewport even though commands remained reachable.
+- **Expected:** The desktop command surface has bounded chrome, every closed popover is absent from layout, and Field Focus keeps the timeline inside the viewport without shell overflow.
+- **Observed:** The M9 live audit initially failed at line 311. A two-tier bounded command grid and closed-details containment produced a 966.438px × 564px workscreen (68.5% of the frame) with zero 320px overflow. Mutating the workscreen bound from `100vh - 21rem` to `100vh - 12rem` failed exactly at the same clipping assertion; restoring it passed the full M9 chain.
+- **Evidence:** pr:https://github.com/EHotwagner/S.I.R./pull/173#issuecomment-5250885535; command:npm run test:persistent-workspace-m9-acceptance -- artifacts/client
+- **Version:** production Vite bundle; system Chromium
+- **Owner:** S.I.R Client.Web tactical command chrome
+- **Recurrence:** review round 2
+- **Avoidable cost:** one layout repair and both bundle-bound review asset regenerations
+- **Disposition:** fixed with bounded command grid, closed-popover containment, and regenerated M9/map-editor assets
+
 ## §5 Did not exercise
 No live compositor or externally hosted browser route was exercised; the declared acceptance route is the locally published production server.
 
@@ -45,13 +57,13 @@ None observed.
 None.
 
 ## §8 Friction and avoidable cost
-Two material checkpoints record the misleading initial runner presentation. The trace, explicit shell exit, report mtime, and process inspection separated test timeout from server lifetime or process-signal hypotheses.
+Three material checkpoints record the misleading initial runner presentation and the Field Focus repair. The trace, explicit shell exit, report mtime, and process inspection separated test timeout from server lifetime or process-signal hypotheses; the layout mutation proved the review failure was not merely decorative geometry.
 
 ## §9 Skill value and gaps
 The SDD observed-run receipt and round-one repair loop required the focused JUnit output to be bound to each real verification obligation. The feedback contract made the runner diagnosis durable rather than leaving it only in terminal output.
 
 ## §10 Outcome markers
-Release publish, client asset build, conformance, and documentation builds completed. The focused published Chromium route passed 3/3 in 2.9 seconds. SDD evidence, verify, ship, and refresh are current; ship reports 13 observed real verification passes.
+Client asset build, conformance, documentation build, M9 acceptance/portability, and map qualification completed. The Field Focus mutation failed at the exact line-311 clipping guard and the restored production bundle passed. SDD evidence, verify, ship, and refresh are current; ship reports 13 observed real verification passes.
 
 ## §11 Falsifiable improvements
 For §4.1, retain role-based queries against explicit accessible names and require the focused test to fail when the shortcut, reorder, persistence, reset, focus/Escape, or overflow contract is mutated.

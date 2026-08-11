@@ -7230,6 +7230,13 @@ let private tacticalLayoutToolbar model dispatch =
                         button "Reset toolbar" "Restore the documented default top toolbar" false (fun _ -> dispatch ResetDesktopToolbar)
                     ]
                 ]
+            Html.details [
+                prop.className "tactical-legacy-controls"
+                prop.children [
+                    Html.summary "Workspace controls"
+                    Html.div [
+                        prop.className "tactical-legacy-controls-popover"
+                        prop.children [
             Html.div [
                 prop.className "tactical-document-identity"
                 prop.children [
@@ -7339,6 +7346,10 @@ let private tacticalLayoutToolbar model dispatch =
                 "Show contextual tactical actions"
                 false
                 (fun _ -> dispatch (InvokeTacticalCommand "input.help"))
+                        ]
+                    ]
+                ]
+            ]
         ]
     ]
 
