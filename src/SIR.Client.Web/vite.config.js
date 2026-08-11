@@ -9,7 +9,10 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       output: {
-        entryFileNames: "content/sir-client/v1/app.js",
+        entryFileNames: (chunk) =>
+          chunk.name === "index"
+            ? "content/sir-client/v1/app.js"
+            : "content/sir-client/v1/[name]-[hash].js",
         chunkFileNames: "content/sir-client/v1/[name]-[hash].js",
         assetFileNames: (assetInfo) =>
           assetInfo.names.some((name) => name.endsWith(".css"))

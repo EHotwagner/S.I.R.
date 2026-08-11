@@ -18,6 +18,17 @@ related:
 
 # Performance Budget
 
+## Production delivery budget
+
+The production client has an executable delivery contract in
+`scripts/test-production-delivery-budget.mjs`. It checks the versioned entry
+asset's raw, gzip, and Brotli bytes and confirms the on-demand support chunk is
+not folded into the initial entry. Browser coverage records a Slow-3G/4× CPU
+request graph against the published Release server: mutable entries revalidate;
+identity-qualified retained engines may be cached immutably. ASP.NET Core owns
+these headers. A proxy or CDN may provide compression/caching too, but must keep
+`Vary: Accept-Encoding` and must not weaken the documented cache class.
+
 ## Browser simulator session budget
 
 The bounded planning worker uses 256-tick cooperative batches. A normal

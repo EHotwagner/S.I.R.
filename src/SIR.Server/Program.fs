@@ -8,6 +8,8 @@ open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Authentication
 open Microsoft.AspNetCore.Authentication.JwtBearer
+open Microsoft.AspNetCore.ResponseCompression
+open Microsoft.AspNetCore.StaticFiles
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 open Microsoft.IdentityModel.Tokens
@@ -19,6 +21,17 @@ type Program() = class end
 module Program =
 
     let private maximumBootstrapBodyBytes = 16 * 1024
+
+    let private cacheControlForStaticAsset (path: PathString) =
+        // Engine paths embed the retained engine identity. Everything else can
+        // be replaced by a normal deployment and must therefore revalidate.
+        if path.StartsWithSegments(PathString("/engines")) then
+            "public,max-age=31536000,immutable"
+        else
+            "public,max-age=0,must-revalidate"
+
+    let private configureStaticAssetResponse (context: StaticFileResponseContext) =
+        context.Context.Response.Headers.CacheControl <- cacheControlForStaticAsset context.Context.Request.Path
 
     let private readBootstrapBody (stream: Stream) =
         task {
@@ -68,7 +81,7 @@ module Program =
 
         app.MapHub<GameHub>("/hub/game") |> ignore
         app.UseDefaultFiles() |> ignore
-        app.UseStaticFiles() |> ignore
+        app.UseStaticFiles(StaticFileOptions(OnPrepareResponse = Action<StaticFileResponseContext>(configureStaticAssetResponse))) |> ignore
         app.MapFallbackToFile("index.html") |> ignore
 
     let createApp (args: string array) =
@@ -79,6 +92,13 @@ module Program =
         // request-start/request-finished messages at Information level.
         builder.Logging.AddFilter("Microsoft.AspNetCore.Hosting.Diagnostics", LogLevel.Warning) |> ignore
         builder.Services.AddSignalR() |> ignore
+        builder.Services
+            .AddResponseCompression(fun options ->
+                options.EnableForHttps <- true
+                options.MimeTypes <-
+                    ResponseCompressionDefaults.MimeTypes
+                    |> Seq.append [ "application/javascript"; "application/wasm"; "application/json" ])
+        |> ignore
         builder.Services.AddSingleton<TimeProvider>(TimeProvider.System) |> ignore
         let jwtIssuer = builder.Configuration["LiveAuthentication:Jwt:Issuer"] |> Option.ofObj |> Option.defaultValue ""
         let jwtAudience = builder.Configuration["LiveAuthentication:Jwt:Audience"] |> Option.ofObj |> Option.defaultValue ""
@@ -118,6 +138,7 @@ module Program =
         LiveAuthority.configure (app.Services.GetRequiredService<TimeProvider>()) (TimeSpan.FromMinutes 15.0)
         app.UseAuthentication() |> ignore
         app.UseAuthorization() |> ignore
+        app.UseResponseCompression() |> ignore
         mapRoutes app
         app
 

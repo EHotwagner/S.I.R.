@@ -251,6 +251,7 @@ env \
   npm ci --ignore-scripts
 ./scripts/build-client.sh
 node scripts/smoke-client.mjs
+npm run test:production-delivery-budget
 npm run setup:browser
 dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish --no-restore
 npm run test:browser-diagnostics-gate
