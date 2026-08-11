@@ -22,7 +22,7 @@ Prose status: checklistReady
 
 ## Source Snapshot
 - spec: work/136-grid-resolution-footprint/spec.md sha256:1c4879d5b6221ffbb2b8ef594f675854655afdab761ab474645696caea089192 schemaVersion:1
-- clarifications: work/136-grid-resolution-footprint/clarifications.md sha256:cce9d068f0bc2ddd6166fbf046bf59996e4ff8fc8b4b2869631287eace240d3b schemaVersion:1
+- clarifications: work/136-grid-resolution-footprint/clarifications.md sha256:c9ddd94c2c7b8e69485c7a0667c328e120222ba7902e13e890a7e97810aece26 schemaVersion:1
 
 ## Checklist Items
 - CHK-001 [FR-001] [AC-001] blocking: Requirement FR-001 is testable and linked to acceptance coverage.

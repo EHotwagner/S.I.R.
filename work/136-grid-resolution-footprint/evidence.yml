@@ -11,19 +11,19 @@ sourceAnalysis: readiness/136-grid-resolution-footprint/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/136-grid-resolution-footprint/analysis.json
-    digest: 7a66f6bf9e6490434121bfcbcd872fe74272d18ac6fb3ad20ed1e2aa8fd73445
+    digest: cb9bfae49d9f401c150c8f5945d52905b647e4ce3a1f7c35ce2419766e8944c9
     schemaVersion: 1
   - label: checklist
     path: work/136-grid-resolution-footprint/checklist.md
-    digest: 37b660f98d201bcb1ed1110ef7bf47b849b012fe16f170a0a9d55988bab2eacf
+    digest: 96d1cbe620c9c7d20a78e953ef49e0836dd3b940d7abc3c552cbb8bb949b11ec
     schemaVersion: 1
   - label: clarifications
     path: work/136-grid-resolution-footprint/clarifications.md
-    digest: cce9d068f0bc2ddd6166fbf046bf59996e4ff8fc8b4b2869631287eace240d3b
+    digest: c9ddd94c2c7b8e69485c7a0667c328e120222ba7902e13e890a7e97810aece26
     schemaVersion: 1
   - label: plan
     path: work/136-grid-resolution-footprint/plan.md
-    digest: 11dfa6acb5211610d7492d797f6f8cae5a931d1277aef6ef0290199375fd5044
+    digest: 25feeeff3b38dc92d01b79b167164217c7251cad606d5705f0ee620444ad1502
     schemaVersion: 1
   - label: spec
     path: work/136-grid-resolution-footprint/spec.md
@@ -31,7 +31,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: tasks
     path: work/136-grid-resolution-footprint/tasks.yml
-    digest: 33777425ff694b740328c13c520f4b98fb2b321bd9b6e45474ab4699105942e8
+    digest: e3948031555641dde63dffbb9ca3db34a9ff04137d53c571ace3708582eee708
     schemaVersion: 1
 evidence:
   - id: EV001

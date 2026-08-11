@@ -41,7 +41,7 @@
       "kind": "analysis",
       "digest": {
         "algorithm": "sha256",
-        "value": "7a66f6bf9e6490434121bfcbcd872fe74272d18ac6fb3ad20ed1e2aa8fd73445"
+        "value": "cb9bfae49d9f401c150c8f5945d52905b647e4ce3a1f7c35ce2419766e8944c9"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -51,7 +51,17 @@
       "kind": "source",
       "digest": {
         "algorithm": "sha256",
-        "value": "1194290e7a5f3aa723bf191c3aafb67be3a5919099a5d6bed8e0d7aefa70941d"
+        "value": "5028e5adaa726b57e6b505ecce6c171b71de1ef350b60bbe500ff8936af2926b"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "readiness/136-grid-resolution-footprint/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "005417dcf7ac34542284fb8297a88bc90f00b5dcd4efa314d2c92cc3553dc721"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -61,7 +71,7 @@
       "kind": "checklist",
       "digest": {
         "algorithm": "sha256",
-        "value": "37b660f98d201bcb1ed1110ef7bf47b849b012fe16f170a0a9d55988bab2eacf"
+        "value": "96d1cbe620c9c7d20a78e953ef49e0836dd3b940d7abc3c552cbb8bb949b11ec"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -71,7 +81,7 @@
       "kind": "clarification",
       "digest": {
         "algorithm": "sha256",
-        "value": "cce9d068f0bc2ddd6166fbf046bf59996e4ff8fc8b4b2869631287eace240d3b"
+        "value": "c9ddd94c2c7b8e69485c7a0667c328e120222ba7902e13e890a7e97810aece26"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +91,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "c49e025dfb88592a0271126bf1a45c237500ece7ff8f69e5da75b291666fe5a0"
+        "value": "a146c0d8a4fc0549e42473325251295f1e42a3e21f82ca296bb13cf306664bf3"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -91,7 +101,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "11dfa6acb5211610d7492d797f6f8cae5a931d1277aef6ef0290199375fd5044"
+        "value": "25feeeff3b38dc92d01b79b167164217c7251cad606d5705f0ee620444ad1502"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -111,7 +121,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "33777425ff694b740328c13c520f4b98fb2b321bd9b6e45474ab4699105942e8"
+        "value": "e3948031555641dde63dffbb9ca3db34a9ff04137d53c571ace3708582eee708"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -157,9 +167,9 @@
   "verificationReadiness": {
     "status": "verificationReady",
     "blockingFindingIds": [],
-    "evidenceSupportedCount": 10,
+    "evidenceSupportedCount": 14,
     "evidenceSelfAttestedCount": 0,
-    "evidenceObservedCount": 10,
+    "evidenceObservedCount": 14,
     "evidenceDeferredCount": 0,
     "evidenceMissingCount": 0,
     "evidenceStaleCount": 0,
@@ -246,6 +256,38 @@
       "observed": true,
       "severity": "ready",
       "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV011",
+      "obligationId": "EV011",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV012",
+      "obligationId": "EV012",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV013",
+      "obligationId": "EV013",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV014",
+      "obligationId": "EV014",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
     }
   ],
   "generatedViews": [
@@ -264,43 +306,21 @@
     {
       "path": "readiness/136-grid-resolution-footprint/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
-      "diagnosticIds": [
-        "workModelNotGenerated"
-      ]
+      "currency": "current",
+      "diagnosticIds": []
     }
   ],
   "disposition": {
-    "state": "advisory",
+    "state": "shipReady",
     "blockingFindingIds": [],
-    "warningFindingIds": [
-      "SF001"
-    ],
+    "warningFindingIds": [],
     "advisoryFindingIds": [],
     "contributingStages": [],
     "classifiedObligationsUnmetCount": 0,
     "journeyObligationsUnmetCount": 0,
-    "correction": "Resolve the blocking ship-readiness findings before the protected-boundary handoff."
+    "correction": ""
   },
-  "findings": [
-    {
-      "id": "SF001",
-      "severity": "warning",
-      "category": "warning",
-      "path": "readiness/136-grid-resolution-footprint/work-model.json",
-      "relatedIds": [
-        "readiness/136-grid-resolution-footprint/work-model.json",
-        "unknownReference",
-        "unknownReference",
-        "unknownReference",
-        "workModelInconsistent",
-        "workModelInconsistent",
-        "workModelInconsistent"
-      ],
-      "message": "Generated view \u0027readiness/136-grid-resolution-footprint/work-model.json\u0027 was not written: the derived work model has blocking diagnostics.",
-      "correction": "Resolve the named lifecycle diagnostics, then re-run to generate the work model view."
-    }
-  ],
+  "findings": [],
   "governanceCompatibility": [
     {
       "path": ".fsgg/policy.yml",
@@ -324,24 +344,7 @@
       "diagnosticIds": []
     }
   ],
-  "diagnostics": [
-    {
-      "id": "workModelNotGenerated",
-      "severity": "warning",
-      "artifact": "readiness/136-grid-resolution-footprint/work-model.json",
-      "message": "Generated view \u0027readiness/136-grid-resolution-footprint/work-model.json\u0027 was not written: the derived work model has blocking diagnostics.",
-      "correction": "Resolve the named lifecycle diagnostics, then re-run to generate the work model view.",
-      "relatedIds": [
-        "readiness/136-grid-resolution-footprint/work-model.json",
-        "unknownReference",
-        "unknownReference",
-        "unknownReference",
-        "workModelInconsistent",
-        "workModelInconsistent",
-        "workModelInconsistent"
-      ]
-    }
-  ],
+  "diagnostics": [],
   "readiness": "shipReady",
   "nextAction": {
     "actionId": "ship.next.protectedBoundary",

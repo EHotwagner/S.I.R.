@@ -37,11 +37,21 @@
       "schemaStatus": "current"
     },
     {
+      "path": "readiness/136-grid-resolution-footprint/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "0a3c6944f461eafadc86c15fce323385dfeb6670b2228b3faede851fb225fc8f"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
       "path": "work/136-grid-resolution-footprint/checklist.md",
       "kind": "checklist",
       "digest": {
         "algorithm": "sha256",
-        "value": "37b660f98d201bcb1ed1110ef7bf47b849b012fe16f170a0a9d55988bab2eacf"
+        "value": "96d1cbe620c9c7d20a78e953ef49e0836dd3b940d7abc3c552cbb8bb949b11ec"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -51,7 +61,7 @@
       "kind": "clarification",
       "digest": {
         "algorithm": "sha256",
-        "value": "cce9d068f0bc2ddd6166fbf046bf59996e4ff8fc8b4b2869631287eace240d3b"
+        "value": "c9ddd94c2c7b8e69485c7a0667c328e120222ba7902e13e890a7e97810aece26"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -61,7 +71,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "11dfa6acb5211610d7492d797f6f8cae5a931d1277aef6ef0290199375fd5044"
+        "value": "25feeeff3b38dc92d01b79b167164217c7251cad606d5705f0ee620444ad1502"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "33777425ff694b740328c13c520f4b98fb2b321bd9b6e45474ab4699105942e8"
+        "value": "e3948031555641dde63dffbb9ca3db34a9ff04137d53c571ace3708582eee708"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -172,9 +182,9 @@
       "id": "AR009",
       "sourcePath": "work/136-grid-resolution-footprint/plan.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
-      "sourceId": "PD-001",
+      "sourceId": "PC-001",
       "targetId": null,
-      "relationship": "planDecisionDisposition",
+      "relationship": "contractDisposition",
       "state": "current",
       "diagnosticIds": []
     },
@@ -182,9 +192,9 @@
       "id": "AR010",
       "sourcePath": "work/136-grid-resolution-footprint/plan.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
-      "sourceId": "PD-002",
+      "sourceId": "GV-001",
       "targetId": null,
-      "relationship": "planDecisionDisposition",
+      "relationship": "generatedViewDisposition",
       "state": "current",
       "diagnosticIds": []
     },
@@ -192,9 +202,9 @@
       "id": "AR011",
       "sourcePath": "work/136-grid-resolution-footprint/plan.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
-      "sourceId": "PD-003",
+      "sourceId": "PM-001",
       "targetId": null,
-      "relationship": "planDecisionDisposition",
+      "relationship": "migrationDisposition",
       "state": "current",
       "diagnosticIds": []
     },
@@ -202,7 +212,7 @@
       "id": "AR012",
       "sourcePath": "work/136-grid-resolution-footprint/plan.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
-      "sourceId": "PD-004",
+      "sourceId": "PD-001",
       "targetId": null,
       "relationship": "planDecisionDisposition",
       "state": "current",
@@ -212,7 +222,7 @@
       "id": "AR013",
       "sourcePath": "work/136-grid-resolution-footprint/plan.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
-      "sourceId": "PD-005",
+      "sourceId": "PD-002",
       "targetId": null,
       "relationship": "planDecisionDisposition",
       "state": "current",
@@ -222,6 +232,36 @@
       "id": "AR014",
       "sourcePath": "work/136-grid-resolution-footprint/plan.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
+      "sourceId": "PD-003",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR015",
+      "sourcePath": "work/136-grid-resolution-footprint/plan.md",
+      "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
+      "sourceId": "PD-004",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR016",
+      "sourcePath": "work/136-grid-resolution-footprint/plan.md",
+      "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
+      "sourceId": "PD-005",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR017",
+      "sourcePath": "work/136-grid-resolution-footprint/plan.md",
+      "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": null,
       "targetId": null,
       "relationship": "taskSourcePlan",
@@ -229,7 +269,17 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR015",
+      "id": "AR018",
+      "sourcePath": "work/136-grid-resolution-footprint/plan.md",
+      "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
+      "sourceId": "VO-001",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR019",
       "sourcePath": "work/136-grid-resolution-footprint/spec.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": "AC-001",
@@ -239,7 +289,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR016",
+      "id": "AR020",
       "sourcePath": "work/136-grid-resolution-footprint/spec.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": "AC-002",
@@ -249,7 +299,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR017",
+      "id": "AR021",
       "sourcePath": "work/136-grid-resolution-footprint/spec.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": "AC-003",
@@ -259,7 +309,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR018",
+      "id": "AR022",
       "sourcePath": "work/136-grid-resolution-footprint/spec.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": "AC-004",
@@ -269,7 +319,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR019",
+      "id": "AR023",
       "sourcePath": "work/136-grid-resolution-footprint/spec.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": "AC-005",
@@ -279,7 +329,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR020",
+      "id": "AR024",
       "sourcePath": "work/136-grid-resolution-footprint/spec.md",
       "targetPath": "work/136-grid-resolution-footprint/checklist.md",
       "sourceId": null,
@@ -289,7 +339,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR021",
+      "id": "AR025",
       "sourcePath": "work/136-grid-resolution-footprint/spec.md",
       "targetPath": "work/136-grid-resolution-footprint/plan.md",
       "sourceId": null,
@@ -299,7 +349,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR022",
+      "id": "AR026",
       "sourcePath": "work/136-grid-resolution-footprint/spec.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": "FR-001",
@@ -309,7 +359,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR023",
+      "id": "AR027",
       "sourcePath": "work/136-grid-resolution-footprint/spec.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": "FR-002",
@@ -319,7 +369,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR024",
+      "id": "AR028",
       "sourcePath": "work/136-grid-resolution-footprint/spec.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": "FR-003",
@@ -329,7 +379,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR025",
+      "id": "AR029",
       "sourcePath": "work/136-grid-resolution-footprint/spec.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": "FR-004",
@@ -339,7 +389,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR026",
+      "id": "AR030",
       "sourcePath": "work/136-grid-resolution-footprint/spec.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": "FR-005",
@@ -349,7 +399,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR027",
+      "id": "AR031",
       "sourcePath": "work/136-grid-resolution-footprint/spec.md",
       "targetPath": "work/136-grid-resolution-footprint/clarifications.md",
       "sourceId": null,
@@ -359,7 +409,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR028",
+      "id": "AR032",
       "sourcePath": "work/136-grid-resolution-footprint/spec.md",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": null,
@@ -369,7 +419,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR029",
+      "id": "AR033",
       "sourcePath": "work/136-grid-resolution-footprint/tasks.yml",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": "T006",
@@ -379,7 +429,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR030",
+      "id": "AR034",
       "sourcePath": "work/136-grid-resolution-footprint/tasks.yml",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": "T007",
@@ -389,7 +439,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR031",
+      "id": "AR035",
       "sourcePath": "work/136-grid-resolution-footprint/tasks.yml",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": "T008",
@@ -399,7 +449,7 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR032",
+      "id": "AR036",
       "sourcePath": "work/136-grid-resolution-footprint/tasks.yml",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": "T009",
@@ -409,10 +459,50 @@
       "diagnosticIds": []
     },
     {
-      "id": "AR033",
+      "id": "AR037",
       "sourcePath": "work/136-grid-resolution-footprint/tasks.yml",
       "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
       "sourceId": "T010",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR038",
+      "sourcePath": "work/136-grid-resolution-footprint/tasks.yml",
+      "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
+      "sourceId": "T011",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR039",
+      "sourcePath": "work/136-grid-resolution-footprint/tasks.yml",
+      "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
+      "sourceId": "T012",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR040",
+      "sourcePath": "work/136-grid-resolution-footprint/tasks.yml",
+      "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
+      "sourceId": "T013",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR041",
+      "sourcePath": "work/136-grid-resolution-footprint/tasks.yml",
+      "targetPath": "work/136-grid-resolution-footprint/tasks.yml",
+      "sourceId": "T014",
       "targetId": "T001",
       "relationship": "taskDependency",
       "state": "current",
@@ -421,9 +511,9 @@
   ],
   "readiness": {
     "status": "implementationReady",
-    "readyCount": 33,
+    "readyCount": 41,
     "advisoryCount": 0,
-    "warningCount": 1,
+    "warningCount": 0,
     "blockingCount": 0,
     "staleSourceCount": 0,
     "missingDispositionCount": 0,
@@ -431,42 +521,13 @@
     "generatedViewFindingCount": 0,
     "acceptedDeferralCount": 0
   },
-  "findings": [
-    {
-      "id": "AF001",
-      "category": "warning",
-      "severity": "warning",
-      "state": "open",
-      "path": "readiness/136-grid-resolution-footprint/work-model.json",
-      "relatedIds": [
-        "readiness/136-grid-resolution-footprint/work-model.json",
-        "unknownReference",
-        "unknownReference",
-        "unknownReference",
-        "unknownReference",
-        "unknownReference",
-        "unknownReference",
-        "unknownReference",
-        "workModelInconsistent",
-        "workModelInconsistent",
-        "workModelInconsistent",
-        "workModelInconsistent",
-        "workModelInconsistent",
-        "workModelInconsistent",
-        "workModelInconsistent"
-      ],
-      "message": "Generated view \u0027readiness/136-grid-resolution-footprint/work-model.json\u0027 was not written: the derived work model has blocking diagnostics.",
-      "correction": "Resolve the named lifecycle diagnostics, then re-run to generate the work model view."
-    }
-  ],
+  "findings": [],
   "generatedViews": [
     {
       "path": "readiness/136-grid-resolution-footprint/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
-      "diagnosticIds": [
-        "workModelNotGenerated"
-      ]
+      "currency": "current",
+      "diagnosticIds": []
     }
   ],
   "optionalBoundaryFacts": [
@@ -492,32 +553,7 @@
       "diagnosticIds": []
     }
   ],
-  "diagnostics": [
-    {
-      "id": "workModelNotGenerated",
-      "severity": "warning",
-      "artifact": "readiness/136-grid-resolution-footprint/work-model.json",
-      "message": "Generated view \u0027readiness/136-grid-resolution-footprint/work-model.json\u0027 was not written: the derived work model has blocking diagnostics.",
-      "correction": "Resolve the named lifecycle diagnostics, then re-run to generate the work model view.",
-      "relatedIds": [
-        "readiness/136-grid-resolution-footprint/work-model.json",
-        "unknownReference",
-        "unknownReference",
-        "unknownReference",
-        "unknownReference",
-        "unknownReference",
-        "unknownReference",
-        "unknownReference",
-        "workModelInconsistent",
-        "workModelInconsistent",
-        "workModelInconsistent",
-        "workModelInconsistent",
-        "workModelInconsistent",
-        "workModelInconsistent",
-        "workModelInconsistent"
-      ]
-    }
-  ],
+  "diagnostics": [],
   "nextAction": {
     "actionId": "analysis.next.implement",
     "command": null,

@@ -17,8 +17,8 @@ Prose status: planned
 
 ## Source Snapshot
 - spec: work/136-grid-resolution-footprint/spec.md sha256:1c4879d5b6221ffbb2b8ef594f675854655afdab761ab474645696caea089192 schemaVersion:1
-- clarifications: work/136-grid-resolution-footprint/clarifications.md sha256:cce9d068f0bc2ddd6166fbf046bf59996e4ff8fc8b4b2869631287eace240d3b schemaVersion:1
-- checklist: work/136-grid-resolution-footprint/checklist.md sha256:37b660f98d201bcb1ed1110ef7bf47b849b012fe16f170a0a9d55988bab2eacf schemaVersion:1
+- clarifications: work/136-grid-resolution-footprint/clarifications.md sha256:c9ddd94c2c7b8e69485c7a0667c328e120222ba7902e13e890a7e97810aece26 schemaVersion:1
+- checklist: work/136-grid-resolution-footprint/checklist.md sha256:96d1cbe620c9c7d20a78e953ef49e0836dd3b940d7abc3c552cbb8bb949b11ec schemaVersion:1
 
 ## Plan Scope
 Introduce a single doubled-resolution conversion at the domain/serialization boundary,
@@ -33,19 +33,22 @@ then route canonical 4×4 human dimensions through simulation, editor, and rende
 
 ## Contract Impact
 No standalone contract-impact identifier is required; PD-004 owns the persisted scale/version interpretation.
+- PC-001 [PD-004] data-contract: Persisted grid coordinates carry an explicit scale/version interpretation; readers migrate recognized legacy values by two or reject unknown interpretations.
 
 ## Verification Obligations
 No standalone verification-obligation identifier is required; PD-005 owns the production-route and mutation evidence.
+- VO-001 [PD-001] [PD-002] [PD-003] [PD-004] [PD-005] productionRouteTest: Execute .NET, Fable, and browser routes plus subject mutations that prove each new or changed gate turns red.
 
 ## Performance Intent
-Use the existing producer-owned battlefield workload and declared target; inspect it
-before implementation and do not invent a timing budget.
+No performance intent is declared for this work item.
 
 ## Migration Posture
 No standalone migration-posture identifier is required; PD-004 owns deterministic legacy scaling and rejection behavior.
+- PM-001 [PC-001] migrate: Double recognized legacy grid values at a single reader boundary; emit the source format/version and recovery action for rejected data.
 
 ## Generated View Impact
 No standalone generated-view identifier is required; the lifecycle generators derive views from the current authored sources.
+- GV-001 [PD-005] workModel: Refresh the SDD work model and preserve .NET/Fable/browser fixture evidence links after source changes.
 
 ## Accepted Deferrals
 No accepted plan deferrals recorded.

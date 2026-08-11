@@ -17,15 +17,15 @@ sources:
     schemaVersion: 1
   - label: clarifications
     path: work/136-grid-resolution-footprint/clarifications.md
-    digest: cce9d068f0bc2ddd6166fbf046bf59996e4ff8fc8b4b2869631287eace240d3b
+    digest: c9ddd94c2c7b8e69485c7a0667c328e120222ba7902e13e890a7e97810aece26
     schemaVersion: 1
   - label: checklist
     path: work/136-grid-resolution-footprint/checklist.md
-    digest: 37b660f98d201bcb1ed1110ef7bf47b849b012fe16f170a0a9d55988bab2eacf
+    digest: 96d1cbe620c9c7d20a78e953ef49e0836dd3b940d7abc3c552cbb8bb949b11ec
     schemaVersion: 1
   - label: plan
     path: work/136-grid-resolution-footprint/plan.md
-    digest: 11dfa6acb5211610d7492d797f6f8cae5a931d1277aef6ef0290199375fd5044
+    digest: 25feeeff3b38dc92d01b79b167164217c7251cad606d5705f0ee620444ad1502
     schemaVersion: 1
 tasks:
   - id: T001
@@ -128,6 +128,46 @@ tasks:
     sourceIds: [AC-004, DEC-002, FR-004, PD-004]
     requiredSkills: [fsharp, implementation]
     requiredEvidence: [EV010]
+  - id: T011
+    title: Update contract surface PC-001
+    status: pending
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-001, PD-001, PD-004]
+    requiredSkills: [fsharp]
+    requiredEvidence: [EV011]
+  - id: T012
+    title: Record verification evidence VO-001
+    status: pending
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-001, PD-001, PD-002, PD-003, PD-004, PD-005, VO-001]
+    requiredSkills: [automated-tests, readiness-evidence]
+    requiredEvidence: [EV012]
+  - id: T013
+    title: Handle migration posture PM-001
+    status: pending
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-001, PM-001]
+    requiredSkills: [schema-versioning]
+    requiredEvidence: [EV013]
+  - id: T014
+    title: Refresh generated view impact GV-001
+    status: pending
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [GV-001, PD-001, PD-005]
+    requiredSkills: [deterministic-json]
+    requiredEvidence: [EV014]
 acceptedDeferrals: []
 findings: []
 advisoryNotes:
