@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "438f6a631d07f571d37088ad85ad75c0186742f695818ecd28120ac2b6f749d3"
+        "value": "2e7dc50b02ca206c1dc59b4adebed6b789202f60efc427307a6490738b0c10e1"
       }
     },
     {
@@ -1098,7 +1098,7 @@
           "path": "work/150-browser-e2e-workflows/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "438f6a631d07f571d37088ad85ad75c0186742f695818ecd28120ac2b6f749d3"
+            "value": "2e7dc50b02ca206c1dc59b4adebed6b789202f60efc427307a6490738b0c10e1"
           },
           "schemaVersion": 1
         },
@@ -1129,7 +1129,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "2cabc95382e089575b74f93533a86e9b15ad72cf4c6d4ba9ca708cc24a56f0bb"
+        "value": "666e006f8809768f4cdbbf6e89b8aabe4a5b58a58a7158bbe9e69fcec96ef848"
       },
       "currency": "current"
     }
