@@ -229,6 +229,8 @@ let run () =
     require
         (UnifiedTacticalWorkspace.displayGesture (UnifiedTacticalWorkspace.effectiveGesture rebound routeCommand) = "Shift+R"
          && UnifiedTacticalWorkspace.accessibleGesture (Some "Ctrl/Cmd+←") = Some "Control+ArrowLeft"
+         && UnifiedTacticalWorkspace.displayGestureFor MetaPlatform (Some "Ctrl+Shift+2") = "Cmd+Shift+2"
+         && UnifiedTacticalWorkspace.accessibleGestureFor MetaPlatform (Some "Ctrl+Shift+2") = Some "Meta+Shift+2"
          && UnifiedTacticalWorkspace.displayGesture None = "Unassigned"
          && UnifiedTacticalWorkspace.accessibleGesture None = None)
         "Visible and accessible shortcut presentation did not derive from the effective registry binding."

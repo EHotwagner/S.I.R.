@@ -122,6 +122,12 @@ let private tacticalCommandAvailable model (command: TacticalCommandDefinition) 
 [<Emit("window.matchMedia('(prefers-reduced-motion: reduce)').matches")>]
 let private prefersReducedMotion: bool = jsNative
 
+[<Emit("/(Mac|iPhone|iPad|iPod)/.test(navigator.platform)")>]
+let private usesMetaShortcutPlatform: bool = jsNative
+
+let private shortcutPlatform =
+    if usesMetaShortcutPlatform then MetaPlatform else ControlPlatform
+
 [<Emit("(() => { const eventTarget = $0; const tag = eventTarget && typeof eventTarget.tagName === 'string' ? eventTarget.tagName.toLowerCase() : ''; return tag === 'input' ? 'input' : tag === 'textarea' ? 'textarea' : tag === 'select' ? 'select' : eventTarget && eventTarget.isContentEditable ? 'contenteditable' : 'application'; })()")>]
 let private currentInputTargetName (target: EventTarget) : string = jsNative
 
@@ -2388,15 +2394,13 @@ let subscriptions model =
                 dispatch (KeyReleased keyboardEvent.key)
         let blurHandler =
             fun (_: Event) -> dispatch ApplicationFocusLost
-        // Capture before nested editors/React controls can consume a command
-        // gesture. Text-entry routing still remains guarded above.
-        window.addEventListener ("keydown", downHandler, true)
+        window.addEventListener ("keydown", downHandler)
         window.addEventListener ("keyup", upHandler)
         window.addEventListener ("blur", blurHandler)
 
         { new IDisposable with
             member _.Dispose() =
-                window.removeEventListener ("keydown", downHandler, true)
+                window.removeEventListener ("keydown", downHandler)
                 window.removeEventListener ("keyup", upHandler)
                 window.removeEventListener ("blur", blurHandler) }
 
@@ -2519,7 +2523,10 @@ let private commandButton properties =
             name = "aria-keyshortcuts")
     Html.button (
         if hasRegistryBinding then properties
-        else properties @ [ prop.custom ("data-binding-state", "unassigned") ])
+        else
+            properties
+            @ [ prop.custom ("data-binding-state", "unassigned")
+                prop.custom ("aria-description", "Shortcut: Unassigned") ])
 
 let private button
     (text: string)
@@ -5324,9 +5331,9 @@ let private tacticalCommandButton (model: Model) (commandId: string) (text: stri
         prop.type'.button
         prop.text text
         prop.disabled disabled
-        prop.title (label + " · " + UnifiedTacticalWorkspace.displayGesture effective)
+        prop.title (label + " · " + UnifiedTacticalWorkspace.displayGestureFor shortcutPlatform effective)
         prop.ariaLabel label
-        match UnifiedTacticalWorkspace.accessibleGesture effective with
+        match UnifiedTacticalWorkspace.accessibleGestureFor shortcutPlatform effective with
         | Some shortcut -> prop.custom ("aria-keyshortcuts", shortcut)
         | None -> prop.custom ("data-binding-state", "unassigned")
         prop.onClick onClick
@@ -5343,9 +5350,9 @@ let private tacticalModalityControls model dispatch =
             prop.type'.button
             prop.text label
             prop.ariaPressed isCurrent
-            prop.title ("Switch to " + label + " · " + UnifiedTacticalWorkspace.displayGesture effective)
+            prop.title ("Switch to " + label + " · " + UnifiedTacticalWorkspace.displayGestureFor shortcutPlatform effective)
             prop.ariaLabel label
-            match UnifiedTacticalWorkspace.accessibleGesture effective with
+            match UnifiedTacticalWorkspace.accessibleGestureFor shortcutPlatform effective with
             | Some shortcut -> prop.custom ("aria-keyshortcuts", shortcut)
             | None -> prop.custom ("data-binding-state", "unassigned")
             prop.onClick (fun _ -> dispatch (InvokeTacticalCommand commandId))
@@ -5861,12 +5868,12 @@ let private tacticalContextHelp model dispatch =
                                         prop.custom ("data-tactical-command", command.Id)
                                         match effective with
                                         | Some _ ->
-                                            match UnifiedTacticalWorkspace.accessibleGesture effective with
+                                            match UnifiedTacticalWorkspace.accessibleGestureFor shortcutPlatform effective with
                                             | Some shortcut -> prop.custom ("aria-keyshortcuts", shortcut)
                                             | None -> prop.custom ("data-binding-state", "unbound")
                                         | None -> prop.custom ("data-binding-state", "unbound")
                                         prop.children [
-                                            Html.kbd (UnifiedTacticalWorkspace.displayGesture effective)
+                                            Html.kbd (UnifiedTacticalWorkspace.displayGestureFor shortcutPlatform effective)
                                             Html.span (command.Label + " · " + command.Category)
                                             Html.small (
                                                 if UnifiedTacticalWorkspace.isRebound model.TacticalBindings command then
@@ -5890,12 +5897,12 @@ let private tacticalContextHelp model dispatch =
                                         prop.custom ("data-modal-command", input.Id)
                                         match effective with
                                         | Some _ ->
-                                            match UnifiedTacticalWorkspace.accessibleGesture effective with
+                                            match UnifiedTacticalWorkspace.accessibleGestureFor shortcutPlatform effective with
                                             | Some shortcut -> prop.custom ("aria-keyshortcuts", shortcut)
                                             | None -> prop.custom ("data-binding-state", "unbound")
                                         | None -> prop.custom ("data-binding-state", "unbound")
                                         prop.children [
-                                            Html.kbd (UnifiedTacticalWorkspace.displayGesture effective)
+                                            Html.kbd (UnifiedTacticalWorkspace.displayGestureFor shortcutPlatform effective)
                                             Html.span (input.Label + " · " + input.Group)
                                             Html.small (
                                                 if Map.containsKey input.Id model.TacticalBindings.Overrides then
@@ -6421,6 +6428,7 @@ let private persistentSceneSvg
                                         | Some commandId when available ->
                                             svg.custom ("role", "button")
                                             svg.custom ("data-binding-state", "unassigned")
+                                            svg.custom ("aria-description", "Shortcut: Unassigned")
                                             svg.custom ("aria-label", "Activate cell " + string terrain.Column + "," + string terrain.Row)
                                             svg.onClick (fun _ -> invoke commandId)
                                         | _ -> svg.custom ("aria-hidden", "true")
@@ -6584,6 +6592,7 @@ let private persistentSceneSvg
                                         | Some commandId when available ->
                                             svg.custom ("role", "button")
                                             svg.custom ("data-binding-state", "unassigned")
+                                            svg.custom ("aria-description", "Shortcut: Unassigned")
                                             svg.custom (
                                                 "aria-label",
                                                 "Select tactical unit " + string visual.Id
@@ -6817,6 +6826,7 @@ let private persistentSceneSvg
                                                     svg.custom ("data-selected", string isSelected)
                                                     svg.custom ("role", "button")
                                                     svg.custom ("data-binding-state", "unassigned")
+                                                    svg.custom ("aria-description", "Shortcut: Unassigned")
                                                     svg.custom ("aria-label", "Select region " + string region.Id + ", " + MapEditor.regionPurposeLabel region.Purpose)
                                                     svg.tabIndex (if isSelected then 0 else -1)
                                                     svg.x (float column * cellSize)
@@ -6852,6 +6862,7 @@ let private persistentSceneSvg
                                                     svg.custom ("data-selected", string isSelected)
                                                     svg.custom ("role", "button")
                                                     svg.custom ("data-binding-state", "unassigned")
+                                                    svg.custom ("aria-description", "Shortcut: Unassigned")
                                                     svg.custom ("aria-label", "Select region " + string region.Id + ", " + MapEditor.regionPurposeLabel region.Purpose)
                                                     svg.tabIndex (if isSelected then 0 else -1)
                                                     svg.points (

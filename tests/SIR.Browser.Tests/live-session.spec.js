@@ -132,15 +132,23 @@ test("tactical command controls expose registry-derived shortcut metadata", asyn
 
 test("every visible actionable control is registry-bound or explicitly unassigned", async ({ page }) => {
   await page.goto("/");
-  const uncovered = await page.locator("button:visible, [role=button]:visible").evaluateAll((controls) =>
-    controls.filter((control) =>
-      !control.hasAttribute("aria-keyshortcuts") && control.getAttribute("data-binding-state") !== "unassigned"
-    ).map((control) => ({
-      tag: control.tagName,
-      name: control.getAttribute("aria-label") || control.textContent?.trim(),
-    }))
-  );
-  expect(uncovered).toEqual([]);
+  for (const mode of ["Editor", "Plan", "Simulate", "Review"]) {
+    await page.getByRole("button", { name: mode, exact: true }).click();
+    const uncovered = await page.locator("button:visible, [role=button]:visible").evaluateAll((controls) =>
+      controls.filter((control) =>
+        !control.hasAttribute("aria-keyshortcuts") && control.getAttribute("data-binding-state") !== "unassigned"
+      ).map((control) => ({
+        tag: control.tagName,
+        name: control.getAttribute("aria-label") || control.textContent?.trim(),
+      }))
+    );
+    const undisclosed = await page.locator('[data-binding-state="unassigned"]:visible').evaluateAll((controls) =>
+      controls.filter((control) => !/unassigned/i.test(control.getAttribute("aria-description") || ""))
+        .map((control) => control.getAttribute("aria-label") || control.textContent?.trim())
+    );
+    expect(uncovered, mode).toEqual([]);
+    expect(undisclosed, mode).toEqual([]);
+  }
 });
 
 test("map and raster pickers reject oversized metadata before reads", async ({ page }) => {

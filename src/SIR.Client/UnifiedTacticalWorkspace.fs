@@ -87,6 +87,10 @@ type TacticalBindingDiagnostic =
     | MalformedTacticalBindingProfile of string
     | UnsupportedTacticalBindingSchema of int
 
+type ShortcutPlatform =
+    | ControlPlatform
+    | MetaPlatform
+
 [<RequireQualifiedAccess>]
 module UnifiedTacticalWorkspace =
     [<Literal>]
@@ -153,10 +157,19 @@ module UnifiedTacticalWorkspace =
     /// Formats the registry's effective binding for visible command presentation.
     let displayGesture (gesture: string option) = gesture |> Option.defaultValue "Unassigned"
 
+    /// Formats the portable registry gesture for the platform that will activate it.
+    let displayGestureFor platform gesture =
+        gesture
+        |> displayGesture
+        |> fun value ->
+            match platform with
+            | ControlPlatform -> value.Replace("Ctrl/Cmd", "Ctrl")
+            | MetaPlatform -> value.Replace("Ctrl/Cmd", "Cmd").Replace("Ctrl", "Cmd")
+
     /// Converts a registry gesture to the token form expected by aria-keyshortcuts.
     let accessibleGesture (gesture: string option) =
         gesture
-        |> Option.map (fun value ->
+        |> Option.map (fun (value: string) ->
             value
                 .Replace("Ctrl/Cmd", "Control")
                 .Replace("Ctrl", "Control")
@@ -166,6 +179,15 @@ module UnifiedTacticalWorkspace =
                 .Replace("→", "ArrowRight")
                 .Replace("↑", "ArrowUp")
                 .Replace("↓", "ArrowDown"))
+
+    /// Formats ARIA shortcut tokens for the same platform-specific presentation.
+    let accessibleGestureFor platform gesture =
+        gesture
+        |> Option.map (fun (value: string) ->
+            match platform with
+            | ControlPlatform -> value.Replace("Ctrl/Cmd", "Control").Replace("Ctrl", "Control")
+            | MetaPlatform -> value.Replace("Ctrl/Cmd", "Meta").Replace("Ctrl", "Meta"))
+        |> accessibleGesture
 
     let private normalizedGesture (gesture: string) =
         gesture.Trim().ToUpperInvariant()
