@@ -18,6 +18,9 @@
     "status": "actionable",
     "missingFacts": [],
     "checkedEvidence": [{
+      "locator": "pr:https://github.com/EHotwagner/S.I.R./pull/173#issuecomment-5250885535",
+      "result": "verified"
+    }, {
       "locator": "command:npm run test:persistent-workspace-m9-acceptance -- artifacts/client",
       "result": "verified"
     }],
