@@ -169,9 +169,30 @@ document.querySelectorAll("details.desktop-menu[open]").forEach(menu => {
 let private closeSiblingDesktopMenus (summary: EventTarget) : unit = jsNative
 
 [<Emit("""
+const menu = $0.closest("details.desktop-menu");
+if (menu) {
+  menu.removeAttribute("open");
+  const trigger = menu.querySelector("summary");
+  if (trigger && typeof trigger.focus === "function") trigger.focus();
+}
+""")>]
+let private closeDesktopMenuAndRestoreTrigger (target: EventTarget) : unit = jsNative
+
+[<Emit("""
 document.querySelectorAll("details.desktop-menu[open]").forEach(menu => menu.removeAttribute("open"));
 """)>]
 let private closeDesktopMenus () : unit = jsNative
+
+[<Emit("""
+const desktopMenu = $0.closest('[role=menu]') || $0.closest('details.desktop-menu')?.querySelector('[role=menu]');
+if (!desktopMenu) return;
+const desktopMenuItems = Array.from(desktopMenu.querySelectorAll('[role=menuitem]:not([disabled])'));
+const desktopMenuCurrent = desktopMenuItems.indexOf(document.activeElement);
+const desktopMenuNext = desktopMenuItems[(desktopMenuCurrent + $1 + desktopMenuItems.length) % desktopMenuItems.length] || desktopMenuItems[0];
+desktopMenuItems.forEach(item => item.tabIndex = item === desktopMenuNext ? 0 : -1);
+if (desktopMenuNext) desktopMenuNext.focus();
+""")>]
+let private focusNextDesktopMenuItem (target: EventTarget) (delta: int) : unit = jsNative
 
 [<Emit("""
 setTimeout(() => {
@@ -418,6 +439,19 @@ let private setSampleReplayTick tick frames shell =
             Announcement = "Sample replay at tick " + string frame.Tick + "." }
 
 let init () =
+    let defaultDesktopToolbarCommands =
+        [ "workspace.editor"; "workspace.plan"; "workspace.simulate"; "workspace.review"; "timeline.play-toggle"; "input.help" ]
+    let desktopToolbarCommands =
+        let stored = readDesktopToolbar ()
+        if isNull stored then defaultDesktopToolbarCommands
+        elif stored.StartsWith("v1:", StringComparison.Ordinal) then
+            let payload = stored.Substring("v1:".Length)
+            if payload = "" then [] else payload.Split('|') |> Array.toList |> List.distinct
+        else
+            let requested = stored.Split('|') |> Array.toList
+            let known = UnifiedTacticalWorkspace.commandRegistry |> List.map _.Id |> Set.ofList
+            let valid = requested |> List.distinct |> List.filter (fun id -> Set.contains id known)
+            if List.isEmpty valid then defaultDesktopToolbarCommands else valid
     let editor =
         let initial = MapEditor.initial
         let autosave = readMapAutosave ()
@@ -474,6 +508,8 @@ let init () =
       TacticalBindingsOpen = false
       TacticalLayout = tacticalLayout
       TacticalLayoutDiagnostics = tacticalLayoutDiagnostics
+      DesktopToolbarCommands = desktopToolbarCommands
+      DesktopToolbarCustomizationOpen = false
       BottomPanelResizeActive = false
       TacticalSelectedUnit = None
       Workspace = EditorWorkspace
@@ -1080,6 +1116,28 @@ let rec update msg model =
         writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
         { model with TacticalLayout = layout; TacticalLayoutDiagnostics = [] },
         Cmd.ofEffect (fun _ -> focusElementAfterRender "layout-reset")
+    | ToggleDesktopToolbarCustomization ->
+        { model with DesktopToolbarCustomizationOpen = not model.DesktopToolbarCustomizationOpen }, Cmd.none
+    | AddDesktopToolbarCommand commandId ->
+        let commands = if List.contains commandId model.DesktopToolbarCommands then model.DesktopToolbarCommands else model.DesktopToolbarCommands @ [ commandId ]
+        writeDesktopToolbar ("v1:" + String.concat "|" commands)
+        { model with DesktopToolbarCommands = commands }, Cmd.none
+    | RemoveDesktopToolbarCommand commandId ->
+        let commands = model.DesktopToolbarCommands |> List.filter ((<>) commandId)
+        writeDesktopToolbar ("v1:" + String.concat "|" commands)
+        { model with DesktopToolbarCommands = commands }, Cmd.none
+    | ReorderDesktopToolbarCommand(commandId, delta) ->
+        let commands =
+            match model.DesktopToolbarCommands |> List.tryFindIndex ((=) commandId) with
+            | Some current when current + delta >= 0 && current + delta < List.length model.DesktopToolbarCommands ->
+                model.DesktopToolbarCommands |> List.mapi (fun i value -> if i = current then model.DesktopToolbarCommands[current + delta] elif i = current + delta then commandId else value)
+            | _ -> model.DesktopToolbarCommands
+        writeDesktopToolbar ("v1:" + String.concat "|" commands)
+        { model with DesktopToolbarCommands = commands }, Cmd.none
+    | ResetDesktopToolbar ->
+        let commands = [ "workspace.editor"; "workspace.plan"; "workspace.simulate"; "workspace.review"; "timeline.play-toggle"; "input.help" ]
+        writeDesktopToolbar ("v1:" + String.concat "|" commands)
+        { model with DesktopToolbarCommands = commands; DesktopToolbarCustomizationOpen = false }, Cmd.none
     | ApplicationFocusLost ->
         { model with
             InputHelpExpanded = false
@@ -7030,6 +7088,69 @@ let private tacticalWorkscreenRegion model dispatch =
 
 let private tacticalLayoutToolbar model dispatch =
     let layout = model.TacticalLayout
+    let registry = activeTacticalRegistry model
+    let commandEntry command =
+        let effective = UnifiedTacticalWorkspace.effectiveGesture model.TacticalBindings command
+        commandButton [
+            prop.type'.button
+            prop.custom ("role", "menuitem")
+            prop.tabIndex -1
+            prop.disabled (not (tacticalCommandAvailable model command))
+            prop.ariaLabel (command.Label + " · " + UnifiedTacticalWorkspace.displayGestureFor shortcutPlatform effective)
+            match UnifiedTacticalWorkspace.accessibleGestureFor shortcutPlatform effective with
+            | Some shortcut -> prop.custom ("aria-keyshortcuts", shortcut)
+            | None -> prop.custom ("data-binding-state", "unassigned")
+            prop.onClick (fun _ ->
+                closeDesktopMenus ()
+                dispatch (InvokeTacticalCommand command.Id))
+            prop.children [ Html.span command.Label; Html.kbd (UnifiedTacticalWorkspace.displayGestureFor shortcutPlatform effective) ]
+        ]
+    let menu (label: string) categories =
+        let commands = registry |> List.filter (fun command -> List.contains command.Category categories)
+        Html.details [
+            prop.className "desktop-menu tactical-desktop-menu"
+            prop.children [
+                Html.summary [
+                    prop.role.button
+                    prop.text label
+                    prop.custom ("data-binding-state", "unassigned")
+                    prop.custom ("aria-description", "Unassigned application menu control")
+                    prop.onClick (fun event ->
+                        closeSiblingDesktopMenus event.target
+                        focusNextDesktopMenuItem event.target 0)
+                    prop.onKeyDown (fun event ->
+                        if event.key = "ArrowDown" then
+                            event.preventDefault ()
+                            focusNextDesktopMenuItem event.target 1
+                        elif event.key = "ArrowUp" then
+                            event.preventDefault ()
+                            focusNextDesktopMenuItem event.target -1
+                        elif event.key = "Escape" then
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            closeDesktopMenuAndRestoreTrigger event.target)
+                ]
+                Html.div [
+                    prop.className "desktop-menu-popover tactical-desktop-menu-popover"
+                    prop.role.menu
+                    prop.ariaLabel (label + " commands")
+                    prop.onKeyDown (fun event ->
+                        if event.key = "ArrowDown" then
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            focusNextDesktopMenuItem event.target 1
+                        elif event.key = "ArrowUp" then
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            focusNextDesktopMenuItem event.target -1
+                        elif event.key = "Escape" then
+                            event.preventDefault ()
+                            event.stopPropagation ()
+                            closeDesktopMenuAndRestoreTrigger event.target)
+                    prop.children [ for command in commands do commandEntry command ]
+                ]
+            ]
+        ]
     let panelToggle (panel: TacticalPanelDefinition) =
         let placement =
             layout.Placements
@@ -7052,6 +7173,77 @@ let private tacticalLayoutToolbar model dispatch =
         prop.className "tactical-compact-toolbar"
         prop.ariaLabel "Tactical workspace toolbar"
         prop.children [
+            Html.nav [
+                prop.className "tactical-desktop-menu-bar"
+                prop.ariaLabel "Application menu bar"
+                prop.custom ("role", "menubar")
+                prop.children [
+                    menu "File" [ "Document" ]
+                    menu "Edit" [ "Plan" ]
+                    menu "View" [ "Modality"; "Shared camera" ]
+                    menu "Tools" [ "Plan"; "Editor" ]
+                    menu "Simulation" [ "Timeline"; "Simulator controllers"; "Simulator movement" ]
+                    menu "Help" [ "Help" ]
+                ]
+            ]
+            Html.div [
+                prop.className "desktop-command-toolbar"
+                prop.role.toolbar
+                prop.ariaLabel "Customizable top toolbar"
+                prop.children [
+                    for commandId in model.DesktopToolbarCommands do
+                        match registry |> List.tryFind (fun command -> command.Id = commandId) with
+                        | Some command ->
+                            tacticalCommandButton model command.Id command.Label command.Label (not (Set.contains model.Tactical.Modality command.Modalities && tacticalCommandAvailable model command)) (fun _ -> dispatch (InvokeTacticalCommand command.Id))
+                        | None -> ()
+                    commandButton [
+                        prop.type'.button
+                        prop.ariaExpanded model.DesktopToolbarCustomizationOpen
+                        prop.ariaControls "desktop-toolbar-customization"
+                        prop.text "Customize toolbar"
+                        prop.onClick (fun _ -> dispatch ToggleDesktopToolbarCustomization)
+                    ]
+                ]
+            ]
+            if model.DesktopToolbarCustomizationOpen then
+                Html.section [
+                    prop.id "desktop-toolbar-customization"
+                    prop.className "desktop-toolbar-customization"
+                    prop.ariaLabel "Customize top toolbar"
+                    prop.children [
+                        Html.h2 "Customize toolbar"
+                        Html.p "Add commands, adjust their order, or restore the default toolbar. Changes persist in this browser."
+                        for commandId in model.DesktopToolbarCommands do
+                            match registry |> List.tryFind (fun command -> command.Id = commandId) with
+                            | Some command ->
+                                Html.div [
+                                    prop.className "desktop-toolbar-customization-row"
+                                    prop.children [
+                                        Html.span command.Label
+                                        button "Move earlier" ("Move " + command.Label + " earlier") false (fun _ -> dispatch (ReorderDesktopToolbarCommand(commandId, -1)))
+                                        button "Move later" ("Move " + command.Label + " later") false (fun _ -> dispatch (ReorderDesktopToolbarCommand(commandId, 1)))
+                                        button "Remove" ("Remove " + command.Label + " from toolbar") false (fun _ -> dispatch (RemoveDesktopToolbarCommand commandId))
+                                    ]
+                                ]
+                            | None -> ()
+                        Html.h3 "Available commands"
+                        for command in registry |> List.filter (fun command -> not (List.contains command.Id model.DesktopToolbarCommands)) |> List.filter (fun command -> command.PointerAvailable) do
+                            button ("Add " + command.Label) ("Add " + command.Label + " to toolbar") false (fun _ -> dispatch (AddDesktopToolbarCommand command.Id))
+                        button "Reset toolbar" "Restore the documented default top toolbar" false (fun _ -> dispatch ResetDesktopToolbar)
+                    ]
+                ]
+            tacticalModalityControls model dispatch
+            Html.details [
+                prop.className "tactical-legacy-controls"
+                prop.children [
+                    Html.summary [
+                        prop.text "Workspace controls"
+                        prop.custom ("data-binding-state", "unassigned")
+                        prop.custom ("aria-description", "Unassigned workspace control disclosure")
+                    ]
+                    Html.div [
+                        prop.className "tactical-legacy-controls-popover"
+                        prop.children [
             Html.div [
                 prop.className "tactical-document-identity"
                 prop.children [
@@ -7062,7 +7254,6 @@ let private tacticalLayoutToolbar model dispatch =
                     )
                 ]
             ]
-            tacticalModalityControls model dispatch
             Html.div [
                 prop.className "tactical-toolbar-transport"
                 prop.children [
@@ -7144,7 +7335,11 @@ let private tacticalLayoutToolbar model dispatch =
             Html.details [
                 prop.className "tactical-panel-menu"
                 prop.children [
-                    Html.summary "Panels"
+                    Html.summary [
+                        prop.text "Panels"
+                        prop.custom ("data-binding-state", "unassigned")
+                        prop.custom ("aria-description", "Unassigned panel control disclosure")
+                    ]
                     Html.div [
                         prop.className "tactical-panel-menu-items"
                         prop.children [
@@ -7161,6 +7356,10 @@ let private tacticalLayoutToolbar model dispatch =
                 "Show contextual tactical actions"
                 false
                 (fun _ -> dispatch (InvokeTacticalCommand "input.help"))
+                        ]
+                    ]
+                ]
+            ]
         ]
     ]
 

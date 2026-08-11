@@ -1,0 +1,29 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-11-sir-item-145-desktop-command-surface.md",
+  "reportSha256": "956bd5405905fe5c36798325f34f00595316966488375693b84f1e9b5a638eb3",
+  "criticMode": "separated-critic-pass",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [{
+    "id": "§4.1",
+    "status": "actionable",
+    "missingFacts": [],
+    "checkedEvidence": [{
+      "locator": "command:npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js tests/SIR.Browser.Tests/desktop-command-surface.spec.js --trace on",
+      "result": "verified"
+    }],
+    "confidenceLimits": ["The terminal run used the system Chromium override required by this host."]
+  }, {
+    "id": "§4.2",
+    "status": "actionable",
+    "missingFacts": [],
+    "checkedEvidence": [{
+      "locator": "pr:https://github.com/EHotwagner/S.I.R./pull/173#issuecomment-5250885535",
+      "result": "verified"
+    }, {
+      "locator": "command:npm run test:persistent-workspace-m9-acceptance -- artifacts/client",
+      "result": "verified"
+    }],
+    "confidenceLimits": ["The audit covers the local production bundle and system Chromium, not an externally hosted compositor."]
+  }]
+}

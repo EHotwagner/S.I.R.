@@ -1,0 +1,1146 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "1.2.0",
+  "workId": "145-desktop-command-surface",
+  "project": {
+    "id": "s.i.r",
+    "defaultWorkRoot": "work",
+    "profile": null
+  },
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      }
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      }
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      }
+    },
+    {
+      "path": "work/145-desktop-command-surface/checklist.md",
+      "kind": "checklist",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "8b7e8421334a0605a03284dedeba51d23273833e3624228d57a02c7364e3d5d5"
+      }
+    },
+    {
+      "path": "work/145-desktop-command-surface/clarifications.md",
+      "kind": "clarifications",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "ff1e721ad79c6e4e4c3d0cc0151a6a14639ef5a8d61d4e731bdb988770eaac97"
+      }
+    },
+    {
+      "path": "work/145-desktop-command-surface/evidence.yml",
+      "kind": "evidence",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "f4924eb171c821df653b553b6c7d21ab78c388efbe5e10fe3256e2c464387ff2"
+      }
+    },
+    {
+      "path": "work/145-desktop-command-surface/plan.md",
+      "kind": "plan",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "07a26c11e51a703c3d1c5aa1760d69be99b9a50ae1a3a08a5808f2b486f6b196"
+      }
+    },
+    {
+      "path": "work/145-desktop-command-surface/spec.md",
+      "kind": "spec",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c80d235c8e68ac8cdd8d9a3f29c1100afbf8d15ef2a6cc56393a2547a2f90594"
+      }
+    },
+    {
+      "path": "work/145-desktop-command-surface/tasks.yml",
+      "kind": "tasks",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "50fb595f7edea6c09b99d1d8dd92bd9d30a62b947263798c0d3f41aae4abc1c1"
+      }
+    }
+  ],
+  "workItem": {
+    "id": "145-desktop-command-surface",
+    "title": "Desktop Command Surface",
+    "stage": "specify",
+    "changeTier": "tier1",
+    "status": "specified"
+  },
+  "performanceIntent": null,
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "The system MUST render a persistent top menu bar with the six predictable command groups and registry-backed command entries. (covers AC-001)",
+      "text": "The system MUST render a persistent top menu bar with the six predictable command groups and registry-backed command entries. (covers AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/145-desktop-command-surface/spec.md",
+      "sourceLocation": {
+        "line": 39,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001"
+      ],
+      "linkedEvidenceIds": [
+        "EV001"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "title": "The system MUST support pointer and keyboard menu navigation, managed focus, Enter activation, and Escape dismissal without dispatching the dismissal key as a workspace command. (covers AC-002)",
+      "text": "The system MUST support pointer and keyboard menu navigation, managed focus, Enter activation, and Escape dismissal without dispatching the dismissal key as a workspace command. (covers AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/145-desktop-command-surface/spec.md",
+      "sourceLocation": {
+        "line": 40,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T002"
+      ],
+      "linkedEvidenceIds": [
+        "EV002"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "title": "The system MUST allow users to add, remove, and reorder top-toolbar commands, persist that preference locally, and reset it to the documented default. (covers AC-003)",
+      "text": "The system MUST allow users to add, remove, and reorder top-toolbar commands, persist that preference locally, and reset it to the documented default. (covers AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/145-desktop-command-surface/spec.md",
+      "sourceLocation": {
+        "line": 41,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T003"
+      ],
+      "linkedEvidenceIds": [
+        "EV003"
+      ]
+    },
+    {
+      "id": "FR-004",
+      "title": "The system MUST expose accessible menu and toolbar roles, labels, and registry-derived keyboard shortcut metadata. (covers AC-004)",
+      "text": "The system MUST expose accessible menu and toolbar roles, labels, and registry-derived keyboard shortcut metadata. (covers AC-004)",
+      "acceptanceCriteria": [
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/145-desktop-command-surface/spec.md",
+      "sourceLocation": {
+        "line": 42,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T004"
+      ],
+      "linkedEvidenceIds": [
+        "EV004"
+      ]
+    },
+    {
+      "id": "FR-005",
+      "title": "The system MUST retain a stable main surface across modes and present unavailable or mode-specific commands honestly while providing usable compact overflow. (covers AC-005)",
+      "text": "The system MUST retain a stable main surface across modes and present unavailable or mode-specific commands honestly while providing usable compact overflow. (covers AC-005)",
+      "acceptanceCriteria": [
+        "AC-005"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/145-desktop-command-surface/spec.md",
+      "sourceLocation": {
+        "line": 43,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T005"
+      ],
+      "linkedEvidenceIds": [
+        "EV005"
+      ]
+    },
+    {
+      "id": "FR-006",
+      "title": "The system MUST use the existing shared command registry as the single command identity, availability, shortcut, and execution authority for menus, toolbars, and keyboard dispatch. (covers AC-006)",
+      "text": "The system MUST use the existing shared command registry as the single command identity, availability, shortcut, and execution authority for menus, toolbars, and keyboard dispatch. (covers AC-006)",
+      "acceptanceCriteria": [
+        "AC-006"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/145-desktop-command-surface/spec.md",
+      "sourceLocation": {
+        "line": 44,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T006"
+      ],
+      "linkedEvidenceIds": [
+        "EV006"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Build menu and toolbar controls from \u0060activeTacticalRegistry\u0060, using the existing command-button and keyboard-dispatch authority rather than a second action map.",
+      "decision": "Build menu and toolbar controls from \u0060activeTacticalRegistry\u0060, using the existing command-button and keyboard-dispatch authority rather than a second action map.",
+      "requirementRefs": [
+        "FR-001",
+        "FR-002",
+        "FR-004",
+        "FR-006"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/145-desktop-command-surface/clarifications.md",
+      "sourceLocation": {
+        "line": 28,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T007"
+      ]
+    },
+    {
+      "id": "DEC-002",
+      "title": "Persist an order-only \u0060sir.desktop-toolbar.v1\u0060 browser value, validate ids against registry defaults, and reset invalid or requested layouts to the default list.",
+      "decision": "Persist an order-only \u0060sir.desktop-toolbar.v1\u0060 browser value, validate ids against registry defaults, and reset invalid or requested layouts to the default list.",
+      "requirementRefs": [
+        "FR-003",
+        "FR-006"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/145-desktop-command-surface/clarifications.md",
+      "sourceLocation": {
+        "line": 29,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T008"
+      ]
+    },
+    {
+      "id": "DEC-003",
+      "title": "Use a compact overflow disclosure rendered in the production shell and assert it with a real browser test; no numeric performance target is introduced.",
+      "decision": "Use a compact overflow disclosure rendered in the production shell and assert it with a real browser test; no numeric performance target is introduced.",
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/145-desktop-command-surface/clarifications.md",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T009"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement requirement FR-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-001"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV001"
+      ],
+      "source": "work/145-desktop-command-surface/tasks.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "T002",
+      "title": "Implement requirement FR-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-002"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-002",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV002"
+      ],
+      "source": "work/145-desktop-command-surface/tasks.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "T003",
+      "title": "Implement requirement FR-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-003"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "FR-003",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV003"
+      ],
+      "source": "work/145-desktop-command-surface/tasks.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "T004",
+      "title": "Implement requirement FR-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-004"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "FR-004",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV004"
+      ],
+      "source": "work/145-desktop-command-surface/tasks.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "T005",
+      "title": "Implement requirement FR-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-005"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "FR-005",
+        "PD-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV005"
+      ],
+      "source": "work/145-desktop-command-surface/tasks.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "T006",
+      "title": "Implement requirement FR-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-006"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-006",
+        "FR-006",
+        "PD-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV006"
+      ],
+      "source": "work/145-desktop-command-surface/tasks.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "T007",
+      "title": "Implement clarification decision DEC-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-001"
+      ],
+      "sourceIds": [
+        "DEC-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV007"
+      ],
+      "source": "work/145-desktop-command-surface/tasks.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "T008",
+      "title": "Implement clarification decision DEC-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-002"
+      ],
+      "sourceIds": [
+        "DEC-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV008"
+      ],
+      "source": "work/145-desktop-command-surface/tasks.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "T009",
+      "title": "Implement clarification decision DEC-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-003"
+      ],
+      "sourceIds": [
+        "DEC-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV009"
+      ],
+      "source": "work/145-desktop-command-surface/tasks.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "T010",
+      "title": "Update contract surface PC-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV010"
+      ],
+      "source": "work/145-desktop-command-surface/tasks.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "T011",
+      "title": "Record verification evidence VO-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "VO-001"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV011"
+      ],
+      "source": "work/145-desktop-command-surface/tasks.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "T012",
+      "title": "Handle migration posture PM-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PM-001"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV012"
+      ],
+      "source": "work/145-desktop-command-surface/tasks.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "T013",
+      "title": "Refresh generated view impact GV-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV013"
+      ],
+      "source": "work/145-desktop-command-surface/tasks.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV001",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T001",
+      "taskRefs": [
+        "T001"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/145-desktop-command-surface/evidence.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV002",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T002",
+      "taskRefs": [
+        "T002"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/145-desktop-command-surface/evidence.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV003",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T003",
+      "taskRefs": [
+        "T003"
+      ],
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/145-desktop-command-surface/evidence.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV004",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T004",
+      "taskRefs": [
+        "T004"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/145-desktop-command-surface/evidence.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV005",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T005",
+      "taskRefs": [
+        "T005"
+      ],
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/145-desktop-command-surface/evidence.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV006",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T006",
+      "taskRefs": [
+        "T006"
+      ],
+      "requirementRefs": [
+        "FR-006"
+      ],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/145-desktop-command-surface/evidence.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV007",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T007",
+      "taskRefs": [
+        "T007"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/145-desktop-command-surface/evidence.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV008",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T008",
+      "taskRefs": [
+        "T008"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/145-desktop-command-surface/evidence.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV009",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T009",
+      "taskRefs": [
+        "T009"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/145-desktop-command-surface/evidence.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV010",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T010",
+      "taskRefs": [
+        "T010"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/145-desktop-command-surface/evidence.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV011",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T011",
+      "taskRefs": [
+        "T011"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/145-desktop-command-surface/evidence.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV012",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T012",
+      "taskRefs": [
+        "T012"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/145-desktop-command-surface/evidence.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV013",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T013",
+      "taskRefs": [
+        "T013"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/145-desktop-command-surface/evidence.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    }
+  ],
+  "generatedViews": [
+    {
+      "path": "readiness/145-desktop-command-surface/work-model.json",
+      "kind": "workModel",
+      "schemaVersion": 1,
+      "generator": {
+        "id": "FS.GG.SDD.Artifacts",
+        "version": "1.0.0"
+      },
+      "sources": [
+        {
+          "path": ".fsgg/agents.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/project.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/sdd.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/145-desktop-command-surface/checklist.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "8b7e8421334a0605a03284dedeba51d23273833e3624228d57a02c7364e3d5d5"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/145-desktop-command-surface/clarifications.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "ff1e721ad79c6e4e4c3d0cc0151a6a14639ef5a8d61d4e731bdb988770eaac97"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/145-desktop-command-surface/evidence.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "f4924eb171c821df653b553b6c7d21ab78c388efbe5e10fe3256e2c464387ff2"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/145-desktop-command-surface/plan.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "07a26c11e51a703c3d1c5aa1760d69be99b9a50ae1a3a08a5808f2b486f6b196"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/145-desktop-command-surface/spec.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c80d235c8e68ac8cdd8d9a3f29c1100afbf8d15ef2a6cc56393a2547a2f90594"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/145-desktop-command-surface/tasks.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "50fb595f7edea6c09b99d1d8dd92bd9d30a62b947263798c0d3f41aae4abc1c1"
+          },
+          "schemaVersion": 1
+        }
+      ],
+      "outputDigest": {
+        "algorithm": "sha256",
+        "value": "884a4f877c832eb8b00554f82084f636601038e3926e2ef0c716d32f416e4fe4"
+      },
+      "currency": "current"
+    }
+  ],
+  "diagnostics": [],
+  "governanceBoundaries": []
+}

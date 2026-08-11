@@ -1,8 +1,8 @@
 {
   "schema": "sir-persistent-workspace-m9-live-review-v2",
   "captureKind": "actual-production-shell-chromium-screenshot",
-  "productionBundleSha256": "1d41d97b73d6098b05162ad576ba9f80369d0aede426bde2dab37609ac3dce1a",
-  "productionStylesSha256": "6cda8579d9048bc41b7b07619de171a838dfaa7eafbde7f45e684d45b344d7ea",
+  "productionBundleSha256": "1c31d769620c94c25f328a739df396cb1c61baf2ba9daffd8e8bd122bcf98741",
+  "productionStylesSha256": "f821560d093b727408ce476a7d62b6a7af9ba8d80585dab9fd57141f0ac32fe2",
   "acceptedMockupSha256": "b2b0d444202aa9c76235fa7277ba2c6a4e89d3d7dc0dd009abb8e73c72c82270",
   "chromiumExecutable": "/usr/sbin/chromium",
   "chromiumUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
@@ -24,73 +24,73 @@
         "x": 14.391,
         "y": 14.391,
         "width": 1411.219,
-        "height": 996.172,
+        "height": 941.703,
         "right": 1425.609,
-        "bottom": 1010.563
+        "bottom": 956.094
       },
       "toolbar": {
         "x": 14.391,
         "y": 14.391,
         "width": 1411.219,
-        "height": 61.563,
+        "height": 95.094,
         "right": 1425.609,
-        "bottom": 75.953
+        "bottom": 109.484
       },
       "frame": {
         "x": 14.391,
-        "y": 83.953,
+        "y": 117.484,
         "width": 1411.219,
-        "height": 810.391,
+        "height": 722.391,
         "right": 1425.609,
-        "bottom": 894.344
+        "bottom": 839.875
       },
       "workscreen": {
         "x": 228.781,
-        "y": 83.953,
+        "y": 117.484,
         "width": 966.438,
-        "height": 652,
+        "height": 564,
         "right": 1195.219,
-        "bottom": 735.953
+        "bottom": 681.484
       },
       "svg": {
         "x": 229.781,
-        "y": 84.953,
+        "y": 118.484,
         "width": 964.438,
-        "height": 650,
+        "height": 562,
         "right": 1194.219,
-        "bottom": 734.953
+        "bottom": 680.484
       },
       "left": {
         "x": 14.391,
-        "y": 83.953,
+        "y": 117.484,
         "width": 208,
-        "height": 652,
+        "height": 564,
         "right": 222.391,
-        "bottom": 735.953
+        "bottom": 681.484
       },
       "right": {
         "x": 1201.609,
-        "y": 83.953,
+        "y": 117.484,
         "width": 224,
-        "height": 652,
+        "height": 564,
         "right": 1425.609,
-        "bottom": 735.953
+        "bottom": 681.484
       },
       "bottom": {
         "x": 14.391,
-        "y": 742.344,
+        "y": 687.875,
         "width": 1411.219,
         "height": 152,
         "right": 1425.609,
-        "bottom": 894.344
+        "bottom": 839.875
       },
       "timeline": {
         "x": 14.391,
-        "y": 747.141,
+        "y": 692.672,
         "width": 1411.219,
         "height": 146.078,
         "right": 1425.609,
-        "bottom": 893.219
+        "bottom": 838.75
       }
     },
     "styles": {
@@ -109,11 +109,11 @@
         "channel": "Authored",
         "rect": {
           "x": 19.391,
-          "y": 752.141,
+          "y": 697.672,
           "width": 68.797,
           "height": 16.797,
           "right": 88.188,
-          "bottom": 768.938
+          "bottom": 714.469
         },
         "text": "Authored"
       },
@@ -121,11 +121,11 @@
         "channel": "Predicted",
         "rect": {
           "x": 100.188,
-          "y": 752.141,
+          "y": 697.672,
           "width": 76,
           "height": 16.797,
           "right": 176.188,
-          "bottom": 768.938
+          "bottom": 714.469
         },
         "text": "Predicted"
       },
@@ -133,11 +133,11 @@
         "channel": "Accepted",
         "rect": {
           "x": 188.188,
-          "y": 752.141,
+          "y": 697.672,
           "width": 68.797,
           "height": 16.797,
           "right": 256.984,
-          "bottom": 768.938
+          "bottom": 714.469
         },
         "text": "Accepted"
       },
@@ -145,176 +145,231 @@
         "channel": "Committed",
         "rect": {
           "x": 268.984,
-          "y": 752.141,
+          "y": 697.672,
           "width": 76,
           "height": 16.797,
           "right": 344.984,
-          "bottom": 768.938
+          "bottom": 714.469
         },
         "text": "Committed"
       }
     ],
     "toolbarChildren": [
       {
+        "label": "File",
+        "rect": {
+          "x": 18.578,
+          "y": 39.938,
+          "width": 56,
+          "height": 44,
+          "right": 74.578,
+          "bottom": 83.938
+        }
+      },
+      {
+        "label": "Edit",
+        "rect": {
+          "x": 76.172,
+          "y": 39.938,
+          "width": 56,
+          "height": 44,
+          "right": 132.172,
+          "bottom": 83.938
+        }
+      },
+      {
+        "label": "View",
+        "rect": {
+          "x": 133.766,
+          "y": 39.938,
+          "width": 56,
+          "height": 44,
+          "right": 189.766,
+          "bottom": 83.938
+        }
+      },
+      {
+        "label": "Tools",
+        "rect": {
+          "x": 191.359,
+          "y": 39.938,
+          "width": 65.609,
+          "height": 44,
+          "right": 256.969,
+          "bottom": 83.938
+        }
+      },
+      {
+        "label": "Simulation",
+        "rect": {
+          "x": 258.563,
+          "y": 39.938,
+          "width": 113.609,
+          "height": 44,
+          "right": 372.172,
+          "bottom": 83.938
+        }
+      },
+      {
+        "label": "Help",
+        "rect": {
+          "x": 373.766,
+          "y": 39.938,
+          "width": 56,
+          "height": 44,
+          "right": 429.766,
+          "bottom": 83.938
+        }
+      },
+      {
+        "label": "Switch to Editor",
+        "rect": {
+          "x": 432.156,
+          "y": 16.984,
+          "width": 111.453,
+          "height": 44,
+          "right": 543.609,
+          "bottom": 60.984
+        }
+      },
+      {
+        "label": "Switch to Plan",
+        "rect": {
+          "x": 545.516,
+          "y": 16.984,
+          "width": 111.453,
+          "height": 44,
+          "right": 656.969,
+          "bottom": 60.984
+        }
+      },
+      {
+        "label": "Switch to Simulate",
+        "rect": {
+          "x": 658.875,
+          "y": 16.984,
+          "width": 111.453,
+          "height": 44,
+          "right": 770.328,
+          "bottom": 60.984
+        }
+      },
+      {
+        "label": "Switch to Review",
+        "rect": {
+          "x": 772.234,
+          "y": 16.984,
+          "width": 111.469,
+          "height": 44,
+          "right": 883.703,
+          "bottom": 60.984
+        }
+      },
+      {
+        "label": "Play or pause",
+        "rect": {
+          "x": 432.156,
+          "y": 62.891,
+          "width": 111.453,
+          "height": 44,
+          "right": 543.609,
+          "bottom": 106.891
+        }
+      },
+      {
+        "label": "Show contextual actions",
+        "rect": {
+          "x": 545.516,
+          "y": 62.891,
+          "width": 111.453,
+          "height": 44,
+          "right": 656.969,
+          "bottom": 106.891
+        }
+      },
+      {
+        "label": "Customize toolbar",
+        "rect": {
+          "x": 658.875,
+          "y": 62.891,
+          "width": 111.453,
+          "height": 44,
+          "right": 770.328,
+          "bottom": 106.891
+        }
+      },
+      {
         "label": "Editor",
         "rect": {
-          "x": 214.813,
-          "y": 23.172,
+          "x": 886.094,
+          "y": 39.938,
           "width": 77.203,
           "height": 44,
-          "right": 292.016,
-          "bottom": 67.172
+          "right": 963.297,
+          "bottom": 83.938
         }
       },
       {
         "label": "Plan",
         "rect": {
-          "x": 297.609,
-          "y": 23.172,
+          "x": 968.891,
+          "y": 39.938,
           "width": 58,
           "height": 44,
-          "right": 355.609,
-          "bottom": 67.172
+          "right": 1026.891,
+          "bottom": 83.938
         }
       },
       {
         "label": "Simulate",
         "rect": {
-          "x": 361.203,
-          "y": 23.172,
+          "x": 1032.484,
+          "y": 39.938,
           "width": 96.406,
           "height": 44,
-          "right": 457.609,
-          "bottom": 67.172
+          "right": 1128.891,
+          "bottom": 83.938
         }
       },
       {
         "label": "Review",
         "rect": {
-          "x": 463.203,
-          "y": 23.172,
+          "x": 1134.484,
+          "y": 39.938,
           "width": 77.203,
           "height": 44,
-          "right": 540.406,
-          "bottom": 67.172
+          "right": 1211.688,
+          "bottom": 83.938
         }
       },
       {
-        "label": "Play or pause active tactical modality",
+        "label": "Workspace controls",
         "rect": {
-          "x": 545.203,
-          "y": 23.172,
-          "width": 58,
+          "x": 1214.078,
+          "y": 39.938,
+          "width": 207.344,
           "height": 44,
-          "right": 603.203,
-          "bottom": 67.172
-        }
-      },
-      {
-        "label": "Hide timeline panel",
-        "rect": {
-          "x": 608,
-          "y": 18.578,
-          "width": 96.406,
-          "height": 53.188,
-          "right": 704.406,
-          "bottom": 71.766
-        }
-      },
-      {
-        "label": "Collapse timeline",
-        "rect": {
-          "x": 707.594,
-          "y": 18.578,
-          "width": 178.969,
-          "height": 53.188,
-          "right": 886.563,
-          "bottom": 71.766
-        }
-      },
-      {
-        "label": "Reset layout",
-        "rect": {
-          "x": 889.75,
-          "y": 18.578,
-          "width": 132.094,
-          "height": 53.188,
-          "right": 1021.844,
-          "bottom": 71.766
-        }
-      },
-      {
-        "label": "Rules",
-        "rect": {
-          "x": 1026.641,
-          "y": 23.172,
-          "width": 67.609,
-          "height": 44,
-          "right": 1094.25,
-          "bottom": 67.172
-        }
-      },
-      {
-        "label": "Data",
-        "rect": {
-          "x": 1097.438,
-          "y": 23.172,
-          "width": 58,
-          "height": 44,
-          "right": 1155.438,
-          "bottom": 67.172
-        }
-      },
-      {
-        "label": "Samples",
-        "rect": {
-          "x": 1158.625,
-          "y": 23.172,
-          "width": 86.797,
-          "height": 44,
-          "right": 1245.422,
-          "bottom": 67.172
-        }
-      },
-      {
-        "label": "Panels",
-        "rect": {
-          "x": 1250.219,
-          "y": 23.172,
-          "width": 77.203,
-          "height": 44,
-          "right": 1327.422,
-          "bottom": 67.172
-        }
-      },
-      {
-        "label": "Show contextual tactical actions",
-        "rect": {
-          "x": 1332.219,
-          "y": 23.172,
-          "width": 86.797,
-          "height": 44,
-          "right": 1419.016,
-          "bottom": 67.172
+          "right": 1421.422,
+          "bottom": 83.938
         }
       }
     ],
     "tools": {
       "rect": {
         "x": 15.391,
-        "y": 514.953,
+        "y": 548.484,
         "width": 206,
         "height": 764,
         "right": 221.391,
-        "bottom": 1278.953
+        "bottom": 1312.484
       },
       "hostRect": {
         "x": 15.391,
-        "y": 514.953,
+        "y": 548.484,
         "width": 206,
         "height": 764,
         "right": 221.391,
-        "bottom": 1278.953
+        "bottom": 1312.484
       }
     },
     "panelBodies": [
@@ -322,11 +377,11 @@
         "panelId": "roster",
         "rect": {
           "x": 15.391,
-          "y": 179,
+          "y": 212.531,
           "width": 206,
           "height": 240.906,
           "right": 221.391,
-          "bottom": 419.906
+          "bottom": 453.438
         },
         "children": [
           {
@@ -334,11 +389,11 @@
             "position": "static",
             "rect": {
               "x": 15.391,
-              "y": 179,
+              "y": 212.531,
               "width": 206,
               "height": 240.906,
               "right": 221.391,
-              "bottom": 419.906
+              "bottom": 453.438
             }
           }
         ]
@@ -347,11 +402,11 @@
         "panelId": "tools",
         "rect": {
           "x": 15.391,
-          "y": 514.953,
+          "y": 548.484,
           "width": 206,
           "height": 764,
           "right": 221.391,
-          "bottom": 1278.953
+          "bottom": 1312.484
         },
         "children": [
           {
@@ -359,11 +414,11 @@
             "position": "static",
             "rect": {
               "x": 15.391,
-              "y": 514.953,
+              "y": 548.484,
               "width": 206,
               "height": 764,
               "right": 221.391,
-              "bottom": 1278.953
+              "bottom": 1312.484
             }
           }
         ]
@@ -372,11 +427,11 @@
         "panelId": "selection",
         "rect": {
           "x": 1202.609,
-          "y": 157.734,
+          "y": 191.266,
           "width": 222,
           "height": 561,
           "right": 1424.609,
-          "bottom": 718.734
+          "bottom": 752.266
         },
         "children": [
           {
@@ -384,11 +439,11 @@
             "position": "static",
             "rect": {
               "x": 1202.609,
-              "y": 157.734,
+              "y": 191.266,
               "width": 222,
               "height": 561,
               "right": 1424.609,
-              "bottom": 718.734
+              "bottom": 752.266
             }
           }
         ]
@@ -418,29 +473,29 @@
       "x": 12,
       "right": 308,
       "y": 12,
-      "bottom": 441.328125,
+      "bottom": 541.609375,
       "width": 296,
-      "height": 429.328125
+      "height": 529.609375
     },
     "toolbarScroll": {
       "clientWidth": 294,
       "scrollWidth": 294,
-      "clientHeight": 427,
-      "scrollHeight": 427
+      "clientHeight": 528,
+      "scrollHeight": 528
     },
     "workscreenRect": {
       "x": 12,
       "right": 308,
-      "y": 449.328125,
-      "bottom": 801.328125,
+      "y": 549.609375,
+      "bottom": 901.609375,
       "width": 296,
       "height": 352
     },
     "timelineRect": {
       "x": 12,
       "right": 308,
-      "y": 807.71875,
-      "bottom": 959.71875,
+      "y": 908,
+      "bottom": 1060,
       "width": 296,
       "height": 152
     },
@@ -452,8 +507,8 @@
         "rect": {
           "x": 18.59375,
           "right": 95.796875,
-          "y": 53.984375,
-          "bottom": 97.984375,
+          "y": 395.03125,
+          "bottom": 439.03125,
           "width": 77.203125,
           "height": 44
         }
@@ -465,8 +520,8 @@
         "rect": {
           "x": 18.59375,
           "right": 76.59375,
-          "y": 201.171875,
-          "bottom": 245.171875,
+          "y": 614.421875,
+          "bottom": 658.421875,
           "width": 58,
           "height": 44
         }
@@ -478,8 +533,8 @@
         "rect": {
           "x": 79.78125,
           "right": 147.390625,
-          "y": 201.171875,
-          "bottom": 245.171875,
+          "y": 614.421875,
+          "bottom": 658.421875,
           "width": 67.609375,
           "height": 44
         }
@@ -489,10 +544,10 @@
         "selector": "#layout-timeline-visibility-toggle",
         "exists": true,
         "rect": {
-          "x": 150.578125,
-          "right": 246.984375,
-          "y": 201.171875,
-          "bottom": 245.171875,
+          "x": 18.59375,
+          "right": 115,
+          "y": 661.609375,
+          "bottom": 705.609375,
           "width": 96.40625,
           "height": 44
         }
@@ -504,8 +559,8 @@
         "rect": {
           "x": 18.59375,
           "right": 86.203125,
-          "y": 344.34375,
-          "bottom": 388.34375,
+          "y": 799.984375,
+          "bottom": 843.984375,
           "width": 67.609375,
           "height": 44
         }
@@ -517,8 +572,8 @@
         "rect": {
           "x": 89.390625,
           "right": 147.390625,
-          "y": 344.34375,
-          "bottom": 388.34375,
+          "y": 799.984375,
+          "bottom": 843.984375,
           "width": 58,
           "height": 44
         }
@@ -528,10 +583,10 @@
         "selector": ".tactical-supporting-controls button:nth-child(3)",
         "exists": true,
         "rect": {
-          "x": 150.578125,
-          "right": 237.375,
-          "y": 344.34375,
-          "bottom": 388.34375,
+          "x": 18.59375,
+          "right": 105.390625,
+          "y": 847.171875,
+          "bottom": 891.171875,
           "width": 86.796875,
           "height": 44
         }
@@ -542,10 +597,10 @@
         "exists": true,
         "rect": {
           "x": 18.59375,
-          "right": 95.796875,
-          "y": 393.140625,
-          "bottom": 437.140625,
-          "width": 77.203125,
+          "right": 225.9375,
+          "y": 891.171875,
+          "bottom": 935.171875,
+          "width": 207.34375,
           "height": 44
         }
       }
@@ -553,6 +608,6 @@
   },
   "png": "field-focus.png",
   "geometrySvg": "field-focus-geometry.svg",
-  "pngSha256": "4942339e96065b3b29331079859d769f73d2e9ab3c4307afb7899aa63c999c4a",
-  "geometrySvgSha256": "2a694bad82fd9dfcccecb94466a599b2bf4bab707ae240f10264cf1f2ae99e7f"
+  "pngSha256": "93c25aff1ee31a01b733549440597252afbfb5804d6a91c9222aea6a2214e452",
+  "geometrySvgSha256": "8d825909129e39ede6dd807b5488355c544cc1d29f9497703ec0b56f6d2988e2"
 }

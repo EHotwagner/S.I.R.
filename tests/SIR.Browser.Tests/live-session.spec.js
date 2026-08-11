@@ -116,7 +116,7 @@ test("tactical command controls expose registry-derived shortcut metadata", asyn
   await expect(play).toHaveAttribute("aria-keyshortcuts", "Space");
   await expect(play).toHaveAttribute("title", /Space/);
 
-  await page.locator("button").filter({ hasText: "Actions" }).click();
+  await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
   const command = page.locator('[data-tactical-command="workspace.plan"]');
   await expect(command).toHaveAttribute("aria-keyshortcuts", "Control+Shift+2");
   await expect(command.locator("kbd")).toHaveText("Ctrl+Shift+2");

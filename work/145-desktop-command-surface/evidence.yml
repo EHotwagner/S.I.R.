@@ -1,0 +1,389 @@
+schemaVersion: 1
+workId: 145-desktop-command-surface
+stage: evidence
+status: evidenceReady
+sourceSpec: work/145-desktop-command-surface/spec.md
+sourceClarifications: work/145-desktop-command-surface/clarifications.md
+sourceChecklist: work/145-desktop-command-surface/checklist.md
+sourcePlan: work/145-desktop-command-surface/plan.md
+sourceTasks: work/145-desktop-command-surface/tasks.yml
+sourceAnalysis: readiness/145-desktop-command-surface/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/145-desktop-command-surface/analysis.json
+    digest: e1c46958e9d2a93138f573e067f902c766e8f8dd8368af6e68e6da314389eb51
+    schemaVersion: 1
+  - label: checklist
+    path: work/145-desktop-command-surface/checklist.md
+    digest: 8b7e8421334a0605a03284dedeba51d23273833e3624228d57a02c7364e3d5d5
+    schemaVersion: 1
+  - label: clarifications
+    path: work/145-desktop-command-surface/clarifications.md
+    digest: ff1e721ad79c6e4e4c3d0cc0151a6a14639ef5a8d61d4e731bdb988770eaac97
+    schemaVersion: 1
+  - label: plan
+    path: work/145-desktop-command-surface/plan.md
+    digest: 07a26c11e51a703c3d1c5aa1760d69be99b9a50ae1a3a08a5808f2b486f6b196
+    schemaVersion: 1
+  - label: spec
+    path: work/145-desktop-command-surface/spec.md
+    digest: c80d235c8e68ac8cdd8d9a3f29c1100afbf8d15ef2a6cc56393a2547a2f90594
+    schemaVersion: 1
+  - label: tasks
+    path: work/145-desktop-command-surface/tasks.yml
+    digest: 50fb595f7edea6c09b99d1d8dd92bd9d30a62b947263798c0d3f41aae4abc1c1
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV001]
+    artifacts: [src/SIR.Client.Web/App.fs, src/SIR.Client.Web/AppTypes.fs, src/SIR.Client.Web/BrowserInfrastructure.fs, src/SIR.Client.Web/styles.css, tests/SIR.Browser.Tests/desktop-command-surface.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/desktop-command-surface.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/145-desktop-command-surface/browser.junit.xml
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV002]
+    artifacts: [src/SIR.Client.Web/App.fs, src/SIR.Client.Web/AppTypes.fs, src/SIR.Client.Web/BrowserInfrastructure.fs, src/SIR.Client.Web/styles.css, tests/SIR.Browser.Tests/desktop-command-surface.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/desktop-command-surface.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/145-desktop-command-surface/browser.junit.xml
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV003]
+    artifacts: [src/SIR.Client.Web/App.fs, src/SIR.Client.Web/AppTypes.fs, src/SIR.Client.Web/BrowserInfrastructure.fs, src/SIR.Client.Web/styles.css, tests/SIR.Browser.Tests/desktop-command-surface.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/desktop-command-surface.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/145-desktop-command-surface/browser.junit.xml
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV004]
+    artifacts: [src/SIR.Client.Web/App.fs, src/SIR.Client.Web/AppTypes.fs, src/SIR.Client.Web/BrowserInfrastructure.fs, src/SIR.Client.Web/styles.css, tests/SIR.Browser.Tests/desktop-command-surface.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/desktop-command-surface.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/145-desktop-command-surface/browser.junit.xml
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV005]
+    artifacts: [src/SIR.Client.Web/App.fs, src/SIR.Client.Web/AppTypes.fs, src/SIR.Client.Web/BrowserInfrastructure.fs, src/SIR.Client.Web/styles.css, tests/SIR.Browser.Tests/desktop-command-surface.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/desktop-command-surface.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/145-desktop-command-surface/browser.junit.xml
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV006]
+    artifacts: [src/SIR.Client.Web/App.fs, src/SIR.Client.Web/AppTypes.fs, src/SIR.Client.Web/BrowserInfrastructure.fs, src/SIR.Client.Web/styles.css, tests/SIR.Browser.Tests/desktop-command-surface.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/desktop-command-surface.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/145-desktop-command-surface/browser.junit.xml
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV007]
+    artifacts: [src/SIR.Client.Web/App.fs, src/SIR.Client.Web/AppTypes.fs, src/SIR.Client.Web/BrowserInfrastructure.fs, src/SIR.Client.Web/styles.css, tests/SIR.Browser.Tests/desktop-command-surface.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/desktop-command-surface.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/145-desktop-command-surface/browser.junit.xml
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: [src/SIR.Client.Web/App.fs, src/SIR.Client.Web/AppTypes.fs, src/SIR.Client.Web/BrowserInfrastructure.fs, src/SIR.Client.Web/styles.css, tests/SIR.Browser.Tests/desktop-command-surface.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/desktop-command-surface.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/145-desktop-command-surface/browser.junit.xml
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: [src/SIR.Client.Web/App.fs, src/SIR.Client.Web/AppTypes.fs, src/SIR.Client.Web/BrowserInfrastructure.fs, src/SIR.Client.Web/styles.css, tests/SIR.Browser.Tests/desktop-command-surface.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/desktop-command-surface.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/145-desktop-command-surface/browser.junit.xml
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV010]
+    artifacts: [src/SIR.Client.Web/App.fs, src/SIR.Client.Web/AppTypes.fs, src/SIR.Client.Web/BrowserInfrastructure.fs, src/SIR.Client.Web/styles.css, tests/SIR.Browser.Tests/desktop-command-surface.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/desktop-command-surface.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/145-desktop-command-surface/browser.junit.xml
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV011]
+    artifacts: [src/SIR.Client.Web/App.fs, src/SIR.Client.Web/AppTypes.fs, src/SIR.Client.Web/BrowserInfrastructure.fs, src/SIR.Client.Web/styles.css, tests/SIR.Browser.Tests/desktop-command-surface.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/desktop-command-surface.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/145-desktop-command-surface/browser.junit.xml
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV012]
+    artifacts: [src/SIR.Client.Web/App.fs, src/SIR.Client.Web/AppTypes.fs, src/SIR.Client.Web/BrowserInfrastructure.fs, src/SIR.Client.Web/styles.css, tests/SIR.Browser.Tests/desktop-command-surface.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/desktop-command-surface.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/145-desktop-command-surface/browser.junit.xml
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV013]
+    artifacts: [src/SIR.Client.Web/App.fs, src/SIR.Client.Web/AppTypes.fs, src/SIR.Client.Web/BrowserInfrastructure.fs, src/SIR.Client.Web/styles.css, tests/SIR.Browser.Tests/desktop-command-surface.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/desktop-command-surface.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/145-desktop-command-surface/browser.junit.xml
+      digest: "sha256:1e4910d8f2085032cd9dc661a6cb059b2a8e52bc5707a3a8defc7b7fb952bfda"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+lifecycleNotes:
+  - "Next lifecycle action: verify."
