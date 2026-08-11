@@ -37,6 +37,16 @@
       "schemaStatus": "current"
     },
     {
+      "path": "readiness/154-production-delivery-performance/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "e433d8247700bb68f15859cb222ec19b11e6ab711f7a378056e80e712794e176"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
       "path": "work/154-production-delivery-performance/checklist.md",
       "kind": "checklist",
       "digest": {
@@ -566,7 +576,7 @@
     {
       "path": "readiness/154-production-delivery-performance/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
+      "currency": "current",
       "diagnosticIds": []
     }
   ],

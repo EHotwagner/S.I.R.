@@ -1,5 +1,6 @@
 import { brotliCompressSync, gzipSync } from "node:zlib";
 import { readdir, readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 
 const root = resolve("artifacts/client");
@@ -9,6 +10,7 @@ const app = await readFile(appPath);
 const entries = await readdir(resolve(root, "content/sir-client/v1"));
 const deferred = entries.filter((entry) => entry.startsWith("deferred-delivery-support-") && entry.endsWith(".js"));
 const enginePath = resolve(root, "engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/worker.js");
+const publication = JSON.parse(await readFile(resolve(root, "publication-manifest.json"), "utf8"));
 
 function requireBudget(label, actual, limit) {
   if (actual > limit) throw new Error(`${label} is ${actual} bytes; budget is ${limit}.`);
@@ -22,7 +24,11 @@ if (deferred.length !== 1) throw new Error("Expected exactly one deferred delive
 if (app.toString("utf8").includes("This support panel loads on demand")) {
   throw new Error("The deferred support panel leaked into the initial application entry.");
 }
-await readFile(enginePath);
+const worker = await readFile(enginePath);
+const engine = publication.engines.find((entry) => entry.workerPath === "engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/worker.js");
+if (!engine || engine.bytes !== worker.byteLength || engine.integrity !== `sha384-${createHash("sha384").update(worker).digest("base64")}`) {
+  throw new Error("The retained engine does not match the publication integrity manifest.");
+}
 
 console.log(JSON.stringify({
   schema: "sir-production-delivery-budget-v1",
