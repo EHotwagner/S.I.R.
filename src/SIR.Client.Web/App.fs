@@ -5888,14 +5888,14 @@ let private tacticalContextHelp model dispatch =
 let private activeSceneProjection (model: Model) =
     let focusedUnit =
         reconcileTacticalSelectedUnit model.Workspace model
+    let editorProjection editorFocusedUnit =
+        TacticalSceneProjection.editor
+            { EditorState = model.Editor
+              EditorWorkspace = model.EditorView
+              EditorFocusedUnit = editorFocusedUnit }
     match model.Workspace with
     | EditorWorkspace ->
-        Some(
-            TacticalSceneProjection.editor
-                { EditorState = model.Editor
-                  EditorWorkspace = model.EditorView
-                  EditorFocusedUnit = focusedUnit }
-        )
+        Some(editorProjection focusedUnit)
     | PlanningWorkspace ->
         model.Planning
         |> Option.map (fun planning ->
@@ -5912,6 +5912,10 @@ let private activeSceneProjection (model: Model) =
                   SimulatorSelectedUnit = model.SimulatorSelectedUnit
                   SimulatorCamera = model.EditorView.Camera
                   SimulatorFocusedUnit = focusedUnit })
+        |> Option.orElseWith (fun () ->
+            reconcileTacticalSelectedUnit EditorWorkspace model
+            |> editorProjection
+            |> Some)
     | ReplayWorkspace ->
         TacticalSceneProjection.acceptReview model.Shell
         |> Option.map (fun accepted ->
@@ -5919,6 +5923,10 @@ let private activeSceneProjection (model: Model) =
                 { AcceptedReview = accepted
                   ReviewCamera = model.EditorView.Camera
                   ReviewFocusedUnit = focusedUnit })
+        |> Option.orElseWith (fun () ->
+            reconcileTacticalSelectedUnit EditorWorkspace model
+            |> editorProjection
+            |> Some)
 
 let private activePresentedSceneProjection (model: Model) =
     let projection = activeSceneProjection model

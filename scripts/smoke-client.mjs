@@ -584,22 +584,21 @@ nonDefaultUnit.dispatchEvent(
 await window.happyDOM.waitUntilComplete();
 assertSelection("non-default Editor selection", 2);
 
-// Review has no accepted frame yet: the shell-owned selection must be filtered
-// out of an unavailable projection, then deterministically restored from the
-// authoritative Editor owner when returning.
+// Review has no accepted frame yet: retain the authoritative Editor scene and
+// its valid selection through the shared work surface.
 modalityButtons.get("Review").click();
 await window.happyDOM.waitUntilComplete();
 await ensurePanelExpanded("tools");
 if (
   workscreenRegion.getAttribute("data-active-modality") !== "Review" ||
-  worksurface.getAttribute("data-scene-owner") !== "Unavailable"
+  worksurface.getAttribute("data-scene-owner") !== "EditorScene"
 ) {
-  throw new Error("Empty Review did not expose its unavailable projection explicitly.");
+  throw new Error("Empty Review did not retain the Editor fallback projection.");
 }
 assertUnavailablePlay("Review without a replay", "Load a replay package to start playback.");
-assertSingleWorksurface("stale selection filtering");
-assertSelection("stale selection filtering", null);
-await clickModality("Editor", "return from unavailable Review");
+assertSingleWorksurface("empty Review editor fallback");
+assertSelection("empty Review editor fallback", 2);
+await clickModality("Editor", "return from empty Review");
 
 modalityButtons.get("Simulate").click();
 await window.happyDOM.waitUntilComplete();
@@ -610,7 +609,11 @@ assertUnavailablePlay(
   "Simulate without a handoff",
   "Create a simulator handoff from the Editor.",
 );
-await clickModality("Editor", "return from unavailable Simulate");
+if (worksurface.getAttribute("data-scene-owner") !== "EditorScene") {
+  throw new Error("Empty Simulate did not retain the Editor fallback projection.");
+}
+assertSelection("empty Simulate editor fallback", 2);
+await clickModality("Editor", "return from empty Simulate");
 
 if (!shell.querySelector('[data-panel-id="document"]')) {
   shell.querySelector("#layout-show-document")?.click();
@@ -869,12 +872,12 @@ modalityButtons.get("Review").click();
 await window.happyDOM.waitUntilComplete();
 if (
   workscreenRegion.getAttribute("data-active-modality") !== "Review" ||
-  worksurface.getAttribute("data-scene-owner") !== "Unavailable"
+  worksurface.getAttribute("data-scene-owner") !== "EditorScene"
 ) {
-  throw new Error("Review file setup did not remain on its unavailable projection.");
+  throw new Error("Review file setup did not retain the Editor fallback projection.");
 }
 assertSingleWorksurface("open Review for accepted file");
-assertSelection("open Review for accepted file", null);
+assertSelection("open Review for accepted file", 2);
 const replayInput = shell.querySelector('input[type="file"]');
 if (!replayInput) {
   throw new Error("Review did not expose the full-replay file boundary.");

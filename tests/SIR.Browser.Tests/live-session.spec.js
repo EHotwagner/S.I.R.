@@ -77,6 +77,34 @@ test("replay picker reads an exactly bounded file after rejecting an oversized o
   await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(1);
 });
 
+test("empty derived modes retain the editor tactical scene and spatial context", async ({ page }) => {
+  await page.goto("/");
+  const battlefield = page.locator("#persistent-tactical-svg");
+  const initial = {
+    owner: await battlefield.getAttribute("data-scene-owner"),
+    viewBox: await battlefield.getAttribute("viewBox"),
+    revision: await battlefield.getAttribute("data-scene-revision"),
+    panX: await battlefield.getAttribute("data-camera-pan-x"),
+    panY: await battlefield.getAttribute("data-camera-pan-y"),
+    zoom: await battlefield.getAttribute("data-camera-zoom"),
+    selection: await battlefield.getAttribute("data-semantic-selection-unit"),
+  };
+  expect(initial.owner).toBe("EditorScene");
+
+  for (const mode of ["Plan", "Simulate", "Review"]) {
+    await page.getByRole("button", { name: mode, exact: true }).click();
+    await expect(battlefield).toHaveAttribute("viewBox", initial.viewBox);
+    await expect(battlefield).toHaveAttribute("data-camera-pan-x", initial.panX);
+    await expect(battlefield).toHaveAttribute("data-camera-pan-y", initial.panY);
+    await expect(battlefield).toHaveAttribute("data-camera-zoom", initial.zoom);
+    if (mode !== "Plan") {
+      await expect(battlefield).toHaveAttribute("data-scene-owner", initial.owner);
+      await expect(battlefield).toHaveAttribute("data-scene-revision", initial.revision);
+      await expect(battlefield).toHaveAttribute("data-semantic-selection-unit", initial.selection);
+    }
+  }
+});
+
 test("map and raster pickers reject oversized metadata before reads", async ({ page }) => {
   await page.goto("/");
   await showDocumentImports(page);

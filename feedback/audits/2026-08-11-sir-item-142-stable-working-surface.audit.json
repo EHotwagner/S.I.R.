@@ -1,0 +1,29 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-11-sir-item-142-stable-working-surface.md",
+  "reportSha256": "dce019887b8cc01917b0eaf7c03553ba00f7b5955a6c4fc629242ac5195d3e78",
+  "criticMode": "separated-critic-pass",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [{
+    "id": "§4.1",
+    "status": "actionable",
+    "missingFacts": [],
+    "checkedEvidence": [
+      {"locator": "command:dotnet restore src/SIR.Server/SIR.Server.fsproj --locked-mode", "result": "verified"},
+      {"locator": "command:npm ci && npm run setup:browser", "result": "verified"}
+    ],
+    "confidenceLimits": ["Provisioning behavior is observed in this isolated worktree."]
+  }, {
+    "id": "§4.2",
+    "status": "actionable",
+    "missingFacts": [],
+    "checkedEvidence": [{"locator": "command:npm run build:client && dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release --no-restore -o artifacts/publish && npm run test:browser -- --grep empty derived modes retain", "result": "verified"}],
+    "confidenceLimits": ["The focused browser route covers empty derived modes only."]
+  }, {
+    "id": "§4.3",
+    "status": "positive-pattern",
+    "missingFacts": [],
+    "checkedEvidence": [{"locator": "command:npm run review:map-editor && npm run review:persistent-workspace-m9 && npm run test:persistent-workspace-m9-acceptance", "result": "verified"}],
+    "confidenceLimits": []
+  }]
+}
