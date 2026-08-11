@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="9" failures="0" skipped="0">
+ <testsuite name="sir-browser" tests="9" failures="0" skipped="0">
+  <testcase classname="live-session.spec.js" name="authorized player journey advances and reconnects without credentials in runtime URLs"></testcase>
+  <testcase classname="live-session.spec.js" name="bootstrap fails closed for absent and cross-actor credentials"></testcase>
+  <testcase classname="live-session.spec.js" name="browser import read failures leave a visible recovery message"></testcase>
+  <testcase classname="live-session.spec.js" name="empty derived modes retain the editor tactical scene and spatial context"></testcase>
+  <testcase classname="live-session.spec.js" name="every visible actionable control is registry-bound or explicitly unassigned"></testcase>
+  <testcase classname="live-session.spec.js" name="map and raster pickers reject oversized metadata before reads"></testcase>
+  <testcase classname="live-session.spec.js" name="oversized browser imports are rejected from metadata before browser reads"></testcase>
+  <testcase classname="live-session.spec.js" name="replay picker reads an exactly bounded file after rejecting an oversized one"></testcase>
+  <testcase classname="live-session.spec.js" name="tactical command controls expose registry-derived shortcut metadata"></testcase>
+ </testsuite>
+</testsuites>

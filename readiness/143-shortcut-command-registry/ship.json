@@ -51,7 +51,7 @@
       "kind": "source",
       "digest": {
         "algorithm": "sha256",
-        "value": "fb18d54b422b20c41517305d8eb554bc295bf246ddf5e909058f74708f108a5f"
+        "value": "7cc8616780644643b27228d2ed72a21c71ef8eada7bd781c06a94427f0bfa428"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -61,7 +61,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "66bb05a769bb2e6fecd86653282a219773958b2e85e3850b6930ca7977b3e5c3"
+        "value": "51c8021ba0302d95e6d859e4c902ad546b267b9d745ff0c6ed0d6962193fba33"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -91,7 +91,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "353da8acb83e42bbc254d5db4e9b088798d1f2d89e930d3a16d10d087de9ecde"
+        "value": "cdb6202ee9c6f1929fe8a7c9b005578254103d6bdf913a03bf0d0b0e6547361c"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -167,10 +167,10 @@
   "verificationReadiness": {
     "status": "verificationReady",
     "blockingFindingIds": [],
-    "evidenceSupportedCount": 16,
+    "evidenceSupportedCount": 15,
     "evidenceSelfAttestedCount": 0,
-    "evidenceObservedCount": 16,
-    "evidenceDeferredCount": 0,
+    "evidenceObservedCount": 15,
+    "evidenceDeferredCount": 1,
     "evidenceMissingCount": 0,
     "evidenceStaleCount": 0,
     "evidenceSyntheticCount": 0,
@@ -300,9 +300,9 @@
     {
       "id": "ED-EV016",
       "obligationId": "EV016",
-      "state": "supported",
-      "observed": true,
-      "severity": "ready",
+      "state": "deferred",
+      "observed": false,
+      "severity": "advisory",
       "diagnosticIds": []
     }
   ],

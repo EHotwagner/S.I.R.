@@ -51,7 +51,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "66bb05a769bb2e6fecd86653282a219773958b2e85e3850b6930ca7977b3e5c3"
+        "value": "51c8021ba0302d95e6d859e4c902ad546b267b9d745ff0c6ed0d6962193fba33"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +81,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "353da8acb83e42bbc254d5db4e9b088798d1f2d89e930d3a16d10d087de9ecde"
+        "value": "cdb6202ee9c6f1929fe8a7c9b005578254103d6bdf913a03bf0d0b0e6547361c"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -491,8 +491,8 @@
     {
       "id": "ED-EV016",
       "obligationId": "EV016",
-      "state": "supported",
-      "observed": true,
+      "state": "deferred",
+      "observed": false,
       "classifiedRequirement": false,
       "journeyRequirement": false,
       "evidenceIds": [
@@ -506,9 +506,9 @@
         "PD-001",
         "PD-005"
       ],
-      "severity": "ready",
+      "severity": "advisory",
       "diagnosticIds": [],
-      "correction": ""
+      "correction": "Resolve evidence obligation EV016."
     }
   ],
   "testDispositions": [
@@ -765,8 +765,8 @@
     {
       "id": "TD-EV016",
       "obligationId": "EV016",
-      "state": "satisfied",
-      "observed": true,
+      "state": "deferred",
+      "observed": false,
       "evidenceIds": [
         "EV016"
       ],
@@ -774,9 +774,9 @@
         "T016"
       ],
       "affectedRequirementIds": [],
-      "severity": "ready",
+      "severity": "advisory",
       "diagnosticIds": [],
-      "correction": ""
+      "correction": "Record a verifying test for EV016."
     }
   ],
   "skillVisibility": [

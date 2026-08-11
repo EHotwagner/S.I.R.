@@ -47,7 +47,11 @@ evidence:
     planDecisionRefs: []
     obligationRefs: [EV001]
     artifacts: [src/SIR.Client/UnifiedTacticalWorkspace.fs, tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs]
-    sourceRefs: []
+    sourceRefs:
+      - kind: implementation
+        path: src/SIR.Client/UnifiedTacticalWorkspace.fs
+      - kind: verification
+        path: tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs
     result: pass
     synthetic: false
     observedRun:
@@ -72,15 +76,19 @@ evidence:
     planDecisionRefs: []
     obligationRefs: [EV002]
     artifacts: [src/SIR.Client.Web/App.fs, tests/SIR.Browser.Tests/live-session.spec.js]
-    sourceRefs: []
+    sourceRefs:
+      - kind: implementation
+        path: src/SIR.Client.Web/App.fs
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
+      source: readiness/143-shortcut-command-registry/command-inventory.junit.xml
+      digest: "sha256:54b12bddad4668607ce316e793bc5f11d1d5af738273b1f3d29c491ca55a6248"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -97,15 +105,17 @@ evidence:
     planDecisionRefs: []
     obligationRefs: [EV003]
     artifacts: [src/SIR.Client.Web/App.fs, tests/SIR.Browser.Tests/live-session.spec.js]
-    sourceRefs: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
+      source: readiness/143-shortcut-command-registry/shortcut-registry.junit.xml
+      digest: "sha256:189d3a064f0da772590e379a57ac09b0b4fba33c3a332b08aef79350aff00ec8"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -122,7 +132,9 @@ evidence:
     planDecisionRefs: []
     obligationRefs: [EV004]
     artifacts: [src/SIR.Client/UnifiedTacticalWorkspace.fs, tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs]
-    sourceRefs: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs
     result: pass
     synthetic: false
     observedRun:
@@ -147,15 +159,17 @@ evidence:
     planDecisionRefs: []
     obligationRefs: [EV005]
     artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
-    sourceRefs: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
+      source: readiness/143-shortcut-command-registry/browser.junit.xml
+      digest: "sha256:fae6ad42730cf338c337bf5eb09cf1876dd1f2d63f60e6ec92152d56ff65e3c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 9
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -171,16 +185,18 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV006]
-    artifacts: []
-    sourceRefs: []
+    artifacts: [src/SIR.Client.Web/App.fs, src/SIR.Client/UnifiedTacticalWorkspace.fs, tests/SIR.Browser.Tests/live-session.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
+      source: artifacts/test-results/143-shortcut-registry.junit.xml
+      digest: "sha256:189d3a064f0da772590e379a57ac09b0b4fba33c3a332b08aef79350aff00ec8"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -196,16 +212,18 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV007]
-    artifacts: []
-    sourceRefs: []
+    artifacts: [src/SIR.Client.Web/App.fs, tests/SIR.Browser.Tests/live-session.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
+      source: artifacts/test-results/143-command-inventory.junit.xml
+      digest: "sha256:54b12bddad4668607ce316e793bc5f11d1d5af738273b1f3d29c491ca55a6248"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -221,16 +239,18 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001]
     obligationRefs: [EV008]
-    artifacts: []
-    sourceRefs: []
+    artifacts: [src/SIR.Client/UnifiedTacticalWorkspace.fs, tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
+      source: artifacts/test-results/143-client.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -246,16 +266,18 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-002]
     obligationRefs: [EV009]
-    artifacts: []
-    sourceRefs: []
+    artifacts: [src/SIR.Client.Web/App.fs, tests/SIR.Browser.Tests/live-session.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
+      source: artifacts/test-results/143-shortcut-registry.junit.xml
+      digest: "sha256:189d3a064f0da772590e379a57ac09b0b4fba33c3a332b08aef79350aff00ec8"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -271,16 +293,18 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-003]
     obligationRefs: [EV010]
-    artifacts: []
-    sourceRefs: []
+    artifacts: [src/SIR.Client.Web/App.fs, tests/SIR.Browser.Tests/live-session.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
+      source: artifacts/test-results/143-shortcut-registry.junit.xml
+      digest: "sha256:189d3a064f0da772590e379a57ac09b0b4fba33c3a332b08aef79350aff00ec8"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -296,16 +320,18 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-004]
     obligationRefs: [EV011]
-    artifacts: []
-    sourceRefs: []
+    artifacts: [src/SIR.Client/UnifiedTacticalWorkspace.fs, tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
+      source: artifacts/test-results/143-client.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -321,16 +347,18 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-005]
     obligationRefs: [EV012]
-    artifacts: []
-    sourceRefs: []
+    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
+      source: artifacts/test-results/143-command-inventory.junit.xml
+      digest: "sha256:54b12bddad4668607ce316e793bc5f11d1d5af738273b1f3d29c491ca55a6248"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -346,16 +374,18 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001, PD-002]
     obligationRefs: [EV013]
-    artifacts: []
-    sourceRefs: []
+    artifacts: [src/SIR.Client/UnifiedTacticalWorkspace.fs, tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
+      source: artifacts/test-results/143-client.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -371,16 +401,20 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001, PD-002, PD-003, PD-004, PD-005]
     obligationRefs: [EV014]
-    artifacts: []
-    sourceRefs: []
+    artifacts: [readiness/143-shortcut-command-registry/browser.junit.xml, tests/SIR.Browser.Tests/live-session.spec.js, tests/SIR.Client.Tests/Program.fs, tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
+      - kind: verification
+        path: tests/SIR.Browser.Tests/live-session.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
+      source: readiness/143-shortcut-command-registry/browser.junit.xml
+      digest: "sha256:fae6ad42730cf338c337bf5eb09cf1876dd1f2d63f60e6ec92152d56ff65e3c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 9
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -396,21 +430,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV015]
-    artifacts: []
-    sourceRefs: []
+    artifacts: [readiness/143-shortcut-command-registry/client-qualification.junit.xml, src/SIR.Client/UnifiedTacticalWorkspace.fs, tests/SIR.Client.Tests/Program.fs, tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
+      source: readiness/143-shortcut-command-registry/client-qualification.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
   - id: EV016
-    kind: verification
+    kind: deferral
     subject:
       type: task
       id: T016
@@ -421,18 +457,14 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001, PD-005]
     obligationRefs: [EV016]
-    artifacts: []
+    artifacts: [readiness/143-shortcut-command-registry/agent-commands/codex/guidance.json, readiness/143-shortcut-command-registry/summary.md, readiness/143-shortcut-command-registry/work-model.json]
     sourceRefs: []
-    result: pass
+    result: deferred
     synthetic: false
-    observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
-      digestContract: exact-bytes-v1
-      outcome: passed
-      passed: 2
-      failed: 0
-      skipped: 0
-    notes: [Evidence required before verify.]
+    rationale: "Generated views are regenerated and checked by the lifecycle, but no product test run can honestly observe their currency as a verification receipt."
+    owner: codex
+    scope: GV-001 generated-view currency and its lifecycle-owned readiness projections.
+    laterLifecycleVisibility: Re-run refresh and ship at the next implementation head before the protected-boundary handoff.
+    notes: [Deferred generated-view evidence is intentionally not laundered through a browser receipt.]
 lifecycleNotes:
   - "Next lifecycle action: verify."

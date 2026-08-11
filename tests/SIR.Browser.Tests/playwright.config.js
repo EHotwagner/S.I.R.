@@ -9,7 +9,9 @@ assertBrowserAvailable();
 export default defineConfig({
   testDir: import.meta.dirname,
   reporter: [[resolve(import.meta.dirname, "deterministic-junit-reporter.js"), {
-    outputFile: resolve(repoRoot, "artifacts/test-results/browser.junit.xml"),
+    // Focused SDD obligations use separately deterministic receipts.  The
+    // default remains the complete browser inventory used by CI.
+    outputFile: resolve(repoRoot, process.env.SIR_JUNIT_OUTPUT || "artifacts/test-results/browser.junit.xml"),
   }]],
   globalSetup: resolve(import.meta.dirname, "browser-setup.js"),
   use: {

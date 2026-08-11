@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "353da8acb83e42bbc254d5db4e9b088798d1f2d89e930d3a16d10d087de9ecde"
+        "value": "cdb6202ee9c6f1929fe8a7c9b005578254103d6bdf913a03bf0d0b0e6547361c"
       }
     },
     {
@@ -874,7 +874,11 @@
         "T006"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client/UnifiedTacticalWorkspace.fs",
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -896,7 +900,10 @@
         "T007"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -920,7 +927,10 @@
       "requirementRefs": [
         "FR-001"
       ],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client/UnifiedTacticalWorkspace.fs",
+        "tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -944,7 +954,10 @@
       "requirementRefs": [
         "FR-002"
       ],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -968,7 +981,10 @@
       "requirementRefs": [
         "FR-003"
       ],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -992,7 +1008,10 @@
       "requirementRefs": [
         "FR-004"
       ],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client/UnifiedTacticalWorkspace.fs",
+        "tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -1016,7 +1035,9 @@
       "requirementRefs": [
         "FR-005"
       ],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -1038,7 +1059,10 @@
         "T013"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client/UnifiedTacticalWorkspace.fs",
+        "tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -1060,7 +1084,12 @@
         "T014"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "readiness/143-shortcut-command-registry/browser.junit.xml",
+        "tests/SIR.Browser.Tests/live-session.spec.js",
+        "tests/SIR.Client.Tests/Program.fs",
+        "tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -1082,7 +1111,12 @@
         "T015"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "readiness/143-shortcut-command-registry/client-qualification.junit.xml",
+        "src/SIR.Client/UnifiedTacticalWorkspace.fs",
+        "tests/SIR.Client.Tests/Program.fs",
+        "tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -1097,20 +1131,24 @@
     },
     {
       "id": "EV016",
-      "kind": "verification",
+      "kind": "deferral",
       "subjectType": "task",
       "subjectId": "T016",
       "taskRefs": [
         "T016"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "pass",
+      "artifactRefs": [
+        "readiness/143-shortcut-command-registry/agent-commands/codex/guidance.json",
+        "readiness/143-shortcut-command-registry/summary.md",
+        "readiness/143-shortcut-command-registry/work-model.json"
+      ],
+      "result": "deferred",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
       "performanceMeasurements": [],
-      "rationale": null,
+      "rationale": "Generated views are regenerated and checked by the lifecycle, but no product test run can honestly observe their currency as a verification receipt.",
       "source": "work/143-shortcut-command-registry/evidence.yml",
       "sourceLocation": {
         "line": 16,
@@ -1172,7 +1210,7 @@
           "path": "work/143-shortcut-command-registry/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "353da8acb83e42bbc254d5db4e9b088798d1f2d89e930d3a16d10d087de9ecde"
+            "value": "cdb6202ee9c6f1929fe8a7c9b005578254103d6bdf913a03bf0d0b0e6547361c"
           },
           "schemaVersion": 1
         },
@@ -1203,7 +1241,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "4759749743b28f059417aecee013d2770a978a6e08a446251991003435f18316"
+        "value": "446d0cf26be81bbb4cfdd76b0cb07440889604b5e98113d34812b972c140cd77"
       },
       "currency": "current"
     }

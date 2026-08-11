@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/143-shortcut-command-registry/ship.json",
-      "digest": "sha256:f4640372f43dbfd699b4000539a8a846e9fb30a333fe5733584cfe7d6823ff9b",
+      "digest": "sha256:ba83edcdab426f0271cda26de5a964b1d658ee1345cb02edbc869d18ed356634",
       "schemaVersion": 1
     },
     {
       "path": "readiness/143-shortcut-command-registry/verify.json",
-      "digest": "sha256:fb18d54b422b20c41517305d8eb554bc295bf246ddf5e909058f74708f108a5f",
+      "digest": "sha256:7cc8616780644643b27228d2ed72a21c71ef8eada7bd781c06a94427f0bfa428",
       "schemaVersion": 1
     },
     {
       "path": "readiness/143-shortcut-command-registry/work-model.json",
-      "digest": "sha256:66bb05a769bb2e6fecd86653282a219773958b2e85e3850b6930ca7977b3e5c3",
+      "digest": "sha256:51c8021ba0302d95e6d859e4c902ad546b267b9d745ff0c6ed0d6962193fba33",
       "schemaVersion": 1
     }
   ],
@@ -99,8 +99,8 @@
       },
       {
         "id": "evidence:EV016",
-        "state": "real",
-        "rationale": null
+        "state": "skipped",
+        "rationale": "Generated views are regenerated and checked by the lifecycle, but no product test run can honestly observe their currency as a verification receipt."
       },
       {
         "id": "task:T001",
