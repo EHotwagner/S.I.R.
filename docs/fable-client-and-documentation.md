@@ -1994,3 +1994,7 @@ identity.
 - [FSharp.Formatting output evaluation](https://fsprojects.github.io/FSharp.Formatting/evaluation.html)
 - [FSharp.Formatting styling](https://fsprojects.github.io/FSharp.Formatting/styling.html)
 - [FSharp.Formatting GitHub Pages guide](https://fsprojects.github.io/FSharp.Formatting/zero-to-hero.html)
+# Governance boundary
+
+See [Fable game governance parity](game-governance.md) for the package-only LockstepExact
+boundary and the native/Skia to Fable/SVG responsibility matrix.

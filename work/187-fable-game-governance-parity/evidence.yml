@@ -1,0 +1,285 @@
+schemaVersion: 1
+workId: 187-fable-game-governance-parity
+stage: evidence
+status: needsEvidenceCorrection
+sourceSpec: work/187-fable-game-governance-parity/spec.md
+sourceClarifications: work/187-fable-game-governance-parity/clarifications.md
+sourceChecklist: work/187-fable-game-governance-parity/checklist.md
+sourcePlan: work/187-fable-game-governance-parity/plan.md
+sourceTasks: work/187-fable-game-governance-parity/tasks.yml
+sourceAnalysis: readiness/187-fable-game-governance-parity/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/187-fable-game-governance-parity/analysis.json
+    digest: 64ac25c95842588b59feca1310afd177cd55d52508ac3faa3b8a3b0f7e9d4e2e
+    schemaVersion: 1
+  - label: checklist
+    path: work/187-fable-game-governance-parity/checklist.md
+    digest: bf46cd6cbfd7b98c984f5028c351c25634b177aa78aa44aba71318e76d7667a9
+    schemaVersion: 1
+  - label: clarifications
+    path: work/187-fable-game-governance-parity/clarifications.md
+    digest: 066db5d8e492cc1d10a00f7c51b89fbf9e91ff29b28e5f6c5623e0171d671c85
+    schemaVersion: 1
+  - label: plan
+    path: work/187-fable-game-governance-parity/plan.md
+    digest: 1af12f233131341d638d5788b20a3227e5cc67f557a493025627e0a816aea7fc
+    schemaVersion: 1
+  - label: spec
+    path: work/187-fable-game-governance-parity/spec.md
+    digest: ea7832d29c41a4126e82dbf7a4b27cfa1542b73dd74ac58fe88181c890595284
+    schemaVersion: 1
+  - label: tasks
+    path: work/187-fable-game-governance-parity/tasks.yml
+    digest: 605b01c07abdc97fb17ec6222f407f3c68fd9cb43d19e616c8c9a87860ce6a94
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: missing
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV001]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-conformance.sh
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV002
+    kind: missing
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV002]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-conformance.sh
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV003
+    kind: missing
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV003]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-conformance.sh
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV004
+    kind: missing
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV004]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-conformance.sh
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV005
+    kind: missing
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV005]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-conformance.sh
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV006
+    kind: missing
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV006]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-conformance.sh
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV007
+    kind: missing
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV007]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-conformance.sh
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV008
+    kind: missing
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV008]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-conformance.sh
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV009
+    kind: missing
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-conformance.sh
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV010
+    kind: missing
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV010]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-conformance.sh
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV011
+    kind: missing
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002, PD-003]
+    obligationRefs: [EV011]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-conformance.sh
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV012
+    kind: missing
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV012]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-conformance.sh
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV013
+    kind: missing
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005, PD-008]
+    obligationRefs: [EV013]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-conformance.sh
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

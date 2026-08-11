@@ -11,6 +11,12 @@
           "FSharp.Core": "10.1.302"
         }
       },
+      "FS.GG.Governance.ReferenceGateSet": {
+        "type": "Direct",
+        "requested": "[1.7.0, 1.7.0]",
+        "resolved": "1.7.0",
+        "contentHash": "LywkCn2cLtEXgIXcrCnegez3ZgGAWjryRpOsCiSuuPkeT/H8NX5AZ5CbEm58zR6axQYwdtbGioHDEG6SQzkiCA=="
+      },
       "FSharp.Core": {
         "type": "Direct",
         "requested": "[10.1.302, 10.1.302]",

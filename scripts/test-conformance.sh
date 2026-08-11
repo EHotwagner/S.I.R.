@@ -8,6 +8,8 @@ export NUGET_PACKAGES="$task_tmp/nuget-packages"
 
 cd "$repo_root"
 
+./scripts/verify-fable-game-governance.sh
+
 node scripts/verify-fable-client-baseline.mjs
 node scripts/verify-project-architecture.mjs
 node scripts/test-persistent-workspace-m0-baseline.mjs

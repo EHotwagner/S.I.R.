@@ -9,5 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="../SIR.Domain/SIR.Domain.fsproj" />
     <PackageReference Include="FS.GG.Game.Core" />
+    <PackageReference Include="FS.GG.Governance.ReferenceGateSet" PrivateAssets="all" />
   </ItemGroup>
 </Project>
