@@ -11,7 +11,7 @@ commit: pending-pr-head
 ## §1 Provenance and confidence
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 1
+- **material events:** 2
 - **zero-event reason:** n/a
 - **checkpoint:** `feedback/checkpoints/item-145-desktop-command-surface.jsonl`
 - **confidence limits:** Chromium was exercised through the locally published production server; CI has not yet run on the candidate PR.
@@ -45,10 +45,10 @@ None observed.
 None.
 
 ## §8 Friction and avoidable cost
-One material checkpoint records the misleading initial runner presentation. The trace, explicit shell exit, report mtime, and process inspection separated test timeout from server lifetime or process-signal hypotheses.
+Two material checkpoints record the misleading initial runner presentation. The trace, explicit shell exit, report mtime, and process inspection separated test timeout from server lifetime or process-signal hypotheses.
 
 ## §9 Skill value and gaps
-The SDD observed-run receipt required the focused JUnit output to be bound to each real verification obligation. The feedback contract made the runner diagnosis durable rather than leaving it only in terminal output.
+The SDD observed-run receipt and round-one repair loop required the focused JUnit output to be bound to each real verification obligation. The feedback contract made the runner diagnosis durable rather than leaving it only in terminal output.
 
 ## §10 Outcome markers
 Release publish, client asset build, conformance, and documentation builds completed. The focused published Chromium route passed 3/3 in 2.9 seconds. SDD evidence, verify, ship, and refresh are current; ship reports 13 observed real verification passes.

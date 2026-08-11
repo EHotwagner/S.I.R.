@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-11-sir-item-145-desktop-command-surface.md",
-  "reportSha256": "bdbe4e010054328eaea9004e1ae6a25f9a9bef0322869315d731e4ceb7a3ca13",
+  "reportSha256": "86dfe4ee00175dfe44e271fade486b45a88dc05b8aa74ae5b72c29da6b2808e4",
   "criticMode": "separated-critic-pass",
   "criticPromptVersion": "actionability-v1",
   "findings": [{
