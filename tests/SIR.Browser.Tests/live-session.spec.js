@@ -79,6 +79,11 @@ test("map and raster pickers reject oversized metadata before reads", async ({ p
   await selectOversizedFile(page, "#editor-map-import", "invalid.sir-map", -1);
   await expect(page.getByRole("alert")).toContainText("Map import has invalid size metadata");
   await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(2);
+  for (const size of [NaN, Infinity, 1.5]) {
+    await selectOversizedFile(page, "#editor-map-import", "invalid.sir-map", size);
+    await expect(page.getByRole("alert")).toContainText("Map import has invalid size metadata");
+    await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(2);
+  }
 });
 
 test("bootstrap fails closed for absent and cross-actor credentials", async ({ request }) => {
