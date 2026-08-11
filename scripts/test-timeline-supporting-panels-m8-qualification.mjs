@@ -37,7 +37,7 @@ for (const required of [
   "OpenSupportingPanel panelId",
   'if panelId = "rules" then',
   'elif panelId = "data" then',
-  'elif panelId = "samples" then',
+  'elif model.Workspace = SimulatorWorkspace && panelId = "samples" then',
   'item "Rules" "rules"',
   'item "Data" "data"',
   'item "Samples" "samples"',
