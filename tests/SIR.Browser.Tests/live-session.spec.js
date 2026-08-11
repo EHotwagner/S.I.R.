@@ -100,7 +100,7 @@ test("empty derived modes retain the editor tactical scene and spatial context",
     if (mode !== "Plan") {
       await expect(battlefield).toHaveAttribute("data-scene-owner", initial.owner);
       await expect(battlefield).toHaveAttribute("data-scene-revision", initial.revision);
-      await expect(battlefield).toHaveAttribute("data-semantic-selection-unit", "");
+      await expect(battlefield).toHaveAttribute("data-semantic-selection-unit", initial.selection);
     }
   }
 });

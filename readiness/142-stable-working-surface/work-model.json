@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "ad423cd8bfde9d4ec8e695844dee3e19ebe7a186d53456bbb5e61ea740d5a527"
+        "value": "aa774ed29de1f927c11629ae5ca0898ce12a7b00c169f7575cafc6c4142811fc"
       }
     }
   ],
@@ -195,7 +195,7 @@
     {
       "id": "T001",
       "title": "Implement requirement FR-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [],
       "requirements": [
@@ -223,7 +223,7 @@
     {
       "id": "T002",
       "title": "Implement requirement FR-002",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [],
       "requirements": [
@@ -251,7 +251,7 @@
     {
       "id": "T003",
       "title": "Implement requirement FR-003",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [],
       "requirements": [
@@ -279,7 +279,7 @@
     {
       "id": "T004",
       "title": "Update contract surface PC-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -305,7 +305,7 @@
     {
       "id": "T005",
       "title": "Record verification evidence VO-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -333,7 +333,7 @@
     {
       "id": "T006",
       "title": "Handle migration posture PM-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -359,7 +359,7 @@
     {
       "id": "T007",
       "title": "Refresh generated view impact GV-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -641,14 +641,14 @@
           "path": "work/142-stable-working-surface/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "ad423cd8bfde9d4ec8e695844dee3e19ebe7a186d53456bbb5e61ea740d5a527"
+            "value": "aa774ed29de1f927c11629ae5ca0898ce12a7b00c169f7575cafc6c4142811fc"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "bf7f4f05eb031222c865b26d29640704537e4459fc4387ae14fa26ee65ee1219"
+        "value": "03be334315808f96c6cc181e8b63bc1bc8267f65d6553d5cd994f3010b4c9bb9"
       },
       "currency": "current"
     }
