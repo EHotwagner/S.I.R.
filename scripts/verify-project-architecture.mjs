@@ -14,6 +14,7 @@ const projects = {
   replay: "src/SIR.Replay.Web/SIR.Replay.Web.fsproj",
   wasm: "src/SIR.Wasm/SIR.Wasm.fsproj",
   match: "src/SIR.Match/SIR.Match.fsproj",
+  simulation: "src/SIR.Simulation/SIR.Simulation.fsproj",
   tools: "src/SIR.Tools/SIR.Tools.fsproj",
 };
 
@@ -34,6 +35,9 @@ const validate = ({ solution, sources, docs }) => {
   if (!references(sources.match).some((reference) => reference.includes("SIR.Wasm"))) fail("SIR.Match lacks SIR.Wasm");
   if (has(sources.match, 'PackageReference Include="Wasmtime"')) fail("SIR.Match owns the concrete Wasmtime package");
   if (!has(sources.wasm, 'PackageReference Include="Wasmtime"')) fail("SIR.Wasm lacks the concrete Wasmtime package");
+  for (const forbidden of ["SIR.Wasm", "SIR.Protocol", "SIR.Server"]) {
+    if (references(sources.simulation).some((reference) => reference.includes(forbidden))) fail(`SIR.Simulation references forbidden ${forbidden}`);
+  }
 
   const replayReferences = references(sources.replay).join(" ");
   const replayCoreReferences = references(sources.replayCore).join(" ");
@@ -57,10 +61,13 @@ if (process.argv.includes("--self-test")) {
   const badClient = structuredClone(input);
   badClient.sources.client += '<ProjectReference Include="../SIR.Simulation/SIR.Simulation.fsproj" />';
   try { validate(badClient); fail("forbidden-edge mutation survived"); } catch (error) { if (!String(error.message).includes("SIR.Client references SIR.Simulation")) throw error; }
+  const badSimulation = structuredClone(input);
+  badSimulation.sources.simulation += '<ProjectReference Include="../SIR.Wasm/SIR.Wasm.fsproj" />';
+  try { validate(badSimulation); fail("simulation-to-wasm mutation survived"); } catch (error) { if (!String(error.message).includes("SIR.Simulation references forbidden SIR.Wasm")) throw error; }
   const staleDocs = structuredClone(input);
   staleDocs.docs.architecture = staleDocs.docs.architecture.replaceAll("SIR.Replay.Web", "SIR.Replay.Removed");
   try { validate(staleDocs); fail("canonical-document mutation survived"); } catch (error) { if (!String(error.message).includes("canonical architecture omits SIR.Replay.Web")) throw error; }
-  console.log("architecture graph self-test: forbidden edge and stale documentation mutations rejected");
+  console.log("architecture graph self-test: client, simulation, and stale-document mutations rejected");
 }
 
 if (process.env.SIR_JUNIT_OUTPUT) {
