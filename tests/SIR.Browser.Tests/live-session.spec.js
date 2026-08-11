@@ -1,5 +1,51 @@
 import { expect, test } from "@playwright/test";
 
+async function selectOversizedFile(page, selector, name, size) {
+  await page.locator(selector).evaluate((input, { name, size }) => {
+    const file = new File(["x"], name, { type: "application/octet-stream" });
+    Object.defineProperty(file, "size", { value: size });
+    file.arrayBuffer = async () => {
+      window.__sirImportReadCalls = (window.__sirImportReadCalls || 0) + 1;
+      return new ArrayBuffer(1);
+    };
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    Object.defineProperty(input, "files", { value: transfer.files });
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }, { name, size });
+}
+
+async function selectUnreadableFile(page, selector, name) {
+  await page.locator(selector).evaluate((input, name) => {
+    const file = new File(["x"], name, { type: "application/octet-stream" });
+    file.arrayBuffer = async () => { throw new Error("read refused"); };
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    Object.defineProperty(input, "files", { value: transfer.files });
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }, name);
+}
+
+test("oversized browser imports are rejected from metadata before browser reads", async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.goto("/");
+  await page.evaluate(() => { window.__sirImportReadCalls = 0; });
+
+  await page.getByRole("button", { name: "Review", exact: true }).click();
+  await expect(page.locator('input[aria-label="Choose replay package"]')).toBeVisible();
+  await selectOversizedFile(page, 'input[aria-label="Choose replay package"]', "large.sirr", 1_048_577);
+  await expect(page.getByText("Replay package is 1048577 bytes; the allowed maximum is 1048576 bytes.", { exact: true })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(0);
+});
+
+test("browser import read failures leave a visible recovery message", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Review", exact: true }).click();
+  await expect(page.locator('input[aria-label="Choose replay package"]')).toBeVisible();
+  await selectUnreadableFile(page, 'input[aria-label="Choose replay package"]', "unreadable.sirr");
+  await expect(page.getByText("Replay package could not be read: read refused", { exact: true })).toBeVisible();
+});
+
 test("bootstrap fails closed for absent and cross-actor credentials", async ({ request }) => {
   const body = { version: 1, actorName: "alpha" };
   const absent = await request.post("/api/bootstrap", { data: body });

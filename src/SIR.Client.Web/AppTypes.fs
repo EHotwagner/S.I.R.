@@ -17,9 +17,12 @@ type Msg =
     | ShellMsg of SIR.Client.Msg
     | BattlefieldChanged of BattlefieldAction
     | FileSelected of File
+    | ReplayReadCompleted of Result<string * byte array, string>
     | MapFileSelected of File
+    | MapReadCompleted of Result<string * string, string>
     | MapTextRead of sourceName: string * text: string
     | BackgroundFileSelected of File
+    | BackgroundReadCompleted of Result<string * string * byte array, string>
     | BackgroundBytesRead of fileName: string * mediaType: string * bytes: byte array
     | AcceptInterchangeReview
     | RejectInterchangeReview
@@ -140,6 +143,7 @@ type Model =
       HeldInputs: HeldInputSession
       InputHelpExpanded: bool
       PendingInterchangeReview: InterchangeReview option
+      ImportAnnouncement: string option
       Battlefield: BattlefieldViewState
       PreviousFrame: RenderFrame option
       PresentationAlpha: float
