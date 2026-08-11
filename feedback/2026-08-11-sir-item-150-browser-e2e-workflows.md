@@ -5,7 +5,7 @@ workspace: S.I.R
 cycle: item-150-browser-e2e-workflows
 lane: sdd
 toolVersion: 1.0.0
-commit: pending-pr-head
+commit: 340205dc6a316eccd8c8ffeeb336b51e9432651c
 ---
 
 ## §1 Provenance and confidence
@@ -17,7 +17,7 @@ commit: pending-pr-head
 - **confidence limits:** Chromium used the local published production server; CI and independent review remain pending.
 
 ## §2 What worked
-The serial Chromium suite provided an honest production route for the visible controls and diagnostics fixture.
+The serial Chromium suite provided honest production routes for simulator playback, live authority, imports, and diagnostics. The 400% check was corrected from pinch-scale emulation to a 320x180 CSS viewport with DPR 4 and ordinary pointer controls.
 
 ## §3 What did not
 The isolated worktree initially lacked both npm dependencies and published client assets, and SDD evidence required a concrete test-file path rather than a directory.
@@ -27,7 +27,7 @@ The isolated worktree initially lacked both npm dependencies and published clien
 - **Kind:** quality-gap
 - **Impact:** Raising browser coverage from 13 to 16 isolated contexts exhausted the test host's former 8/minute admission budget and produced visible bootstrap 400 errors.
 - **Expected:** The Playwright-only development host covers its bounded serial inventory without changing the production eight/minute default.
-- **Observed:** Mutating `SIR_LIVE_MAX_BOOTSTRAPS_PER_MINUTE` from 32 to 8 made the suite red with `/api/bootstrap` 400 responses; restoring 32 passed all 16 journeys.
+- **Observed:** Mutating `SIR_LIVE_MAX_BOOTSTRAPS_PER_MINUTE` from 32 to 8 made the suite red with `/api/bootstrap` 400 responses; restoring 32 passed the current 23 journeys with one intentional diagnostics self-test skip.
 - **Evidence:** command:npm run test:browser
 - **Version:** Playwright 1.62.1; Chromium 151.0.7922.34
 - **Owner:** S.I.R browser-test host
@@ -63,7 +63,7 @@ The four checkpoints record setup, strict SDD evidence binding, scoped-cap mutat
 The SDD observed-run flow bound a real JUnit report to all 14 verification obligations; the feedback tool location remains a packaging gap.
 
 ## §10 Outcome markers
-`npm run test:browser` passed 16/16. SDD evidence is observed, verify is verificationReady, and ship is shipReady.
+`npm run test:browser` passed 23/0 with one intentional diagnostics self-test skip. The dedicated diagnostics gate passed; SDD evidence is observed, verify is verificationReady, and ship is shipReady. Local FsDocs generated successfully but its final verifier is limited by the disposable-worktree basename; hosted exact-head CI is authoritative.
 
 ## §11 Falsifiable improvements
 Keep the 8/minute configuration mutation in review evidence: it must red the expanded suite with bootstrap rejection.
@@ -77,7 +77,7 @@ Keep the 8/minute configuration mutation in review evidence: it must red the exp
 | sdd-authoring | exercised | charter through ship completed. |
 | implementation-apis | exercised | Browser control and diagnostic fixtures implemented. |
 | dependencies-build | exercised | npm install, client build, and server publish completed. |
-| testing | exercised | 16 serial Chromium journeys pass; admission mutation reds. |
+| testing | exercised | 23 serial Chromium journeys pass with one intentional diagnostics skip; environment and command mutations red. |
 | evidence | exercised | JUnit observed-run receipt binds all 14 obligations. |
 | runtime-playtest | exercised | locally published production client. |
 | performance | partial | No typed item performance intent exists; no target invented. |
