@@ -93,6 +93,7 @@ test("empty derived modes retain the editor tactical scene and spatial context",
 
   for (const mode of ["Plan", "Simulate", "Review"]) {
     await page.getByRole("button", { name: mode, exact: true }).click();
+    await expect(battlefield).toHaveAttribute("data-scene-owner", initial.owner);
     await expect(battlefield).toHaveAttribute("viewBox", initial.viewBox);
     await expect(battlefield).toHaveAttribute("data-scene-revision", initial.revision);
     await expect(battlefield).toHaveAttribute("data-camera-pan-x", initial.panX);
@@ -185,4 +186,3 @@ test("authorized player journey advances and reconnects without credentials in r
   expect(credentialUrls).toEqual([]);
   await expect(page.locator("body")).not.toContainText("accessToken");
 });
-    await expect(battlefield).toHaveAttribute("data-scene-owner", initial.owner);
