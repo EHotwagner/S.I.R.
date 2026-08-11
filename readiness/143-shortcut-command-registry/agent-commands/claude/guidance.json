@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 1,
+  "viewVersion": "1.0",
+  "workId": "143-shortcut-command-registry",
+  "targetId": "claude",
+  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generated": true,
+  "sources": [
+    {
+      "path": "readiness/143-shortcut-command-registry/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "fcfff20bf97e792623527a68bbecc0a3ee37b4d60a2c7660c6b2b37de0993de2"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    }
+  ],
+  "behaviorModelDigest": {
+    "algorithm": "sha256",
+    "value": "25395348572be1a24ac2c0ba0311ab75448961d6f87eb1373857475f9fbdedd2"
+  },
+  "commands": [
+    {
+      "id": "T001",
+      "title": "Implement requirement FR-001",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T001 (done) covering AC-001, FR-001.",
+      "relatedIds": [
+        "AC-001",
+        "FR-001"
+      ]
+    },
+    {
+      "id": "T002",
+      "title": "Implement requirement FR-002",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T002 (done) covering AC-002, FR-002.",
+      "relatedIds": [
+        "AC-002",
+        "FR-002"
+      ]
+    },
+    {
+      "id": "T003",
+      "title": "Implement requirement FR-003",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T003 (done) covering AC-003, FR-003.",
+      "relatedIds": [
+        "AC-003",
+        "FR-003"
+      ]
+    },
+    {
+      "id": "T004",
+      "title": "Implement requirement FR-004",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T004 (done) covering AC-004, FR-004.",
+      "relatedIds": [
+        "AC-004",
+        "FR-004"
+      ]
+    },
+    {
+      "id": "T005",
+      "title": "Implement requirement FR-005",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T005 (done) covering AC-005, FR-005.",
+      "relatedIds": [
+        "AC-005",
+        "FR-005"
+      ]
+    },
+    {
+      "id": "T006",
+      "title": "Implement clarification decision DEC-001",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T006 (done) covering DEC-001.",
+      "relatedIds": [
+        "DEC-001"
+      ]
+    },
+    {
+      "id": "T007",
+      "title": "Implement clarification decision DEC-002",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T007 (done) covering DEC-002.",
+      "relatedIds": [
+        "DEC-002"
+      ]
+    },
+    {
+      "id": "T008",
+      "title": "Implement plan decision PD-001",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T008 (done) covering AC-001, DEC-001, FR-001, PD-001.",
+      "relatedIds": [
+        "AC-001",
+        "DEC-001",
+        "FR-001",
+        "PD-001"
+      ]
+    },
+    {
+      "id": "T009",
+      "title": "Implement plan decision PD-002",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T009 (done) covering AC-002, DEC-001, DEC-002, FR-002, PD-002.",
+      "relatedIds": [
+        "AC-002",
+        "DEC-001",
+        "DEC-002",
+        "FR-002",
+        "PD-002"
+      ]
+    },
+    {
+      "id": "T010",
+      "title": "Implement plan decision PD-003",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T010 (done) covering AC-003, DEC-001, FR-003, PD-003.",
+      "relatedIds": [
+        "AC-003",
+        "DEC-001",
+        "FR-003",
+        "PD-003"
+      ]
+    },
+    {
+      "id": "T011",
+      "title": "Implement plan decision PD-004",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T011 (done) covering AC-004, DEC-002, FR-004, PD-004.",
+      "relatedIds": [
+        "AC-004",
+        "DEC-002",
+        "FR-004",
+        "PD-004"
+      ]
+    },
+    {
+      "id": "T012",
+      "title": "Implement plan decision PD-005",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T012 (done) covering AC-005, DEC-001, FR-005, PD-005.",
+      "relatedIds": [
+        "AC-005",
+        "DEC-001",
+        "FR-005",
+        "PD-005"
+      ]
+    },
+    {
+      "id": "T013",
+      "title": "Update contract surface PC-001",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T013 (done) covering PC-001, PD-001, PD-002.",
+      "relatedIds": [
+        "PC-001",
+        "PD-001",
+        "PD-002"
+      ]
+    },
+    {
+      "id": "T014",
+      "title": "Record verification evidence VO-001",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T014 (done) covering PC-001, PD-001, PD-002, PD-003, PD-004, PD-005, VO-001.",
+      "relatedIds": [
+        "PC-001",
+        "PD-001",
+        "PD-002",
+        "PD-003",
+        "PD-004",
+        "PD-005",
+        "VO-001"
+      ]
+    },
+    {
+      "id": "T015",
+      "title": "Handle migration posture PM-001",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T015 (done) covering PC-001, PM-001.",
+      "relatedIds": [
+        "PC-001",
+        "PM-001"
+      ]
+    },
+    {
+      "id": "T016",
+      "title": "Refresh generated view impact GV-001",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T016 (done) covering GV-001, PD-001, PD-005.",
+      "relatedIds": [
+        "GV-001",
+        "PD-001",
+        "PD-005"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "id": "automated-tests",
+      "title": "automated-tests",
+      "capability": "Required by tasks: T014.",
+      "relatedIds": [
+        "T014"
+      ]
+    },
+    {
+      "id": "deterministic-json",
+      "title": "deterministic-json",
+      "capability": "Required by tasks: T016.",
+      "relatedIds": [
+        "T016"
+      ]
+    },
+    {
+      "id": "fsharp",
+      "title": "fsharp",
+      "capability": "Required by tasks: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013.",
+      "relatedIds": [
+        "T001",
+        "T002",
+        "T003",
+        "T004",
+        "T005",
+        "T006",
+        "T007",
+        "T008",
+        "T009",
+        "T010",
+        "T011",
+        "T012",
+        "T013"
+      ]
+    },
+    {
+      "id": "implementation",
+      "title": "implementation",
+      "capability": "Required by tasks: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012.",
+      "relatedIds": [
+        "T001",
+        "T002",
+        "T003",
+        "T004",
+        "T005",
+        "T006",
+        "T007",
+        "T008",
+        "T009",
+        "T010",
+        "T011",
+        "T012"
+      ]
+    },
+    {
+      "id": "readiness-evidence",
+      "title": "readiness-evidence",
+      "capability": "Required by tasks: T014.",
+      "relatedIds": [
+        "T014"
+      ]
+    },
+    {
+      "id": "schema-versioning",
+      "title": "schema-versioning",
+      "capability": "Required by tasks: T015.",
+      "relatedIds": [
+        "T015"
+      ]
+    }
+  ],
+  "renderedFiles": [
+    {
+      "path": "readiness/143-shortcut-command-registry/agent-commands/claude/commands.md",
+      "kind": "commands"
+    },
+    {
+      "path": "readiness/143-shortcut-command-registry/agent-commands/claude/skills.md",
+      "kind": "skills"
+    }
+  ],
+  "diagnostics": [
+    {
+      "id": "agents.staleGeneratedGuidance",
+      "severity": "warning",
+      "artifact": "readiness/143-shortcut-command-registry/agent-commands/claude/guidance.json",
+      "message": "Generated agent guidance for target \u0027claude\u0027 no longer matches the current normalized work model.",
+      "correction": "Regenerate agent guidance so the generated view matches the current work model.",
+      "relatedIds": [
+        "claude"
+      ]
+    }
+  ]
+}

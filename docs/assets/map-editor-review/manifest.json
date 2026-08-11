@@ -1,7 +1,7 @@
 {
   "format": "sir-map-editor-review-v1",
   "generatedFrom": "production persistent Fable/React SVG workscreen after the M4 Editor migration",
-  "productionBundleSha256": "62b84d4a7ec218c6aaadbfdd6146a214c90a41c165791dac022566cede615543",
+  "productionBundleSha256": "1d41d97b73d6098b05162ad576ba9f80369d0aede426bde2dab37609ac3dce1a",
   "rasterizer": "rsvg-convert 2.62.3",
   "width": 960,
   "height": 640,
@@ -11,7 +11,7 @@
       "description": "Authored terrain projected through the persistent Editor renderer.",
       "svg": "terrain.svg",
       "png": "terrain.png",
-      "svgSha256": "ade0fd1db95daa218979ce49d0069027a454a1c6409287dff7e386725150dc6c",
+      "svgSha256": "a5dbae6432b723f2fd49dd72e6b9d24779405e553ba08718a038b1da5bc63f58",
       "pngSha256": "0a1a94639ab53c64c1271df908bc9add81da2d023f0d23467d016e984022e8b5"
     },
     {
@@ -19,7 +19,7 @@
       "description": "Semantic edges projected through the persistent Editor renderer.",
       "svg": "edges.svg",
       "png": "edges.png",
-      "svgSha256": "118cee18c6c4d648a49b9032ab2ca36df6f4659b246d8f9aa4d58d73138748cd",
+      "svgSha256": "e2ffc142209b3429be7c37de02a11eecf01ab4127de4031b5cdcc85aaaca463b",
       "pngSha256": "d781fb94291be76a67bf19bc24de1915b1a3a9b12bbc939585bece9794783103"
     },
     {
@@ -27,7 +27,7 @@
       "description": "Canonical square-unit footprints in the shared Editor projection.",
       "svg": "units.svg",
       "png": "units.png",
-      "svgSha256": "d919c09ceacbf8f5903bfc04ae8fe7244b69fef5f04e53b9709a1b8f0dfbf33d",
+      "svgSha256": "6ac9cc132e66388bf213cdc85ec8a9b4d79606779d4bb8c6141c1934777502c3",
       "pngSha256": "898f9c35da30304a659b8870e0ec7de40b103a7775bd1d0604bbd72e6a5db475"
     },
     {
@@ -35,7 +35,7 @@
       "description": "Imported objective and deployment regions projected as positioned annotations.",
       "svg": "zones.svg",
       "png": "zones.png",
-      "svgSha256": "538cf13e74e79456e3765680c544d9669ac5d0a5a0b80744ceaf5d257b1b132c",
+      "svgSha256": "5e2ae643c811e7085735b081210f65d17e08f2a07acb93ce53ef857139939681",
       "pngSha256": "db5b1684b65f415c6aa6bfca5242370713ab7edf96c7b7cb68fb984a017f0963"
     },
     {
@@ -43,7 +43,7 @@
       "description": "Signature-validated local background rendered by the retained persistent SVG.",
       "svg": "background.svg",
       "png": "background.png",
-      "svgSha256": "c2229224a42915ca7142759bb4ccac941d34f5bfd414a7363d0c4112846aa97f",
+      "svgSha256": "2c8105c40ec8e17e81da1de1190431628ef22b61a8c6ebecbf0b14eb124aaec1",
       "pngSha256": "7627379cf346eaeec756cf2b74d7ae533d6a329792680f05c29914da64cc777c"
     },
     {
@@ -51,7 +51,7 @@
       "description": "Immutable simulator handoff projected into the same retained SVG.",
       "svg": "simulator-handoff.svg",
       "png": "simulator-handoff.png",
-      "svgSha256": "5c8b6213a2d435a43f30fcd36a0a573423effbb1a9b3150d1a27afef5494438f",
+      "svgSha256": "ce7a8e3f7f1de6597c2020c18bb1693ff70490b94a8c168f50a6405c399a1382",
       "pngSha256": "0284c077fa653544cc48c3644569142a76431553ee5e08cdadf2b498f1b92f6d"
     },
     {
@@ -59,7 +59,7 @@
       "description": "Imported EDGE-GAP validation state shown with the authoritative persistent projection.",
       "svg": "validation.svg",
       "png": "validation.png",
-      "svgSha256": "957b8b0d21b63f4f2491ab08c42488eeee1ec0dd3dc9716e946f7f4c11192429",
+      "svgSha256": "6766814177cb580d0650b3e42ac4f7ff0b89b454dc18034eb8dfc487edf74e06",
       "pngSha256": "84549ff044dfde9c1a49844a21c86a0a37c53796ed9b032ad4fb1fd78948f699"
     }
   ]
