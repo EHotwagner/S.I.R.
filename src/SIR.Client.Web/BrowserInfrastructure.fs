@@ -1,5 +1,6 @@
 module SIR.Client.Web.BrowserInfrastructure
 
+open System
 open Browser.Types
 open Fable.Core
 open Fable.Core.JsInterop
@@ -7,12 +8,15 @@ open SIR.Client
 open Elmish
 
 let private sizeError label maximum (file: File) =
-    let actual = int64 file.size
-
-    if actual > int64 maximum then
-        Error(label + " is " + string actual + " bytes; the allowed maximum is " + string maximum + " bytes.")
-    else
-        Ok()
+    try
+        let size = float file.size
+        if Double.IsNaN size || Double.IsInfinity size || size < 0.0 || size <> floor size then
+            Error(label + " has invalid size metadata; the allowed maximum is " + string maximum + " bytes.")
+        elif size > float maximum then
+            Error(label + " is " + string (int64 size) + " bytes; the allowed maximum is " + string maximum + " bytes.")
+        else Ok()
+    with _ ->
+        Error(label + " has unreadable size metadata; the allowed maximum is " + string maximum + " bytes.")
 
 let fileBytes maximum (file: File) =
     async {

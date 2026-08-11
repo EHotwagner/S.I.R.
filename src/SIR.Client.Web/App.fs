@@ -546,11 +546,16 @@ let rec update msg model =
         match result with
         | Ok(name, bytes) -> update (ShellMsg(ReplayBytesSelected(name, bytes))) model
         | Error error ->
+            let cancelled, _ = Shell.update CancelRequested model.Shell
             { model with
                 Shell =
-                    { model.Shell with
+                    { cancelled with
                         Source = Rejected("Replay package", error)
                         Verification = Failed error
+                        Mode = NoRun
+                        Inspection = None
+                        ActiveOperation = None
+                        Playback = { cancelled.Playback with CurrentTick = 0; FinalTick = 0; IsPlaying = false }
                         Announcement = error } },
             Cmd.none
     | MapFileSelected file ->
@@ -561,7 +566,7 @@ let rec update msg model =
             MapReadCompleted
     | MapReadCompleted result ->
         match result with
-        | Ok(name, text) -> update (MapTextRead(name, text)) model
+        | Ok(name, text) -> update (MapTextRead(name, text)) { model with ImportAnnouncement = None }
         | Error error -> { model with ImportAnnouncement = Some error }, Cmd.none
     | MapTextRead(sourceName, text) ->
         let lower = sourceName.ToLowerInvariant()
@@ -584,7 +589,7 @@ let rec update msg model =
             BackgroundReadCompleted
     | BackgroundReadCompleted result ->
         match result with
-        | Ok(name, mediaType, bytes) -> update (BackgroundBytesRead(name, mediaType, bytes)) model
+        | Ok(name, mediaType, bytes) -> update (BackgroundBytesRead(name, mediaType, bytes)) { model with ImportAnnouncement = None }
         | Error error -> { model with ImportAnnouncement = Some error }, Cmd.none
     | BackgroundBytesRead(fileName, mediaType, bytes) ->
         update
