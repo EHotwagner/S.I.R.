@@ -20,6 +20,25 @@ test("disabled playback names why it is unavailable before a simulation is loade
   await expect(page.getByText(/Play unavailable:/)).toBeVisible();
 });
 
+test("a curated sample creates a visible simulator handoff and playback can reset", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Simulate", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Play tactical timeline", exact: true })).toBeDisabled();
+  await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
+  await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
+  await page.getByRole("button", { name: /^Run .+ in Simulator$/ }).first().click();
+
+  const play = page.getByRole("button", { name: "Play tactical timeline", exact: true });
+  await expect(play).toBeEnabled();
+  await play.click();
+  const pause = page.getByRole("button", { name: "Pause tactical timeline", exact: true });
+  await expect(pause).toBeVisible();
+  await pause.click();
+  await page.getByRole("button", { name: "Step tactical timeline forward", exact: true }).click();
+  await page.getByRole("button", { name: "Go to tactical timeline start", exact: true }).click();
+  await expect(page.getByRole("slider", { name: "Current tactical time" })).toHaveValue("0");
+});
+
 test("live authority reconnect remains visible through the production command surface", async ({ page }) => {
   await page.goto("/");
   const live = page.getByRole("region", { name: "Authoritative live session" });

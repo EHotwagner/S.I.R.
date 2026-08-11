@@ -5882,6 +5882,13 @@ let private tacticalContextHelp model dispatch =
                         prop.ariaControls "tactical-input-panel"
                         prop.onClick (fun _ -> dispatch (ToggleInputHelp false))
                     ]
+                    if model.Workspace = SimulatorWorkspace then
+                        commandButton [
+                            prop.type'.button
+                            prop.text "Samples"
+                            prop.ariaLabel "Open simulator samples"
+                            prop.onClick (fun _ -> dispatch (OpenSupportingPanel "samples"))
+                        ]
                 ]
             ]
             Html.p [
@@ -7604,7 +7611,7 @@ let private tacticalPanelBody panelId model dispatch =
         ]
     elif panelId = "data" then
         rulesDataCatalog
-    elif panelId = "samples" then
+    elif panelId = "samples" && model.Workspace <> SimulatorWorkspace then
         sampleCatalogView dispatch
     elif model.Workspace = PlanningWorkspace then
         match model.Planning with
@@ -7621,6 +7628,15 @@ let private tacticalPanelBody panelId model dispatch =
                 prop.text "No Plan capability is assigned to this panel."
             ]
         | None -> Html.p "Planner unavailable for the current map revision."
+    elif model.Workspace = SimulatorWorkspace && panelId = "samples" then
+        Html.div [
+            prop.ariaLabel "Simulator samples"
+            prop.children [
+                for sample in ExperienceSamples.maps do
+                    button sample.Title ("Load simulation sample: " + sample.Summary) false (fun _ ->
+                        dispatch (LoadSimulationSample sample.Id))
+            ]
+        ]
     elif model.Workspace = SimulatorWorkspace then
         match model.Simulator with
         | Some simulator ->
