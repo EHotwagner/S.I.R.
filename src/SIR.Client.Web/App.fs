@@ -644,11 +644,9 @@ let rec update msg model =
         | Ok(name, mediaType, bytes) -> update (BackgroundBytesRead(name, mediaType, bytes)) { model with ImportAnnouncement = None }
         | Error error -> { model with ImportAnnouncement = Some error }, Cmd.none
     | BackgroundBytesRead(fileName, mediaType, bytes) ->
-        update
-            (EditorWorkspaceChanged(
-                AttachLocalRaster(fileName, mediaType, bytes)
-            ))
-            model
+        let next, command =
+            update (EditorWorkspaceChanged(AttachLocalRaster(fileName, mediaType, bytes))) model
+        { next with ImportAnnouncement = Some("Attached background " + fileName + ".") }, command
     | RejectInterchangeReview ->
         { model with PendingInterchangeReview = None },
         Cmd.ofEffect (fun _ -> focusElementAfterRender "persistent-tactical-svg")

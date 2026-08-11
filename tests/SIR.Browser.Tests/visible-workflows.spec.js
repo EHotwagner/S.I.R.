@@ -72,6 +72,22 @@ test("a valid map selected through the visible import control reports success", 
   await expect(page.getByRole("alert")).toContainText("Imported map visible-success.sir-map.");
 });
 
+test("the visible background picker rejects an oversized file then reports attachment", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Editor", exact: true }).click();
+  await page.getByRole("button", { name: "Expand Document / revision panel", exact: true }).click();
+  const picker = page.getByLabel("Choose local raster map background", { exact: true });
+  await expect(picker).toBeVisible();
+  await picker.setInputFiles({ name: "too-large.png", mimeType: "image/png", buffer: Buffer.alloc(10_485_761) });
+  await expect(page.getByRole("alert")).toContainText(/allowed maximum/i);
+  await picker.setInputFiles({
+    name: "attached.png",
+    mimeType: "image/png",
+    buffer: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScL9bQAAAABJRU5ErkJggg==", "base64"),
+  });
+  await expect(page.getByRole("alert")).toContainText("Attached background attached.png.");
+});
+
 test("a curated sample creates a visible simulator handoff and playback can reset", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Simulate", exact: true }).click();
