@@ -29,16 +29,22 @@ Initial extraction coupled browser-only dependencies into the Fable test route; 
 - **Expected:** Replay/editor shared sources compile without Feliz/Thoth browser-host dependencies.
 - **Observed:** Introducing `SIR.Replay.Core` restored the focused modal Fable run.
 - **Evidence:** command:dotnet fable tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj
+- **Version:** Fable 5.13.0
 - **Owner:** S.I.R project graph
+- **Recurrence:** new
+- **Avoidable cost:** one repair round and focused Fable rerun
 - **Disposition:** fixed in this item
 
 #### §4.2 API documentation follows public namespace identity
-- **Kind:** documentation-defect
+- **Kind:** documentation
 - **Impact:** The verifier expected a non-existent Wasm-named MatchReplay page.
 - **Expected:** Docs verification asserts the generated `sir-match-matchreplay` page while Wasm is included in docs generation.
 - **Observed:** FsDocs retained the `SIR.Match` namespace path after source ownership moved.
 - **Evidence:** command:npm run build:docs
+- **Version:** FsDocs 22.1.0
 - **Owner:** S.I.R documentation verification
+- **Recurrence:** new
+- **Avoidable cost:** one docs build and verifier repair
 - **Disposition:** fixed in this item
 
 ## §5 Did not exercise
@@ -71,3 +77,10 @@ Keep the Simulation-to-Wasm subject mutation in the verifier self-test.
 | evidence | exercised | observed JUnit receipt bound to obligations. |
 | documentation | exercised | FsDocs API path verified. |
 | worker-git-pr | exercised | isolated claim, PR, and review handoff. |
+| scaffolding | not-exercised | Existing repository. |
+| onboarding-guidance | exercised | Claim and SDD route read. |
+| skills | exercised | SDD, board, and feedback contracts used. |
+| dependencies-build | exercised | Locked restore and release build run. |
+| runtime-playtest | exercised | Published browser route exercised by conformance. |
+| performance | partial | No typed item performance intent exists. |
+| packaging-upgrade | not-exercised | Out of scope. |
