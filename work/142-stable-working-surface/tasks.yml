@@ -1,0 +1,106 @@
+schemaVersion: 1
+work:
+  id: 142-stable-working-surface
+  title: "Stable Working Surface"
+  stage: tasks
+  status: tasksReady
+  sourceSpec: work/142-stable-working-surface/spec.md
+  sourceClarifications: work/142-stable-working-surface/clarifications.md
+  sourceChecklist: work/142-stable-working-surface/checklist.md
+  sourcePlan: work/142-stable-working-surface/plan.md
+  publicOrToolFacingImpact: true
+
+sources:
+  - label: spec
+    path: work/142-stable-working-surface/spec.md
+    digest: c713ae7f96069a328e55c403ffa2529e8e049d5eef44d5abfa3094c13ae3da63
+    schemaVersion: 1
+  - label: clarifications
+    path: work/142-stable-working-surface/clarifications.md
+    digest: 477ad449e8d8f0b73ec723281f871d3800e0c533cf61c9c4cb4f9445442dc5e8
+    schemaVersion: 1
+  - label: checklist
+    path: work/142-stable-working-surface/checklist.md
+    digest: 2bb9e3efe9351eccdf07faf590ed2bac072989fc8ae7bd417ac211ac233e3987
+    schemaVersion: 1
+  - label: plan
+    path: work/142-stable-working-surface/plan.md
+    digest: 524b4f8241345e685bef318e3f9c18aecdc677c9b047a55d8d6725767afe64c2
+    schemaVersion: 1
+tasks:
+  - id: T001
+    title: Implement requirement FR-001
+    status: pending
+    owner: sdd
+    dependencies: []
+    requirements: [FR-001]
+    decisions: []
+    sourceIds: [AC-001, FR-001, PD-001]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV001]
+  - id: T002
+    title: Implement requirement FR-002
+    status: pending
+    owner: sdd
+    dependencies: []
+    requirements: [FR-002]
+    decisions: []
+    sourceIds: [AC-002, FR-002, PD-002]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV002]
+  - id: T003
+    title: Implement requirement FR-003
+    status: pending
+    owner: sdd
+    dependencies: []
+    requirements: [FR-003]
+    decisions: []
+    sourceIds: [AC-003, FR-003, PD-003]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV003]
+  - id: T004
+    title: Update contract surface PC-001
+    status: pending
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-001, PD-001]
+    requiredSkills: [fsharp]
+    requiredEvidence: [EV004]
+  - id: T005
+    title: Record verification evidence VO-001
+    status: pending
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-001, PD-001, VO-001]
+    requiredSkills: [automated-tests, readiness-evidence]
+    requiredEvidence: [EV005]
+  - id: T006
+    title: Handle migration posture PM-001
+    status: pending
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-001, PM-001]
+    requiredSkills: [schema-versioning]
+    requiredEvidence: [EV006]
+  - id: T007
+    title: Refresh generated view impact GV-001
+    status: pending
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [GV-001, PD-001]
+    requiredSkills: [deterministic-json]
+    requiredEvidence: [EV007]
+acceptedDeferrals: []
+findings: []
+advisoryNotes:
+  - "Optional Governance pointers remain compatibility facts only."
+lifecycleNotes:
+  - "Next lifecycle action: fsgg-sdd analyze --work 142-stable-working-surface."
