@@ -26,6 +26,18 @@ async function selectUnreadableFile(page, selector, name) {
   }, name);
 }
 
+async function showDocumentImports(page) {
+  await page.getByRole("button", { name: "Editor", exact: true }).click();
+  const toggle = page.locator("#layout-show-document");
+  if (await toggle.getAttribute("aria-pressed") === "false") {
+    await page.locator("details.tactical-panel-menu").click();
+    await toggle.click();
+  }
+  await expect(page.locator('[data-panel-id="document"]')).toBeVisible();
+  await page.locator("#layout-panel-document-collapse").click();
+  await expect(page.locator("#editor-map-import")).toBeVisible();
+}
+
 test("oversized browser imports are rejected from metadata before browser reads", async ({ page }) => {
   test.setTimeout(90_000);
   await page.goto("/");
@@ -44,6 +56,17 @@ test("browser import read failures leave a visible recovery message", async ({ p
   await expect(page.locator('input[aria-label="Choose replay package"]')).toBeVisible();
   await selectUnreadableFile(page, 'input[aria-label="Choose replay package"]', "unreadable.sirr");
   await expect(page.getByText("Replay package could not be read: read refused", { exact: true })).toBeVisible();
+});
+
+test("map and raster pickers reject oversized metadata before reads", async ({ page }) => {
+  await page.goto("/");
+  await showDocumentImports(page);
+  await page.evaluate(() => { window.__sirImportReadCalls = 0; });
+  await selectOversizedFile(page, "#editor-map-import", "over.sir-map", 2_000_001);
+  await expect(page.getByRole("alert")).toContainText("Map import is 2000001 bytes");
+  await selectOversizedFile(page, "#editor-background-file", "over.png", 10_000_001);
+  await expect(page.getByRole("alert")).toContainText("Raster background is 10000001 bytes");
+  await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(0);
 });
 
 test("bootstrap fails closed for absent and cross-actor credentials", async ({ request }) => {
