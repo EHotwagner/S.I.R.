@@ -11,7 +11,7 @@ sourceAnalysis: readiness/150-browser-e2e-workflows/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/150-browser-e2e-workflows/analysis.json
-    digest: f694e64c1b0b57113a043a8778289c473a8f0690be29c0499069cd69fa72b9bf
+    digest: 2d00b0de05098948e4b3f6c8c77548320296cede31c5a838ddc0b520a1dc2bbf
     schemaVersion: 1
   - label: checklist
     path: work/150-browser-e2e-workflows/checklist.md
