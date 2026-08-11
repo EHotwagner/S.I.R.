@@ -9,6 +9,7 @@ export NUGET_PACKAGES="$task_tmp/nuget-packages"
 cd "$repo_root"
 
 node scripts/verify-fable-client-baseline.mjs
+node scripts/verify-project-architecture.mjs
 node scripts/test-persistent-workspace-m0-baseline.mjs
 
 control_abi_generated_before=$(

@@ -1,0 +1,29 @@
+# Agent skills for claude (generated)
+
+Generated from `readiness/153-separated-project-graph/work-model.json`. This is a generated projection of the
+normalized work model, not an authored source of truth. See `guidance.json`.
+
+## automated-tests — automated-tests
+- Capability: Required by tasks: T007.
+- Related: T007
+
+## deterministic-json — deterministic-json
+- Capability: Required by tasks: T009.
+- Related: T009
+
+## fsharp — fsharp
+- Capability: Required by tasks: T001, T002, T003, T004, T005, T006.
+- Related: T001, T002, T003, T004, T005, T006
+
+## implementation — implementation
+- Capability: Required by tasks: T001, T002, T003, T004, T005.
+- Related: T001, T002, T003, T004, T005
+
+## readiness-evidence — readiness-evidence
+- Capability: Required by tasks: T007.
+- Related: T007
+
+## schema-versioning — schema-versioning
+- Capability: Required by tasks: T008.
+- Related: T008
+

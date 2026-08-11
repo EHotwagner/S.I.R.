@@ -1,13 +1,13 @@
 ---
-title: Public Protocol
+title: Public Transport Protocol
 category: Engineering
 categoryindex: 6
 index: 9
 status: accepted
 decision-status: canonical
 document-type: living-architecture
-version: "0.4"
-last-updated: 2026-07-29
+version: "0.5"
+last-updated: 2026-08-11
 related:
   - docs/game-vision.md
   - docs/technology-stack.md
@@ -18,13 +18,16 @@ related:
   - docs/fable-client-and-documentation.md
 ---
 
-# Public gRPC Protocol Architecture
+# Public Transport Protocol Architecture
 
 ## Decision status
 
-This document defines the canonical protocol architecture for the native gRPC
-transport, including the service split, live-session envelope, sequencing,
-resume, projection, backpressure, and compatibility model.
+The current canonical transport is explicit HTTP/Thoth request-response plus
+SignalR live-session messaging. `SIR.Protocol.Generated` owns reproducible
+transport records/codecs, while `SIR.Protocol` owns validation, limits,
+compatibility, and domain mapping. The gRPC service model below remains a
+future protocol-design reference; it is not the shipped transport and does not
+override the current generated-project boundary.
 
 ## Goals
 
@@ -43,8 +46,9 @@ The public protocol must:
 
 ## Contract ownership
 
-Canonical `.proto` files under `schemas/protocol/` are the language-neutral
-source of truth:
+For a future gRPC transport, canonical `.proto` files under
+`schemas/protocol/` are the language-neutral source of truth. The current
+HTTP/Thoth and SignalR codecs remain versioned generated-project inputs:
 
 ```text
 schemas/protocol/sir/api/v1/

@@ -1,9 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <Compile Include="Http.fs" />
-    <Compile Include="Realtime.fs" />
+    <Compile Include="ProtocolBoundary.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Thoth.Json.Net" />
+    <ProjectReference Include="../SIR.Protocol.Generated/SIR.Protocol.Generated.fsproj" />
   </ItemGroup>
 </Project>

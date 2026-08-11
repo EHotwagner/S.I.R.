@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Compile Include="../SIR.Client/RulesCatalog.fs" Link="RulesCatalog.fs" />
+    <Compile Include="../SIR.Client/ReplayPresentation.fs" Link="ReplayPresentation.fs" />
+    <Compile Include="../SIR.Client/UnitGlyphCatalog.fs" Link="UnitGlyphCatalog.fs" />
+    <Compile Include="../SIR.Client/Battlefield.fs" Link="Battlefield.fs" />
+    <Compile Include="../SIR.Client/ClientModuleBoundaries.fs" Link="ClientModuleBoundaries.fs" />
+    <Compile Include="../SIR.Client/MapEditorTypes.fs" Link="MapEditorTypes.fs" />
+    <Compile Include="../SIR.Client/MapEditorHistory.fs" Link="MapEditorHistory.fs" />
+    <Compile Include="../SIR.Client/MapEditorValidation.fs" Link="MapEditorValidation.fs" />
+    <Compile Include="../SIR.Client/MapEditorRevision.fs" Link="MapEditorRevision.fs" />
+    <Compile Include="../SIR.Client/MapEditor.fs" Link="MapEditor.fs" />
+    <Compile Include="../SIR.Client/MapEditorSimulator.fs" Link="MapEditorSimulator.fs" />
+    <Compile Include="../SIR.Client/MapEditorInterchange.fs" Link="MapEditorInterchange.fs" />
+    <Compile Include="../SIR.Client/MapEditorWorkspace.fs" Link="MapEditorWorkspace.fs" />
+    <Compile Include="../SIR.Client/ModalInput.fsi" Link="ModalInput.fsi" />
+    <Compile Include="../SIR.Client/ModalInput.fs" Link="ModalInput.fs" />
+    <Compile Include="../SIR.Client/Lab.fs" Link="Lab.fs" />
+    <Compile Include="../SIR.Client/EvidenceExport.fs" Link="EvidenceExport.fs" />
+    <Compile Include="../SIR.Client/EngineCatalog.fs" Link="EngineCatalog.fs" />
+    <Compile Include="../SIR.Client/Shell.fs" Link="Shell.fs" />
+    <Compile Include="../SIR.Client/SimulatorWorkerProtocol.fs" Link="SimulatorWorkerProtocol.fs" />
+    <Compile Include="../SIR.Client/PlanningWorkspace.fs" Link="PlanningWorkspace.fs" />
+    <Compile Include="../SIR.Client/UnifiedTacticalWorkspace.fs" Link="UnifiedTacticalWorkspace.fs" />
+    <Compile Include="../SIR.Client/TacticalWorkspaceLayout.fsi" Link="TacticalWorkspaceLayout.fsi" />
+    <Compile Include="../SIR.Client/TacticalWorkspaceLayout.fs" Link="TacticalWorkspaceLayout.fs" />
+    <Compile Include="../SIR.Client/TacticalSceneProjection.fsi" Link="TacticalSceneProjection.fsi" />
+    <Compile Include="../SIR.Client/TacticalSceneProjection.fs" Link="TacticalSceneProjection.fs" />
+    <Compile Include="../SIR.Client/ExperienceSamples.fs" Link="ExperienceSamples.fs" />
+    <Compile Include="../SIR.Client/Comparison.fs" Link="Comparison.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../SIR.Domain/SIR.Domain.fsproj" />
+    <ProjectReference Include="../SIR.Simulation/SIR.Simulation.fsproj" />
+  </ItemGroup>
+</Project>

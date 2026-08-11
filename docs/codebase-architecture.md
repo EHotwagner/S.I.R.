@@ -6,8 +6,8 @@ index: 3
 status: accepted
 decision-status: canonical
 document-type: living-architecture
-version: "0.5"
-last-updated: 2026-07-28
+version: "0.6"
+last-updated: 2026-08-11
 related:
   - docs/game-vision.md
   - docs/technology-stack.md
@@ -34,10 +34,9 @@ and versioned deterministic local overrides.
 
 This is the canonical initial F# solution and dependency architecture.
 
-The proposal deliberately starts with a small number of cohesive assemblies.
-Gameplay subsystems begin as F# modules and namespaces within those assemblies.
-They become separate projects only when an actual dependency, deployment,
-packaging, or build-time boundary justifies the split.
+The recorded #153 decision restores the separated project graph. The earlier
+combined scaffold projects were transitional: the explicit project boundaries
+below now govern solution layout, source ownership, and dependency checks.
 
 ## Canonical solution layout
 
@@ -286,25 +285,27 @@ SIR.Wasm ────────┘                     │
                                        ├──► SIR.Server ◄── FS.GG.Net server components
 SIR.Protocol ──────────────────────────┘
 
-SIR.Protocol ───────────► SIR.Client ◄── FS.GG.Net client components
+SIR.Protocol.Generated ─► SIR.Protocol ─► SIR.Client ◄── FS.GG.Net client components
                                ▲
                                └──────── FS.GG.Rendering
 
-SIR.Domain + SIR.Simulation ───► SIR.Replay.Web ───► Fable + Elmish/browser
+SIR.Domain + SIR.Simulation ───► SIR.Replay.Core ───► SIR.Replay.Web ───► Fable + Elmish/browser
 
 Domain + Simulation + Wasm + Match + Protocol ───► SIR.Tools
 ```
 
-The graph must remain acyclic. In particular:
+The graph must remain acyclic. `scripts/verify-project-architecture.mjs`
+checks the following load-bearing edges against the solution, project files, and
+this canonical document. In particular:
 
 - `Domain` does not reference `Simulation`;
 - `Simulation` does not reference `Wasm`, `Protocol`, or `Server`;
 - `Protocol` does not reference `Server` or `Client`;
 - `Match` does not reference `Protocol` or a transport;
 - `Server` does not become a gameplay-rules assembly; and
-- the live `Client` does not reference `Simulation`, `Wasm`, or server
+- the live `SIR.Client` does not reference `SIR.Simulation`, `SIR.Wasm`, or server
   internals; and
-- `Replay.Web` may reference the shared simulation but not `Wasm`, `Match`,
+- `Replay.Core`/`Replay.Web` may reference the shared simulation but not `Wasm`, `Match`,
   `Server`, or privileged live services.
 
 ## Internal F# organization

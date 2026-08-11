@@ -1,36 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <Compile Include="RulesCatalog.fs" />
-    <Compile Include="ReplayPresentation.fs" />
-    <Compile Include="UnitGlyphCatalog.fs" />
-    <Compile Include="Battlefield.fs" />
-    <Compile Include="ClientModuleBoundaries.fs" />
-    <Compile Include="MapEditorTypes.fs" />
-    <Compile Include="MapEditorHistory.fs" />
-    <Compile Include="MapEditorValidation.fs" />
-    <Compile Include="MapEditorRevision.fs" />
-    <Compile Include="MapEditor.fs" />
-    <Compile Include="MapEditorSimulator.fs" />
-    <Compile Include="MapEditorInterchange.fs" />
-    <Compile Include="MapEditorWorkspace.fs" />
-    <Compile Include="ModalInput.fsi" />
-    <Compile Include="ModalInput.fs" />
-    <Compile Include="Lab.fs" />
-    <Compile Include="EvidenceExport.fs" />
-    <Compile Include="EngineCatalog.fs" />
-    <Compile Include="Shell.fs" />
-    <Compile Include="SimulatorWorkerProtocol.fs" />
-    <Compile Include="PlanningWorkspace.fs" />
-    <Compile Include="UnifiedTacticalWorkspace.fs" />
-    <Compile Include="TacticalWorkspaceLayout.fsi" />
-    <Compile Include="TacticalWorkspaceLayout.fs" />
-    <Compile Include="TacticalSceneProjection.fsi" />
-    <Compile Include="TacticalSceneProjection.fs" />
-    <Compile Include="ExperienceSamples.fs" />
-    <Compile Include="Comparison.fs" />
+    <Compile Include="LiveClientBoundary.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../SIR.Domain/SIR.Domain.fsproj" />
-    <ProjectReference Include="../SIR.Simulation/SIR.Simulation.fsproj" />
+    <ProjectReference Include="../SIR.Protocol/SIR.Protocol.fsproj" />
   </ItemGroup>
 </Project>

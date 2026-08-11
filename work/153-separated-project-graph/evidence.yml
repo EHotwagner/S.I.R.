@@ -1,0 +1,263 @@
+schemaVersion: 1
+workId: 153-separated-project-graph
+stage: evidence
+status: evidenceReady
+sourceSpec: work/153-separated-project-graph/spec.md
+sourceClarifications: work/153-separated-project-graph/clarifications.md
+sourceChecklist: work/153-separated-project-graph/checklist.md
+sourcePlan: work/153-separated-project-graph/plan.md
+sourceTasks: work/153-separated-project-graph/tasks.yml
+sourceAnalysis: readiness/153-separated-project-graph/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/153-separated-project-graph/analysis.json
+    digest: 806affa13533f0a4d3fc8ea29b19bc206196cc28f0235bb79d722766f92b1877
+    schemaVersion: 1
+  - label: checklist
+    path: work/153-separated-project-graph/checklist.md
+    digest: 4ca753b0bff4d3bbeee281de0fef555ef4117ea704759fed914b2d342e8f5c6d
+    schemaVersion: 1
+  - label: clarifications
+    path: work/153-separated-project-graph/clarifications.md
+    digest: 7a579efa101f1cfb33aff28055b5a1f630ac428d4638e164387e036b25e2d76c
+    schemaVersion: 1
+  - label: plan
+    path: work/153-separated-project-graph/plan.md
+    digest: ff17820f1bb532bb57118f02f15e7f759d11d6eb8397850b6a38f1c3325a4c98
+    schemaVersion: 1
+  - label: spec
+    path: work/153-separated-project-graph/spec.md
+    digest: 516a9acbc98c57e4e21eb1a343dc1c40fba50cbc8c8a24879a7c492d197d4928
+    schemaVersion: 1
+  - label: tasks
+    path: work/153-separated-project-graph/tasks.yml
+    digest: 37500f9d75f0c6434804edebfe435b50c2f3cdac1701699f4715f0d762ae4621
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV001]
+    artifacts: [SIR.slnx, src/SIR.Protocol.Generated/SIR.Protocol.Generated.fsproj, src/SIR.Replay.Web/SIR.Replay.Web.fsproj, src/SIR.Tools/SIR.Tools.fsproj, src/SIR.Wasm/SIR.Wasm.fsproj]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/153-separated-project-graph/architecture.junit.xml
+      digest: "sha256:312756197521a8febc35a58443d2a4a9151901632387d687ecf9dc5f6216f935"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Architecture verification passed with real project graph fixtures.]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV002]
+    artifacts: [src/SIR.Client/SIR.Client.fsproj, src/SIR.Replay.Web/SIR.Replay.Web.fsproj]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/153-separated-project-graph/architecture.junit.xml
+      digest: "sha256:312756197521a8febc35a58443d2a4a9151901632387d687ecf9dc5f6216f935"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Forbidden live-client simulation edge mutation was rejected.]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV003]
+    artifacts: [docs/codebase-architecture.md, docs/public-protocol-architecture.md, scripts/verify-project-architecture.mjs]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/153-separated-project-graph/architecture.junit.xml
+      digest: "sha256:312756197521a8febc35a58443d2a4a9151901632387d687ecf9dc5f6216f935"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Stale canonical-document mutation was rejected.]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV004]
+    artifacts: [scripts/build-client.sh, scripts/test-conformance.sh]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/153-separated-project-graph/architecture.junit.xml
+      digest: "sha256:312756197521a8febc35a58443d2a4a9151901632387d687ecf9dc5f6216f935"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Full compatibility route completed after the resource-name extraction repair.]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: [src/SIR.Protocol.Generated/SIR.Protocol.Generated.fsproj, src/SIR.Protocol/SIR.Protocol.fsproj]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/153-separated-project-graph/architecture.junit.xml
+      digest: "sha256:312756197521a8febc35a58443d2a4a9151901632387d687ecf9dc5f6216f935"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Generated protocol boundary retains HTTP/Thoth and SignalR compatibility.]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV006]
+    artifacts: [docs/codebase-architecture.md, docs/issue-138-fable-game-integration-report.md, docs/public-protocol-architecture.md]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/153-separated-project-graph/architecture.junit.xml
+      digest: "sha256:312756197521a8febc35a58443d2a4a9151901632387d687ecf9dc5f6216f935"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Canonical documents are checked against the concrete solution graph.]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-003, PD-004]
+    obligationRefs: [EV007]
+    artifacts: [readiness/153-separated-project-graph/architecture.junit.xml, scripts/test-conformance.sh]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/153-separated-project-graph/architecture.junit.xml
+      digest: "sha256:312756197521a8febc35a58443d2a4a9151901632387d687ecf9dc5f6216f935"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Architecture gate and complete compatibility route were run on this worktree.]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: [scripts/build-client.sh, src/SIR.Client.Web/index.html]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/153-separated-project-graph/architecture.junit.xml
+      digest: "sha256:312756197521a8febc35a58443d2a4a9151901632387d687ecf9dc5f6216f935"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Replay-web replaces the transitional client-web project in the solution while retaining the published bundle surface.]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV009]
+    artifacts: [readiness/153-separated-project-graph/analysis.json]
+    sourceRefs: []
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/153-separated-project-graph/architecture.junit.xml
+      digest: "sha256:312756197521a8febc35a58443d2a4a9151901632387d687ecf9dc5f6216f935"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Generated readiness views are refreshed after the authored graph change.]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

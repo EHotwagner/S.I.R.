@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <Nullable>disable</Nullable>
+    <DefineConstants>$(DefineConstants);FABLE_COMPILER</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../SIR.Client.Web/SignalR.fs" Link="SignalR.fs" />
+    <Compile Include="../SIR.Client.Web/LiveApi.fs" Link="LiveApi.fs" />
+    <Compile Include="../SIR.Client.Web/LiveSession.fs" Link="LiveSession.fs" />
+    <Compile Include="../SIR.Client.Web/Worker.fs" Link="Worker.fs" />
+    <Compile Include="../SIR.Client.Web/Runner.fs" Link="Runner.fs" />
+    <Compile Include="../SIR.Client.Web/BrowserInfrastructure.fs" Link="BrowserInfrastructure.fs" />
+    <Compile Include="../SIR.Client.Web/AppTypes.fs" Link="AppTypes.fs" />
+    <Compile Include="../SIR.Client.Web/AppShell.fs" Link="AppShell.fs" />
+    <Compile Include="../SIR.Client.Web/CommandRegistry.fs" Link="CommandRegistry.fs" />
+    <Compile Include="../SIR.Client.Web/ModeAdapters.fs" Link="ModeAdapters.fs" />
+    <Compile Include="../SIR.Client.Web/SceneAdapters.fs" Link="SceneAdapters.fs" />
+    <Compile Include="../SIR.Client.Web/PanelViews.fs" Link="PanelViews.fs" />
+    <Compile Include="../SIR.Client.Web/App.fs" Link="App.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../SIR.Replay.Core/SIR.Replay.Core.fsproj" />
+    <ProjectReference Include="../SIR.Protocol.Generated/SIR.Protocol.Generated.fsproj" />
+    <PackageReference Include="Fable.Browser.Dom" />
+    <PackageReference Include="Fable.Core" />
+    <PackageReference Include="Fable.Elmish" />
+    <PackageReference Include="Fable.Elmish.React" />
+    <PackageReference Include="Feliz" />
+    <PackageReference Include="Thoth.Json" />
+  </ItemGroup>
+</Project>
