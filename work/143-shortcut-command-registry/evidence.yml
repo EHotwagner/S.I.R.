@@ -46,16 +46,16 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV001]
-    artifacts: []
+    artifacts: [src/SIR.Client/UnifiedTacticalWorkspace.fs, tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs]
     sourceRefs: []
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
+      source: artifacts/test-results/143-client.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -71,7 +71,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV002]
-    artifacts: []
+    artifacts: [src/SIR.Client.Web/App.fs, tests/SIR.Browser.Tests/live-session.spec.js]
     sourceRefs: []
     result: pass
     synthetic: false
@@ -96,7 +96,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV003]
-    artifacts: []
+    artifacts: [src/SIR.Client.Web/App.fs, tests/SIR.Browser.Tests/live-session.spec.js]
     sourceRefs: []
     result: pass
     synthetic: false
@@ -121,16 +121,16 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV004]
-    artifacts: []
+    artifacts: [src/SIR.Client/UnifiedTacticalWorkspace.fs, tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs]
     sourceRefs: []
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:966e1a5664f26a3fdbc44df5c88e49f77afe083e418cf8ef5ffaba3eda215be0"
+      source: artifacts/test-results/143-client.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 2
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -146,7 +146,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV005]
-    artifacts: []
+    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js]
     sourceRefs: []
     result: pass
     synthetic: false

@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "3c600818f964615973c72e32006c58930f93833cefe3701352aa25db4d22fd61"
+        "value": "353da8acb83e42bbc254d5db4e9b088798d1f2d89e930d3a16d10d087de9ecde"
       }
     },
     {
@@ -742,7 +742,10 @@
       "requirementRefs": [
         "FR-001"
       ],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client/UnifiedTacticalWorkspace.fs",
+        "tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -766,7 +769,10 @@
       "requirementRefs": [
         "FR-002"
       ],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -790,7 +796,10 @@
       "requirementRefs": [
         "FR-003"
       ],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -814,7 +823,10 @@
       "requirementRefs": [
         "FR-004"
       ],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "src/SIR.Client/UnifiedTacticalWorkspace.fs",
+        "tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -838,7 +850,9 @@
       "requirementRefs": [
         "FR-005"
       ],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -1158,7 +1172,7 @@
           "path": "work/143-shortcut-command-registry/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "3c600818f964615973c72e32006c58930f93833cefe3701352aa25db4d22fd61"
+            "value": "353da8acb83e42bbc254d5db4e9b088798d1f2d89e930d3a16d10d087de9ecde"
           },
           "schemaVersion": 1
         },
@@ -1189,7 +1203,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "a7318b36540055eb7935e83321ce7ef597858f9a4389be08e549f6cab9102e65"
+        "value": "4759749743b28f059417aecee013d2770a978a6e08a446251991003435f18316"
       },
       "currency": "current"
     }
