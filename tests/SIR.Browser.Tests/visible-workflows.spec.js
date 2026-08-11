@@ -1,4 +1,22 @@
-import { expect, test } from "./journey.js";
+import { allowExpectedDiagnostic, expect, test } from "./journey.js";
+
+// Diagnostics-gate self-tests deliberately issue a browser fetch; they are not product-journey evidence.
+test("explicitly allowed rejection diagnostics do not hide unrelated browser failures", async ({ page }) => {
+  await page.route("**/controlled-rejection", (route) => route.fulfill({ status: 418, body: "expected" }));
+  allowExpectedDiagnostic(page, /controlled-rejection|I'm a teapot/);
+  await page.goto("/");
+  await page.evaluate(() => fetch("/controlled-rejection"));
+});
+
+test("unexpected rejection diagnostics fail the journey gate", async ({ page }) => {
+  test.skip(process.env.SIR_DIAGNOSTIC_SELF_TEST !== "1", "diagnostic gate child-process self-test only");
+  await page.route("**/unexpected-rejection", (route) => route.fulfill({ status: 418, body: "unexpected" }));
+  // Isolate the network threshold: Chromium emits a generic 418 console message
+  // for fetch, while this child specifically proves the unallowlisted response gate.
+  allowExpectedDiagnostic(page, /I'm a teapot/);
+  await page.goto("/");
+  await page.evaluate(() => fetch("/unexpected-rejection"));
+});
 
 test("visible mode controls preserve a usable tactical workspace across authoring modes", async ({ page }) => {
   await page.goto("/");
