@@ -225,6 +225,14 @@ let run () =
          && restored = UnifiedTacticalWorkspace.emptyBindingProfile)
         "Clear or restore-command binding flow diverged."
 
+    let routeCommand = registry |> List.find (fun command -> command.Id = "planning.route")
+    require
+        (UnifiedTacticalWorkspace.displayGesture (UnifiedTacticalWorkspace.effectiveGesture rebound routeCommand) = "Shift+R"
+         && UnifiedTacticalWorkspace.accessibleGesture (Some "Ctrl/Cmd+←") = Some "Control+ArrowLeft"
+         && UnifiedTacticalWorkspace.displayGesture None = "Unassigned"
+         && UnifiedTacticalWorkspace.accessibleGesture None = None)
+        "Visible and accessible shortcut presentation did not derive from the effective registry binding."
+
     let modalBinding: ModalBinding<ModalCommand> =
         { Id = "editor.fixture.action"
           Context = AnyEditorContext

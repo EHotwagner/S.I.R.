@@ -150,6 +150,23 @@ module UnifiedTacticalWorkspace =
     let isRebound profile command =
         Map.containsKey command.Id profile.Overrides
 
+    /// Formats the registry's effective binding for visible command presentation.
+    let displayGesture (gesture: string option) = gesture |> Option.defaultValue "Unassigned"
+
+    /// Converts a registry gesture to the token form expected by aria-keyshortcuts.
+    let accessibleGesture (gesture: string option) =
+        gesture
+        |> Option.map (fun value ->
+            value
+                .Replace("Ctrl/Cmd", "Control")
+                .Replace("Ctrl", "Control")
+                .Replace("Cmd", "Meta")
+                .Replace("Esc", "Escape")
+                .Replace("←", "ArrowLeft")
+                .Replace("→", "ArrowRight")
+                .Replace("↑", "ArrowUp")
+                .Replace("↓", "ArrowDown"))
+
     let private normalizedGesture (gesture: string) =
         gesture.Trim().ToUpperInvariant()
 

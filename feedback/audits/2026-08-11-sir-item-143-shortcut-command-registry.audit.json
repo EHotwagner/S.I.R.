@@ -1,0 +1,14 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-11-sir-item-143-shortcut-command-registry.md",
+  "reportSha256": "7276377b7fa88c1edf8c36f09245c36766de0fc064bfe5a4de4609f075b1ff7c",
+  "criticMode": "separated-critic-pass",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [{
+    "id": "§4.1",
+    "status": "positive-pattern",
+    "missingFacts": [],
+    "checkedEvidence": [{"locator":"command:npm run test:browser -- --grep every visible actionable control","result":"verified"}],
+    "confidenceLimits": ["fresh independent critic pending"]
+  }]
+}

@@ -105,6 +105,44 @@ test("empty derived modes retain the editor tactical scene and spatial context",
   }
 });
 
+test("tactical command controls expose registry-derived shortcut metadata", async ({ page }) => {
+  await page.goto("/");
+
+  const editor = page.getByRole("button", { name: "Editor", exact: true });
+  await expect(editor).toHaveAttribute("aria-keyshortcuts", "Control+Shift+1");
+  await expect(editor).toHaveAttribute("title", /Ctrl\+Shift\+1/);
+
+  const play = page.getByRole("button", { name: "Play tactical timeline", exact: true });
+  await expect(play).toHaveAttribute("aria-keyshortcuts", "Space");
+  await expect(play).toHaveAttribute("title", /Space/);
+
+  await page.locator("button").filter({ hasText: "Actions" }).click();
+  const command = page.locator('[data-tactical-command="workspace.plan"]');
+  await expect(command).toHaveAttribute("aria-keyshortcuts", "Control+Shift+2");
+  await expect(command.locator("kbd")).toHaveText("Ctrl+Shift+2");
+
+  // Exercise the production window keyboard subscription for the same
+  // registry that rendered the contextual command list.
+  await page.keyboard.press("Escape");
+  await expect(command).toHaveCount(0);
+
+  await page.keyboard.press("Control+Shift+2");
+  await expect(page.getByRole("button", { name: "Plan", exact: true })).toHaveAttribute("aria-pressed", "true");
+});
+
+test("every visible actionable control is registry-bound or explicitly unassigned", async ({ page }) => {
+  await page.goto("/");
+  const uncovered = await page.locator("button:visible, [role=button]:visible").evaluateAll((controls) =>
+    controls.filter((control) =>
+      !control.hasAttribute("aria-keyshortcuts") && control.getAttribute("data-binding-state") !== "unassigned"
+    ).map((control) => ({
+      tag: control.tagName,
+      name: control.getAttribute("aria-label") || control.textContent?.trim(),
+    }))
+  );
+  expect(uncovered).toEqual([]);
+});
+
 test("map and raster pickers reject oversized metadata before reads", async ({ page }) => {
   await page.goto("/");
   await showDocumentImports(page);

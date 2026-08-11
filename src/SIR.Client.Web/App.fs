@@ -122,7 +122,7 @@ let private tacticalCommandAvailable model (command: TacticalCommandDefinition) 
 [<Emit("window.matchMedia('(prefers-reduced-motion: reduce)').matches")>]
 let private prefersReducedMotion: bool = jsNative
 
-[<Emit("(() => { const target = $0; const tag = target && typeof target.tagName === 'string' ? target.tagName.toLowerCase() : ''; return tag === 'input' ? 'input' : tag === 'textarea' ? 'textarea' : tag === 'select' ? 'select' : target && target.isContentEditable ? 'contenteditable' : 'application'; })()")>]
+[<Emit("(() => { const eventTarget = $0; const tag = eventTarget && typeof eventTarget.tagName === 'string' ? eventTarget.tagName.toLowerCase() : ''; return tag === 'input' ? 'input' : tag === 'textarea' ? 'textarea' : tag === 'select' ? 'select' : eventTarget && eventTarget.isContentEditable ? 'contenteditable' : 'application'; })()")>]
 let private currentInputTargetName (target: EventTarget) : string = jsNative
 
 let private currentInputTarget target =
@@ -132,6 +132,12 @@ let private currentInputTarget target =
     | "select" -> ModalInputTarget.SelectElement
     | "contenteditable" -> ModalInputTarget.ContentEditableElement
     | _ -> ModalInputTarget.ApplicationElement
+
+/// Browser `key` represents shifted digits as printable symbols (for example
+/// Ctrl+Shift+2 arrives as `@`).  Registry gestures use the physical digit, so
+/// normalize that one divergent browser representation before dispatch.
+[<Emit("($0.code && /^Digit[0-9]$/.test($0.code) ? $0.code.slice(5) : $0.key)")>]
+let private registryKeyboardKey (event: KeyboardEvent) : string = jsNative
 
 [<Emit("(() => { const target = $0; const current = $1; return target === current || (target && typeof target.tagName === 'string' && target.tagName.toLowerCase() === 'svg' && target.getAttribute('role') === 'application'); })()")>]
 let private isSimulatorModalTarget
@@ -2332,6 +2338,7 @@ let subscriptions model =
         let downHandler =
             fun (event: Event) ->
                 let keyboardEvent: KeyboardEvent = unbox event
+                let key = registryKeyboardKey keyboardEvent
                 if
                     keyboardEvent.target
                     |> currentInputTarget
@@ -2342,14 +2349,14 @@ let subscriptions model =
                     if
                         (modalResolution
                             KeyDown
-                            keyboardEvent.key
+                            key
                             controlOrMeta
                             keyboardEvent.shiftKey
                             keyboardEvent.altKey
                             keyboardEvent.repeat
                          |> isCatalogGesture)
                         || isRegistryGesture
-                            keyboardEvent.key
+                            key
                             controlOrMeta
                             keyboardEvent.shiftKey
                             keyboardEvent.altKey
@@ -2357,7 +2364,7 @@ let subscriptions model =
                         keyboardEvent.preventDefault ()
                     dispatch (
                         KeyPressed(
-                            keyboardEvent.key,
+                            key,
                             controlOrMeta,
                             keyboardEvent.shiftKey,
                             keyboardEvent.altKey,
@@ -2381,13 +2388,15 @@ let subscriptions model =
                 dispatch (KeyReleased keyboardEvent.key)
         let blurHandler =
             fun (_: Event) -> dispatch ApplicationFocusLost
-        window.addEventListener ("keydown", downHandler)
+        // Capture before nested editors/React controls can consume a command
+        // gesture. Text-entry routing still remains guarded above.
+        window.addEventListener ("keydown", downHandler, true)
         window.addEventListener ("keyup", upHandler)
         window.addEventListener ("blur", blurHandler)
 
         { new IDisposable with
             member _.Dispose() =
-                window.removeEventListener ("keydown", downHandler)
+                window.removeEventListener ("keydown", downHandler, true)
                 window.removeEventListener ("keyup", upHandler)
                 window.removeEventListener ("blur", blurHandler) }
 
@@ -2441,7 +2450,14 @@ let subscriptions model =
 
     [ [ "replay-worker-v1" ], runner
       [ "planning-worker-v1" ], planningRunner
-      [ "keyboard" ], keyboard
+      // The resolver closes over the active command registry and binding
+      // profile. Re-subscribe when either can change so keyboard activation
+      // cannot keep dispatching a stale render's command map.
+      [ "keyboard"
+        string model.Workspace
+        string model.Tactical.Modality
+        string model.InputHelpExpanded
+        string model.TacticalBindings ], keyboard
       if model.Workspace = EditorWorkspace then
           [ "editor-resize" ], editorResize
       if
@@ -2491,13 +2507,27 @@ let private status model =
         "status-diverged"
     | Failed reason -> "Replay failed — " + reason, "status-failed"
 
+/// The render-time policy for command controls.  A control is either supplied
+/// with registry-derived `aria-keyshortcuts` by its family adapter, or is
+/// explicitly disclosed as unassigned.  This keeps unbound/dynamic controls
+/// out of a silent third state without mutating the DOM after render.
+let private commandButton properties =
+    let hasRegistryBinding =
+        properties
+        |> List.exists (fun property ->
+            let name, _ = unbox<string * obj> property
+            name = "aria-keyshortcuts")
+    Html.button (
+        if hasRegistryBinding then properties
+        else properties @ [ prop.custom ("data-binding-state", "unassigned") ])
+
 let private button
     (text: string)
     (label: string)
     (disabled: bool)
     (onClick: MouseEvent -> unit)
     =
-    Html.button [
+    commandButton [
         prop.type'.button
         prop.text text
         prop.ariaLabel label
@@ -2801,7 +2831,7 @@ let private inspector (model: SIR.Client.Model) dispatch =
                 prop.children (
                     inspection.Units
                     |> List.map (fun unit ->
-                        Html.button [
+                        commandButton [
                             prop.type'.button
                             prop.className ("unit-token unit-" + unit.Side.ToLowerInvariant())
                             prop.ariaLabel (
@@ -2823,7 +2853,7 @@ let private inspector (model: SIR.Client.Model) dispatch =
                     inspection.Events
                     |> List.map (fun event ->
                         Html.li [
-                            Html.button [
+                            commandButton [
                                 prop.type'.button
                                 prop.ariaLabel ("Inspect event " + string event.Id)
                                 prop.text (
@@ -2935,7 +2965,7 @@ let private reviewRosterPanel (model: SIR.Client.Model) dispatch =
                 Html.ul [
                     for unit in units do
                         Html.li [
-                            Html.button [
+                            commandButton [
                                 prop.type'.button
                                 prop.ariaLabel ("Inspect disclosed unit " + string unit.Id)
                                 prop.text (
@@ -3005,7 +3035,7 @@ let private reviewSelectionPanel (model: SIR.Client.Model) dispatch =
                     prop.children [
                         for event in events do
                             Html.li [
-                                Html.button [
+                                commandButton [
                                     prop.type'.button
                                     prop.ariaLabel ("Inspect disclosed event " + string event.Id)
                                     prop.text (
@@ -3766,7 +3796,7 @@ let private editorToolbar
     dispatch
     =
     let choose (label: string) (tool: MapEditorTool) =
-        Html.button [
+        commandButton [
             prop.type'.button
             prop.text label
             prop.ariaPressed (state.Tool = tool)
@@ -3778,7 +3808,7 @@ let private editorToolbar
             MapEditor.terrainLabel terrain
             + " · "
             + MapEditor.terrainPattern terrain
-        Html.button [
+        commandButton [
             prop.type'.button
             prop.className (
                 "terrain-palette-choice terrain-"
@@ -3803,7 +3833,7 @@ let private editorToolbar
             failwith ("Unknown canonical footprint preset: " + presetId))
 
     let choosePanel (label: string) (panel: EditorToolPanel) =
-        Html.button [
+        commandButton [
             prop.type'.button
             prop.text label
             prop.ariaPressed (
@@ -4288,7 +4318,7 @@ let private editorToolbar
                                               FillAndCrop, "Fill/crop"
                                               StretchToBoard, "Stretch"
                                               NativePixels, "Grid scale" ] do
-                                            Html.button [
+                                            commandButton [
                                                 prop.type'.button
                                                 prop.text label
                                                 prop.ariaPressed (background.Fit = fit)
@@ -4421,13 +4451,13 @@ let private editorToolbar
                                 prop.children [
                                     for name, saved in state.Authoring.SavedViews |> Map.toList do
                                         Html.li [
-                                            Html.button [
+                                            commandButton [
                                                 prop.type'.button
                                                 prop.text ("Recall " + saved.Name)
                                                 prop.onClick (fun _ ->
                                                     dispatch (RecallEditorView name))
                                             ]
-                                            Html.button [
+                                            commandButton [
                                                 prop.type'.button
                                                 prop.text ("Remove " + saved.Name)
                                                 prop.onClick (fun _ ->
@@ -5092,7 +5122,7 @@ let private planningPanelBody
                           "Hold", "H", "planning.hold", HoldTool
                           "Engage", "E", "planning.engagement", EngagementTool
                           "Sync", "M", "planning.synchronization", SynchronizationTool ] do
-                        Html.button [
+                        commandButton [
                             prop.type'.button
                             prop.ariaPressed (state.Tool = tool)
                             prop.text (label + " · " + key)
@@ -5127,7 +5157,7 @@ let private planningPanelBody
                         prop.className "planning-roster-list"
                         prop.children [
                             for unit in state.Roster do
-                                Html.button [
+                                commandButton [
                                     prop.type'.button
                                     prop.ariaPressed (state.SelectedUnit = Some unit.UnitId)
                                     prop.text (
@@ -5221,7 +5251,7 @@ let private planningPanelBody
                     Html.h3 "Authored commands"
                     if List.isEmpty state.Commands then Html.p "No authored commands."
                     for command in state.Commands do
-                        Html.button [
+                        commandButton [
                             prop.type'.button
                             prop.ariaPressed (state.SelectedCommand = Some command.Id)
                             prop.text (planningCommandLabel command)
@@ -5237,7 +5267,7 @@ let private planningPanelBody
                     Html.h2 ("Validation · " + string state.Issues.Length + " issues")
                     Html.p "Use the issue buttons or bracket keys to move selection to the affected command."
                     for index, issue in Array.indexed state.Issues do
-                        Html.button [
+                        commandButton [
                             prop.type'.button
                             prop.ariaPressed (state.FocusedIssue = Some index)
                             prop.text (issue.Code + " · " + issue.Detail)
@@ -5267,7 +5297,7 @@ let private supportingPanelControls (model: Model) dispatch =
         let placement =
             model.TacticalLayout.Placements
             |> List.find (fun placement -> placement.PanelId = panelId)
-        Html.button [
+        commandButton [
             prop.type'.button
             prop.text label
             prop.ariaPressed placement.Visible
@@ -5285,13 +5315,39 @@ let private supportingPanelControls (model: Model) dispatch =
         ]
     ]
 
-let private tacticalModalityControls (workspace: WorkspaceMode) dispatch =
+let private tacticalCommandButton (model: Model) (commandId: string) (text: string) (label: string) disabled onClick =
+    let effective =
+        activeTacticalRegistry model
+        |> List.tryFind (fun command -> command.Id = commandId)
+        |> Option.bind (UnifiedTacticalWorkspace.effectiveGesture model.TacticalBindings)
+    commandButton [
+        prop.type'.button
+        prop.text text
+        prop.disabled disabled
+        prop.title (label + " · " + UnifiedTacticalWorkspace.displayGesture effective)
+        prop.ariaLabel label
+        match UnifiedTacticalWorkspace.accessibleGesture effective with
+        | Some shortcut -> prop.custom ("aria-keyshortcuts", shortcut)
+        | None -> prop.custom ("data-binding-state", "unassigned")
+        prop.onClick onClick
+    ]
+
+let private tacticalModalityControls model dispatch =
     let item (label: string) commandId (value: WorkspaceMode) =
-        let isCurrent = workspace = value
-        Html.button [
+        let isCurrent = model.Workspace = value
+        let effective =
+            activeTacticalRegistry model
+            |> List.tryFind (fun command -> command.Id = commandId)
+            |> Option.bind (UnifiedTacticalWorkspace.effectiveGesture model.TacticalBindings)
+        commandButton [
             prop.type'.button
             prop.text label
             prop.ariaPressed isCurrent
+            prop.title ("Switch to " + label + " · " + UnifiedTacticalWorkspace.displayGesture effective)
+            prop.ariaLabel label
+            match UnifiedTacticalWorkspace.accessibleGesture effective with
+            | Some shortcut -> prop.custom ("aria-keyshortcuts", shortcut)
+            | None -> prop.custom ("data-binding-state", "unassigned")
             prop.onClick (fun _ -> dispatch (InvokeTacticalCommand commandId))
         ]
 
@@ -5372,47 +5428,19 @@ let private tacticalTimeline model dispatch =
             Html.div [
                 prop.className "tactical-transport"
                 prop.children [
-                    Html.button [
-                        prop.type'.button
-                        prop.text (if state.IsPlaying then "Pause" else "Play")
-                        prop.disabled (not (available "timeline.play-toggle"))
-                        prop.ariaLabel (if state.IsPlaying then "Pause tactical timeline" else "Play tactical timeline")
-                        prop.onClick (fun _ -> dispatch (InvokeTacticalCommand "timeline.play-toggle"))
-                    ]
-                    Html.button [
-                        prop.type'.button
-                        prop.text "Home"
-                        prop.disabled (not (available "timeline.home"))
-                        prop.onClick (fun _ -> dispatch (InvokeTacticalCommand "timeline.home"))
-                    ]
-                    Html.button [
-                        prop.type'.button
-                        prop.text "−1"
-                        prop.disabled (not (available "timeline.step-back"))
-                        prop.ariaLabel "Step tactical timeline backward"
-                        prop.onClick (fun _ -> dispatch (InvokeTacticalCommand "timeline.step-back"))
-                    ]
-                    Html.button [
-                        prop.type'.button
-                        prop.text "+1"
-                        prop.disabled (not (available "timeline.step-forward"))
-                        prop.ariaLabel "Step tactical timeline forward"
-                        prop.onClick (fun _ -> dispatch (InvokeTacticalCommand "timeline.step-forward"))
-                    ]
-                    Html.button [
-                        prop.type'.button
-                        prop.text "End"
-                        prop.disabled (not (available "timeline.end"))
-                        prop.onClick (fun _ -> dispatch (InvokeTacticalCommand "timeline.end"))
-                    ]
-                    Html.button [
+                    tacticalCommandButton model "timeline.play-toggle" (if state.IsPlaying then "Pause" else "Play") (if state.IsPlaying then "Pause tactical timeline" else "Play tactical timeline") (not (available "timeline.play-toggle")) (fun _ -> dispatch (InvokeTacticalCommand "timeline.play-toggle"))
+                    tacticalCommandButton model "timeline.home" "Home" "Go to tactical timeline start" (not (available "timeline.home")) (fun _ -> dispatch (InvokeTacticalCommand "timeline.home"))
+                    tacticalCommandButton model "timeline.step-back" "−1" "Step tactical timeline backward" (not (available "timeline.step-back")) (fun _ -> dispatch (InvokeTacticalCommand "timeline.step-back"))
+                    tacticalCommandButton model "timeline.step-forward" "+1" "Step tactical timeline forward" (not (available "timeline.step-forward")) (fun _ -> dispatch (InvokeTacticalCommand "timeline.step-forward"))
+                    tacticalCommandButton model "timeline.end" "End" "Go to tactical timeline end" (not (available "timeline.end")) (fun _ -> dispatch (InvokeTacticalCommand "timeline.end"))
+                    commandButton [
                         prop.type'.button
                         prop.text "Move command here"
                         prop.disabled (not (available "timeline.move-command"))
                         prop.onClick (fun _ ->
                             dispatch (InvokeTacticalCommand "timeline.move-command"))
                     ]
-                    Html.button [
+                    commandButton [
                         prop.type'.button
                         prop.text "Remove command"
                         prop.disabled (not (available "timeline.remove-command"))
@@ -5507,7 +5535,7 @@ let private tacticalBindingDialog model dispatch =
                     prop.className "modal-input-panel-heading"
                     prop.children [
                         Html.h2 "Command bindings"
-                        Html.button [
+                        commandButton [
                             prop.type'.button
                             prop.text "Close"
                             prop.onClick (fun _ -> dispatch ToggleTacticalBindings)
@@ -5595,7 +5623,7 @@ let private tacticalBindingDialog model dispatch =
                                         effective
                                         |> Option.defaultValue "Unbound"
                                     )
-                                    Html.button [
+                                    commandButton [
                                         prop.type'.button
                                         prop.text "Apply"
                                         prop.onClick (fun _ ->
@@ -5606,7 +5634,7 @@ let private tacticalBindingDialog model dispatch =
                                                 )
                                             ))
                                     ]
-                                    Html.button [
+                                    commandButton [
                                         prop.type'.button
                                         prop.text "Replace conflict"
                                         prop.onClick (fun _ ->
@@ -5617,7 +5645,7 @@ let private tacticalBindingDialog model dispatch =
                                                 )
                                             ))
                                     ]
-                                    Html.button [
+                                    commandButton [
                                         prop.type'.button
                                         prop.text "Clear"
                                         prop.onClick (fun _ ->
@@ -5625,7 +5653,7 @@ let private tacticalBindingDialog model dispatch =
                                                 ClearTacticalBinding command.Id
                                             ))
                                     ]
-                                    Html.button [
+                                    commandButton [
                                         prop.type'.button
                                         prop.text "Restore"
                                         prop.onClick (fun _ ->
@@ -5640,13 +5668,13 @@ let private tacticalBindingDialog model dispatch =
                 Html.div [
                     prop.className "tactical-binding-actions"
                     prop.children [
-                        Html.button [
+                        commandButton [
                             prop.type'.button
                             prop.text "Restore modality"
                             prop.onClick (fun _ ->
                                 dispatch RestoreTacticalModalityBindings)
                         ]
-                        Html.button [
+                        commandButton [
                             prop.type'.button
                             prop.text "Restore all"
                             prop.onClick (fun _ ->
@@ -5675,7 +5703,7 @@ let private tacticalBindingDialog model dispatch =
                         ]
                     ]
                 ]
-                Html.button [
+                commandButton [
                     prop.type'.button
                     prop.text "Import bindings"
                     prop.onClick (fun _ -> dispatch ImportTacticalBindings)
@@ -5780,7 +5808,7 @@ let private tacticalContextHelp model dispatch =
                             ]
                         ]
                     ]
-                    Html.button [
+                    commandButton [
                         prop.id "tactical-input-toggle"
                         prop.type'.button
                         prop.className "modal-input-toggle"
@@ -5809,13 +5837,13 @@ let private tacticalContextHelp model dispatch =
                             prop.className "modal-input-panel-heading"
                             prop.children [
                                 Html.h3 "Executable actions"
-                                Html.button [
+                                commandButton [
                                     prop.id "tactical-configure-bindings"
                                     prop.type'.button
                                     prop.text "Configure bindings"
                                     prop.onClick (fun _ -> dispatch ToggleTacticalBindings)
                                 ]
-                                Html.button [
+                                commandButton [
                                     prop.type'.button
                                     prop.text "Close"
                                     prop.onClick (fun _ -> dispatch (ToggleInputHelp true))
@@ -5832,14 +5860,13 @@ let private tacticalContextHelp model dispatch =
                                     Html.li [
                                         prop.custom ("data-tactical-command", command.Id)
                                         match effective with
-                                        | Some shortcut ->
-                                            prop.custom (
-                                                "aria-keyshortcuts",
-                                                shortcut.Replace("Ctrl", "Control")
-                                            )
+                                        | Some _ ->
+                                            match UnifiedTacticalWorkspace.accessibleGesture effective with
+                                            | Some shortcut -> prop.custom ("aria-keyshortcuts", shortcut)
+                                            | None -> prop.custom ("data-binding-state", "unbound")
                                         | None -> prop.custom ("data-binding-state", "unbound")
                                         prop.children [
-                                            Html.kbd (effective |> Option.defaultValue "Unbound")
+                                            Html.kbd (UnifiedTacticalWorkspace.displayGesture effective)
                                             Html.span (command.Label + " · " + command.Category)
                                             Html.small (
                                                 if UnifiedTacticalWorkspace.isRebound model.TacticalBindings command then
@@ -5862,14 +5889,13 @@ let private tacticalContextHelp model dispatch =
                                     Html.li [
                                         prop.custom ("data-modal-command", input.Id)
                                         match effective with
-                                        | Some shortcut ->
-                                            prop.custom (
-                                                "aria-keyshortcuts",
-                                                shortcut.Replace("Ctrl", "Control")
-                                            )
+                                        | Some _ ->
+                                            match UnifiedTacticalWorkspace.accessibleGesture effective with
+                                            | Some shortcut -> prop.custom ("aria-keyshortcuts", shortcut)
+                                            | None -> prop.custom ("data-binding-state", "unbound")
                                         | None -> prop.custom ("data-binding-state", "unbound")
                                         prop.children [
-                                            Html.kbd (effective |> Option.defaultValue "Unbound")
+                                            Html.kbd (UnifiedTacticalWorkspace.displayGesture effective)
                                             Html.span (input.Label + " · " + input.Group)
                                             Html.small (
                                                 if Map.containsKey input.Id model.TacticalBindings.Overrides then
@@ -6394,6 +6420,7 @@ let private persistentSceneSvg
                                         match command with
                                         | Some commandId when available ->
                                             svg.custom ("role", "button")
+                                            svg.custom ("data-binding-state", "unassigned")
                                             svg.custom ("aria-label", "Activate cell " + string terrain.Column + "," + string terrain.Row)
                                             svg.onClick (fun _ -> invoke commandId)
                                         | _ -> svg.custom ("aria-hidden", "true")
@@ -6556,6 +6583,7 @@ let private persistentSceneSvg
                                         match command with
                                         | Some commandId when available ->
                                             svg.custom ("role", "button")
+                                            svg.custom ("data-binding-state", "unassigned")
                                             svg.custom (
                                                 "aria-label",
                                                 "Select tactical unit " + string visual.Id
@@ -6788,6 +6816,7 @@ let private persistentSceneSvg
                                                     svg.custom ("data-region-purpose", MapEditor.regionPurposeLabel region.Purpose)
                                                     svg.custom ("data-selected", string isSelected)
                                                     svg.custom ("role", "button")
+                                                    svg.custom ("data-binding-state", "unassigned")
                                                     svg.custom ("aria-label", "Select region " + string region.Id + ", " + MapEditor.regionPurposeLabel region.Purpose)
                                                     svg.tabIndex (if isSelected then 0 else -1)
                                                     svg.x (float column * cellSize)
@@ -6822,6 +6851,7 @@ let private persistentSceneSvg
                                                     svg.custom ("data-region-purpose", MapEditor.regionPurposeLabel region.Purpose)
                                                     svg.custom ("data-selected", string isSelected)
                                                     svg.custom ("role", "button")
+                                                    svg.custom ("data-binding-state", "unassigned")
                                                     svg.custom ("aria-label", "Select region " + string region.Id + ", " + MapEditor.regionPurposeLabel region.Purpose)
                                                     svg.tabIndex (if isSelected then 0 else -1)
                                                     svg.points (
@@ -6993,7 +7023,7 @@ let private tacticalLayoutToolbar model dispatch =
         let placement =
             layout.Placements
             |> List.find (fun placement -> placement.PanelId = panel.Id)
-        Html.button [
+        commandButton [
             prop.id ("layout-show-" + panel.Id)
             prop.type'.button
             prop.className "tactical-panel-toggle"
@@ -7021,24 +7051,24 @@ let private tacticalLayoutToolbar model dispatch =
                     )
                 ]
             ]
-            tacticalModalityControls model.Workspace dispatch
+            tacticalModalityControls model dispatch
             Html.div [
                 prop.className "tactical-toolbar-transport"
                 prop.children [
-                    Html.button [
-                        prop.type'.button
-                        prop.ariaLabel "Play or pause active tactical modality"
-                        prop.text (if model.Tactical.IsPlaying then "Pause" else "Play")
-                        prop.onClick (fun _ ->
-                            dispatch (InvokeTacticalCommand "timeline.play-toggle"))
-                    ]
+                    tacticalCommandButton
+                        model
+                        "timeline.play-toggle"
+                        (if model.Tactical.IsPlaying then "Pause" else "Play")
+                        "Play or pause active tactical modality"
+                        false
+                        (fun _ -> dispatch (InvokeTacticalCommand "timeline.play-toggle"))
                 ]
             ]
             Html.div [
                 prop.className "tactical-toolbar-layout"
                 prop.ariaLabel "Panel visibility"
                 prop.children [
-                    Html.button [
+                    commandButton [
                         prop.id "layout-left-drawer-toggle"
                         prop.type'.button
                         prop.className "tactical-drawer-toggle"
@@ -7047,7 +7077,7 @@ let private tacticalLayoutToolbar model dispatch =
                         prop.text "Left"
                         prop.onClick (fun _ -> dispatch (ToggleLayoutDrawer Left))
                     ]
-                    Html.button [
+                    commandButton [
                         prop.id "layout-right-drawer-toggle"
                         prop.type'.button
                         prop.className "tactical-drawer-toggle"
@@ -7056,7 +7086,7 @@ let private tacticalLayoutToolbar model dispatch =
                         prop.text "Right"
                         prop.onClick (fun _ -> dispatch (ToggleLayoutDrawer Right))
                     ]
-                    Html.button [
+                    commandButton [
                         prop.id "layout-timeline-visibility-toggle"
                         prop.type'.button
                         prop.ariaPressed (
@@ -7073,7 +7103,7 @@ let private tacticalLayoutToolbar model dispatch =
                         prop.onClick (fun _ ->
                             dispatch ToggleLayoutBottomPanelVisibility)
                     ]
-                    Html.button [
+                    commandButton [
                         prop.id "layout-timeline-toggle"
                         prop.type'.button
                         prop.disabled (
@@ -7091,7 +7121,7 @@ let private tacticalLayoutToolbar model dispatch =
                         )
                         prop.onClick (fun _ -> dispatch ToggleLayoutBottomPanel)
                     ]
-                    Html.button [
+                    commandButton [
                         prop.id "layout-reset"
                         prop.type'.button
                         prop.text "Reset layout"
@@ -7113,13 +7143,13 @@ let private tacticalLayoutToolbar model dispatch =
                     ]
                 ]
             ]
-            Html.button [
-                prop.type'.button
-                prop.text "Actions"
-                prop.ariaLabel "Show contextual tactical actions"
-                prop.onClick (fun _ ->
-                    dispatch (InvokeTacticalCommand "input.help"))
-            ]
+            tacticalCommandButton
+                model
+                "input.help"
+                "Actions"
+                "Show contextual tactical actions"
+                false
+                (fun _ -> dispatch (InvokeTacticalCommand "input.help"))
         ]
     ]
 
@@ -7143,7 +7173,7 @@ let private editorLayerPanel (state: MapEditorState) dispatch =
                           DimmedLayer, "Dimmed"
                           HiddenLayer, "Hidden"
                           LockedLayer, "Locked" ] do
-                        Html.button [
+                        commandButton [
                             prop.type'.button
                             prop.text label
                             prop.ariaPressed (MapEditor.layerState domain state = value)
@@ -7182,7 +7212,7 @@ let private editorOutlinerPanel (state: MapEditorState) dispatch =
         prop.children [
             Html.h4 ("Units · " + string state.Map.Units.Count)
             for _, unit in state.Map.Units |> Map.toList do
-                Html.button [
+                commandButton [
                     prop.type'.button
                     prop.ariaPressed (Set.contains unit.Id state.SelectedUnits)
                     prop.text (unit.ClassId + " " + string unit.Id + " · " + string unit.Column + "," + string unit.Row)
@@ -7190,7 +7220,7 @@ let private editorOutlinerPanel (state: MapEditorState) dispatch =
                 ]
             Html.h4 ("Regions · " + string state.Map.Regions.Count)
             for _, region in state.Map.Regions |> Map.toList do
-                Html.button [
+                commandButton [
                     prop.type'.button
                     prop.ariaPressed (state.SelectedRegion = Some region.Id)
                     prop.text ("Region " + string region.Id + " · " + MapEditor.regionPurposeLabel region.Purpose)
@@ -7215,7 +7245,7 @@ let private simulatorPanelBody
             prop.children [
                 Html.h4 ("Disposable runtime units · " + string handoff.RuntimeMap.Units.Count)
                 for _, unit in handoff.RuntimeMap.Units |> Map.toList do
-                    Html.button [
+                    commandButton [
                         prop.type'.button
                         prop.ariaPressed (Option.contains unit.Id selectedUnit)
                         prop.text (
@@ -7468,7 +7498,7 @@ let private tacticalSidebar side model dispatch =
                                 Html.div [
                                     prop.className "tactical-layout-panel-actions"
                                     prop.children [
-                                        Html.button [
+                                        commandButton [
                                             prop.id ("layout-panel-" + panel.Id + "-collapse")
                                             prop.type'.button
                                             prop.ariaExpanded (not placement.Collapsed)
@@ -7481,21 +7511,21 @@ let private tacticalSidebar side model dispatch =
                                             prop.onClick (fun _ ->
                                                 dispatch (ToggleLayoutPanelCollapsed panel.Id))
                                         ]
-                                        Html.button [
+                                        commandButton [
                                             prop.type'.button
                                             prop.ariaLabel ("Move " + panel.Label + " panel up")
                                             prop.text "↑"
                                             prop.onClick (fun _ ->
                                                 dispatch (ReorderLayoutPanel(panel.Id, -1)))
                                         ]
-                                        Html.button [
+                                        commandButton [
                                             prop.type'.button
                                             prop.ariaLabel ("Move " + panel.Label + " panel down")
                                             prop.text "↓"
                                             prop.onClick (fun _ ->
                                                 dispatch (ReorderLayoutPanel(panel.Id, 1)))
                                         ]
-                                        Html.button [
+                                        commandButton [
                                             prop.type'.button
                                             prop.ariaLabel (
                                                 "Move " + panel.Label + " panel to "
@@ -7511,7 +7541,7 @@ let private tacticalSidebar side model dispatch =
                                                     )
                                                 ))
                                         ]
-                                        Html.button [
+                                        commandButton [
                                             prop.type'.button
                                             prop.ariaLabel ("Hide " + panel.Label + " panel")
                                             prop.text "×"

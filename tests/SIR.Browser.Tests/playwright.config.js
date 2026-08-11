@@ -7,7 +7,7 @@ const executablePath = browserExecutablePath();
 assertBrowserAvailable();
 
 export default defineConfig({
-  testDir: ".",
+  testDir: import.meta.dirname,
   reporter: [[resolve(import.meta.dirname, "deterministic-junit-reporter.js"), {
     outputFile: resolve(repoRoot, "artifacts/test-results/browser.junit.xml"),
   }]],
