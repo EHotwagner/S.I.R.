@@ -12,7 +12,7 @@ commit: pending-pr-head
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 6
+- **material events:** 7
 - **zero-event reason:** n/a
 - Checkpoint file: `feedback/checkpoints/item-136-grid-resolution-footprint.jsonl`.
 - Confidence is limited to the preserved worktree and local production qualification.
@@ -91,6 +91,8 @@ Two recovery handoffs and one blocked refresh attempt.
 `shipReady`, fourteen observed evidence receipts, a passing production client JUnit report, and a passing hash-bound browser qualification were produced. The browser gate rejected a mutation that removed its autosave storage write.
 
 The M9 persistent-workspace and map-editor review assets were regenerated from the same production bundle; serial conformance and documentation routes passed.
+
+Round-three SDD repair restored one-to-one ownership for T011–T014 and EV011–EV014 before regenerating current analysis, evidence, verification, ship, refresh, and agent views.
 
 ## §11 Falsifiable improvements
 

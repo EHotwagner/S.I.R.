@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "a146c0d8a4fc0549e42473325251295f1e42a3e21f82ca296bb13cf306664bf3"
+        "value": "1bf354640e44ad6f6ab36d3a252c06f9b8c49e06e209710e08ac8789d8e3ec94"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "e3948031555641dde63dffbb9ca3db34a9ff04137d53c571ace3708582eee708"
+        "value": "199289f0016ece8b98180d83375e2670155da9d332a57d743ad348918ac1e261"
       }
     }
   ],
@@ -569,7 +569,7 @@
     {
       "id": "T011",
       "title": "Update contract surface PC-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -596,7 +596,7 @@
     {
       "id": "T012",
       "title": "Record verification evidence VO-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -628,7 +628,7 @@
     {
       "id": "T013",
       "title": "Handle migration posture PM-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -654,7 +654,7 @@
     {
       "id": "T014",
       "title": "Refresh generated view impact GV-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -948,9 +948,9 @@
       "id": "EV011",
       "kind": "verification",
       "subjectType": "task",
-      "subjectId": "T010",
+      "subjectId": "T011",
       "taskRefs": [
-        "T010"
+        "T011"
       ],
       "requirementRefs": [],
       "artifactRefs": [
@@ -973,9 +973,9 @@
       "id": "EV012",
       "kind": "verification",
       "subjectType": "task",
-      "subjectId": "T010",
+      "subjectId": "T012",
       "taskRefs": [
-        "T010"
+        "T012"
       ],
       "requirementRefs": [],
       "artifactRefs": [
@@ -998,9 +998,9 @@
       "id": "EV013",
       "kind": "verification",
       "subjectType": "task",
-      "subjectId": "T010",
+      "subjectId": "T013",
       "taskRefs": [
-        "T010"
+        "T013"
       ],
       "requirementRefs": [],
       "artifactRefs": [
@@ -1023,9 +1023,9 @@
       "id": "EV014",
       "kind": "verification",
       "subjectType": "task",
-      "subjectId": "T010",
+      "subjectId": "T014",
       "taskRefs": [
-        "T010"
+        "T014"
       ],
       "requirementRefs": [],
       "artifactRefs": [
@@ -1099,7 +1099,7 @@
           "path": "work/136-grid-resolution-footprint/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "a146c0d8a4fc0549e42473325251295f1e42a3e21f82ca296bb13cf306664bf3"
+            "value": "1bf354640e44ad6f6ab36d3a252c06f9b8c49e06e209710e08ac8789d8e3ec94"
           },
           "schemaVersion": 1
         },
@@ -1123,14 +1123,14 @@
           "path": "work/136-grid-resolution-footprint/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "e3948031555641dde63dffbb9ca3db34a9ff04137d53c571ace3708582eee708"
+            "value": "199289f0016ece8b98180d83375e2670155da9d332a57d743ad348918ac1e261"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "8dddde80bd899d803b834978cc6be2abf9bef3419cd6e2eca66c9d8d595dd020"
+        "value": "4e552e46883a08d2e2ee3af3b0583623eb74bb96471ed08857a26497cfb4f769"
       },
       "currency": "current"
     }

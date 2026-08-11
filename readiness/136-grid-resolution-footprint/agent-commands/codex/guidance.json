@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "005417dcf7ac34542284fb8297a88bc90f00b5dcd4efa314d2c92cc3553dc721"
+        "value": "a0d4de52bff2867ef386ff513d83f276f07d55b1f49746f2d7a1d5d9de623866"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -19,7 +19,7 @@
   ],
   "behaviorModelDigest": {
     "algorithm": "sha256",
-    "value": "eb56ae74add569ee317c80a88acebccc1e9f82029f66380f63a02629cc89fc07"
+    "value": "e39af8c375899524ed564fc2ee5f12367b8641fa051439b5fa24f5744e29db30"
   },
   "commands": [
     {
@@ -131,7 +131,7 @@
       "id": "T011",
       "title": "Update contract surface PC-001",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T011 (pending) covering PC-001, PD-001, PD-004.",
+      "purpose": "Carry out lifecycle task T011 (done) covering PC-001, PD-001, PD-004.",
       "relatedIds": [
         "PC-001",
         "PD-001",
@@ -142,7 +142,7 @@
       "id": "T012",
       "title": "Record verification evidence VO-001",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T012 (pending) covering PC-001, PD-001, PD-002, PD-003, PD-004, PD-005, VO-001.",
+      "purpose": "Carry out lifecycle task T012 (done) covering PC-001, PD-001, PD-002, PD-003, PD-004, PD-005, VO-001.",
       "relatedIds": [
         "PC-001",
         "PD-001",
@@ -157,7 +157,7 @@
       "id": "T013",
       "title": "Handle migration posture PM-001",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T013 (pending) covering PC-001, PM-001.",
+      "purpose": "Carry out lifecycle task T013 (done) covering PC-001, PM-001.",
       "relatedIds": [
         "PC-001",
         "PM-001"
@@ -167,7 +167,7 @@
       "id": "T014",
       "title": "Refresh generated view impact GV-001",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T014 (pending) covering GV-001, PD-001, PD-005.",
+      "purpose": "Carry out lifecycle task T014 (done) covering GV-001, PD-001, PD-005.",
       "relatedIds": [
         "GV-001",
         "PD-001",

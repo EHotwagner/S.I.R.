@@ -55,21 +55,21 @@ normalized work model, not an authored source of truth. See `guidance.json`.
 
 ## T011 — Update contract surface PC-001
 - Stage: specify
-- Purpose: Carry out lifecycle task T011 (pending) covering PC-001, PD-001, PD-004.
+- Purpose: Carry out lifecycle task T011 (done) covering PC-001, PD-001, PD-004.
 - Related: PC-001, PD-001, PD-004
 
 ## T012 — Record verification evidence VO-001
 - Stage: specify
-- Purpose: Carry out lifecycle task T012 (pending) covering PC-001, PD-001, PD-002, PD-003, PD-004, PD-005, VO-001.
+- Purpose: Carry out lifecycle task T012 (done) covering PC-001, PD-001, PD-002, PD-003, PD-004, PD-005, VO-001.
 - Related: PC-001, PD-001, PD-002, PD-003, PD-004, PD-005, VO-001
 
 ## T013 — Handle migration posture PM-001
 - Stage: specify
-- Purpose: Carry out lifecycle task T013 (pending) covering PC-001, PM-001.
+- Purpose: Carry out lifecycle task T013 (done) covering PC-001, PM-001.
 - Related: PC-001, PM-001
 
 ## T014 — Refresh generated view impact GV-001
 - Stage: specify
-- Purpose: Carry out lifecycle task T014 (pending) covering GV-001, PD-001, PD-005.
+- Purpose: Carry out lifecycle task T014 (done) covering GV-001, PD-001, PD-005.
 - Related: GV-001, PD-001, PD-005
 

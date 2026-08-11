@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/136-grid-resolution-footprint/ship.json",
-      "digest": "sha256:2b3f3698881aa92feb68fa67516031c54473a37567e541b92b17cefc41985793",
+      "digest": "sha256:e26f7d6b70064135c6507463eba476f44a607d2c64d7f385b27134e4e5343a86",
       "schemaVersion": 1
     },
     {
       "path": "readiness/136-grid-resolution-footprint/verify.json",
-      "digest": "sha256:5028e5adaa726b57e6b505ecce6c171b71de1ef350b60bbe500ff8936af2926b",
+      "digest": "sha256:642a077892ad2bea77852d69d10b241edb6aa69d97c9d70d990c34592ade0db2",
       "schemaVersion": 1
     },
     {
       "path": "readiness/136-grid-resolution-footprint/work-model.json",
-      "digest": "sha256:005417dcf7ac34542284fb8297a88bc90f00b5dcd4efa314d2c92cc3553dc721",
+      "digest": "sha256:a0d4de52bff2867ef386ff513d83f276f07d55b1f49746f2d7a1d5d9de623866",
       "schemaVersion": 1
     }
   ],
@@ -144,22 +144,22 @@
       },
       {
         "id": "task:T011",
-        "state": "pending",
+        "state": "real",
         "rationale": null
       },
       {
         "id": "task:T012",
-        "state": "pending",
+        "state": "real",
         "rationale": null
       },
       {
         "id": "task:T013",
-        "state": "pending",
+        "state": "real",
         "rationale": null
       },
       {
         "id": "task:T014",
-        "state": "pending",
+        "state": "real",
         "rationale": null
       }
     ],
@@ -206,19 +206,19 @@
       },
       {
         "dependent": "evidence:EV011",
-        "dependency": "task:T010"
+        "dependency": "task:T011"
       },
       {
         "dependent": "evidence:EV012",
-        "dependency": "task:T010"
+        "dependency": "task:T012"
       },
       {
         "dependent": "evidence:EV013",
-        "dependency": "task:T010"
+        "dependency": "task:T013"
       },
       {
         "dependent": "evidence:EV014",
-        "dependency": "task:T010"
+        "dependency": "task:T014"
       },
       {
         "dependent": "task:T001",
