@@ -1,8 +1,8 @@
 {
   "schema": "sir-persistent-workspace-m9-live-review-v2",
   "captureKind": "actual-production-shell-chromium-screenshot",
-  "productionBundleSha256": "0b680381e5be1b594c1d33f690afc811491dd154d9f1da169036b79d84da204c",
-  "productionStylesSha256": "ecf35f3f2c406a4fe7753837e8846057e4ebac65c501da9077bdda49e97a10ef",
+  "productionBundleSha256": "1c31d769620c94c25f328a739df396cb1c61baf2ba9daffd8e8bd122bcf98741",
+  "productionStylesSha256": "f821560d093b727408ce476a7d62b6a7af9ba8d80585dab9fd57141f0ac32fe2",
   "acceptedMockupSha256": "b2b0d444202aa9c76235fa7277ba2c6a4e89d3d7dc0dd009abb8e73c72c82270",
   "chromiumExecutable": "/usr/sbin/chromium",
   "chromiumUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
@@ -226,42 +226,42 @@
         "rect": {
           "x": 432.156,
           "y": 16.984,
-          "width": 193.453,
+          "width": 111.453,
           "height": 44,
-          "right": 625.609,
+          "right": 543.609,
           "bottom": 60.984
         }
       },
       {
         "label": "Switch to Plan",
         "rect": {
-          "x": 627.516,
+          "x": 545.516,
           "y": 16.984,
-          "width": 193.453,
+          "width": 111.453,
           "height": 44,
-          "right": 820.969,
+          "right": 656.969,
           "bottom": 60.984
         }
       },
       {
         "label": "Switch to Simulate",
         "rect": {
-          "x": 822.875,
+          "x": 658.875,
           "y": 16.984,
-          "width": 193.453,
+          "width": 111.453,
           "height": 44,
-          "right": 1016.328,
+          "right": 770.328,
           "bottom": 60.984
         }
       },
       {
         "label": "Switch to Review",
         "rect": {
-          "x": 1018.234,
+          "x": 772.234,
           "y": 16.984,
-          "width": 193.453,
+          "width": 111.469,
           "height": 44,
-          "right": 1211.688,
+          "right": 883.703,
           "bottom": 60.984
         }
       },
@@ -270,32 +270,76 @@
         "rect": {
           "x": 432.156,
           "y": 62.891,
-          "width": 193.453,
+          "width": 111.453,
           "height": 44,
-          "right": 625.609,
+          "right": 543.609,
           "bottom": 106.891
         }
       },
       {
         "label": "Show contextual actions",
         "rect": {
-          "x": 627.516,
+          "x": 545.516,
           "y": 62.891,
-          "width": 193.453,
+          "width": 111.453,
           "height": 44,
-          "right": 820.969,
+          "right": 656.969,
           "bottom": 106.891
         }
       },
       {
         "label": "Customize toolbar",
         "rect": {
-          "x": 822.875,
+          "x": 658.875,
           "y": 62.891,
-          "width": 193.453,
+          "width": 111.453,
           "height": 44,
-          "right": 1016.328,
+          "right": 770.328,
           "bottom": 106.891
+        }
+      },
+      {
+        "label": "Editor",
+        "rect": {
+          "x": 886.094,
+          "y": 39.938,
+          "width": 77.203,
+          "height": 44,
+          "right": 963.297,
+          "bottom": 83.938
+        }
+      },
+      {
+        "label": "Plan",
+        "rect": {
+          "x": 968.891,
+          "y": 39.938,
+          "width": 58,
+          "height": 44,
+          "right": 1026.891,
+          "bottom": 83.938
+        }
+      },
+      {
+        "label": "Simulate",
+        "rect": {
+          "x": 1032.484,
+          "y": 39.938,
+          "width": 96.406,
+          "height": 44,
+          "right": 1128.891,
+          "bottom": 83.938
+        }
+      },
+      {
+        "label": "Review",
+        "rect": {
+          "x": 1134.484,
+          "y": 39.938,
+          "width": 77.203,
+          "height": 44,
+          "right": 1211.688,
+          "bottom": 83.938
         }
       },
       {
@@ -429,29 +473,29 @@
       "x": 12,
       "right": 308,
       "y": 12,
-      "bottom": 443.21875,
+      "bottom": 541.609375,
       "width": 296,
-      "height": 431.21875
+      "height": 529.609375
     },
     "toolbarScroll": {
       "clientWidth": 294,
       "scrollWidth": 294,
-      "clientHeight": 429,
-      "scrollHeight": 429
+      "clientHeight": 528,
+      "scrollHeight": 528
     },
     "workscreenRect": {
       "x": 12,
       "right": 308,
-      "y": 451.21875,
-      "bottom": 803.21875,
+      "y": 549.609375,
+      "bottom": 901.609375,
       "width": 296,
       "height": 352
     },
     "timelineRect": {
       "x": 12,
       "right": 308,
-      "y": 809.609375,
-      "bottom": 961.609375,
+      "y": 908,
+      "bottom": 1060,
       "width": 296,
       "height": 152
     },
@@ -463,8 +507,8 @@
         "rect": {
           "x": 18.59375,
           "right": 95.796875,
-          "y": 472.03125,
-          "bottom": 516.03125,
+          "y": 395.03125,
+          "bottom": 439.03125,
           "width": 77.203125,
           "height": 44
         }
@@ -476,8 +520,8 @@
         "rect": {
           "x": 18.59375,
           "right": 76.59375,
-          "y": 609.625,
-          "bottom": 653.625,
+          "y": 614.421875,
+          "bottom": 658.421875,
           "width": 58,
           "height": 44
         }
@@ -489,8 +533,8 @@
         "rect": {
           "x": 79.78125,
           "right": 147.390625,
-          "y": 609.625,
-          "bottom": 653.625,
+          "y": 614.421875,
+          "bottom": 658.421875,
           "width": 67.609375,
           "height": 44
         }
@@ -502,8 +546,8 @@
         "rect": {
           "x": 18.59375,
           "right": 115,
-          "y": 656.8125,
-          "bottom": 700.8125,
+          "y": 661.609375,
+          "bottom": 705.609375,
           "width": 96.40625,
           "height": 44
         }
@@ -515,8 +559,8 @@
         "rect": {
           "x": 18.59375,
           "right": 86.203125,
-          "y": 795.1875,
-          "bottom": 839.1875,
+          "y": 799.984375,
+          "bottom": 843.984375,
           "width": 67.609375,
           "height": 44
         }
@@ -528,8 +572,8 @@
         "rect": {
           "x": 89.390625,
           "right": 147.390625,
-          "y": 795.1875,
-          "bottom": 839.1875,
+          "y": 799.984375,
+          "bottom": 843.984375,
           "width": 58,
           "height": 44
         }
@@ -541,8 +585,8 @@
         "rect": {
           "x": 18.59375,
           "right": 105.390625,
-          "y": 842.375,
-          "bottom": 886.375,
+          "y": 847.171875,
+          "bottom": 891.171875,
           "width": 86.796875,
           "height": 44
         }
@@ -554,8 +598,8 @@
         "rect": {
           "x": 18.59375,
           "right": 225.9375,
-          "y": 886.375,
-          "bottom": 930.375,
+          "y": 891.171875,
+          "bottom": 935.171875,
           "width": 207.34375,
           "height": 44
         }
@@ -564,6 +608,6 @@
   },
   "png": "field-focus.png",
   "geometrySvg": "field-focus-geometry.svg",
-  "pngSha256": "276d38479c7c1f953fbd4740f16b48391fe2ac8756cc68bcfe5b46bba418060b",
-  "geometrySvgSha256": "d2ff0056d9cda5f5ef2bbfd0af6750284c5ecee276b08bb3a10ba7c808e4bb80"
+  "pngSha256": "93c25aff1ee31a01b733549440597252afbfb5804d6a91c9222aea6a2214e452",
+  "geometrySvgSha256": "8d825909129e39ede6dd807b5488355c544cc1d29f9497703ec0b56f6d2988e2"
 }

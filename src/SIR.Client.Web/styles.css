@@ -602,7 +602,7 @@
 #sir-replay-app .desktop-toolbar-customization-row span { min-width: 12rem; }
 @media (max-width: 720px) { #sir-replay-app .tactical-desktop-menu-bar { overflow-x: auto; max-width: 100%; } #sir-replay-app .tactical-desktop-menu > summary { padding-inline: .3rem; } }
 @media (min-width: 721px) {
-  #sir-replay-app .tactical-compact-toolbar { position: relative; display: grid; grid-template-columns: max-content minmax(0, 1fr) max-content; min-width: 0; min-height: 0; padding: .1rem .2rem; gap: .15rem; }
+  #sir-replay-app .tactical-compact-toolbar { position: relative; display: grid; grid-template-columns: max-content minmax(0, 1fr) max-content max-content; min-width: 0; min-height: 0; padding: .1rem .2rem; gap: .15rem; }
   #sir-replay-app .tactical-compact-toolbar > * { min-width: 0; max-width: 100%; }
   #sir-replay-app .tactical-desktop-menu-bar { min-width: 0; }
   #sir-replay-app .desktop-command-toolbar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); min-width: 0; gap: .12rem; }

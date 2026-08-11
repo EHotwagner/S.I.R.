@@ -219,42 +219,42 @@
       "rect": {
         "x": 432.156,
         "y": 16.984,
-        "width": 193.453,
+        "width": 111.453,
         "height": 44,
-        "right": 625.609,
+        "right": 543.609,
         "bottom": 60.984
       }
     },
     {
       "label": "Switch to Plan",
       "rect": {
-        "x": 627.516,
+        "x": 545.516,
         "y": 16.984,
-        "width": 193.453,
+        "width": 111.453,
         "height": 44,
-        "right": 820.969,
+        "right": 656.969,
         "bottom": 60.984
       }
     },
     {
       "label": "Switch to Simulate",
       "rect": {
-        "x": 822.875,
+        "x": 658.875,
         "y": 16.984,
-        "width": 193.453,
+        "width": 111.453,
         "height": 44,
-        "right": 1016.328,
+        "right": 770.328,
         "bottom": 60.984
       }
     },
     {
       "label": "Switch to Review",
       "rect": {
-        "x": 1018.234,
+        "x": 772.234,
         "y": 16.984,
-        "width": 193.453,
+        "width": 111.469,
         "height": 44,
-        "right": 1211.688,
+        "right": 883.703,
         "bottom": 60.984
       }
     },
@@ -263,32 +263,76 @@
       "rect": {
         "x": 432.156,
         "y": 62.891,
-        "width": 193.453,
+        "width": 111.453,
         "height": 44,
-        "right": 625.609,
+        "right": 543.609,
         "bottom": 106.891
       }
     },
     {
       "label": "Show contextual actions",
       "rect": {
-        "x": 627.516,
+        "x": 545.516,
         "y": 62.891,
-        "width": 193.453,
+        "width": 111.453,
         "height": 44,
-        "right": 820.969,
+        "right": 656.969,
         "bottom": 106.891
       }
     },
     {
       "label": "Customize toolbar",
       "rect": {
-        "x": 822.875,
+        "x": 658.875,
         "y": 62.891,
-        "width": 193.453,
+        "width": 111.453,
         "height": 44,
-        "right": 1016.328,
+        "right": 770.328,
         "bottom": 106.891
+      }
+    },
+    {
+      "label": "Editor",
+      "rect": {
+        "x": 886.094,
+        "y": 39.938,
+        "width": 77.203,
+        "height": 44,
+        "right": 963.297,
+        "bottom": 83.938
+      }
+    },
+    {
+      "label": "Plan",
+      "rect": {
+        "x": 968.891,
+        "y": 39.938,
+        "width": 58,
+        "height": 44,
+        "right": 1026.891,
+        "bottom": 83.938
+      }
+    },
+    {
+      "label": "Simulate",
+      "rect": {
+        "x": 1032.484,
+        "y": 39.938,
+        "width": 96.406,
+        "height": 44,
+        "right": 1128.891,
+        "bottom": 83.938
+      }
+    },
+    {
+      "label": "Review",
+      "rect": {
+        "x": 1134.484,
+        "y": 39.938,
+        "width": 77.203,
+        "height": 44,
+        "right": 1211.688,
+        "bottom": 83.938
       }
     },
     {

@@ -7113,6 +7113,8 @@ let private tacticalLayoutToolbar model dispatch =
                 Html.summary [
                     prop.role.button
                     prop.text label
+                    prop.custom ("data-binding-state", "unassigned")
+                    prop.custom ("aria-description", "Unassigned application menu control")
                     prop.onClick (fun event ->
                         closeSiblingDesktopMenus event.target
                         focusNextDesktopMenuItem event.target 0)
@@ -7230,10 +7232,15 @@ let private tacticalLayoutToolbar model dispatch =
                         button "Reset toolbar" "Restore the documented default top toolbar" false (fun _ -> dispatch ResetDesktopToolbar)
                     ]
                 ]
+            tacticalModalityControls model dispatch
             Html.details [
                 prop.className "tactical-legacy-controls"
                 prop.children [
-                    Html.summary "Workspace controls"
+                    Html.summary [
+                        prop.text "Workspace controls"
+                        prop.custom ("data-binding-state", "unassigned")
+                        prop.custom ("aria-description", "Unassigned workspace control disclosure")
+                    ]
                     Html.div [
                         prop.className "tactical-legacy-controls-popover"
                         prop.children [
@@ -7247,7 +7254,6 @@ let private tacticalLayoutToolbar model dispatch =
                     )
                 ]
             ]
-            tacticalModalityControls model dispatch
             Html.div [
                 prop.className "tactical-toolbar-transport"
                 prop.children [
@@ -7329,7 +7335,11 @@ let private tacticalLayoutToolbar model dispatch =
             Html.details [
                 prop.className "tactical-panel-menu"
                 prop.children [
-                    Html.summary "Panels"
+                    Html.summary [
+                        prop.text "Panels"
+                        prop.custom ("data-binding-state", "unassigned")
+                        prop.custom ("aria-description", "Unassigned panel control disclosure")
+                    ]
                     Html.div [
                         prop.className "tactical-panel-menu-items"
                         prop.children [

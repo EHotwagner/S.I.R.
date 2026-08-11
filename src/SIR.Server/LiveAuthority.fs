@@ -38,7 +38,10 @@ module LiveAuthority =
     let private admissionGate = obj ()
     let private maximumSessions = 64
     let private maximumActorNameLength = 128
-    let private maximumAdmissionsPerMinute = 8
+    let private maximumAdmissionsPerMinute =
+        match Int32.TryParse(Environment.GetEnvironmentVariable("SIR_LIVE_MAX_BOOTSTRAPS_PER_MINUTE")) with
+        | true, configured when configured >= 8 && configured <= 128 -> configured
+        | _ -> 8
     let private admissions = ConcurrentDictionary<string, DateTimeOffset list>()
     let private disconnectGrace = TimeSpan.FromMinutes 2.0
 
