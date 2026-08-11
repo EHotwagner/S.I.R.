@@ -29,8 +29,10 @@ The isolated worktree initially lacked both npm dependencies and published clien
 - **Expected:** The Playwright-only development host covers its bounded serial inventory without changing the production eight/minute default.
 - **Observed:** Mutating `SIR_LIVE_MAX_BOOTSTRAPS_PER_MINUTE` from 32 to 8 made the suite red with `/api/bootstrap` 400 responses; restoring 32 passed all 16 journeys.
 - **Evidence:** command:npm run test:browser
+- **Version:** Playwright 1.62.1; Chromium 151.0.7922.34
 - **Owner:** S.I.R browser-test host
 - **Recurrence:** new
+- **Avoidable cost:** one scoped configuration repair and mutation run
 - **Disposition:** fixed in test-only configuration
 
 #### §4.2 Feedback tooling is not packaged in this repository
@@ -39,8 +41,10 @@ The isolated worktree initially lacked both npm dependencies and published clien
 - **Expected:** The feedback tool named by the work-board contract is available locally.
 - **Observed:** No `.agents/skills/fs-gg-feedback-report` exists; the canonical external tool was used to validate this checkpoint state.
 - **Evidence:** command:find .agents/skills -maxdepth 1 -type d
+- **Version:** FS.GG feedback-tool 1.0.0
 - **Owner:** FS.GG drivers skill packaging
 - **Recurrence:** recurring
+- **Avoidable cost:** one external tool discovery
 - **Disposition:** recorded for workspace remediation
 
 ## §5 Did not exercise
@@ -67,8 +71,16 @@ Keep the 8/minute configuration mutation in review evidence: it must red the exp
 ## §12 Development-surface coverage
 | Surface | Status | Evidence and result |
 |---|---|---|
+| scaffolding | not-exercised | Existing repository. |
+| onboarding-guidance | exercised | Item route, claim, and pnext contract read. |
+| skills | exercised | SDD, board, and feedback contracts used. |
 | sdd-authoring | exercised | charter through ship completed. |
+| implementation-apis | exercised | Browser control and diagnostic fixtures implemented. |
+| dependencies-build | exercised | npm install, client build, and server publish completed. |
 | testing | exercised | 16 serial Chromium journeys pass; admission mutation reds. |
+| evidence | exercised | JUnit observed-run receipt binds all 14 obligations. |
 | runtime-playtest | exercised | locally published production client. |
-| feedback | exercised | four validated checkpoints and schema-v2 report. |
+| performance | partial | No typed item performance intent exists; no target invented. |
+| documentation | exercised | This schema-v2 report completed. |
+| packaging-upgrade | not-exercised | Out of scope. |
 | worker-git-pr | exercised | isolated claim, branch, PR, and handoff. |
