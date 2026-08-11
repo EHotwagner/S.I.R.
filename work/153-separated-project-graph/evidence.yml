@@ -11,7 +11,7 @@ sourceAnalysis: readiness/153-separated-project-graph/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/153-separated-project-graph/analysis.json
-    digest: 5457d1a90c2e5bfa501e569ed901219287399f02566eae82334e968b4d40fa10
+    digest: 806affa13533f0a4d3fc8ea29b19bc206196cc28f0235bb79d722766f92b1877
     schemaVersion: 1
   - label: checklist
     path: work/153-separated-project-graph/checklist.md
