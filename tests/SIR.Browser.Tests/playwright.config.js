@@ -1,17 +1,20 @@
 import { defineConfig } from "@playwright/test";
 import { resolve } from "node:path";
+import { assertBrowserAvailable, browserExecutablePath } from "./browser-setup.js";
 
 const repoRoot = resolve(import.meta.dirname, "../..");
-const executablePath = process.env.PLAYWRIGHT_EXECUTABLE_PATH;
+const executablePath = browserExecutablePath();
+assertBrowserAvailable();
 
 export default defineConfig({
   testDir: ".",
   reporter: [[resolve(import.meta.dirname, "deterministic-junit-reporter.js"), {
     outputFile: resolve(repoRoot, "artifacts/test-results/browser.junit.xml"),
   }]],
+  globalSetup: resolve(import.meta.dirname, "browser-setup.js"),
   use: {
     baseURL: "http://127.0.0.1:5100",
-    launchOptions: executablePath ? { executablePath } : {},
+    launchOptions: { executablePath },
   },
   webServer: {
     command: "dotnet SIR.Server.dll --urls http://127.0.0.1:5100",
