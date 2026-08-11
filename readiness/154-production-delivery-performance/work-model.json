@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "96c50bd899c95b12b1ad305dee444d3d61838349a022ad4871752650c6190204"
+        "value": "901e91ffc034e7dfecb2289c16dccd488ffca965f30150cc74ca3964a9fc14a3"
       }
     },
     {
@@ -1367,7 +1367,7 @@
       "schemaVersion": 1,
       "generator": {
         "id": "FS.GG.SDD.Artifacts",
-        "version": "1.0.0"
+        "version": "1.0.1"
       },
       "sources": [
         {
@@ -1414,7 +1414,7 @@
           "path": "work/154-production-delivery-performance/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "96c50bd899c95b12b1ad305dee444d3d61838349a022ad4871752650c6190204"
+            "value": "901e91ffc034e7dfecb2289c16dccd488ffca965f30150cc74ca3964a9fc14a3"
           },
           "schemaVersion": 1
         },
@@ -1445,7 +1445,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "511af81052d94229b0317a983c2549500cbb2a8b2775d19e7f92e38253c1d8e0"
+        "value": "7a292dfe5a679a279440aafc180d7e4a8d6de84d851591ebd42c87d5a10bcd52"
       },
       "currency": "current"
     }

@@ -4,7 +4,7 @@
   "workId": "154-production-delivery-performance",
   "stage": "analyze",
   "status": "implementationReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sources": [
     {
       "path": ".fsgg/agents.yml",
@@ -41,7 +41,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "503ae3ec6f13a4b40e537cdbc0a9680ca10d10ff65c6f068db0bfedb8cec2466"
+        "value": "f258511e2a9794a98b9b0bc3c6ecfb175cc8df5ff02564b1b676182c8c76c8aa"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"

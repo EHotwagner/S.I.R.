@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
   "contractVersion": "2.0.0",
-  "generatorVersion": "FS.GG.SDD.Artifacts/1.0.0",
+  "generatorVersion": "FS.GG.SDD.Artifacts/1.0.1",
   "workId": "154-production-delivery-performance",
   "sources": [
     {
       "path": "readiness/154-production-delivery-performance/ship.json",
-      "digest": "sha256:25820a463b2d6bbacd7dfe331b75c827108dd8ceae815dd254ecba5934dcf155",
+      "digest": "sha256:0f93521fa19670a32f5173d8801924902836b98bd193d5c0c1dafc16d2efb129",
       "schemaVersion": 1
     },
     {
       "path": "readiness/154-production-delivery-performance/verify.json",
-      "digest": "sha256:ce05088a6413a82132c8fdf7c324375a8344887e2f274e2bd3a30d7e0e9188de",
+      "digest": "sha256:50123165de68c9e97a96866423838bcf5eb92f22dd8cb76e8b8ba3d05fabe066",
       "schemaVersion": 1
     },
     {
       "path": "readiness/154-production-delivery-performance/work-model.json",
-      "digest": "sha256:b730801edb70739d0163e4dbfbb1a3a43b4f5987ce369ae9060701a33bd88889",
+      "digest": "sha256:f258511e2a9794a98b9b0bc3c6ecfb175cc8df5ff02564b1b676182c8c76c8aa",
       "schemaVersion": 1
     }
   ],

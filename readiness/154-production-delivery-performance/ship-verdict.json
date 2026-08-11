@@ -4,10 +4,10 @@
   "workId": "154-production-delivery-performance",
   "stage": "ship",
   "status": "shipReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sourcesDigest": {
     "algorithm": "sha256",
-    "value": "cc6bc3d029c40d2c16c14bdceb924b4b881209863f1ab7e861ace1d935ec16d2"
+    "value": "965a0a3bd27609586d0f0d143c1b7b26f99e61bef3f099bfe03f922a0a78fef6"
   },
   "verificationReadiness": {
     "status": "verificationReady",

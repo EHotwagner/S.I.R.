@@ -3,7 +3,7 @@
   "viewVersion": "1.0",
   "workId": "154-production-delivery-performance",
   "targetId": "codex",
-  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "generated": true,
   "sources": [
     {
@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "b730801edb70739d0163e4dbfbb1a3a43b4f5987ce369ae9060701a33bd88889"
+        "value": "f258511e2a9794a98b9b0bc3c6ecfb175cc8df5ff02564b1b676182c8c76c8aa"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
