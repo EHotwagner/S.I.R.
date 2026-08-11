@@ -35,7 +35,7 @@ sourceSnapshots:
     schemaVersion: 1
 evidence:
   - id: EV001
-    kind: implementation
+    kind: verification
     subject:
       type: task
       id: T001
@@ -50,6 +50,14 @@ evidence:
     sourceRefs: []
     result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:8c909731e0fa0476228d0bcbd6701cc295473c0da8ffa1bd1b8d037fd0090f95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV002
     kind: verification
@@ -102,7 +110,7 @@ evidence:
       skipped: 0
     notes: [Evidence required before verify.]
   - id: EV004
-    kind: implementation
+    kind: verification
     subject:
       type: task
       id: T004
@@ -117,6 +125,14 @@ evidence:
     sourceRefs: []
     result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:8c909731e0fa0476228d0bcbd6701cc295473c0da8ffa1bd1b8d037fd0090f95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV005
     kind: verification
@@ -144,7 +160,7 @@ evidence:
       skipped: 0
     notes: [Evidence required before verify.]
   - id: EV006
-    kind: note
+    kind: verification
     subject:
       type: task
       id: T006
@@ -159,9 +175,17 @@ evidence:
     sourceRefs: []
     result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:8c909731e0fa0476228d0bcbd6701cc295473c0da8ffa1bd1b8d037fd0090f95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV007
-    kind: generated-view
+    kind: verification
     subject:
       type: task
       id: T007
@@ -176,6 +200,14 @@ evidence:
     sourceRefs: []
     result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:8c909731e0fa0476228d0bcbd6701cc295473c0da8ffa1bd1b8d037fd0090f95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
 lifecycleNotes:
   - "Next lifecycle action: verify."

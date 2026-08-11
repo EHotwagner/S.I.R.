@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "c130f32ce393753e0079014d10e25950bd07a6c3a7044ff3cd1f07ab6a92a4f8"
+        "value": "61b5fdac54238c209f55519160e2730287d0a5b00e01fc09986e7728ee655200"
       }
     },
     {
@@ -386,7 +386,7 @@
   "evidence": [
     {
       "id": "EV001",
-      "kind": "implementation",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T001",
       "taskRefs": [
@@ -466,7 +466,7 @@
     },
     {
       "id": "EV004",
-      "kind": "implementation",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T004",
       "taskRefs": [
@@ -514,7 +514,7 @@
     },
     {
       "id": "EV006",
-      "kind": "note",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T006",
       "taskRefs": [
@@ -539,7 +539,7 @@
     },
     {
       "id": "EV007",
-      "kind": "generated-view",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T007",
       "taskRefs": [
@@ -617,7 +617,7 @@
           "path": "work/142-stable-working-surface/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "c130f32ce393753e0079014d10e25950bd07a6c3a7044ff3cd1f07ab6a92a4f8"
+            "value": "61b5fdac54238c209f55519160e2730287d0a5b00e01fc09986e7728ee655200"
           },
           "schemaVersion": 1
         },
@@ -648,7 +648,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "3f6f116e443d4df52ae91bb47799a4727f202de1bae5b9cab618470083ce06ab"
+        "value": "bf7f4f05eb031222c865b26d29640704537e4459fc4387ae14fa26ee65ee1219"
       },
       "currency": "current"
     }
