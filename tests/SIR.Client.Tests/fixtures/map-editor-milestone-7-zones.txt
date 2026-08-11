@@ -38,6 +38,7 @@ unit 3 red goblin 16 2 2 12 12 general - N N
 unit 4 red troll 18 10 6 12 12 general - N N
 round-trip=True
 v1-load=True
+legacy-native-high-resolution=True
 v1-canonical-header=SIR-MAP 4
 invalid-codes=REGION-POLYGON-AREA,REGION-POLYGON-SELF-INTERSECTION
 locked-preserved=True

@@ -3398,6 +3398,19 @@ let main arguments =
         "SIR-MAP 1\nsize 4 4\nterrain 1 1 rough\n"
     let migratedV1 =
         MapEditor.tryImport legacyV1 |> Result.defaultWith failwith
+    let nativeHighResolution =
+        MapEditor.tryImport "SIR-MAP 4\nsize 8 8\nterrain 2 2 rough\nterrain 2 3 rough\nterrain 3 2 rough\nterrain 3 3 rough\n"
+        |> Result.defaultWith failwith
+    let legacyScaleFacts =
+        [ "SIR-MAP 1\nsize 4 4\nterrain 1 1 rough\n"
+          "SIR-MAP 2\nsize 4 4\nterrain 1 1 rough\n"
+          "SIR-MAP 3\nsize 4 4\nterrain 1 1 rough\n" ]
+        |> List.map (MapEditor.tryImport >> Result.defaultWith failwith)
+        |> List.map (fun migrated -> migrated.Width, migrated.Height, migrated.Terrain.Count, Map.containsKey (2, 2) migrated.Terrain)
+    let legacyScaleComparisonPassed =
+        legacyScaleFacts |> List.forall ((=) (nativeHighResolution.Width, nativeHighResolution.Height, nativeHighResolution.Terrain.Count, true))
+    if not legacyScaleComparisonPassed then
+        failwithf "Legacy comparison facts: %A" legacyScaleFacts
     let migratedText =
         MapEditor.export { editor with Map = migratedV1 }
     let invalidBowTie =
@@ -3435,6 +3448,7 @@ let main arguments =
             [ zoneText.TrimEnd()
               "round-trip=" + string (zoneImported = zoneAuthored.Map)
               "v1-load=" + string (migratedV1.Regions.IsEmpty)
+              "legacy-native-high-resolution=" + string legacyScaleComparisonPassed
               "v1-canonical-header=" + migratedText.Split('\n')[0]
               "invalid-codes=" + String.concat "," invalidRegionCodes
               "locked-preserved=" + string (lockedZoneAttempt.Map = lockedZone.Map)
@@ -3472,6 +3486,7 @@ let main arguments =
         ).TrimEnd()
     require
         (zoneFixture = expectedZoneFixture
+         && legacyScaleComparisonPassed
          && zoneAuthored.Revision.Number = editor.Revision.Number + 5L
          && zoneAuthored.UndoHistory.Length = 5
          && zoneResizeLoss.LostRegions = 2
