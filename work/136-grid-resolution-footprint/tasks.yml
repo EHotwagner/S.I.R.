@@ -25,7 +25,7 @@ sources:
     schemaVersion: 1
   - label: plan
     path: work/136-grid-resolution-footprint/plan.md
-    digest: 50877f57305733199079dc71c15ab13ce60bcd09ede0e4d6b386548ad29ad3c1
+    digest: 11dfa6acb5211610d7492d797f6f8cae5a931d1277aef6ef0290199375fd5044
     schemaVersion: 1
 tasks:
   - id: T001
@@ -128,46 +128,6 @@ tasks:
     sourceIds: [AC-004, DEC-002, FR-004, PD-004]
     requiredSkills: [fsharp, implementation]
     requiredEvidence: [EV010]
-  - id: T011
-    title: Update contract surface PC-001
-    status: done
-    owner: sdd
-    dependencies: [T001]
-    requirements: []
-    decisions: []
-    sourceIds: [PC-001, PD-004]
-    requiredSkills: [fsharp]
-    requiredEvidence: [EV011]
-  - id: T012
-    title: Record verification evidence VO-001
-    status: done
-    owner: sdd
-    dependencies: [T001]
-    requirements: []
-    decisions: []
-    sourceIds: [PD-001, PD-002, PD-003, PD-004, PD-005, VO-001]
-    requiredSkills: [automated-tests, readiness-evidence]
-    requiredEvidence: [EV012]
-  - id: T013
-    title: Handle migration posture PM-001
-    status: done
-    owner: sdd
-    dependencies: [T001]
-    requirements: []
-    decisions: []
-    sourceIds: [PC-001, PM-001]
-    requiredSkills: [schema-versioning]
-    requiredEvidence: [EV013]
-  - id: T014
-    title: Refresh generated view impact GV-001
-    status: done
-    owner: sdd
-    dependencies: [T001]
-    requirements: []
-    decisions: []
-    sourceIds: [GV-001, PD-005]
-    requiredSkills: [deterministic-json]
-    requiredEvidence: [EV014]
 acceptedDeferrals: []
 findings: []
 advisoryNotes:

@@ -32,20 +32,20 @@ then route canonical 4×4 human dimensions through simulation, editor, and rende
 - PD-005 [AC-005] [FR-005] complete: Add focused .NET, Fable, and browser production-route fixtures for 4×4 occupancy, narrow/diagonal/edge cases, render scale, and legacy compatibility.
 
 ## Contract Impact
-- PC-001 [PD-004] data-contract: Persisted grid coordinates carry an explicit scale/version interpretation; readers either migrate versioned legacy values by two or reject unknown interpretations.
+No standalone contract-impact identifier is required; PD-004 owns the persisted scale/version interpretation.
 
 ## Verification Obligations
-- VO-001 [PD-001] [PD-002] [PD-003] [PD-004] [PD-005] productionRouteTest: Execute .NET, Fable, and browser routes plus subject mutations that prove each new or changed gate turns red.
+No standalone verification-obligation identifier is required; PD-005 owns the production-route and mutation evidence.
 
 ## Performance Intent
 Use the existing producer-owned battlefield workload and declared target; inspect it
 before implementation and do not invent a timing budget.
 
 ## Migration Posture
-- PM-001 [PC-001] migrate: Double recognized legacy grid values at a single reader boundary; emit the source format/version and recovery action for rejected data.
+No standalone migration-posture identifier is required; PD-004 owns deterministic legacy scaling and rejection behavior.
 
 ## Generated View Impact
-- GV-001 [PD-005] workModel: Refresh the SDD work model and preserve .NET/Fable/browser fixture evidence links after source changes.
+No standalone generated-view identifier is required; the lifecycle generators derive views from the current authored sources.
 
 ## Accepted Deferrals
 No accepted plan deferrals recorded.

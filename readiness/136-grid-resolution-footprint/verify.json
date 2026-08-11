@@ -41,7 +41,7 @@
       "kind": "analysis",
       "digest": {
         "algorithm": "sha256",
-        "value": "4f7e6b95b88a25513b40b5e983ef1699e6dfb64bcb8354c477cf5709ec3eea7e"
+        "value": "7a66f6bf9e6490434121bfcbcd872fe74272d18ac6fb3ad20ed1e2aa8fd73445"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -71,7 +71,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "fe469a18c08e5d6303f7b2ea82d04f40b0d7ce2cc7190b912a5a5bfe7b75a9c6"
+        "value": "c49e025dfb88592a0271126bf1a45c237500ece7ff8f69e5da75b291666fe5a0"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +81,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "50877f57305733199079dc71c15ab13ce60bcd09ede0e4d6b386548ad29ad3c1"
+        "value": "11dfa6acb5211610d7492d797f6f8cae5a931d1277aef6ef0290199375fd5044"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -101,7 +101,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "9ef93b32d879756b984ee4afe865b0c07fa9d9f7555f9d782f58675848d0f7da"
+        "value": "33777425ff694b740328c13c520f4b98fb2b321bd9b6e45474ab4699105942e8"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -141,8 +141,8 @@
     ]
   },
   "taskGraph": {
-    "taskCount": 14,
-    "dependencyCount": 9,
+    "taskCount": 10,
+    "dependencyCount": 5,
     "dependenciesValid": true,
     "statusesValid": true,
     "findingIds": []
@@ -362,94 +362,6 @@
       "severity": "ready",
       "diagnosticIds": [],
       "correction": ""
-    },
-    {
-      "id": "ED-EV011",
-      "obligationId": "EV011",
-      "state": "supported",
-      "observed": true,
-      "classifiedRequirement": false,
-      "journeyRequirement": false,
-      "evidenceIds": [
-        "EV011"
-      ],
-      "affectedTaskIds": [
-        "T011"
-      ],
-      "affectedSourceIds": [
-        "PC-001",
-        "PD-004"
-      ],
-      "severity": "ready",
-      "diagnosticIds": [],
-      "correction": ""
-    },
-    {
-      "id": "ED-EV012",
-      "obligationId": "EV012",
-      "state": "supported",
-      "observed": true,
-      "classifiedRequirement": false,
-      "journeyRequirement": false,
-      "evidenceIds": [
-        "EV012"
-      ],
-      "affectedTaskIds": [
-        "T012"
-      ],
-      "affectedSourceIds": [
-        "PD-001",
-        "PD-002",
-        "PD-003",
-        "PD-004",
-        "PD-005",
-        "VO-001"
-      ],
-      "severity": "ready",
-      "diagnosticIds": [],
-      "correction": ""
-    },
-    {
-      "id": "ED-EV013",
-      "obligationId": "EV013",
-      "state": "supported",
-      "observed": true,
-      "classifiedRequirement": false,
-      "journeyRequirement": false,
-      "evidenceIds": [
-        "EV013"
-      ],
-      "affectedTaskIds": [
-        "T013"
-      ],
-      "affectedSourceIds": [
-        "PC-001",
-        "PM-001"
-      ],
-      "severity": "ready",
-      "diagnosticIds": [],
-      "correction": ""
-    },
-    {
-      "id": "ED-EV014",
-      "obligationId": "EV014",
-      "state": "supported",
-      "observed": true,
-      "classifiedRequirement": false,
-      "journeyRequirement": false,
-      "evidenceIds": [
-        "EV014"
-      ],
-      "affectedTaskIds": [
-        "T014"
-      ],
-      "affectedSourceIds": [
-        "GV-001",
-        "PD-005"
-      ],
-      "severity": "ready",
-      "diagnosticIds": [],
-      "correction": ""
     }
   ],
   "testDispositions": [
@@ -622,95 +534,9 @@
       "severity": "ready",
       "diagnosticIds": [],
       "correction": ""
-    },
-    {
-      "id": "TD-EV011",
-      "obligationId": "EV011",
-      "state": "satisfied",
-      "observed": true,
-      "evidenceIds": [
-        "EV011"
-      ],
-      "affectedTaskIds": [
-        "T011"
-      ],
-      "affectedRequirementIds": [],
-      "severity": "ready",
-      "diagnosticIds": [],
-      "correction": ""
-    },
-    {
-      "id": "TD-EV012",
-      "obligationId": "EV012",
-      "state": "satisfied",
-      "observed": true,
-      "evidenceIds": [
-        "EV012"
-      ],
-      "affectedTaskIds": [
-        "T012"
-      ],
-      "affectedRequirementIds": [],
-      "severity": "ready",
-      "diagnosticIds": [],
-      "correction": ""
-    },
-    {
-      "id": "TD-EV013",
-      "obligationId": "EV013",
-      "state": "satisfied",
-      "observed": true,
-      "evidenceIds": [
-        "EV013"
-      ],
-      "affectedTaskIds": [
-        "T013"
-      ],
-      "affectedRequirementIds": [],
-      "severity": "ready",
-      "diagnosticIds": [],
-      "correction": ""
-    },
-    {
-      "id": "TD-EV014",
-      "obligationId": "EV014",
-      "state": "satisfied",
-      "observed": true,
-      "evidenceIds": [
-        "EV014"
-      ],
-      "affectedTaskIds": [
-        "T014"
-      ],
-      "affectedRequirementIds": [],
-      "severity": "ready",
-      "diagnosticIds": [],
-      "correction": ""
     }
   ],
   "skillVisibility": [
-    {
-      "skill": "automated-tests",
-      "requiringTaskIds": [
-        "T012"
-      ],
-      "visibility": "visible",
-      "sourceArtifactPath": "work/136-grid-resolution-footprint/tasks.yml",
-      "severity": "ready",
-      "diagnosticIds": [],
-      "correction": ""
-    },
-    {
-      "skill": "deterministic-json",
-      "requiringTaskIds": [
-        "T014"
-      ],
-      "visibility": "visible",
-      "sourceArtifactPath": "work/136-grid-resolution-footprint/tasks.yml",
-      "severity": "ready",
-      "diagnosticIds": [],
-      "correction": ""
-    },
     {
       "skill": "fsharp",
       "requiringTaskIds": [
@@ -723,8 +549,7 @@
         "T007",
         "T008",
         "T009",
-        "T010",
-        "T011"
+        "T010"
       ],
       "visibility": "visible",
       "sourceArtifactPath": "work/136-grid-resolution-footprint/tasks.yml",
@@ -745,28 +570,6 @@
         "T008",
         "T009",
         "T010"
-      ],
-      "visibility": "visible",
-      "sourceArtifactPath": "work/136-grid-resolution-footprint/tasks.yml",
-      "severity": "ready",
-      "diagnosticIds": [],
-      "correction": ""
-    },
-    {
-      "skill": "readiness-evidence",
-      "requiringTaskIds": [
-        "T012"
-      ],
-      "visibility": "visible",
-      "sourceArtifactPath": "work/136-grid-resolution-footprint/tasks.yml",
-      "severity": "ready",
-      "diagnosticIds": [],
-      "correction": ""
-    },
-    {
-      "skill": "schema-versioning",
-      "requiringTaskIds": [
-        "T013"
       ],
       "visibility": "visible",
       "sourceArtifactPath": "work/136-grid-resolution-footprint/tasks.yml",

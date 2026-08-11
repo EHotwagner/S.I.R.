@@ -327,7 +327,7 @@ Display:
 
 ```text
 EDITOR / UNITS / BROWSE
-Human / Rifle squad — 2×2 — 100 HP — preset 3 of 18
+Human / Rifle squad — 4×4 — 100 HP — preset 3 of 18
 ```
 
 | Input | Command |
@@ -362,7 +362,7 @@ Display:
 
 ```text
 EDITOR / UNITS / PLACE
-Rifle squad — 2×2 — preview at E6 — valid
+Rifle squad — 4×4 — preview at E6 — valid
 ```
 
 | Input | Command |

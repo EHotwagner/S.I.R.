@@ -41,7 +41,7 @@
       "kind": "analysis",
       "digest": {
         "algorithm": "sha256",
-        "value": "4f7e6b95b88a25513b40b5e983ef1699e6dfb64bcb8354c477cf5709ec3eea7e"
+        "value": "7a66f6bf9e6490434121bfcbcd872fe74272d18ac6fb3ad20ed1e2aa8fd73445"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -51,7 +51,7 @@
       "kind": "source",
       "digest": {
         "algorithm": "sha256",
-        "value": "2602c51529d6258c0d74772b4b8518d4cf670226d9e4225abf5ff0c84cc477e8"
+        "value": "1194290e7a5f3aa723bf191c3aafb67be3a5919099a5d6bed8e0d7aefa70941d"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +81,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "fe469a18c08e5d6303f7b2ea82d04f40b0d7ce2cc7190b912a5a5bfe7b75a9c6"
+        "value": "c49e025dfb88592a0271126bf1a45c237500ece7ff8f69e5da75b291666fe5a0"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -91,7 +91,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "50877f57305733199079dc71c15ab13ce60bcd09ede0e4d6b386548ad29ad3c1"
+        "value": "11dfa6acb5211610d7492d797f6f8cae5a931d1277aef6ef0290199375fd5044"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -111,7 +111,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "9ef93b32d879756b984ee4afe865b0c07fa9d9f7555f9d782f58675848d0f7da"
+        "value": "33777425ff694b740328c13c520f4b98fb2b321bd9b6e45474ab4699105942e8"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -157,9 +157,9 @@
   "verificationReadiness": {
     "status": "verificationReady",
     "blockingFindingIds": [],
-    "evidenceSupportedCount": 14,
+    "evidenceSupportedCount": 10,
     "evidenceSelfAttestedCount": 0,
-    "evidenceObservedCount": 14,
+    "evidenceObservedCount": 10,
     "evidenceDeferredCount": 0,
     "evidenceMissingCount": 0,
     "evidenceStaleCount": 0,
@@ -242,38 +242,6 @@
     {
       "id": "ED-EV010",
       "obligationId": "EV010",
-      "state": "supported",
-      "observed": true,
-      "severity": "ready",
-      "diagnosticIds": []
-    },
-    {
-      "id": "ED-EV011",
-      "obligationId": "EV011",
-      "state": "supported",
-      "observed": true,
-      "severity": "ready",
-      "diagnosticIds": []
-    },
-    {
-      "id": "ED-EV012",
-      "obligationId": "EV012",
-      "state": "supported",
-      "observed": true,
-      "severity": "ready",
-      "diagnosticIds": []
-    },
-    {
-      "id": "ED-EV013",
-      "obligationId": "EV013",
-      "state": "supported",
-      "observed": true,
-      "severity": "ready",
-      "diagnosticIds": []
-    },
-    {
-      "id": "ED-EV014",
-      "obligationId": "EV014",
       "state": "supported",
       "observed": true,
       "severity": "ready",

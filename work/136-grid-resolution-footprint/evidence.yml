@@ -11,7 +11,7 @@ sourceAnalysis: readiness/136-grid-resolution-footprint/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/136-grid-resolution-footprint/analysis.json
-    digest: 4f7e6b95b88a25513b40b5e983ef1699e6dfb64bcb8354c477cf5709ec3eea7e
+    digest: 7a66f6bf9e6490434121bfcbcd872fe74272d18ac6fb3ad20ed1e2aa8fd73445
     schemaVersion: 1
   - label: checklist
     path: work/136-grid-resolution-footprint/checklist.md
@@ -23,7 +23,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: plan
     path: work/136-grid-resolution-footprint/plan.md
-    digest: 50877f57305733199079dc71c15ab13ce60bcd09ede0e4d6b386548ad29ad3c1
+    digest: 11dfa6acb5211610d7492d797f6f8cae5a931d1277aef6ef0290199375fd5044
     schemaVersion: 1
   - label: spec
     path: work/136-grid-resolution-footprint/spec.md
@@ -31,7 +31,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: tasks
     path: work/136-grid-resolution-footprint/tasks.yml
-    digest: 9ef93b32d879756b984ee4afe865b0c07fa9d9f7555f9d782f58675848d0f7da
+    digest: 33777425ff694b740328c13c520f4b98fb2b321bd9b6e45474ab4699105942e8
     schemaVersion: 1
 evidence:
   - id: EV001
@@ -308,8 +308,8 @@ evidence:
     kind: verification
     subject:
       type: task
-      id: T011
-    taskRefs: [T011]
+      id: T010
+    taskRefs: [T010]
     requirementRefs: []
     acceptanceScenarioRefs: []
     clarificationDecisionRefs: []
@@ -335,8 +335,8 @@ evidence:
     kind: verification
     subject:
       type: task
-      id: T012
-    taskRefs: [T012]
+      id: T010
+    taskRefs: [T010]
     requirementRefs: []
     acceptanceScenarioRefs: []
     clarificationDecisionRefs: []
@@ -362,8 +362,8 @@ evidence:
     kind: verification
     subject:
       type: task
-      id: T013
-    taskRefs: [T013]
+      id: T010
+    taskRefs: [T010]
     requirementRefs: []
     acceptanceScenarioRefs: []
     clarificationDecisionRefs: []
@@ -389,8 +389,8 @@ evidence:
     kind: verification
     subject:
       type: task
-      id: T014
-    taskRefs: [T014]
+      id: T010
+    taskRefs: [T010]
     requirementRefs: []
     acceptanceScenarioRefs: []
     clarificationDecisionRefs: []
