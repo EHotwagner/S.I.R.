@@ -54,12 +54,12 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:9e13cb325a159aab96ced20659ad03a806a2f885c87b2325ab4dcbcfe2a19325"
+      digest: "sha256:b544beb99ede7dd15850d3227d3196af50a59598afa662dbb41238f289574018"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 16
+      passed: 22
       failed: 0
-      skipped: 0
+      skipped: 1
     notes: [Evidence required before verify.]
   - id: EV002
     kind: verification
@@ -81,12 +81,12 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:9e13cb325a159aab96ced20659ad03a806a2f885c87b2325ab4dcbcfe2a19325"
+      digest: "sha256:b544beb99ede7dd15850d3227d3196af50a59598afa662dbb41238f289574018"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 16
+      passed: 22
       failed: 0
-      skipped: 0
+      skipped: 1
     notes: [Evidence required before verify.]
   - id: EV003
     kind: verification
@@ -108,12 +108,12 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:9e13cb325a159aab96ced20659ad03a806a2f885c87b2325ab4dcbcfe2a19325"
+      digest: "sha256:b544beb99ede7dd15850d3227d3196af50a59598afa662dbb41238f289574018"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 16
+      passed: 22
       failed: 0
-      skipped: 0
+      skipped: 1
     notes: [Evidence required before verify.]
   - id: EV004
     kind: verification
@@ -135,12 +135,12 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:9e13cb325a159aab96ced20659ad03a806a2f885c87b2325ab4dcbcfe2a19325"
+      digest: "sha256:b544beb99ede7dd15850d3227d3196af50a59598afa662dbb41238f289574018"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 16
+      passed: 22
       failed: 0
-      skipped: 0
+      skipped: 1
     notes: [Evidence required before verify.]
   - id: EV005
     kind: verification
@@ -162,12 +162,12 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:9e13cb325a159aab96ced20659ad03a806a2f885c87b2325ab4dcbcfe2a19325"
+      digest: "sha256:b544beb99ede7dd15850d3227d3196af50a59598afa662dbb41238f289574018"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 16
+      passed: 22
       failed: 0
-      skipped: 0
+      skipped: 1
     notes: [Evidence required before verify.]
   - id: EV006
     kind: verification
@@ -189,12 +189,12 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:9e13cb325a159aab96ced20659ad03a806a2f885c87b2325ab4dcbcfe2a19325"
+      digest: "sha256:b544beb99ede7dd15850d3227d3196af50a59598afa662dbb41238f289574018"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 16
+      passed: 22
       failed: 0
-      skipped: 0
+      skipped: 1
     notes: [Evidence required before verify.]
   - id: EV007
     kind: verification
@@ -216,12 +216,12 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:9e13cb325a159aab96ced20659ad03a806a2f885c87b2325ab4dcbcfe2a19325"
+      digest: "sha256:b544beb99ede7dd15850d3227d3196af50a59598afa662dbb41238f289574018"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 16
+      passed: 22
       failed: 0
-      skipped: 0
+      skipped: 1
     notes: [Evidence required before verify.]
   - id: EV008
     kind: verification
@@ -243,12 +243,12 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:9e13cb325a159aab96ced20659ad03a806a2f885c87b2325ab4dcbcfe2a19325"
+      digest: "sha256:b544beb99ede7dd15850d3227d3196af50a59598afa662dbb41238f289574018"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 16
+      passed: 22
       failed: 0
-      skipped: 0
+      skipped: 1
     notes: [Evidence required before verify.]
   - id: EV009
     kind: verification
@@ -270,12 +270,12 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:9e13cb325a159aab96ced20659ad03a806a2f885c87b2325ab4dcbcfe2a19325"
+      digest: "sha256:b544beb99ede7dd15850d3227d3196af50a59598afa662dbb41238f289574018"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 16
+      passed: 22
       failed: 0
-      skipped: 0
+      skipped: 1
     notes: [Evidence required before verify.]
   - id: EV010
     kind: verification
@@ -297,12 +297,12 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:9e13cb325a159aab96ced20659ad03a806a2f885c87b2325ab4dcbcfe2a19325"
+      digest: "sha256:b544beb99ede7dd15850d3227d3196af50a59598afa662dbb41238f289574018"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 16
+      passed: 22
       failed: 0
-      skipped: 0
+      skipped: 1
     notes: [Evidence required before verify.]
   - id: EV011
     kind: verification
@@ -324,12 +324,12 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:9e13cb325a159aab96ced20659ad03a806a2f885c87b2325ab4dcbcfe2a19325"
+      digest: "sha256:b544beb99ede7dd15850d3227d3196af50a59598afa662dbb41238f289574018"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 16
+      passed: 22
       failed: 0
-      skipped: 0
+      skipped: 1
     notes: [Evidence required before verify.]
   - id: EV012
     kind: verification
@@ -351,12 +351,12 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:9e13cb325a159aab96ced20659ad03a806a2f885c87b2325ab4dcbcfe2a19325"
+      digest: "sha256:b544beb99ede7dd15850d3227d3196af50a59598afa662dbb41238f289574018"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 16
+      passed: 22
       failed: 0
-      skipped: 0
+      skipped: 1
     notes: [Evidence required before verify.]
   - id: EV013
     kind: verification
@@ -378,12 +378,12 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:9e13cb325a159aab96ced20659ad03a806a2f885c87b2325ab4dcbcfe2a19325"
+      digest: "sha256:b544beb99ede7dd15850d3227d3196af50a59598afa662dbb41238f289574018"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 16
+      passed: 22
       failed: 0
-      skipped: 0
+      skipped: 1
     notes: [Evidence required before verify.]
   - id: EV014
     kind: verification
@@ -405,12 +405,12 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:9e13cb325a159aab96ced20659ad03a806a2f885c87b2325ab4dcbcfe2a19325"
+      digest: "sha256:b544beb99ede7dd15850d3227d3196af50a59598afa662dbb41238f289574018"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 16
+      passed: 22
       failed: 0
-      skipped: 0
+      skipped: 1
     notes: [Evidence required before verify.]
 lifecycleNotes:
   - "Next lifecycle action: verify."
