@@ -12,14 +12,14 @@ commit: pending-pr-head
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 4
+- **material events:** 5
 - **zero-event reason:** n/a
 - Checkpoint file: `feedback/checkpoints/item-136-grid-resolution-footprint.jsonl`.
 - Confidence is limited to the preserved worktree and local production qualification.
 
 ## §2 What worked
 
-The production client qualification emits a machine-readable JUnit receipt, which SDD bound to all fourteen verification obligations.
+The production client qualification emits a machine-readable JUnit receipt, which SDD bound to all fourteen verification obligations. The production browser qualification also observed the autosave callback's same-window storage write; removing that write made the exact browser gate fail before restoration passed.
 
 ## §3 What did not
 
@@ -88,7 +88,7 @@ Two recovery handoffs and one blocked refresh attempt.
 
 ## §10 Outcome markers
 
-`shipReady`, fourteen observed evidence receipts, and a passing production client JUnit report were produced.
+`shipReady`, fourteen observed evidence receipts, a passing production client JUnit report, and a passing hash-bound browser qualification were produced. The browser gate rejected a mutation that removed its autosave storage write.
 
 ## §11 Falsifiable improvements
 
@@ -99,7 +99,7 @@ Two recovery handoffs and one blocked refresh attempt.
 | Surface | Status | Evidence and result |
 |---|---|---|
 | sdd-authoring | exercised | evidence, verify, and ship completed; refresh blocked transparently. |
-| testing | exercised | production JUnit pass and 19 Hz mutation refusal. |
+| testing | exercised | production JUnit pass, 19 Hz mutation refusal, browser autosave-write mutation refusal, and passing hash-bound browser route. |
 | evidence | exercised | fourteen observed receipts. |
 | worker-git-pr | partial | recovery claim and preserved-worktree audit completed. |
 | scaffolding | not-exercised | Existing repository. |

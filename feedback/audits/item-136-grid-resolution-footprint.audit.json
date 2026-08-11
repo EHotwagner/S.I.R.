@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/item-136-grid-resolution-footprint.md",
-  "reportSha256": "e40a3dce6659dbe06091109d00e99a6d10b57efeee33872a9825cde7019ee575",
+  "reportSha256": "5eb4fdc9bdf44c658f7def6a607a63b6c4d642c8bfdb043abd1a47bf5aee4d6c",
   "criticMode": "separated-critic-pass",
   "criticPromptVersion": "actionability-v1",
   "findings": [
