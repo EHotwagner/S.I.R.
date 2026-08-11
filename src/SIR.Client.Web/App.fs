@@ -472,6 +472,7 @@ let init () =
       HeldInputs = HeldInputSession.empty
       InputHelpExpanded = false
       PendingInterchangeReview = None
+      ImportAnnouncement = None
       Battlefield =
         { Battlefield.initial with
             ReducedMotion =
@@ -538,15 +539,35 @@ let rec update msg model =
     | FileSelected file ->
         { model with SampleReplayFrames = None },
         Cmd.OfAsync.perform
-            fileBytes
+            (fileBytes SIR.Simulation.Replay.defaultLimits.MaxPackageBytes)
             file
-            (fun (name, bytes) -> ShellMsg(ReplayBytesSelected(name, bytes)))
+            ReplayReadCompleted
+    | ReplayReadCompleted result ->
+        match result with
+        | Ok(name, bytes) -> update (ShellMsg(ReplayBytesSelected(name, bytes))) model
+        | Error error ->
+            let cancelled, effects = Shell.update CancelRequested model.Shell
+            { model with
+                Shell =
+                    { cancelled with
+                        Source = Rejected("Replay package", error)
+                        Verification = Failed error
+                        Mode = NoRun
+                        Inspection = None
+                        ActiveOperation = None
+                        Playback = { cancelled.Playback with CurrentTick = 0; FinalTick = 0; IsPlaying = false }
+                        Announcement = error } },
+            effectsToCmd effects
     | MapFileSelected file ->
         model,
         Cmd.OfAsync.perform
-            fileText
+            (fileText MapEditor.MaximumImportBytes)
             file
-            (fun (name, text) -> MapTextRead(name, text))
+            MapReadCompleted
+    | MapReadCompleted result ->
+        match result with
+        | Ok(name, text) -> update (MapTextRead(name, text)) { model with ImportAnnouncement = None }
+        | Error error -> { model with ImportAnnouncement = Some error }, Cmd.none
     | MapTextRead(sourceName, text) ->
         let lower = sourceName.ToLowerInvariant()
         if lower.EndsWith(".sir-map") then
@@ -563,9 +584,13 @@ let rec update msg model =
     | BackgroundFileSelected file ->
         model,
         Cmd.OfAsync.perform
-            rasterBytes
+            (rasterBytes MapEditorWorkspace.MaximumBackgroundBytes)
             file
-            (fun (name, mediaType, bytes) -> BackgroundBytesRead(name, mediaType, bytes))
+            BackgroundReadCompleted
+    | BackgroundReadCompleted result ->
+        match result with
+        | Ok(name, mediaType, bytes) -> update (BackgroundBytesRead(name, mediaType, bytes)) { model with ImportAnnouncement = None }
+        | Error error -> { model with ImportAnnouncement = Some error }, Cmd.none
     | BackgroundBytesRead(fileName, mediaType, bytes) ->
         update
             (EditorWorkspaceChanged(
@@ -3737,6 +3762,7 @@ let private editorToolbar
     (view: EditorWorkspaceState)
     (activePanel: EditorToolPanel)
     panelVisible
+    (importAnnouncement: string option)
     dispatch
     =
     let choose (label: string) (tool: MapEditorTool) =
@@ -4463,6 +4489,15 @@ let private editorToolbar
                                 ]
                             ]
                         ]
+                        match importAnnouncement with
+                        | Some announcement ->
+                            Html.p [
+                                prop.role.alert
+                                prop.ariaLive.assertive
+                                prop.className "validation-error"
+                                prop.text announcement
+                            ]
+                        | None -> Html.none
                         Html.p [
                             prop.className "repository-transfer-help"
                             prop.children [
@@ -7362,6 +7397,7 @@ let private tacticalPanelBody panelId model dispatch =
                 model.EditorView
                 activePanel
                 true
+                model.ImportAnnouncement
                 dispatch
         | "layers" -> editorLayerPanel model.Editor dispatch
         | "selection" -> editorUnitPanel model.Editor dispatch
@@ -7372,6 +7408,7 @@ let private tacticalPanelBody panelId model dispatch =
                 model.EditorView
                 DocumentTools
                 true
+                model.ImportAnnouncement
                 dispatch
         | _ ->
             Html.p [

@@ -1,5 +1,114 @@
 import { expect, test } from "@playwright/test";
 
+async function selectOversizedFile(page, selector, name, size) {
+  await page.locator(selector).evaluate((input, { name, size }) => {
+    const file = new File(["x"], name, { type: "application/octet-stream" });
+    Object.defineProperty(file, "size", { value: size });
+    file.arrayBuffer = async () => {
+      window.__sirImportReadCalls = (window.__sirImportReadCalls || 0) + 1;
+      return new ArrayBuffer(1);
+    };
+    file.text = async () => {
+      window.__sirImportReadCalls = (window.__sirImportReadCalls || 0) + 1;
+      return "SIR-MAP 2\nsize 4 4\n";
+    };
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    Object.defineProperty(input, "files", { value: transfer.files, configurable: true });
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }, { name, size });
+}
+
+async function selectUnreadableFile(page, selector, name) {
+  await page.locator(selector).evaluate((input, name) => {
+    const file = new File(["x"], name, { type: "application/octet-stream" });
+    file.arrayBuffer = async () => { throw new Error("read refused"); };
+    file.text = async () => { throw new Error("read refused"); };
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    Object.defineProperty(input, "files", { value: transfer.files, configurable: true });
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }, name);
+}
+
+async function showDocumentImports(page) {
+  await page.getByRole("button", { name: "Editor", exact: true }).click();
+  const toggle = page.locator("#layout-show-document");
+  if (await toggle.getAttribute("aria-pressed") === "false") {
+    await page.locator("details.tactical-panel-menu").click();
+    await toggle.click();
+  }
+  await expect(page.locator('[data-panel-id="document"]')).toBeVisible();
+  await page.locator("#layout-panel-document-collapse").click();
+  await expect(page.locator("#editor-map-import")).toBeVisible();
+}
+
+test("oversized browser imports are rejected from metadata before browser reads", async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.goto("/");
+  await page.evaluate(() => { window.__sirImportReadCalls = 0; });
+
+  await page.getByRole("button", { name: "Review", exact: true }).click();
+  await expect(page.locator('input[aria-label="Choose replay package"]')).toBeVisible();
+  await selectOversizedFile(page, 'input[aria-label="Choose replay package"]', "large.sirr", 1_048_577);
+  await expect(page.getByText("Replay package is 1048577 bytes; the allowed maximum is 1048576 bytes.", { exact: true })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(0);
+});
+
+test("browser import read failures leave a visible recovery message", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Review", exact: true }).click();
+  await expect(page.locator('input[aria-label="Choose replay package"]')).toBeVisible();
+  await selectUnreadableFile(page, 'input[aria-label="Choose replay package"]', "unreadable.sirr");
+  await expect(page.getByText("Replay package could not be read: read refused", { exact: true })).toBeVisible();
+  await page.evaluate(() => { window.__sirImportReadCalls = 0; });
+  await selectOversizedFile(page, 'input[aria-label="Choose replay package"]', "recovered.sirr", 1_048_576);
+  await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(1);
+});
+
+test("replay picker reads an exactly bounded file after rejecting an oversized one", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => { window.__sirImportReadCalls = 0; });
+  await page.getByRole("button", { name: "Review", exact: true }).click();
+  const picker = 'input[aria-label="Choose replay package"]';
+  await selectOversizedFile(page, picker, "over.sirr", 1_048_577);
+  await expect(page.getByText("Replay package is 1048577 bytes; the allowed maximum is 1048576 bytes.", { exact: true })).toBeVisible();
+  await selectOversizedFile(page, picker, "at-limit.sirr", 1_048_576);
+  await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(1);
+});
+
+test("map and raster pickers reject oversized metadata before reads", async ({ page }) => {
+  await page.goto("/");
+  await showDocumentImports(page);
+  await page.evaluate(() => { window.__sirImportReadCalls = 0; });
+  await selectOversizedFile(page, "#editor-map-import", "over.sir-map", 2_000_001);
+  await expect(page.getByRole("alert")).toContainText("Map import is 2000001 bytes");
+  await selectOversizedFile(page, "#editor-background-file", "over.png", 10_000_001);
+  await expect(page.getByRole("alert")).toContainText("Raster background is 10000001 bytes");
+  await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(0);
+  await selectOversizedFile(page, "#editor-map-import", "at-limit.sir-map", 2_000_000);
+  await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(1);
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  await selectOversizedFile(page, "#editor-background-file", "at-limit.png", 10_000_000);
+  await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(2);
+  await selectOversizedFile(page, "#editor-map-import", "invalid.sir-map", -1);
+  await expect(page.getByRole("alert")).toContainText("Map import has invalid size metadata");
+  await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(2);
+  for (const size of [NaN, Infinity, 1.5]) {
+    await selectOversizedFile(page, "#editor-map-import", "invalid.sir-map", size);
+    await expect(page.getByRole("alert")).toContainText("Map import has invalid size metadata");
+    await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(2);
+  }
+  await selectUnreadableFile(page, "#editor-map-import", "unreadable.sir-map");
+  await expect(page.getByRole("alert")).toContainText("Map import could not be read: read refused");
+  await selectOversizedFile(page, "#editor-map-import", "recovered.sir-map", 2_000_000);
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  await selectUnreadableFile(page, "#editor-background-file", "unreadable.png");
+  await expect(page.getByRole("alert")).toContainText("Raster background could not be read: read refused");
+  await selectOversizedFile(page, "#editor-background-file", "recovered.png", 10_000_000);
+  await expect(page.getByRole("alert")).toHaveCount(0);
+});
+
 test("bootstrap fails closed for absent and cross-actor credentials", async ({ request }) => {
   const body = { version: 1, actorName: "alpha" };
   const absent = await request.post("/api/bootstrap", { data: body });

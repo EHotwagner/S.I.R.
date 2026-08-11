@@ -1,29 +1,56 @@
 module SIR.Client.Web.BrowserInfrastructure
 
+open System
 open Browser.Types
 open Fable.Core
 open Fable.Core.JsInterop
 open SIR.Client
 open Elmish
 
-let fileBytes (file: File) =
+let private sizeError label maximum (file: File) =
+    try
+        let size = float file.size
+        if Double.IsNaN size || Double.IsInfinity size || size < 0.0 || size <> floor size then
+            Error(label + " has invalid size metadata; the allowed maximum is " + string maximum + " bytes.")
+        elif size > float maximum then
+            Error(label + " is " + string (int64 size) + " bytes; the allowed maximum is " + string maximum + " bytes.")
+        else Ok()
+    with _ ->
+        Error(label + " has unreadable size metadata; the allowed maximum is " + string maximum + " bytes.")
+
+let fileBytes maximum (file: File) =
     async {
-        let! buffer = file.arrayBuffer () |> Async.AwaitPromise
-        let typed = JS.Constructors.Uint8Array.Create(buffer)
-        return file.name, Array.init typed.length (fun index -> typed[index])
+        match sizeError "Replay package" maximum file with
+        | Error error -> return Error error
+        | Ok() ->
+            try
+                let! buffer = file.arrayBuffer () |> Async.AwaitPromise
+                let typed = JS.Constructors.Uint8Array.Create(buffer)
+                return Ok(file.name, Array.init typed.length (fun index -> typed[index]))
+            with error -> return Error("Replay package could not be read: " + error.Message)
     }
 
-let fileText (file: File) =
+let fileText maximum (file: File) =
     async {
-        let! text = file.text () |> Async.AwaitPromise
-        return file.name, text
+        match sizeError "Map import" maximum file with
+        | Error error -> return Error error
+        | Ok() ->
+            try
+                let! text = file.text () |> Async.AwaitPromise
+                return Ok(file.name, text)
+            with error -> return Error("Map import could not be read: " + error.Message)
     }
 
-let rasterBytes (file: File) =
+let rasterBytes maximum (file: File) =
     async {
-        let! buffer = file.arrayBuffer () |> Async.AwaitPromise
-        let typed = JS.Constructors.Uint8Array.Create(buffer)
-        return file.name, file.``type``, Array.init typed.length (fun index -> typed[index])
+        match sizeError "Raster background" maximum file with
+        | Error error -> return Error error
+        | Ok() ->
+            try
+                let! buffer = file.arrayBuffer () |> Async.AwaitPromise
+                let typed = JS.Constructors.Uint8Array.Create(buffer)
+                return Ok(file.name, file.``type``, Array.init typed.length (fun index -> typed[index]))
+            with error -> return Error("Raster background could not be read: " + error.Message)
     }
 
 [<Emit("window.localStorage.getItem('sir.map-editor.autosave.v1')")>]
