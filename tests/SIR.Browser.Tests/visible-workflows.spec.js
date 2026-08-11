@@ -1,0 +1,31 @@
+import { expect, test } from "./journey.js";
+
+test("visible mode controls preserve a usable tactical workspace across authoring modes", async ({ page }) => {
+  await page.goto("/");
+  const workspace = page.getByRole("main", { name: "S.I.R. simulator and editor" });
+  await expect(workspace).toBeVisible();
+
+  for (const mode of ["Editor", "Plan", "Simulate", "Review"]) {
+    const control = page.getByRole("button", { name: mode, exact: true });
+    await control.click();
+    await expect(control).toHaveAttribute("aria-pressed", "true");
+    await expect(workspace.getByRole("application")).toBeVisible();
+  }
+});
+
+test("disabled playback names why it is unavailable before a simulation is loaded", async ({ page }) => {
+  await page.goto("/");
+  const play = page.getByRole("button", { name: "Play tactical timeline", exact: true });
+  await expect(play).toBeDisabled();
+  await expect(page.getByText(/Play unavailable:/)).toBeVisible();
+});
+
+test("live authority reconnect remains visible through the production command surface", async ({ page }) => {
+  await page.goto("/");
+  const live = page.getByRole("region", { name: "Authoritative live session" });
+  await expect(live).toContainText("live connected", { timeout: 90_000 });
+  await page.getByRole("button", { name: "Disconnect the player-visible live session" }).click();
+  await expect(live).toContainText("live disconnected");
+  await page.getByRole("button", { name: "Reconnect and request the authoritative live snapshot" }).click();
+  await expect(live).toContainText("live connected");
+});

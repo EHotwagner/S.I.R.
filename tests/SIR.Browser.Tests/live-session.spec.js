@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./journey.js";
 
 async function selectOversizedFile(page, selector, name, size) {
   await page.locator(selector).evaluate((input, { name, size }) => {
