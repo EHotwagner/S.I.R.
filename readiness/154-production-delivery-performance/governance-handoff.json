@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/154-production-delivery-performance/ship.json",
-      "digest": "sha256:0b77a51d7bffa4cda28c0f3f8924e81e4c23a55cf3ff0c0faeb42fe8419aacf6",
+      "digest": "sha256:98542205cb626c4ee344bc1765c6480daa869c1a710f4efe8352244c67b7c654",
       "schemaVersion": 1
     },
     {
       "path": "readiness/154-production-delivery-performance/verify.json",
-      "digest": "sha256:c697e61d085197268f77850526a71c09f5a9508bfe87fc314915291b72576d5c",
+      "digest": "sha256:910c81551d8444bc3ddcc2abf9288c98013a23d821f89b2e8a52c793c24ad8d5",
       "schemaVersion": 1
     },
     {
       "path": "readiness/154-production-delivery-performance/work-model.json",
-      "digest": "sha256:d7aaf2330447434f42f776709bfa3b4bf03c0c6ae9f3090c0f9aff39ba89d83d",
+      "digest": "sha256:b949d89afe511ccdd13b00fba833b7393f75c81f02ef2262a9e859ad32835ee7",
       "schemaVersion": 1
     }
   ],
