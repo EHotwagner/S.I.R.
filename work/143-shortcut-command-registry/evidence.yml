@@ -55,7 +55,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/143-client.junit.xml
+      source: readiness/143-shortcut-command-registry/client-qualification.junit.xml
       digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -138,7 +138,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/143-client.junit.xml
+      source: readiness/143-shortcut-command-registry/client-qualification.junit.xml
       digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -192,7 +192,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/143-shortcut-registry.junit.xml
+      source: readiness/143-shortcut-command-registry/shortcut-registry.junit.xml
       digest: "sha256:189d3a064f0da772590e379a57ac09b0b4fba33c3a332b08aef79350aff00ec8"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -219,7 +219,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/143-command-inventory.junit.xml
+      source: readiness/143-shortcut-command-registry/command-inventory.junit.xml
       digest: "sha256:54b12bddad4668607ce316e793bc5f11d1d5af738273b1f3d29c491ca55a6248"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -246,7 +246,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/143-client.junit.xml
+      source: readiness/143-shortcut-command-registry/client-qualification.junit.xml
       digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -273,7 +273,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/143-shortcut-registry.junit.xml
+      source: readiness/143-shortcut-command-registry/shortcut-registry.junit.xml
       digest: "sha256:189d3a064f0da772590e379a57ac09b0b4fba33c3a332b08aef79350aff00ec8"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -300,7 +300,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/143-shortcut-registry.junit.xml
+      source: readiness/143-shortcut-command-registry/shortcut-registry.junit.xml
       digest: "sha256:189d3a064f0da772590e379a57ac09b0b4fba33c3a332b08aef79350aff00ec8"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -327,7 +327,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/143-client.junit.xml
+      source: readiness/143-shortcut-command-registry/client-qualification.junit.xml
       digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -354,7 +354,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/143-command-inventory.junit.xml
+      source: readiness/143-shortcut-command-registry/command-inventory.junit.xml
       digest: "sha256:54b12bddad4668607ce316e793bc5f11d1d5af738273b1f3d29c491ca55a6248"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -381,7 +381,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/143-client.junit.xml
+      source: readiness/143-shortcut-command-registry/client-qualification.junit.xml
       digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
       digestContract: exact-bytes-v1
       outcome: passed

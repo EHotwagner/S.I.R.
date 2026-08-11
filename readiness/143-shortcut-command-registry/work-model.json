@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "cdb6202ee9c6f1929fe8a7c9b005578254103d6bdf913a03bf0d0b0e6547361c"
+        "value": "d0195f97288c705430af579f363a97cbd1b2dd0c48d9e58809faabdd7bdbf9fe"
       }
     },
     {
@@ -1210,7 +1210,7 @@
           "path": "work/143-shortcut-command-registry/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "cdb6202ee9c6f1929fe8a7c9b005578254103d6bdf913a03bf0d0b0e6547361c"
+            "value": "d0195f97288c705430af579f363a97cbd1b2dd0c48d9e58809faabdd7bdbf9fe"
           },
           "schemaVersion": 1
         },
@@ -1241,7 +1241,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "446d0cf26be81bbb4cfdd76b0cb07440889604b5e98113d34812b972c140cd77"
+        "value": "0ec42ea64a541802a168140ab47bfce955ff951c139d7a0a6209c83d240f1f33"
       },
       "currency": "current"
     }

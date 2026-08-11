@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/143-shortcut-command-registry/ship.json",
-      "digest": "sha256:ba83edcdab426f0271cda26de5a964b1d658ee1345cb02edbc869d18ed356634",
+      "digest": "sha256:12ac728dedb163c58d9ff95d2f882ed19faaf0ab1ad93ddaf75d7dda01ee0dae",
       "schemaVersion": 1
     },
     {
       "path": "readiness/143-shortcut-command-registry/verify.json",
-      "digest": "sha256:7cc8616780644643b27228d2ed72a21c71ef8eada7bd781c06a94427f0bfa428",
+      "digest": "sha256:794a1f342ffccfef6af530cbe14bee9b31f5932360b2001acec08a8bb12784da",
       "schemaVersion": 1
     },
     {
       "path": "readiness/143-shortcut-command-registry/work-model.json",
-      "digest": "sha256:51c8021ba0302d95e6d859e4c902ad546b267b9d745ff0c6ed0d6962193fba33",
+      "digest": "sha256:fcfff20bf97e792623527a68bbecc0a3ee37b4d60a2c7660c6b2b37de0993de2",
       "schemaVersion": 1
     }
   ],
