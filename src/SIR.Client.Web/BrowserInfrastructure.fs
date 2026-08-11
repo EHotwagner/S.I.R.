@@ -68,6 +68,12 @@ let readTacticalLayout () : string = jsNative
 [<Emit("window.localStorage.setItem('sir.tactical-layout.v1', $0)")>]
 let writeTacticalLayout (_: string) : unit = jsNative
 
+[<Emit("window.localStorage.getItem('sir.desktop-toolbar.v1')")>]
+let readDesktopToolbar () : string = jsNative
+
+[<Emit("window.localStorage.setItem('sir.desktop-toolbar.v1', $0)")>]
+let writeDesktopToolbar (_: string) : unit = jsNative
+
 let downloadExperiment report =
     let content = Lab.export report
     emitJsStatement content """

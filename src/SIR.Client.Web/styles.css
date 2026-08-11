@@ -586,6 +586,19 @@
   border-radius: .4rem;
   background: #111a17;
 }
+#sir-replay-app .tactical-desktop-menu-bar { display: flex; gap: .1rem; align-items: center; min-width: 0; }
+#sir-replay-app .tactical-desktop-menu { position: relative; }
+#sir-replay-app .tactical-desktop-menu > summary { list-style: none; padding: .22rem .45rem; border-radius: .2rem; cursor: default; }
+#sir-replay-app .tactical-desktop-menu > summary::-webkit-details-marker { display: none; }
+#sir-replay-app .tactical-desktop-menu[open] > summary, #sir-replay-app .tactical-desktop-menu > summary:hover { background: #2a3b34; }
+#sir-replay-app .tactical-desktop-menu-popover { position: absolute; z-index: 40; top: calc(100% + .1rem); left: 0; display: grid; min-width: 15rem; padding: .25rem; border: 1px solid #6d8077; border-radius: .25rem; background: #17211e; box-shadow: 0 .7rem 1.5rem rgba(0,0,0,.55); }
+#sir-replay-app .tactical-desktop-menu-popover button { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .75rem; width: 100%; min-height: 1.85rem; padding: .28rem .45rem; border-color: transparent; text-align: left; }
+#sir-replay-app .tactical-desktop-menu-popover kbd { color: #b9c8c0; }
+#sir-replay-app .desktop-command-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: .18rem; min-width: 0; }
+#sir-replay-app .desktop-toolbar-customization { display: grid; gap: .35rem; width: min(34rem, 100%); padding: .5rem; border: 1px solid #52665c; background: #17211e; }
+#sir-replay-app .desktop-toolbar-customization-row { display: flex; align-items: center; flex-wrap: wrap; gap: .3rem; }
+#sir-replay-app .desktop-toolbar-customization-row span { min-width: 12rem; }
+@media (max-width: 720px) { #sir-replay-app .tactical-desktop-menu-bar { overflow-x: auto; max-width: 100%; } #sir-replay-app .tactical-desktop-menu > summary { padding-inline: .3rem; } }
 #sir-replay-app .tactical-compact-toolbar button,
 #sir-replay-app .tactical-compact-toolbar summary {
   min-height: 2.75rem;

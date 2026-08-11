@@ -53,6 +53,11 @@ type Msg =
     | ResizeLayoutBottomPanelKeyboard of delta: int
     | OpenSupportingPanel of panelId: string
     | ResetTacticalLayout
+    | ToggleDesktopToolbarCustomization
+    | AddDesktopToolbarCommand of string
+    | RemoveDesktopToolbarCommand of string
+    | ReorderDesktopToolbarCommand of commandId: string * delta: int
+    | ResetDesktopToolbar
     | InvokeTacticalCommand of string
     | InvokeTacticalValueCommand of commandId: string * value: string
     | ExecuteTacticalCommand of string
@@ -133,6 +138,8 @@ type Model =
       TacticalBindingsOpen: bool
       TacticalLayout: TacticalLayoutProfile
       TacticalLayoutDiagnostics: string list
+      DesktopToolbarCommands: string list
+      DesktopToolbarCustomizationOpen: bool
       BottomPanelResizeActive: bool
       TacticalSelectedUnit: int32 option
       Workspace: WorkspaceMode
