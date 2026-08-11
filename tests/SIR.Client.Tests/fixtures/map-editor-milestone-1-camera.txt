@@ -1,6 +1,6 @@
 fit=54.000|36.000|1.479
 zoom=-52.500|-35.000|1.849
-frame=59.259|-100.741|4.383
+frame=-3.404|-163.404|5.035
 cell=2|1
-edge-low=1|1|EastEdge|8.000
-edge-high=1|1|EastEdge|8.000
+edge-low=4|2|SouthEdge|0.000
+edge-high=4|2|SouthEdge|0.000

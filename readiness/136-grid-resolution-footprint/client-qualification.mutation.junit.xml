@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?><testsuite name="SIR.Client.Tests" tests="1" failures="1" errors="0" skipped="0"><testcase name="production-client-qualification"><failure message="System.Exception: Immutable simulator handoff, deterministic preview, or disclosure gating failed.
+   at SIR.Client.Tests.main(String[] arguments) in /home/developer/projects/S.I.R-item-136/tests/SIR.Client.Tests/Program.fs:line 2471" /></testcase></testsuite>

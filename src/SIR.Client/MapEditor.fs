@@ -6,13 +6,22 @@ open SIR.Domain
 [<RequireQualifiedAccess>]
 module MapEditor =
     [<Literal>]
-    let FormatVersion = 3
+    let FormatVersion = 4
 
     [<Literal>]
     let LegacyFormatVersion = 1
 
     [<Literal>]
     let PreviousFormatVersion = 2
+
+    [<Literal>]
+    let PreScaleFormatVersion = 3
+
+    [<Literal>]
+    let GridResolutionMultiplier = 2
+
+    [<Literal>]
+    let MaximumMapDimension = 80
 
     [<Literal>]
     let MaximumHistoryCommands = 100
@@ -49,7 +58,7 @@ module MapEditor =
             ClassId = "goblin"
             GlyphId = "goblin"
             Side = Red
-            FootprintSize = 1
+            FootprintSize = 2
             Health = 35
             HealthMaximum = 35 }
           { Id = "orc"
@@ -59,7 +68,7 @@ module MapEditor =
             ClassId = "orc"
             GlyphId = "orc"
             Side = Red
-            FootprintSize = 2
+            FootprintSize = 4
             Health = 100
             HealthMaximum = 100 }
           { Id = "troll"
@@ -69,7 +78,7 @@ module MapEditor =
             ClassId = "troll"
             GlyphId = "troll"
             Side = Red
-            FootprintSize = 3
+            FootprintSize = 6
             Health = 240
             HealthMaximum = 240 }
           { Id = "human"
@@ -79,7 +88,7 @@ module MapEditor =
             ClassId = "rifleman"
             GlyphId = "rifleman"
             Side = Blue
-            FootprintSize = 2
+            FootprintSize = 4
             Health = 12
             HealthMaximum = 12 }
           { Id = "human-gunner"
@@ -89,7 +98,7 @@ module MapEditor =
             ClassId = "gunner"
             GlyphId = "gunner"
             Side = Blue
-            FootprintSize = 2
+            FootprintSize = 4
             Health = 12
             HealthMaximum = 12 }
           { Id = "human-marksman"
@@ -99,7 +108,7 @@ module MapEditor =
             ClassId = "marksman"
             GlyphId = "marksman"
             Side = Blue
-            FootprintSize = 2
+            FootprintSize = 4
             Health = 12
             HealthMaximum = 12 }
           { Id = "human-engineer"
@@ -109,7 +118,7 @@ module MapEditor =
             ClassId = "engineer"
             GlyphId = "engineer"
             Side = Blue
-            FootprintSize = 2
+            FootprintSize = 4
             Health = 12
             HealthMaximum = 12 }
           { Id = "human-medic"
@@ -119,7 +128,7 @@ module MapEditor =
             ClassId = "medic"
             GlyphId = "medic"
             Side = Blue
-            FootprintSize = 2
+            FootprintSize = 4
             Health = 12
             HealthMaximum = 12 }
           { Id = "human-signaller"
@@ -129,7 +138,7 @@ module MapEditor =
             ClassId = "signaller"
             GlyphId = "signaller"
             Side = Blue
-            FootprintSize = 2
+            FootprintSize = 4
             Health = 12
             HealthMaximum = 12 }
           { Id = "drone"
@@ -139,7 +148,7 @@ module MapEditor =
             ClassId = "observation-drone"
             GlyphId = "observation-drone"
             Side = NeutralSide
-            FootprintSize = 1
+            FootprintSize = 2
             Health = 8
             HealthMaximum = 8 }
           { Id = "relay-drone"
@@ -149,7 +158,7 @@ module MapEditor =
             ClassId = "relay-drone"
             GlyphId = "relay-drone"
             Side = NeutralSide
-            FootprintSize = 1
+            FootprintSize = 2
             Health = 8
             HealthMaximum = 8 } ]
 
@@ -420,8 +429,8 @@ module MapEditor =
             [ { Id = 1
                 Side = Blue
                 ClassId = "rifleman"
-                Column = 1
-                Row = 1
+                Column = 2
+                Row = 2
                 Size = canonicalFootprintSize "human"
                 Health = 12
                 HealthMaximum = 12
@@ -433,8 +442,8 @@ module MapEditor =
               { Id = 2
                 Side = Blue
                 ClassId = "medic"
-                Column = 1
-                Row = 5
+                Column = 2
+                Row = 10
                 Size = canonicalFootprintSize "human"
                 Health = 12
                 HealthMaximum = 12
@@ -446,8 +455,8 @@ module MapEditor =
               { Id = 3
                 Side = Red
                 ClassId = "goblin"
-                Column = 9
-                Row = 1
+                Column = 16
+                Row = 2
                 Size = canonicalFootprintSize "goblin"
                 Health = 12
                 HealthMaximum = 12
@@ -459,8 +468,8 @@ module MapEditor =
               { Id = 4
                 Side = Red
                 ClassId = "troll"
-                Column = 8
-                Row = 5
+                Column = 18
+                Row = 10
                 Size = canonicalFootprintSize "troll"
                 Health = 12
                 HealthMaximum = 12
@@ -472,19 +481,19 @@ module MapEditor =
             |> List.map (fun unit -> unit.Id, unit)
             |> Map.ofList
         let map =
-            { emptyMap 12 8 with
+            { emptyMap 24 16 with
                 Terrain =
-                    [ (5, 3), Objective
-                      (5, 4), Objective
-                      (4, 3), Rough
-                      (4, 4), Rough
-                      (6, 3), Rough
-                      (6, 4), Rough ]
+                    [ for column, row, terrain in
+                          [ 5, 3, Objective; 5, 4, Objective; 4, 3, Rough
+                            4, 4, Rough; 6, 3, Rough; 6, 4, Rough ] do
+                          for scaledRow in row * 2 .. row * 2 + 1 do
+                              for scaledColumn in column * 2 .. column * 2 + 1 do
+                                  yield (scaledColumn, scaledRow), terrain ]
                     |> Map.ofList
                 Edges =
-                    [ (5, 2, SouthEdge), (Wall, false)
-                      (6, 2, SouthEdge), (Door, false)
-                      (7, 2, SouthEdge), (Window, false) ]
+                    [ for column, kind in [ 5, Wall; 6, Door; 7, Window ] do
+                          yield (column * 2, 4, SouthEdge), (kind, false)
+                          yield (column * 2 + 1, 4, SouthEdge), (kind, false) ]
                     |> Map.ofList
                 Units = units
                 NextUnitId = 5 }
@@ -1368,11 +1377,12 @@ module MapEditor =
             if lines.Length = 0 then None
             elif lines[0] = "SIR-MAP " + string LegacyFormatVersion then Some LegacyFormatVersion
             elif lines[0] = "SIR-MAP " + string PreviousFormatVersion then Some PreviousFormatVersion
+            elif lines[0] = "SIR-MAP " + string PreScaleFormatVersion then Some PreScaleFormatVersion
             elif lines[0] = "SIR-MAP " + string FormatVersion then Some FormatVersion
             else None
 
         if lines.Length < 2 || version.IsNone then
-            Error "The file is not a supported SIR-MAP 1, SIR-MAP 2, or SIR-MAP 3 document."
+            Error "The file is not a supported SIR-MAP 1, SIR-MAP 2, SIR-MAP 3, or SIR-MAP 4 document."
         else
             let mutable result = Ok(emptyMap 12 8)
 
@@ -1386,9 +1396,9 @@ module MapEditor =
                     match parts |> Array.toList with
                     | [ "size"; width; height ] ->
                         match parseInt line width, parseInt line height with
-                        | Ok width, Ok height when width >= 4 && width <= 40 && height >= 4 && height <= 40 ->
+                        | Ok width, Ok height when width >= 4 && width <= MaximumMapDimension && height >= 4 && height <= MaximumMapDimension ->
                             result <- Ok { map with Width = width; Height = height }
-                        | Ok _, Ok _ -> result <- fail line "size must be between 4 and 40."
+                        | Ok _, Ok _ -> result <- fail line ("size must be between 4 and " + string MaximumMapDimension + ".")
                         | Error error, _
                         | _, Error error -> result <- Error error
                     | [ "terrain"; column; row; terrain ] ->
@@ -1489,7 +1499,7 @@ module MapEditor =
                         | _, None, _ -> result <- fail line "unknown zone purpose."
                         | _ -> result <- fail line "invalid or duplicate zone identifier."
                     | [ "unit"; id; side; classId; column; row; size; remaining; maximum; controller; script; body; attention ]
-                        when version = Some FormatVersion ->
+                        when version = Some PreScaleFormatVersion || version = Some FormatVersion ->
                         match
                             parseInt line id,
                             sideFromName side,
@@ -1540,7 +1550,7 @@ module MapEditor =
                             result <- Error error
                         | _ -> result <- fail line "invalid unit orientation."
                     | [ "unit"; id; side; classId; column; row; size; remaining; maximum; controller; script ]
-                        when version <> Some FormatVersion ->
+                        when version <> Some PreScaleFormatVersion && version <> Some FormatVersion ->
                         match
                             parseInt line id,
                             sideFromName side,
@@ -1590,7 +1600,61 @@ module MapEditor =
                         | _ -> result <- fail line "invalid unit."
                     | _ -> result <- fail line "unknown record."
 
+            let migrateLegacyMap map =
+                if version = Some FormatVersion then map
+                else
+                    let scale = GridResolutionMultiplier
+                    let terrain =
+                        map.Terrain
+                        |> Map.toList
+                        |> List.collect (fun ((column, row), value) ->
+                            [ for scaledColumn in column * scale .. column * scale + scale - 1 do
+                                  for scaledRow in row * scale .. row * scale + scale - 1 do
+                                      yield (scaledColumn, scaledRow), value ])
+                        |> Map.ofList
+                    let edges =
+                        map.Edges
+                        |> Map.toList
+                        |> List.collect (fun ((column, row, direction), value) ->
+                            match direction with
+                            | EastEdge ->
+                                [ for scaledRow in row * scale .. row * scale + scale - 1 do
+                                      yield (column * scale + scale - 1, scaledRow, EastEdge), value ]
+                            | SouthEdge ->
+                                [ for scaledColumn in column * scale .. column * scale + scale - 1 do
+                                      yield (scaledColumn, row * scale + scale - 1, SouthEdge), value ])
+                        |> Map.ofList
+                    let regions =
+                        map.Regions
+                        |> Map.map (fun _ region ->
+                            let geometry =
+                                match region.Geometry with
+                                | RegionRectangle(column, row, width, height) ->
+                                    RegionRectangle(column * scale, row * scale, width * scale, height * scale)
+                                | RegionPolygon vertices ->
+                                    vertices
+                                    |> Array.map (fun point ->
+                                        { CellColumn = point.CellColumn * scale
+                                          CellRow = point.CellRow * scale })
+                                    |> RegionPolygon
+                            { region with Geometry = geometry })
+                    let units =
+                        map.Units
+                        |> Map.map (fun _ unit ->
+                            { unit with
+                                Column = unit.Column * scale
+                                Row = unit.Row * scale
+                                Size = unit.Size * scale })
+                    { map with
+                        Width = map.Width * scale
+                        Height = map.Height * scale
+                        Terrain = terrain
+                        Edges = edges
+                        Regions = regions
+                        Units = units }
+
             result
+            |> Result.map migrateLegacyMap
             |> Result.bind (fun map ->
                 let invalidTerrain =
                     map.Terrain

@@ -101,7 +101,12 @@ type BattlefieldScene =
 [<RequireQualifiedAccess>]
 module Battlefield =
     [<Literal>]
-    let CellSize = 48.0
+    /// High-resolution cells are half the prior render pitch, so a 4×4 human
+    /// footprint retains the former 2×2 world-space extent.
+    let CellSize = 24.0
+
+    [<Literal>]
+    let private SemanticCellSize = 48.0
 
     [<Literal>]
     let OverviewThresholdPx = 24.0
@@ -486,7 +491,7 @@ module Battlefield =
 
     let scene (frame: RenderFrame) (state: BattlefieldViewState) : BattlefieldScene =
         let tier =
-            semanticZoom state.SemanticZoom (CellSize * state.Camera.Zoom)
+            semanticZoom state.SemanticZoom (SemanticCellSize * state.Camera.Zoom)
         let units = frame.Units |> Array.map (projectUnit frame.Board tier)
         let overlays, wholeForceSegments =
             projectOverlays state.SelectedUnit frame.Overlays
@@ -701,7 +706,7 @@ module Battlefield =
             { state with
                 Camera = { state.Camera with Zoom = zoom }
                 SemanticZoom =
-                    semanticZoom state.SemanticZoom (CellSize * zoom) }
+                    semanticZoom state.SemanticZoom (SemanticCellSize * zoom) }
         | SelectUnit unitId -> { state with SelectedUnit = unitId }
         | FocusUnit unitId -> { state with FocusedUnit = unitId }
         | FocusDirection(x, y) ->
@@ -784,17 +789,17 @@ module Battlefield =
           Board =
             { MinimumColumn = 0
               MinimumRow = 0
-              MaximumColumn = 7
-              MaximumRow = 7 }
+              MaximumColumn = 15
+              MaximumRow = 15 }
           Units =
-            [| sampleUnit 1 0 0 2 "rifleman" Human 12 0 (Some "standing") 0.0 "Bravo 6"
+            [| sampleUnit 1 0 0 4 "rifleman" Human 12 0 (Some "standing") 0.0 "Bravo 6"
                |> withSecondary WeaponHeading (Math.PI / 4.0)
-               sampleUnit 2 3 0 2 "medic" Human 9 2 (Some "kneeling") (Math.PI / 4.0) "Mercy"
+               sampleUnit 2 6 0 4 "medic" Human 9 2 (Some "kneeling") (Math.PI / 4.0) "Mercy"
                |> withSecondary SensorHeading (Math.PI * 1.25)
-               sampleUnit 3 0 3 2 "gunner" Human 6 4 (Some "prone") (Math.PI * 1.5) "Anvil"
-               sampleUnit 4 6 2 1 "observation-drone" Neutral 11 1 None Math.PI "Kite"
-               sampleUnit 5 6 6 1 "goblin" Arcane 8 0 (Some "crouched") Math.PI "Needle"
-               sampleUnit 6 3 5 2 "troll" Arcane 3 7 (Some "braced") (Math.PI * 1.25) "Stone" |]
+               sampleUnit 3 0 4 4 "gunner" Human 6 4 (Some "prone") (Math.PI * 1.5) "Anvil"
+               sampleUnit 4 12 4 2 "observation-drone" Neutral 11 1 None Math.PI "Kite"
+               sampleUnit 5 12 12 2 "goblin" Arcane 8 0 (Some "crouched") Math.PI "Needle"
+               sampleUnit 6 6 10 4 "troll" Arcane 3 7 (Some "braced") (Math.PI * 1.25) "Stone" |]
           Edges =
             [| { Id = "wall-north"
                  Kind = "wall"

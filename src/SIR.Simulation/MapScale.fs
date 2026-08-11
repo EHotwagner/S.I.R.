@@ -144,10 +144,10 @@ module MapScale =
     let TicksPerSecond = 20
 
     [<Literal>]
-    let CellMillimeters = 500
+    let CellMillimeters = 250
 
     [<Literal>]
-    let DiagonalCellMillimeters = 707
+    let DiagonalCellMillimeters = 354
 
     [<Literal>]
     let MaximumMovementCreditMillimeters = 1060
@@ -194,19 +194,19 @@ module MapScale =
     let combatProfileFor (classId: string) =
         match classId.Trim().ToLowerInvariant() with
         | "rifleman" ->
-            { Delivery = ProjectileDelivery; Range = 8; Damage = 12
+            { Delivery = ProjectileDelivery; Range = 16; Damage = 12
               RecoveryTicks = 10; AreaShape = None }
         | "troll" ->
-            { Delivery = MeleeDelivery; Range = 1; Damage = 18
+            { Delivery = MeleeDelivery; Range = 2; Damage = 18
               RecoveryTicks = 20; AreaShape = None }
         | "orc" ->
-            { Delivery = MeleeDelivery; Range = 1; Damage = 5
+            { Delivery = MeleeDelivery; Range = 2; Damage = 5
               RecoveryTicks = 20; AreaShape = None }
         | "goblin" ->
-            { Delivery = MeleeDelivery; Range = 1; Damage = 2
+            { Delivery = MeleeDelivery; Range = 2; Damage = 2
               RecoveryTicks = 16; AreaShape = None }
         | _ ->
-            { Delivery = MeleeDelivery; Range = 1; Damage = 1
+            { Delivery = MeleeDelivery; Range = 2; Damage = 1
               RecoveryTicks = 20; AreaShape = None }
 
     let movementCost board unit origin destination =

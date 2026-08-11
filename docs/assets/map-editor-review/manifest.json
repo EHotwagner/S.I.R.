@@ -1,7 +1,7 @@
 {
   "format": "sir-map-editor-review-v1",
   "generatedFrom": "production persistent Fable/React SVG workscreen after the M4 Editor migration",
-  "productionBundleSha256": "bbbcca35a43893eb8d28e3fb6f8bad262434ba1286694ed503bf92e8e9aaa044",
+  "productionBundleSha256": "a26293c40319e0473b43de5d24f2d6ec127830905c3a55378020133bd7f8a6c2",
   "rasterizer": "rsvg-convert 2.62.3",
   "width": 960,
   "height": 640,
@@ -11,56 +11,56 @@
       "description": "Authored terrain projected through the persistent Editor renderer.",
       "svg": "terrain.svg",
       "png": "terrain.png",
-      "svgSha256": "ce8fb004bc3568e3f45dc2b0b0bf3c256f4e813989a7efb35889d89e5c4e395a",
-      "pngSha256": "bc59362a984544cc71e1bcf040828a1d23d91930bf972987ed9794761d08f208"
+      "svgSha256": "ade0fd1db95daa218979ce49d0069027a454a1c6409287dff7e386725150dc6c",
+      "pngSha256": "0a1a94639ab53c64c1271df908bc9add81da2d023f0d23467d016e984022e8b5"
     },
     {
       "domain": "edges",
       "description": "Semantic edges projected through the persistent Editor renderer.",
       "svg": "edges.svg",
       "png": "edges.png",
-      "svgSha256": "b976ab167d553da180e252501eec7f1c640552667596b3d172f316a227d93526",
-      "pngSha256": "9d51599ddd703ec16473b1c5c26955b7018ba9d43842f20b555c067ec05fb494"
+      "svgSha256": "118cee18c6c4d648a49b9032ab2ca36df6f4659b246d8f9aa4d58d73138748cd",
+      "pngSha256": "d781fb94291be76a67bf19bc24de1915b1a3a9b12bbc939585bece9794783103"
     },
     {
       "domain": "units",
       "description": "Canonical square-unit footprints in the shared Editor projection.",
       "svg": "units.svg",
       "png": "units.png",
-      "svgSha256": "0bdf17fdcd7eafe793efc3516d67db00316f66cbd7829abbc7840e91d66d1257",
-      "pngSha256": "b087d5b396020489575c34b1973c0830c5febdbd767b46357e8bea46b1bf0a9f"
+      "svgSha256": "d919c09ceacbf8f5903bfc04ae8fe7244b69fef5f04e53b9709a1b8f0dfbf33d",
+      "pngSha256": "898f9c35da30304a659b8870e0ec7de40b103a7775bd1d0604bbd72e6a5db475"
     },
     {
       "domain": "zones",
       "description": "Imported objective and deployment regions projected as positioned annotations.",
       "svg": "zones.svg",
       "png": "zones.png",
-      "svgSha256": "935d2bf79900ac38e184bd21722bf5d472a0b91a7322e902e4b226ce5868e2ab",
-      "pngSha256": "0b5cedb17347d9b00c44b28c141a413b6b99d692d1db04b07b9a9770f6828e97"
+      "svgSha256": "538cf13e74e79456e3765680c544d9669ac5d0a5a0b80744ceaf5d257b1b132c",
+      "pngSha256": "db5b1684b65f415c6aa6bfca5242370713ab7edf96c7b7cb68fb984a017f0963"
     },
     {
       "domain": "background",
       "description": "Signature-validated local background rendered by the retained persistent SVG.",
       "svg": "background.svg",
       "png": "background.png",
-      "svgSha256": "d7a81f83c89164ce9c39c5745fcee04a9a5edb36831f83281f085320f81d2875",
-      "pngSha256": "4a8b8e9d57c8611ccb76907d8ab3860c47b28d8ad775a4e61b29ad81de931513"
+      "svgSha256": "c2229224a42915ca7142759bb4ccac941d34f5bfd414a7363d0c4112846aa97f",
+      "pngSha256": "7627379cf346eaeec756cf2b74d7ae533d6a329792680f05c29914da64cc777c"
     },
     {
       "domain": "simulator-handoff",
       "description": "Immutable simulator handoff projected into the same retained SVG.",
       "svg": "simulator-handoff.svg",
       "png": "simulator-handoff.png",
-      "svgSha256": "bbeafdb2d62f9f20759830b2cf73e4f2c5436955c7a60c7c9278c47525fd1e78",
-      "pngSha256": "da79df622ff24c4d2d110344e9a32fce0d027a5a04aa3b0fbec05d3d15627fa1"
+      "svgSha256": "5c8b6213a2d435a43f30fcd36a0a573423effbb1a9b3150d1a27afef5494438f",
+      "pngSha256": "0284c077fa653544cc48c3644569142a76431553ee5e08cdadf2b498f1b92f6d"
     },
     {
       "domain": "validation",
       "description": "Imported EDGE-GAP validation state shown with the authoritative persistent projection.",
       "svg": "validation.svg",
       "png": "validation.png",
-      "svgSha256": "0258a299fdc514d2e8d1f3f0d002cc6bcda61ced67ceba7e525ae9d503c00b79",
-      "pngSha256": "30a2aaa201146e83d51813b4f83a005125508808efa61716299ac84fe3fe57a2"
+      "svgSha256": "957b8b0d21b63f4f2491ab08c42488eeee1ec0dd3dc9716e946f7f4c11192429",
+      "pngSha256": "84549ff044dfde9c1a49844a21c86a0a37c53796ed9b032ad4fb1fd78948f699"
     }
   ]
 }

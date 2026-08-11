@@ -250,8 +250,8 @@ let private scheduleMapAutosave content =
     emitJsStatement
         content
         """
-        clearTimeout(window.__sirMapAutosaveTimer);
-        window.__sirMapAutosaveTimer = setTimeout(() => {
+        window.clearTimeout(window.__sirMapAutosaveTimer);
+        window.__sirMapAutosaveTimer = window.setTimeout(() => {
           window.localStorage.setItem("sir.map-editor.autosave.v1", $0);
         }, 500);
         """

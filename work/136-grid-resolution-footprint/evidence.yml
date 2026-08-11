@@ -1,0 +1,416 @@
+schemaVersion: 1
+workId: 136-grid-resolution-footprint
+stage: evidence
+status: evidenceReady
+sourceSpec: work/136-grid-resolution-footprint/spec.md
+sourceClarifications: work/136-grid-resolution-footprint/clarifications.md
+sourceChecklist: work/136-grid-resolution-footprint/checklist.md
+sourcePlan: work/136-grid-resolution-footprint/plan.md
+sourceTasks: work/136-grid-resolution-footprint/tasks.yml
+sourceAnalysis: readiness/136-grid-resolution-footprint/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/136-grid-resolution-footprint/analysis.json
+    digest: e5d3d1b4f85e8f8854d6d0cca9502890a5991381648e595fbe3dae89c64130b4
+    schemaVersion: 1
+  - label: checklist
+    path: work/136-grid-resolution-footprint/checklist.md
+    digest: 96d1cbe620c9c7d20a78e953ef49e0836dd3b940d7abc3c552cbb8bb949b11ec
+    schemaVersion: 1
+  - label: clarifications
+    path: work/136-grid-resolution-footprint/clarifications.md
+    digest: c9ddd94c2c7b8e69485c7a0667c328e120222ba7902e13e890a7e97810aece26
+    schemaVersion: 1
+  - label: plan
+    path: work/136-grid-resolution-footprint/plan.md
+    digest: 25feeeff3b38dc92d01b79b167164217c7251cad606d5705f0ee620444ad1502
+    schemaVersion: 1
+  - label: spec
+    path: work/136-grid-resolution-footprint/spec.md
+    digest: 1c4879d5b6221ffbb2b8ef594f675854655afdab761ab474645696caea089192
+    schemaVersion: 1
+  - label: tasks
+    path: work/136-grid-resolution-footprint/tasks.yml
+    digest: 199289f0016ece8b98180d83375e2670155da9d332a57d743ad348918ac1e261
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV001]
+    artifacts: [readiness/136-grid-resolution-footprint/client-qualification.junit.xml, tests/SIR.Client.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/136-grid-resolution-footprint/client-qualification.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: [readiness/136-grid-resolution-footprint/client-qualification.junit.xml, tests/SIR.Client.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/136-grid-resolution-footprint/client-qualification.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV003]
+    artifacts: [readiness/136-grid-resolution-footprint/client-qualification.junit.xml, tests/SIR.Client.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/136-grid-resolution-footprint/client-qualification.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: [readiness/136-grid-resolution-footprint/client-qualification.junit.xml, tests/SIR.Client.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/136-grid-resolution-footprint/client-qualification.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV005]
+    artifacts: [readiness/136-grid-resolution-footprint/client-qualification.junit.xml, tests/SIR.Client.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/136-grid-resolution-footprint/client-qualification.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV006]
+    artifacts: [readiness/136-grid-resolution-footprint/client-qualification.junit.xml, tests/SIR.Client.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/136-grid-resolution-footprint/client-qualification.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV007]
+    artifacts: [readiness/136-grid-resolution-footprint/client-qualification.junit.xml, tests/SIR.Client.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/136-grid-resolution-footprint/client-qualification.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: [readiness/136-grid-resolution-footprint/client-qualification.junit.xml, tests/SIR.Client.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/136-grid-resolution-footprint/client-qualification.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV009]
+    artifacts: [readiness/136-grid-resolution-footprint/client-qualification.junit.xml, tests/SIR.Client.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/136-grid-resolution-footprint/client-qualification.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV010]
+    artifacts: [readiness/136-grid-resolution-footprint/client-qualification.junit.xml, tests/SIR.Client.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/136-grid-resolution-footprint/client-qualification.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV011]
+    artifacts: [readiness/136-grid-resolution-footprint/client-qualification.junit.xml, tests/SIR.Client.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/136-grid-resolution-footprint/client-qualification.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-003, PD-004, PD-005]
+    obligationRefs: [EV012]
+    artifacts: [readiness/136-grid-resolution-footprint/client-qualification.junit.xml, tests/SIR.Client.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/136-grid-resolution-footprint/client-qualification.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV013]
+    artifacts: [readiness/136-grid-resolution-footprint/client-qualification.junit.xml, tests/SIR.Client.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/136-grid-resolution-footprint/client-qualification.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV014]
+    artifacts: [readiness/136-grid-resolution-footprint/client-qualification.junit.xml, tests/SIR.Client.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/136-grid-resolution-footprint/client-qualification.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Evidence required before verify.]
+lifecycleNotes:
+  - "Next lifecycle action: verify."
