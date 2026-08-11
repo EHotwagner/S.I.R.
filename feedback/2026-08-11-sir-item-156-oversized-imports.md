@@ -11,7 +11,7 @@ commit: pending-pr-head
 ## §1 Provenance and confidence
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 2
+- **material events:** 3
 - **zero-event reason:** n/a
 - **checkpoint:** `feedback/checkpoints/item-156-oversized-imports.jsonl` (one validated event)
 - **confidence limits:** Browser coverage uses Chromium on the production server route.
@@ -46,6 +46,18 @@ The former import paths allocated content before applying their existing size li
 - **Recurrence:** resolved in this item
 - **Avoidable cost:** one review repair round
 - **Disposition:** product fix
+
+#### §4.3 Bundle-bound review assets required regeneration
+- **Kind:** capability-gap
+- **Impact:** Hosted CI rejected the changed production bundle until its map-editor review artifacts were regenerated.
+- **Expected:** Bundle-bound assets match the exact candidate bundle.
+- **Observed:** The F2R App change invalidated the generated review manifest binding.
+- **Evidence:** command:npm run review:map-editor
+- **Version:** current
+- **Owner:** S.I.R client delivery
+- **Recurrence:** resolved in this item
+- **Avoidable cost:** one final review repair round
+- **Disposition:** regenerated map-editor and M9 assets
 
 ## §5 Did not exercise
 No new performance target was declared for this bounded browser safety fix.
