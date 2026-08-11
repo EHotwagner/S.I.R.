@@ -8,9 +8,13 @@ async function selectOversizedFile(page, selector, name, size) {
       window.__sirImportReadCalls = (window.__sirImportReadCalls || 0) + 1;
       return new ArrayBuffer(1);
     };
+    file.text = async () => {
+      window.__sirImportReadCalls = (window.__sirImportReadCalls || 0) + 1;
+      return "SIR-MAP 2\nsize 4 4\n";
+    };
     const transfer = new DataTransfer();
     transfer.items.add(file);
-    Object.defineProperty(input, "files", { value: transfer.files });
+    Object.defineProperty(input, "files", { value: transfer.files, configurable: true });
     input.dispatchEvent(new Event("change", { bubbles: true }));
   }, { name, size });
 }
@@ -21,7 +25,7 @@ async function selectUnreadableFile(page, selector, name) {
     file.arrayBuffer = async () => { throw new Error("read refused"); };
     const transfer = new DataTransfer();
     transfer.items.add(file);
-    Object.defineProperty(input, "files", { value: transfer.files });
+    Object.defineProperty(input, "files", { value: transfer.files, configurable: true });
     input.dispatchEvent(new Event("change", { bubbles: true }));
   }, name);
 }
@@ -67,6 +71,9 @@ test("map and raster pickers reject oversized metadata before reads", async ({ p
   await selectOversizedFile(page, "#editor-background-file", "over.png", 10_000_001);
   await expect(page.getByRole("alert")).toContainText("Raster background is 10000001 bytes");
   await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(0);
+  await selectOversizedFile(page, "#editor-map-import", "at-limit.sir-map", 2_000_000);
+  await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(1);
+  await expect(page.getByRole("alert")).toHaveCount(0);
 });
 
 test("bootstrap fails closed for absent and cross-actor credentials", async ({ request }) => {
