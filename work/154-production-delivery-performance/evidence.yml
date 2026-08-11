@@ -11,7 +11,7 @@ sourceAnalysis: readiness/154-production-delivery-performance/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/154-production-delivery-performance/analysis.json
-    digest: 49e840cec711d4f13240cbdb1e7ad3835c007c6dc4e7c5cc2114f0c5ceb479cf
+    digest: 183ab0d2b4f9d054462e0af6c539f7a3ec6987f8a7580e4092fe44bd4d175464
     schemaVersion: 1
   - label: checklist
     path: work/154-production-delivery-performance/checklist.md
