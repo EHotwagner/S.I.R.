@@ -25,6 +25,7 @@
     "test": "./scripts/test-conformance.sh",
     "setup:browser": "playwright install chromium",
     "test:browser": "playwright test --config tests/SIR.Browser.Tests/playwright.config.js",
+    "test:browser-diagnostics-gate": "node scripts/test-browser-diagnostics-gate.mjs",
     "verify:scaffold": "node scripts/verify-scaffold-provenance.mjs",
     "verify:baseline": "node scripts/verify-fable-client-baseline.mjs"
   },

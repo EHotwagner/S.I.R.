@@ -619,7 +619,11 @@ let rec update msg model =
     | MapTextRead(sourceName, text) ->
         let lower = sourceName.ToLowerInvariant()
         if lower.EndsWith(".sir-map") then
-            update (EditorChanged(LoadMapText text)) model
+            match MapEditor.tryImport text with
+            | Error error -> { model with ImportAnnouncement = Some error }, Cmd.none
+            | Ok _ ->
+                let next, command = update (EditorChanged(LoadMapText text)) model
+                { next with ImportAnnouncement = Some("Imported map " + sourceName + ".") }, command
         else
             let format =
                 if lower.EndsWith(".dd2vtt") || lower.EndsWith(".uvtt") then UniversalVtt
@@ -640,11 +644,9 @@ let rec update msg model =
         | Ok(name, mediaType, bytes) -> update (BackgroundBytesRead(name, mediaType, bytes)) { model with ImportAnnouncement = None }
         | Error error -> { model with ImportAnnouncement = Some error }, Cmd.none
     | BackgroundBytesRead(fileName, mediaType, bytes) ->
-        update
-            (EditorWorkspaceChanged(
-                AttachLocalRaster(fileName, mediaType, bytes)
-            ))
-            model
+        let next, command =
+            update (EditorWorkspaceChanged(AttachLocalRaster(fileName, mediaType, bytes))) model
+        { next with ImportAnnouncement = Some("Attached background " + fileName + ".") }, command
     | RejectInterchangeReview ->
         { model with PendingInterchangeReview = None },
         Cmd.ofEffect (fun _ -> focusElementAfterRender "persistent-tactical-svg")
@@ -5882,6 +5884,20 @@ let private tacticalContextHelp model dispatch =
                         prop.ariaControls "tactical-input-panel"
                         prop.onClick (fun _ -> dispatch (ToggleInputHelp false))
                     ]
+                    if model.Workspace = SimulatorWorkspace then
+                        commandButton [
+                            prop.type'.button
+                            prop.text "Samples"
+                            prop.ariaLabel "Open simulator samples"
+                            prop.onClick (fun _ -> dispatch (OpenSupportingPanel "samples"))
+                        ]
+                    if model.Workspace = SimulatorWorkspace && model.Simulator.IsSome then
+                        commandButton [
+                            prop.type'.button
+                            prop.text "Reset simulation"
+                            prop.ariaLabel "Reset simulation to its immutable revision"
+                            prop.onClick (fun _ -> dispatch (InvokeTacticalCommand "simulator.reset.request"))
+                        ]
                 ]
             ]
             Html.p [
@@ -7604,7 +7620,7 @@ let private tacticalPanelBody panelId model dispatch =
         ]
     elif panelId = "data" then
         rulesDataCatalog
-    elif panelId = "samples" then
+    elif panelId = "samples" && model.Workspace <> SimulatorWorkspace then
         sampleCatalogView dispatch
     elif model.Workspace = PlanningWorkspace then
         match model.Planning with
@@ -7621,6 +7637,15 @@ let private tacticalPanelBody panelId model dispatch =
                 prop.text "No Plan capability is assigned to this panel."
             ]
         | None -> Html.p "Planner unavailable for the current map revision."
+    elif model.Workspace = SimulatorWorkspace && panelId = "samples" then
+        Html.div [
+            prop.ariaLabel "Simulator samples"
+            prop.children [
+                for sample in ExperienceSamples.maps do
+                    button sample.Title ("Load simulation sample: " + sample.Summary) false (fun _ ->
+                        dispatch (LoadSimulationSample sample.Id))
+            ]
+        ]
     elif model.Workspace = SimulatorWorkspace then
         match model.Simulator with
         | Some simulator ->
@@ -8075,6 +8100,10 @@ let view model dispatch =
                 prop.children [
                     Html.h2 "Authoritative live session"
                     Html.p ("live " + model.Live.Status)
+                    Html.p (
+                        "Authoritative live tick "
+                        + string (model.Live.Snapshot |> Option.map _.Tick |> Option.defaultValue 0)
+                    )
                     button "Advance live session" "Send the next player-visible live advance command" (model.Live.Connection.IsNone) (fun _ -> dispatch AdvanceLiveSession)
                     button "Disconnect live session" "Disconnect the player-visible live session" (model.Live.Connection.IsNone) (fun _ -> dispatch DisconnectLiveSession)
                     button "Reconnect live session" "Reconnect and request the authoritative live snapshot" (model.Live.Connection.IsNone) (fun _ -> dispatch ReconnectLiveSession)

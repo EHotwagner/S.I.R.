@@ -28,10 +28,11 @@ export default defineConfig({
       ...process.env,
       ASPNETCORE_ENVIRONMENT: "Development",
       SIR_ALLOW_ANONYMOUS_LIVE_SESSIONS: "true",
-      SIR_LIVE_MAX_BOOTSTRAPS_PER_MINUTE: "16",
+      SIR_LIVE_MAX_BOOTSTRAPS_PER_MINUTE: "32",
       // The serial suite mounts the production application once per isolated
-      // test context. Keep its test-host admission budget above that bounded
-      // inventory without changing the production default of eight/minute.
+      // test context. Keep its test-host admission budget above the bounded
+      // browser inventory (including direct bootstrap rejection checks) without
+      // changing the production default of eight/minute.
     },
     cwd: resolve(repoRoot, "artifacts/publish"),
     url: "http://127.0.0.1:5100/",
