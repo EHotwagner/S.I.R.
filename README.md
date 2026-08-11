@@ -48,6 +48,26 @@ npm ci
 ./scripts/test-conformance.sh
 ```
 
+## Browser tests
+
+The browser suite uses the Chromium revision pinned by `@playwright/test` unless
+`PLAYWRIGHT_EXECUTABLE_PATH` selects a supported system Chromium. After a clean
+clone, provision the pinned browser once, then run the suite:
+
+```bash
+npm ci
+npm run setup:browser
+dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish
+npm run test:browser
+```
+
+`npm run setup:browser` uses Playwright's revisioned browser cache, so its
+downloads remain cacheable without being mistaken for a browser from a different
+Playwright release. The test output reports the selected policy, executable, and
+browser version. In restricted environments, set
+`PLAYWRIGHT_EXECUTABLE_PATH=/path/to/chromium` before running the test; if no
+browser is available, the failure names the same provisioning command.
+
 Build the complete documentation site locally with:
 
 ```bash

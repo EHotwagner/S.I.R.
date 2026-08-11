@@ -23,6 +23,7 @@
     "test:map-design-transfer": "node scripts/test-map-editor-design-transfer.mjs",
     "test:persistent-workspace-m0": "node scripts/test-persistent-workspace-m0-baseline.mjs",
     "test": "./scripts/test-conformance.sh",
+    "setup:browser": "playwright install chromium",
     "test:browser": "playwright test --config tests/SIR.Browser.Tests/playwright.config.js",
     "verify:scaffold": "node scripts/verify-scaffold-provenance.mjs",
     "verify:baseline": "node scripts/verify-fable-client-baseline.mjs"
