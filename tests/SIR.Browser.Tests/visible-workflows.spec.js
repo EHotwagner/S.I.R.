@@ -38,6 +38,40 @@ test("disabled playback names why it is unavailable before a simulation is loade
   await expect(page.getByText(/Play unavailable:/)).toBeVisible();
 });
 
+test("the normal UI remains operable at 400 percent browser zoom", async ({ page }) => {
+  await page.goto("/");
+  // Use Chromium's actual browser zoom shortcut: this is intentionally not a
+  // CSS/device-scale emulation or an implementation-state assertion.
+  await page.keyboard.press("Control++");
+  await page.keyboard.press("Control++");
+  await page.keyboard.press("Control++");
+  await page.keyboard.press("Control++");
+  await expect(page.getByRole("main", { name: "S.I.R. simulator and editor" })).toBeVisible();
+  await page.getByRole("button", { name: "Simulate", exact: true }).click();
+  await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Open simulator samples", exact: true })).toBeVisible();
+});
+
+test("a valid map selected through the visible import control reports success", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Editor", exact: true }).click();
+  await page.getByRole("button", { name: "Expand Document / revision panel", exact: true }).click();
+  const picker = page.getByLabel("Import SIR map", { exact: true });
+  await expect(picker).toBeVisible();
+  await picker.setInputFiles({
+    name: "invalid.sir-map",
+    mimeType: "text/plain",
+    buffer: Buffer.from("not a SIR map"),
+  });
+  await expect(page.getByRole("alert")).toContainText(/not a supported|Map line/i);
+  await picker.setInputFiles({
+    name: "visible-success.sir-map",
+    mimeType: "text/plain",
+    buffer: Buffer.from("SIR-MAP 2\nsize 4 4\n"),
+  });
+  await expect(page.getByRole("alert")).toContainText("Imported map visible-success.sir-map.");
+});
+
 test("a curated sample creates a visible simulator handoff and playback can reset", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Simulate", exact: true }).click();

@@ -619,7 +619,11 @@ let rec update msg model =
     | MapTextRead(sourceName, text) ->
         let lower = sourceName.ToLowerInvariant()
         if lower.EndsWith(".sir-map") then
-            update (EditorChanged(LoadMapText text)) model
+            match MapEditor.tryImport text with
+            | Error error -> { model with ImportAnnouncement = Some error }, Cmd.none
+            | Ok _ ->
+                let next, command = update (EditorChanged(LoadMapText text)) model
+                { next with ImportAnnouncement = Some("Imported map " + sourceName + ".") }, command
         else
             let format =
                 if lower.EndsWith(".dd2vtt") || lower.EndsWith(".uvtt") then UniversalVtt

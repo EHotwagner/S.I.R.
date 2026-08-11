@@ -162,7 +162,7 @@ test("map and raster pickers reject oversized metadata before reads", async ({ p
   await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(0);
   await selectOversizedFile(page, "#editor-map-import", "at-limit.sir-map", 2_000_000);
   await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(1);
-  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(page.getByRole("alert")).toContainText("Imported map at-limit.sir-map.");
   await selectOversizedFile(page, "#editor-background-file", "at-limit.png", 10_000_000);
   await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(2);
   await selectOversizedFile(page, "#editor-map-import", "invalid.sir-map", -1);
@@ -176,7 +176,7 @@ test("map and raster pickers reject oversized metadata before reads", async ({ p
   await selectUnreadableFile(page, "#editor-map-import", "unreadable.sir-map");
   await expect(page.getByRole("alert")).toContainText("Map import could not be read: read refused");
   await selectOversizedFile(page, "#editor-map-import", "recovered.sir-map", 2_000_000);
-  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(page.getByRole("alert")).toContainText("Imported map recovered.sir-map.");
   await selectUnreadableFile(page, "#editor-background-file", "unreadable.png");
   await expect(page.getByRole("alert")).toContainText("Raster background could not be read: read refused");
   await selectOversizedFile(page, "#editor-background-file", "recovered.png", 10_000_000);
