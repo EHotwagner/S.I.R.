@@ -22,7 +22,7 @@ Prose status: checklistReady
 
 ## Source Snapshot
 - spec: work/150-browser-e2e-workflows/spec.md sha256:4e483c7e3bfbe1f94bc45198137a4bfc40ac6c9b25c21046cbb41e719510f541 schemaVersion:1
-- clarifications: work/150-browser-e2e-workflows/clarifications.md sha256:cfc9df4975bdeb72bfc1be56581b33fc5e2da543d57a84461d7bedfee1d7ed9c schemaVersion:1
+- clarifications: work/150-browser-e2e-workflows/clarifications.md sha256:cb5107f69efefd245c6c24ee23f471238abc64c6e466adebc3584eebf701484e schemaVersion:1
 
 ## Checklist Items
 - CHK-001 [FR-001] [AC-001] blocking: Requirement FR-001 is testable and linked to acceptance coverage.

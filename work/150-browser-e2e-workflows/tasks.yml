@@ -17,15 +17,15 @@ sources:
     schemaVersion: 1
   - label: clarifications
     path: work/150-browser-e2e-workflows/clarifications.md
-    digest: cfc9df4975bdeb72bfc1be56581b33fc5e2da543d57a84461d7bedfee1d7ed9c
+    digest: cb5107f69efefd245c6c24ee23f471238abc64c6e466adebc3584eebf701484e
     schemaVersion: 1
   - label: checklist
     path: work/150-browser-e2e-workflows/checklist.md
-    digest: ccf9b9b31f17f8ecac773f8a2346870ab66ed0dd59f878fe57c927d22fda75b7
+    digest: 196f67608119558f213ea367b65f503fe98c54ed00adcea5409d0cf082a384ec
     schemaVersion: 1
   - label: plan
     path: work/150-browser-e2e-workflows/plan.md
-    digest: c9e88d89d14d8a83e8477913490a87b4e207faaba5b752d99293c98597d7c718
+    digest: 6860ee172a78c8f4004075698dab5c4313adfe1048e1b83790aec767b4093a28
     schemaVersion: 1
 tasks:
   - id: T001

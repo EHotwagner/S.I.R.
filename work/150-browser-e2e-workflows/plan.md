@@ -17,8 +17,8 @@ Prose status: planned
 
 ## Source Snapshot
 - spec: work/150-browser-e2e-workflows/spec.md sha256:4e483c7e3bfbe1f94bc45198137a4bfc40ac6c9b25c21046cbb41e719510f541 schemaVersion:1
-- clarifications: work/150-browser-e2e-workflows/clarifications.md sha256:cfc9df4975bdeb72bfc1be56581b33fc5e2da543d57a84461d7bedfee1d7ed9c schemaVersion:1
-- checklist: work/150-browser-e2e-workflows/checklist.md sha256:ccf9b9b31f17f8ecac773f8a2346870ab66ed0dd59f878fe57c927d22fda75b7 schemaVersion:1
+- clarifications: work/150-browser-e2e-workflows/clarifications.md sha256:cb5107f69efefd245c6c24ee23f471238abc64c6e466adebc3584eebf701484e schemaVersion:1
+- checklist: work/150-browser-e2e-workflows/checklist.md sha256:196f67608119558f213ea367b65f503fe98c54ed00adcea5409d0cf082a384ec schemaVersion:1
 
 ## Plan Scope
 - Add a reusable Playwright journey harness under `tests/SIR.Browser.Tests` that captures browser diagnostics and exposes only accessible/visible interaction helpers.

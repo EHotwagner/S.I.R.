@@ -23,9 +23,9 @@ publicOrToolFacingImpact: true
   private `window` hooks or implementation-only `data-*` attributes as assertions.
 
 ## Decisions
-- DEC-001 [CQ-001] [AMB:AMB-001] resolved: The Playwright harness records unexpected console, page, and network
+- DEC-001: [CQ-001] [AMB:AMB-001] resolved: The Playwright harness records unexpected console, page, and network
   failures per journey, while individual rejection-path requests are explicitly allowlisted.
-- DEC-002 [CQ-001] resolved: A scenario may prepare input through Playwright's public file chooser,
+- DEC-002: [CQ-001] resolved: A scenario may prepare input through Playwright's public file chooser,
   but verifies result and rejection through the rendered UI.
 
 ## Accepted Deferrals

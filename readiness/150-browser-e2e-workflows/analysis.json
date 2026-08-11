@@ -37,11 +37,21 @@
       "schemaStatus": "current"
     },
     {
+      "path": "readiness/150-browser-e2e-workflows/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "9b2fccc8a12cc8858ec2abe2c9e0f01f9f6f22343bd96d8cffaaee3e4ddf2e7e"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
       "path": "work/150-browser-e2e-workflows/checklist.md",
       "kind": "checklist",
       "digest": {
         "algorithm": "sha256",
-        "value": "ccf9b9b31f17f8ecac773f8a2346870ab66ed0dd59f878fe57c927d22fda75b7"
+        "value": "196f67608119558f213ea367b65f503fe98c54ed00adcea5409d0cf082a384ec"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -51,7 +61,7 @@
       "kind": "clarification",
       "digest": {
         "algorithm": "sha256",
-        "value": "cfc9df4975bdeb72bfc1be56581b33fc5e2da543d57a84461d7bedfee1d7ed9c"
+        "value": "cb5107f69efefd245c6c24ee23f471238abc64c6e466adebc3584eebf701484e"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -61,7 +71,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "c9e88d89d14d8a83e8477913490a87b4e207faaba5b752d99293c98597d7c718"
+        "value": "6860ee172a78c8f4004075698dab5c4313adfe1048e1b83790aec767b4093a28"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "22f51c14bfa4ec04e9af28f439686d8bcc3b9327f71f8ba300907b84c1a08899"
+        "value": "065684d868d41c934db49dc699f4a16d6e8347ee61f07d0861fa11e8d0549ed2"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -553,7 +563,7 @@
     "status": "implementationReady",
     "readyCount": 46,
     "advisoryCount": 0,
-    "warningCount": 1,
+    "warningCount": 0,
     "blockingCount": 0,
     "staleSourceCount": 0,
     "missingDispositionCount": 0,
@@ -561,32 +571,13 @@
     "generatedViewFindingCount": 0,
     "acceptedDeferralCount": 0
   },
-  "findings": [
-    {
-      "id": "AF001",
-      "category": "warning",
-      "severity": "warning",
-      "state": "open",
-      "path": "readiness/150-browser-e2e-workflows/work-model.json",
-      "relatedIds": [
-        "readiness/150-browser-e2e-workflows/work-model.json",
-        "unknownReference",
-        "unknownReference",
-        "workModelInconsistent",
-        "workModelInconsistent"
-      ],
-      "message": "Generated view \u0027readiness/150-browser-e2e-workflows/work-model.json\u0027 was not written: the derived work model has blocking diagnostics.",
-      "correction": "Resolve the named lifecycle diagnostics, then re-run to generate the work model view."
-    }
-  ],
+  "findings": [],
   "generatedViews": [
     {
       "path": "readiness/150-browser-e2e-workflows/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
-      "diagnosticIds": [
-        "workModelNotGenerated"
-      ]
+      "currency": "current",
+      "diagnosticIds": []
     }
   ],
   "optionalBoundaryFacts": [
@@ -612,22 +603,7 @@
       "diagnosticIds": []
     }
   ],
-  "diagnostics": [
-    {
-      "id": "workModelNotGenerated",
-      "severity": "warning",
-      "artifact": "readiness/150-browser-e2e-workflows/work-model.json",
-      "message": "Generated view \u0027readiness/150-browser-e2e-workflows/work-model.json\u0027 was not written: the derived work model has blocking diagnostics.",
-      "correction": "Resolve the named lifecycle diagnostics, then re-run to generate the work model view.",
-      "relatedIds": [
-        "readiness/150-browser-e2e-workflows/work-model.json",
-        "unknownReference",
-        "unknownReference",
-        "workModelInconsistent",
-        "workModelInconsistent"
-      ]
-    }
-  ],
+  "diagnostics": [],
   "nextAction": {
     "actionId": "analysis.next.implement",
     "command": null,
