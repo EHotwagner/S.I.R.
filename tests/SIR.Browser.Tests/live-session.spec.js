@@ -61,6 +61,9 @@ test("browser import read failures leave a visible recovery message", async ({ p
   await expect(page.locator('input[aria-label="Choose replay package"]')).toBeVisible();
   await selectUnreadableFile(page, 'input[aria-label="Choose replay package"]', "unreadable.sirr");
   await expect(page.getByText("Replay package could not be read: read refused", { exact: true })).toBeVisible();
+  await page.evaluate(() => { window.__sirImportReadCalls = 0; });
+  await selectOversizedFile(page, 'input[aria-label="Choose replay package"]', "recovered.sirr", 1_048_576);
+  await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(1);
 });
 
 test("replay picker reads an exactly bounded file after rejecting an oversized one", async ({ page }) => {
