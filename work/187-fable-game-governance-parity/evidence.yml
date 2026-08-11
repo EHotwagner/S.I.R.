@@ -1,7 +1,7 @@
 schemaVersion: 1
 workId: 187-fable-game-governance-parity
 stage: evidence
-status: needsEvidenceCorrection
+status: evidenceReady
 sourceSpec: work/187-fable-game-governance-parity/spec.md
 sourceClarifications: work/187-fable-game-governance-parity/clarifications.md
 sourceChecklist: work/187-fable-game-governance-parity/checklist.md
@@ -35,7 +35,7 @@ sourceSnapshots:
     schemaVersion: 1
 evidence:
   - id: EV001
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T001
@@ -50,11 +50,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: scripts/test-conformance.sh
-    result: missing
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
+      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 15
+      failed: 0
+      skipped: 0
+    notes: [Verified by the clean local conformance route.]
   - id: EV002
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T002
@@ -69,11 +77,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: scripts/test-conformance.sh
-    result: missing
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
+      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 15
+      failed: 0
+      skipped: 0
+    notes: [Verified by the clean local conformance route.]
   - id: EV003
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T003
@@ -88,11 +104,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: scripts/test-conformance.sh
-    result: missing
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
+      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 15
+      failed: 0
+      skipped: 0
+    notes: [Verified by the clean local conformance route.]
   - id: EV004
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T004
@@ -107,11 +131,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: scripts/test-conformance.sh
-    result: missing
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
+      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 15
+      failed: 0
+      skipped: 0
+    notes: [Verified by the clean local conformance route.]
   - id: EV005
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T005
@@ -126,11 +158,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: scripts/test-conformance.sh
-    result: missing
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
+      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 15
+      failed: 0
+      skipped: 0
+    notes: [Verified by the clean local conformance route.]
   - id: EV006
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T006
@@ -145,11 +185,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: scripts/test-conformance.sh
-    result: missing
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
+      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 15
+      failed: 0
+      skipped: 0
+    notes: [Verified by the clean local conformance route.]
   - id: EV007
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T007
@@ -164,11 +212,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: scripts/test-conformance.sh
-    result: missing
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
+      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 15
+      failed: 0
+      skipped: 0
+    notes: [Verified by the clean local conformance route.]
   - id: EV008
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T008
@@ -183,11 +239,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: scripts/test-conformance.sh
-    result: missing
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
+      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 15
+      failed: 0
+      skipped: 0
+    notes: [Verified by the clean local conformance route.]
   - id: EV009
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T009
@@ -202,11 +266,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: scripts/test-conformance.sh
-    result: missing
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
+      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 15
+      failed: 0
+      skipped: 0
+    notes: [Verified by the clean local conformance route.]
   - id: EV010
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T010
@@ -221,11 +293,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: scripts/test-conformance.sh
-    result: missing
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
+      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 15
+      failed: 0
+      skipped: 0
+    notes: [Verified by the clean local conformance route.]
   - id: EV011
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T011
@@ -240,11 +320,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: scripts/test-conformance.sh
-    result: missing
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
+      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 15
+      failed: 0
+      skipped: 0
+    notes: [Verified by the clean local conformance route.]
   - id: EV012
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T012
@@ -259,11 +347,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: scripts/test-conformance.sh
-    result: missing
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
+      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 15
+      failed: 0
+      skipped: 0
+    notes: [Verified by the clean local conformance route.]
   - id: EV013
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T013
@@ -278,8 +374,16 @@ evidence:
     sourceRefs:
       - kind: verification
         path: scripts/test-conformance.sh
-    result: missing
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
+      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 15
+      failed: 0
+      skipped: 0
+    notes: [Verified by the clean local conformance route.]
 lifecycleNotes:
   - "Next lifecycle action: verify."

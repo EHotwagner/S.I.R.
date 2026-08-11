@@ -81,7 +81,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "944f07a25a3be139d29db823edd3dac8d42c2292deebbb4a62b2e2f3f8d094ef"
+        "value": "605b01c07abdc97fb17ec6222f407f3c68fd9cb43d19e616c8c9a87860ce6a94"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -533,7 +533,7 @@
     "status": "implementationReady",
     "readyCount": 44,
     "advisoryCount": 0,
-    "warningCount": 0,
+    "warningCount": 1,
     "blockingCount": 0,
     "staleSourceCount": 0,
     "missingDispositionCount": 0,
@@ -541,13 +541,30 @@
     "generatedViewFindingCount": 0,
     "acceptedDeferralCount": 0
   },
-  "findings": [],
+  "findings": [
+    {
+      "id": "AF001",
+      "category": "warning",
+      "severity": "warning",
+      "state": "open",
+      "path": "readiness/187-fable-game-governance-parity/work-model.json",
+      "relatedIds": [
+        "readiness/187-fable-game-governance-parity/work-model.json",
+        "unknownReference",
+        "workModelInconsistent"
+      ],
+      "message": "Generated view \u0027readiness/187-fable-game-governance-parity/work-model.json\u0027 was not written: the derived work model has blocking diagnostics.",
+      "correction": "Resolve the named lifecycle diagnostics, then re-run to generate the work model view."
+    }
+  ],
   "generatedViews": [
     {
       "path": "readiness/187-fable-game-governance-parity/work-model.json",
       "kind": "workModel",
       "currency": "missing",
-      "diagnosticIds": []
+      "diagnosticIds": [
+        "workModelNotGenerated"
+      ]
     }
   ],
   "optionalBoundaryFacts": [
@@ -573,7 +590,20 @@
       "diagnosticIds": []
     }
   ],
-  "diagnostics": [],
+  "diagnostics": [
+    {
+      "id": "workModelNotGenerated",
+      "severity": "warning",
+      "artifact": "readiness/187-fable-game-governance-parity/work-model.json",
+      "message": "Generated view \u0027readiness/187-fable-game-governance-parity/work-model.json\u0027 was not written: the derived work model has blocking diagnostics.",
+      "correction": "Resolve the named lifecycle diagnostics, then re-run to generate the work model view.",
+      "relatedIds": [
+        "readiness/187-fable-game-governance-parity/work-model.json",
+        "unknownReference",
+        "workModelInconsistent"
+      ]
+    }
+  ],
   "nextAction": {
     "actionId": "analysis.next.implement",
     "command": null,
