@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "8fb99a5dd87227eb4a6b80ff198600321676a468f3c14aa7946f8b1d1fc20fdf"
+        "value": "fb736a70a522b36d0a54b90df755d6bc03bf1e40862276901931762ae3c65f11"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "5fe3edb72fc797b6aa012fad6865c2593cd08481723dd1dcc270db130c69acc7"
+        "value": "50fb595f7edea6c09b99d1d8dd92bd9d30a62b947263798c0d3f41aae4abc1c1"
       }
     }
   ],
@@ -317,7 +317,7 @@
     {
       "id": "T001",
       "title": "Implement requirement FR-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [],
       "requirements": [
@@ -345,7 +345,7 @@
     {
       "id": "T002",
       "title": "Implement requirement FR-002",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [],
       "requirements": [
@@ -373,7 +373,7 @@
     {
       "id": "T003",
       "title": "Implement requirement FR-003",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [],
       "requirements": [
@@ -401,7 +401,7 @@
     {
       "id": "T004",
       "title": "Implement requirement FR-004",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [],
       "requirements": [
@@ -429,7 +429,7 @@
     {
       "id": "T005",
       "title": "Implement requirement FR-005",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [],
       "requirements": [
@@ -457,7 +457,7 @@
     {
       "id": "T006",
       "title": "Implement requirement FR-006",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [],
       "requirements": [
@@ -485,7 +485,7 @@
     {
       "id": "T007",
       "title": "Implement clarification decision DEC-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -513,7 +513,7 @@
     {
       "id": "T008",
       "title": "Implement clarification decision DEC-002",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -541,7 +541,7 @@
     {
       "id": "T009",
       "title": "Implement clarification decision DEC-003",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -569,7 +569,7 @@
     {
       "id": "T010",
       "title": "Update contract surface PC-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -595,7 +595,7 @@
     {
       "id": "T011",
       "title": "Record verification evidence VO-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -623,7 +623,7 @@
     {
       "id": "T012",
       "title": "Handle migration posture PM-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -649,7 +649,7 @@
     {
       "id": "T013",
       "title": "Refresh generated view impact GV-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -676,7 +676,7 @@
   "evidence": [
     {
       "id": "EV001",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T001",
       "taskRefs": [
@@ -685,8 +685,14 @@
       "requirementRefs": [
         "FR-001"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -700,7 +706,7 @@
     },
     {
       "id": "EV002",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T002",
       "taskRefs": [
@@ -709,8 +715,14 @@
       "requirementRefs": [
         "FR-002"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -724,7 +736,7 @@
     },
     {
       "id": "EV003",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T003",
       "taskRefs": [
@@ -733,8 +745,14 @@
       "requirementRefs": [
         "FR-003"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -748,7 +766,7 @@
     },
     {
       "id": "EV004",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T004",
       "taskRefs": [
@@ -757,8 +775,14 @@
       "requirementRefs": [
         "FR-004"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -772,7 +796,7 @@
     },
     {
       "id": "EV005",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T005",
       "taskRefs": [
@@ -781,8 +805,14 @@
       "requirementRefs": [
         "FR-005"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -796,7 +826,7 @@
     },
     {
       "id": "EV006",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T006",
       "taskRefs": [
@@ -805,8 +835,14 @@
       "requirementRefs": [
         "FR-006"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -820,15 +856,21 @@
     },
     {
       "id": "EV007",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T007",
       "taskRefs": [
         "T007"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -842,15 +884,21 @@
     },
     {
       "id": "EV008",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T008",
       "taskRefs": [
         "T008"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -864,15 +912,21 @@
     },
     {
       "id": "EV009",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T009",
       "taskRefs": [
         "T009"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -886,15 +940,21 @@
     },
     {
       "id": "EV010",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T010",
       "taskRefs": [
         "T010"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -908,15 +968,21 @@
     },
     {
       "id": "EV011",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T011",
       "taskRefs": [
         "T011"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -930,15 +996,21 @@
     },
     {
       "id": "EV012",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T012",
       "taskRefs": [
         "T012"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -952,15 +1024,21 @@
     },
     {
       "id": "EV013",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T013",
       "taskRefs": [
         "T013"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs",
+        "src/SIR.Client.Web/AppTypes.fs",
+        "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "src/SIR.Client.Web/styles.css",
+        "tests/SIR.Browser.Tests/desktop-command-surface.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1027,7 +1105,7 @@
           "path": "work/145-desktop-command-surface/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "8fb99a5dd87227eb4a6b80ff198600321676a468f3c14aa7946f8b1d1fc20fdf"
+            "value": "fb736a70a522b36d0a54b90df755d6bc03bf1e40862276901931762ae3c65f11"
           },
           "schemaVersion": 1
         },
@@ -1051,14 +1129,14 @@
           "path": "work/145-desktop-command-surface/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "5fe3edb72fc797b6aa012fad6865c2593cd08481723dd1dcc270db130c69acc7"
+            "value": "50fb595f7edea6c09b99d1d8dd92bd9d30a62b947263798c0d3f41aae4abc1c1"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "364220ece1b1a5a4a94575698b470426be0456c43a3be84ec0fc3f7e690dc39b"
+        "value": "25c5adda241ab56965bcfbbf18d73b2fe0d348cb1f7c4d1d22bed88d690ef7b9"
       },
       "currency": "current"
     }

@@ -1,0 +1,17 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-11-sir-item-145-desktop-command-surface.md",
+  "reportSha256": "bdbe4e010054328eaea9004e1ae6a25f9a9bef0322869315d731e4ceb7a3ca13",
+  "criticMode": "separated-critic-pass",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [{
+    "id": "§4.1",
+    "status": "actionable",
+    "missingFacts": [],
+    "checkedEvidence": [{
+      "locator": "command:npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js tests/SIR.Browser.Tests/desktop-command-surface.spec.js --trace on",
+      "result": "verified"
+    }],
+    "confidenceLimits": ["The terminal run used the system Chromium override required by this host."]
+  }]
+}
