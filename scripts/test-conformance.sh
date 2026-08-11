@@ -251,6 +251,7 @@ env \
 ./scripts/build-client.sh
 node scripts/smoke-client.mjs
 npm run setup:browser
+dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish --no-restore
 npm run test:browser-diagnostics-gate
 node scripts/test-map-editor-qualification.mjs
 node scripts/test-planning-workspace-m5-qualification.mjs
