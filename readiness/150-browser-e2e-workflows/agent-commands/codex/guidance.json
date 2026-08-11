@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "698f4bfe77273116a6fe2dbc4167d22ba91ee3474fb6f2482e2a274f3c1ea33d"
+        "value": "13dbf2acbe52f0695186c71f964bbd471ae0cd5125a752e8c1451ff61cdb2cec"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -19,7 +19,7 @@
   ],
   "behaviorModelDigest": {
     "algorithm": "sha256",
-    "value": "ef2b6da68c809530507e9fdb040bef7b430a9ee46f238d68d58730bc6e927200"
+    "value": "73825590743e9fd1723472ffc74a85a68163c98b40fd09f5361db03c79a399be"
   },
   "commands": [
     {
@@ -154,9 +154,10 @@
       "id": "T013",
       "title": "Handle migration posture PM-001",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T013 (done) covering PC-001, PM-001.",
+      "purpose": "Carry out lifecycle task T013 (done) covering PC-001, PD-001, PM-001.",
       "relatedIds": [
         "PC-001",
+        "PD-001",
         "PM-001"
       ]
     },

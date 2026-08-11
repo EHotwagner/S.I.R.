@@ -36,18 +36,26 @@ Prose status: planned
 - PD-008 [AC-008] [FR-008] complete: Install per-page console/page/request-failure collection with a narrow explicit rejection allowance and fail the scenario in teardown on unexplained diagnostics.
 
 ## Contract Impact
+Contract: No standalone contract-impact identifier is required; PD-001 and PD-008 own the visible-only test architecture.
+
 - PC-001 [PD-001] [PD-008] test architecture: Browser test helpers are public user-interface interactions and diagnostics collection; no new runtime API or private browser hook is introduced.
 
 ## Verification Obligations
+Verification: No standalone verification-obligation identifier is required; PD-001 and PD-008 own the production Chromium and mutation evidence.
+
 - VO-001 [PD-001] [PD-008] chromium: Run the full Chromium suite against the production client route, retain its JUnit/report artifact, and prove each added or modified gate reds on a subject mutation.
 
 ## Performance Intent
 No performance intent is declared for this work item.
 
 ## Migration Posture
+Migration: No standalone migration-posture identifier is required; PD-001 owns compatibility.
+
 - PM-001 [PC-001] compatibility: Preserve the existing browser-test entry point and add scenarios without changing production tactical data formats or the live-authority protocol.
 
 ## Generated View Impact
+Generated View: No standalone generated-view identifier is required; lifecycle generators derive views from current authored sources.
+
 - GV-001 [PD-001] workModel: Refresh the SDD work model and guidance after authored evidence or task state changes; retain current analysis/verify/ship receipts for the exact candidate.
 
 ## Accepted Deferrals

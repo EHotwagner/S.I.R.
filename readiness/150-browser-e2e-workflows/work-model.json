@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "ff9dbc56767ae62568729334de4e3d6f3e4acb0bdd3bc0e66156ae8feede8cf9"
+        "value": "866c0a735b4112ed96090eb51e7a0b9e18da8bdbe2329923252347b41913e502"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "6860ee172a78c8f4004075698dab5c4313adfe1048e1b83790aec767b4093a28"
+        "value": "a5b1d4594c0b64c1f74e2bed50dd9d71ba2678812f783b3d77b196e4e170c7fb"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "065684d868d41c934db49dc699f4a16d6e8347ee61f07d0861fa11e8d0549ed2"
+        "value": "6e8826691f9e46fcf3221747673c0ee03711764e2443c955f8f55d39434d865e"
       }
     }
   ],
@@ -677,6 +677,7 @@
       "decisions": [],
       "sourceIds": [
         "PC-001",
+        "PD-001",
         "PM-001"
       ],
       "requiredSkills": [
@@ -1098,7 +1099,7 @@
           "path": "work/150-browser-e2e-workflows/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "ff9dbc56767ae62568729334de4e3d6f3e4acb0bdd3bc0e66156ae8feede8cf9"
+            "value": "866c0a735b4112ed96090eb51e7a0b9e18da8bdbe2329923252347b41913e502"
           },
           "schemaVersion": 1
         },
@@ -1106,7 +1107,7 @@
           "path": "work/150-browser-e2e-workflows/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "6860ee172a78c8f4004075698dab5c4313adfe1048e1b83790aec767b4093a28"
+            "value": "a5b1d4594c0b64c1f74e2bed50dd9d71ba2678812f783b3d77b196e4e170c7fb"
           },
           "schemaVersion": 1
         },
@@ -1122,14 +1123,14 @@
           "path": "work/150-browser-e2e-workflows/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "065684d868d41c934db49dc699f4a16d6e8347ee61f07d0861fa11e8d0549ed2"
+            "value": "6e8826691f9e46fcf3221747673c0ee03711764e2443c955f8f55d39434d865e"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "ea491377b6899feb58f37b59bec92d04a6bf08e45412e70802b227f3fc97a62b"
+        "value": "636b5907553bee2c5176dc36c92992d96bed852b6f88acc27c29a7fc8700a557"
       },
       "currency": "current"
     }

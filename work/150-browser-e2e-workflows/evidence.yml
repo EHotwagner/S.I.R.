@@ -11,7 +11,7 @@ sourceAnalysis: readiness/150-browser-e2e-workflows/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/150-browser-e2e-workflows/analysis.json
-    digest: bb73e44c0d8693d0f1e4d50f1fdfc425fd559526a596c6782b309a282f555c44
+    digest: f694e64c1b0b57113a043a8778289c473a8f0690be29c0499069cd69fa72b9bf
     schemaVersion: 1
   - label: checklist
     path: work/150-browser-e2e-workflows/checklist.md
@@ -23,7 +23,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: plan
     path: work/150-browser-e2e-workflows/plan.md
-    digest: 6860ee172a78c8f4004075698dab5c4313adfe1048e1b83790aec767b4093a28
+    digest: a5b1d4594c0b64c1f74e2bed50dd9d71ba2678812f783b3d77b196e4e170c7fb
     schemaVersion: 1
   - label: spec
     path: work/150-browser-e2e-workflows/spec.md
@@ -31,7 +31,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: tasks
     path: work/150-browser-e2e-workflows/tasks.yml
-    digest: 065684d868d41c934db49dc699f4a16d6e8347ee61f07d0861fa11e8d0549ed2
+    digest: 6e8826691f9e46fcf3221747673c0ee03711764e2443c955f8f55d39434d865e
     schemaVersion: 1
 evidence:
   - id: EV001

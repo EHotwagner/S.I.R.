@@ -25,7 +25,7 @@ sources:
     schemaVersion: 1
   - label: plan
     path: work/150-browser-e2e-workflows/plan.md
-    digest: 6860ee172a78c8f4004075698dab5c4313adfe1048e1b83790aec767b4093a28
+    digest: a5b1d4594c0b64c1f74e2bed50dd9d71ba2678812f783b3d77b196e4e170c7fb
     schemaVersion: 1
 tasks:
   - id: T001
@@ -135,7 +135,7 @@ tasks:
     dependencies: [T001]
     requirements: []
     decisions: []
-    sourceIds: [PD-001, PD-008]
+    sourceIds: [PC-001, PD-001, PD-008]
     requiredSkills: [fsharp]
     requiredEvidence: [EV011]
   - id: T012
@@ -145,7 +145,7 @@ tasks:
     dependencies: [T001]
     requirements: []
     decisions: []
-    sourceIds: [PD-001, PD-008]
+    sourceIds: [PD-001, PD-008, VO-001]
     requiredSkills: [automated-tests, readiness-evidence]
     requiredEvidence: [EV012]
   - id: T013
@@ -155,7 +155,7 @@ tasks:
     dependencies: [T001]
     requirements: []
     decisions: []
-    sourceIds: [PD-001]
+    sourceIds: [PC-001, PD-001, PM-001]
     requiredSkills: [schema-versioning]
     requiredEvidence: [EV013]
   - id: T014
@@ -165,7 +165,7 @@ tasks:
     dependencies: [T001]
     requirements: []
     decisions: []
-    sourceIds: [PD-001]
+    sourceIds: [GV-001, PD-001]
     requiredSkills: [deterministic-json]
     requiredEvidence: [EV014]
 acceptedDeferrals: []

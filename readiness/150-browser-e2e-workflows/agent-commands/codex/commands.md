@@ -65,8 +65,8 @@ normalized work model, not an authored source of truth. See `guidance.json`.
 
 ## T013 — Handle migration posture PM-001
 - Stage: specify
-- Purpose: Carry out lifecycle task T013 (done) covering PC-001, PM-001.
-- Related: PC-001, PM-001
+- Purpose: Carry out lifecycle task T013 (done) covering PC-001, PD-001, PM-001.
+- Related: PC-001, PD-001, PM-001
 
 ## T014 — Refresh generated view impact GV-001
 - Stage: specify
