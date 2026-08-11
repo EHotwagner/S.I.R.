@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "41b34961d90337fec99074cfa795c8d01459b5ce4c6108ab2676a529d84b3d63"
+        "value": "99933828e0e6b306802b0df0d4fdcbcb39da9f94597c219176771b63e76ad51b"
       }
     },
     {
@@ -386,7 +386,7 @@
   "evidence": [
     {
       "id": "EV001",
-      "kind": "missing",
+      "kind": "implementation",
       "subjectType": "task",
       "subjectId": "T001",
       "taskRefs": [
@@ -395,8 +395,10 @@
       "requirementRefs": [
         "FR-001"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -410,7 +412,7 @@
     },
     {
       "id": "EV002",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T002",
       "taskRefs": [
@@ -419,8 +421,10 @@
       "requirementRefs": [
         "FR-002"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -434,7 +438,7 @@
     },
     {
       "id": "EV003",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T003",
       "taskRefs": [
@@ -443,8 +447,10 @@
       "requirementRefs": [
         "FR-003"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -458,15 +464,17 @@
     },
     {
       "id": "EV004",
-      "kind": "missing",
+      "kind": "implementation",
       "subjectType": "task",
       "subjectId": "T004",
       "taskRefs": [
         "T004"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "src/SIR.Client.Web/App.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -480,15 +488,17 @@
     },
     {
       "id": "EV005",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T005",
       "taskRefs": [
         "T005"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -502,15 +512,17 @@
     },
     {
       "id": "EV006",
-      "kind": "missing",
+      "kind": "note",
       "subjectType": "task",
       "subjectId": "T006",
       "taskRefs": [
         "T006"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "work/142-stable-working-surface/plan.md"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -524,15 +536,17 @@
     },
     {
       "id": "EV007",
-      "kind": "missing",
+      "kind": "generated-view",
       "subjectType": "task",
       "subjectId": "T007",
       "taskRefs": [
         "T007"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "readiness/142-stable-working-surface/analysis.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -599,7 +613,7 @@
           "path": "work/142-stable-working-surface/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "41b34961d90337fec99074cfa795c8d01459b5ce4c6108ab2676a529d84b3d63"
+            "value": "99933828e0e6b306802b0df0d4fdcbcb39da9f94597c219176771b63e76ad51b"
           },
           "schemaVersion": 1
         },
@@ -630,7 +644,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "70e0571796a18774eaee38c45f71999f6f2599336bc6da1c63f1e251e4d46e24"
+        "value": "cce0cc6f7941f3ae840c46fb119027995834e15ba23c6168be50413d01a7d7f2"
       },
       "currency": "current"
     }
