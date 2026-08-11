@@ -3,7 +3,7 @@
      sources:
        - readiness/154-production-delivery-performance/agent-commands/claude/guidance.json  digest:a9398543a79bc7c55c56ab3b74875e64e57d8e9e9cea5b2c55555b627cd1939f  schema:1(current)
        - readiness/154-production-delivery-performance/agent-commands/codex/guidance.json  digest:7b9d1ed89c30a85a784ca961d6119f8f6df2d13f01dee0fad0b423aa0b11003b  schema:1(current)
-       - readiness/154-production-delivery-performance/analysis.json  digest:8d632cb1a614cba5cb625d2b17964cdf01e029f1952a806f2ea4e13d542d9998  schema:1(current)
+       - readiness/154-production-delivery-performance/analysis.json  digest:221451c4bfa2bfc4cebe88b540f3b4fc547d4ec4a7439d8845a51f30b4b3ab18  schema:1(current)
        - readiness/154-production-delivery-performance/ship.json  digest:6eca5c1ccf716a4b463e4052980d614010f49cc8e1f159dba4788416885fab31  schema:1(current)
        - readiness/154-production-delivery-performance/verify.json  digest:2d2f06e2aa46961acab33e2866ad91658579a271f2f089ca9c6569a8f4d10fca  schema:1(current)
        - readiness/154-production-delivery-performance/work-model.json  digest:ba00b91d4aa9b071a4f97beeb8b034c1700e21d22e0ffbaa768df6a2b72a4fb6  schema:1(current)

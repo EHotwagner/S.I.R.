@@ -25,13 +25,17 @@ test("Release delivery uses cache-safe compression and defers support code", asy
   const responseBytes = async (selected) =>
     (await Promise.all(selected.map((response) => response.body().then((body) => body.byteLength)))).reduce((total, bytes) => total + bytes, 0);
   const initialBytes = await responseBytes(responses);
+  const maximumInitialBytes = Number(process.env.SIR_DELIVERY_MAX_INITIAL_ROUTE_BYTES ?? 1_150_000);
   expect(initialDeferred).toBe(0);
   await page.getByRole("button", { name: "Delivery support" }).click();
   await expect(page.getByText("This support panel loads on demand")).toBeVisible();
   expect(responses.some((response) => response.url().includes("deferred-delivery-support-"))).toBe(true);
   const deferredBytes = await responseBytes(responses.filter((response) => response.url().includes("deferred-delivery-support-")));
+  const maximumDeferredBytes = Number(process.env.SIR_DELIVERY_MAX_DEFERRED_ROUTE_BYTES ?? 20_000);
   expect(initialBytes).toBeGreaterThan(0);
   expect(deferredBytes).toBeGreaterThan(0);
+  expect(initialBytes).toBeLessThanOrEqual(maximumInitialBytes);
+  expect(deferredBytes).toBeLessThanOrEqual(maximumDeferredBytes);
   console.log(JSON.stringify({ schema: "sir-production-delivery-route-v1", throttle: "Slow-3G/4x CPU", initialResponseBytes: initialBytes, deferredActivationBytes: deferredBytes }));
 
   const engine = await page.request.get("/engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/worker.js", {
