@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "68e79388b84e46dcc424a6f1a877e34abd5cb0f2cb54ff117fd99781ce37fecd"
+        "value": "27ddbdb2e2e034783ac3950104d04f52b3760663980c32f1a87584fea7d1be01"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -19,14 +19,14 @@
   ],
   "behaviorModelDigest": {
     "algorithm": "sha256",
-    "value": "5fa983195603397078a82e58e21cd6d231ecfccd02893af1e39e3653c4ba519b"
+    "value": "68253f0a061d9e7c2870c571843926cb42cc5021b5d5d63cf916e8a5127a9967"
   },
   "commands": [
     {
       "id": "T001",
       "title": "Implement requirement FR-001",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T001 (pending) covering AC-001, FR-001, PD-001.",
+      "purpose": "Carry out lifecycle task T001 (done) covering AC-001, FR-001, PD-001.",
       "relatedIds": [
         "AC-001",
         "FR-001",
@@ -37,7 +37,7 @@
       "id": "T002",
       "title": "Implement requirement FR-002",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T002 (pending) covering AC-002, FR-002, PD-002.",
+      "purpose": "Carry out lifecycle task T002 (done) covering AC-002, FR-002, PD-002.",
       "relatedIds": [
         "AC-002",
         "FR-002",
@@ -48,7 +48,7 @@
       "id": "T003",
       "title": "Implement requirement FR-003",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T003 (pending) covering AC-003, FR-003, PD-003.",
+      "purpose": "Carry out lifecycle task T003 (done) covering AC-003, FR-003, PD-003.",
       "relatedIds": [
         "AC-003",
         "FR-003",
@@ -59,7 +59,7 @@
       "id": "T004",
       "title": "Update contract surface PC-001",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T004 (pending) covering PC-001, PD-001.",
+      "purpose": "Carry out lifecycle task T004 (done) covering PC-001, PD-001.",
       "relatedIds": [
         "PC-001",
         "PD-001"
@@ -69,7 +69,7 @@
       "id": "T005",
       "title": "Record verification evidence VO-001",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T005 (pending) covering PC-001, PD-001, VO-001.",
+      "purpose": "Carry out lifecycle task T005 (done) covering PC-001, PD-001, VO-001.",
       "relatedIds": [
         "PC-001",
         "PD-001",
@@ -80,7 +80,7 @@
       "id": "T006",
       "title": "Handle migration posture PM-001",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T006 (pending) covering PC-001, PM-001.",
+      "purpose": "Carry out lifecycle task T006 (done) covering PC-001, PM-001.",
       "relatedIds": [
         "PC-001",
         "PM-001"
@@ -90,7 +90,7 @@
       "id": "T007",
       "title": "Refresh generated view impact GV-001",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T007 (pending) covering GV-001, PD-001.",
+      "purpose": "Carry out lifecycle task T007 (done) covering GV-001, PD-001.",
       "relatedIds": [
         "GV-001",
         "PD-001"
@@ -162,5 +162,16 @@
       "kind": "skills"
     }
   ],
-  "diagnostics": []
+  "diagnostics": [
+    {
+      "id": "agents.staleGeneratedGuidance",
+      "severity": "warning",
+      "artifact": "readiness/142-stable-working-surface/agent-commands/claude/guidance.json",
+      "message": "Generated agent guidance for target \u0027claude\u0027 no longer matches the current normalized work model.",
+      "correction": "Regenerate agent guidance so the generated view matches the current work model.",
+      "relatedIds": [
+        "claude"
+      ]
+    }
+  ]
 }

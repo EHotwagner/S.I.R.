@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/142-stable-working-surface/ship.json",
-      "digest": "sha256:ce469b81698b7b3ae62b20a3d4fca1d7d3d807a18e059275a5ad8dc9383cfc26",
+      "digest": "sha256:ecb4e355362f5f6bc8df193a7d74979dd75f29b921de3ce55dfb9118b4a2356d",
       "schemaVersion": 1
     },
     {
       "path": "readiness/142-stable-working-surface/verify.json",
-      "digest": "sha256:6a722721775f1c9f02ed9a7fa0f48caf9831d563c5f4b3eff0bf57b5a743f55d",
+      "digest": "sha256:55dc3644da69aefdf878b8606926d1b8cc24635ba21775c91239e7b1ace5b5cb",
       "schemaVersion": 1
     },
     {
       "path": "readiness/142-stable-working-surface/work-model.json",
-      "digest": "sha256:68e79388b84e46dcc424a6f1a877e34abd5cb0f2cb54ff117fd99781ce37fecd",
+      "digest": "sha256:27ddbdb2e2e034783ac3950104d04f52b3760663980c32f1a87584fea7d1be01",
       "schemaVersion": 1
     }
   ],
@@ -59,37 +59,37 @@
       },
       {
         "id": "task:T001",
-        "state": "pending",
+        "state": "real",
         "rationale": null
       },
       {
         "id": "task:T002",
-        "state": "pending",
+        "state": "real",
         "rationale": null
       },
       {
         "id": "task:T003",
-        "state": "pending",
+        "state": "real",
         "rationale": null
       },
       {
         "id": "task:T004",
-        "state": "pending",
+        "state": "real",
         "rationale": null
       },
       {
         "id": "task:T005",
-        "state": "pending",
+        "state": "real",
         "rationale": null
       },
       {
         "id": "task:T006",
-        "state": "pending",
+        "state": "real",
         "rationale": null
       },
       {
         "id": "task:T007",
-        "state": "pending",
+        "state": "real",
         "rationale": null
       }
     ],

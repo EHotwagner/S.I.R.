@@ -11,7 +11,7 @@ sourceAnalysis: readiness/142-stable-working-surface/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/142-stable-working-surface/analysis.json
-    digest: b1721815f76f3ed19b96c932d8d9d97447a661593c8fbf2f441df5d6108f3afd
+    digest: f8d384c013c96e964fddb22570690170d7b83108c983e0b72aeedada5f8155c3
     schemaVersion: 1
   - label: checklist
     path: work/142-stable-working-surface/checklist.md
@@ -31,7 +31,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: tasks
     path: work/142-stable-working-surface/tasks.yml
-    digest: ad423cd8bfde9d4ec8e695844dee3e19ebe7a186d53456bbb5e61ea740d5a527
+    digest: aa774ed29de1f927c11629ae5ca0898ce12a7b00c169f7575cafc6c4142811fc
     schemaVersion: 1
 evidence:
   - id: EV001
