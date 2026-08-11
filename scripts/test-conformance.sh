@@ -8,8 +8,6 @@ export NUGET_PACKAGES="$task_tmp/nuget-packages"
 
 cd "$repo_root"
 
-./scripts/verify-fable-game-governance.sh
-
 node scripts/verify-fable-client-baseline.mjs
 node scripts/verify-project-architecture.mjs
 node scripts/test-persistent-workspace-m0-baseline.mjs
@@ -54,6 +52,7 @@ search_fixed() {
 }
 
 dotnet tool restore
+./scripts/verify-fable-game-governance.sh
 dotnet restore SIR.slnx --locked-mode
 dotnet build SIR.slnx --no-restore
 

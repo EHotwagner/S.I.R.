@@ -11,7 +11,7 @@ sourceAnalysis: readiness/187-fable-game-governance-parity/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/187-fable-game-governance-parity/analysis.json
-    digest: 64ac25c95842588b59feca1310afd177cd55d52508ac3faa3b8a3b0f7e9d4e2e
+    digest: 432c0c0a5f8d86df7a1f555922911bf99d3b566d3696326dee2edfa771ad3549
     schemaVersion: 1
   - label: checklist
     path: work/187-fable-game-governance-parity/checklist.md
@@ -54,7 +54,7 @@ evidence:
     synthetic: false
     observedRun:
       source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
-      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digest: "sha256:3f9a27e9b91932866ddcddd548c600a2288a1b4cee6e411dc28e6bcfb4620a5f"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -81,7 +81,7 @@ evidence:
     synthetic: false
     observedRun:
       source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
-      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digest: "sha256:3f9a27e9b91932866ddcddd548c600a2288a1b4cee6e411dc28e6bcfb4620a5f"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -108,7 +108,7 @@ evidence:
     synthetic: false
     observedRun:
       source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
-      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digest: "sha256:3f9a27e9b91932866ddcddd548c600a2288a1b4cee6e411dc28e6bcfb4620a5f"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -135,7 +135,7 @@ evidence:
     synthetic: false
     observedRun:
       source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
-      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digest: "sha256:3f9a27e9b91932866ddcddd548c600a2288a1b4cee6e411dc28e6bcfb4620a5f"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -162,7 +162,7 @@ evidence:
     synthetic: false
     observedRun:
       source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
-      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digest: "sha256:3f9a27e9b91932866ddcddd548c600a2288a1b4cee6e411dc28e6bcfb4620a5f"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -189,7 +189,7 @@ evidence:
     synthetic: false
     observedRun:
       source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
-      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digest: "sha256:3f9a27e9b91932866ddcddd548c600a2288a1b4cee6e411dc28e6bcfb4620a5f"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -216,7 +216,7 @@ evidence:
     synthetic: false
     observedRun:
       source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
-      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digest: "sha256:3f9a27e9b91932866ddcddd548c600a2288a1b4cee6e411dc28e6bcfb4620a5f"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -243,7 +243,7 @@ evidence:
     synthetic: false
     observedRun:
       source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
-      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digest: "sha256:3f9a27e9b91932866ddcddd548c600a2288a1b4cee6e411dc28e6bcfb4620a5f"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -270,7 +270,7 @@ evidence:
     synthetic: false
     observedRun:
       source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
-      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digest: "sha256:3f9a27e9b91932866ddcddd548c600a2288a1b4cee6e411dc28e6bcfb4620a5f"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -297,7 +297,7 @@ evidence:
     synthetic: false
     observedRun:
       source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
-      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digest: "sha256:3f9a27e9b91932866ddcddd548c600a2288a1b4cee6e411dc28e6bcfb4620a5f"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -324,7 +324,7 @@ evidence:
     synthetic: false
     observedRun:
       source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
-      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digest: "sha256:3f9a27e9b91932866ddcddd548c600a2288a1b4cee6e411dc28e6bcfb4620a5f"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -351,7 +351,7 @@ evidence:
     synthetic: false
     observedRun:
       source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
-      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digest: "sha256:3f9a27e9b91932866ddcddd548c600a2288a1b4cee6e411dc28e6bcfb4620a5f"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
@@ -378,7 +378,7 @@ evidence:
     synthetic: false
     observedRun:
       source: work/187-fable-game-governance-parity/test-results/governance-parity.trx
-      digest: "sha256:f95883cf83ba374b9c696ece6835c96ea16f526d8b0b7dd322b5b255363a0b60"
+      digest: "sha256:3f9a27e9b91932866ddcddd548c600a2288a1b4cee6e411dc28e6bcfb4620a5f"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 15
