@@ -46,7 +46,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001]
     obligationRefs: [EV001]
-    artifacts: [src/SIR.Client.Web/App.fs]
+    artifacts: [src/SIR.Client.Web/App.fs, tests/SIR.Browser.Tests/live-session.spec.js]
     sourceRefs: []
     result: pass
     synthetic: false
@@ -63,10 +63,18 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-002]
     obligationRefs: [EV002]
-    artifacts: [src/SIR.Client.Web/App.fs]
+    artifacts: [src/SIR.Client.Web/App.fs, tests/SIR.Browser.Tests/live-session.spec.js]
     sourceRefs: []
     result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:8c909731e0fa0476228d0bcbd6701cc295473c0da8ffa1bd1b8d037fd0090f95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV003
     kind: verification
@@ -84,6 +92,14 @@ evidence:
     sourceRefs: []
     result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:8c909731e0fa0476228d0bcbd6701cc295473c0da8ffa1bd1b8d037fd0090f95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV004
     kind: implementation
@@ -118,6 +134,14 @@ evidence:
     sourceRefs: []
     result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:8c909731e0fa0476228d0bcbd6701cc295473c0da8ffa1bd1b8d037fd0090f95"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV006
     kind: note
@@ -131,7 +155,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV006]
-    artifacts: [work/142-stable-working-surface/plan.md]
+    artifacts: [tests/SIR.Browser.Tests/live-session.spec.js, work/142-stable-working-surface/plan.md]
     sourceRefs: []
     result: pass
     synthetic: false
@@ -148,7 +172,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001]
     obligationRefs: [EV007]
-    artifacts: [readiness/142-stable-working-surface/analysis.json]
+    artifacts: [readiness/142-stable-working-surface/analysis.json, tests/SIR.Browser.Tests/live-session.spec.js]
     sourceRefs: []
     result: pass
     synthetic: false

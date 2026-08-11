@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "99933828e0e6b306802b0df0d4fdcbcb39da9f94597c219176771b63e76ad51b"
+        "value": "c130f32ce393753e0079014d10e25950bd07a6c3a7044ff3cd1f07ab6a92a4f8"
       }
     },
     {
@@ -396,7 +396,8 @@
         "FR-001"
       ],
       "artifactRefs": [
-        "src/SIR.Client.Web/App.fs"
+        "src/SIR.Client.Web/App.fs",
+        "tests/SIR.Browser.Tests/live-session.spec.js"
       ],
       "result": "pass",
       "synthetic": false,
@@ -422,7 +423,8 @@
         "FR-002"
       ],
       "artifactRefs": [
-        "src/SIR.Client.Web/App.fs"
+        "src/SIR.Client.Web/App.fs",
+        "tests/SIR.Browser.Tests/live-session.spec.js"
       ],
       "result": "pass",
       "synthetic": false,
@@ -520,6 +522,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
+        "tests/SIR.Browser.Tests/live-session.spec.js",
         "work/142-stable-working-surface/plan.md"
       ],
       "result": "pass",
@@ -544,7 +547,8 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "readiness/142-stable-working-surface/analysis.json"
+        "readiness/142-stable-working-surface/analysis.json",
+        "tests/SIR.Browser.Tests/live-session.spec.js"
       ],
       "result": "pass",
       "synthetic": false,
@@ -613,7 +617,7 @@
           "path": "work/142-stable-working-surface/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "99933828e0e6b306802b0df0d4fdcbcb39da9f94597c219176771b63e76ad51b"
+            "value": "c130f32ce393753e0079014d10e25950bd07a6c3a7044ff3cd1f07ab6a92a4f8"
           },
           "schemaVersion": 1
         },
@@ -644,7 +648,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "cce0cc6f7941f3ae840c46fb119027995834e15ba23c6168be50413d01a7d7f2"
+        "value": "3f6f116e443d4df52ae91bb47799a4727f202de1bae5b9cab618470083ce06ab"
       },
       "currency": "current"
     }
