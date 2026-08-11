@@ -11,3 +11,4 @@ dotnet fable src/SIR.Replay.Web/SIR.Replay.Web.fsproj \
   --noCache
 
 npx vite build --config src/SIR.Client.Web/vite.config.js
+node scripts/generate-publication-manifest.mjs artifacts/client

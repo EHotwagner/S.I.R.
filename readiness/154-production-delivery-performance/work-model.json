@@ -1,0 +1,1455 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "1.2.0",
+  "workId": "154-production-delivery-performance",
+  "project": {
+    "id": "s.i.r",
+    "defaultWorkRoot": "work",
+    "profile": null
+  },
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      }
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      }
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      }
+    },
+    {
+      "path": "work/154-production-delivery-performance/checklist.md",
+      "kind": "checklist",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "8e398b50967a5eb7aba85e0b5877216a319a31d128a402e0857efb7c04189fd2"
+      }
+    },
+    {
+      "path": "work/154-production-delivery-performance/clarifications.md",
+      "kind": "clarifications",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "da0ba318a9b57bbf534b6cdc1240cb62c31b7e1a594500de704014ee1d97eafd"
+      }
+    },
+    {
+      "path": "work/154-production-delivery-performance/evidence.yml",
+      "kind": "evidence",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "901e91ffc034e7dfecb2289c16dccd488ffca965f30150cc74ca3964a9fc14a3"
+      }
+    },
+    {
+      "path": "work/154-production-delivery-performance/plan.md",
+      "kind": "plan",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "828b5093d5697748c82836f3df7c495d5d4825221f6cd434af364a0ac2a845a7"
+      }
+    },
+    {
+      "path": "work/154-production-delivery-performance/spec.md",
+      "kind": "spec",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "d944db2aa6622035bd82bd61b3ee4e264839a3c0509876f34ea12459d06c5fde"
+      }
+    },
+    {
+      "path": "work/154-production-delivery-performance/tasks.yml",
+      "kind": "tasks",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "911208f01e78a6682a556c8e76d11a0d949d3fd439c2c492d8fb7b6e1ba89018"
+      }
+    }
+  ],
+  "workItem": {
+    "id": "154-production-delivery-performance",
+    "title": "Production Delivery Performance",
+    "stage": "specify",
+    "changeTier": "tier1",
+    "status": "specified"
+  },
+  "performanceIntent": null,
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "The production server MUST negotiate Brotli and gzip for compressible client assets and emit \u0060Vary: Accept-Encoding\u0060. (Stories: US-001; Acceptance: AC-001)",
+      "text": "The production server MUST negotiate Brotli and gzip for compressible client assets and emit \u0060Vary: Accept-Encoding\u0060. (Stories: US-001; Acceptance: AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/154-production-delivery-performance/spec.md",
+      "sourceLocation": {
+        "line": 35,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001"
+      ],
+      "linkedEvidenceIds": [
+        "EV001",
+        "EV015"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "title": "The production server MUST give content-addressed engine assets an immutable long-lived cache policy and mutable entry assets a safe revalidation policy. (Stories: US-001; Acceptance: AC-001)",
+      "text": "The production server MUST give content-addressed engine assets an immutable long-lived cache policy and mutable entry assets a safe revalidation policy. (Stories: US-001; Acceptance: AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/154-production-delivery-performance/spec.md",
+      "sourceLocation": {
+        "line": 36,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T006"
+      ],
+      "linkedEvidenceIds": [
+        "EV006",
+        "EV015"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "title": "Cache and compression configuration MUST leave engine selection, integrity manifests, offline/error behavior, and source-map delivery policy intact. (Stories: US-001; Acceptance: AC-001)",
+      "text": "Cache and compression configuration MUST leave engine selection, integrity manifests, offline/error behavior, and source-map delivery policy intact. (Stories: US-001; Acceptance: AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/154-production-delivery-performance/spec.md",
+      "sourceLocation": {
+        "line": 37,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T007"
+      ],
+      "linkedEvidenceIds": [
+        "EV007",
+        "EV015"
+      ]
+    },
+    {
+      "id": "FR-004",
+      "title": "The client build MUST defer a non-default mode or supporting-panel code path until activation without changing the first interactive route. (Stories: US-001; Acceptance: AC-002)",
+      "text": "The client build MUST defer a non-default mode or supporting-panel code path until activation without changing the first interactive route. (Stories: US-001; Acceptance: AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/154-production-delivery-performance/spec.md",
+      "sourceLocation": {
+        "line": 38,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T008"
+      ],
+      "linkedEvidenceIds": [
+        "EV008",
+        "EV016"
+      ]
+    },
+    {
+      "id": "FR-005",
+      "title": "The delivery measurement MUST exercise the Release artifact under declared network and CPU throttling and report first-load and deferred-mode activation byte totals. (Stories: US-001; Acceptance: AC-002)",
+      "text": "The delivery measurement MUST exercise the Release artifact under declared network and CPU throttling and report first-load and deferred-mode activation byte totals. (Stories: US-001; Acceptance: AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/154-production-delivery-performance/spec.md",
+      "sourceLocation": {
+        "line": 39,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T009"
+      ],
+      "linkedEvidenceIds": [
+        "EV009",
+        "EV016"
+      ]
+    },
+    {
+      "id": "FR-006",
+      "title": "CI MUST reject a production delivery artifact when any defined raw, compressed, or initial-route byte budget is exceeded. (Stories: US-002; Acceptance: AC-003)",
+      "text": "CI MUST reject a production delivery artifact when any defined raw, compressed, or initial-route byte budget is exceeded. (Stories: US-002; Acceptance: AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/154-production-delivery-performance/spec.md",
+      "sourceLocation": {
+        "line": 40,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T010"
+      ],
+      "linkedEvidenceIds": [
+        "EV010",
+        "EV017"
+      ]
+    },
+    {
+      "id": "FR-007",
+      "title": "The delivery-budget gate MUST fail if its HTTP/cache/compression expectations or integrity-manifest protections are violated, and name the responsible artifact or request. (Stories: US-002; Acceptance: AC-003)",
+      "text": "The delivery-budget gate MUST fail if its HTTP/cache/compression expectations or integrity-manifest protections are violated, and name the responsible artifact or request. (Stories: US-002; Acceptance: AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/154-production-delivery-performance/spec.md",
+      "sourceLocation": {
+        "line": 41,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T011"
+      ],
+      "linkedEvidenceIds": [
+        "EV011",
+        "EV017"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Let ASP.NET Core own response compression and static-file cache headers. A reverse proxy/CDN may add equivalent behavior, but must not strip \u0060Vary\u0060 or weaken the documented cache policy.",
+      "decision": "Let ASP.NET Core own response compression and static-file cache headers. A reverse proxy/CDN may add equivalent behavior, but must not strip \u0060Vary\u0060 or weaken the documented cache policy.",
+      "requirementRefs": [
+        "FR-001",
+        "FR-002"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/154-production-delivery-performance/clarifications.md",
+      "sourceLocation": {
+        "line": 24,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T012"
+      ]
+    },
+    {
+      "id": "DEC-002",
+      "title": "Treat the normal simulator route as initial; defer the Rules Lab mode because it is not needed to reach the first interactive simulator route and can be loaded explicitly on activation.",
+      "decision": "Treat the normal simulator route as initial; defer the Rules Lab mode because it is not needed to reach the first interactive simulator route and can be loaded explicitly on activation.",
+      "requirementRefs": [
+        "FR-004",
+        "FR-005"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/154-production-delivery-performance/clarifications.md",
+      "sourceLocation": {
+        "line": 25,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T013"
+      ]
+    },
+    {
+      "id": "DEC-003",
+      "title": "Check deterministic raw/Brotli/gzip file budgets and a browser-observed Release request graph. Use CDP network throttling and CPU throttling only as measurement conditions, not timing pass/fail thresholds.",
+      "decision": "Check deterministic raw/Brotli/gzip file budgets and a browser-observed Release request graph. Use CDP network throttling and CPU throttling only as measurement conditions, not timing pass/fail thresholds.",
+      "requirementRefs": [
+        "FR-006",
+        "FR-007"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/154-production-delivery-performance/clarifications.md",
+      "sourceLocation": {
+        "line": 26,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T014"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement requirement FR-001",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-001"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV001"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "T002",
+      "title": "Update contract surface PC-001",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV002"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "T003",
+      "title": "Record verification evidence VO-001",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "VO-001"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV003"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "T004",
+      "title": "Handle migration posture PM-001",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PM-001"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV004"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "T005",
+      "title": "Refresh generated view impact GV-001",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-001",
+        "PD-001",
+        "PD-002",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV005"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "T006",
+      "title": "Implement requirement FR-002",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-002"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV006"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "T007",
+      "title": "Implement requirement FR-003",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-003"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV007"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "T008",
+      "title": "Implement requirement FR-004",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-004"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV008"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "T009",
+      "title": "Implement requirement FR-005",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-005"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV009"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "T010",
+      "title": "Implement requirement FR-006",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-006"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "FR-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV010"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "T011",
+      "title": "Implement requirement FR-007",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-007"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "FR-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV011"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "T012",
+      "title": "Implement clarification decision DEC-001",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-001"
+      ],
+      "sourceIds": [
+        "DEC-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV012"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "T013",
+      "title": "Implement clarification decision DEC-002",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-002"
+      ],
+      "sourceIds": [
+        "DEC-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV013"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "T014",
+      "title": "Implement clarification decision DEC-003",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-003"
+      ],
+      "sourceIds": [
+        "DEC-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV014"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "T015",
+      "title": "Implement plan decision PD-001",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "DEC-001",
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV015"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "T016",
+      "title": "Implement plan decision PD-002",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "DEC-002",
+        "FR-004",
+        "FR-005",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV016"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 16,
+        "column": 1
+      }
+    },
+    {
+      "id": "T017",
+      "title": "Implement plan decision PD-003",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "DEC-003",
+        "FR-006",
+        "FR-007",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV017"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 17,
+        "column": 1
+      }
+    },
+    {
+      "id": "T018",
+      "title": "Update contract surface PC-002",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV018"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "id": "T019",
+      "title": "Record verification evidence VO-002",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-002",
+        "VO-002"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV019"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "id": "T020",
+      "title": "Record verification evidence VO-003",
+      "status": "pending",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-003",
+        "VO-003"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV020"
+      ],
+      "source": "work/154-production-delivery-performance/tasks.yml",
+      "sourceLocation": {
+        "line": 20,
+        "column": 1
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV001",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T001",
+      "taskRefs": [
+        "T001"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV002",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T002",
+      "taskRefs": [
+        "T002"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV003",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T003",
+      "taskRefs": [
+        "T003"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV004",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T004",
+      "taskRefs": [
+        "T004"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV005",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T005",
+      "taskRefs": [
+        "T005"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV006",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T006",
+      "taskRefs": [
+        "T006"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV007",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T007",
+      "taskRefs": [
+        "T007"
+      ],
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV008",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T008",
+      "taskRefs": [
+        "T008"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV009",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T009",
+      "taskRefs": [
+        "T009"
+      ],
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV010",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T010",
+      "taskRefs": [
+        "T010"
+      ],
+      "requirementRefs": [
+        "FR-006"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV011",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T011",
+      "taskRefs": [
+        "T011"
+      ],
+      "requirementRefs": [
+        "FR-007"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV012",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T012",
+      "taskRefs": [
+        "T012"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV013",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T013",
+      "taskRefs": [
+        "T013"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV014",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T014",
+      "taskRefs": [
+        "T014"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV015",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T015",
+      "taskRefs": [
+        "T015"
+      ],
+      "requirementRefs": [
+        "FR-001",
+        "FR-002",
+        "FR-003"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV016",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T016",
+      "taskRefs": [
+        "T016"
+      ],
+      "requirementRefs": [
+        "FR-004",
+        "FR-005"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 16,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV017",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T017",
+      "taskRefs": [
+        "T017"
+      ],
+      "requirementRefs": [
+        "FR-006",
+        "FR-007"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 17,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV018",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T018",
+      "taskRefs": [
+        "T018"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV019",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T019",
+      "taskRefs": [
+        "T019"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV020",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T020",
+      "taskRefs": [
+        "T020"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/154-production-delivery-performance/evidence.yml",
+      "sourceLocation": {
+        "line": 20,
+        "column": 1
+      }
+    }
+  ],
+  "generatedViews": [
+    {
+      "path": "readiness/154-production-delivery-performance/work-model.json",
+      "kind": "workModel",
+      "schemaVersion": 1,
+      "generator": {
+        "id": "FS.GG.SDD.Artifacts",
+        "version": "1.0.1"
+      },
+      "sources": [
+        {
+          "path": ".fsgg/agents.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/project.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/sdd.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/154-production-delivery-performance/checklist.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "8e398b50967a5eb7aba85e0b5877216a319a31d128a402e0857efb7c04189fd2"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/154-production-delivery-performance/clarifications.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "da0ba318a9b57bbf534b6cdc1240cb62c31b7e1a594500de704014ee1d97eafd"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/154-production-delivery-performance/evidence.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "901e91ffc034e7dfecb2289c16dccd488ffca965f30150cc74ca3964a9fc14a3"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/154-production-delivery-performance/plan.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "828b5093d5697748c82836f3df7c495d5d4825221f6cd434af364a0ac2a845a7"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/154-production-delivery-performance/spec.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d944db2aa6622035bd82bd61b3ee4e264839a3c0509876f34ea12459d06c5fde"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/154-production-delivery-performance/tasks.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "911208f01e78a6682a556c8e76d11a0d949d3fd439c2c492d8fb7b6e1ba89018"
+          },
+          "schemaVersion": 1
+        }
+      ],
+      "outputDigest": {
+        "algorithm": "sha256",
+        "value": "7a292dfe5a679a279440aafc180d7e4a8d6de84d851591ebd42c87d5a10bcd52"
+      },
+      "currency": "current"
+    }
+  ],
+  "diagnostics": [],
+  "governanceBoundaries": []
+}
