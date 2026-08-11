@@ -250,6 +250,7 @@ env \
   npm ci --ignore-scripts
 ./scripts/build-client.sh
 node scripts/smoke-client.mjs
+npm run setup:browser
 npm run test:browser-diagnostics-gate
 node scripts/test-map-editor-qualification.mjs
 node scripts/test-planning-workspace-m5-qualification.mjs

@@ -49,16 +49,22 @@ test("disabled playback names why it is unavailable before a simulation is loade
 
 test("the normal UI remains operable at 400 percent browser zoom", async ({ page }) => {
   await page.goto("/");
-  // Use Chromium's actual browser zoom shortcut: this is intentionally not a
-  // CSS/device-scale emulation or an implementation-state assertion.
-  await page.keyboard.press("Control++");
-  await page.keyboard.press("Control++");
-  await page.keyboard.press("Control++");
-  await page.keyboard.press("Control++");
+  // Browser-zoom environment model: quarter the CSS viewport and raise DPR to
+  // four, which exercises the same responsive media queries as 400% zoom.
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send("Emulation.setDeviceMetricsOverride", {
+    width: 320,
+    height: 180,
+    deviceScaleFactor: 4,
+    mobile: false,
+  });
+  await expect.poll(() => page.evaluate(() => window.innerWidth)).toBeLessThanOrEqual(320);
+  await expect.poll(() => page.evaluate(() => window.devicePixelRatio)).toBeGreaterThanOrEqual(4);
   await expect(page.getByRole("main", { name: "S.I.R. simulator and editor" })).toBeVisible();
   await page.getByRole("button", { name: "Simulate", exact: true }).click();
   await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Open simulator samples", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
+  await expect(page.getByLabel("Simulator samples", { exact: true })).toBeVisible();
 });
 
 test("a valid map selected through the visible import control reports success", async ({ page }) => {
@@ -124,7 +130,10 @@ test("a curated sample creates a visible simulator handoff and playback can rese
   const pause = page.getByRole("button", { name: "Pause tactical timeline", exact: true });
   await expect(pause).toBeVisible();
   await pause.click();
-  await page.getByRole("button", { name: "Step tactical timeline forward", exact: true }).click();
+  const runtimeTick = page.getByText(/Authoritative runtime tick \d+/);
+  const beforeTick = Number((await runtimeTick.textContent()).match(/\d+/)[0]);
+  await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();
+  await expect(runtimeTick).toHaveText(new RegExp(`^Authoritative runtime tick ${beforeTick + 1}\\b`));
   page.once("dialog", (dialog) => dialog.accept());
   await page.getByRole("button", { name: "Reset simulation to its immutable revision", exact: true }).filter({ hasText: "Reset simulation" }).click();
   await expect(page.getByText(/Authoritative runtime tick 0/)).toBeVisible();
@@ -134,6 +143,8 @@ test("live authority reconnect remains visible through the production command su
   await page.goto("/");
   const live = page.getByRole("region", { name: "Authoritative live session" });
   await expect(live).toContainText("live connected", { timeout: 90_000 });
+  await page.getByRole("button", { name: "Send the next player-visible live advance command" }).click();
+  await expect(live).toContainText(/tick [1-9]/, { timeout: 30_000 });
   await page.getByRole("button", { name: "Disconnect the player-visible live session" }).click();
   await expect(live).toContainText("live disconnected");
   await page.getByRole("button", { name: "Reconnect and request the authoritative live snapshot" }).click();

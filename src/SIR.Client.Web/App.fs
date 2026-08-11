@@ -8100,6 +8100,10 @@ let view model dispatch =
                 prop.children [
                     Html.h2 "Authoritative live session"
                     Html.p ("live " + model.Live.Status)
+                    Html.p (
+                        "Authoritative live tick "
+                        + string (model.Live.Snapshot |> Option.map _.Tick |> Option.defaultValue 0)
+                    )
                     button "Advance live session" "Send the next player-visible live advance command" (model.Live.Connection.IsNone) (fun _ -> dispatch AdvanceLiveSession)
                     button "Disconnect live session" "Disconnect the player-visible live session" (model.Live.Connection.IsNone) (fun _ -> dispatch DisconnectLiveSession)
                     button "Reconnect live session" "Reconnect and request the authoritative live snapshot" (model.Live.Connection.IsNone) (fun _ -> dispatch ReconnectLiveSession)
