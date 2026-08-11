@@ -40,15 +40,41 @@ Object.assign(globalThis, {
 });
 window.Element.prototype.setPointerCapture = () => {};
 window.Element.prototype.releasePointerCapture = () => {};
+const nativeWindowTimeout = window.setTimeout.bind(window);
+const nativeAutosaveSetItem = window.localStorage.setItem.bind(window.localStorage);
+window.localStorage.setItem = (key, value) => {
+  if (key === "sir.map-editor.autosave.v1") window.__sirMapAutosaveStored = true;
+  return nativeAutosaveSetItem(key, value);
+};
+window.setTimeout = (callback, delay, ...arguments_) => {
+  if (delay === 500) window.__sirMapAutosaveScheduled = true;
+  return nativeWindowTimeout(() => {
+    if (delay === 500) window.__sirMapAutosaveFired = true;
+    try {
+      callback();
+      if (delay === 500)
+        window.__sirMapAutosaveStoredValue = window.localStorage.getItem("sir.map-editor.autosave.v1");
+    } catch (error) {
+      window.__sirMapAutosaveError = String(error);
+    }
+  }, delay, ...arguments_);
+};
 await import(
   pathToFileURL(resolve(clientOutput, scriptMatch[1].replace(/^\.\//, "")))
 );
+window.localStorage.setItem("sir.qualification.storage-probe", "present");
+const storageProbe = window.localStorage.getItem("sir.qualification.storage-probe") === "present";
+window.localStorage.removeItem("sir.qualification.storage-probe");
+window.happyDOM.waitUntilComplete = async () => {
+  await new Promise((done) => setTimeout(done, 0));
+};
 await window.happyDOM.waitUntilComplete();
 
 const failures = [];
 const require = (condition, message) => {
   if (!condition) failures.push(message);
 };
+require(storageProbe, "Happy DOM did not retain a direct localStorage write.");
 require(
   appSource.split("\n").length <= 8200,
   "App composition exceeded its 8,200-line ownership ceiling; extract a typed boundary instead of regrowing it",
@@ -640,16 +666,22 @@ require(
   "clipboard paste did not remain one undoable transaction",
 );
 const autosaveName = window.document.querySelector("#map-name");
-autosaveName.value = "Autosave qualification";
+Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set?.call(
+  autosaveName,
+  "Autosave qualification",
+);
 autosaveName.dispatchEvent(new window.Event("input", { bubbles: true }));
 autosaveName.dispatchEvent(new window.Event("change", { bubbles: true }));
+buttonByText(
+  "Zoom in",
+  window.document.querySelector('[aria-label="Map editor document actions"]'),
+)?.click();
+await new Promise((done) => window.setTimeout(done, 1200));
 await window.happyDOM.waitUntilComplete();
-await new Promise((done) => setTimeout(done, 1200));
 require(
-  /^SIR-MAP [123]\n/.test(window.localStorage.getItem("sir.map-editor.autosave.v1") ?? ""),
-  `authored changes did not reach observed autosave storage (timer ${Boolean(window.__sirMapAutosaveTimer)}, name ${window.document.querySelector("#map-name")?.value})`,
+  /^SIR-MAP [1234]\n/.test(window.__sirMapAutosaveStoredValue ?? ""),
+  `authored changes did not reach observed autosave storage (scheduled ${Boolean(window.__sirMapAutosaveScheduled)}, fired ${Boolean(window.__sirMapAutosaveFired)}, stored ${Boolean(window.__sirMapAutosaveStored)}, callback-value ${window.__sirMapAutosaveStoredValue ?? "none"}, error ${window.__sirMapAutosaveError ?? "none"}, timer ${Boolean(window.__sirMapAutosaveTimer)}, name ${window.document.querySelector("#map-name")?.value})`,
 );
-
 const cameraBefore = Number(worksurface.getAttribute("data-camera-zoom"));
 buttonByText(
   "Zoom in",
