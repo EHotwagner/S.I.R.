@@ -9,6 +9,7 @@
     "import:map-design": "node scripts/import-map-editor-design.mjs",
     "measure:worker": "node scripts/measure-worker.mjs",
     "test:worker-roundtrip-race": "node scripts/test-worker-roundtrip-race.mjs",
+    "test:browser-import-preflight-wiring": "node scripts/test-browser-import-preflight-wiring.mjs",
     "review:battlefield": "node scripts/generate-battlefield-review.mjs",
     "review:map-editor": "node scripts/generate-map-editor-review.mjs",
     "review:persistent-workspace-m9": "node scripts/generate-persistent-workspace-m9-review.mjs",
