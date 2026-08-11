@@ -174,12 +174,12 @@ document.querySelectorAll("details.desktop-menu[open]").forEach(menu => menu.rem
 let private closeDesktopMenus () : unit = jsNative
 
 [<Emit("""
-const menu = $0.closest('[role=menu]');
-if (!menu) return;
-const items = Array.from(menu.querySelectorAll('[role=menuitem]:not([disabled])'));
-const current = items.indexOf(document.activeElement);
-const next = items[(current + $1 + items.length) % items.length] || items[0];
-if (next) next.focus();
+const desktopMenu = $0.closest('[role=menu]') || $0.closest('details.desktop-menu')?.querySelector('[role=menu]');
+if (!desktopMenu) return;
+const desktopMenuItems = Array.from(desktopMenu.querySelectorAll('[role=menuitem]:not([disabled])'));
+const desktopMenuCurrent = desktopMenuItems.indexOf(document.activeElement);
+const desktopMenuNext = desktopMenuItems[(desktopMenuCurrent + $1 + desktopMenuItems.length) % desktopMenuItems.length] || desktopMenuItems[0];
+if (desktopMenuNext) desktopMenuNext.focus();
 """)>]
 let private focusNextDesktopMenuItem (target: EventTarget) (delta: int) : unit = jsNative
 
@@ -7098,7 +7098,9 @@ let private tacticalLayoutToolbar model dispatch =
                 Html.summary [
                     prop.role.button
                     prop.text label
-                    prop.onClick (fun event -> closeSiblingDesktopMenus event.target)
+                    prop.onClick (fun event ->
+                        closeSiblingDesktopMenus event.target
+                        focusNextDesktopMenuItem event.target 0)
                     prop.onKeyDown (fun event ->
                         if event.key = "ArrowDown" then
                             event.preventDefault ()
