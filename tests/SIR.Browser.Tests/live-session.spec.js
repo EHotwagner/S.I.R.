@@ -63,6 +63,17 @@ test("browser import read failures leave a visible recovery message", async ({ p
   await expect(page.getByText("Replay package could not be read: read refused", { exact: true })).toBeVisible();
 });
 
+test("replay picker reads an exactly bounded file after rejecting an oversized one", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => { window.__sirImportReadCalls = 0; });
+  await page.getByRole("button", { name: "Review", exact: true }).click();
+  const picker = 'input[aria-label="Choose replay package"]';
+  await selectOversizedFile(page, picker, "over.sirr", 1_048_577);
+  await expect(page.getByText("Replay package is 1048577 bytes; the allowed maximum is 1048576 bytes.", { exact: true })).toBeVisible();
+  await selectOversizedFile(page, picker, "at-limit.sirr", 1_048_576);
+  await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(1);
+});
+
 test("map and raster pickers reject oversized metadata before reads", async ({ page }) => {
   await page.goto("/");
   await showDocumentImports(page);
