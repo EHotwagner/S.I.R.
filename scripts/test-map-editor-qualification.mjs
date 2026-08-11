@@ -879,3 +879,4 @@ console.log(
   "Map-editor M4 qualification passed: one accessible persistent SVG owns all Editor layers and pointer intent; registered tools/layers/selection/validation/document panels own Editor controls; atomic editing, undo-redo, camera, modal input, validation, import and accessibility parity remain intact; legacy renderer source/CSS is absent; and seven domain-truthful review boards are hash-bound to the production bundle.",
 );
 window.happyDOM.close();
+process.exit(0);

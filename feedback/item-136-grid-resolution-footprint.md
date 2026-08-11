@@ -23,7 +23,7 @@ The production client qualification emits a machine-readable JUnit receipt, whic
 
 ## §3 What did not
 
-Two workers stalled before completion, and `fsgg-sdd refresh` subsequently classified the otherwise accepted spec as malformed.
+Two workers stalled before completion, and `fsgg-sdd refresh` subsequently blocked on its generated work-model self-reference while the authored specification remained accepted by analyze, verify, and ship.
 
 ## §4 Findings
 
@@ -45,7 +45,7 @@ Two workers stalled before completion, and `fsgg-sdd refresh` subsequently class
 - **Kind:** capability-gap
 - **Impact:** Generated views remained blocked after shipReady.
 - **Expected:** Refresh accepts the valid specification that analyze, evidence, verify, and ship accepted.
-- **Observed:** `refresh.malformedSource` named `spec.md`.
+- **Observed:** `refresh.malformedSource` names `spec.md`, but the generated work-model diagnostics identify supported PC-001/VO-001/GV-001 references as unknown/inconsistent; this is a projection defect, not an authored malformed-spec claim.
 - **Evidence:** command:fsgg-sdd refresh --work 136-grid-resolution-footprint --text
 - **Version:** FS.GG.SDD 1.0.0
 - **Owner:** FS.GG.SDD refresh
@@ -92,7 +92,7 @@ Two recovery handoffs and one blocked refresh attempt.
 
 ## §11 Falsifiable improvements
 
-- Repair refresh so a spec accepted by ship is not reported malformed. Acceptance: refresh completes current/zero-blocking for this work item.
+- Repair the work-model/refresh projection self-reference. Acceptance: refresh completes current/zero-blocking for this work item without misclassifying accepted authored sources.
 
 ## §12 Development-surface coverage
 
