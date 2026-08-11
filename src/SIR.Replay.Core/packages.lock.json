@@ -22,15 +22,6 @@
           "SIR.Domain": "[1.0.0, )"
         }
       },
-      "sir.wasm": {
-        "type": "Project",
-        "dependencies": {
-          "FSharp.Core": "[10.1.302, 10.1.302]",
-          "SIR.Domain": "[1.0.0, )",
-          "SIR.Simulation": "[1.0.0, )",
-          "Wasmtime": "[44.0.0, 44.0.0]"
-        }
-      },
       "FS.GG.Game.Core": {
         "type": "CentralTransitive",
         "requested": "[0.13.0, 0.13.0]",
@@ -39,12 +30,6 @@
         "dependencies": {
           "FSharp.Core": "10.1.302"
         }
-      },
-      "Wasmtime": {
-        "type": "CentralTransitive",
-        "requested": "[44.0.0, 44.0.0]",
-        "resolved": "44.0.0",
-        "contentHash": "Mo93hPzT2wzxQlntv0yqWChspMCp9KlT4rTYseriz/WZ1wKjRCE5WBwrN2ljBeqBitKINPMwupN4Ar1jnaS7Vw=="
       }
     }
   }

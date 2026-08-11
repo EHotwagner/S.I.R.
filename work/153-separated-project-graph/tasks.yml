@@ -1,0 +1,126 @@
+schemaVersion: 1
+work:
+  id: 153-separated-project-graph
+  title: "Separated Project Graph"
+  stage: tasks
+  status: tasksReady
+  sourceSpec: work/153-separated-project-graph/spec.md
+  sourceClarifications: work/153-separated-project-graph/clarifications.md
+  sourceChecklist: work/153-separated-project-graph/checklist.md
+  sourcePlan: work/153-separated-project-graph/plan.md
+  publicOrToolFacingImpact: true
+
+sources:
+  - label: spec
+    path: work/153-separated-project-graph/spec.md
+    digest: 516a9acbc98c57e4e21eb1a343dc1c40fba50cbc8c8a24879a7c492d197d4928
+    schemaVersion: 1
+  - label: clarifications
+    path: work/153-separated-project-graph/clarifications.md
+    digest: 7a579efa101f1cfb33aff28055b5a1f630ac428d4638e164387e036b25e2d76c
+    schemaVersion: 1
+  - label: checklist
+    path: work/153-separated-project-graph/checklist.md
+    digest: 4ca753b0bff4d3bbeee281de0fef555ef4117ea704759fed914b2d342e8f5c6d
+    schemaVersion: 1
+  - label: plan
+    path: work/153-separated-project-graph/plan.md
+    digest: ff17820f1bb532bb57118f02f15e7f759d11d6eb8397850b6a38f1c3325a4c98
+    schemaVersion: 1
+tasks:
+  - id: T001
+    title: Implement requirement FR-001
+    status: done
+    owner: godwit-8c21
+    dependencies: []
+    requirements: [FR-001]
+    decisions: []
+    sourceIds: [AC-001, FR-001, PD-001]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV001]
+  - id: T002
+    title: Implement requirement FR-002
+    status: done
+    owner: godwit-8c21
+    dependencies: []
+    requirements: [FR-002]
+    decisions: []
+    sourceIds: [AC-002, FR-002, PD-002]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV002]
+  - id: T003
+    title: Implement requirement FR-003
+    status: done
+    owner: godwit-8c21
+    dependencies: []
+    requirements: [FR-003]
+    decisions: []
+    sourceIds: [AC-003, FR-003, PD-003]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV003]
+  - id: T004
+    title: Implement requirement FR-004
+    status: done
+    owner: godwit-8c21
+    dependencies: []
+    requirements: [FR-004]
+    decisions: []
+    sourceIds: [AC-004, FR-004, PD-004]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV004]
+  - id: T005
+    title: Implement clarification decision DEC-001
+    status: done
+    owner: godwit-8c21
+    dependencies: [T001]
+    requirements: []
+    decisions: [DEC-001]
+    sourceIds: [DEC-001]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV005]
+  - id: T006
+    title: Update contract surface PC-001
+    status: done
+    owner: godwit-8c21
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-001, PD-001]
+    requiredSkills: [fsharp]
+    requiredEvidence: [EV006]
+  - id: T007
+    title: Record verification evidence VO-001
+    status: done
+    owner: godwit-8c21
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-001, PD-001, PD-002, PD-003, PD-004, VO-001]
+    requiredSkills: [automated-tests, readiness-evidence]
+    requiredEvidence: [EV007]
+  - id: T008
+    title: Handle migration posture PM-001
+    status: done
+    owner: godwit-8c21
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-001, PM-001]
+    requiredSkills: [schema-versioning]
+    requiredEvidence: [EV008]
+  - id: T009
+    title: Refresh generated view impact GV-001
+    status: done
+    owner: godwit-8c21
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [GV-001, PD-001]
+    requiredSkills: [deterministic-json]
+    requiredEvidence: [EV009]
+acceptedDeferrals: []
+findings: []
+advisoryNotes:
+  - "Optional Governance pointers remain compatibility facts only."
+lifecycleNotes:
+  - "Next lifecycle action: fsgg-sdd analyze --work 153-separated-project-graph."

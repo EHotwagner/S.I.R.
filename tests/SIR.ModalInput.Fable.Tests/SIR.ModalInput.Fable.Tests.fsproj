@@ -7,6 +7,6 @@
     <Compile Include="../SIR.ModalInput.Shared/Program.fs" Link="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../src/SIR.Client/SIR.Client.fsproj" />
+    <ProjectReference Include="../../src/SIR.Replay.Core/SIR.Replay.Core.fsproj" />
   </ItemGroup>
 </Project>

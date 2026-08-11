@@ -16,12 +16,20 @@ Machine-verifiable identities live in `config/scaffold-provenance.json`; `npm ru
 | `Domain` | `src/SIR.Domain`, `src/SIR.Simulation`, `src/SIR.Match` | Preserved; existing deterministic simulation, live qualification, canonical encoding, replay, and controller boundaries remain consumer-owned. |
 | `Protocol` | `src/SIR.Protocol` | Added bounded bootstrap and realtime DTOs with named .NET/Fable codecs. No privileged domain type crosses the wire. |
 | `Server` | `src/SIR.Server` | Added ASP.NET Core host and SignalR hub around `SIR.Match.LiveIntegration`; the host does not own gameplay rules. |
-| `Client` | `src/SIR.Client`, `src/SIR.Client.Web` | Preserved existing Elmish/Feliz tactical workspace; added a narrow HTTP/SignalR live-session adapter compiled by Fable. |
+| `Client` | `src/SIR.Client`, `src/SIR.Replay.Web` | The live client is protocol-only; the replay/editor Fable host owns the existing Elmish/Feliz tactical workspace and narrow HTTP/SignalR live-session adapter. |
 | `Domain.Tests` / `Protocol.Tests` / `Server.Tests` | Existing shared .NET/Fable suites plus browser integration | Existing canonical and match qualification evidence remains; the browser test exercises both named codec and authoritative transport runtimes. |
 | `Browser.Tests` | `tests/SIR.Browser.Tests` | Added production-publish test for advance, forced disconnect/reconnect, and bounded full resync. |
 | root lifecycle | `build.sh`, `scripts/test-conformance.sh`, `.github/workflows/ci.yml` | One orchestration path owns restore, build, tests, production bundle/publish, browser smoke, provenance, SDD evidence import, and doctor. |
 
 No existing S.I.R. feature lane was deleted or replaced by the template arena sample.
+
+## Project-graph reconciliation
+
+Issue #153 restores the originally documented separated graph. `SIR.Wasm` now
+owns the concrete Wasmtime adapter, `SIR.Protocol.Generated` owns transport
+records/codecs, `SIR.Replay.Web` owns the Fable replay/editor host, and
+`SIR.Tools` is the command host. This is a boundary restoration, not a transport
+rewrite: the HTTP/Thoth plus SignalR vertical slice remains the released path.
 
 ## Deliberate deviations
 

@@ -6,7 +6,7 @@ fable_output="$repo_root/src/SIR.Client.Web/.fable"
 
 cd "$repo_root"
 
-dotnet fable src/SIR.Client.Web/SIR.Client.Web.fsproj \
+dotnet fable src/SIR.Replay.Web/SIR.Replay.Web.fsproj \
   --outDir "$fable_output" \
   --noCache
 

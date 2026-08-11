@@ -20,7 +20,7 @@
           "FSharp.Core": "[10.1.302, 10.1.302]",
           "SIR.Domain": "[1.0.0, )",
           "SIR.Simulation": "[1.0.0, )",
-          "Wasmtime": "[44.0.0, 44.0.0]"
+          "SIR.Wasm": "[1.0.0, )"
         }
       },
       "sir.simulation": {
@@ -29,6 +29,15 @@
           "FS.GG.Game.Core": "[0.13.0, 0.13.0]",
           "FSharp.Core": "[10.1.302, 10.1.302]",
           "SIR.Domain": "[1.0.0, )"
+        }
+      },
+      "sir.wasm": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[10.1.302, 10.1.302]",
+          "SIR.Domain": "[1.0.0, )",
+          "SIR.Simulation": "[1.0.0, )",
+          "Wasmtime": "[44.0.0, 44.0.0]"
         }
       },
       "FS.GG.Game.Core": {

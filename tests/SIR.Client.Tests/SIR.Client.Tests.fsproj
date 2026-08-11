@@ -12,7 +12,7 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../src/SIR.Client/SIR.Client.fsproj" />
+    <ProjectReference Include="../../src/SIR.Replay.Core/SIR.Replay.Core.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fixtures/*.sir-lab" CopyToOutputDirectory="PreserveNewest" />

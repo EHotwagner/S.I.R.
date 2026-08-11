@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Compile Include="../SIR.Match/ControlHost.fs" Link="ControlHost.fs" />
+    <Compile Include="../SIR.Match/Plan.fs" Link="Plan.fs" />
+    <Compile Include="../SIR.Match/MatchReplay.fs" Link="MatchReplay.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../SIR.Match/StandardController.wat" Link="StandardController.wat" LogicalName="SIR.Match.StandardController.wat" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../SIR.Domain/SIR.Domain.fsproj" />
+    <ProjectReference Include="../SIR.Simulation/SIR.Simulation.fsproj" />
+    <PackageReference Include="Wasmtime" />
+  </ItemGroup>
+</Project>

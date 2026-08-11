@@ -27,6 +27,7 @@
     "test:browser": "playwright test --config tests/SIR.Browser.Tests/playwright.config.js",
     "test:browser-diagnostics-gate": "node scripts/test-browser-diagnostics-gate.mjs",
     "verify:scaffold": "node scripts/verify-scaffold-provenance.mjs",
+    "verify:architecture": "node scripts/verify-project-architecture.mjs",
     "verify:baseline": "node scripts/verify-fable-client-baseline.mjs"
   },
   "dependencies": {

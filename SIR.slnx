@@ -1,12 +1,16 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/SIR.Client/SIR.Client.fsproj" />
-    <Project Path="src/SIR.Client.Web/SIR.Client.Web.fsproj" />
     <Project Path="src/SIR.Domain/SIR.Domain.fsproj" />
     <Project Path="src/SIR.Match/SIR.Match.fsproj" />
     <Project Path="src/SIR.Protocol/SIR.Protocol.fsproj" />
+    <Project Path="src/SIR.Protocol.Generated/SIR.Protocol.Generated.fsproj" />
+    <Project Path="src/SIR.Replay.Core/SIR.Replay.Core.fsproj" />
+    <Project Path="src/SIR.Replay.Web/SIR.Replay.Web.fsproj" />
     <Project Path="src/SIR.Server/SIR.Server.fsproj" />
     <Project Path="src/SIR.Simulation/SIR.Simulation.fsproj" />
+    <Project Path="src/SIR.Tools/SIR.Tools.fsproj" />
+    <Project Path="src/SIR.Wasm/SIR.Wasm.fsproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/SIR.Client.Tests/SIR.Client.Tests.fsproj" />

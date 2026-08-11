@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Compile Include="../SIR.Protocol/Http.fs" Link="Http.fs" />
+    <Compile Include="../SIR.Protocol/Realtime.fs" Link="Realtime.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Thoth.Json.Net" />
+  </ItemGroup>
+</Project>
