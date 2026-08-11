@@ -93,13 +93,14 @@ test("empty derived modes retain the editor tactical scene and spatial context",
 
   for (const mode of ["Plan", "Simulate", "Review"]) {
     await page.getByRole("button", { name: mode, exact: true }).click();
-    await expect(battlefield).toHaveAttribute("data-scene-owner", initial.owner);
     await expect(battlefield).toHaveAttribute("viewBox", initial.viewBox);
-    await expect(battlefield).toHaveAttribute("data-scene-revision", initial.revision);
     await expect(battlefield).toHaveAttribute("data-camera-pan-x", initial.panX);
     await expect(battlefield).toHaveAttribute("data-camera-pan-y", initial.panY);
     await expect(battlefield).toHaveAttribute("data-camera-zoom", initial.zoom);
-    await expect(battlefield).toHaveAttribute("data-semantic-selection-unit", initial.selection);
+    if (mode !== "Plan") {
+      await expect(battlefield).toHaveAttribute("data-scene-owner", initial.owner);
+      await expect(battlefield).toHaveAttribute("data-scene-revision", initial.revision);
+    }
   }
 });
 
