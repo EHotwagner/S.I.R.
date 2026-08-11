@@ -255,6 +255,7 @@ npm run test:production-delivery-budget
 npm run setup:browser
 dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish --no-restore
 npm run test:browser-diagnostics-gate
+npm run test:production-delivery-evidence
 node scripts/test-map-editor-qualification.mjs
 node scripts/test-planning-workspace-m5-qualification.mjs
 node scripts/test-simulator-workspace-m6-qualification.mjs

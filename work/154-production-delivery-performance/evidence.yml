@@ -11,7 +11,7 @@ sourceAnalysis: readiness/154-production-delivery-performance/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/154-production-delivery-performance/analysis.json
-    digest: 221451c4bfa2bfc4cebe88b540f3b4fc547d4ec4a7439d8845a51f30b4b3ab18
+    digest: 49e840cec711d4f13240cbdb1e7ad3835c007c6dc4e7c5cc2114f0c5ceb479cf
     schemaVersion: 1
   - label: checklist
     path: work/154-production-delivery-performance/checklist.md
@@ -53,11 +53,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -80,11 +80,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -107,11 +107,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -134,11 +134,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -161,11 +161,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -188,11 +188,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -215,11 +215,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -242,11 +242,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -269,11 +269,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -296,11 +296,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -323,11 +323,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -350,11 +350,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -377,11 +377,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -404,11 +404,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -431,11 +431,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -458,11 +458,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -485,11 +485,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -512,11 +512,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -539,11 +539,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
@@ -566,11 +566,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:de2dbd4171fa2e343a0b03b900161ae26f576ef039da4730058b9f92c0e63515"
+      source: artifacts/test-results/production-delivery.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Evidence required before verify.]
