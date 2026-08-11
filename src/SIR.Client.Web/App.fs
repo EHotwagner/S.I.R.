@@ -546,7 +546,7 @@ let rec update msg model =
         match result with
         | Ok(name, bytes) -> update (ShellMsg(ReplayBytesSelected(name, bytes))) model
         | Error error ->
-            let cancelled, _ = Shell.update CancelRequested model.Shell
+            let cancelled, effects = Shell.update CancelRequested model.Shell
             { model with
                 Shell =
                     { cancelled with
@@ -557,7 +557,7 @@ let rec update msg model =
                         ActiveOperation = None
                         Playback = { cancelled.Playback with CurrentTick = 0; FinalTick = 0; IsPlaying = false }
                         Announcement = error } },
-            Cmd.none
+            effectsToCmd effects
     | MapFileSelected file ->
         model,
         Cmd.OfAsync.perform
