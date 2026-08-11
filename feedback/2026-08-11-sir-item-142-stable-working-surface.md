@@ -59,7 +59,9 @@ A clean worktree command that provisions and runs the browser route without prer
 ## §12 Development-surface coverage
 | Surface | Status | Evidence and result |
 |---|---|---|
+| scaffolding | not-exercised | Existing workspace. |
 | onboarding-guidance | exercised | Isolated claim and restore route. |
+| skills | exercised | SDD, coordination, and feedback contracts used. |
 | sdd-authoring | exercised | Charter through ship readiness completed. |
 | implementation-apis | exercised | Shared scene fallback changed. |
 | dependencies-build | exercised | Client build and server publish passed. |
@@ -67,4 +69,6 @@ A clean worktree command that provisions and runs the browser route without prer
 | evidence | exercised | JUnit observed receipt bound by SDD. |
 | runtime-playtest | exercised | Chromium production-server route. |
 | performance | not-exercised | No declared target. |
+| documentation | exercised | Feedback report and audit authored. |
+| packaging-upgrade | not-exercised | Out of scope. |
 | worker-git-pr | exercised | Isolated branch prepared for review. |
