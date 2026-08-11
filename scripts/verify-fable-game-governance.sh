@@ -23,6 +23,7 @@ done
 
 # Governance owns the strict YAML schemas; route is the executable policy
 # validation and deliberately runs in every local/CI conformance invocation.
+dotnet fsi scripts/validate-governance-yaml.fsx
 dotnet tool run fsgg-governance route --root . --mode inner --format json >/dev/null
 
 for root_name in .agents .claude .codex; do
