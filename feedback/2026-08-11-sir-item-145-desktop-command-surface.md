@@ -11,7 +11,7 @@ commit: pending-pr-head
 ## §1 Provenance and confidence
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 3
+- **material events:** 4
 - **zero-event reason:** n/a
 - **checkpoint:** `feedback/checkpoints/item-145-desktop-command-surface.jsonl`
 - **confidence limits:** Chromium was exercised through the locally published production server; CI has not yet run on the candidate PR.
