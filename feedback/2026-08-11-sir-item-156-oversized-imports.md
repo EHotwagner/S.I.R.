@@ -11,8 +11,9 @@ commit: pending-pr-head
 ## §1 Provenance and confidence
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 0
-- **zero-event reason:** No workflow friction or durable process finding beyond the repaired product defect.
+- **material events:** 1
+- **zero-event reason:** n/a
+- **checkpoint:** `feedback/checkpoints/item-156-oversized-imports.jsonl` (one validated event)
 - **confidence limits:** Browser coverage uses Chromium on the production server route.
 
 ## §2 What worked
@@ -22,7 +23,17 @@ File metadata supplies a bounded preflight before browser allocation, while deco
 The former import paths allocated content before applying their existing size limits.
 
 ## §4 Findings
-None observed.
+#### §4.1 FsDocs title derives from the isolated worktree basename
+- **Kind:** capability-gap
+- **Impact:** The local docs verifier rejects a title derived from `item-156-oversized-imports`, although hosted CI remains the authority.
+- **Expected:** The worktree-local docs build preserves the configured S.I.R. title.
+- **Observed:** `scripts/build-docs.sh` completed its build stages, then its final verifier saw `Simulator | item-156-oversized-imports` while `FsDocsCollectionName` remained `S.I.R.`.
+- **Evidence:** command:scripts/build-docs.sh
+- **Version:** current
+- **Owner:** S.I.R documentation build
+- **Recurrence:** observed in this isolated worktree
+- **Avoidable cost:** one local verification retry
+- **Disposition:** environment limitation; hosted CI is authoritative
 
 ## §5 Did not exercise
 No new performance target was declared for this bounded browser safety fix.
