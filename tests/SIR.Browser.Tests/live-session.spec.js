@@ -23,6 +23,7 @@ async function selectUnreadableFile(page, selector, name) {
   await page.locator(selector).evaluate((input, name) => {
     const file = new File(["x"], name, { type: "application/octet-stream" });
     file.arrayBuffer = async () => { throw new Error("read refused"); };
+    file.text = async () => { throw new Error("read refused"); };
     const transfer = new DataTransfer();
     transfer.items.add(file);
     Object.defineProperty(input, "files", { value: transfer.files, configurable: true });
@@ -84,6 +85,10 @@ test("map and raster pickers reject oversized metadata before reads", async ({ p
     await expect(page.getByRole("alert")).toContainText("Map import has invalid size metadata");
     await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(2);
   }
+  await selectUnreadableFile(page, "#editor-map-import", "unreadable.sir-map");
+  await expect(page.getByRole("alert")).toContainText("Map import could not be read: read refused");
+  await selectOversizedFile(page, "#editor-map-import", "recovered.sir-map", 2_000_000);
+  await expect(page.getByRole("alert")).toHaveCount(0);
 });
 
 test("bootstrap fails closed for absent and cross-actor credentials", async ({ request }) => {
