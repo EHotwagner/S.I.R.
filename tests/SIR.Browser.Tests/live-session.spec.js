@@ -89,6 +89,10 @@ test("map and raster pickers reject oversized metadata before reads", async ({ p
   await expect(page.getByRole("alert")).toContainText("Map import could not be read: read refused");
   await selectOversizedFile(page, "#editor-map-import", "recovered.sir-map", 2_000_000);
   await expect(page.getByRole("alert")).toHaveCount(0);
+  await selectUnreadableFile(page, "#editor-background-file", "unreadable.png");
+  await expect(page.getByRole("alert")).toContainText("Raster background could not be read: read refused");
+  await selectOversizedFile(page, "#editor-background-file", "recovered.png", 10_000_000);
+  await expect(page.getByRole("alert")).toHaveCount(0);
 });
 
 test("bootstrap fails closed for absent and cross-actor credentials", async ({ request }) => {
