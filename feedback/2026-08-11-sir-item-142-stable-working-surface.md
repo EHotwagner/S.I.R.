@@ -11,7 +11,7 @@ commit: pending-pr-head
 ## §1 Provenance and confidence
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 1
+- **material events:** 2
 - **zero-event reason:** n/a
 - **checkpoint:** `feedback/checkpoints/item-142-stable-working-surface.jsonl`
 - **confidence limits:** Chromium was exercised on the locally published production route.
@@ -35,6 +35,18 @@ A fresh isolated worktree did not contain restored server assets or the Playwrig
 - **Avoidable cost:** Two prerequisite retries.
 - **Disposition:** recorded for delivery tooling follow-up.
 
+#### §4.2 Review repair clarified valid cross-mode selection continuity
+- **Kind:** quality-gap
+- **Impact:** Empty Simulate and Review modes initially cleared an editor selection even when the fallback scene could represent it.
+- **Expected:** A valid editor selection survives the editor-scene fallback; only an invalid target selection clears predictably.
+- **Observed:** The fallback originally reconciled selection against the empty derived mode. The repair reconciles it against the editor projection, and production browser coverage preserves the selected unit through empty Simulate and Review.
+- **Evidence:** command:npm run build:client && dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release --no-restore -o artifacts/publish && npm run test:browser -- --grep empty derived modes retain
+- **Version:** current
+- **Owner:** S.I.R Client.Web tactical workspace
+- **Recurrence:** resolved in review round 1
+- **Avoidable cost:** one independent-review repair round
+- **Disposition:** product fix with production browser evidence
+
 ## §5 Did not exercise
 No typed performance intent applies.
 
@@ -51,7 +63,7 @@ The recorded checkpoint captures the provisioning friction.
 The SDD observed-run rule prevented an empty JUnit report from being treated as evidence.
 
 ## §10 Outcome markers
-Focused Chromium coverage verifies stable bounds and camera, editor fallback for empty Simulate/Review, and predictable clearing of an invalid selection.
+Focused Chromium coverage verifies stable bounds, camera, retained valid editor selection in empty Simulate/Review, and predictable clearing of an invalid selection.
 
 ## §11 Falsifiable improvements
 A clean worktree command that provisions and runs the browser route without prerequisite retries would close §4.1.

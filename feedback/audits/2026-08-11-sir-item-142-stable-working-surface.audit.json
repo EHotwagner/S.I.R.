@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-11-sir-item-142-stable-working-surface.md",
-  "reportSha256": "9a8faeea6b1fbeeb55807ef8333a0bdd33cd4cd0cb944d4a4327f045d1fb82a5",
+  "reportSha256": "6236ca30c7fc91b857a9df9c1e896339dd54aca636fd0475f1651e7acde01093",
   "criticMode": "separated-critic-pass",
   "criticPromptVersion": "actionability-v1",
   "findings": [{
@@ -13,5 +13,11 @@
       {"locator": "command:npm ci && npm run setup:browser", "result": "verified"}
     ],
     "confidenceLimits": ["Provisioning behavior is observed in this isolated worktree."]
+  }, {
+    "id": "§4.2",
+    "status": "actionable",
+    "missingFacts": [],
+    "checkedEvidence": [{"locator": "command:npm run build:client && dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release --no-restore -o artifacts/publish && npm run test:browser -- --grep empty derived modes retain", "result": "verified"}],
+    "confidenceLimits": ["The focused browser route covers empty derived modes only."]
   }]
 }
