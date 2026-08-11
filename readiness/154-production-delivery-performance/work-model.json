@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "e1170e37acc7bc759e4020ec1475320d846af553ddffe5acac6046a6df91d15f"
+        "value": "c05e76dd42dec7c6087f93c44f7e33436cb2c4313d52acf744eef17e1a5ba334"
       }
     },
     {
@@ -897,7 +897,7 @@
   "evidence": [
     {
       "id": "EV001",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T001",
       "taskRefs": [
@@ -907,7 +907,7 @@
         "FR-001"
       ],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -921,7 +921,7 @@
     },
     {
       "id": "EV002",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T002",
       "taskRefs": [
@@ -929,7 +929,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -943,7 +943,7 @@
     },
     {
       "id": "EV003",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T003",
       "taskRefs": [
@@ -951,7 +951,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -965,7 +965,7 @@
     },
     {
       "id": "EV004",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T004",
       "taskRefs": [
@@ -973,7 +973,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -987,7 +987,7 @@
     },
     {
       "id": "EV005",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T005",
       "taskRefs": [
@@ -995,7 +995,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1009,7 +1009,7 @@
     },
     {
       "id": "EV006",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T006",
       "taskRefs": [
@@ -1019,7 +1019,7 @@
         "FR-002"
       ],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1033,7 +1033,7 @@
     },
     {
       "id": "EV007",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T007",
       "taskRefs": [
@@ -1043,7 +1043,7 @@
         "FR-003"
       ],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1057,7 +1057,7 @@
     },
     {
       "id": "EV008",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T008",
       "taskRefs": [
@@ -1067,7 +1067,7 @@
         "FR-004"
       ],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1081,7 +1081,7 @@
     },
     {
       "id": "EV009",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T009",
       "taskRefs": [
@@ -1091,7 +1091,7 @@
         "FR-005"
       ],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1105,7 +1105,7 @@
     },
     {
       "id": "EV010",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T010",
       "taskRefs": [
@@ -1115,7 +1115,7 @@
         "FR-006"
       ],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1129,7 +1129,7 @@
     },
     {
       "id": "EV011",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T011",
       "taskRefs": [
@@ -1139,7 +1139,7 @@
         "FR-007"
       ],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1153,7 +1153,7 @@
     },
     {
       "id": "EV012",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T012",
       "taskRefs": [
@@ -1161,7 +1161,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1175,7 +1175,7 @@
     },
     {
       "id": "EV013",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T013",
       "taskRefs": [
@@ -1183,7 +1183,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1197,7 +1197,7 @@
     },
     {
       "id": "EV014",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T014",
       "taskRefs": [
@@ -1205,7 +1205,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1219,7 +1219,7 @@
     },
     {
       "id": "EV015",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T015",
       "taskRefs": [
@@ -1231,7 +1231,7 @@
         "FR-003"
       ],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1245,7 +1245,7 @@
     },
     {
       "id": "EV016",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T016",
       "taskRefs": [
@@ -1256,7 +1256,7 @@
         "FR-005"
       ],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1270,7 +1270,7 @@
     },
     {
       "id": "EV017",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T017",
       "taskRefs": [
@@ -1281,7 +1281,7 @@
         "FR-007"
       ],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1295,7 +1295,7 @@
     },
     {
       "id": "EV018",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T018",
       "taskRefs": [
@@ -1303,7 +1303,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1317,7 +1317,7 @@
     },
     {
       "id": "EV019",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T019",
       "taskRefs": [
@@ -1325,7 +1325,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1339,7 +1339,7 @@
     },
     {
       "id": "EV020",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T020",
       "taskRefs": [
@@ -1347,7 +1347,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [],
-      "result": "missing",
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1414,7 +1414,7 @@
           "path": "work/154-production-delivery-performance/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "e1170e37acc7bc759e4020ec1475320d846af553ddffe5acac6046a6df91d15f"
+            "value": "c05e76dd42dec7c6087f93c44f7e33436cb2c4313d52acf744eef17e1a5ba334"
           },
           "schemaVersion": 1
         },
@@ -1445,7 +1445,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "1a20e97f92bee6e50e3965cf3ca5099b275a83a49aee5140f1e2919886adacff"
+        "value": "fc091450eff4f08d12bca26a15016a6a0269d55c57466018723bc0ec42403a7f"
       },
       "currency": "current"
     }

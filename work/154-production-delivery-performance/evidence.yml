@@ -1,7 +1,7 @@
 schemaVersion: 1
 workId: 154-production-delivery-performance
 stage: evidence
-status: needsEvidenceCorrection
+status: evidenceReady
 sourceSpec: work/154-production-delivery-performance/spec.md
 sourceClarifications: work/154-production-delivery-performance/clarifications.md
 sourceChecklist: work/154-production-delivery-performance/checklist.md
@@ -52,6 +52,14 @@ evidence:
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
     result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV002
     kind: verification
@@ -71,6 +79,14 @@ evidence:
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
     result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV003
     kind: verification
@@ -90,6 +106,14 @@ evidence:
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
     result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV004
     kind: verification
@@ -109,9 +133,17 @@ evidence:
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
     result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV005
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T005
@@ -126,11 +158,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV006
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T006
@@ -145,11 +185,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV007
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T007
@@ -164,11 +212,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV008
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T008
@@ -183,11 +239,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV009
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T009
@@ -202,11 +266,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV010
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T010
@@ -221,11 +293,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV011
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T011
@@ -240,11 +320,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV012
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T012
@@ -259,11 +347,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV013
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T013
@@ -278,11 +374,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV014
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T014
@@ -297,11 +401,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV015
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T015
@@ -316,11 +428,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV016
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T016
@@ -335,11 +455,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV017
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T017
@@ -354,11 +482,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV018
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T018
@@ -373,11 +509,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV019
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T019
@@ -392,11 +536,19 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
   - id: EV020
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T020
@@ -411,8 +563,16 @@ evidence:
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/production-delivery.spec.js
-    result: missing
+    result: pass
     synthetic: false
+    observedRun:
+      source: artifacts/test-results/browser.junit.xml
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
     notes: [Evidence required before verify.]
 lifecycleNotes:
   - "Next lifecycle action: verify."
