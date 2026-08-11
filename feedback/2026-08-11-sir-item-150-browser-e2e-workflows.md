@@ -11,7 +11,7 @@ commit: 340205dc6a316eccd8c8ffeeb336b51e9432651c
 ## §1 Provenance and confidence
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 4
+- **material events:** 5
 - **zero-event reason:** n/a
 - **checkpoint:** `feedback/checkpoints/item-150-browser-e2e-workflows.jsonl`
 - **confidence limits:** Chromium used the local published production server; CI and independent review remain pending.
@@ -57,7 +57,7 @@ None observed.
 None.
 
 ## §8 Friction and avoidable cost
-The four checkpoints record setup, strict SDD evidence binding, scoped-cap mutation, and missing local feedback capability.
+The five checkpoints record setup, strict SDD evidence binding, scoped-cap mutation, missing local feedback capability, and the terminal generated-view projection diagnosis.
 
 ## §9 Skill value and gaps
 The SDD observed-run flow bound a real JUnit report to all 14 verification obligations; the feedback tool location remains a packaging gap.
