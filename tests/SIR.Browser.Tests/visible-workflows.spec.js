@@ -89,6 +89,34 @@ test("visible mode controls preserve a usable tactical workspace across authorin
   }
 });
 
+test("the player-visible Rules explorer renders the executable combat corpus and pinned source", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "View", exact: true }).click();
+  await page.getByRole("menuitem", { name: /Rules data/ }).click();
+  const explorer = page.getByRole("region", { name: "Rules data tables", exact: true });
+  await expect(explorer).toBeVisible();
+  await expect(explorer.getByRole("heading", { name: /FS\.GG\.Game\.Core@0\.13\.0/ })).toBeVisible();
+  await expect(explorer.getByRole("heading", { name: /AttackResolved event/ })).toHaveCount(0);
+  await explorer.getByRole("button", { name: "Execute canonical player attack" }).click();
+  await expect(explorer.getByRole("heading", { name: "AttackResolved event tick-1-attack-10-20" })).toBeVisible();
+  await expect(explorer.getByText(/Damage 25 · remaining health 75/)).toBeVisible();
+  await expect(explorer.getByText(/COMBAT-DAMAGE-001.*baseDamage=.*trace=.*retention=.*→.*damage/)).toBeVisible();
+  await explorer.getByRole("link", { name: "Open governing rule COMBAT-ATTACK-RESOLUTION-001" }).click();
+  await expect(page).toHaveURL(/#rule-COMBAT-ATTACK-RESOLUTION-001$/);
+  await expect(explorer.getByText(/Transition · AttackPhase · events AttackResolved/)).toBeVisible();
+  const damage = explorer.getByText(/^COMBAT-DAMAGE-001 · Expected damage$/);
+  await damage.click();
+  const damageRule = damage.locator("..");
+  await expect(explorer.getByText(/baseDamage:damage.*trace:ratio.*retention:ratio/)).toBeVisible();
+  const source = explorer.getByRole("link", { name: /Pinned F# source · CombatRules.damage/ });
+  await expect(source).toHaveAttribute(
+    "href",
+    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/0f7128985a14ef3470e92d23ee5786236f97fb97\/src\/SIR\.Simulation\/CombatRules\.fs/,
+  );
+  await expect(damageRule.getByText(/examples: tests\/SIR\.Conformance\.Shared\/RulesCorpusFixtures\.fs · properties:/)).toBeVisible();
+  await expect(damageRule.getByRole("link", { name: "Coverage graph" })).toHaveAttribute("href", /rules-corpus\/v2\/coverage\.json/);
+});
+
 test("the maintained simulation transport is available without a manual handoff in every modality", async ({ page }) => {
   await loadMaintainedSimulation(page);
   for (const mode of ["Editor", "Plan", "Simulate", "Review"]) {

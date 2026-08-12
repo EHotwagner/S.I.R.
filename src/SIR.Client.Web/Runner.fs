@@ -5,7 +5,6 @@ open Browser.Types
 open Fable.Core
 open Fable.Core.JsInterop
 open SIR.Client
-open SIR.Simulation
 
 [<RequireQualifiedAccess>]
 module Runner =
@@ -84,11 +83,6 @@ module Runner =
             worker <- Some(engine.Identity, active)
             active
 
-    let private engineIdentity (bytes: byte array) =
-        bytes
-        |> Array.map (fun value -> value.ToString("x2"))
-        |> String.concat ""
-
     let post operation request =
         let envelope: WorkerRequestEnvelope =
             { ProtocolVersion = int32 WorkerProtocol.CurrentVersion
@@ -96,25 +90,9 @@ module Runner =
               Request = request }
 
         match request with
-        | LoadPackage(_, bytes) ->
-            match Replay.decode Replay.defaultLimits bytes with
-            | Ok package ->
-                match EngineCatalog.tryFind package with
-                | Some engine -> (activate engine)?postMessage (envelope)
-                | None ->
-                    dispatch (
-                        RunnerResponded(
-                            operation,
-                            RunnerUnsupported(
-                                "engine "
-                                + engineIdentity package.EngineHash
-                                + " is not retained by this publication"
-                            )
-                        )
-                    )
-            | Error _ ->
-                // The retained worker owns detailed validation errors for malformed packages.
-                (activate EngineCatalog.Current)?postMessage (envelope)
+        | LoadPackage _ ->
+            // The retained worker owns complete untrusted replay decoding and identity validation.
+            (activate EngineCatalog.Current)?postMessage (envelope)
         | _ -> (activate EngineCatalog.Current)?postMessage (envelope)
 
     /// Sends a simulator-session operation through the retained browser worker.

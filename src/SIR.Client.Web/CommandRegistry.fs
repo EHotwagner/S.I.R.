@@ -224,5 +224,7 @@ let activeTacticalRegistry model =
               "Fit shared workscreen"
               "Shared camera"
               model.Tactical.Modality ]
-    UnifiedTacticalWorkspace.commandRegistry @ modal @ contextual @ cameraCommands
+    let panelCommands =
+        [ pointerCommand "panel.data" "Rules data" "View" model.Tactical.Modality ]
+    UnifiedTacticalWorkspace.commandRegistry @ modal @ contextual @ cameraCommands @ panelCommands
     |> List.distinctBy _.Id

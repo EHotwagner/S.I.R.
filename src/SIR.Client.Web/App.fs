@@ -601,7 +601,7 @@ let rec update msg model =
     | FileSelected file ->
         { model with SampleReplayFrames = None },
         Cmd.OfAsync.perform
-            (fileBytes SIR.Simulation.Replay.defaultLimits.MaxPackageBytes)
+            (fileBytes 1_048_576)
             file
             ReplayReadCompleted
     | ReplayReadCompleted result ->
@@ -1753,6 +1753,7 @@ let rec update msg model =
         | "workspace.plan" -> update (WorkspaceChanged PlanningWorkspace) model
         | "workspace.simulate" -> update (WorkspaceChanged SimulatorWorkspace) model
         | "workspace.review" -> update (WorkspaceChanged ReplayWorkspace) model
+        | "panel.data" -> update (OpenSupportingPanel "data") model
         | "timeline.play-toggle" -> update TacticalPlaybackToggled model
         | "timeline.step-back" -> update (TacticalTimeStepped -1L) model
         | "timeline.step-forward" -> update (TacticalTimeStepped 1L) model
@@ -3166,7 +3167,7 @@ let private sandbox (model: SIR.Client.Model) dispatch =
         prop.ariaLabel "Sandbox parameters"
         prop.children [
             Html.h2 "Typed parameters"
-            Html.p "Every edit creates a derived sandbox; the immutable baseline remains visible in the comparison."
+            Html.p "Edits create a derived sandbox; the baseline stays immutable."
             match scenario with
             | None ->
                 Html.p "Load a design scenario or verified replay to edit parameters."
@@ -3211,7 +3212,7 @@ let private scenarioCatalog model dispatch =
         prop.children [
             Html.p [ prop.className "eyebrow"; prop.text "No replay file required" ]
             Html.h2 "Try an interactive scenario"
-            Html.p "Run a fixed example, edit its typed values, compare the fork with the immutable baseline, sweep either parameter, and export the result."
+            Html.p "Run an example, edit typed values, compare, sweep, and export."
             Html.div [
                 prop.className "scenario-grid"
                 prop.children [
@@ -3424,11 +3425,11 @@ let private comparisonPanel (model: Model) dispatch =
             Html.p [
                 prop.className "comparison-warning"
                 prop.role.note
-                prop.text "Neither side is a verified replay. Editing always creates a separately identified derived fork; the baseline cannot be edited."
+                prop.text "Neither side is verified replay evidence; edits create an identified fork."
             ]
             match report with
             | None ->
-                Html.p "Run a design scenario, then edit a typed parameter to create a linked fork comparison."
+                Html.p "Run a scenario, then edit a parameter to compare a linked fork."
             | Some report ->
                 let baseline = report.Comparison.Baseline
                 let fork = report.Comparison.Fork
@@ -3560,15 +3561,18 @@ let private catalogTable
         ]
     ]
 
+[<ReactLazyComponent>]
+let private LazyExecutableRulesPanel () =
+    React.DynamicImported("../RulesExplorer.js")
 let private rulesDataCatalog =
     Html.section [
-        prop.id "rules-data-tables"
-        prop.className "panel rules-data-panel"
         prop.ariaLabel "Rules data tables"
         prop.children [
-            Html.p [ prop.className "eyebrow"; prop.text "Inspectable rules catalog" ]
+            React.Suspense([ LazyExecutableRulesPanel () ], fallback = Html.p "Loading executable rules…")
+            Html.section [
+                prop.children [
             Html.h2 "Units, perks, weapons, and equipment"
-            Html.p "Expand a table below. Canonical roles, proposed content, and prototype balance values are labeled separately; prototype numbers are laboratory inputs, not accepted balance."
+            Html.p "Tables label canonical, proposed, and prototype laboratory values."
             Html.details [
                 prop.isOpen true
                 prop.children [
@@ -3667,9 +3671,9 @@ let private rulesDataCatalog =
                     prop.text "Read definitions, formulas, and design rationale in the Gameplay Reference."
                 ]
             ]
+                ] ]
         ]
     ]
-
 let private laboratoryResults model dispatch =
     Html.section [
         prop.className "panel lab-results"
@@ -3678,7 +3682,7 @@ let private laboratoryResults model dispatch =
             Html.h2 "Simulation result"
             match model.Lab.Report with
             | None ->
-                Html.p "Click “Simulate now” on any scenario above. Its deterministic result will appear here."
+                Html.p "Run a scenario to see its deterministic result."
             | Some report ->
                 Html.p [
                     prop.className "evidence-label"
@@ -3806,7 +3810,7 @@ let private laboratoryResults model dispatch =
                     "Export reproducible laboratory experiment"
                     false
                     (fun _ -> dispatch ExportExperiment)
-                Html.p "Export includes the exact scenario revision, parameters, engine and ruleset identities, result identities, integer metrics, and optional sweep."
+                Html.p "Export preserves revision, identities, parameters, metrics, and sweep."
         ]
     ]
 
@@ -4212,7 +4216,7 @@ let private editorToolbar
                                      CellRow = cursor.CellRow + 2 } |]
                             )
                         Html.h3 "Zones and objectives"
-                        Html.p "Create authoritative geometry at the keyboard terrain cursor, then select and edit it below."
+                        Html.p "Create, select, and edit geometry."
                         Html.div [
                             prop.className "control-row"
                             prop.role.group
@@ -4233,7 +4237,7 @@ let private editorToolbar
                             ]
                         ]
                         match state.SelectedRegion |> Option.bind (fun id -> Map.tryFind id state.Map.Regions) with
-                        | None -> Html.p "Select a region in the map or region list to edit it."
+                        | None -> Html.p "Select a region to edit it."
                         | Some region ->
                             Html.h4 ("Region " + string region.Id)
                             Html.div [
@@ -4381,7 +4385,7 @@ let private editorToolbar
                             ]
                             match view.Background with
                             | None ->
-                                Html.p "No raster background. Remote URLs, SVG, and executable content are never fetched or accepted."
+                                Html.p "Remote or executable backgrounds are rejected."
                             | Some background ->
                                 Html.p (
                                     background.FileName + " · "
@@ -4822,7 +4826,7 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                 prop.children [
                     Html.article [ Html.h3 "Manual"; Html.p "Issue explicit movement commands." ]
                     Html.article [ Html.h3 "Scripted AI"; Html.p "Repeat a deterministic direction script." ]
-                    Html.article [ Html.h3 "General AI"; Html.p "Approach the nearest hostile until its class-specific melee or ranged attack is in range." ]
+                    Html.article [ Html.h3 "General AI"; Html.p "Approach the nearest hostile." ]
                 ]
             ]
             match selected with
@@ -4906,7 +4910,7 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                     ]
                 ]
                 Html.h3 "Route planner"
-                Html.p "Choose a destination with the route controls below. The planner routes around terrain, blocking edges, and occupied footprints. The live Inputs panel lists commands for the current mode."
+                Html.p "Choose a destination; routing avoids obstacles."
                 Html.div [
                     prop.className "manual-movement"
                     prop.children [
@@ -5089,7 +5093,7 @@ let private sampleCatalogView (dispatch: Msg -> unit) =
                 prop.children [
                     Html.p [ prop.className "eyebrow"; prop.text "Explore mechanics" ]
                     Html.h2 "Curated samples"
-                    Html.p "Open a canonical map for editing, run its deterministic controller sandbox, or inspect a precomputed replay walkthrough."
+                    Html.p "Open a map, run its sandbox, or inspect a replay walkthrough."
                 ]
             ]
             Html.h3 "Maps and simulations"
@@ -5110,7 +5114,7 @@ let private sampleCatalogView (dispatch: Msg -> unit) =
             ]
             Html.p [
                 prop.className "sample-disclosure"
-                prop.text "Curated walkthroughs are deterministic sandbox evidence, not cryptographically verified match replays."
+                prop.text "Walkthroughs are sandbox evidence, not verified match replays."
             ]
         ]
     ]
@@ -5282,7 +5286,7 @@ let private planningPanelBody
                         )
                         match state.Tool with
                         | RouteTool ->
-                            Html.p "Choose a battlefield cell, or use these keyboard-operable waypoint controls."
+                            Html.p "Choose a cell or use waypoint controls."
                             Html.div [
                                 prop.className "planning-direction-grid"
                                 prop.children [
@@ -5321,9 +5325,9 @@ let private planningPanelBody
                                     ("Engage " + target.Name + " with " + capability)
                                     "planning.inspector.engagement"
                             | None, _ ->
-                                Html.p "No other roster unit is available as a disclosed target."
+                                Html.p "No disclosed target is available."
                             | _, None ->
-                                Html.p "This authored loadout has no accepted engagement capability."
+                                Html.p "This loadout cannot engage."
                         | SynchronizationTool ->
                             planningButton
                                 "Add synchronization marker"
@@ -5351,7 +5355,7 @@ let private planningPanelBody
                 prop.ariaLabel "Planning validation navigation"
                 prop.children [
                     Html.h2 ("Validation · " + string state.Issues.Length + " issues")
-                    Html.p "Use the issue buttons or bracket keys to move selection to the affected command."
+                    Html.p "Use issue controls to select the affected command."
                     for index, issue in Array.indexed state.Issues do
                         commandButton [
                             prop.type'.button
@@ -5634,7 +5638,7 @@ let private tacticalBindingDialog model dispatch =
                         ]
                     ]
                 ]
-                Html.p "Capture or type a gesture. Conflicts and browser reservations are validated before local storage is updated."
+                Html.p "Capture a gesture; conflicts are checked before saving."
                 if not (List.isEmpty model.TacticalBindingDiagnostics) then
                     Html.ul [
                         prop.role.alert
@@ -6426,7 +6430,7 @@ let private persistentSceneSvg
         svg.viewBox (0, 0, max 1 (int boardWidth), max 1 (int boardHeight))
         svg.children [
             Svg.title "Persistent tactical battlefield"
-            Svg.desc "One retained SVG renders presentation-only shared scene layers. Pointer and keyboard intent pass through the tactical command registry and availability boundary."
+            Svg.desc "Shared scene layers; input passes through the command registry."
             Svg.g [
                 svg.id "persistent-scene-camera"
                 svg.custom ("data-scene-layer", "camera")
@@ -7264,7 +7268,7 @@ let private tacticalLayoutToolbar model dispatch =
                 prop.children [
                     menu "File" [ "Document" ]
                     menu "Edit" [ "Plan" ]
-                    menu "View" [ "Modality"; "Shared camera" ]
+                    menu "View" [ "Modality"; "Shared camera"; "View" ]
                     menu "Tools" [ "Plan"; "Editor" ]
                     menu "Simulation" [ "Timeline"; "Simulator controllers"; "Simulator movement" ]
                     menu "Help" [ "Help" ]
@@ -7296,7 +7300,7 @@ let private tacticalLayoutToolbar model dispatch =
                     prop.ariaLabel "Customize top toolbar"
                     prop.children [
                         Html.h2 "Customize toolbar"
-                        Html.p "Add commands, adjust their order, or restore the default toolbar. Changes persist in this browser."
+                        Html.p "Add, reorder, or restore toolbar commands."
                         for commandId in model.DesktopToolbarCommands do
                             match registry |> List.tryFind (fun command -> command.Id = commandId) with
                             | Some command ->
@@ -7654,7 +7658,7 @@ let private simulatorPanelBody
                     + "; timeline seeking reconstructs deterministic runtime state."
                 )
                 if stale then
-                    Html.p "The current editor draft is not valid for simulation; the last valid runtime remains available."
+                    Html.p "The draft is invalid; the last valid runtime remains."
                 button "Open Editor" "Open the map editor" false (fun _ ->
                     dispatch (WorkspaceChanged EditorWorkspace))
                 button "Repository bundle" "Download editor and simulator design work" false (fun _ ->
@@ -8064,7 +8068,7 @@ let view model dispatch =
                 prop.className "panel"
                 prop.children [
                     Html.h2 "Planner unavailable"
-                    Html.p "Open the planner again to create an authored revision from the current map."
+                    Html.p "Open Plan to create a revision from this map."
                 ]
             ]
         | EditorWorkspace ->

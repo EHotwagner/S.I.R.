@@ -21,6 +21,16 @@ related:
 
 ## Executive summary
 
+The Rules data panel now projects the schema-v1 executable combat registry:
+typed formulas, a registered Game.Core line-of-sight algorithm, rationale,
+dependencies, evidence, and commit-pinned F# source links. Authoritative
+evaluation remains shared F#; the generated JSON is an inspection contract and
+is never interpreted as a second JavaScript gameplay implementation. Release
+qualification compares the complete manifest, application graph, and package
+digests byte-for-byte on .NET and Fable/Node. The committed
+`FS.GG.Game.Core@0.13.0` dependency-surface capture records the exact package
+API used by the trace adapter.
+
 S.I.R. will use one deterministic F# gameplay kernel on the authoritative .NET
 server, in headless design and balance tools, and in a Fable browser
 application. The server is developed with published `FS.GG.Game` packages.

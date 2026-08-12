@@ -53,7 +53,7 @@ type SimulationEvent =
     | UnitMoved of unitId: UnitId * origin: Cell * destination: Cell
     | MovementBlockedByEdge of unitId: UnitId * origin: Cell * destination: Cell * edge: Edge
     | UnitObserved of observerId: UnitId * targetId: UnitId * distance: int32
-    | AttackResolved of attackerId: UnitId * targetId: UnitId * damage: int32 * remainingHealth: int32
+    | AttackResolved of attackerId: UnitId * targetId: UnitId * damage: int32 * remainingHealth: int32 * explanation: RuleApplication
 
 /// One logical-phase checkpoint for first-divergence diagnosis.
 type PhaseCheckpoint =
@@ -293,7 +293,18 @@ module Simulation =
                 Set.contains (attackerId, targetId) current.Observations
                 && chebyshevDistance attacker.Cell target.Cell <= 1L
                 ->
-                let damage = rules.AttackPower
+                let combat =
+                    CombatRules.resolveAttack
+                        { Attacker = attacker.Cell
+                          TargetFootprint = [ target.Cell ]
+                          IsTransparent = inBounds current.Board
+                          RangeCells = chebyshevDistance attacker.Cell target.Cell |> int32
+                          Suppression = FixedPoint.zero
+                          BaseDamage = BoundedInt32.value rules.AttackPower |> fun value -> FixedPoint.fromRatio value 1 |> required
+                          ArmorRetention = FixedPoint.fromRatio 1 1 |> required
+                          EventId = $"tick-{current.Tick + 1}-attack-{unitIdValue attackerId}-{unitIdValue targetId}" }
+                    |> required
+                let damage = BoundedInt32.create 0 100 combat.ExpectedDamage |> required
 
                 let remaining =
                     BoundedInt32.subtractSaturating target.Health damage
@@ -306,7 +317,8 @@ module Simulation =
                     attackerId,
                     targetId,
                     BoundedInt32.value damage,
-                    BoundedInt32.value remaining
+                    BoundedInt32.value remaining,
+                    combat.Explanation
                 )
                 :: events
             | _ -> current, events)
@@ -382,7 +394,7 @@ module Simulation =
                   unitIdBytes observerId
                   unitIdBytes targetId
                   CanonicalEncoding.int32LittleEndian distance ]
-        | AttackResolved(attackerId, targetId, damage, remainingHealth) ->
+        | AttackResolved(attackerId, targetId, damage, remainingHealth, _) ->
             CanonicalEncoding.concatenate
                 [ CanonicalEncoding.byteValue 3uy
                   unitIdBytes attackerId

@@ -1,0 +1,69 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-12-sir-item-194-executable-rules-corpus.md",
+  "reportSha256": "2aaddb6298122fad6f024cbdb33ceea0a302e3afab9202200ce6a2459507ac0e",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "artifact:scripts/generate-item-194-evidence.sh", "result": "verified"},
+        {"locator": "command:./scripts/generate-item-194-evidence.sh", "result": "verified"},
+        {"locator": "command:dotnet fsgg-sdd verify --work 194-executable-rules-corpus --text", "result": "verified"}
+      ],
+      "confidenceLimits": ["The repaired receipt partition is specific to this work item; the CLI does not itself assess whether a named testcase semantically observes every claim."]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:./scripts/verify-rules-corpus.sh", "result": "verified"}
+      ],
+      "confidenceLimits": ["The receipt covers the first combat slice, not future corpus migrations."]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "artifact:src/SIR.Client.Web/CommandRegistry.fs", "result": "verified"},
+        {"locator": "command:npx playwright test tests/SIR.Browser.Tests/visible-workflows.spec.js --grep \"player-visible Rules explorer\"", "result": "verified"}
+      ],
+      "confidenceLimits": ["The focused route proves desktop production reachability at the qualified viewport."]
+    },
+    {
+      "id": "§4.4",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:npm run test:production-delivery-evidence", "result": "verified"}
+      ],
+      "confidenceLimits": ["The measured 622-byte margin is candidate-specific; the cap was not changed."]
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:find .agents/skills -path */fs-gg-feedback-report/SKILL.md", "result": "verified"}
+      ],
+      "confidenceLimits": ["The canonical provider copy was available in the adjacent FS.GG.Rendering checkout."]
+    },
+    {
+      "id": "§4.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:./scripts/verify-rules-corpus.sh", "result": "verified"},
+        {"locator": "command:SIR_RULES_FORCE_GREP=1 ./scripts/verify-rules-corpus.sh", "result": "verified"},
+        {"locator": "command:node scripts/test-production-replay-v3.mjs", "result": "verified"},
+        {"locator": "command:npx playwright test tests/SIR.Browser.Tests/visible-workflows.spec.js --grep \"player-visible Rules explorer\"", "result": "verified"}
+      ],
+      "confidenceLimits": ["The successor exact-head hosted CI and independent confirmation review remain merge-boundary obligations; current-source correspondence now has App, CombatRules semantic, and metadata-only inversion probes."]
+    }
+  ]
+}

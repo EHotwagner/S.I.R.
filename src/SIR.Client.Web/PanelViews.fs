@@ -2,6 +2,7 @@ module SIR.Client.Web.PanelViews
 
 open Feliz
 open SIR.Client
+open SIR.Domain
 
 /// Read-only review panels are kept outside the Elmish composition root so the
 /// root only selects a panel and owns dispatch, rather than its view details.

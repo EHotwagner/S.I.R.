@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="6" failures="0" skipped="0"><testsuite name="sir-full-conformance" tests="6" failures="0" skipped="0">
+<properties><property name="producer" value="scripts/generate-item-194-evidence.sh"/><property name="command" value="./scripts/test-conformance.sh"/></properties>
+<testcase classname="test-conformance.sh" name="locked restore and full solution build pass" />
+<testcase classname="test-conformance.sh" name="dotnet fable mutation replay and authority gates pass" />
+<testcase classname="test-conformance.sh" name="M4 through M9 qualification passes" />
+<testcase classname="test-conformance.sh" name="browser smoke diagnostics and full browser inventory pass" />
+<testcase classname="test-conformance.sh" name="performance worker and delivery budgets pass" />
+<testcase classname="test-conformance.sh" name="documentation and review artifact integrity pass" />
+</testsuite></testsuites>
