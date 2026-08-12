@@ -36,6 +36,7 @@ jobs:
       - run: dotnet restore SIR.slnx --locked-mode
       - run: npm run verify:scaffold
       - run: dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release --no-restore -o artifacts/publish
+      - run: ./scripts/test-spatial-diagnostic-subject-mutation.sh
       - run: npm run test:browser
         env:
           PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium

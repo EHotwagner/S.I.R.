@@ -284,7 +284,6 @@ node scripts/smoke-client.mjs
 npm run test:production-delivery-budget
 npm run setup:browser
 dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish --no-restore
-./scripts/test-spatial-diagnostic-subject-mutation.sh
 npm run test:browser-diagnostics-gate
 npm run test:production-delivery-evidence
 node scripts/test-map-editor-qualification.mjs
