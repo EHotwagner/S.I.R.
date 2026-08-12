@@ -243,10 +243,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]
@@ -351,10 +351,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]
@@ -945,10 +945,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]
@@ -972,10 +972,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]
@@ -999,10 +999,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]
@@ -1080,10 +1080,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]
@@ -1188,10 +1188,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]
@@ -1323,10 +1323,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 6
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]

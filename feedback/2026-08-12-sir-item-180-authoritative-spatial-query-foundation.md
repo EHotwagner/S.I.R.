@@ -5,7 +5,7 @@ workspace: S.I.R
 cycle: item-180-authoritative-spatial-query-foundation
 lane: sdd
 toolVersion: 1.0.1
-commit: 7af3571b0767996bce0d75d23fc3169878e4d257
+commit: cc1ac22044dfc6da72a7938a2adab095cd614cfa
 ---
 
 ## §1 Provenance and confidence
@@ -32,10 +32,10 @@ The first browser projection made spatial diagnostics eager and exceeded the fix
 
 - **Kind:** friction
 - **Impact:** New player-facing functionality cannot silently inflate the initial production response past its declared boundary.
-- **Expected:** Initial application delivery stays below 1,150,000 transferred bytes and deferred activation stays below 20,000 bytes.
-- **Observed:** Current Release qualification measured 1,148,861 initial bytes and 304 deferred activation bytes; the production build separately emits `RulesExplorer-Ca6EtDlL.js`.
+- **Expected:** Initial application delivery stays below 1,150,000 transferred bytes; the RulesExplorer spatial chunk stays below 60,000 raw, 20,000 gzip, and 16,000 Brotli bytes.
+- **Observed:** Current Release qualification measured 1,147,985 initial bytes, 41,228 deferred RulesExplorer bytes, and an 8,582-byte authenticated diagnostic response; the static budget measured the RulesExplorer chunk at 41,228 raw, 13,305 gzip, and 11,444 Brotli bytes.
 - **Evidence:** command:node scripts/test-production-delivery-budget.mjs; command:npx playwright test tests/SIR.Browser.Tests/production-delivery.spec.js --config tests/SIR.Browser.Tests/playwright.config.js
-- **Version:** S.I.R implementation commit 7af3571b0767996bce0d75d23fc3169878e4d257
+- **Version:** S.I.R implementation commit cc1ac22044dfc6da72a7938a2adab095cd614cfa
 - **Owner:** EHotwagner/S.I.R. client production delivery
 - **Recurrence:** seen again feedback/2026-08-12-sir-item-194-executable-rules-corpus.md §4.3
 - **Avoidable cost:** two build and route measurement iterations, recorded by the cycle checkpoint but not independently reproduced
@@ -48,7 +48,7 @@ The first browser projection made spatial diagnostics eager and exceeded the fix
 - **Expected:** Game.Core supplies classified primitives while S.I.R owns and revalidates the product semantic envelope in .NET and Fable.
 - **Observed:** The final adapter uses package A-star candidate generation and independently validates every transition before accepting a result; exact canonical bytes agree across .NET and Fable and divergence guards fail at byte zero.
 - **Evidence:** command:./scripts/verify-spatial-query.sh
-- **Version:** FS.GG.Game.Core 0.13.0; S.I.R implementation commit 7af3571b0767996bce0d75d23fc3169878e4d257
+- **Version:** FS.GG.Game.Core 0.13.0; S.I.R implementation commit cc1ac22044dfc6da72a7938a2adab095cd614cfa
 - **Owner:** EHotwagner/S.I.R. spatial authority adapter
 - **Recurrence:** new
 - **Avoidable cost:** one performance repair iteration, recorded by the cycle checkpoint
@@ -61,7 +61,7 @@ The first browser projection made spatial diagnostics eager and exceeded the fix
 - **Expected:** Happy DOM verifies the registered Data panel and immediate results without claiming network activation; production browser evidence separately verifies the player-visible spatial route.
 - **Observed:** The current smoke exits green with zero eagerly rendered tables and emits Happy DOM teardown `removeChild` exceptions after its assertions. The focused spatial Playwright test proves authoritative selected-unit diagnostics, knowledge policy, package identity, and evaluator identity, but does not assert the seven catalog tables.
 - **Evidence:** command:node scripts/smoke-docs.mjs; command:npx playwright test tests/SIR.Browser.Tests/visible-workflows.spec.js --config tests/SIR.Browser.Tests/playwright.config.js --grep "player-visible spatial diagnostics route"
-- **Version:** S.I.R implementation commit 7af3571b0767996bce0d75d23fc3169878e4d257
+- **Version:** S.I.R implementation commit cc1ac22044dfc6da72a7938a2adab095cd614cfa
 - **Owner:** EHotwagner/S.I.R. documentation and browser qualification
 - **Recurrence:** new
 - **Avoidable cost:** one full evidence rerun
@@ -87,7 +87,7 @@ The first browser projection made spatial diagnostics eager and exceeded the fix
 - **Expected:** A workspace requiring schema-v2 feedback projects the canonical feedback-report skill and helper.
 - **Observed:** `.agents/skills` contains no feedback-report skill, so the canonical provider copy from FS.GG.Rendering was required.
 - **Evidence:** command:find .agents/skills -path '*/fs-gg-feedback-report/SKILL.md'; issue:FS-GG/.github#2380
-- **Version:** S.I.R implementation commit 7af3571b0767996bce0d75d23fc3169878e4d257
+- **Version:** S.I.R implementation commit cc1ac22044dfc6da72a7938a2adab095cd614cfa
 - **Owner:** FS-GG scaffold skill materialization
 - **Recurrence:** seen again feedback/2026-08-12-sir-item-194-executable-rules-corpus.md §4.5 and earlier S.I.R feedback; open FS-GG/.github#2380
 - **Avoidable cost:** one cross-workspace discovery
@@ -115,7 +115,7 @@ The work-board-best, pnext-item, intra-repo parallel-work, complete SDD lifecycl
 
 ## §10 Outcome markers
 
-The focused spatial verifier passed 32 named cases across five receipts; full conformance, documentation, delivery, and browser receipts add 13 cases, for 45 passing retained cases with no failures/skips. SDD verify reports 50/50 evidence and tests observed, zero self-attested, and ship reports `shipReady` with all generated views current. The exact production route measured 1,148,861 initial and 304 deferred bytes.
+The focused spatial verifier passed 17 grouped executable cases across five receipts; full conformance, documentation, delivery, and browser receipts add 14 cases, for 31 passing retained cases with no failures/skips. SDD verify reports 50/50 evidence and tests observed, zero self-attested, and ship reports `shipReady` with all generated views current. The exact production route measured 1,147,985 initial, 41,228 deferred RulesExplorer, and 8,582 diagnostic API bytes.
 
 ## §11 Falsifiable improvements
 
