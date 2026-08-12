@@ -1,8 +1,8 @@
 {
   "schema": "sir-persistent-workspace-m9-live-review-v2",
   "captureKind": "actual-production-shell-chromium-screenshot",
-  "productionBundleSha256": "42583000bcd2d2639714606c93c7e2cd5244e23eb1a7d687a424c5a4bb7bd6b0",
-  "productionStylesSha256": "f821560d093b727408ce476a7d62b6a7af9ba8d80585dab9fd57141f0ac32fe2",
+  "productionBundleSha256": "6a6c50e18d4b11979e04d410edde923f643ec2414d21c7415311c355d939e342",
+  "productionStylesSha256": "7e1bf2e19ce4a7eff68c4d892bdb6671d1300018edb4f9d2ec794c56c8cabb63",
   "acceptedMockupSha256": "b2b0d444202aa9c76235fa7277ba2c6a4e89d3d7dc0dd009abb8e73c72c82270",
   "chromiumExecutable": "/usr/sbin/chromium",
   "chromiumUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
@@ -88,9 +88,49 @@
         "x": 14.391,
         "y": 692.672,
         "width": 1411.219,
-        "height": 146.078,
+        "height": 146.094,
         "right": 1425.609,
-        "bottom": 838.75
+        "bottom": 838.766
+      },
+      "timelineLegend": {
+        "x": 15.391,
+        "y": 693.672,
+        "width": 325.594,
+        "height": 17.719,
+        "right": 340.984,
+        "bottom": 711.391
+      },
+      "timelineTransport": {
+        "x": 15.391,
+        "y": 712.984,
+        "width": 1409.219,
+        "height": 44,
+        "right": 1424.609,
+        "bottom": 756.984
+      },
+      "timelineRuler": {
+        "x": 17.391,
+        "y": 760.578,
+        "width": 1409.219,
+        "height": 44,
+        "right": 1426.609,
+        "bottom": 804.578
+      },
+      "timelineCursor": {
+        "x": 342.578,
+        "y": 693.672,
+        "width": 1082.031,
+        "height": 17.719,
+        "right": 1424.609,
+        "bottom": 711.391
+      },
+      "timelineLanes": {
+        "x": 15.391,
+        "y": 808.172,
+        "width": 1409.219,
+        "height": 29.594,
+        "right": 1424.609,
+        "bottom": 837.766
       }
     },
     "styles": {
@@ -108,50 +148,62 @@
       {
         "channel": "Authored",
         "rect": {
-          "x": 19.391,
-          "y": 697.672,
+          "x": 15.391,
+          "y": 693.672,
           "width": 68.797,
-          "height": 16.797,
-          "right": 88.188,
-          "bottom": 714.469
+          "height": 17.719,
+          "right": 84.188,
+          "bottom": 711.391
         },
         "text": "Authored"
       },
       {
         "channel": "Predicted",
         "rect": {
-          "x": 100.188,
-          "y": 697.672,
+          "x": 96.188,
+          "y": 693.672,
           "width": 76,
-          "height": 16.797,
-          "right": 176.188,
-          "bottom": 714.469
+          "height": 17.719,
+          "right": 172.188,
+          "bottom": 711.391
         },
         "text": "Predicted"
       },
       {
         "channel": "Accepted",
         "rect": {
-          "x": 188.188,
-          "y": 697.672,
+          "x": 184.188,
+          "y": 693.672,
           "width": 68.797,
-          "height": 16.797,
-          "right": 256.984,
-          "bottom": 714.469
+          "height": 17.719,
+          "right": 252.984,
+          "bottom": 711.391
         },
         "text": "Accepted"
       },
       {
         "channel": "Committed",
         "rect": {
-          "x": 268.984,
-          "y": 697.672,
+          "x": 264.984,
+          "y": 693.672,
           "width": 76,
-          "height": 16.797,
-          "right": 344.984,
-          "bottom": 714.469
+          "height": 17.719,
+          "right": 340.984,
+          "bottom": 711.391
         },
         "text": "Committed"
+      },
+      {
+        "channel": "Committed",
+        "rect": {
+          "x": 15.391,
+          "y": 808.172,
+          "width": 1409.219,
+          "height": 29.594,
+          "right": 1424.609,
+          "bottom": 837.766
+        },
+        "text": "Committed Committed simulator execution · 0–0"
       }
     ],
     "toolbarChildren": [
@@ -608,6 +660,6 @@
   },
   "png": "field-focus.png",
   "geometrySvg": "field-focus-geometry.svg",
-  "pngSha256": "93c25aff1ee31a01b733549440597252afbfb5804d6a91c9222aea6a2214e452",
-  "geometrySvgSha256": "8d825909129e39ede6dd807b5488355c544cc1d29f9497703ec0b56f6d2988e2"
+  "pngSha256": "d064d0ceceb5176aebe11a7f9b52ffdcf8a9dabdd1a42446e5a391d847b9fd6c",
+  "geometrySvgSha256": "627bcd2aaeea7d83ea6543621cc605872d352a76b26f6d6188c07b6f8727d463"
 }

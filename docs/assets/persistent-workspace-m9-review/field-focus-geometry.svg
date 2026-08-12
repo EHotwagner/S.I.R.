@@ -81,9 +81,49 @@
       "x": 14.391,
       "y": 692.672,
       "width": 1411.219,
-      "height": 146.078,
+      "height": 146.094,
       "right": 1425.609,
-      "bottom": 838.75
+      "bottom": 838.766
+    },
+    "timelineLegend": {
+      "x": 15.391,
+      "y": 693.672,
+      "width": 325.594,
+      "height": 17.719,
+      "right": 340.984,
+      "bottom": 711.391
+    },
+    "timelineTransport": {
+      "x": 15.391,
+      "y": 712.984,
+      "width": 1409.219,
+      "height": 44,
+      "right": 1424.609,
+      "bottom": 756.984
+    },
+    "timelineRuler": {
+      "x": 17.391,
+      "y": 760.578,
+      "width": 1409.219,
+      "height": 44,
+      "right": 1426.609,
+      "bottom": 804.578
+    },
+    "timelineCursor": {
+      "x": 342.578,
+      "y": 693.672,
+      "width": 1082.031,
+      "height": 17.719,
+      "right": 1424.609,
+      "bottom": 711.391
+    },
+    "timelineLanes": {
+      "x": 15.391,
+      "y": 808.172,
+      "width": 1409.219,
+      "height": 29.594,
+      "right": 1424.609,
+      "bottom": 837.766
     }
   },
   "styles": {
@@ -101,50 +141,62 @@
     {
       "channel": "Authored",
       "rect": {
-        "x": 19.391,
-        "y": 697.672,
+        "x": 15.391,
+        "y": 693.672,
         "width": 68.797,
-        "height": 16.797,
-        "right": 88.188,
-        "bottom": 714.469
+        "height": 17.719,
+        "right": 84.188,
+        "bottom": 711.391
       },
       "text": "Authored"
     },
     {
       "channel": "Predicted",
       "rect": {
-        "x": 100.188,
-        "y": 697.672,
+        "x": 96.188,
+        "y": 693.672,
         "width": 76,
-        "height": 16.797,
-        "right": 176.188,
-        "bottom": 714.469
+        "height": 17.719,
+        "right": 172.188,
+        "bottom": 711.391
       },
       "text": "Predicted"
     },
     {
       "channel": "Accepted",
       "rect": {
-        "x": 188.188,
-        "y": 697.672,
+        "x": 184.188,
+        "y": 693.672,
         "width": 68.797,
-        "height": 16.797,
-        "right": 256.984,
-        "bottom": 714.469
+        "height": 17.719,
+        "right": 252.984,
+        "bottom": 711.391
       },
       "text": "Accepted"
     },
     {
       "channel": "Committed",
       "rect": {
-        "x": 268.984,
-        "y": 697.672,
+        "x": 264.984,
+        "y": 693.672,
         "width": 76,
-        "height": 16.797,
-        "right": 344.984,
-        "bottom": 714.469
+        "height": 17.719,
+        "right": 340.984,
+        "bottom": 711.391
       },
       "text": "Committed"
+    },
+    {
+      "channel": "Committed",
+      "rect": {
+        "x": 15.391,
+        "y": 808.172,
+        "width": 1409.219,
+        "height": 29.594,
+        "right": 1424.609,
+        "bottom": 837.766
+      },
+      "text": "Committed Committed simulator execution · 0–0"
     }
   ],
   "toolbarChildren": [

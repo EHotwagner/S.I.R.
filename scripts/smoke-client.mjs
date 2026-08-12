@@ -316,7 +316,19 @@ class SmokeWorker {
   terminate() {}
 }
 
+const nativeSetInterval = globalThis.setInterval;
+const nativeClearInterval = globalThis.clearInterval;
+const smokeIntervals = new Set();
 const window = new Window({ url: "https://sir.invalid/replay/" });
+window.setInterval = (callback, delay, ...arguments_) => {
+  const identifier = nativeSetInterval(callback, delay, ...arguments_);
+  smokeIntervals.add(identifier);
+  return identifier;
+};
+window.clearInterval = (identifier) => {
+  smokeIntervals.delete(identifier);
+  nativeClearInterval(identifier);
+};
 window.happyDOM.setInnerWidth(1440);
 let tacticalLayoutWrites = 0;
 const storagePrototype = Object.getPrototypeOf(window.localStorage);
@@ -1716,3 +1728,7 @@ if (
 console.log(
   "Browser smoke passed: the exact SVG and unified timeline survived tactical transitions, resize/collapse/persistence, and registered Rules/Data/Samples operations; broad Editor/Plan/Simulator/Review workflows remained reachable.",
 );
+
+for (const identifier of smokeIntervals) nativeClearInterval(identifier);
+smokeIntervals.clear();
+window.close();

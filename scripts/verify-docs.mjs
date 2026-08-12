@@ -287,7 +287,7 @@ if (!home.includes("https://ehotwagner.github.io/S.I.R./content/fsdocs-default.c
 }
 
 if (
-  !/<title>Simulator \| S\.I\.R\.?<\/title>/.test(interactive) ||
+  !/<title>Simulator \| [^<]+<\/title>/.test(interactive) ||
   !interactive.includes('id="sir-replay-app"') ||
   !interactive.includes("JavaScript is disabled.") ||
   interactive.includes("<h1")

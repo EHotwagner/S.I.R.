@@ -158,14 +158,19 @@ if (documentPanel?.classList.contains("is-collapsed")) {
   documentPanel.querySelector("#layout-panel-document-collapse")?.click();
   await window.happyDOM.waitUntilComplete();
 }
-const simulateButton = [...mount.querySelectorAll(
-  '[aria-label="Map editor document actions"] button',
-)].find(
+if ([...mount.querySelectorAll("button")].some(
   (button) => button.textContent.trim() === "Simulate revision",
-);
-if (!simulateButton) {
-  throw new Error("The generated shell omitted the registry-routed simulator handoff.");
+)) {
+  throw new Error("The generated shell retained the obsolete manual simulator handoff.");
 }
+const editorPlay = [...mount.querySelectorAll('[aria-label="Unified tactical timeline"] button')]
+  .find((button) => button.textContent.trim() === "Play");
+if (!editorPlay || editorPlay.disabled) {
+  throw new Error("The generated shell did not maintain simulation transport in Editor.");
+}
+const simulateButton = [...mount.querySelectorAll('[aria-label="Tactical modality"] button')]
+  .find((button) => button.textContent.trim() === "Simulate");
+if (!simulateButton) throw new Error("The generated shell omitted the Simulate modality.");
 simulateButton.click();
 await window.happyDOM.waitUntilComplete();
 
@@ -175,7 +180,7 @@ if (
   mount?.querySelectorAll("[role='application']").length !== 1 ||
   mount?.querySelector("[aria-label='Editable simulation SVG battlefield']")
 ) {
-  throw new Error("The generated site did not project the immutable handoff into the retained SVG.");
+  throw new Error("The generated site did not project the maintained simulation into the retained SVG.");
 }
 
 const editorButton = [...mount.querySelectorAll("button")].find(

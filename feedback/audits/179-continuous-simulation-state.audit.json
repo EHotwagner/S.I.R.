@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/179-continuous-simulation-state.md",
-  "reportSha256": "63f7f21b215cdfbb8d9afbf76772bedee09488be7e0d114c1fce3dbd8c4700e5",
+  "reportSha256": "43ed3bd6623339a6e98c5b645aa61593bbef486a531979ea8e848fd26fd2952f",
   "criticMode": "separated-critic-pass",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -22,6 +22,22 @@
       "checkedEvidence": [
         {"locator": "command:./scripts/build-docs.sh", "result": "verified"},
         {"locator": "command:npm run test:browser", "result": "verified"}
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:timeout 180s node scripts/smoke-client.mjs",
+          "result": "verified"
+        },
+        {
+          "locator": "command:./scripts/build-docs.sh",
+          "result": "verified"
+        }
       ],
       "confidenceLimits": []
     }

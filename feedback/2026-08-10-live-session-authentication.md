@@ -47,7 +47,7 @@ The product’s declared workflow requires schema-v2 feedback, but the repositor
 - **Impact:** the documentation and cross-runtime-conformance CI jobs failed, blocking releaseability.
 - **Expected:** every required production-bundle-bound review manifest is regenerated with the client change.
 - **Observed:** `docs/assets/persistent-workspace-m9-review/manifest.json` retained the prior bundle digest until the repair phase regenerated it.
-- **Evidence:** command:node scripts/test-persistent-workspace-m9-acceptance.mjs; file:docs/assets/persistent-workspace-m9-review/manifest.json
+- **Evidence:** command:node scripts/test-persistent-workspace-m9-acceptance.mjs
 - **Version:** current repair branch production client bundle.
 - **Owner:** S.I.R review artifact generation
 - **Recurrence:** seen again #148; same existing bundle-binding regression cause, repaired in this PR.

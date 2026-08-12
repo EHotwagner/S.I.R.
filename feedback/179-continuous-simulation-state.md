@@ -12,9 +12,9 @@ commit: pending-pr-head
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 2
+- **material events:** 3
 - **zero-event reason:** n/a
-- **checkpoint:** `feedback/checkpoints/179-continuous-simulation-state.jsonl` (2 events).
+- **checkpoint:** `feedback/checkpoints/179-continuous-simulation-state.jsonl` (3 events).
 - **confidence limits:** Local .NET, documentation, smoke, and production-browser evidence passed; hosted exact-head CI and independent critique remain pending.
 
 ## §2 What worked
@@ -23,7 +23,7 @@ The source-bound delivery-route guard prevented a recovery worker from silently 
 
 ## §3 What did not
 
-The inherited delivery-route receipt was stale after the issue subject changed, so the initial forced claim was correctly refused until a current receipt was recorded. The inherited acceptance surface also retained manual-handoff and cursor-only assertions that contradicted the item contract and initially failed both documentation and cross-runtime CI.
+The inherited delivery-route receipt was stale after the issue subject changed, so the initial forced claim was correctly refused until a current receipt was recorded. The inherited acceptance surface also retained manual-handoff and cursor-only assertions that contradicted the item contract and initially failed both documentation and cross-runtime CI. Once those assertions passed, automatic simulator initialization exposed a Happy DOM interval wait with no teardown and additional stale documentation checks that had been masked by the earlier failure.
 
 ## §4 Findings
 
@@ -53,6 +53,19 @@ The inherited delivery-route receipt was stale after the issue subject changed, 
 - **Avoidable cost:** three focused smoke/browser repair iterations
 - **Disposition:** product fix
 
+#### §4.3 Successful automatic initialization made the documentation smoke non-terminating
+
+- **Kind:** quality-gap
+- **Impact:** A successful smoke run could consume CPU indefinitely because production playback intervals kept Happy DOM's completion wait live; later documentation assertions were unreachable until the hang was bounded and diagnosed.
+- **Expected:** Browser harnesses preserve interval-driven playback coverage, release their timers, and let the complete documentation chain reach every assertion within a bounded duration.
+- **Observed:** Four detached local gate runs remained active until their exact worktree-owned process trees were terminated; routing application intervals through tracked native timers made the smoke pass and exit in 3.9 seconds, after which M9 geometry, reconstructed-seek, bundle-integrity, clone-title, and generated-site checks could run and be repaired.
+- **Evidence:** command:timeout 180s node scripts/smoke-client.mjs; command:./scripts/build-docs.sh
+- **Version:** PR #196 recovery successor head
+- **Owner:** EHotwagner/S.I.R. documentation acceptance
+- **Recurrence:** new
+- **Avoidable cost:** one bounded hang diagnosis and four focused documentation-gate repairs
+- **Disposition:** product fix
+
 ## §5 Did not exercise
 
 No scaffold creation, package upgrade, or separate runtime playtest was needed for this recovery.
@@ -67,7 +80,7 @@ None observed.
 
 ## §8 Friction and avoidable cost
 
-One refused claim and one route-receipt refresh were required to preserve the recovery boundary. Three focused iterations updated stale smoke, review-generation, and browser expectations to the actual continuous-simulation contract.
+One refused claim and one route-receipt refresh were required to preserve the recovery boundary. Three focused iterations updated stale smoke, review-generation, and browser expectations to the actual continuous-simulation contract. A bounded hang diagnosis then exposed and repaired timer teardown plus four masked documentation checks.
 
 ## §9 Skill value and gaps
 
@@ -82,6 +95,7 @@ The focused client qualification passed, the 25-case production Playwright suite
 - Preserve the source-bound delivery-route refusal: a changed issue body must continue to make a recovery claim fail until a new receipt is recorded.
 - Keep the evidence diagnostic that rejects a directory used where a concrete verification artifact is required.
 - Bind acceptance language to FR-001/FR-004/FR-005: replacing reconstructed seek with cursor-only behavior or restoring manual handoff chrome must make documentation, smoke, or browser gates red.
+- Keep browser harness completion bounded: automatic simulation intervals must not prevent smoke or documentation processes from exiting after a successful assertion run.
 
 ## §12 Development-surface coverage
 
