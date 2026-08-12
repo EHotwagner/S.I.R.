@@ -28,6 +28,18 @@
       "commands": [
         "fsgg-coord-engine"
       ]
+    },
+    "fs.gg.governance.cli": {
+      "version": "1.12.1",
+      "commands": [
+        "fsgg-governance"
+      ]
+    },
+    "fs.gg.governance.fsharpsurfacecommand": {
+      "version": "1.12.1",
+      "commands": [
+        "fsgg-fsharp-surface"
+      ]
     }
   }
 }

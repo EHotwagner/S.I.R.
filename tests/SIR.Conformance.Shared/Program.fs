@@ -13,6 +13,7 @@ let main arguments =
             | _ -> None
 
         let numeric = NumericFixtures.evaluate injectAt
+        let gameCore = GameCoreFixtures.evaluate injectAt
 
         match NumericFixtures.firstDivergence numeric with
         | Some divergence ->
@@ -25,36 +26,44 @@ let main arguments =
 
             failwith "Canonical conformance failed."
         | None ->
-            let simulation = SimulationFixtures.evaluate None
-
-            match SimulationFixtures.firstDivergence simulation with
+            match NumericFixtures.firstDivergence gameCore with
             | Some divergence ->
                 eprintfn
-                    "first divergence: tick=%d phase=%s byte=%d expected=%02x actual=%02x"
-                    divergence.Tick
-                    (SimulationFixtures.phaseName divergence.Phase)
-                    divergence.ByteOffset
-                    divergence.Expected
-                    divergence.Actual
-
-                failwith "Simulation conformance failed."
+                    "first divergence: fixture=%s byte=%d expected=%02x actual=%02x"
+                    divergence.FixtureName divergence.ByteOffset divergence.Expected divergence.Actual
+                failwith "Game.Core canonical conformance failed."
             | None ->
-                let replay = ReplayFixtures.evaluate ()
-                let orientation = OrientationFixtures.evaluate ()
-                let controlAbi = ControlAbiFixtures.evaluate ()
-                let mapScale = SimulationFixtures.mapScaleEvidence ()
+                let simulation = SimulationFixtures.evaluate None
 
-                [ NumericFixtures.canonicalBytes numeric
-                  orientation
-                  controlAbi
-                  SimulationFixtures.canonicalBytes simulation
-                  mapScale
-                  replay ]
-                |> SIR.Domain.CanonicalEncoding.concatenate
-                |> NumericFixtures.hex
-                |> printfn "%s"
+                match SimulationFixtures.firstDivergence simulation with
+                | Some divergence ->
+                    eprintfn
+                        "first divergence: tick=%d phase=%s byte=%d expected=%02x actual=%02x"
+                        divergence.Tick
+                        (SimulationFixtures.phaseName divergence.Phase)
+                        divergence.ByteOffset
+                        divergence.Expected
+                        divergence.Actual
 
-                0
+                    failwith "Simulation conformance failed."
+                | None ->
+                    let replay = ReplayFixtures.evaluate ()
+                    let orientation = OrientationFixtures.evaluate ()
+                    let controlAbi = ControlAbiFixtures.evaluate ()
+                    let mapScale = SimulationFixtures.mapScaleEvidence ()
+
+                    [ NumericFixtures.canonicalBytes numeric
+                      NumericFixtures.canonicalBytes gameCore
+                      orientation
+                      controlAbi
+                      SimulationFixtures.canonicalBytes simulation
+                      mapScale
+                      replay ]
+                    |> SIR.Domain.CanonicalEncoding.concatenate
+                    |> NumericFixtures.hex
+                    |> printfn "%s"
+
+                    0
     | [ "--inject-simulation-divergence"; phaseName ] ->
         match SimulationFixtures.tryParsePhase phaseName with
         | None ->

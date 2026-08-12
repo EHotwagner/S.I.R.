@@ -52,6 +52,7 @@ search_fixed() {
 }
 
 dotnet tool restore
+./scripts/verify-fable-game-governance.sh
 dotnet restore SIR.slnx --locked-mode
 dotnet build SIR.slnx --no-restore
 
@@ -128,6 +129,35 @@ if node "$fable_entry" \
   echo "The Fable divergence guard accepted a deliberately changed fixture" >&2
   exit 1
 fi
+
+for game_core_fixture in game-core-cell-order game-core-edge-between game-core-los game-core-astar; do
+  game_core_pattern="first divergence: fixture=$game_core_fixture byte="
+
+  if dotnet run \
+    --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj \
+    --no-build \
+    --no-restore \
+    -- --inject-divergence "$game_core_fixture" >"$task_tmp/dotnet-$game_core_fixture.log" 2>&1; then
+    echo "The .NET Game.Core guard accepted a changed $game_core_fixture subject" >&2
+    exit 1
+  fi
+
+  if ! search_fixed "$game_core_pattern" "$task_tmp/dotnet-$game_core_fixture.log"; then
+    echo "The .NET Game.Core guard did not identify $game_core_fixture" >&2
+    exit 1
+  fi
+
+  if node "$fable_entry" \
+    --inject-divergence "$game_core_fixture" >"$task_tmp/fable-$game_core_fixture.log" 2>&1; then
+    echo "The Fable Game.Core guard accepted a changed $game_core_fixture subject" >&2
+    exit 1
+  fi
+
+  if ! search_fixed "$game_core_pattern" "$task_tmp/fable-$game_core_fixture.log"; then
+    echo "The Fable Game.Core guard did not identify $game_core_fixture" >&2
+    exit 1
+  fi
+done
 
 if ! search_fixed "$divergence_pattern" "$task_tmp/fable-divergence.log"; then
   echo "The Fable divergence guard did not identify the first changed fixture" >&2

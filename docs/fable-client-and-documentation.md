@@ -1257,7 +1257,7 @@ adversarial blocked-cell insertion order.
 `SIR.Simulation` package seam, and separate .NET and Fable/Node conformance
 hosts linked to the same fixture source. Dependencies and tools are centrally
 locked to .NET SDK 10.0.302, Fable 5.13.0, Node 26.5.0,
-`@fable-org/fable-library-js` 2.5.1, `FSharp.Core` 10.1.302, and the exact
+`@fable-org/fable-library-js` 2.5.1, `FSharp.Core` 10.1.303, and the exact
 published `FS.GG.Game.Core` 0.13.0 package. NuGet and npm lock files are
 committed; the simulation consumes no sibling checkout or project reference
 outside this repository.
@@ -1963,7 +1963,7 @@ verified against their executable owners by
 | Laboratory export | `sir-lab-experiment-v1` with exact engine, ruleset, scenario, inputs, and integer results | New export schema and fixture migration |
 | Publication | SHA-384 asset integrity; retain each engine while its replay format is supported | New publication schema and retention audit |
 | Upstream package | `FS.GG.Game.Core` 0.13.0, profile `fs-gg-game-core-fable-lockstep-v1`, source delivered through the existing package | New published profile and consumer conformance |
-| Toolchain | .NET SDK 10.0.302; Fable 5.13.0; FSharp.Core 10.1.302; Elmish 5.0.2; Elmish.React 5.6.0; React 19.2.8; Vite 8.1.5; Node 26.5.0; fsdocs 22.1.0 | Coherent lock update plus complete conformance and documentation gates |
+| Toolchain | .NET SDK 10.0.302; Fable 5.13.0; FSharp.Core 10.1.303; Elmish 5.0.2; Elmish.React 5.6.0; React 19.2.8; Vite 8.1.5; Node 26.5.0; fsdocs 22.1.0 | Coherent lock update plus complete conformance and documentation gates |
 | Browser quality gates | Production-bundle mount, generated-site mount, and structural accessibility checks under happy-dom | Replacement requires equivalent or stronger checked evidence |
 
 ## Future production profiles
@@ -1994,3 +1994,7 @@ identity.
 - [FSharp.Formatting output evaluation](https://fsprojects.github.io/FSharp.Formatting/evaluation.html)
 - [FSharp.Formatting styling](https://fsprojects.github.io/FSharp.Formatting/styling.html)
 - [FSharp.Formatting GitHub Pages guide](https://fsprojects.github.io/FSharp.Formatting/zero-to-hero.html)
+# Governance boundary
+
+See [Fable game governance parity](game-governance.md) for the package-only LockstepExact
+boundary and the native/Skia to Fable/SVG responsibility matrix.

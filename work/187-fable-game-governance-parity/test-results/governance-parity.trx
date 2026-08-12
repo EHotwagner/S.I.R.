@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="d87d4e26-ab46-4e9a-8d5f-f8c09851f20c" name="@60c9e64cc8e0 2026-08-11 23:41:42" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-08-11T23:41:42.2552438+02:00" queuing="2026-08-11T23:41:42.2552438+02:00" start="2026-08-11T23:41:41.5085704+02:00" finish="2026-08-11T23:41:42.2833854+02:00" />
+  <TestSettings name="default" id="1cd58674-805e-487c-85dd-5968278192ad">
+    <Deployment runDeploymentRoot="_60c9e64cc8e0_2026-08-11_23_41_42" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="6a7d8610-a603-4525-a55b-3266122335cc" testId="f4589aac-bcc3-f6bd-2938-b6c46193a520" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.bootstrap rejects cross actor identity" computerName="60c9e64cc8e0" duration="00:00:00.0096006" startTime="2026-08-11T23:41:42.2352676+02:00" endTime="2026-08-11T23:41:42.2352880+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6a7d8610-a603-4525-a55b-3266122335cc" />
+    <UnitTestResult executionId="83620010-ba77-4ab7-905e-d5af182765a8" testId="23f90c22-9055-e0a6-0c21-5e2669fa90f9" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.chunked bootstrap body is rejected before parsing" computerName="60c9e64cc8e0" duration="00:00:00.0200283" startTime="2026-08-11T23:41:42.1852955+02:00" endTime="2026-08-11T23:41:42.2052813+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="83620010-ba77-4ab7-905e-d5af182765a8" />
+    <UnitTestResult executionId="5dc9f211-c6f0-4c6b-bcf3-df02f3c3a758" testId="e353a7da-dd6c-8e9f-80d4-fe76f65eafb0" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.bootstrap bounds actor names and global session admission" computerName="60c9e64cc8e0" duration="00:00:00.0014375" startTime="2026-08-11T23:41:42.1713987+02:00" endTime="2026-08-11T23:41:42.1727747+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5dc9f211-c6f0-4c6b-bcf3-df02f3c3a758" />
+    <UnitTestResult executionId="280bdd77-5503-40b9-be13-44e1d6eaf1e8" testId="af97fa3e-3cd5-8a58-fc28-01633b7a4ef8" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.production rejects development identity header" computerName="60c9e64cc8e0" duration="00:00:00.0099135" startTime="2026-08-11T23:41:42.2353419+02:00" endTime="2026-08-11T23:41:42.2417065+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="280bdd77-5503-40b9-be13-44e1d6eaf1e8" />
+    <UnitTestResult executionId="fbc44e8d-7ad3-4ec6-b59e-9226c7d27354" testId="da0ebd1a-9d30-e029-67e8-33a0c59bbf71" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.bootstrap rate limiting and lifecycle metrics are observable" computerName="60c9e64cc8e0" duration="00:00:00.0005774" startTime="2026-08-11T23:41:42.2349121+02:00" endTime="2026-08-11T23:41:42.2349526+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fbc44e8d-7ad3-4ec6-b59e-9226c7d27354" />
+    <UnitTestResult executionId="60804096-37f2-45aa-b83e-0b6bb08ae13f" testId="ca8f4372-1632-3c49-4d63-e8521ad1ed66" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.framework diagnostics suppress rejected query credentials" computerName="60c9e64cc8e0" duration="00:00:00.1600915" startTime="2026-08-11T23:41:41.8079517+02:00" endTime="2026-08-11T23:41:41.9713187+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="60804096-37f2-45aa-b83e-0b6bb08ae13f" />
+    <UnitTestResult executionId="5931770c-1f5e-41be-a102-05c27a6122f3" testId="9e3ff86a-705e-2c5a-b13d-2650ba750e9f" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.independent sessions mutate concurrently" computerName="60c9e64cc8e0" duration="00:00:00.0051912" startTime="2026-08-11T23:41:42.1666499+02:00" endTime="2026-08-11T23:41:42.1712900+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5931770c-1f5e-41be-a102-05c27a6122f3" />
+    <UnitTestResult executionId="cf443f18-a4a8-473a-bde7-edcdb0745333" testId="c89c8dc6-f357-8e25-821c-a60f23e84690" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.concurrent admissions never exceed capacity" computerName="60c9e64cc8e0" duration="00:00:00.0135600" startTime="2026-08-11T23:41:42.2057796+02:00" endTime="2026-08-11T23:41:42.2193565+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cf443f18-a4a8-473a-bde7-edcdb0745333" />
+    <UnitTestResult executionId="ccb5af00-52e9-4845-9af6-77dce00f19e6" testId="e6fe9cf1-af0c-218e-31e5-d371329fcd45" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.query only credentials and revoked sessions are denied" computerName="60c9e64cc8e0" duration="00:00:00.0002626" startTime="2026-08-11T23:41:42.2418153+02:00" endTime="2026-08-11T23:41:42.2420116+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ccb5af00-52e9-4845-9af6-77dce00f19e6" />
+    <UnitTestResult executionId="e77773e2-fb55-4562-9a94-acc44f679640" testId="5305a7ec-baca-aaa7-160d-107e16210613" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.production rejects spoofed header and admits signed identity" computerName="60c9e64cc8e0" duration="00:00:00.1947714" startTime="2026-08-11T23:41:41.9774841+02:00" endTime="2026-08-11T23:41:42.1660855+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e77773e2-fb55-4562-9a94-acc44f679640" />
+    <UnitTestResult executionId="c0486c21-9069-4b1a-b2f2-4b3a9b15bd2a" testId="7f38d18e-8840-31f5-982b-47e6ef418666" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.superseded admission releases capacity with stable denial" computerName="60c9e64cc8e0" duration="00:00:00.0005895" startTime="2026-08-11T23:41:42.1728741+02:00" endTime="2026-08-11T23:41:42.1733843+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c0486c21-9069-4b1a-b2f2-4b3a9b15bd2a" />
+    <UnitTestResult executionId="2d67d6e2-20b2-41cd-9b32-55ea00502403" testId="a39e13bc-e383-7706-8a25-94b466af6129" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.takeover rejects superseded connection and keeps deterministic work" computerName="60c9e64cc8e0" duration="00:00:00.0016004" startTime="2026-08-11T23:41:42.2351959+02:00" endTime="2026-08-11T23:41:42.2352185+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2d67d6e2-20b2-41cd-9b32-55ea00502403" />
+    <UnitTestResult executionId="4575152b-88e2-4529-9fb5-aac355f69394" testId="ffd9e77d-fa91-7dbc-76ba-a8221563082e" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.disconnect grace expires and releases a session" computerName="60c9e64cc8e0" duration="00:00:00.0005077" startTime="2026-08-11T23:41:42.2351131+02:00" endTime="2026-08-11T23:41:42.2351382+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4575152b-88e2-4529-9fb5-aac355f69394" />
+    <UnitTestResult executionId="8d45c775-2df7-43e4-b3c2-584c0593f3aa" testId="282154bb-dfa9-0af3-2a56-88d71f13ed8b" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.injected clock expires admission" computerName="60c9e64cc8e0" duration="00:00:00.0003907" startTime="2026-08-11T23:41:42.2054199+02:00" endTime="2026-08-11T23:41:42.2056885+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8d45c775-2df7-43e4-b3c2-584c0593f3aa" />
+    <UnitTestResult executionId="7afa2441-95a2-46a8-afe2-23f2a6631b51" testId="23d70a59-7169-d804-981b-a6f6a78aaf8d" testName="SIR.Server.Tests+LiveSessionAuthenticationTests.production rejects absent bearer identity" computerName="60c9e64cc8e0" duration="00:00:00.0117215" startTime="2026-08-11T23:41:42.1734689+02:00" endTime="2026-08-11T23:41:42.1851745+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7afa2441-95a2-46a8-afe2-23f2a6631b51" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.concurrent admissions never exceed capacity" storage="/tmp/sir-item-187-worker.1f2oxg/tests/sir.server.tests/bin/debug/net10.0/sir.server.tests.dll" id="c89c8dc6-f357-8e25-821c-a60f23e84690">
+      <Execution id="cf443f18-a4a8-473a-bde7-edcdb0745333" />
+      <TestMethod codeBase="/tmp/sir-item-187-worker.1F2oXg/tests/SIR.Server.Tests/bin/Debug/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="concurrent admissions never exceed capacity" />
+    </UnitTest>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.independent sessions mutate concurrently" storage="/tmp/sir-item-187-worker.1f2oxg/tests/sir.server.tests/bin/debug/net10.0/sir.server.tests.dll" id="9e3ff86a-705e-2c5a-b13d-2650ba750e9f">
+      <Execution id="5931770c-1f5e-41be-a102-05c27a6122f3" />
+      <TestMethod codeBase="/tmp/sir-item-187-worker.1F2oXg/tests/SIR.Server.Tests/bin/Debug/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="independent sessions mutate concurrently" />
+    </UnitTest>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.query only credentials and revoked sessions are denied" storage="/tmp/sir-item-187-worker.1f2oxg/tests/sir.server.tests/bin/debug/net10.0/sir.server.tests.dll" id="e6fe9cf1-af0c-218e-31e5-d371329fcd45">
+      <Execution id="ccb5af00-52e9-4845-9af6-77dce00f19e6" />
+      <TestMethod codeBase="/tmp/sir-item-187-worker.1F2oXg/tests/SIR.Server.Tests/bin/Debug/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="query only credentials and revoked sessions are denied" />
+    </UnitTest>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.bootstrap rate limiting and lifecycle metrics are observable" storage="/tmp/sir-item-187-worker.1f2oxg/tests/sir.server.tests/bin/debug/net10.0/sir.server.tests.dll" id="da0ebd1a-9d30-e029-67e8-33a0c59bbf71">
+      <Execution id="fbc44e8d-7ad3-4ec6-b59e-9226c7d27354" />
+      <TestMethod codeBase="/tmp/sir-item-187-worker.1F2oXg/tests/SIR.Server.Tests/bin/Debug/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="bootstrap rate limiting and lifecycle metrics are observable" />
+    </UnitTest>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.superseded admission releases capacity with stable denial" storage="/tmp/sir-item-187-worker.1f2oxg/tests/sir.server.tests/bin/debug/net10.0/sir.server.tests.dll" id="7f38d18e-8840-31f5-982b-47e6ef418666">
+      <Execution id="c0486c21-9069-4b1a-b2f2-4b3a9b15bd2a" />
+      <TestMethod codeBase="/tmp/sir-item-187-worker.1F2oXg/tests/SIR.Server.Tests/bin/Debug/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="superseded admission releases capacity with stable denial" />
+    </UnitTest>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.production rejects absent bearer identity" storage="/tmp/sir-item-187-worker.1f2oxg/tests/sir.server.tests/bin/debug/net10.0/sir.server.tests.dll" id="23d70a59-7169-d804-981b-a6f6a78aaf8d">
+      <Execution id="7afa2441-95a2-46a8-afe2-23f2a6631b51" />
+      <TestMethod codeBase="/tmp/sir-item-187-worker.1F2oXg/tests/SIR.Server.Tests/bin/Debug/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="production rejects absent bearer identity" />
+    </UnitTest>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.injected clock expires admission" storage="/tmp/sir-item-187-worker.1f2oxg/tests/sir.server.tests/bin/debug/net10.0/sir.server.tests.dll" id="282154bb-dfa9-0af3-2a56-88d71f13ed8b">
+      <Execution id="8d45c775-2df7-43e4-b3c2-584c0593f3aa" />
+      <TestMethod codeBase="/tmp/sir-item-187-worker.1F2oXg/tests/SIR.Server.Tests/bin/Debug/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="injected clock expires admission" />
+    </UnitTest>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.framework diagnostics suppress rejected query credentials" storage="/tmp/sir-item-187-worker.1f2oxg/tests/sir.server.tests/bin/debug/net10.0/sir.server.tests.dll" id="ca8f4372-1632-3c49-4d63-e8521ad1ed66">
+      <Execution id="60804096-37f2-45aa-b83e-0b6bb08ae13f" />
+      <TestMethod codeBase="/tmp/sir-item-187-worker.1F2oXg/tests/SIR.Server.Tests/bin/Debug/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="framework diagnostics suppress rejected query credentials" />
+    </UnitTest>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.disconnect grace expires and releases a session" storage="/tmp/sir-item-187-worker.1f2oxg/tests/sir.server.tests/bin/debug/net10.0/sir.server.tests.dll" id="ffd9e77d-fa91-7dbc-76ba-a8221563082e">
+      <Execution id="4575152b-88e2-4529-9fb5-aac355f69394" />
+      <TestMethod codeBase="/tmp/sir-item-187-worker.1F2oXg/tests/SIR.Server.Tests/bin/Debug/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="disconnect grace expires and releases a session" />
+    </UnitTest>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.bootstrap bounds actor names and global session admission" storage="/tmp/sir-item-187-worker.1f2oxg/tests/sir.server.tests/bin/debug/net10.0/sir.server.tests.dll" id="e353a7da-dd6c-8e9f-80d4-fe76f65eafb0">
+      <Execution id="5dc9f211-c6f0-4c6b-bcf3-df02f3c3a758" />
+      <TestMethod codeBase="/tmp/sir-item-187-worker.1F2oXg/tests/SIR.Server.Tests/bin/Debug/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="bootstrap bounds actor names and global session admission" />
+    </UnitTest>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.production rejects spoofed header and admits signed identity" storage="/tmp/sir-item-187-worker.1f2oxg/tests/sir.server.tests/bin/debug/net10.0/sir.server.tests.dll" id="5305a7ec-baca-aaa7-160d-107e16210613">
+      <Execution id="e77773e2-fb55-4562-9a94-acc44f679640" />
+      <TestMethod codeBase="/tmp/sir-item-187-worker.1F2oXg/tests/SIR.Server.Tests/bin/Debug/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="production rejects spoofed header and admits signed identity" />
+    </UnitTest>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.production rejects development identity header" storage="/tmp/sir-item-187-worker.1f2oxg/tests/sir.server.tests/bin/debug/net10.0/sir.server.tests.dll" id="af97fa3e-3cd5-8a58-fc28-01633b7a4ef8">
+      <Execution id="280bdd77-5503-40b9-be13-44e1d6eaf1e8" />
+      <TestMethod codeBase="/tmp/sir-item-187-worker.1F2oXg/tests/SIR.Server.Tests/bin/Debug/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="production rejects development identity header" />
+    </UnitTest>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.takeover rejects superseded connection and keeps deterministic work" storage="/tmp/sir-item-187-worker.1f2oxg/tests/sir.server.tests/bin/debug/net10.0/sir.server.tests.dll" id="a39e13bc-e383-7706-8a25-94b466af6129">
+      <Execution id="2d67d6e2-20b2-41cd-9b32-55ea00502403" />
+      <TestMethod codeBase="/tmp/sir-item-187-worker.1F2oXg/tests/SIR.Server.Tests/bin/Debug/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="takeover rejects superseded connection and keeps deterministic work" />
+    </UnitTest>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.bootstrap rejects cross actor identity" storage="/tmp/sir-item-187-worker.1f2oxg/tests/sir.server.tests/bin/debug/net10.0/sir.server.tests.dll" id="f4589aac-bcc3-f6bd-2938-b6c46193a520">
+      <Execution id="6a7d8610-a603-4525-a55b-3266122335cc" />
+      <TestMethod codeBase="/tmp/sir-item-187-worker.1F2oXg/tests/SIR.Server.Tests/bin/Debug/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="bootstrap rejects cross actor identity" />
+    </UnitTest>
+    <UnitTest name="SIR.Server.Tests+LiveSessionAuthenticationTests.chunked bootstrap body is rejected before parsing" storage="/tmp/sir-item-187-worker.1f2oxg/tests/sir.server.tests/bin/debug/net10.0/sir.server.tests.dll" id="23f90c22-9055-e0a6-0c21-5e2669fa90f9">
+      <Execution id="83620010-ba77-4ab7-905e-d5af182765a8" />
+      <TestMethod codeBase="/tmp/sir-item-187-worker.1F2oXg/tests/SIR.Server.Tests/bin/Debug/net10.0/SIR.Server.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SIR.Server.Tests+LiveSessionAuthenticationTests" name="chunked bootstrap body is rejected before parsing" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="f4589aac-bcc3-f6bd-2938-b6c46193a520" executionId="6a7d8610-a603-4525-a55b-3266122335cc" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="23f90c22-9055-e0a6-0c21-5e2669fa90f9" executionId="83620010-ba77-4ab7-905e-d5af182765a8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e353a7da-dd6c-8e9f-80d4-fe76f65eafb0" executionId="5dc9f211-c6f0-4c6b-bcf3-df02f3c3a758" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="af97fa3e-3cd5-8a58-fc28-01633b7a4ef8" executionId="280bdd77-5503-40b9-be13-44e1d6eaf1e8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="da0ebd1a-9d30-e029-67e8-33a0c59bbf71" executionId="fbc44e8d-7ad3-4ec6-b59e-9226c7d27354" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ca8f4372-1632-3c49-4d63-e8521ad1ed66" executionId="60804096-37f2-45aa-b83e-0b6bb08ae13f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9e3ff86a-705e-2c5a-b13d-2650ba750e9f" executionId="5931770c-1f5e-41be-a102-05c27a6122f3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c89c8dc6-f357-8e25-821c-a60f23e84690" executionId="cf443f18-a4a8-473a-bde7-edcdb0745333" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e6fe9cf1-af0c-218e-31e5-d371329fcd45" executionId="ccb5af00-52e9-4845-9af6-77dce00f19e6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5305a7ec-baca-aaa7-160d-107e16210613" executionId="e77773e2-fb55-4562-9a94-acc44f679640" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7f38d18e-8840-31f5-982b-47e6ef418666" executionId="c0486c21-9069-4b1a-b2f2-4b3a9b15bd2a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a39e13bc-e383-7706-8a25-94b466af6129" executionId="2d67d6e2-20b2-41cd-9b32-55ea00502403" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ffd9e77d-fa91-7dbc-76ba-a8221563082e" executionId="4575152b-88e2-4529-9fb5-aac355f69394" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="282154bb-dfa9-0af3-2a56-88d71f13ed8b" executionId="8d45c775-2df7-43e4-b3c2-584c0593f3aa" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="23d70a59-7169-d804-981b-a6f6a78aaf8d" executionId="7afa2441-95a2-46a8-afe2-23f2a6631b51" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="15" executed="15" passed="15" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.10)
+[xUnit.net 00:00:00.04]   Discovering: SIR.Server.Tests
+[xUnit.net 00:00:00.06]   Discovered:  SIR.Server.Tests
+[xUnit.net 00:00:00.07]   Starting:    SIR.Server.Tests
+warn: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[16]
+      The WebRootPath was not found: /tmp/sir-item-187-worker.1F2oXg/src/SIR.Server/wwwroot. Static files may be unavailable.
+info: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[62]
+      User profile is available. Using '/home/developer/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+warn: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[16]
+      The WebRootPath was not found: /tmp/sir-item-187-worker.1F2oXg/src/SIR.Server/wwwroot. Static files may be unavailable.
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /tmp/sir-item-187-worker.1F2oXg/src/SIR.Server
+info: Microsoft.AspNetCore.Authorization.DefaultAuthorizationService[2]
+      Authorization failed. These requirements were not met:
+      DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+info: Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler[12]
+      AuthenticationScheme: Bearer was challenged.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/bootstrap =&gt; Invoke'
+info: Microsoft.AspNetCore.Http.Result.ContentResult[2]
+      Write content with HTTP Response ContentType of application/json
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/bootstrap =&gt; Invoke'
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+warn: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[16]
+      The WebRootPath was not found: /tmp/sir-item-187-worker.1F2oXg/src/SIR.Server/wwwroot. Static files may be unavailable.
+info: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[62]
+      User profile is available. Using '/home/developer/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+warn: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[16]
+      The WebRootPath was not found: /tmp/sir-item-187-worker.1F2oXg/src/SIR.Server/wwwroot. Static files may be unavailable.
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /tmp/sir-item-187-worker.1F2oXg/src/SIR.Server
+info: Microsoft.AspNetCore.Authorization.DefaultAuthorizationService[2]
+      Authorization failed. These requirements were not met:
+      DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+info: Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler[12]
+      AuthenticationScheme: Bearer was challenged.
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+warn: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[16]
+      The WebRootPath was not found: /tmp/sir-item-187-worker.1F2oXg/src/SIR.Server/wwwroot. Static files may be unavailable.
+info: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[62]
+      User profile is available. Using '/home/developer/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+warn: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[16]
+      The WebRootPath was not found: /tmp/sir-item-187-worker.1F2oXg/src/SIR.Server/wwwroot. Static files may be unavailable.
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /tmp/sir-item-187-worker.1F2oXg/src/SIR.Server
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/bootstrap =&gt; Invoke'
+info: Microsoft.AspNetCore.Http.Result.BadRequestObjectResult[1]
+      Setting HTTP status code 400.
+info: Microsoft.AspNetCore.Http.Result.BadRequestObjectResult[3]
+      Writing value of type '&lt;&gt;f__AnonymousType3781612660`1' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/bootstrap =&gt; Invoke'
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+warn: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[16]
+      The WebRootPath was not found: /tmp/sir-item-187-worker.1F2oXg/src/SIR.Server/wwwroot. Static files may be unavailable.
+info: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[62]
+      User profile is available. Using '/home/developer/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+warn: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[16]
+      The WebRootPath was not found: /tmp/sir-item-187-worker.1F2oXg/src/SIR.Server/wwwroot. Static files may be unavailable.
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /tmp/sir-item-187-worker.1F2oXg/src/SIR.Server
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'HTTP: POST /api/bootstrap =&gt; Invoke'
+info: Microsoft.AspNetCore.Http.Result.BadRequestObjectResult[1]
+      Setting HTTP status code 400.
+info: Microsoft.AspNetCore.Http.Result.BadRequestObjectResult[3]
+      Writing value of type '&lt;&gt;f__AnonymousType3781612660`1' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: POST /api/bootstrap =&gt; Invoke'
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+warn: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[16]
+      The WebRootPath was not found: /tmp/sir-item-187-worker.1F2oXg/src/SIR.Server/wwwroot. Static files may be unavailable.
+info: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[62]
+      User profile is available. Using '/home/developer/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+warn: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[16]
+      The WebRootPath was not found: /tmp/sir-item-187-worker.1F2oXg/src/SIR.Server/wwwroot. Static files may be unavailable.
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /tmp/sir-item-187-worker.1F2oXg/src/SIR.Server
+info: Microsoft.AspNetCore.Authorization.DefaultAuthorizationService[2]
+      Authorization failed. These requirements were not met:
+      DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+info: Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler[12]
+      AuthenticationScheme: Bearer was challenged.
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+[xUnit.net 00:00:00.52]   Finished:    SIR.Server.Tests
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>
