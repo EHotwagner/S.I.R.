@@ -1,7 +1,5 @@
 namespace SIR.Client
 
-open SIR.Simulation
-
 /// One immutable browser engine retained for replay compatibility.
 type RetainedEngine =
     { Version: string
@@ -30,14 +28,14 @@ module EngineCatalog =
         { Version = "v1"
           Identity = CurrentIdentity
           EngineHash = [| for value in 1 .. 32 -> byte value |]
-          ReplayFormatVersions = [ int32 Replay.CurrentFormatVersion ]
+          ReplayFormatVersions = [ 1; 2; 3 ]
           WorkerPath = CurrentWorkerPath }
 
     let Retained = [ Current ]
 
-    /// Selects only a retained engine whose replay-format contract includes the package.
-    let tryFind (package: ReplayPackage) =
+    /// Selects only a retained engine whose replay-format contract includes the fixed header.
+    let tryFind engineHash formatVersion =
         Retained
         |> List.tryFind (fun engine ->
-            engine.Identity = identity package.EngineHash
-            && List.contains package.FormatVersion engine.ReplayFormatVersions)
+            engine.Identity = identity engineHash
+            && List.contains formatVersion engine.ReplayFormatVersions)

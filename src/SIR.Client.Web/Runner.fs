@@ -5,7 +5,6 @@ open Browser.Types
 open Fable.Core
 open Fable.Core.JsInterop
 open SIR.Client
-open SIR.Simulation
 
 [<RequireQualifiedAccess>]
 module Runner =
@@ -89,6 +88,16 @@ module Runner =
         |> Array.map (fun value -> value.ToString("x2"))
         |> String.concat ""
 
+    let private routedHeader (bytes: byte array) =
+        if bytes.Length >= 41
+           && bytes[0] = 0x53uy
+           && bytes[1] = 0x49uy
+           && bytes[2] = 0x52uy
+           && bytes[3] = 0x52uy then
+            let formatVersion = int32 bytes[4] ||| (int32 bytes[5] <<< 8) ||| (int32 bytes[6] <<< 16) ||| (int32 bytes[7] <<< 24)
+            Some(formatVersion, bytes[9..40])
+        else None
+
     let post operation request =
         let envelope: WorkerRequestEnvelope =
             { ProtocolVersion = int32 WorkerProtocol.CurrentVersion
@@ -97,9 +106,9 @@ module Runner =
 
         match request with
         | LoadPackage(_, bytes) ->
-            match Replay.decode Replay.defaultLimits bytes with
-            | Ok package ->
-                match EngineCatalog.tryFind package with
+            match routedHeader bytes with
+            | Some(formatVersion, engineHash) ->
+                match EngineCatalog.tryFind engineHash formatVersion with
                 | Some engine -> (activate engine)?postMessage (envelope)
                 | None ->
                     dispatch (
@@ -107,12 +116,12 @@ module Runner =
                             operation,
                             RunnerUnsupported(
                                 "engine "
-                                + engineIdentity package.EngineHash
+                                + engineIdentity engineHash
                                 + " is not retained by this publication"
                             )
                         )
                     )
-            | Error _ ->
+            | None ->
                 // The retained worker owns detailed validation errors for malformed packages.
                 (activate EngineCatalog.Current)?postMessage (envelope)
         | _ -> (activate EngineCatalog.Current)?postMessage (envelope)

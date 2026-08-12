@@ -110,6 +110,9 @@ let main arguments =
         printfn "final-state-sha256=%s" (NumericFixtures.hex replayVector[32..63])
         printfn "perspective-package-sha256=%s" (NumericFixtures.hex replayVector[64..95])
         0
+    | [ "--print-replay-package" ] ->
+        ReplayFixtures.canonicalPackageBytes () |> NumericFixtures.hex |> printfn "%s"
+        0
     | [ "--print-rules-manifest" ] ->
         printfn "%s" (RulesCorpusFixtures.manifestJson ())
         0

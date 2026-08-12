@@ -39,9 +39,17 @@ while IFS=$'\t' read -r source_path source_symbol; do
 done <<< "$(jq -r '.rules[].source | select(. != null) | [.path, .symbol] | @tsv' "$repo_root/tests/fixtures/rules-corpus/v2/manifest.json")"
 
 source_commit=$(jq -r '.sourceCommit' "$repo_root/tests/fixtures/rules-corpus/v2/manifest.json")
-declared_source_sha=$(sed -n 's/.*"combat-rules-source-sha256", System.Text.Encoding.UTF8.GetBytes "\([0-9a-f]\{64\}\)".*/\1/p' "$repo_root/src/SIR.Simulation/CombatRules.fs")
-actual_source_sha=$(git -C "$repo_root" show "$source_commit:src/SIR.Simulation/CombatRules.fs" | sha256sum | cut -d' ' -f1)
-test "$declared_source_sha" = "$actual_source_sha" || { echo "combat implementation fingerprint does not match pinned source" >&2; exit 1; }
+source_manifest="$repo_root/tests/fixtures/rules-corpus/v2/implementation-sources.json"
+test "$(jq -r '.sourceCommit' "$source_manifest")" = "$source_commit" || { echo "implementation source manifest does not bind the package source commit" >&2; exit 1; }
+source_digest_input=$(mktemp /tmp/sir-rules-source-digest.XXXXXX)
+while IFS= read -r artifact_path; do
+  actual_artifact_sha=$(git -C "$repo_root" show "$source_commit:$artifact_path" | sha256sum | cut -d' ' -f1)
+  printf '%s\t%s\n' "$artifact_path" "$actual_artifact_sha" >> "$source_digest_input"
+done <<< "$(jq -r '.sources[]' "$source_manifest")"
+actual_sources_digest=$(sha256sum "$source_digest_input" | cut -d' ' -f1)
+rm -f "$source_digest_input"
+declared_sources_digest=$(sed -n 's/.*"sir-rules-implementation-sources-v1", System.Text.Encoding.UTF8.GetBytes "\([0-9a-f]\{64\}\)".*/\1/p' "$repo_root/src/SIR.Simulation/CombatRules.fs")
+test "$declared_sources_digest" = "$actual_sources_digest" || { echo "implementation source manifest digest does not match pinned sources" >&2; exit 1; }
 declared_package_sha=$(sed -n 's/.*"fs-gg-game-core-nupkg-sha256", System.Text.Encoding.UTF8.GetBytes "\([0-9a-f]\{64\}\)".*/\1/p' "$repo_root/src/SIR.Simulation/CombatRules.fs")
 captured_package_sha=$(jq -r '.sha256' "$repo_root/docs/dependency-surface/FS.GG.Game.Core/0.13.0.json")
 test "$declared_package_sha" = "$captured_package_sha" || { echo "Game.Core implementation fingerprint does not match dependency receipt" >&2; exit 1; }

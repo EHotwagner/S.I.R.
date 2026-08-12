@@ -87,7 +87,7 @@ let main arguments =
             failwithf "The retained v1 fixture did not decode: %A" error)
 
     require
-        (EngineCatalog.tryFind decodedRetainedFixture = Some EngineCatalog.Current)
+        (EngineCatalog.tryFind decodedRetainedFixture.EngineHash decodedRetainedFixture.FormatVersion = Some EngineCatalog.Current)
         "A retained replay did not select its exact engine bundle."
 
     let missingPackage =
@@ -95,7 +95,7 @@ let main arguments =
             EngineHash = CanonicalHash.sha256 [| 2uy |] }
 
     require
-        (EngineCatalog.tryFind missingPackage = None)
+        (EngineCatalog.tryFind missingPackage.EngineHash missingPackage.FormatVersion = None)
         "An unavailable engine silently selected a retained bundle."
 
     let initial = Shell.init ()

@@ -601,7 +601,7 @@ let rec update msg model =
     | FileSelected file ->
         { model with SampleReplayFrames = None },
         Cmd.OfAsync.perform
-            (fileBytes SIR.Simulation.Replay.defaultLimits.MaxPackageBytes)
+            (fileBytes 1_048_576)
             file
             ReplayReadCompleted
     | ReplayReadCompleted result ->
