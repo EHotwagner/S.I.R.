@@ -4,8 +4,8 @@
        - readiness/187-fable-game-governance-parity/agent-commands/claude/guidance.json  digest:ed05b5d3c81248a26fa2d2a08d3e65d69c14f2a06f239c2885499cbc561d2e5d  schema:1(current)
        - readiness/187-fable-game-governance-parity/agent-commands/codex/guidance.json  digest:aaa0495fc4e96236993b432a35a6dc5d1ef123ac381db3a9d53b85d1b6f521b9  schema:1(current)
        - readiness/187-fable-game-governance-parity/analysis.json  digest:6bd1328703abe3ef455ba200506d853abd746779a5d29ffdb63f99c240714392  schema:1(current)
-       - readiness/187-fable-game-governance-parity/ship.json  digest:426144d02598a32d24f2d2c3b623dc41ade2ae62efdcfea6c02105356734aef6  schema:1(current)
-       - readiness/187-fable-game-governance-parity/verify.json  digest:3e501a4d3a1c60074495445d076d37d57c719c0140c497a5a76a49476dc9844a  schema:1(current)
+       - readiness/187-fable-game-governance-parity/ship.json  digest:dac6cb87035f7567eea4ff77f0fd36f50b402d53f28f81ef8ea7919a81c8089d  schema:1(current)
+       - readiness/187-fable-game-governance-parity/verify.json  digest:dfec0eb6b13eaa2575dbf58dd2fa4517719ec97bb39a9409f79379f6c79d64e7  schema:1(current)
        - readiness/187-fable-game-governance-parity/work-model.json  digest:97bcb830d7a3ff3538bb25e02da38b5a33ab5d8006ca370e991f0ee0d3c51f25  schema:1(current)
      outputDigest: 29701d2b96cc5d06519afbfe756368bd7b3348d0e1d442a7e120eecbda444e9f -->
 

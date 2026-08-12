@@ -11,7 +11,7 @@ sourceAnalysis: readiness/187-fable-game-governance-parity/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/187-fable-game-governance-parity/analysis.json
-    digest: 76d62144d57913abb9ae19c0e5b843d74db2df8fd7c2de97ed55dd4059f06f25
+    digest: 6bd1328703abe3ef455ba200506d853abd746779a5d29ffdb63f99c240714392
     schemaVersion: 1
   - label: checklist
     path: work/187-fable-game-governance-parity/checklist.md

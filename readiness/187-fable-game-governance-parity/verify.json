@@ -81,7 +81,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "bf00e1e1d16e1089d6d193b0ab6c0b9701c65879d1115d7d8c2886e33d31f136"
+        "value": "56cc49635691c802ae035f12958c39a8e64dc056b7c62dcd84b2ab11d12aa6f9"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -767,24 +767,7 @@
       "diagnosticIds": []
     }
   ],
-  "findings": [
-    {
-      "id": "VF001",
-      "severity": "warning",
-      "category": "warning",
-      "path": "work/187-fable-game-governance-parity/evidence.yml",
-      "relatedIds": [
-        "analysis",
-        "checklist",
-        "clarifications",
-        "plan",
-        "spec",
-        "tasks"
-      ],
-      "message": "One or more evidence source snapshots no longer match current source digests.",
-      "correction": "Rerun the evidence command after reviewing the changed source artifacts."
-    }
-  ],
+  "findings": [],
   "governanceCompatibility": [
     {
       "path": ".fsgg/policy.yml",
@@ -808,23 +791,7 @@
       "diagnosticIds": []
     }
   ],
-  "diagnostics": [
-    {
-      "id": "evidence.staleEvidenceSource",
-      "severity": "warning",
-      "artifact": "work/187-fable-game-governance-parity/evidence.yml",
-      "message": "One or more evidence source snapshots no longer match current source digests.",
-      "correction": "Rerun the evidence command after reviewing the changed source artifacts.",
-      "relatedIds": [
-        "analysis",
-        "checklist",
-        "clarifications",
-        "plan",
-        "spec",
-        "tasks"
-      ]
-    }
-  ],
+  "diagnostics": [],
   "readiness": "verificationReady",
   "nextAction": {
     "actionId": "verify.next.ship",
