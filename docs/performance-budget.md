@@ -29,7 +29,7 @@ workload, against explicit 20 ms and 50 ms gates respectively.
 
 The measured published route is also retained: under Slow-3G and 4× CPU the
 initial response set is 1,119,915 bytes, the on-demand Rules explorer chunk is
-51,658 bytes, and one authenticated physical-combat authority projection is
+51,702 bytes, and one authenticated physical-combat authority projection is
 1,243 bytes. The route invokes that authority exactly once. Physical evaluator
 code is absent from presentation chunks and retained only in the immutable
 replay worker and Server/Match authority.

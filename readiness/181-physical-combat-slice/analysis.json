@@ -4,7 +4,7 @@
   "workId": "181-physical-combat-slice",
   "stage": "analyze",
   "status": "implementationReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sources": [
     {
       "path": ".fsgg/agents.yml",
@@ -37,6 +37,16 @@
       "schemaStatus": "current"
     },
     {
+      "path": "readiness/181-physical-combat-slice/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "02e9deddf1df7f7d06c6cdfac023ba6f38562ca18e22366c1293fbce317d54b9"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
       "path": "work/181-physical-combat-slice/checklist.md",
       "kind": "checklist",
       "digest": {
@@ -51,7 +61,7 @@
       "kind": "clarification",
       "digest": {
         "algorithm": "sha256",
-        "value": "660e99add891a9950f6d6c869985c949e5dce71bdcaf3e2ef840944fb1b3b0e7"
+        "value": "8b92785e8a2cee06c766a52b0e14e11b4c0a4c4206ae5925397f01f37c0bb849"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -61,7 +71,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "ee32d36c1241668ae7a28004d5488428bd083f3a100e2cdbecff3d5c14df5cf6"
+        "value": "3e2703a453090d3404cf276095a1d6fc057011384c2090249d6d606fc8e44e3f"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "50998179491a279383d0e0214c582b399d597b31be890512d1e75cec21478d99"
+        "value": "f5581521117659f2a88604ff296feeb9409fb759461fecd2df12694da77a0528"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -1306,7 +1316,7 @@
     {
       "path": "readiness/181-physical-combat-slice/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
+      "currency": "current",
       "diagnosticIds": []
     }
   ],

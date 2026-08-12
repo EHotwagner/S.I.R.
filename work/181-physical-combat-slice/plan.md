@@ -17,7 +17,7 @@ Prose status: planned
 
 ## Source Snapshot
 - spec: work/181-physical-combat-slice/spec.md sha256:5cc62476900c0f3a9d7b05366135c6d423db3f092779ab7f0b22d13edad0c669 schemaVersion:1
-- clarifications: work/181-physical-combat-slice/clarifications.md sha256:660e99add891a9950f6d6c869985c949e5dce71bdcaf3e2ef840944fb1b3b0e7 schemaVersion:1
+- clarifications: work/181-physical-combat-slice/clarifications.md sha256:8b92785e8a2cee06c766a52b0e14e11b4c0a4c4206ae5925397f01f37c0bb849 schemaVersion:1
 - checklist: work/181-physical-combat-slice/checklist.md sha256:99b81ad6a9d31fd81ee9671c9de61df2b4e0cdf80cd2743b493ffd777ad3285f schemaVersion:1
 
 ## Plan Scope

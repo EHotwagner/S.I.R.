@@ -1,0 +1,1577 @@
+schemaVersion: 1
+workId: 181-physical-combat-slice
+stage: evidence
+status: evidenceReady
+sourceSpec: work/181-physical-combat-slice/spec.md
+sourceClarifications: work/181-physical-combat-slice/clarifications.md
+sourceChecklist: work/181-physical-combat-slice/checklist.md
+sourcePlan: work/181-physical-combat-slice/plan.md
+sourceTasks: work/181-physical-combat-slice/tasks.yml
+sourceAnalysis: readiness/181-physical-combat-slice/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/181-physical-combat-slice/analysis.json
+    digest: f06e3a7c92e805f51793a51925168c41cf2d22bdbcf0ddbe2c96c98eabe6dc88
+    schemaVersion: 1
+  - label: checklist
+    path: work/181-physical-combat-slice/checklist.md
+    digest: 99b81ad6a9d31fd81ee9671c9de61df2b4e0cdf80cd2743b493ffd777ad3285f
+    schemaVersion: 1
+  - label: clarifications
+    path: work/181-physical-combat-slice/clarifications.md
+    digest: 8b92785e8a2cee06c766a52b0e14e11b4c0a4c4206ae5925397f01f37c0bb849
+    schemaVersion: 1
+  - label: plan
+    path: work/181-physical-combat-slice/plan.md
+    digest: 3e2703a453090d3404cf276095a1d6fc057011384c2090249d6d606fc8e44e3f
+    schemaVersion: 1
+  - label: spec
+    path: work/181-physical-combat-slice/spec.md
+    digest: 5cc62476900c0f3a9d7b05366135c6d423db3f092779ab7f0b22d13edad0c669
+    schemaVersion: 1
+  - label: tasks
+    path: work/181-physical-combat-slice/tasks.yml
+    digest: f5581521117659f2a88604ff296feeb9409fb759461fecd2df12694da77a0528
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV003]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV006]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV007]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: [FR-011]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV012]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: [FR-013]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV013]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: [FR-014]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV014]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV015]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV016]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV017]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV018]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV019]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV020
+    kind: verification
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV020]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV021
+    kind: verification
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV021]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV022
+    kind: verification
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV022]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV023
+    kind: verification
+    subject:
+      type: task
+      id: T023
+    taskRefs: [T023]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV023]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV024
+    kind: verification
+    subject:
+      type: task
+      id: T024
+    taskRefs: [T024]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV024]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV025
+    kind: verification
+    subject:
+      type: task
+      id: T025
+    taskRefs: [T025]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV025]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV026
+    kind: verification
+    subject:
+      type: task
+      id: T026
+    taskRefs: [T026]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV026]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV027
+    kind: verification
+    subject:
+      type: task
+      id: T027
+    taskRefs: [T027]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV027]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV028
+    kind: verification
+    subject:
+      type: task
+      id: T028
+    taskRefs: [T028]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV028]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV029
+    kind: verification
+    subject:
+      type: task
+      id: T029
+    taskRefs: [T029]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV029]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV030
+    kind: verification
+    subject:
+      type: task
+      id: T030
+    taskRefs: [T030]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV030]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV031
+    kind: verification
+    subject:
+      type: task
+      id: T031
+    taskRefs: [T031]
+    requirementRefs: [FR-011]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV031]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV032
+    kind: verification
+    subject:
+      type: task
+      id: T032
+    taskRefs: [T032]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV032]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV033
+    kind: verification
+    subject:
+      type: task
+      id: T033
+    taskRefs: [T033]
+    requirementRefs: [FR-013]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-013]
+    obligationRefs: [EV033]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV034
+    kind: verification
+    subject:
+      type: task
+      id: T034
+    taskRefs: [T034]
+    requirementRefs: [FR-014]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-014]
+    obligationRefs: [EV034]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV035
+    kind: verification
+    subject:
+      type: task
+      id: T035
+    taskRefs: [T035]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-003, PD-005, PD-006]
+    obligationRefs: [EV035]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV036
+    kind: verification
+    subject:
+      type: task
+      id: T036
+    taskRefs: [T036]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002, PD-008]
+    obligationRefs: [EV036]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV037
+    kind: verification
+    subject:
+      type: task
+      id: T037
+    taskRefs: [T037]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007, PD-009, PD-014]
+    obligationRefs: [EV037]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV038
+    kind: verification
+    subject:
+      type: task
+      id: T038
+    taskRefs: [T038]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV038]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV039
+    kind: verification
+    subject:
+      type: task
+      id: T039
+    taskRefs: [T039]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV039]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV040
+    kind: verification
+    subject:
+      type: task
+      id: T040
+    taskRefs: [T040]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV040]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV041
+    kind: verification
+    subject:
+      type: task
+      id: T041
+    taskRefs: [T041]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV041]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV042
+    kind: verification
+    subject:
+      type: task
+      id: T042
+    taskRefs: [T042]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV042]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV043
+    kind: verification
+    subject:
+      type: task
+      id: T043
+    taskRefs: [T043]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-003, PD-004, PD-005, PD-006, PD-007]
+    obligationRefs: [EV043]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV044
+    kind: verification
+    subject:
+      type: task
+      id: T044
+    taskRefs: [T044]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002, PD-008]
+    obligationRefs: [EV044]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV045
+    kind: verification
+    subject:
+      type: task
+      id: T045
+    taskRefs: [T045]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007, PD-009, PD-014]
+    obligationRefs: [EV045]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV046
+    kind: verification
+    subject:
+      type: task
+      id: T046
+    taskRefs: [T046]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV046]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV047
+    kind: verification
+    subject:
+      type: task
+      id: T047
+    taskRefs: [T047]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV047]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV048
+    kind: verification
+    subject:
+      type: task
+      id: T048
+    taskRefs: [T048]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV048]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV049
+    kind: verification
+    subject:
+      type: task
+      id: T049
+    taskRefs: [T049]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-013]
+    obligationRefs: [EV049]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV050
+    kind: verification
+    subject:
+      type: task
+      id: T050
+    taskRefs: [T050]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-014]
+    obligationRefs: [EV050]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV051
+    kind: verification
+    subject:
+      type: task
+      id: T051
+    taskRefs: [T051]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV051]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV052
+    kind: verification
+    subject:
+      type: task
+      id: T052
+    taskRefs: [T052]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV052]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV053
+    kind: verification
+    subject:
+      type: task
+      id: T053
+    taskRefs: [T053]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV053]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV054
+    kind: verification
+    subject:
+      type: task
+      id: T054
+    taskRefs: [T054]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV054]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV055
+    kind: verification
+    subject:
+      type: task
+      id: T055
+    taskRefs: [T055]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009, PD-010, PD-014]
+    obligationRefs: [EV055]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV056
+    kind: verification
+    subject:
+      type: task
+      id: T056
+    taskRefs: [T056]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV056]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+  - id: EV057
+    kind: verification
+    subject:
+      type: task
+      id: T057
+    taskRefs: [T057]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-014]
+    obligationRefs: [EV057]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-physical-combat.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/181-physical-combat-slice/physical-combat.junit.xml
+      digest: "sha256:cad402c77e9767dbd2c28a0abb19333f8298fa0c01c561b78d0e2a4d24d6ff78"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Bound to the deterministic physical-combat qualification receipt from the successful 2026-08-13 candidate run.]
+lifecycleNotes:
+  - "Next lifecycle action: verify."
