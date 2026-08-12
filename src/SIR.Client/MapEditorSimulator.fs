@@ -387,13 +387,14 @@ module MapEditorSimulator =
         let next = state.Revision
         let before = handoff.Revision.Document
         let after = next.Document
-        let unchangedBoard =
+        let unchangedGeometry =
             before.Width = after.Width && before.Height = after.Height
-            && before.Terrain = after.Terrain && before.Edges = after.Edges
+        let unchangedTerrain = before.Terrain = after.Terrain
+        let unchangedTopology = before.Edges = after.Edges
         let retained =
             before.Units
             |> Map.forall (fun id unit -> Map.tryFind id after.Units = Some unit)
-        if unchangedBoard && retained then
+        if unchangedGeometry && unchangedTerrain && unchangedTopology && retained then
             let introduced =
                 after.Units
                 |> Map.filter (fun id _ -> not (Map.containsKey id before.Units))
@@ -411,9 +412,26 @@ module MapEditorSimulator =
                     ActivationTicks = Map.fold (fun ticks id _ -> Map.add id handoff.Tick ticks) handoff.ActivationTicks introduced
                     ReconciliationMessage = Some ("Added " + string (Map.count introduced) + " unit(s) at tick " + string handoff.Tick + ".") }
         else
+            let reason =
+                if not unchangedGeometry then
+                    "map geometry changed"
+                elif not unchangedTerrain then
+                    "terrain changed"
+                elif not unchangedTopology then
+                    "edge topology changed"
+                else
+                    before.Units
+                    |> Map.toSeq
+                    |> Seq.tryPick (fun (id, unit) ->
+                        match Map.tryFind id after.Units with
+                        | None -> Some("existing unit " + string id + " was removed")
+                        | Some updated when updated <> unit ->
+                            Some("existing unit " + string id + " changed")
+                        | _ -> None)
+                    |> Option.defaultValue "an incompatible authored value changed"
             { fromRevision next with
                 InitialRevision = next
-                ReconciliationMessage = Some "Simulation restarted at tick 0 because terrain, geometry, topology, or an existing unit changed." }
+                ReconciliationMessage = Some("Simulation restarted at tick 0 because " + reason + ".") }
 
     let perspectivePreview (projection: RenderFrame option) =
         match projection with
@@ -493,7 +511,7 @@ module MapEditorSimulator =
             PreviewDestination = None }
 
     /// Reconstructs actual simulation state at a timeline tick from its pinned initial revision.
-    let seek tick handoff =
+    let seek tick (handoff: SimulatorHandoff) =
         let target = max 0 tick
         let baseline = fromRevision handoff.InitialRevision
         let activate atTick current =
@@ -508,8 +526,9 @@ module MapEditorSimulator =
                             PresentationPositions = Map.add id (float unit.Column, float unit.Row) state.PresentationPositions }
                     | None -> state
                 else state) current
+        let activatedBaseline = activate 0 baseline
         [ 1 .. target ]
-        |> List.fold (fun current nextTick -> current |> activate nextTick |> step) baseline
+        |> List.fold (fun current nextTick -> current |> step |> activate nextTick) activatedBaseline
         |> fun replayed ->
             { replayed with
                 Revision = handoff.Revision

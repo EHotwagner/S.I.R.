@@ -502,7 +502,7 @@ const ownerByModality = {
   Editor: ["Editor", "EditorScene"],
   Plan: ["Plan", "PlanningScene"],
   Simulate: ["Simulate", "SimulatorScene"],
-  Review: ["Review", "ReviewScene"],
+  Review: ["Review", "EditorScene"],
 };
 const assertModality = (label, operation) => {
   const [modality, owner] = ownerByModality[label];
@@ -595,8 +595,8 @@ nonDefaultUnit.dispatchEvent(
 await window.happyDOM.waitUntilComplete();
 assertSelection("non-default Editor selection", 2);
 
-// Review has no accepted frame yet: retain the authoritative Editor scene and
-// its valid selection through the shared work surface.
+// Review has no accepted frame yet: retain the authoritative maintained runtime
+// and its valid selection through the shared work surface.
 modalityButtons.get("Review").click();
 await window.happyDOM.waitUntilComplete();
 await ensurePanelExpanded("tools");
@@ -604,13 +604,13 @@ if (
   workscreenRegion.getAttribute("data-active-modality") !== "Review" ||
   worksurface.getAttribute("data-scene-owner") !== "EditorScene"
 ) {
-  throw new Error("Empty Review did not retain the Editor fallback projection.");
+  throw new Error("Empty Review did not retain the maintained simulation projection.");
 }
 if (buttonByText(timeline, "Play")?.disabled) {
   throw new Error("Review did not expose the maintained simulation transport.");
 }
-assertSingleWorksurface("empty Review editor fallback");
-assertSelection("empty Review editor fallback", 2);
+assertSingleWorksurface("empty Review maintained simulation");
+assertSelection("empty Review maintained simulation", 2);
 await clickModality("Editor", "return from empty Review");
 
 modalityButtons.get("Simulate").click();
@@ -824,7 +824,7 @@ await clickModality("Simulate", "inspect incompatible-edit rebuild");
 if (
   worksurface.getAttribute("data-scene-revision") !== newerEditorRevision ||
   worksurface.getAttribute("data-scene-tick") !== "0" ||
-  !currentSimulatorTools()?.textContent.includes("Simulation restarted at tick 0 because terrain, geometry, topology, or an existing unit changed.") ||
+  !currentSimulatorTools()?.textContent.includes("Simulation restarted at tick 0 because existing unit 2 changed.") ||
   !currentSimulatorRevision()?.textContent.includes("matches the current editor draft")
 ) {
   throw new Error("An incompatible existing-unit edit did not deterministically rebuild the maintained simulation with a visible reason.");
@@ -856,7 +856,7 @@ if (
   workscreenRegion.getAttribute("data-active-modality") !== "Review" ||
   worksurface.getAttribute("data-scene-owner") !== "EditorScene"
 ) {
-  throw new Error("Review file setup did not retain the Editor fallback projection.");
+  throw new Error("Review file setup did not retain the maintained simulation projection.");
 }
 assertSingleWorksurface("open Review for accepted file");
 assertSelection("open Review for accepted file", 2);
@@ -883,6 +883,7 @@ Object.defineProperty(replayInput, "files", {
 replayInput.dispatchEvent(new window.Event("change", { bubbles: true }));
 await new Promise((resolveWait) => setTimeout(resolveWait, 20));
 await window.happyDOM.waitUntilComplete();
+ownerByModality.Review[1] = "ReviewScene";
 assertModality("Review", "accepted review sample");
 assertSingleWorksurface("accepted review sample");
 for (const panelId of [
@@ -1589,7 +1590,7 @@ if (
   workscreenRegion.getAttribute("data-active-modality") !== "Plan" ||
   worksurface.getAttribute("data-scene-owner") !== "PlanningScene"
 ) {
-  throw new Error("Rules did not open as a focused registered panel over the retained Plan scene.");
+  throw new Error("Rules did not open as a focused registered panel over the maintained runtime scene.");
 }
 assertSingleWorksurface("open Rules supporting panel");
 assertCamera("open Rules supporting panel");

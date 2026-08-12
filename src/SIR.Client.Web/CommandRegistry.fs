@@ -46,7 +46,7 @@ let activeTacticalRegistry model =
             [ yield
                   pointerCommand
                       "editor.scene.create-simulator-handoff"
-                      "Create simulator handoff from authored revision"
+                      "Inspect maintained simulation for authored revision"
                       "Editor shared scene"
                       Editor
               yield!

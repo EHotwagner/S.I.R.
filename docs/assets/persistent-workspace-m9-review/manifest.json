@@ -1,7 +1,7 @@
 {
   "schema": "sir-persistent-workspace-m9-live-review-v2",
   "captureKind": "actual-production-shell-chromium-screenshot",
-  "productionBundleSha256": "6a6c50e18d4b11979e04d410edde923f643ec2414d21c7415311c355d939e342",
+  "productionBundleSha256": "a4099f3d18b48c62909ebb803752d7760c8fb85ae4f93c464032e1b959f645d8",
   "productionStylesSha256": "7e1bf2e19ce4a7eff68c4d892bdb6671d1300018edb4f9d2ec794c56c8cabb63",
   "acceptedMockupSha256": "b2b0d444202aa9c76235fa7277ba2c6a4e89d3d7dc0dd009abb8e73c72c82270",
   "chromiumExecutable": "/usr/sbin/chromium",
@@ -660,6 +660,6 @@
   },
   "png": "field-focus.png",
   "geometrySvg": "field-focus-geometry.svg",
-  "pngSha256": "d064d0ceceb5176aebe11a7f9b52ffdcf8a9dabdd1a42446e5a391d847b9fd6c",
+  "pngSha256": "b044811756dbfaf28f80fd1f7fef724edcb94dc88106799e1a898357c8110704",
   "geometrySvgSha256": "627bcd2aaeea7d83ea6543621cc605872d352a76b26f6d6188c07b6f8727d463"
 }

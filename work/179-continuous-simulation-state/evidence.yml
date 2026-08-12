@@ -54,10 +54,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -81,10 +81,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -108,10 +108,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -135,10 +135,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -162,10 +162,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -189,10 +189,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -216,10 +216,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -243,10 +243,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -270,10 +270,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -297,10 +297,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -324,10 +324,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -351,10 +351,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -378,10 +378,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -405,10 +405,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -432,10 +432,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -459,10 +459,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
@@ -486,10 +486,10 @@ evidence:
     synthetic: false
     observedRun:
       source: artifacts/test-results/179-browser.junit.xml
-      digest: "sha256:38ba8fa44b7b42b1815eb1ed31167fb2ee2effe354c969737fba523764f1ad45"
+      digest: "sha256:24e44c7616a68392c6666e127ceb0c7d746a5fb1dc5652a2dd258e821b537b59"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 24
+      passed: 28
       failed: 0
       skipped: 1
     notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]

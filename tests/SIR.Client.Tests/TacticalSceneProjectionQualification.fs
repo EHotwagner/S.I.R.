@@ -136,7 +136,9 @@ let run () =
         { (initialEditor.Map.Units |> Map.toSeq |> Seq.head |> snd) with
             Id = addedId
             Column = 0
-            Row = 0 }
+            Row = 0
+            Controller = Scripted
+            Script = [ East ] }
     let addedMap = { initialEditor.Map with Units = Map.add addedId addedUnit initialEditor.Map.Units; NextUnitId = addedId + 1 }
     let addedEditor =
         { initialEditor with
@@ -145,15 +147,38 @@ let run () =
     let reconciled = MapEditorSimulator.reconcile addedEditor advancedSimulator
     let beforeActivation = MapEditorSimulator.seek 0 reconciled
     let atActivation = MapEditorSimulator.seek reconciled.Tick reconciled
+    let addedAtZero = MapEditorSimulator.reconcile addedEditor initialSimulator
+    let soughtAtZero = MapEditorSimulator.seek 0 addedAtZero
     let terrainMap = { addedMap with Terrain = Map.add (0, 0) Rough addedMap.Terrain }
     let incompatibleEditor = { addedEditor with Map = terrainMap; Revision = { addedEditor.Revision with Document = terrainMap; Digest = "continuous-terrain" } }
     let restarted = MapEditorSimulator.reconcile incompatibleEditor reconciled
+    let topologyMap = { addedMap with Edges = Map.add (0, 0, EastEdge) (Wall, false) addedMap.Edges }
+    let topologyEditor = { addedEditor with Map = topologyMap; Revision = { addedEditor.Revision with Document = topologyMap; Digest = "continuous-topology" } }
+    let topologyRestarted = MapEditorSimulator.reconcile topologyEditor reconciled
+    let removedMap = { addedMap with Units = Map.remove addedId addedMap.Units }
+    let removedEditor = { addedEditor with Map = removedMap; Revision = { addedEditor.Revision with Document = removedMap; Digest = "continuous-removal" } }
+    let removalRestarted = MapEditorSimulator.reconcile removedEditor reconciled
+    let mutatedMap =
+        { addedMap with
+            Units = Map.change addedId (Option.map (fun unit -> { unit with Health = unit.Health - 1 })) addedMap.Units }
+    let mutatedEditor = { addedEditor with Map = mutatedMap; Revision = { addedEditor.Revision with Document = mutatedMap; Digest = "continuous-mutation" } }
+    let mutationRestarted = MapEditorSimulator.reconcile mutatedEditor reconciled
+    let geometryMap = { addedMap with Width = addedMap.Width + 1 }
+    let geometryEditor = { addedEditor with Map = geometryMap; Revision = { addedEditor.Revision with Document = geometryMap; Digest = "continuous-geometry" } }
+    let geometryRestarted = MapEditorSimulator.reconcile geometryEditor reconciled
     require
         (reconciled.Tick = advancedSimulator.Tick
          && not (Map.containsKey addedId beforeActivation.RuntimeMap.Units)
          && Map.containsKey addedId atActivation.RuntimeMap.Units
+         && atActivation.KernelState = reconciled.KernelState
+         && atActivation.MovementCreditsMillimeters = reconciled.MovementCreditsMillimeters
+         && soughtAtZero.KernelState = addedAtZero.KernelState
          && restarted.Tick = 0
-         && restarted.ReconciliationMessage |> Option.exists (fun message -> message.Contains("terrain")))
+         && restarted.ReconciliationMessage = Some "Simulation restarted at tick 0 because terrain changed."
+         && topologyRestarted.ReconciliationMessage = Some "Simulation restarted at tick 0 because edge topology changed."
+         && removalRestarted.ReconciliationMessage = Some("Simulation restarted at tick 0 because existing unit " + string addedId + " was removed.")
+         && mutationRestarted.ReconciliationMessage = Some("Simulation restarted at tick 0 because existing unit " + string addedId + " changed.")
+         && geometryRestarted.ReconciliationMessage = Some "Simulation restarted at tick 0 because map geometry changed.")
         "Continuous simulation reconciliation, activation history, seek, or incompatible fallback diverged."
     let unitIds = initialEditor.Map.Units |> Map.toArray |> Array.map fst
     require (unitIds.Length >= 2) "Qualification fixture needs two authored units."

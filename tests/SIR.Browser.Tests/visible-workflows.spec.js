@@ -9,6 +9,27 @@ const retainedReplay = Buffer.from(
   "base64",
 );
 
+async function loadMaintainedSimulation(page) {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Simulate", exact: true }).click();
+  await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
+  await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
+  await page.getByRole("button", { name: /^Load simulation sample:/ }).first().click();
+}
+
+async function expandPanel(page, panelId) {
+  const panel = page.locator(`[data-panel-id="${panelId}"]`);
+  if (await panel.count() === 0) {
+    await page.locator("details.tactical-panel-menu").click();
+    await page.locator(`#layout-show-${panelId}`).click();
+  }
+  if (await panel.getAttribute("data-collapsed") === "true" || await panel.evaluate((node) => node.classList.contains("is-collapsed"))) {
+    await panel.locator(`#layout-panel-${panelId}-collapse`).click();
+  }
+  await expect(panel).toBeVisible();
+  return panel;
+}
+
 // Diagnostics-gate self-tests deliberately issue a browser fetch; they are not product-journey evidence.
 test("explicitly allowed rejection diagnostics do not hide unrelated browser failures", async ({ page }) => {
   await page.route("**/controlled-rejection", (route) => route.fulfill({ status: 418, body: "expected" }));
@@ -41,16 +62,84 @@ test("visible mode controls preserve a usable tactical workspace across authorin
 });
 
 test("the maintained simulation transport is available without a manual handoff in every modality", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "Simulate", exact: true }).click();
-  await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
-  await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
-  await page.getByRole("button", { name: /^Load simulation sample:/ }).first().click();
+  await loadMaintainedSimulation(page);
   for (const mode of ["Editor", "Plan", "Simulate", "Review"]) {
     await page.getByRole("button", { name: mode, exact: true }).click();
     await expect(page.getByRole("button", { name: "Play tactical timeline", exact: true })).toBeEnabled();
   }
   await expect(page.getByText(/simulator handoff/i)).toHaveCount(0);
+});
+
+test("maintained runtime state is truthful at the cursor in every modality", async ({ page }) => {
+  await loadMaintainedSimulation(page);
+  await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();
+  const battlefield = page.locator("#persistent-tactical-svg");
+  for (const mode of ["Simulate", "Editor", "Plan", "Review"]) {
+    await page.getByRole("button", { name: mode, exact: true }).click();
+    const expectedOwner = mode === "Simulate" ? "SimulatorScene" : mode === "Plan" ? "PlanningScene" : "EditorScene";
+    await expect(battlefield).toHaveAttribute("data-scene-owner", expectedOwner);
+    await expect(battlefield).toHaveAttribute("data-scene-tick", "1");
+    await expect(page.getByLabel("Unified tactical timeline")).toHaveAttribute("data-time-cursor", "1");
+  }
+});
+
+test("advance pause place seek activation and resume preserve continuous state", async ({ page }) => {
+  await loadMaintainedSimulation(page);
+  const battlefield = page.locator("#persistent-tactical-svg");
+  await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();
+  await expect(battlefield).toHaveAttribute("data-scene-tick", "1");
+  const originalUnitCount = await battlefield.locator("#persistent-layer-units [data-unit-id]").count();
+
+  await page.getByRole("button", { name: "Editor", exact: true }).click();
+  const tools = await expandPanel(page, "tools");
+  await tools.getByRole("button", { name: "Units", exact: true }).click();
+  await tools.locator(".unit-preset-group button").first().click();
+  await battlefield.locator('[aria-label="Activate cell 12,4"]').click();
+  await page.getByRole("button", { name: "Simulate", exact: true }).click();
+  await expect(page.getByText("Added 1 unit(s) at tick 1.", { exact: true })).toBeVisible();
+  await expect(battlefield.locator("#persistent-layer-units [data-unit-id]")).toHaveCount(originalUnitCount + 1);
+  const liveActivationState = await battlefield.locator("#persistent-layer-units").innerHTML();
+
+  await page.getByRole("button", { name: "Go to tactical timeline start", exact: true }).click();
+  await expect(battlefield).toHaveAttribute("data-scene-tick", "0");
+  await expect(battlefield.locator("#persistent-layer-units [data-unit-id]")).toHaveCount(originalUnitCount);
+  await page.getByRole("button", { name: "Step tactical timeline forward", exact: true }).click();
+  await expect(battlefield).toHaveAttribute("data-scene-tick", "1");
+  await expect(battlefield.locator("#persistent-layer-units")).toHaveJSProperty("innerHTML", liveActivationState);
+
+  await page.getByRole("button", { name: "Play tactical timeline", exact: true }).click();
+  await expect.poll(async () => Number(await battlefield.getAttribute("data-scene-tick"))).toBeGreaterThan(1);
+  await page.getByRole("button", { name: "Pause tactical timeline", exact: true }).click();
+});
+
+test("terrain edits reset with a terrain-specific visible explanation", async ({ page }) => {
+  await loadMaintainedSimulation(page);
+  const battlefield = page.locator("#persistent-tactical-svg");
+  await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();
+  await page.getByRole("button", { name: "Editor", exact: true }).click();
+  const tools = await expandPanel(page, "tools");
+  await tools.getByRole("button", { name: "Terrain", exact: true }).click();
+  await tools.getByRole("button", { name: "Pencil", exact: true }).click();
+  await tools.getByRole("button", { name: /^rough terrain,/i }).click();
+  await battlefield.focus();
+  await battlefield.press("Enter");
+  await tools.getByRole("button", { name: /^blocked terrain,/i }).click();
+  await battlefield.focus();
+  await battlefield.press("Enter");
+  await page.getByRole("button", { name: "Simulate", exact: true }).click();
+  await expect(page.getByText("Simulation restarted at tick 0 because terrain changed.", { exact: true })).toBeVisible();
+});
+
+test("topology edits reset with a topology-specific visible explanation", async ({ page }) => {
+  await loadMaintainedSimulation(page);
+  await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();
+  await page.getByRole("button", { name: "Editor", exact: true }).click();
+  const edgeTools = await expandPanel(page, "tools");
+  await edgeTools.getByRole("button", { name: "Edges", exact: true }).click();
+  await edgeTools.getByRole("button", { name: "Convert cursor edge to wall", exact: true }).click();
+  await edgeTools.getByRole("button", { name: "Convert cursor edge to a window", exact: true }).click();
+  await page.getByRole("button", { name: "Simulate", exact: true }).click();
+  await expect(page.getByText("Simulation restarted at tick 0 because edge topology changed.", { exact: true })).toBeVisible();
 });
 
 test("the normal UI remains operable at 400 percent browser zoom", async ({ page }) => {

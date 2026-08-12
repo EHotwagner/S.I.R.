@@ -6020,45 +6020,92 @@ let private tacticalContextHelp model dispatch =
 let private activeSceneProjection (model: Model) =
     let focusedUnit =
         reconcileTacticalSelectedUnit model.Workspace model
+        |> Option.orElseWith (fun () ->
+            model.SimulatorSelectedUnit
+            |> Option.filter (fun id ->
+                model.Simulator
+                |> Option.exists (fun simulator ->
+                    Map.containsKey id simulator.RuntimeMap.Units)))
     let editorProjection editorFocusedUnit =
         TacticalSceneProjection.editor
             { EditorState = model.Editor
               EditorWorkspace = model.EditorView
               EditorFocusedUnit = editorFocusedUnit }
-    match model.Workspace with
-    | EditorWorkspace ->
-        Some(editorProjection focusedUnit)
-    | PlanningWorkspace ->
+    let simulatorProjection () =
+        model.Simulator
+        |> Option.map (fun simulator ->
+            TacticalSceneProjection.simulator
+                { SimulatorHandoff = simulator
+                  SimulatorSelectedUnit = focusedUnit
+                  SimulatorCamera = model.EditorView.Camera
+                  SimulatorFocusedUnit = focusedUnit })
+    let withRuntimeTruth (contextual: SharedSceneProjection) =
+        simulatorProjection ()
+        |> Option.map (fun runtime ->
+            let runtimeUnits =
+                runtime.Units
+                |> Array.map (fun unit -> unit.Visual.Id, unit)
+                |> Map.ofArray
+            let units =
+                Array.append
+                    (contextual.Units
+                     |> Array.choose (fun authored ->
+                         Map.tryFind authored.Visual.Id runtimeUnits
+                         |> Option.map (fun live ->
+                             { authored with
+                                 PresentationColumn = live.PresentationColumn
+                                 PresentationRow = live.PresentationRow
+                                 Visual =
+                                     { authored.Visual with
+                                         AnchorColumn = live.Visual.AnchorColumn
+                                         AnchorRow = live.Visual.AnchorRow
+                                         Health = live.Visual.Health } })))
+                    (runtime.Units
+                     |> Array.filter (fun live ->
+                         contextual.Units
+                         |> Array.exists (fun authored ->
+                             authored.Visual.Id = live.Visual.Id)
+                         |> not))
+            { contextual with
+                RevisionIdentity = runtime.RevisionIdentity
+                Tick = runtime.Tick
+                Board = runtime.Board
+                Terrain = runtime.Terrain
+                Edges = runtime.Edges
+                Units = units
+                Routes = Array.append contextual.Routes runtime.Routes
+                Annotations = Array.append contextual.Annotations runtime.Annotations })
+        |> Option.defaultValue contextual
+    match model.Workspace, TacticalSceneProjection.acceptReview model.Shell with
+    | ReplayWorkspace, Some accepted ->
+        Some(
+            TacticalSceneProjection.review
+                { AcceptedReview = accepted
+                  ReviewCamera = model.EditorView.Camera
+                  ReviewFocusedUnit = focusedUnit }
+        )
+    | EditorWorkspace, _ ->
+        editorProjection focusedUnit |> withRuntimeTruth |> Some
+    | PlanningWorkspace, _ ->
         model.Planning
         |> Option.map (fun planning ->
             TacticalSceneProjection.planning
                 { PlanningMap = model.Editor.Map
                   PlanningState = planning
                   PlanningCamera = model.EditorView.Camera
-                  PlanningFocusedUnit = focusedUnit })
-    | SimulatorWorkspace ->
-        model.Simulator
-        |> Option.map (fun simulator ->
-            TacticalSceneProjection.simulator
-                { SimulatorHandoff = simulator
-                  SimulatorSelectedUnit = model.SimulatorSelectedUnit
-                  SimulatorCamera = model.EditorView.Camera
-                  SimulatorFocusedUnit = focusedUnit })
+                  PlanningFocusedUnit = focusedUnit }
+            |> withRuntimeTruth)
+    | SimulatorWorkspace, _ ->
+        simulatorProjection ()
         |> Option.orElseWith (fun () ->
             reconcileTacticalSelectedUnit EditorWorkspace model
             |> editorProjection
             |> Some)
-    | ReplayWorkspace ->
-        TacticalSceneProjection.acceptReview model.Shell
-        |> Option.map (fun accepted ->
-            TacticalSceneProjection.review
-                { AcceptedReview = accepted
-                  ReviewCamera = model.EditorView.Camera
-                  ReviewFocusedUnit = focusedUnit })
-        |> Option.orElseWith (fun () ->
-            reconcileTacticalSelectedUnit EditorWorkspace model
-            |> editorProjection
-            |> Some)
+    | ReplayWorkspace, _ ->
+        reconcileTacticalSelectedUnit EditorWorkspace model
+        |> editorProjection
+        |> withRuntimeTruth
+        |> Some
 
 let private activePresentedSceneProjection (model: Model) =
     let projection = activeSceneProjection model
