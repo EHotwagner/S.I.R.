@@ -1,4 +1,6 @@
 [shell_environment_policy.set]
+# Canonical product board: https://github.com/users/EHotwagner/projects/6
+# Do not retarget S.I.R.-owned work to the FS-GG organization Coordination board.
 FSGG_COORD_OWNER_TYPE = "user"
 FSGG_COORD_OWNER = "EHotwagner"
 FSGG_COORD_PROJECT = "S.I.R."
