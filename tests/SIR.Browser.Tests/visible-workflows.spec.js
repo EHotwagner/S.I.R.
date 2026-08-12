@@ -139,6 +139,18 @@ test("a curated sample creates a visible simulator handoff and playback can rese
   await expect(page.getByText(/Authoritative runtime tick 0/)).toBeVisible();
 });
 
+test("production simulator status exposes continuous runtime time without handoff chrome", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Simulate", exact: true }).click();
+  await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
+  await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
+  await page.getByRole("button", { name: /^Load simulation sample:/ }).first().click();
+  await expect(page.getByText(/^Authoritative runtime tick 0/)).toBeVisible();
+  await expect(page.getByText(/manual.*handoff/i)).toHaveCount(0);
+  await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();
+  await expect(page.getByText(/^Authoritative runtime tick 1/)).toBeVisible();
+});
+
 test("live authority reconnect remains visible through the production command surface", async ({ page }) => {
   await page.goto("/");
   const live = page.getByRole("region", { name: "Authoritative live session" });
