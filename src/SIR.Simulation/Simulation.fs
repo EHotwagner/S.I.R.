@@ -173,6 +173,40 @@ module Simulation =
             |> List.tryFind (fun semantic -> semantic.BlocksMovement && semantic.Edge = crossed)
             |> Option.map (fun semantic -> semantic.Edge))
 
+    let private spatialIdentity tick =
+        SpatialAuthorityIdentity.create "minimal-slice-board" "sir-spatial-v1" (int64 tick) "simulation-authority" (int64 tick)
+        |> Result.defaultWith failwith
+
+    let private spatialWorld tick board =
+        { Identity = spatialIdentity tick
+          Minimum = board.Minimum
+          Maximum = board.Maximum
+          Terrain = Map.empty
+          Boundaries =
+            board.Edges
+            |> List.map (fun semantic ->
+                { Edge = semantic.Edge
+                  Permeability = { Ground = not semantic.BlocksMovement; Vision = true; Projectile = true }
+                  RevisionToken = $"edge:{semantic.Edge.Lo.Col}:{semantic.Edge.Lo.Row}:{semantic.Edge.Hi.Col}:{semantic.Edge.Hi.Row}" })
+          Occupancy = Map.empty
+          DisclosedRevisionTokens = Set.empty }
+
+    let private spatialProfile modality =
+        { ProfileId = "minimal-unit-v1"
+          Modality = modality
+          Stance = "standing"
+          HeightBand = 1
+          Facing = North }
+
+    let private spatialRequest queryId kind modality origin target =
+        { QueryId = queryId
+          QueryKind = kind
+          Origin = origin
+          Target = target
+          Footprint = [ cell 0 0 ]
+          Profile = spatialProfile modality
+          Bounds = { SpatialQuery.defaultBounds with MaximumResultCells = 2 } }
+
     let private diagonalEdges origin destination =
         let horizontal = cell destination.Col origin.Row
         let vertical = cell origin.Col destination.Row
@@ -192,6 +226,12 @@ module Simulation =
             diagonalEdges origin destination
             |> List.tryPick (fun (left, right) -> blockingEdge board left right)
 
+    let private authoritativeMovementBlocker tick board origin destination =
+        let request = spatialRequest "simulation-movement" SpatialQueryKind.MovementCost SpatialModality.GroundMovement origin destination
+        let result, _ = SpatialQuery.evaluate (spatialWorld tick board) request
+        if result.Outcome = SpatialOutcome.Found && result.Path = [ origin; destination ] then None
+        else movementBlocker board origin destination
+
     let private tryUnit id state = Map.tryFind id state.Units
 
     let private replaceUnit unit state =
@@ -210,7 +250,7 @@ module Simulation =
                 match tryUnit unitId state with
                 | None -> None
                 | Some unit ->
-                    match movementBlocker state.Board unit.Cell destination with
+                    match authoritativeMovementBlocker state.Tick state.Board unit.Cell destination with
                     | Some edge -> Some(unit, destination, Some edge)
                     | None when
                         inBounds state.Board destination
@@ -262,12 +302,9 @@ module Simulation =
         ||> List.fold (fun (current, events) (observerId, targetId) ->
             match tryUnit observerId current, tryUnit targetId current with
             | Some observer, Some target ->
-                let visible =
-                    Los.lineOfSightBy
-                        Supercover
-                        (inBounds current.Board)
-                        observer.Cell
-                        target.Cell
+                let request = spatialRequest "simulation-observation" SpatialQueryKind.ExactLineOfSight SpatialModality.Vision observer.Cell target.Cell
+                let visibility, _ = SpatialQuery.evaluate (spatialWorld current.Tick current.Board) request
+                let visible = visibility.Outcome = SpatialOutcome.Found && visibility.Visible
 
                 if visible then
                     let distance = chebyshevDistance observer.Cell target.Cell |> int32

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="6" failures="0" skipped="0"><testsuite name="sir-full-conformance" tests="6" failures="0" skipped="0">
+<properties><property name="producer" value="scripts/generate-item-180-evidence.sh"/><property name="command" value="./scripts/test-conformance.sh"/></properties>
+<testcase classname="test-conformance.sh" name="locked restore and full solution build pass"/>
+<testcase classname="test-conformance.sh" name="governance and public F sharp surface materialization pass"/>
+<testcase classname="test-conformance.sh" name="native Fable replay and spatial authority gates pass"/>
+<testcase classname="test-conformance.sh" name="M4 through M9 product qualification passes"/>
+<testcase classname="test-conformance.sh" name="browser smoke diagnostics and accessibility pass"/>
+<testcase classname="test-conformance.sh" name="performance and production delivery budgets pass"/>
+</testsuite></testsuites>

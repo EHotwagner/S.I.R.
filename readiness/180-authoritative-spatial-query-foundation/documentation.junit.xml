@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="4" failures="0" skipped="0"><testsuite name="spatial-documentation" tests="4" failures="0" skipped="0">
+<properties><property name="producer" value="scripts/generate-item-180-evidence.sh"/><property name="command" value="./scripts/build-docs.sh"/></properties>
+<testcase classname="fsdocs" name="strict evaluated API documentation includes the spatial signatures"/>
+<testcase classname="fsdocs" name="architecture and performance documentation build"/>
+<testcase classname="docs" name="publication integrity experience and browser smoke pass"/>
+<testcase classname="docs" name="documentation accessibility passes"/>
+</testsuite></testsuites>

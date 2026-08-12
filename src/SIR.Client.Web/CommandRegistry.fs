@@ -225,6 +225,10 @@ let activeTacticalRegistry model =
               "Shared camera"
               model.Tactical.Modality ]
     let panelCommands =
-        [ pointerCommand "panel.data" "Rules data" "View" model.Tactical.Modality ]
+        [ pointerCommand
+              "panel.data"
+              "Spatial diagnostics · Rules data"
+              "View"
+              model.Tactical.Modality ]
     UnifiedTacticalWorkspace.commandRegistry @ modal @ contextual @ cameraCommands @ panelCommands
     |> List.distinctBy _.Id

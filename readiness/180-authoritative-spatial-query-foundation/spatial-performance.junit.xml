@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="7" failures="0" skipped="0"><testsuite name="spatial-performance" tests="7" failures="0" skipped="0">
+<properties><property name="producer" value="scripts/generate-item-180-evidence.sh"/><property name="command" value="./scripts/verify-spatial-query.sh"/></properties>
+<testcase classname="SpatialQueryFixtures" name="selected-unit LOS satisfies the 20 millisecond target"/>
+<testcase classname="SpatialQueryFixtures" name="bounded route satisfies the 50 millisecond target"/>
+<testcase classname="SpatialQueryFixtures" name="local invalidation satisfies the 10 millisecond target"/>
+<testcase classname="SpatialQueryFixtures" name="100-demand workload satisfies the 250 millisecond target"/>
+<testcase classname="SpatialQueryFixtures" name="200-demand workload satisfies the 500 millisecond target"/>
+<testcase classname="SpatialQueryFixtures" name="route result and expansion structural ceilings hold"/>
+<testcase classname="SpatialQueryFixtures" name="crossings footprint samples and explanation size ceilings hold"/>
+</testsuite></testsuites>

@@ -18,6 +18,23 @@ related:
 
 # Performance Budget
 
+## Spatial-query budget
+
+The schema-v1 spatial service caps one query at 4,096 expansions, 64 result
+cells, 4,096 crossed cells/edges, 256 footprint samples, and a 64 KiB canonical
+explanation. `scripts/verify-spatial-query.sh` measures an 80×80 maximum map,
+selected-unit LOS, a bounded route preview, local invalidation, and deterministic
+100/200-unit demand after runtime warm-up. Qualification targets are 20 ms LOS,
+50 ms route preview, 10 ms invalidation, and 250/500 ms demand batches.
+
+The first list-frontier implementation failed honestly at 193 ms for one route
+and 1.6/3.1 seconds for the demand batches. The accepted implementation uses the
+published package `Pathfinding.astar EightWay` result as a fast candidate and
+then validates every returned step against S.I.R.'s stricter complete-footprint
+transition envelopes. The measured Release candidate recorded 0 ms LOS, 0 ms
+route, 0 ms invalidation, and 27/43 ms for 100/200-unit demand, with 41 route
+cells, 41 expansions, and 2,156 explanation bytes.
+
 ## Production delivery budget
 
 The production client has an executable delivery contract in

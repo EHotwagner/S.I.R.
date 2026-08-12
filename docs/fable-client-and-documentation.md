@@ -21,6 +21,15 @@ related:
 
 ## Executive summary
 
+The View menu now exposes a player-reachable **Spatial diagnostics** command.
+After selecting a simulator unit, the panel renders the shared F# query's
+normalized footprint, outcome, crossed cells/edges, cover and exposure inputs,
+revision/knowledge policy, package/profile, and source symbol. The browser does
+not implement geometry: it executes and projects `SIR.Simulation.SpatialQuery`.
+Native and Fable/Node fixtures compare the complete canonical payload, and the
+production Playwright journey exercises the real entry, sample loading, unit
+selection, View command, and panel.
+
 The Rules data panel now projects the schema-v1 executable combat registry:
 typed formulas, a registered Game.Core line-of-sight algorithm, rationale,
 dependencies, evidence, and commit-pinned F# source links. Authoritative

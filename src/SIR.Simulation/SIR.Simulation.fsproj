@@ -3,6 +3,8 @@
     <Compile Include="Substrate.fs" />
     <Compile Include="CombatRules.fsi" />
     <Compile Include="CombatRules.fs" />
+    <Compile Include="SpatialQuery.fsi" />
+    <Compile Include="SpatialQuery.fs" />
     <Compile Include="Simulation.fs" />
     <Compile Include="MapScale.fs" />
     <Compile Include="CapabilityExecution.fs" />

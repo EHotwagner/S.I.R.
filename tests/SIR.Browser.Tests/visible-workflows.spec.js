@@ -117,6 +117,20 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   await expect(damageRule.getByRole("link", { name: "Coverage graph" })).toHaveAttribute("href", /rules-corpus\/v2\/coverage\.json/);
 });
 
+test("the player-visible spatial diagnostics route shows authoritative selected-unit evidence", async ({ page }) => {
+  await loadMaintainedSimulation(page);
+  const battlefield = page.locator("#persistent-tactical-svg");
+  await battlefield.locator("#persistent-layer-units [data-unit-id]").first().click();
+  await page.getByRole("button", { name: "View", exact: true }).click();
+  await page.getByRole("menuitem", { name: /Spatial diagnostics/ }).click();
+  const diagnostics = page.getByRole("region", { name: "Selected unit spatial diagnostics", exact: true });
+  await expect(diagnostics).toBeVisible();
+  await expect(diagnostics.getByText("ExactLineOfSight", { exact: true })).toBeVisible();
+  await expect(diagnostics.getByText(/player-disclosed/)).toBeVisible();
+  await expect(diagnostics.getByText(/FS\.GG\.Game\.Core@0\.13\.0.*fs-gg-game-core-fable-lockstep-v1/)).toBeVisible();
+  await expect(diagnostics.getByText("SIR.Simulation.SpatialQuery.evaluate", { exact: true })).toBeVisible();
+});
+
 test("the maintained simulation transport is available without a manual handoff in every modality", async ({ page }) => {
   await loadMaintainedSimulation(page);
   for (const mode of ["Editor", "Plan", "Simulate", "Review"]) {
