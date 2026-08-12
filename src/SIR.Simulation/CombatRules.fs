@@ -14,7 +14,7 @@ module CombatRules =
     let private requiredId value = RuleId.create value |> Result.defaultWith failwith
     let private fixedValue unitName value = { DataKind = RuleValueKind.FixedPoint; Unit = unitName; Value = RuleValue.FixedPointValue value }
     let private integerValue unitName value = { DataKind = RuleValueKind.Integer; Unit = unitName; Value = RuleValue.IntegerValue value }
-    let private source symbol = Some { Symbol = symbol; RepositoryPath = "src/SIR.Simulation/CombatRules.fs"; Commit = "f108e7d770900adddcbbf42a8e4b5d4f925cc60e" }
+    let private source symbol = Some { Symbol = symbol; RepositoryPath = "src/SIR.Simulation/CombatRules.fs"; Commit = "791ed35fc776eaf7d54ce3ba5dc56f0416853229" }
     let private statement trigger response = { Preconditions = []; Trigger = trigger; System = "S.I.R. combat simulation"; Responses = [ response ] }
     let private metadata id title kind rationale dependencies symbol evidence =
         { Id = requiredId id; Title = title; Status = Canonical; SemanticKind = kind; Statement = statement None title; Rationale = rationale; Dependencies = dependencies |> List.map requiredId; Supersedes = []; RuleSource = source symbol; Examples = [ "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs" ]; Properties = [ "deterministic .NET/Fable canonical equality" ]; Evidence = [ evidence ] }
@@ -48,7 +48,7 @@ module CombatRules =
           Semantics = TransitionSemantics { Phase = "AttackPhase"; Preconditions = []; Reads = [ "attacker.cell"; "target.footprint"; "weapon"; "armor" ]; Effects = [ "target.health" ]; Events = [ "AttackResolved" ] } }
 
     let registry = [ weapon; body; engagement; trace; armor; damage; transition ] |> Rules.validate |> Result.defaultWith (fun errors -> failwithf "Invalid combat registry: %A" errors)
-    let packageIdentity = Rules.packageIdentity "sir-simulation-v1" "fs-gg-game-core-fable-lockstep-v1" "FS.GG.Game.Core@0.13.0" "f108e7d770900adddcbbf42a8e4b5d4f925cc60e" [ "combat-rules", CanonicalHash.sha256 (System.Text.Encoding.UTF8.GetBytes "combat-rules-v1") ] registry
+    let packageIdentity = Rules.packageIdentity "sir-simulation-v1" "fs-gg-game-core-fable-lockstep-v1" "FS.GG.Game.Core@0.13.0" "791ed35fc776eaf7d54ce3ba5dc56f0416853229" [ "combat-rules", CanonicalHash.sha256 (System.Text.Encoding.UTF8.GetBytes "combat-rules-v1") ] registry
     let retainedPackage = { Identity = packageIdentity; ManifestJson = Rules.manifestJson packageIdentity registry; CoverageJson = Rules.coverageJson packageIdentity registry }
 
     let replayBinding explanation =
@@ -89,18 +89,21 @@ module CombatRules =
         let traceValue = FixedPoint.fromRatio visible total |> Result.defaultWith (fun _ -> failwith "Non-empty footprint division failed.")
         let preparationInputs = Map.ofList [ "range", fixedValue "seconds" (fp input.RangeCells 1) ]
         let armorInputs = Map.ofList [ "retention", fixedValue "ratio" input.ArmorRetention ]
-        let damageInputs = Map.ofList [ "baseDamage", fixedValue "damage" input.BaseDamage; "trace", fixedValue "ratio" traceValue; "retention", fixedValue "ratio" input.ArmorRetention ]
-        match evaluate (formula "COMBAT-ENGAGEMENT-001") preparationInputs, evaluate (formula "COMBAT-ARMOR-004") armorInputs, evaluate (formula "COMBAT-DAMAGE-001") damageInputs with
-        | Ok preparation, Ok retained, Ok expected ->
-            let fixedOf (typed: TypedValue) = match typed.Value with RuleValue.FixedPointValue value -> value | _ -> failwith "Validated formula returned another kind."
-            let expectedFixed = fixedOf expected
-            let roundedDamage = (FixedPoint.raw expectedFixed + FixedPoint.Scale / 2) / FixedPoint.Scale
-            let traceTyped = fixedValue "ratio" traceValue
-            let children =
-                [ application "COMBAT-ENGAGEMENT-001" input.EventId [ "rangeCells", integerValue "cells" input.RangeCells; "suppression", fixedValue "suppression" input.Suppression ] preparation []
-                  application "COMBAT-TRACE-002" input.EventId [ "visibleSamples", integerValue "samples" visible; "totalSamples", integerValue "samples" total; "lineMode", { DataKind = RuleValueKind.Text; Unit = "name"; Value = RuleValue.TextValue "Supercover" } ] traceTyped []
-                  application "COMBAT-ARMOR-004" input.EventId [ "retention", fixedValue "ratio" input.ArmorRetention ] retained []
-                  application "COMBAT-DAMAGE-001" input.EventId [ "baseDamage", fixedValue "damage" input.BaseDamage; "trace", traceTyped; "retention", retained ] expected [] ]
-            let outcome = integerValue "damage" roundedDamage
-            Ok { Preparation = fixedOf preparation; TraceProbability = traceValue; ArmorRetention = fixedOf retained; ExpectedDamage = roundedDamage; Explanation = application "COMBAT-ATTACK-RESOLUTION-001" input.EventId [] outcome children }
-        | Error error, _, _ | _, Error error, _ | _, _, Error error -> Error error
+        let fixedOf (typed: TypedValue) = match typed.Value with RuleValue.FixedPointValue value -> value | _ -> failwith "Validated formula returned another kind."
+        match evaluate (formula "COMBAT-ENGAGEMENT-001") preparationInputs, evaluate (formula "COMBAT-ARMOR-004") armorInputs with
+        | Ok preparation, Ok retained ->
+            let damageInputs = Map.ofList [ "baseDamage", fixedValue "damage" input.BaseDamage; "trace", fixedValue "ratio" traceValue; "retention", retained ]
+            match evaluate (formula "COMBAT-DAMAGE-001") damageInputs with
+            | Error error -> Error error
+            | Ok expected ->
+                let expectedFixed = fixedOf expected
+                let roundedDamage = (FixedPoint.raw expectedFixed + FixedPoint.Scale / 2) / FixedPoint.Scale
+                let traceTyped = fixedValue "ratio" traceValue
+                let children =
+                    [ application "COMBAT-ENGAGEMENT-001" input.EventId [ "rangeCells", integerValue "cells" input.RangeCells; "suppression", fixedValue "suppression" input.Suppression ] preparation []
+                      application "COMBAT-TRACE-002" input.EventId [ "visibleSamples", integerValue "samples" visible; "totalSamples", integerValue "samples" total; "lineMode", { DataKind = RuleValueKind.Text; Unit = "name"; Value = RuleValue.TextValue "Supercover" } ] traceTyped []
+                      application "COMBAT-ARMOR-004" input.EventId [ "retention", fixedValue "ratio" input.ArmorRetention ] retained []
+                      application "COMBAT-DAMAGE-001" input.EventId [ "baseDamage", fixedValue "damage" input.BaseDamage; "trace", traceTyped; "retention", retained ] expected [] ]
+                let outcome = integerValue "damage" roundedDamage
+                Ok { Preparation = fixedOf preparation; TraceProbability = traceValue; ArmorRetention = fixedOf retained; ExpectedDamage = roundedDamage; Explanation = application "COMBAT-ATTACK-RESOLUTION-001" input.EventId [] outcome children }
+        | Error error, _ | _, Error error -> Error error
