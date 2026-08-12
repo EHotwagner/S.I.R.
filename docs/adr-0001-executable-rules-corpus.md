@@ -151,10 +151,14 @@ developer-only rule descriptions.
 
 ### Historical replay interpretation is content-addressed
 
-Published rule packages are immutable and addressed by a digest over their
-canonical manifest. A replay records its engine identity, rule-package digest,
-and structured explanations. Historical documentation resolves against that
-digest, not against the current `main` branch.
+Published rule packages are immutable and addressed by a digest over a
+non-recursive canonical package projection: the digest field itself is omitted
+from its hash input. Executable identity also includes a deterministic
+implementation digest covering registered algorithm artifacts, so changing an
+algorithm cannot preserve the old semantic identity merely because its F#
+symbol and metadata remain unchanged. A replay records its engine identity,
+rule-package digest, and structured explanations. Historical documentation
+resolves against that digest, not against the current `main` branch.
 
 A published package referenced by a retained replay is not replaced in place.
 An archival replay bundle may embed its rule manifest so it remains

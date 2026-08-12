@@ -500,25 +500,50 @@ type RulePackageIdentity =
     { SchemaVersion: int
       EngineIdentity: string
       SourceCommit: string
+      ImplementationDigest: CanonicalHash
       SemanticDigest: CanonicalHash
       ManifestDigest: CanonicalHash }
 ```
 
-`SemanticDigest` identifies executable semantics and authoritative content.
-`ManifestDigest` covers the complete published representation, including
-statements, rationale, source references, and documentation metadata. This
-distinction allows diagnostics to say whether a change affects execution,
-explanation only, or both.
+`ImplementationDigest` fingerprints the deterministic runtime-artifact set
+containing registered algorithms, including its runtime profile and relevant
+toolchain identity. Every algorithm registration maps to a component covered
+by this digest. Changing compiled algorithm behavior therefore changes package
+semantic identity even when the algorithm keeps the same F# symbol,
+dependencies, and registration metadata.
 
-The canonical digest input excludes volatile build timestamps and absolute
-paths. Package identity is reproducible from the same repository state and
-toolchain contract.
+`SemanticDigest` identifies executable semantics and authoritative content. It
+is computed from the canonical semantic projection of facts, predicates,
+formulas, transitions, and algorithm registrations together with
+`ImplementationDigest`. It may conservatively change when a runtime artifact
+changes without changing observable behavior; it must never remain unchanged
+when registered executable behavior changes.
+
+`ManifestDigest` identifies the complete published representation, including
+statements, rationale, source references, and documentation metadata. Its
+canonical hash input includes the package metadata, manifest payload,
+`ImplementationDigest`, and `SemanticDigest`, but omits `ManifestDigest` itself.
+The digest therefore does not recursively contain the value being computed.
+The published package is an envelope containing the computed identity and the
+hashed manifest payload.
+
+This separation allows diagnostics to say whether a change affects registered
+runtime artifacts, inspectable execution semantics, explanation only, or more
+than one of those surfaces.
+
+All canonical digest projections exclude volatile build timestamps and
+absolute paths. The implementation-artifact set is ordered and encoded
+canonically. Package identity is reproducible from the same repository state
+and toolchain contract. Runtime artifacts do not embed the final package
+digests in bytes covered by `ImplementationDigest`; the outer package envelope
+performs that binding after artifact fingerprinting and avoids a second digest
+cycle.
 
 ### Manifest contents
 
-The deterministic manifest includes:
+The deterministic manifest payload includes:
 
-- package identity and schema version;
+- manifest schema version and engine compatibility profile;
 - every rule's metadata, kind, and status;
 - canonical facts and content values;
 - predicate and formula ASTs;
@@ -531,8 +556,11 @@ The deterministic manifest includes:
 - presentation labels and unit definitions; and
 - canonical explanation vocabulary.
 
-It does not contain executable JavaScript as a second authority. Compiled
-engine artifacts have their own identity and bind to the semantic digest.
+The outer package envelope contains `RulePackageIdentity`; digest values are not
+duplicated inside the hashed payload. The manifest does not contain executable
+JavaScript as a second authority. Compiled .NET and Fable engine artifacts are
+members of the deterministic set covered by `ImplementationDigest` and are
+bound to the manifest by the outer package identity.
 
 ### Replay binding
 
@@ -647,10 +675,14 @@ CI rejects at least:
 - a formula or predicate with invalid units or an unregistered operation;
 - a transition that references an unknown phase, effect, event, or rule;
 - an algorithm without source identity, explanation projection, and evidence;
+- an algorithm registration not mapped to a component covered by
+  `ImplementationDigest`;
 - a narrative rule used to satisfy executable coverage;
 - an authoritative event with a missing or invalid explanation obligation;
 - a source symbol or repository path that cannot be resolved;
 - nondeterministic manifest ordering or digest generation;
+- a digest projection that contains its own output field or a runtime artifact
+  that embeds a digest covering that artifact;
 - .NET/Fable disagreement over canonical fixtures;
 - a replay whose declared package identity disagrees with embedded or resolved
   content;
