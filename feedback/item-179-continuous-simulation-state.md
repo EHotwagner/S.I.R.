@@ -2,7 +2,7 @@
 feedbackSchema: 2
 date: 2026-08-12
 workspace: S.I.R
-cycle: 179-continuous-simulation-state
+cycle: item-179-continuous-simulation-state
 lane: sdd
 toolVersion: 1.0.1
 commit: pending-pr-head
@@ -14,7 +14,7 @@ commit: pending-pr-head
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
 - **material events:** 3
 - **zero-event reason:** n/a
-- **checkpoint:** `feedback/checkpoints/179-continuous-simulation-state.jsonl` (3 events).
+- **checkpoint:** `feedback/checkpoints/item-179-continuous-simulation-state.jsonl` (3 events).
 - **confidence limits:** Local .NET, documentation, smoke, and production-browser evidence passed; hosted exact-head CI and independent critique remain pending.
 
 ## §2 What worked
