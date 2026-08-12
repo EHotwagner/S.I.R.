@@ -1,0 +1,40 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-12-sir-item-187-fable-game-governance-parity.md",
+  "reportSha256": "94d7f08536fe4c6e12551236aec85887ffc09579d7fa10f9e66d9fdc481dc469",
+  "criticMode": "separated-critic-pass",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [{"locator": "command:scripts/fsgg-coord delivery-route show EHotwagner/S.I.R#187 --json", "result": "verified"}],
+      "confidenceLimits": ["Known recurring report; no new issue filed in this recovery lane."]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [{"locator": "command:dotnet fsgg-sdd refresh --work 187-fable-game-governance-parity --root . --text", "result": "verified"}],
+      "confidenceLimits": ["The direct parser diagnostic remains an upstream SDD improvement."]
+    },
+    {
+      "id": "§4.3",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:dotnet tool run fsgg-fsharp-surface -- --root . --project src/SIR.Simulation/SIR.Simulation.fsproj", "result": "verified"},
+        {"locator": "command:dotnet fsgg-sdd ship --work 187-fable-game-governance-parity --root . --text", "result": "verified"}
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.4",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [{"locator": "command:./scripts/test-conformance.sh", "result": "verified"}],
+      "confidenceLimits": ["Hosted CI remains pending."]
+    }
+  ]
+}

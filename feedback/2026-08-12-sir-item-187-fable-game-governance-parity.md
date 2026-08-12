@@ -112,9 +112,11 @@ The governance verifier passed, the skill-equivalence subject mutation reddened 
 
 | Surface | Status | Evidence and result |
 |---|---|---|
+| scaffolding | not-exercised | Existing repository; no scaffold operation in this lane. |
 | onboarding-guidance | exercised | Typed claim, route, and recovery contract used. |
 | skills | exercised | Fable package-consumer and SDD skills used. |
 | sdd-authoring | exercised | Canonical 187 lifecycle regenerated through ship and refresh. |
+| implementation-apis | exercised | The governance verifier now produces and validates the public-surface receipt. |
 | dependencies-build | exercised | Published Governance tool 1.12.1 restored and full build passed. |
 | testing | exercised | `./scripts/test-conformance.sh` passed; skill-equivalence mutation red. |
 | evidence | exercised | Public-surface receipt and observed SDD evidence are current. |
