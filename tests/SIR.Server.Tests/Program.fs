@@ -5,6 +5,7 @@ open System.IO
 open System.Net
 open System.Net.Http
 open System.Text
+open System.Text.Json
 open System.Security.Cryptography
 open System.Collections.Concurrent
 open Microsoft.AspNetCore.Hosting
@@ -102,6 +103,17 @@ type LiveSessionAuthenticationTests() =
             let response = postSpatial client (Some admission.AccessToken) (spatialRequest 8 8)
             let body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
             require (response.StatusCode = HttpStatusCode.OK) $"authorized spatial diagnostics must succeed (got {response.StatusCode})"
+            let projection =
+                JsonSerializer.Deserialize<SpatialDiagnosticResponseDto>(body)
+                |> box
+                |> function
+                    | null -> failwith "the endpoint must return a typed spatial diagnostic projection"
+                    | value -> unbox<SpatialDiagnosticResponseDto> value
+            let route = projection.Queries |> Array.find (fun query -> query.QueryKind = "BoundedPath")
+            require (route.Outcome = "Found" && route.Path.Length >= 2) "the endpoint must return the complete non-empty authoritative path for a found bounded route"
+            require (route.Path[0].Column = route.Origin.Column && route.Path[0].Row = route.Origin.Row) "the authoritative path must begin at the normalized origin"
+            let destination = route.Path[route.Path.Length - 1]
+            require (destination.Column = route.Target.Column && destination.Row = route.Target.Row) "the authoritative path must end at the normalized target"
             require (body.Contains("ExactLineOfSight") && body.Contains("BoundedPath") && body.Contains("Cover")) "the endpoint must return LOS, route, and cover projections"
             require (body.Contains("\"Origin\"") && body.Contains("\"Target\"") && body.Contains("\"FootprintSamples\"") && body.Contains("\"Path\"")) "the endpoint must return exact normalized input and path fields"
             require (body.Contains("\"CrossedCells\"") && body.Contains("\"CrossedEdges\"") && body.Contains("\"CoverContributors\"") && body.Contains("\"Decisions\"")) "the endpoint must return exact authoritative explanation fields"

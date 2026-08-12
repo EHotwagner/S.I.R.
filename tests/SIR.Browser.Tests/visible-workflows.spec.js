@@ -131,6 +131,10 @@ test("the player-visible spatial diagnostics route shows authoritative selected-
   await expect(diagnostics.getByText("Normalized inputs", { exact: true }).first()).toBeVisible();
   await expect(diagnostics.getByText("Footprint samples", { exact: true }).first()).toBeVisible();
   await expect(diagnostics.getByText("Authoritative path", { exact: true }).first()).toBeVisible();
+  const boundedPath = diagnostics.locator("details").filter({ hasText: "BoundedPath · Found" });
+  const renderedPath = boundedPath.getByText("Authoritative path", { exact: true }).locator("+ dd");
+  await expect(renderedPath).not.toHaveText("none");
+  await expect(renderedPath).toHaveText(/^\(\d+,\d+\)(?:, \(\d+,\d+\))+$/);
   await expect(diagnostics.getByText("Crossed cells", { exact: true }).first()).toBeVisible();
   await expect(diagnostics.getByText("Crossed edges", { exact: true }).first()).toBeVisible();
   await expect(diagnostics.getByText("Cover contributors", { exact: true }).first()).toBeVisible();

@@ -37,6 +37,40 @@ javascript_has_spatial_authority() {
   fi
 }
 
+require_clean_scan() {
+  local description=$1
+  shift
+  local status
+  if "$@"; then
+    echo "$description contains forbidden spatial authority" >&2
+    exit 1
+  else
+    status=$?
+  fi
+  if [[ $status -ne 1 ]]; then
+    echo "$description could not be read (search exited $status)" >&2
+    exit 1
+  fi
+}
+
+expect_unreadable_client_scan_error() {
+  local source=src/SIR.Client.Web/RulesExplorer.fs
+  local original_mode
+  local status
+  original_mode=$(stat -c '%a' "$source")
+  chmod 000 "$source"
+  if client_has_authority_calls; then
+    status=0
+  else
+    status=$?
+  fi
+  chmod "$original_mode" "$source"
+  if [[ $status -le 1 ]]; then
+    echo "Client authority scan did not fail closed for unreadable source (search exited $status)" >&2
+    exit 1
+  fi
+}
+
 dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
 dotnet_output=$(dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-build --no-restore -- --print-spatial-query)
 
@@ -63,15 +97,10 @@ for runtime in dotnet fable; do
   search_fixed_quiet "first divergence: fixture=spatial-query byte=0" "$mutation_log"
 done
 
-if client_has_authority_calls; then
-  echo "Client code contains direct authoritative Game.Core geometry calls" >&2
-  exit 1
-fi
-
-if javascript_has_spatial_authority; then
-  echo "JavaScript/TypeScript contains copied spatial authority" >&2
-  exit 1
-fi
+expect_unreadable_client_scan_error
+SIR_SPATIAL_FORCE_GREP=1 expect_unreadable_client_scan_error
+require_clean_scan "Client code" client_has_authority_calls
+require_clean_scan "JavaScript/TypeScript" javascript_has_spatial_authority
 
 dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-build --no-restore -- --print-spatial-performance
 

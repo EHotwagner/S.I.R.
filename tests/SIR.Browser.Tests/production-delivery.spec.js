@@ -37,6 +37,10 @@ test("Release delivery uses cache-safe compression and defers spatial diagnostic
   const diagnostics = page.getByRole("region", { name: "Selected unit spatial diagnostics", exact: true });
   await expect(diagnostics).toBeVisible();
   await expect(diagnostics.getByText(/ExactLineOfSight · Found/)).toBeVisible();
+  const boundedPath = diagnostics.locator("details").filter({ hasText: "BoundedPath · Found" });
+  const renderedPath = boundedPath.getByText("Authoritative path", { exact: true }).locator("+ dd");
+  await expect(renderedPath).not.toHaveText("none");
+  await expect(renderedPath).toHaveText(/^\(\d+,\d+\)(?:, \(\d+,\d+\))+$/);
   await expect(diagnostics.getByText("SIR.Simulation.SpatialQuery.evaluate", { exact: true }).first()).toBeVisible();
   expect(responses.some((response) => response.url().includes("RulesExplorer-"))).toBe(true);
   const deferredBytes = await responseBytes(responses.filter((response) => response.url().includes("RulesExplorer-")));
