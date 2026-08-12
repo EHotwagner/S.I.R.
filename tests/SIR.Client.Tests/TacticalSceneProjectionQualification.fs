@@ -129,6 +129,32 @@ let private ids projection =
 
 let run () =
     let initialEditor = MapEditor.initial
+    let initialSimulator = MapEditorSimulator.tryHandoff initialEditor |> Result.defaultWith failwith
+    let advancedSimulator = MapEditorSimulator.update StepSimulator initialEditor.SelectedUnit initialSimulator
+    let addedId = initialEditor.Map.NextUnitId
+    let addedUnit =
+        { (initialEditor.Map.Units |> Map.toSeq |> Seq.head |> snd) with
+            Id = addedId
+            Column = 0
+            Row = 0 }
+    let addedMap = { initialEditor.Map with Units = Map.add addedId addedUnit initialEditor.Map.Units; NextUnitId = addedId + 1 }
+    let addedEditor =
+        { initialEditor with
+            Map = addedMap
+            Revision = { initialEditor.Revision with Document = addedMap; Digest = "continuous-added" } }
+    let reconciled = MapEditorSimulator.reconcile addedEditor advancedSimulator
+    let beforeActivation = MapEditorSimulator.seek 0 reconciled
+    let atActivation = MapEditorSimulator.seek reconciled.Tick reconciled
+    let terrainMap = { addedMap with Terrain = Map.add (0, 0) Rough addedMap.Terrain }
+    let incompatibleEditor = { addedEditor with Map = terrainMap; Revision = { addedEditor.Revision with Document = terrainMap; Digest = "continuous-terrain" } }
+    let restarted = MapEditorSimulator.reconcile incompatibleEditor reconciled
+    require
+        (reconciled.Tick = advancedSimulator.Tick
+         && not (Map.containsKey addedId beforeActivation.RuntimeMap.Units)
+         && Map.containsKey addedId atActivation.RuntimeMap.Units
+         && restarted.Tick = 0
+         && restarted.ReconciliationMessage |> Option.exists (fun message -> message.Contains("terrain")))
+        "Continuous simulation reconciliation, activation history, seek, or incompatible fallback diverged."
     let unitIds = initialEditor.Map.Units |> Map.toArray |> Array.map fst
     require (unitIds.Length >= 2) "Qualification fixture needs two authored units."
     let firstUnit, secondUnit = unitIds[0], unitIds[1]

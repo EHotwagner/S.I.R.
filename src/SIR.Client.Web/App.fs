@@ -7508,6 +7508,9 @@ let private simulatorPanelBody
                     "Authoritative runtime tick " + string handoff.Tick
                     + " · " + if handoff.IsRunning then "Running" else "Paused"
                 )
+                match handoff.ReconciliationMessage with
+                | Some message -> Html.p [ prop.role "status"; prop.text message ]
+                | None -> Html.none
                 Html.div [
                     prop.className "control-row simulation-controls"
                     prop.children [
