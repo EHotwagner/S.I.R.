@@ -105,6 +105,30 @@ module Program =
                 })
         ) |> ignore
 
+        app.MapPost(
+            "/api/combat/physical-drill",
+            Func<HttpRequest, Task<IResult>>(fun request ->
+                task {
+                    let maximumBytes = 4 * 1024
+                    let authorization = string request.Headers.Authorization
+                    let accessToken =
+                        if authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) then authorization.Substring("Bearer ".Length)
+                        else ""
+                    if not (LiveAuthority.authorizeHttp accessToken) then
+                        return Results.Unauthorized()
+                    elif request.ContentLength.HasValue && request.ContentLength.Value > int64 maximumBytes then
+                        return Results.BadRequest {| error = "physical combat body too large" |}
+                    else
+                        let! boundedBody = readBoundedBody maximumBytes request.Body
+                        match boundedBody with
+                        | Error _ -> return Results.BadRequest {| error = "physical combat body too large" |}
+                        | Ok body ->
+                            match PhysicalCombatDiagnostics.evaluate body with
+                            | Error error -> return Results.BadRequest {| error = error |}
+                            | Ok response -> return Results.Text(response, "application/json")
+                })
+        ) |> ignore
+
         app.MapHub<GameHub>("/hub/game") |> ignore
         app.UseDefaultFiles() |> ignore
         app.UseStaticFiles(StaticFileOptions(OnPrepareResponse = Action<StaticFileResponseContext>(configureStaticAssetResponse))) |> ignore

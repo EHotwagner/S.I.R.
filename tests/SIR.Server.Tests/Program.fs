@@ -86,6 +86,12 @@ let postSpatial (client: HttpClient) bearer body =
     bearer |> Option.iter (fun value -> request.Headers.Authorization <- Headers.AuthenticationHeaderValue("Bearer", value))
     client.SendAsync(request).GetAwaiter().GetResult()
 
+let postPhysicalCombat (client: HttpClient) bearer body =
+    let request = new HttpRequestMessage(HttpMethod.Post, "/api/combat/physical-drill")
+    request.Content <- new StringContent(body, Encoding.UTF8, "application/json")
+    bearer |> Option.iter (fun value -> request.Headers.Authorization <- Headers.AuthenticationHeaderValue("Bearer", value))
+    client.SendAsync(request).GetAwaiter().GetResult()
+
 let admittedSession (client: HttpClient) actor =
     use response = post client actor (Some(productionToken actor)) None None
     require (response.StatusCode = HttpStatusCode.OK) "the production identity must obtain a live-session admission"
@@ -94,6 +100,33 @@ let admittedSession (client: HttpClient) actor =
     |> Result.defaultWith failwith
 
 type LiveSessionAuthenticationTests() =
+    [<Fact>]
+    member _.``physical combat drill requires admission and returns ordered authority projection``() =
+        withProductionClient (fun client ->
+            use unauthorized = postPhysicalCombat client None "{\"AttackId\":\"unauthorized\",\"Weapon\":\"AntiArmor\"}"
+            require (unauthorized.StatusCode = HttpStatusCode.Unauthorized) "physical combat must reject an absent bearer admission"
+            let admission = admittedSession client "combat-player"
+            use response = postPhysicalCombat client (Some admission.AccessToken) "{\"AttackId\":\"server-combat-test\",\"Weapon\":\"AntiArmor\"}"
+            let body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+            require (response.StatusCode = HttpStatusCode.OK) "authorized physical combat must resolve"
+            let projection =
+                JsonSerializer.Deserialize<PhysicalCombatResponseDto>(body)
+                |> box
+                |> function null -> failwith "physical combat must return its typed projection" | value -> unbox<PhysicalCombatResponseDto> value
+            require (projection.Profile = "AntiArmor" && projection.Trace.Length >= 2 && projection.CanonicalByteCount > 0) "physical combat must disclose effective parameters, trace, and canonical evidence"
+            require (projection.Cover.Contains("roadblock-2") && projection.Armor.Contains("Front") && projection.RemainingHealth = 75) "cover, directional armor, and HP projection changed"
+            require (projection.Wounds = [| "Serious" |] && projection.Suppression = 12 && not projection.Incapacitated) "wound, suppression, and incapacity must remain distinct"
+            let steps = projection.Facts |> Array.map _.Step
+            let index step = steps |> Array.findIndex ((=) step)
+            require (index "Physical trace" < index "Cover" && index "Cover" < index "Armor" && index "Armor" < index "HP" && index "HP" < index "Suppression") "authority facts lost canonical consequence ordering")
+
+    [<Fact>]
+    member _.``physical combat drill rejects unknown profiles before evaluation``() =
+        withProductionClient (fun client ->
+            let admission = admittedSession client "combat-bounds"
+            use response = postPhysicalCombat client (Some admission.AccessToken) "{\"AttackId\":\"invalid-profile\",\"Weapon\":\"UnboundedLaser\"}"
+            require (response.StatusCode = HttpStatusCode.BadRequest) "unknown weapon profiles must fail closed")
+
     [<Fact>]
     member _.``spatial diagnostics require identity and return bounded authoritative projection``() =
         withProductionClient (fun client ->

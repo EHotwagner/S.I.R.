@@ -3,6 +3,7 @@ module SIR.Client.Web.RulesExplorer
 open Feliz
 open Fable.Core
 open Fable.Core.JsInterop
+open FS.GG.Game.Core
 open SIR.Client
 open SIR.Domain
 open SIR.Protocol.Http
@@ -43,6 +44,14 @@ type private SpatialDiagnosticResult =
 
 type private SpatialDiagnosticProjection =
     { Queries: SpatialDiagnosticResult list }
+
+type private PhysicalCombatCell = { Column: int32; Row: int32 }
+type private PhysicalCombatFact = { Step: string; Subject: string; Detail: string }
+type private PhysicalCombatProjection =
+    { AttackId: string; Profile: string; BaseDamage: int32; Penetration: int32
+      Trace: PhysicalCombatCell list; Cover: string; Armor: string; RemainingHealth: int32
+      Wounds: string list; Suppression: int32; Incapacitated: bool
+      Facts: PhysicalCombatFact list; CanonicalByteCount: int32 }
 
 [<Global>]
 let private fetch (url: string, options: obj) : JS.Promise<obj> = jsNative
@@ -87,8 +96,25 @@ let private responseDecoder : Decoder<SpatialDiagnosticProjection> =
     Decode.object (fun get ->
         { Queries = get.Required.Field "Queries" (Decode.list resultDecoder) })
 
-let private cellText value = $"({value.Column},{value.Row})"
-let private edgeText value = cellText value.Low + "→" + cellText value.High
+let private combatCellDecoder : Decoder<PhysicalCombatCell> =
+    Decode.object (fun get -> { Column = get.Required.Field "Column" Decode.int; Row = get.Required.Field "Row" Decode.int })
+
+let private combatFactDecoder : Decoder<PhysicalCombatFact> =
+    Decode.object (fun get -> { Step = get.Required.Field "Step" Decode.string; Subject = get.Required.Field "Subject" Decode.string; Detail = get.Required.Field "Detail" Decode.string })
+
+let private combatResponseDecoder : Decoder<PhysicalCombatProjection> =
+    Decode.object (fun get ->
+        { AttackId = get.Required.Field "AttackId" Decode.string; Profile = get.Required.Field "Profile" Decode.string
+          BaseDamage = get.Required.Field "BaseDamage" Decode.int; Penetration = get.Required.Field "Penetration" Decode.int
+          Trace = get.Required.Field "Trace" (Decode.list combatCellDecoder); Cover = get.Required.Field "Cover" Decode.string
+          Armor = get.Required.Field "Armor" Decode.string; RemainingHealth = get.Required.Field "RemainingHealth" Decode.int
+          Wounds = get.Required.Field "Wounds" (Decode.list Decode.string); Suppression = get.Required.Field "Suppression" Decode.int
+          Incapacitated = get.Required.Field "Incapacitated" Decode.bool; Facts = get.Required.Field "Facts" (Decode.list combatFactDecoder)
+          CanonicalByteCount = get.Required.Field "CanonicalByteCount" Decode.int })
+
+let private cellText (value: SpatialDiagnosticCell) = $"({value.Column},{value.Row})"
+let private combatCellText (value: PhysicalCombatCell) = $"({value.Column},{value.Row})"
+let private edgeText (value: SpatialDiagnosticEdge) = cellText value.Low + "→" + cellText value.High
 let private valuesText render values =
     match values with
     | [] -> "none"
@@ -148,6 +174,21 @@ let private loadDiagnostics accessToken body =
             |> Result.defaultWith (fun error -> failwith $"spatial diagnostic response did not decode: {error}")
     }
 
+let private loadPhysicalCombat accessToken =
+    async {
+        let body = Encode.object [ "AttackId", Encode.string "player-visible-anti-armor"; "Weapon", Encode.string "AntiArmor" ] |> Encode.toString 0
+        let options =
+            createObj [
+                "method" ==> "POST"
+                "headers" ==> createObj [ "Content-Type" ==> "application/json"; "Authorization" ==> ("Bearer " + accessToken) ]
+                "body" ==> body
+            ]
+        let! response = fetch ("/api/combat/physical-drill", options) |> Async.AwaitPromise
+        let! responseBody = response?text() |> Async.AwaitPromise
+        if not (unbox<bool> response?ok) then failwith $"physical combat request failed: {responseBody}"
+        return Decode.fromString combatResponseDecoder (string responseBody) |> Result.defaultWith (fun error -> failwith $"physical combat response did not decode: {error}")
+    }
+
 let private valueText value =
     match value.Value with
     | IntegerValue number -> string number + " " + value.Unit
@@ -202,8 +243,10 @@ let private rulesCatalog () =
     ]
 
 [<ReactComponent>]
-let ExecutableRulesPanel () =
-    let resolvedAttack, setResolvedAttack = React.useState<SIR.Simulation.SimulationEvent option>(None)
+let ExecutableRulesPanel (bootstrap: BootstrapV1.Response option) =
+    let resolvedAttack, setResolvedAttack = React.useState<(int32 * int32 * RuleApplication) option>(None)
+    let physicalResult, setPhysicalResult = React.useState<PhysicalCombatProjection option>(None)
+    let physicalFailure, setPhysicalFailure = React.useState<string option>(None)
     Html.section [
         prop.ariaLabel "Rules data tables"
         prop.children [
@@ -211,19 +254,22 @@ let ExecutableRulesPanel () =
             Html.button [
                 prop.text "Execute canonical player attack"
                 prop.onClick (fun _ ->
-                    let result = SIR.Simulation.Simulation.runTick SIR.Simulation.Simulation.initialState SIR.Simulation.Simulation.inputs
-                    result.Events
-                    |> List.tryFind (fun (event: SIR.Simulation.SimulationEvent) ->
-                        match event with
-                        | SIR.Simulation.SimulationEvent.AttackResolved _ -> true
-                        | _ -> false)
+                    let fixedPoint value = FixedPoint.fromRatio value 1 |> Result.defaultWith (string >> failwith)
+                    SIR.Simulation.CombatRules.resolveAttack
+                        { Attacker = { Col = 1; Row = 1 }
+                          TargetFootprint = [ { Col = 2; Row = 0 } ]
+                          VisibleSamples = 1; TotalSamples = 1; RangeCells = 1
+                          Suppression = FixedPoint.zero; BaseDamage = fixedPoint 25; ArmorRetention = fixedPoint 1
+                          EventId = "tick-1-attack-10-20" }
+                    |> Result.map (fun result -> result.ExpectedDamage, 100 - result.ExpectedDamage, result.Explanation)
+                    |> Result.toOption
                     |> setResolvedAttack)
             ]
             Html.section [
                 prop.ariaLabel "Authoritative attack event"
                 prop.children [
                     match resolvedAttack with
-                    | Some(SIR.Simulation.SimulationEvent.AttackResolved(_, _, damage, remainingHealth, explanation)) ->
+                    | Some(damage, remainingHealth, explanation) ->
                         Html.h3 ("AttackResolved event " + explanation.EventId)
                         Html.p ("Damage " + string damage + " · remaining health " + string remainingHealth + " · outcome " + valueText explanation.Outcome)
                         let governingId = RuleId.value explanation.RuleId
@@ -234,6 +280,52 @@ let ExecutableRulesPanel () =
                                 Html.li (RuleId.value application.RuleId + " · " + (application.Operands |> List.map (fun (name, value) -> name + "=" + valueText value) |> String.concat "; ") + " → " + valueText application.Outcome)
                         ]
                     | _ -> Html.p "No authoritative attack has been emitted yet."
+                ]
+            ]
+            Html.section [
+                prop.ariaLabel "Physical combat drill"
+                prop.children [
+                    Html.h3 "Physical combat drill"
+                    Html.p "Anti-armor point fire crosses partial external cover before resolving front armor, HP, wounds, and suppression."
+                    Html.button [
+                        prop.text "Fire anti-armor attack"
+                        prop.disabled (Option.isNone bootstrap)
+                        prop.onClick (fun _ ->
+                            setPhysicalResult None
+                            setPhysicalFailure None
+                            match bootstrap with
+                            | None -> setPhysicalFailure (Some "Live authority admission is unavailable.")
+                            | Some admission ->
+                                Async.StartImmediate(async {
+                                    try
+                                        let! result = loadPhysicalCombat admission.AccessToken
+                                        setPhysicalResult (Some result)
+                                    with error -> setPhysicalFailure (Some error.Message)
+                                }))
+                    ]
+                    match physicalFailure, physicalResult with
+                    | Some failure, _ -> Html.p ("Authoritative physical combat unavailable: " + failure)
+                    | None, None -> Html.p "No physical attack has been committed yet."
+                    | None, Some result ->
+                        Html.p ($"{result.AttackId} · {result.Profile} · damage {result.BaseDamage} · penetration {result.Penetration} · canonical bytes {result.CanonicalByteCount}")
+                        Svg.svg [
+                            svg.custom ("aria-label", "Visible attack trace")
+                            svg.viewBox (0, 0, 500, 80)
+                            svg.children [
+                                Svg.line [ svg.x1 30; svg.y1 40; svg.x2 470; svg.y2 40; svg.stroke "#ffb347"; svg.strokeWidth 5 ]
+                                Svg.circle [ svg.cx 250; svg.cy 40; svg.r 18; svg.fill "#65737e" ]
+                                Svg.text [ svg.x 220; svg.y 75; svg.text "partial cover" ]
+                            ]
+                        ]
+                        Html.dl [
+                            Html.dt "Trace"; Html.dd (result.Trace |> List.map combatCellText |> String.concat " → ")
+                            Html.dt "Cover outcome"; Html.dd result.Cover
+                            Html.dt "Armor outcome"; Html.dd result.Armor
+                            Html.dt "HP / wounds"; Html.dd (string result.RemainingHealth + " / " + String.concat ", " result.Wounds)
+                            Html.dt "Suppression / incapacity"; Html.dd ($"{result.Suppression} / {result.Incapacitated}")
+                        ]
+                        Html.h4 "Ordered resolution explanation"
+                        Html.ol [ for fact in result.Facts do Html.li ($"{fact.Step} · {fact.Subject} · {fact.Detail}") ]
                 ]
             ]
             for rule in SIR.Simulation.CombatRules.registry do
@@ -330,7 +422,7 @@ let DeferredDataPanel (simulator: SimulatorHandoff option) (selectedUnit: int32 
                         ]
                 ]
             ]
-            ExecutableRulesPanel ()
+            ExecutableRulesPanel bootstrap
             rulesCatalog ()
         ]
     ]

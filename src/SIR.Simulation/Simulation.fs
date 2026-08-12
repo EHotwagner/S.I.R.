@@ -14,6 +14,10 @@ type UnitState =
       Side: Side
       Cell: Cell
       Health: BoundedInt32
+      Armor: ArmorState
+      Wounds: Wound list
+      Incapacitated: bool
+      Suppression: int32
       BodyFacing: Direction8
       AttentionDirection: Direction8 }
 
@@ -26,7 +30,8 @@ type SemanticEdge =
 type Board =
     { Minimum: Cell
       Maximum: Cell
-      Edges: SemanticEdge list }
+      Edges: SemanticEdge list
+      Covers: Map<string, CoverState> }
 
 /// Complete authoritative state for the minimal slice.
 type SimulationState =
@@ -40,6 +45,7 @@ type KernelInput =
     | Move of unitId: UnitId * destination: Cell
     | Observe of observerId: UnitId * targetId: UnitId
     | Attack of attackerId: UnitId * targetId: UnitId
+    | PhysicalAttack of attackerId: UnitId * aimCell: Cell * profile: WeaponProfile
 
 /// Stable logical phases used by conformance diagnostics.
 type SimulationPhase =
@@ -54,6 +60,9 @@ type SimulationEvent =
     | MovementBlockedByEdge of unitId: UnitId * origin: Cell * destination: Cell * edge: Edge
     | UnitObserved of observerId: UnitId * targetId: UnitId * distance: int32
     | AttackResolved of attackerId: UnitId * targetId: UnitId * damage: int32 * remainingHealth: int32 * explanation: RuleApplication
+    | PhysicalAttackResolved of attackerId: UnitId * profile: WeaponProfile * facts: CombatFact list * applications: RuleApplication list
+    | PhysicalAttackRejected of attackerId: UnitId * profile: WeaponProfile * rejection: CombatRejection
+    | CombatRecoveryCommitted of facts: CombatFact list
 
 /// One logical-phase checkpoint for first-divergence diagnosis.
 type PhaseCheckpoint =
@@ -103,6 +112,8 @@ module Simulation =
     let defaultRules =
         { AttackPower = health 25 }
 
+    let private defaultArmor = { FrontRating = 50; RearRating = 20; Integrity = 100 }
+
     let private cell col row: Cell = { Col = col; Row = row }
 
     let private requiredEdge left right =
@@ -116,6 +127,10 @@ module Simulation =
               Side = Red
               Cell = cell 0 0
               Health = health 100
+              Armor = defaultArmor
+              Wounds = []
+              Incapacitated = false
+              Suppression = 0
               BodyFacing = North
               AttentionDirection = North }
 
@@ -124,6 +139,10 @@ module Simulation =
               Side = Blue
               Cell = cell 2 0
               Health = health 100
+              Armor = defaultArmor
+              Wounds = []
+              Incapacitated = false
+              Suppression = 0
               BodyFacing = North
               AttentionDirection = North }
 
@@ -135,7 +154,8 @@ module Simulation =
           Board =
             { Minimum = cell 0 0
               Maximum = cell 2 1
-              Edges = [ edge ] }
+              Edges = [ edge ]
+              Covers = Map.empty }
           Units = [ red.Id, red; blue.Id, blue ] |> Map.ofList
           Observations = Set.empty }
 
@@ -152,6 +172,7 @@ module Simulation =
             | Move(id, destination) -> 0, unitIdValue id, destination.Col, destination.Row, 0
             | Observe(observerId, targetId) -> 1, unitIdValue observerId, 0, 0, unitIdValue targetId
             | Attack(attackerId, targetId) -> 2, unitIdValue attackerId, 0, 0, unitIdValue targetId
+            | PhysicalAttack(attackerId, aim, profile) -> 3, unitIdValue attackerId, aim.Col, aim.Row, (match profile with WeaponProfile.Rifle -> 0 | WeaponProfile.SupportWeapon -> 1 | WeaponProfile.AntiArmor -> 2 | WeaponProfile.LobbedArea -> 3)
 
         compare (key left) (key right)
 
@@ -334,7 +355,8 @@ module Simulation =
                     CombatRules.resolveAttack
                         { Attacker = attacker.Cell
                           TargetFootprint = [ target.Cell ]
-                          IsTransparent = inBounds current.Board
+                          VisibleSamples = 1
+                          TotalSamples = 1
                           RangeCells = chebyshevDistance attacker.Cell target.Cell |> int32
                           Suppression = FixedPoint.zero
                           BaseDamage = BoundedInt32.value rules.AttackPower |> fun value -> FixedPoint.fromRatio value 1 |> required
@@ -361,6 +383,64 @@ module Simulation =
             | _ -> current, events)
         |> fun (next, events) -> next, List.rev events
 
+    let private combatWorld (state: SimulationState) =
+        let combatants =
+            state.Units
+            |> Map.toList
+            |> List.map (fun (id, unit) ->
+                let entityId = string (unitIdValue id)
+                entityId,
+                { EntityId = entityId
+                  Faction = match unit.Side with Red -> "red" | Blue -> "blue"
+                  Cell = unit.Cell
+                  Facing = unit.BodyFacing
+                  Health = BoundedInt32.value unit.Health
+                  Armor = unit.Armor
+                  Wounds = unit.Wounds
+                  Incapacitated = unit.Incapacitated
+                  Suppression = unit.Suppression })
+            |> Map.ofList
+        { Spatial = spatialWorld state.Tick state.Board
+          Combatants = combatants
+          Covers = state.Board.Covers }
+
+    let private applyCombatWorld (combat: CombatWorld) (state: SimulationState) : SimulationState =
+        let units =
+            state.Units
+            |> Map.map (fun id unit ->
+                match Map.tryFind (string (unitIdValue id)) combat.Combatants with
+                | None -> unit
+                | Some updated ->
+                    { unit with
+                        Cell = updated.Cell
+                        Health = BoundedInt32.create 0 100 updated.Health |> required
+                        Armor = updated.Armor
+                        Wounds = updated.Wounds
+                        Incapacitated = updated.Incapacitated
+                        Suppression = updated.Suppression })
+        { state with Units = units; Board = { state.Board with Covers = combat.Covers } }
+
+    let private physicalAttackPhase (state: SimulationState) inputs =
+        let attacks =
+            inputs
+            |> List.choose (function PhysicalAttack(attackerId, aim, profile) -> Some(attackerId, aim, profile) | _ -> None)
+        ((state, []), attacks)
+        ||> List.fold (fun (current, events) (attackerId, aim, profile) ->
+            let request =
+                { AttackId = $"tick-{current.Tick + 1}-physical-{unitIdValue attackerId}-{aim.Col}-{aim.Row}"
+                  AttackerId = string (unitIdValue attackerId)
+                  AimCell = aim
+                  Weapon = profile
+                  Limits = Combat.defaultLimits }
+            match Combat.resolve (combatWorld current) request with
+            | Error rejection -> current, PhysicalAttackRejected(attackerId, profile, rejection) :: events
+            | Ok result -> applyCombatWorld result.World current, PhysicalAttackResolved(attackerId, profile, result.Facts, result.RuleApplications) :: events)
+        |> fun (next, events) -> next, List.rev events
+
+    let private recoveryPhase (state: SimulationState) =
+        let recovered, facts = Combat.recover (combatWorld state)
+        applyCombatWorld recovered state, facts
+
     let private sideCode side =
         match side with
         | Red -> 0uy
@@ -383,6 +463,22 @@ module Simulation =
     let private edgeBytes edge =
         CanonicalEncoding.concatenate [ cellBytes edge.Lo; cellBytes edge.Hi ]
 
+    let private textBytes (value: string) =
+        let bytes = System.Text.Encoding.UTF8.GetBytes value
+        CanonicalEncoding.concatenate [ CanonicalEncoding.int32LittleEndian bytes.Length; bytes ]
+
+    let private profileCode = function
+        | WeaponProfile.Rifle -> 0uy
+        | WeaponProfile.SupportWeapon -> 1uy
+        | WeaponProfile.AntiArmor -> 2uy
+        | WeaponProfile.LobbedArea -> 3uy
+
+    let private woundBytes (wound: Wound) =
+        CanonicalEncoding.concatenate
+            [ textBytes wound.AttackId
+              CanonicalEncoding.byteValue (match wound.Severity with WoundSeverity.Serious -> 0uy | WoundSeverity.Critical -> 1uy)
+              CanonicalEncoding.int32LittleEndian wound.Damage ]
+
     /// Provisional canonical M6 state encoding. The versioned replay schema is selected in M7.
     let stateBytes state =
         let unitBytes =
@@ -393,8 +489,24 @@ module Simulation =
                   CanonicalEncoding.byteValue (sideCode unit.Side)
                   cellBytes unit.Cell
                   CanonicalEncoding.boundedInt32 unit.Health
+                  CanonicalEncoding.int32LittleEndian unit.Armor.FrontRating
+                  CanonicalEncoding.int32LittleEndian unit.Armor.RearRating
+                  CanonicalEncoding.int32LittleEndian unit.Armor.Integrity
+                  CanonicalEncoding.int32LittleEndian unit.Wounds.Length
+                  yield! unit.Wounds |> List.map woundBytes
+                  CanonicalEncoding.byteValue (if unit.Incapacitated then 1uy else 0uy)
+                  CanonicalEncoding.int32LittleEndian unit.Suppression
                   CanonicalEncoding.direction8 unit.BodyFacing
                   CanonicalEncoding.direction8 unit.AttentionDirection ])
+
+        let coverBytes =
+            state.Board.Covers
+            |> Map.toList
+            |> List.collect (fun (id, cover) ->
+                [ textBytes id
+                  cellBytes cover.Cell
+                  CanonicalEncoding.int32LittleEndian cover.Integrity
+                  CanonicalEncoding.byteValue (if cover.ProjectileBlocking then 1uy else 0uy) ])
 
         let observationBytes =
             state.Observations
@@ -407,6 +519,8 @@ module Simulation =
                CanonicalEncoding.int32LittleEndian state.Tick
                CanonicalEncoding.int32LittleEndian state.Units.Count ]
              @ unitBytes
+             @ [ CanonicalEncoding.int32LittleEndian state.Board.Covers.Count ]
+             @ coverBytes
              @ [ CanonicalEncoding.int32LittleEndian state.Observations.Count ]
              @ observationBytes)
 
@@ -438,6 +552,25 @@ module Simulation =
                   unitIdBytes targetId
                   CanonicalEncoding.int32LittleEndian damage
                   CanonicalEncoding.int32LittleEndian remainingHealth ]
+        | PhysicalAttackResolved(attackerId, profile, facts, applications) ->
+            CanonicalEncoding.concatenate
+                ([ CanonicalEncoding.byteValue 4uy
+                   unitIdBytes attackerId
+                   CanonicalEncoding.byteValue (profileCode profile)
+                   Combat.canonicalFactsBytes facts
+                   CanonicalEncoding.int32LittleEndian applications.Length ]
+                 @ (applications |> List.map Rules.canonicalApplicationBytes))
+        | PhysicalAttackRejected(attackerId, profile, rejection) ->
+            let detail = sprintf "%A" rejection
+            CanonicalEncoding.concatenate
+                [ CanonicalEncoding.byteValue 5uy
+                  unitIdBytes attackerId
+                  CanonicalEncoding.byteValue (profileCode profile)
+                  textBytes detail ]
+        | CombatRecoveryCommitted facts ->
+            CanonicalEncoding.concatenate
+                [ CanonicalEncoding.byteValue 6uy
+                  Combat.canonicalFactsBytes facts ]
 
     /// Provisional canonical M6 event encoding. Event order is phase order then canonical input order.
     let eventsBytes (events: SimulationEvent list) =
@@ -453,8 +586,16 @@ module Simulation =
               stateBytes checkpoint.State
               eventsBytes checkpoint.Events ]
 
-    /// Executes one tick from stable phase inputs and commits each phase as a deterministic batch.
-    let runTickWithRules rules (state: SimulationState) (journal: KernelInput list) =
+    let private noPhysicalAttackPhase (state: SimulationState) _ = state, []
+    let private noCombatRecovery (state: SimulationState) = state, []
+
+    let private runTickCore
+        (physicalPhase: SimulationState -> KernelInput list -> SimulationState * SimulationEvent list)
+        (recover: SimulationState -> SimulationState * CombatFact list)
+        rules
+        (state: SimulationState)
+        (journal: KernelInput list)
+        =
         let canonicalInputs = journal |> List.distinct |> List.sortWith inputCompare
         let nextTick = state.Tick + 1
 
@@ -475,9 +616,10 @@ module Simulation =
               State = observationState
               Events = throughObservation }
 
-        let attackState, attackEvents =
+        let legacyAttackState, legacyAttackEvents =
             attackPhase rules observationState canonicalInputs
-        let allEvents = throughObservation @ attackEvents
+        let attackState, physicalAttackEvents = physicalPhase legacyAttackState canonicalInputs
+        let allEvents = throughObservation @ legacyAttackEvents @ physicalAttackEvents
 
         let attackCheckpoint =
             { Tick = nextTick
@@ -485,20 +627,22 @@ module Simulation =
               State = attackState
               Events = allEvents }
 
-        let committed = { attackState with Tick = nextTick }
+        let recoveredState, recoveryFacts = recover attackState
+        let committed = { recoveredState with Tick = nextTick }
+        let committedEvents = if List.isEmpty recoveryFacts then allEvents else allEvents @ [ CombatRecoveryCommitted recoveryFacts ]
 
         let commitCheckpoint =
             { Tick = nextTick
               Phase = CommitPhase
               State = committed
-              Events = allEvents }
+              Events = committedEvents }
 
         let canonicalState = stateBytes committed
 
         { State = committed
-          Events = allEvents
+          Events = committedEvents
           StateBytes = canonicalState
-          EventBytes = eventsBytes allEvents
+          EventBytes = eventsBytes committedEvents
           StateDigest = CanonicalEncoding.digest32 canonicalState
           Checkpoints =
             [ movementCheckpoint
@@ -506,6 +650,14 @@ module Simulation =
               attackCheckpoint
               commitCheckpoint ] }
 
+    /// Executes the original compact laboratory rules without physical-combat authority.
+    let runTickWithRules rules state journal =
+        runTickCore noPhysicalAttackPhase noCombatRecovery rules state journal
+
+    /// Executes one authoritative tick including physical delivery and suppression recovery.
+    let runPhysicalTickWithRules rules state journal =
+        runTickCore physicalAttackPhase recoveryPhase rules state journal
+
     /// Executes the canonical rules used by replay and authoritative hosts.
     let runTick state journal =
-        runTickWithRules defaultRules state journal
+        runPhysicalTickWithRules defaultRules state journal

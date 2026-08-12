@@ -17,7 +17,8 @@ module RulesCorpusFixtures =
         CombatRules.resolveAttack
             { Attacker = { Col = 0; Row = 0 }
               TargetFootprint = [ { Col = 1; Row = 0 }; { Col = 1; Row = 1 } ]
-              IsTransparent = fun _ -> true
+              VisibleSamples = 1
+              TotalSamples = 1
               RangeCells = 1
               Suppression = FixedPoint.zero
               BaseDamage = fp 25 1
@@ -29,7 +30,8 @@ module RulesCorpusFixtures =
         CombatRules.resolveAttack
             { Attacker = { Col = 0; Row = 0 }
               TargetFootprint = [ { Col = 1; Row = 0 }; { Col = 1; Row = 1 } ]
-              IsTransparent = fun _ -> true
+              VisibleSamples = 1
+              TotalSamples = 1
               RangeCells = 1
               Suppression = FixedPoint.zero
               BaseDamage = fp 25 1

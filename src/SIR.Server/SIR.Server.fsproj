@@ -4,6 +4,7 @@
     <Compile Include="LiveAuthority.fs" />
     <Compile Include="GameHub.fs" />
     <Compile Include="SpatialDiagnostics.fs" />
+    <Compile Include="PhysicalCombatDiagnostics.fs" />
     <Compile Include="Program.fs" />
     <Content Include="../../artifacts/client/**" Link="wwwroot/%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>

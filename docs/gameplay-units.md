@@ -6,7 +6,7 @@ category: Forces & Equipment
 categoryindex: 3
 index: 3
 version: "0.3"
-last-updated: 2026-07-29
+last-updated: 2026-08-13
 related:
   - docs/gameplay-reference.md
   - docs/human-forces.md
@@ -44,6 +44,12 @@ Return to the [Gameplay Reference](gameplay-reference.md).
 
 A drone, caster, goblin, or troll is a unit under these same rules. No faction
 receives a privileged squad-wide controller or hidden world truth.
+
+Physical-combat v1 stores armor, wounds, incapacitation, and suppression as
+distinct authoritative fields alongside HP. A unit never stores “in cover”:
+cover is resolved from current external cell volumes and the authoritative
+trace direction. Suppression bands affect capability timing/effectiveness and
+recover independently of wounds and HP.
 
 ### Canonical base and symbol rule
 

@@ -5,8 +5,8 @@ categoryindex: 4
 index: 1
 status: proposed
 document-type: living-design
-version: "0.6"
-last-updated: 2026-07-27
+version: "0.7"
+last-updated: 2026-08-13
 related:
   - docs/game-vision.md
   - docs/research/combat-awareness-models.md
@@ -47,6 +47,27 @@ attack action
 
 All stages execute under the simultaneous-completion and batched-consequence
 rules defined by the game vision.
+
+## Executable physical-combat v1
+
+`SIR.Simulation.Combat` is the bounded executable slice. It accepts four
+versioned integer profiles (rifle, support weapon, anti-armor, and lobbed area),
+uses `SpatialQuery` as the sole trace/edge authority, and emits canonical facts
+in eligibility → commitment → trace/contact → cover → armor → HP/wound →
+suppression order. Cover is an external cell volume; it is never stored as a
+unit flag. Contacts are faction-neutral, so civilians and friendlies receive
+the same collision, area, wound, and suppression resolution as enemies.
+
+HP, directional armor integrity, wounds/incapacitation, and suppression remain
+separate state. Suppression changes effectiveness/timing bands and recovers by
+five points per committed tick; it never subtracts HP. Canonical result bytes
+retain effective parameters, authoritative spatial bytes, facts, and package-
+bound rule applications for replay and explanation.
+
+The player-visible drill is served by authenticated Match/Server authority.
+The Web client receives a renderer-neutral projection and cannot evaluate the
+physical rules locally; only the retained replay worker contains browser-side
+authority code.
 
 ## Sustained targeting
 

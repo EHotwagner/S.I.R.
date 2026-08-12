@@ -146,6 +146,12 @@ module Replay =
         | Red -> 0uy
         | Blue -> 1uy
 
+    let private weaponProfileByte = function
+        | WeaponProfile.Rifle -> 0uy
+        | WeaponProfile.SupportWeapon -> 1uy
+        | WeaponProfile.AntiArmor -> 2uy
+        | WeaponProfile.LobbedArea -> 3uy
+
     let private inputBytes input =
         match input with
         | Move(unitId, destination) ->
@@ -157,6 +163,12 @@ module Replay =
         | Attack(attackerId, targetId) ->
             CanonicalEncoding.concatenate
                 [ [| 2uy |]; unitIdBytes attackerId; unitIdBytes targetId ]
+        | PhysicalAttack(attackerId, aim, profile) ->
+            CanonicalEncoding.concatenate
+                [ [| 3uy |]
+                  unitIdBytes attackerId
+                  cellBytes aim
+                  CanonicalEncoding.byteValue (weaponProfileByte profile) ]
 
     let private snapshotBytesForVersion formatVersion (state: SimulationState) =
         let edgeSegments =
@@ -508,6 +520,13 @@ module Replay =
                         Side = readSide reader
                         Cell = readCell reader
                         Health = readHealth reader
+                        Armor =
+                            { FrontRating = 0
+                              RearRating = 0
+                              Integrity = 0 }
+                        Wounds = []
+                        Incapacitated = false
+                        Suppression = 0
                         BodyFacing =
                             if formatVersion >= DirectionalFormatVersion then
                                 readDirection "body-facing" reader
@@ -542,7 +561,8 @@ module Replay =
           Board =
             { Minimum = minimum
               Maximum = maximum
-              Edges = edges }
+              Edges = edges
+              Covers = Map.empty }
           Units = Map.ofList units
           Observations = observations }
 

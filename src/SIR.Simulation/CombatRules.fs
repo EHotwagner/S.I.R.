@@ -3,7 +3,7 @@ namespace SIR.Simulation
 open FS.GG.Game.Core
 open SIR.Domain
 
-type CombatAttackInput = { Attacker: Cell; TargetFootprint: Cell list; IsTransparent: Cell -> bool; RangeCells: int32; Suppression: FixedPoint; BaseDamage: FixedPoint; ArmorRetention: FixedPoint; EventId: string }
+type CombatAttackInput = { Attacker: Cell; TargetFootprint: Cell list; VisibleSamples: int32; TotalSamples: int32; RangeCells: int32; Suppression: FixedPoint; BaseDamage: FixedPoint; ArmorRetention: FixedPoint; EventId: string }
 type CombatAttackResult = { Preparation: FixedPoint; TraceProbability: FixedPoint; ArmorRetention: FixedPoint; ExpectedDamage: int32; Explanation: RuleApplication }
 type RuleReplayBinding = { BoundEngineIdentity: string; BoundCompatibilityProfile: string; BoundPackageVersion: string; BoundSourceCommit: string; BoundImplementationDigest: byte array; BoundSemanticDigest: byte array; BoundManifestDigest: byte array; BoundExplanation: RuleApplication }
 type RetainedRulePackage = { Identity: RulePackageIdentity; ManifestJson: string; CoverageJson: string }
@@ -91,13 +91,9 @@ module CombatRules =
     let private evaluate expression inputs = Rules.evaluate inputs expression |> Result.mapError (sprintf "%A")
     let private formula id = registry |> List.find (fun rule -> RuleId.value rule.Metadata.Id = id) |> fun rule -> match rule.Semantics with FormulaSemantics(_, _, expression) -> expression | _ -> failwith "Expected formula."
     let private application id eventId operands (outcome: TypedValue) children = { ApplicationId = eventId + ":" + id; RuleId = requiredId id; Operands = operands; Outcome = outcome; Children = children; EventId = eventId; PackageManifestDigest = packageIdentity.ManifestDigest }
-    let private traceProbability attacker footprint isTransparent =
-        let visible = footprint |> List.filter (Los.lineOfSightBy Supercover isTransparent attacker) |> List.length
-        visible, List.length footprint
-
     let resolveAttack input =
-        if List.isEmpty input.TargetFootprint then Error "Target footprint must contain at least one sample." else
-        let visible, total = traceProbability input.Attacker input.TargetFootprint input.IsTransparent
+        if List.isEmpty input.TargetFootprint || input.TotalSamples <= 0 || input.VisibleSamples < 0 || input.VisibleSamples > input.TotalSamples then Error "Target footprint and authoritative spatial sample counts must be valid." else
+        let visible, total = int input.VisibleSamples, int input.TotalSamples
         let traceValue = FixedPoint.fromRatio visible total |> Result.defaultWith (fun _ -> failwith "Non-empty footprint division failed.")
         let preparationInputs = Map.ofList [ "range", fixedValue "seconds" (fp input.RangeCells 1) ]
         let armorInputs = Map.ofList [ "retention", fixedValue "ratio" input.ArmorRetention ]

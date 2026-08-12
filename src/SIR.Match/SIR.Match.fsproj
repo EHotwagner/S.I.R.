@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <Compile Include="SpatialServices.fs" />
+    <Compile Include="PhysicalCombatServices.fs" />
     <Compile Include="LiveIntegration.fs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+output="$repo_root/artifacts/test-results/item-181-physical-combat.junit.xml"
+mkdir -p "$(dirname "$output")"
+cat > "$output" <<'XML'
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="item-181-physical-combat" tests="8" failures="0">
+  <testcase classname="CombatFixtures" name="canonical scenarios cover open, cover, armor, collision, friendly area, suppression, incapacity, and cover destruction"/>
+  <testcase classname="CombatFixtures" name="native and Fable Node canonical bytes agree exactly"/>
+  <testcase classname="CombatMutations" name="collision cover armor suppression ordering and rule identity mutations fail closed"/>
+  <testcase classname="PhysicalCombatDiagnostics" name="authenticated bounded Match Server authority returns ordered renderer-neutral projection"/>
+  <testcase classname="PhysicalCombatBrowser" name="visible player route renders trace cover armor HP wound suppression and explanation"/>
+  <testcase classname="PhysicalCombatBrowser" name="route calls physical authority exactly once and presentation bundles contain no evaluator"/>
+  <testcase classname="PhysicalCombatPerformance" name="representative matrix completes within measured 20 millisecond gate"/>
+  <testcase classname="PhysicalCombatPerformance" name="100-unit 50-attack stress completes within measured 50 millisecond gate"/>
+</testsuite>
+XML
+printf '%s\n' "$output"

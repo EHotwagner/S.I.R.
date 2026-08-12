@@ -223,36 +223,22 @@ module Lab =
         let attackPower = required "attack-power" parameters
         let attackCount = required "attack-count" parameters
 
-        let boundedAttackPower =
-            BoundedInt32.create 0 100 attackPower
-            |> Result.defaultWith (fun error ->
-                failwith ("Validated attack power could not enter the kernel: " + string error))
-
-        let rules =
-            { Simulation.defaultRules with
-                AttackPower = boundedAttackPower }
-
-        let attackOnly =
-            Simulation.inputs
-            |> List.choose (function
-                | Attack _ as attack -> Some attack
-                | _ -> None)
-
-        let mutable state = Simulation.initialState
-
-        for index in 1 .. attackCount do
-            let journal =
-                if index = 1 then Simulation.inputs else attackOnly
-
-            state <- (Simulation.runTickWithRules rules state journal).State
-
-        let remainingHealth =
-            state.Units
-            |> Map.toList
-            |> List.pick (fun (_, unit) ->
-                match unit.Side with
-                | Blue -> Some(BoundedInt32.value unit.Health)
-                | Red -> None)
+        let baseDamage =
+            FixedPoint.fromRatio attackPower 1
+            |> Result.defaultWith (fun error -> failwith ("Validated attack power could not enter the rules package: " + string error))
+        let oneAttack =
+            CombatRules.resolveAttack
+                { Attacker = { Col = 1; Row = 1 }
+                  TargetFootprint = [ { Col = 2; Row = 0 } ]
+                  VisibleSamples = 1
+                  TotalSamples = 1
+                  RangeCells = 1
+                  Suppression = FixedPoint.zero
+                  BaseDamage = baseDamage
+                  ArmorRetention = FixedPoint.fromRatio 1 1 |> Result.defaultWith (string >> failwith)
+                  EventId = "rules-lab-evaluation" }
+            |> Result.defaultWith (fun error -> failwith ("Validated rules-lab attack was rejected: " + string error))
+        let remainingHealth = max 0 (100 - oneAttack.ExpectedDamage * attackCount)
 
         let totalDamage = 100 - remainingHealth
 

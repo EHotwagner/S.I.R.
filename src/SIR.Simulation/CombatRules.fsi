@@ -6,7 +6,8 @@ open SIR.Domain
 type CombatAttackInput =
     { Attacker: Cell
       TargetFootprint: Cell list
-      IsTransparent: Cell -> bool
+      VisibleSamples: int32
+      TotalSamples: int32
       RangeCells: int32
       Suppression: FixedPoint
       BaseDamage: FixedPoint
