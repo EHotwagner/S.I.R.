@@ -35,6 +35,7 @@ browser_gate() {
 }
 
 cd "$repo_root"
+dotnet restore "$server_project" --locked-mode >/dev/null
 sed -i 's/Path = result.Path |> List.map cellDto |> List.toArray/Path = [||]/' "$subject"
 grep -F 'Path = [||]' "$subject" >/dev/null || {
   echo "Spatial diagnostic subject mutation did not apply" >&2
