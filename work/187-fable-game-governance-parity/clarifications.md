@@ -21,7 +21,7 @@ publicOrToolFacingImpact: true
 - CQ-001: Record migration as unavailable-source provenance, create the canonical 187 package from the issue contract, and verify no committed artifact remains bound to 178.
 
 ## Decisions
-- DEC-001 [CQ-001] [AMB:AMB-001] [FR-008] [AC-008] complete: The absent provisional package is not reconstructed from unverified local state; the issue body is the authoritative migration input and repository search is the negative provenance evidence.
+- DEC-001: [CQ-001] [AMB:AMB-001] [FR-008] [AC-008] resolved: The absent provisional package is not reconstructed from unverified local state; the issue body is the authoritative migration input and repository search is the negative provenance evidence.
 
 ## Accepted Deferrals
 - None.

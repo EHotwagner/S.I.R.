@@ -17,15 +17,15 @@ sources:
     schemaVersion: 1
   - label: clarifications
     path: work/187-fable-game-governance-parity/clarifications.md
-    digest: 066db5d8e492cc1d10a00f7c51b89fbf9e91ff29b28e5f6c5623e0171d671c85
+    digest: 3a24d65ac85a98b5167c26c374d9b92be9b63ee2ca88933572dd042141b803ff
     schemaVersion: 1
   - label: checklist
     path: work/187-fable-game-governance-parity/checklist.md
-    digest: bf46cd6cbfd7b98c984f5028c351c25634b177aa78aa44aba71318e76d7667a9
+    digest: 26117ababcf78b16cf447fe80a3a0208e52ccd336f141a781fdfe9477fc76eb0
     schemaVersion: 1
   - label: plan
     path: work/187-fable-game-governance-parity/plan.md
-    digest: 1af12f233131341d638d5788b20a3227e5cc67f557a493025627e0a816aea7fc
+    digest: 679c7437d12a37975b269574b4dc7094b30eac876f01a6248f04dd9dc85b0773
     schemaVersion: 1
 tasks:
   - id: T001

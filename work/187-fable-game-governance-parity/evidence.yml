@@ -11,19 +11,19 @@ sourceAnalysis: readiness/187-fable-game-governance-parity/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/187-fable-game-governance-parity/analysis.json
-    digest: 432c0c0a5f8d86df7a1f555922911bf99d3b566d3696326dee2edfa771ad3549
+    digest: 76d62144d57913abb9ae19c0e5b843d74db2df8fd7c2de97ed55dd4059f06f25
     schemaVersion: 1
   - label: checklist
     path: work/187-fable-game-governance-parity/checklist.md
-    digest: bf46cd6cbfd7b98c984f5028c351c25634b177aa78aa44aba71318e76d7667a9
+    digest: 26117ababcf78b16cf447fe80a3a0208e52ccd336f141a781fdfe9477fc76eb0
     schemaVersion: 1
   - label: clarifications
     path: work/187-fable-game-governance-parity/clarifications.md
-    digest: 066db5d8e492cc1d10a00f7c51b89fbf9e91ff29b28e5f6c5623e0171d671c85
+    digest: 3a24d65ac85a98b5167c26c374d9b92be9b63ee2ca88933572dd042141b803ff
     schemaVersion: 1
   - label: plan
     path: work/187-fable-game-governance-parity/plan.md
-    digest: 1af12f233131341d638d5788b20a3227e5cc67f557a493025627e0a816aea7fc
+    digest: 679c7437d12a37975b269574b4dc7094b30eac876f01a6248f04dd9dc85b0773
     schemaVersion: 1
   - label: spec
     path: work/187-fable-game-governance-parity/spec.md
@@ -31,7 +31,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: tasks
     path: work/187-fable-game-governance-parity/tasks.yml
-    digest: 605b01c07abdc97fb17ec6222f407f3c68fd9cb43d19e616c8c9a87860ce6a94
+    digest: 5a6237b246490806414d3b131b1a4f4b8f9992ccd3b4679b9895aa85de186f06
     schemaVersion: 1
 evidence:
   - id: EV001

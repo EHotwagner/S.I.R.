@@ -4,10 +4,10 @@
   "workId": "187-fable-game-governance-parity",
   "stage": "ship",
   "status": "shipReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sourcesDigest": {
     "algorithm": "sha256",
-    "value": "69d544a910883e8ce0736b046925f173545241f471eb3c1d32bc06f4e29d07ef"
+    "value": "135ee078817725a57f39d5e1a7898e1f6a6e8c9b77aca57f392429bf10f325ce"
   },
   "verificationReadiness": {
     "status": "verificationReady",
@@ -16,7 +16,7 @@
     "evidenceObservedCount": 13
   },
   "disposition": {
-    "state": "advisory",
+    "state": "shipReady",
     "blockingFindingIds": []
   },
   "readiness": "shipReady"

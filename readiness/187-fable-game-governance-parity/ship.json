@@ -4,7 +4,7 @@
   "workId": "187-fable-game-governance-parity",
   "stage": "ship",
   "status": "shipReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sources": [
     {
       "path": ".fsgg/agents.yml",
@@ -41,7 +41,7 @@
       "kind": "analysis",
       "digest": {
         "algorithm": "sha256",
-        "value": "432c0c0a5f8d86df7a1f555922911bf99d3b566d3696326dee2edfa771ad3549"
+        "value": "76d62144d57913abb9ae19c0e5b843d74db2df8fd7c2de97ed55dd4059f06f25"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -51,7 +51,17 @@
       "kind": "source",
       "digest": {
         "algorithm": "sha256",
-        "value": "df210978d00e30848d3416f27664f85acd83d1ed9b357ee658b61fdd1eefee26"
+        "value": "b5f5709c4d08759a51af0c128679ef061a3d641484d2b08fbcbe2bd08ba36e0d"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "readiness/187-fable-game-governance-parity/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "ce34d635fa25b5e69f2a50fc73e41b5eb0ee985b09f9e6d7e1e4d17ec4b5d96c"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -61,7 +71,7 @@
       "kind": "checklist",
       "digest": {
         "algorithm": "sha256",
-        "value": "bf46cd6cbfd7b98c984f5028c351c25634b177aa78aa44aba71318e76d7667a9"
+        "value": "26117ababcf78b16cf447fe80a3a0208e52ccd336f141a781fdfe9477fc76eb0"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -71,7 +81,7 @@
       "kind": "clarification",
       "digest": {
         "algorithm": "sha256",
-        "value": "066db5d8e492cc1d10a00f7c51b89fbf9e91ff29b28e5f6c5623e0171d671c85"
+        "value": "3a24d65ac85a98b5167c26c374d9b92be9b63ee2ca88933572dd042141b803ff"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +91,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "d201d876072f02ad59365f55834a6c037ab3fd8bc6984bb88e9a5af95e8136bc"
+        "value": "58aabf5598f28eeb51680c0f55188a9e8df8335876d7fe2e47c285b01200dee6"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -91,7 +101,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "1af12f233131341d638d5788b20a3227e5cc67f557a493025627e0a816aea7fc"
+        "value": "679c7437d12a37975b269574b4dc7094b30eac876f01a6248f04dd9dc85b0773"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -111,7 +121,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "605b01c07abdc97fb17ec6222f407f3c68fd9cb43d19e616c8c9a87860ce6a94"
+        "value": "5a6237b246490806414d3b131b1a4f4b8f9992ccd3b4679b9895aa85de186f06"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -288,39 +298,21 @@
     {
       "path": "readiness/187-fable-game-governance-parity/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
-      "diagnosticIds": [
-        "workModelNotGenerated"
-      ]
+      "currency": "current",
+      "diagnosticIds": []
     }
   ],
   "disposition": {
-    "state": "advisory",
+    "state": "shipReady",
     "blockingFindingIds": [],
-    "warningFindingIds": [
-      "SF001"
-    ],
+    "warningFindingIds": [],
     "advisoryFindingIds": [],
     "contributingStages": [],
     "classifiedObligationsUnmetCount": 0,
     "journeyObligationsUnmetCount": 0,
-    "correction": "Resolve the blocking ship-readiness findings before the protected-boundary handoff."
+    "correction": ""
   },
-  "findings": [
-    {
-      "id": "SF001",
-      "severity": "warning",
-      "category": "warning",
-      "path": "readiness/187-fable-game-governance-parity/work-model.json",
-      "relatedIds": [
-        "readiness/187-fable-game-governance-parity/work-model.json",
-        "unknownReference",
-        "workModelInconsistent"
-      ],
-      "message": "Generated view \u0027readiness/187-fable-game-governance-parity/work-model.json\u0027 was not written: the derived work model has blocking diagnostics.",
-      "correction": "Resolve the named lifecycle diagnostics, then re-run to generate the work model view."
-    }
-  ],
+  "findings": [],
   "governanceCompatibility": [
     {
       "path": ".fsgg/policy.yml",
@@ -344,20 +336,7 @@
       "diagnosticIds": []
     }
   ],
-  "diagnostics": [
-    {
-      "id": "workModelNotGenerated",
-      "severity": "warning",
-      "artifact": "readiness/187-fable-game-governance-parity/work-model.json",
-      "message": "Generated view \u0027readiness/187-fable-game-governance-parity/work-model.json\u0027 was not written: the derived work model has blocking diagnostics.",
-      "correction": "Resolve the named lifecycle diagnostics, then re-run to generate the work model view.",
-      "relatedIds": [
-        "readiness/187-fable-game-governance-parity/work-model.json",
-        "unknownReference",
-        "workModelInconsistent"
-      ]
-    }
-  ],
+  "diagnostics": [],
   "readiness": "shipReady",
   "nextAction": {
     "actionId": "ship.next.protectedBoundary",

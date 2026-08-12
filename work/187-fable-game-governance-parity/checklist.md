@@ -22,7 +22,7 @@ Prose status: checklistReady
 
 ## Source Snapshot
 - spec: work/187-fable-game-governance-parity/spec.md sha256:ea7832d29c41a4126e82dbf7a4b27cfa1542b73dd74ac58fe88181c890595284 schemaVersion:1
-- clarifications: work/187-fable-game-governance-parity/clarifications.md sha256:066db5d8e492cc1d10a00f7c51b89fbf9e91ff29b28e5f6c5623e0171d671c85 schemaVersion:1
+- clarifications: work/187-fable-game-governance-parity/clarifications.md sha256:3a24d65ac85a98b5167c26c374d9b92be9b63ee2ca88933572dd042141b803ff schemaVersion:1
 
 ## Checklist Items
 - CHK-001 [FR-001] [AC-001] blocking: Requirement FR-001 is testable and linked to acceptance coverage.

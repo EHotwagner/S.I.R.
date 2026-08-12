@@ -12,7 +12,7 @@ reject() { if grep -R -n -E --exclude-dir=work --exclude-dir=readiness "$1" "$2"
 dotnet msbuild Directory.Packages.props -nologo -getProperty:ManagePackageVersionsCentrally >/dev/null
 
 require 'FS.GG.Game.Core" Version="[0.13.0]"' Directory.Packages.props
-require 'FS.GG.Governance.Cli" Version="[1.12.0]"' Directory.Packages.props
+require 'FS.GG.Governance.Cli" Version="[1.12.1]"' Directory.Packages.props
 require 'FS.GG.Governance.ReferenceGateSet" Version="[1.7.0]"' Directory.Packages.props
 require 'PackageReference Include="FS.GG.Game.Core"' src/SIR.Simulation/SIR.Simulation.fsproj
 require 'PackageReference Include="FS.GG.Governance.ReferenceGateSet"' src/SIR.Simulation/SIR.Simulation.fsproj
@@ -25,10 +25,14 @@ done
 # validation and deliberately runs in every local/CI conformance invocation.
 dotnet fsi scripts/validate-governance-yaml.fsx
 dotnet tool run fsgg-governance route --root . --mode inner --format json >/dev/null
+# The producer writes the receipt SDD consumes for the declared F# surface.
+dotnet tool run fsgg-fsharp-surface -- --root . --project src/SIR.Simulation/SIR.Simulation.fsproj >/dev/null
 
 for root_name in .agents .claude .codex; do
   for skill in fs-gg-ai fs-gg-ballistics fs-gg-effects fs-gg-game-core fs-gg-grids fs-gg-line-drawing fs-gg-mapcraft fs-gg-persistence fs-gg-playtest fs-gg-visibility; do
     test -s "$root_name/skills/$skill/SKILL.md" || { echo "missing materialized skill: $root_name/$skill" >&2; exit 1; }
+    cmp -s ".agents/skills/$skill/SKILL.md" ".claude/skills/$skill/SKILL.md" || { echo "materialized skill differs: .agents/.claude $skill" >&2; exit 1; }
+    cmp -s ".agents/skills/$skill/SKILL.md" ".codex/skills/$skill/SKILL.md" || { echo "materialized skill differs: .agents/.codex $skill" >&2; exit 1; }
   done
 done
 
