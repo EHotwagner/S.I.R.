@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-12-sir-item-194-executable-rules-corpus.md",
-  "reportSha256": "b5efa20da52165624aaf7ccf79a30c7db8a863fc1fc824256fee3c4e722505c1",
+  "reportSha256": "2aaddb6298122fad6f024cbdb33ceea0a302e3afab9202200ce6a2459507ac0e",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -63,7 +63,7 @@
         {"locator": "command:node scripts/test-production-replay-v3.mjs", "result": "verified"},
         {"locator": "command:npx playwright test tests/SIR.Browser.Tests/visible-workflows.spec.js --grep \"player-visible Rules explorer\"", "result": "verified"}
       ],
-      "confidenceLimits": ["The final exact-head hosted CI and independent confirmation review remain merge-boundary obligations."]
+      "confidenceLimits": ["The successor exact-head hosted CI and independent confirmation review remain merge-boundary obligations; current-source correspondence now has App, CombatRules semantic, and metadata-only inversion probes."]
     }
   ]
 }

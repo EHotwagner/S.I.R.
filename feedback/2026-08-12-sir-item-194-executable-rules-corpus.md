@@ -12,9 +12,9 @@ commit: 0f7128985a14ef3470e92d23ee5786236f97fb97
 
 - **activation:** active
 - **phases:** lifecycle-authoring, implementation-test-evidence, verify-ship-pr
-- **material events:** 6
+- **material events:** 7
 - **zero-event reason:** n/a
-- **checkpoint:** `feedback/checkpoints/item-194-executable-rules-corpus.jsonl` (6 events).
+- **checkpoint:** `feedback/checkpoints/item-194-executable-rules-corpus.jsonl` (7 events).
 - **confidence limits:** Local full conformance, documentation, focused browser, replay-v3, coverage, identity, delivery, and SDD ship gates passed; hosted exact-head CI and exact-head independent review remain pending.
 
 ## §2 What worked
@@ -97,7 +97,7 @@ The isolated worktree needed an initial restore and `npm ci`. The first explorer
 - **Kind:** quality-gap
 - **Impact:** The first reviewed head could pass focused receipts while disabling replay v3 in the production Fable build, accepting an opaque archive, emitting a wholly dangling coverage graph, showing a synthetic attack, and omitting evaluator/codec surfaces from implementation identity.
 - **Expected:** Independent review reproduces production-target behavior, validates graph topology and every declared archive identity, traces player input to the authoritative event, and mutates every identity surface.
-- **Observed:** The repaired candidate removes the Fable downgrade; adds a typed, bounded, content-addressed archive with per-field rejection; emits 45 unique coverage nodes with zero dangling edges; executes `Simulation.runTick` from a visible command and deep-links from the emitted `AttackResolved`; and verifies an 11-source plus package/fingerprint implementation inventory at immutable source commit `0f7128985a14ef3470e92d23ee5786236f97fb97`.
+- **Observed:** The repaired candidate removes the Fable downgrade; adds a typed, bounded, content-addressed archive with per-field rejection; emits 45 unique coverage nodes with zero dangling edges; executes `Simulation.runTick` from a visible command and deep-links from the emitted `AttackResolved`; and verifies an 11-source plus package/fingerprint implementation inventory at immutable source commit `0f7128985a14ef3470e92d23ee5786236f97fb97`. After confirmation critique proved that pinned-object hashing alone allowed a changed current `App.fs` to pass, the verifier added byte-exact current-versus-pin correspondence for every declared source, normalizing only three parsed CombatRules identity metadata literals; App and non-metadata CombatRules mutations now fail while the required metadata rebind passes.
 - **Evidence:** command:./scripts/verify-rules-corpus.sh; command:SIR_RULES_FORCE_GREP=1 ./scripts/verify-rules-corpus.sh; command:node scripts/test-production-replay-v3.mjs; command:npx playwright test tests/SIR.Browser.Tests/visible-workflows.spec.js --grep "player-visible Rules explorer"
 - **Version:** S.I.R implementation pin 0f7128985a14ef3470e92d23ee5786236f97fb97
 - **Owner:** S.I.R replay, rules corpus, and browser acceptance

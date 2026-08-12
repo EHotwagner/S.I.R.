@@ -42,10 +42,73 @@ source_commit=$(jq -r '.sourceCommit' "$repo_root/tests/fixtures/rules-corpus/v2
 source_manifest="$repo_root/tests/fixtures/rules-corpus/v2/implementation-sources.json"
 test "$(jq -r '.sourceCommit' "$source_manifest")" = "$source_commit" || { echo "implementation source manifest does not bind the package source commit" >&2; exit 1; }
 source_digest_input=$(mktemp /tmp/sir-rules-source-digest.XXXXXX)
+normalize_implementation_source() {
+  local artifact_path=$1
+  local input_path=$2
+  if test "$artifact_path" = "src/SIR.Simulation/CombatRules.fs"; then
+    sed -E \
+      -e 's/(Commit = ")[0-9a-f]{40}(" })/\1<SOURCE_COMMIT>\2/' \
+      -e 's/(GetBytes ")[0-9a-f]{64}(" \])/\1<IMPLEMENTATION_DIGEST>\2/' \
+      -e 's/(FS.GG.Game.Core@0\.13\.0" ")[0-9a-f]{40}(" implementationArtifacts)/\1<SOURCE_COMMIT>\2/' \
+      "$input_path"
+  else
+    command cat "$input_path"
+  fi
+}
+
+source_matches_pin() {
+  local artifact_path=$1
+  local current_path=$2
+  local pinned_path
+  local current_normalized
+  local pinned_normalized
+  pinned_path=$(mktemp /tmp/sir-rules-pinned-source.XXXXXX)
+  current_normalized=$(mktemp /tmp/sir-rules-current-normalized.XXXXXX)
+  pinned_normalized=$(mktemp /tmp/sir-rules-pinned-normalized.XXXXXX)
+  git -C "$repo_root" show "$source_commit:$artifact_path" > "$pinned_path"
+  normalize_implementation_source "$artifact_path" "$current_path" > "$current_normalized"
+  normalize_implementation_source "$artifact_path" "$pinned_path" > "$pinned_normalized"
+  cmp -s "$current_normalized" "$pinned_normalized"
+  local result=$?
+  rm -f "$pinned_path" "$current_normalized" "$pinned_normalized"
+  return "$result"
+}
+
 while IFS= read -r artifact_path; do
   actual_artifact_sha=$(git -C "$repo_root" show "$source_commit:$artifact_path" | sha256sum | cut -d' ' -f1)
   printf '%s\t%s\n' "$artifact_path" "$actual_artifact_sha" >> "$source_digest_input"
+  source_matches_pin "$artifact_path" "$repo_root/$artifact_path" || {
+    echo "current implementation source differs from package pin: $artifact_path" >&2
+    rm -f "$source_digest_input"
+    exit 1
+  }
 done <<< "$(jq -r '.sources[]' "$source_manifest")"
+
+app_mutant=$(mktemp /tmp/sir-rules-app-mutant.XXXXXX)
+combat_mutant=$(mktemp /tmp/sir-rules-combat-mutant.XXXXXX)
+combat_metadata_mutant=$(mktemp /tmp/sir-rules-combat-metadata-mutant.XXXXXX)
+cp "$repo_root/src/SIR.Client.Web/App.fs" "$app_mutant"
+printf '\n// implementation identity subject mutation\n' >> "$app_mutant"
+if source_matches_pin "src/SIR.Client.Web/App.fs" "$app_mutant"; then
+  echo "App.fs implementation source mutation unexpectedly passed" >&2
+  rm -f "$app_mutant" "$combat_mutant" "$combat_metadata_mutant" "$source_digest_input"
+  exit 1
+fi
+sed '0,/module CombatRules =/s//module CombatRules = \/\/ implementation identity subject mutation/' \
+  "$repo_root/src/SIR.Simulation/CombatRules.fs" > "$combat_mutant"
+if source_matches_pin "src/SIR.Simulation/CombatRules.fs" "$combat_mutant"; then
+  echo "CombatRules.fs non-metadata source mutation unexpectedly passed" >&2
+  rm -f "$app_mutant" "$combat_mutant" "$combat_metadata_mutant" "$source_digest_input"
+  exit 1
+fi
+sed -E 's/(Commit = ")[0-9a-f]{40}(" })/\10000000000000000000000000000000000000000\2/' \
+  "$repo_root/src/SIR.Simulation/CombatRules.fs" > "$combat_metadata_mutant"
+source_matches_pin "src/SIR.Simulation/CombatRules.fs" "$combat_metadata_mutant" || {
+  echo "CombatRules.fs metadata-only source rebind was not normalized" >&2
+  rm -f "$app_mutant" "$combat_mutant" "$combat_metadata_mutant" "$source_digest_input"
+  exit 1
+}
+rm -f "$app_mutant" "$combat_mutant" "$combat_metadata_mutant"
 printf 'package\t%s\nalgorithm\t%s\n' "$(jq -r '.packageSha256' "$source_manifest")" "$(jq -r '.algorithmFingerprint' "$source_manifest")" >> "$source_digest_input"
 actual_sources_digest=$(sha256sum "$source_digest_input" | cut -d' ' -f1)
 identity_mutant=$(mktemp /tmp/sir-rules-source-digest-mutant.XXXXXX)
