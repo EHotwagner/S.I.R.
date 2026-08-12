@@ -186,6 +186,7 @@ module MatchReplay =
               EngineHash = engineHash
               RulesetHash = rulesetHash
               FullReplayAuthorized = true
+              RulesArchive = None
               Content =
                 AuthorizedFullReplay
                     { InitialSnapshot = Simulation.initialState
@@ -199,6 +200,7 @@ module MatchReplay =
               EngineHash = engineHash
               RulesetHash = rulesetHash
               FullReplayAuthorized = false
+              RulesArchive = None
               Content = PerspectivePlayback perspectives }
 
         let reexecuted = executeArtifact artifact compiled 4

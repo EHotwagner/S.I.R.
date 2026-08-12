@@ -1753,6 +1753,7 @@ let rec update msg model =
         | "workspace.plan" -> update (WorkspaceChanged PlanningWorkspace) model
         | "workspace.simulate" -> update (WorkspaceChanged SimulatorWorkspace) model
         | "workspace.review" -> update (WorkspaceChanged ReplayWorkspace) model
+        | "panel.data" -> update (OpenSupportingPanel "data") model
         | "timeline.play-toggle" -> update TacticalPlaybackToggled model
         | "timeline.step-back" -> update (TacticalTimeStepped -1L) model
         | "timeline.step-forward" -> update (TacticalTimeStepped 1L) model
@@ -3560,70 +3561,16 @@ let private catalogTable
         ]
     ]
 
+[<ReactLazyComponent>]
+let private LazyExecutableRulesPanel () =
+    React.DynamicImported("../RulesExplorer.js")
 let private rulesDataCatalog =
-    let kindName = function
-        | RuleKind.Fact -> "Fact"
-        | RuleKind.Predicate -> "Predicate"
-        | RuleKind.Formula -> "Formula"
-        | RuleKind.Transition -> "Transition"
-        | RuleKind.Algorithm -> "Registered algorithm"
-        | RuleKind.Narrative -> "Narrative"
-    let semanticsSummary = function
-        | FactSemantics value -> sprintf "%A %s" value.Value value.Unit
-        | PredicateSemantics expression -> Rules.formulaNotation expression
-        | FormulaSemantics(_, _, expression) -> Rules.formulaNotation expression
-        | TransitionSemantics contract -> contract.Phase + " → " + String.concat ", " contract.Events
-        | AlgorithmSemantics contract -> contract.ImplementationSymbol + " · " + contract.Fingerprint
-        | NarrativeSemantics -> "Declared narrative rule"
-    let sourceLink source =
-        "https://github.com/EHotwagner/S.I.R./blob/" + source.Commit + "/" + source.RepositoryPath
     Html.section [
-        prop.id "rules-data-tables"
-        prop.className "panel rules-data-panel"
         prop.ariaLabel "Rules data tables"
         prop.children [
-            Html.p [ prop.className "eyebrow"; prop.text "Inspectable rules catalog" ]
-            Html.h2 "Executable combat rules"
-            Html.p (
-                "Package "
-                + SIR.Simulation.CombatRules.packageIdentity.PackageVersion
-                + " · immutable source "
-                + SIR.Simulation.CombatRules.packageIdentity.SourceCommit.Substring(0, 12)
-                + " · generated directly from the portable F# registry"
-            )
-            for rule in SIR.Simulation.CombatRules.registry do
-                let metadata = rule.Metadata
-                Html.details [
-                    prop.id ("rule-" + RuleId.value metadata.Id)
-                    prop.children [
-                        Html.summary (RuleId.value metadata.Id + " · " + metadata.Title)
-                        Html.dl [
-                            Html.dt "Kind"
-                            Html.dd (kindName metadata.SemanticKind)
-                            Html.dt "Formula or implementation"
-                            Html.dd (semanticsSummary rule.Semantics)
-                            Html.dt "Rationale"
-                            Html.dd metadata.Rationale
-                            Html.dt "Dependencies"
-                            Html.dd (
-                                match metadata.Dependencies with
-                                | [] -> "None"
-                                | values -> values |> List.map RuleId.value |> String.concat ", "
-                            )
-                            Html.dt "Examples and properties"
-                            Html.dd (String.concat "; " (metadata.Examples @ metadata.Properties))
-                            Html.dt "Evidence"
-                            Html.dd (String.concat "; " metadata.Evidence)
-                        ]
-                        match metadata.RuleSource with
-                        | Some source ->
-                            Html.a [
-                                prop.href (sourceLink source)
-                                prop.text ("Pinned F# source · " + source.Symbol)
-                            ]
-                        | None -> Html.span "No executable source"
-                    ]
-                ]
+            React.Suspense([ LazyExecutableRulesPanel () ], fallback = Html.p "Loading executable rules…")
+            Html.section [
+                prop.children [
             Html.h2 "Units, perks, weapons, and equipment"
             Html.p "Expand a table below. Canonical roles, proposed content, and prototype balance values are labeled separately; prototype numbers are laboratory inputs, not accepted balance."
             Html.details [
@@ -3724,9 +3671,9 @@ let private rulesDataCatalog =
                     prop.text "Read definitions, formulas, and design rationale in the Gameplay Reference."
                 ]
             ]
+                ] ]
         ]
     ]
-
 let private laboratoryResults model dispatch =
     Html.section [
         prop.className "panel lab-results"
@@ -7321,7 +7268,7 @@ let private tacticalLayoutToolbar model dispatch =
                 prop.children [
                     menu "File" [ "Document" ]
                     menu "Edit" [ "Plan" ]
-                    menu "View" [ "Modality"; "Shared camera" ]
+                    menu "View" [ "Modality"; "Shared camera"; "View" ]
                     menu "Tools" [ "Plan"; "Editor" ]
                     menu "Simulation" [ "Timeline"; "Simulator controllers"; "Simulator movement" ]
                     menu "Help" [ "Help" ]

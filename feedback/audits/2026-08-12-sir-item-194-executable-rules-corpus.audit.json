@@ -1,0 +1,55 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-12-sir-item-194-executable-rules-corpus.md",
+  "reportSha256": "331552503c8d12e523cf1c00d29307a3eb8cc5fa2ab390aaf9533b5ed01f1efe",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:dotnet fsgg-sdd verify --work 194-executable-rules-corpus --text", "result": "verified"}
+      ],
+      "confidenceLimits": ["The repaired receipt partition is specific to this work item; the CLI does not itself assess whether a named testcase semantically observes every claim."]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:./scripts/verify-rules-corpus.sh", "result": "verified"}
+      ],
+      "confidenceLimits": ["The receipt covers the first combat slice, not future corpus migrations."]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "artifact:src/SIR.Client.Web/CommandRegistry.fs", "result": "verified"},
+        {"locator": "command:npx playwright test tests/SIR.Browser.Tests/visible-workflows.spec.js --grep \"player-visible Rules explorer\"", "result": "verified"}
+      ],
+      "confidenceLimits": ["The focused route proves desktop production reachability at the qualified viewport."]
+    },
+    {
+      "id": "§4.4",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:npm run test:production-delivery-evidence", "result": "verified"}
+      ],
+      "confidenceLimits": ["The measured 3,485-byte margin is candidate-specific; the cap was not changed."]
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:find .agents/skills -path */fs-gg-feedback-report/SKILL.md", "result": "verified"}
+      ],
+      "confidenceLimits": ["The canonical provider copy was available in the adjacent FS.GG.Rendering checkout."]
+    }
+  ]
+}

@@ -12,6 +12,8 @@
     <Compile Include="HumanCapabilities.fs" />
     <Compile Include="CanonicalEncoding.fs" />
     <Compile Include="CanonicalHash.fs" />
+    <Compile Include="RuleTypes.fsi" />
+    <Compile Include="RuleTypes.fs" />
     <Compile Include="Rules.fsi" />
     <Compile Include="Rules.fs" />
   </ItemGroup>

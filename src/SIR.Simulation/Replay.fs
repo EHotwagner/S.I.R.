@@ -53,6 +53,7 @@ type ReplayPackage =
       EngineHash: byte array
       RulesetHash: byte array
       FullReplayAuthorized: bool
+      RulesArchive: byte array option
       Content: ReplayContent }
 
 /// Resource limits applied before and during package decoding.
@@ -98,7 +99,14 @@ type private ReplayReader =
 [<RequireQualifiedAccess>]
 module Replay =
     [<Literal>]
+#if SIR_WEB_CLIENT
     let CurrentFormatVersion = 2
+#else
+    let CurrentFormatVersion = 3
+#endif
+
+    [<Literal>]
+    let DirectionalFormatVersion = 2
 
     [<Literal>]
     let LegacyFormatVersion = 1
@@ -167,9 +175,9 @@ module Replay =
                   [| sideByte unit.Side |]
                   cellBytes unit.Cell
                   CanonicalEncoding.boundedInt32 unit.Health
-                  if formatVersion >= CurrentFormatVersion then
+                  if formatVersion >= DirectionalFormatVersion then
                       CanonicalEncoding.direction8 unit.BodyFacing
-                  if formatVersion >= CurrentFormatVersion then
+                  if formatVersion >= DirectionalFormatVersion then
                       CanonicalEncoding.direction8 unit.AttentionDirection ])
 
         let observationSegments =
@@ -271,6 +279,12 @@ module Replay =
               package.EngineHash
               package.RulesetHash
               [| if package.FullReplayAuthorized then 1uy else 0uy |]
+              if package.FormatVersion >= 3 then
+#if SIR_WEB_CLIENT
+                  [||]
+#else
+                  match package.RulesArchive with None -> [| 0uy |] | Some archive -> CanonicalEncoding.concatenate [ [| 1uy |]; lengthPrefixed archive ]
+#endif
               payload ]
 
     let private failDecode detail = raise (ReplayDecodeFailure detail)
@@ -316,6 +330,10 @@ module Replay =
         | 0uy -> false
         | 1uy -> true
         | value -> failDecode (sprintf "Invalid Boolean byte %d." value)
+
+    let private readLengthPrefixed field maximum reader =
+        let count = readCount field maximum reader
+        readBytes count reader
 
     let private readSide reader =
         match readByte reader with
@@ -388,12 +406,12 @@ module Replay =
                         Cell = readCell reader
                         Health = readHealth reader
                         BodyFacing =
-                            if formatVersion >= CurrentFormatVersion then
+                            if formatVersion >= DirectionalFormatVersion then
                                 readDirection "body-facing" reader
                             else
                                 North
                         AttentionDirection =
-                            if formatVersion >= CurrentFormatVersion then
+                            if formatVersion >= DirectionalFormatVersion then
                                 readDirection "attention" reader
                             else
                                 North } ]
@@ -490,6 +508,7 @@ module Replay =
                 let version = readInt32 reader
 
                 if version <> LegacyFormatVersion
+                   && version <> DirectionalFormatVersion
                    && version <> CurrentFormatVersion then
                     failDecode (sprintf "Unsupported replay format %d." version)
 
@@ -497,6 +516,17 @@ module Replay =
                 let engineHash = readBytes 32 reader
                 let rulesetHash = readBytes 32 reader
                 let fullReplayAuthorized = readBool reader
+                let rulesArchive =
+                    if version >= 3 then
+#if SIR_WEB_CLIENT
+                        None
+#else
+                        match readByte reader with
+                        | 0uy -> None
+                        | 1uy -> Some(readLengthPrefixed "rules archive" limits.MaxPackageBytes reader)
+                        | value -> failDecode (sprintf "Invalid rules archive byte %d." value)
+#endif
+                    else None
 
                 let content =
                     match disclosure with
@@ -513,6 +543,7 @@ module Replay =
                       EngineHash = engineHash
                       RulesetHash = rulesetHash
                       FullReplayAuthorized = fullReplayAuthorized
+                      RulesArchive = rulesArchive
                       Content = content }
             with
             | ReplayDecodeFailure detail -> Error(MalformedPackage detail)
@@ -528,6 +559,7 @@ module Replay =
 
     let private validateHeader (expectedEngine: byte array) (package: ReplayPackage) =
         if package.FormatVersion <> int32 LegacyFormatVersion
+           && package.FormatVersion <> int32 DirectionalFormatVersion
            && package.FormatVersion <> int32 CurrentFormatVersion then
             Error(
                 UnsupportedFormat(

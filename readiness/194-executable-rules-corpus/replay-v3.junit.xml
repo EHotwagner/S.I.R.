@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="4" failures="0" skipped="0"><testsuite name="rules-replay-v3" tests="4" failures="0" skipped="0">
+<testcase classname="ReplayFixtures" name="canonical replay v3 archives the rule package and explanation" />
+<testcase classname="RulesCorpusFixtures" name="retained v1 resolves unchanged after current v2 changes" />
+<testcase classname="RulesCorpusFixtures" name="current and historical exact identities never substitute" />
+<testcase classname="RulesCorpusFixtures" name="unavailable historical identity fails explicitly" />
+</testsuite></testsuites>

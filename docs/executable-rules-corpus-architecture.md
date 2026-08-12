@@ -6,7 +6,7 @@ index: 19
 description: Architecture for making the S.I.R. web client, simulation, documentation, source, and historical replays projections of one typed F# rules corpus.
 status: accepted
 decision-status: canonical
-implementation-status: planned
+implementation-status: partial
 document-type: living-architecture
 version: "1.0"
 last-updated: 2026-08-12
@@ -28,8 +28,30 @@ semantics, Fable execution, reference documentation, interactive explanations,
 source navigation, and historical replay context are projected. It uses
 inspectable representations where they produce trustworthy formulas and
 derivations, and registered ordinary F# where game mechanics need unrestricted
-algorithmic expression. This page defines the target architecture; it does not
-claim that the current rules catalog and simulation have already migrated.
+algorithmic expression. The first combat vertical slice is implemented; all
+mechanics outside the explicitly listed slice remain legacy authority.
+
+## Implemented combat vertical slice
+
+`SIR.Domain.Rules` now owns the portable typed values, expression evaluator,
+registry validation, canonical codecs, rule applications, and three-part
+package identity. `SIR.Simulation.CombatRules` registers representative weapon
+and body facts, engagement preparation, exposed-footprint tracing through the
+package-restored `FS.GG.Game.Core.Los.lineOfSightBy` algorithm, armor retention,
+expected damage, and the authoritative attack transition.
+
+The generated schema-v1 fixture under `tests/fixtures/rules-corpus/v1` retains
+the deterministic manifest, coverage graph, and representative application.
+Its source revision is immutable, historical lookup matches every package
+identity component, and absence returns `HistoricalRulePackageUnavailable`
+instead of falling back to current rules. The web Rules data panel renders the
+same registry and its pinned source links; it does not evaluate manifest JSON.
+
+The compact builder syntax remains provisional. The post-slice review found
+that explicit records are verbose but reviewable, `RuleSource` avoids dangerous
+global F# record-label inference collisions, and AST union cases should avoid
+generic names already used by client models. Broader migration should first
+introduce internal builders without changing the published erased contracts.
 
 ## Goals
 

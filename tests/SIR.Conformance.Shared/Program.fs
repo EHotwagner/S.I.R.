@@ -119,6 +119,22 @@ let main arguments =
     | [ "--print-rules-application" ] ->
         printfn "%s" (RulesCorpusFixtures.representativeApplicationBytes () |> NumericFixtures.hex)
         0
+#if !FABLE_COMPILER
+    | [ "--print-rules-performance" ] ->
+        let stopwatch = System.Diagnostics.Stopwatch.StartNew()
+        let checksum, applications, operands, explanationBytes, manifestBytes = RulesCorpusFixtures.performanceWorkload 10_000
+        stopwatch.Stop()
+        if applications > 32 || operands > 128 || explanationBytes > 65_536 || manifestBytes > 524_288 || stopwatch.ElapsedMilliseconds > 2_000L then
+            failwith "Rules corpus performance budget exceeded."
+        printfn "iterations=10000"
+        printfn "checksum=%d" checksum
+        printfn "applications=%d/32" applications
+        printfn "operands=%d/128" operands
+        printfn "explanation-bytes=%d/65536" explanationBytes
+        printfn "manifest-bytes=%d/524288" manifestBytes
+        printfn "elapsed-ms=%d/2000" stopwatch.ElapsedMilliseconds
+        0
+#endif
     | _ ->
         eprintfn
             "Usage: conformance [--inject-divergence FIXTURE | --inject-simulation-divergence PHASE | --inject-rules-corpus-divergence | --print-simulation-oracle | --print-replay-evidence | --print-rules-manifest | --print-rules-coverage | --print-rules-application]"

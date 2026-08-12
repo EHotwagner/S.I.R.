@@ -76,6 +76,7 @@ let main arguments =
           EngineHash = EngineCatalog.Current.EngineHash
           RulesetHash = CanonicalHash.sha256 [| 1uy |]
           FullReplayAuthorized = false
+          RulesArchive = None
           Content = SIR.Simulation.PerspectivePlayback [] }
 
     let decodedRetainedFixture =

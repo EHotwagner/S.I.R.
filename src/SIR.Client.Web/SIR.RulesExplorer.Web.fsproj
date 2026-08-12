@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <DefineConstants>$(DefineConstants);FABLE_COMPILER</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="RulesExplorer.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../SIR.Domain/SIR.Domain.fsproj" />
+    <ProjectReference Include="../SIR.Simulation/SIR.Simulation.fsproj" />
+    <PackageReference Include="Fable.Core" />
+    <PackageReference Include="Fable.Browser.Dom" />
+    <PackageReference Include="Fable.Elmish" />
+    <PackageReference Include="Fable.Elmish.React" />
+    <PackageReference Include="Feliz" />
+    <PackageReference Include="Thoth.Json" />
+  </ItemGroup>
+</Project>

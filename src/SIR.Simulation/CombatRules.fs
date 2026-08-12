@@ -14,7 +14,7 @@ module CombatRules =
     let private requiredId value = RuleId.create value |> Result.defaultWith failwith
     let private fixedValue unitName value = { DataKind = RuleValueKind.FixedPoint; Unit = unitName; Value = RuleValue.FixedPointValue value }
     let private integerValue unitName value = { DataKind = RuleValueKind.Integer; Unit = unitName; Value = RuleValue.IntegerValue value }
-    let private source symbol = Some { Symbol = symbol; RepositoryPath = "src/SIR.Simulation/CombatRules.fs"; Commit = "791ed35fc776eaf7d54ce3ba5dc56f0416853229" }
+    let private source symbol = Some { Symbol = symbol; RepositoryPath = "src/SIR.Simulation/CombatRules.fs"; Commit = "4fbbb11ed3e34d50c28b04042ac8eba7753afb28" }
     let private statement trigger response = { Preconditions = []; Trigger = trigger; System = "S.I.R. combat simulation"; Responses = [ response ] }
     let private metadata id title kind rationale dependencies symbol evidence =
         { Id = requiredId id; Title = title; Status = Canonical; SemanticKind = kind; Statement = statement None title; Rationale = rationale; Dependencies = dependencies |> List.map requiredId; Supersedes = []; RuleSource = source symbol; Examples = [ "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs" ]; Properties = [ "deterministic .NET/Fable canonical equality" ]; Evidence = [ evidence ] }
@@ -47,9 +47,23 @@ module CombatRules =
         { Metadata = metadata "COMBAT-ATTACK-RESOLUTION-001" "Resolve one explained attack" Transition "The attack transition exposes its ordered rule calls and authoritative event." [ "COMBAT-ENGAGEMENT-001"; "COMBAT-TRACE-002"; "COMBAT-ARMOR-004"; "COMBAT-DAMAGE-001" ] "CombatRules.resolveAttack" "rules-corpus-v1"
           Semantics = TransitionSemantics { Phase = "AttackPhase"; Preconditions = []; Reads = [ "attacker.cell"; "target.footprint"; "weapon"; "armor" ]; Effects = [ "target.health" ]; Events = [ "AttackResolved" ] } }
 
-    let registry = [ weapon; body; engagement; trace; armor; damage; transition ] |> Rules.validate |> Result.defaultWith (fun errors -> failwithf "Invalid combat registry: %A" errors)
-    let packageIdentity = Rules.packageIdentity "sir-simulation-v1" "fs-gg-game-core-fable-lockstep-v1" "FS.GG.Game.Core@0.13.0" "791ed35fc776eaf7d54ce3ba5dc56f0416853229" [ "combat-rules", CanonicalHash.sha256 (System.Text.Encoding.UTF8.GetBytes "combat-rules-v1") ] registry
-    let retainedPackage = { Identity = packageIdentity; ManifestJson = Rules.manifestJson packageIdentity registry; CoverageJson = Rules.coverageJson packageIdentity registry }
+    let registry =
+#if SIR_WEB_CLIENT
+        [ weapon; body; engagement; trace; armor; damage; transition ] |> List.sortBy (fun rule -> RuleId.value rule.Metadata.Id)
+#else
+        [ weapon; body; engagement; trace; armor; damage; transition ] |> Rules.validate |> Result.defaultWith (fun errors -> failwithf "Invalid combat registry: %A" errors)
+#endif
+    let implementationArtifacts =
+        [ "combat-rules-source-sha256", System.Text.Encoding.UTF8.GetBytes "5d82d4dae2acbf7b30e1c912f981ae920de423059ac94ef175796f3d5b9b2c65"
+          "fs-gg-game-core-nupkg-sha256", System.Text.Encoding.UTF8.GetBytes "2722ec4828960167da8e77c2699b0d0a679cd4791207d2bf6f3b644a2bab66f7"
+          "los-line-of-sight-by-fingerprint", System.Text.Encoding.UTF8.GetBytes "FS.GG.Game.Core@0.13.0:Los.lineOfSightBy:Supercover" ]
+    let packageIdentity = Rules.packageIdentity "sir-simulation-v1" "fs-gg-game-core-fable-lockstep-v1" "FS.GG.Game.Core@0.13.0" "4fbbb11ed3e34d50c28b04042ac8eba7753afb28" implementationArtifacts registry
+    let retainedPackage =
+#if SIR_WEB_CLIENT
+        { Identity = packageIdentity; ManifestJson = ""; CoverageJson = "" }
+#else
+        { Identity = packageIdentity; ManifestJson = Rules.manifestJson packageIdentity registry; CoverageJson = Rules.coverageJson packageIdentity registry }
+#endif
 
     let replayBinding explanation =
         { BoundEngineIdentity = packageIdentity.EngineIdentity

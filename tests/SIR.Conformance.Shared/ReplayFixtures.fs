@@ -31,6 +31,31 @@ module ReplayFixtures =
           StateHash = Replay.stateHash state
           EventHash = Replay.eventHash events }
 
+    let private rulesArchive () =
+        let attack =
+            CombatRules.resolveAttack
+                { Attacker = { Col = 0; Row = 0 }
+                  TargetFootprint = [ { Col = 1; Row = 0 } ]
+                  IsTransparent = fun _ -> true
+                  RangeCells = 1
+                  Suppression = FixedPoint.zero
+                  BaseDamage = FixedPoint.fromRatio 25 1 |> Result.defaultWith (fun _ -> failwith "invalid damage")
+                  ArmorRetention = FixedPoint.fromRatio 4 5 |> Result.defaultWith (fun _ -> failwith "invalid retention")
+                  EventId = "replay-v3-attack" }
+            |> Result.defaultWith failwith
+        let identity = CombatRules.packageIdentity
+        let text (value: string) = System.Text.Encoding.UTF8.GetBytes value
+        CanonicalEncoding.concatenate
+            [ text identity.CompatibilityProfile
+              text identity.PackageVersion
+              text identity.SourceCommit
+              identity.ImplementationDigest
+              identity.SemanticDigest
+              identity.ManifestDigest
+              Rules.canonicalApplicationBytes attack.Explanation
+              text CombatRules.retainedPackage.ManifestJson
+              text CombatRules.retainedPackage.CoverageJson ]
+
     let private fullPackage () =
         let red = Simulation.unitId 10
         let blue = Simulation.unitId 20
@@ -60,6 +85,7 @@ module ReplayFixtures =
           EngineHash = engineHash
           RulesetHash = rulesetHash
           FullReplayAuthorized = true
+          RulesArchive = Some(rulesArchive ())
           Content =
             AuthorizedFullReplay
                 { InitialSnapshot = Simulation.initialState
@@ -77,6 +103,7 @@ module ReplayFixtures =
           EngineHash = engineHash
           RulesetHash = rulesetHash
           FullReplayAuthorized = false
+          RulesArchive = None
           Content =
             PerspectivePlayback
                 [ { Tick = 1
@@ -100,7 +127,8 @@ module ReplayFixtures =
 
         let legacyPackage =
             { package with
-                FormatVersion = Replay.LegacyFormatVersion }
+                FormatVersion = Replay.LegacyFormatVersion
+                RulesArchive = None }
 
         let legacyDecoded =
             legacyPackage
@@ -124,6 +152,10 @@ module ReplayFixtures =
             match Replay.decode Replay.defaultLimits encoded with
             | Ok decoded -> decoded
             | Error error -> failwithf "Canonical replay did not decode: %A" error
+
+        match decoded.RulesArchive with
+        | None -> failwith "Replay v3 omitted its canonical rules archive."
+        | Some archive -> require (archive = rulesArchive ()) "Replay v3 did not retain exact canonical rule-package/application bytes."
 
         require
             (Replay.encode decoded = encoded)

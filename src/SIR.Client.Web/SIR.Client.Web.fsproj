@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <Nullable>disable</Nullable>
-    <DefineConstants>$(DefineConstants);FABLE_COMPILER</DefineConstants>
+    <DefineConstants>$(DefineConstants);FABLE_COMPILER;SIR_WEB_CLIENT</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../SIR.Protocol/Http.fs" Link="Protocol/Http.fs" />

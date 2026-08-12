@@ -42,6 +42,7 @@ type HistoricalRuleResolution =
 [<RequireQualifiedAccess>]
 module CombatRules =
     val registry: RuleDefinition list
+    val implementationArtifacts: (string * byte array) list
     val packageIdentity: RulePackageIdentity
     val retainedPackage: RetainedRulePackage
     val replayBinding: RuleApplication -> RuleReplayBinding

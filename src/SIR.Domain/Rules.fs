@@ -3,37 +3,6 @@ namespace SIR.Domain
 open System
 open System.Text
 
-[<Struct>]
-type RuleId = private RuleId of value: string
-
-[<RequireQualifiedAccess>]
-module RuleId =
-    let create value =
-        let validCharacter character = (character >= 'A' && character <= 'Z') || (character >= '0' && character <= '9') || character = '-'
-        if String.IsNullOrWhiteSpace value || value.Length < 5 || value |> Seq.exists (validCharacter >> not) then Error "Rule IDs use non-empty uppercase ASCII letters, digits, and hyphens."
-        elif value.StartsWith("-") || value.EndsWith("-") || value.Contains("--") then Error "Rule IDs cannot begin/end with or repeat a hyphen."
-        else Ok(RuleId value)
-
-    let value (RuleId value) = value
-
-type RuleStatus = Proposed | Prototype | Canonical | Deprecated | Superseded
-type RuleKind = Fact | Predicate | Formula | Transition | Algorithm | Narrative
-type ControlledStatement = { Preconditions: string list; Trigger: string option; System: string; Responses: string list }
-type SourceRef = { Symbol: string; RepositoryPath: string; Commit: string }
-type RuleMetadata = { Id: RuleId; Title: string; Status: RuleStatus; SemanticKind: RuleKind; Statement: ControlledStatement; Rationale: string; Dependencies: RuleId list; Supersedes: RuleId list; RuleSource: SourceRef option; Examples: string list; Properties: string list; Evidence: string list }
-type RuleValueKind = Integer | FixedPoint | Boolean | Text
-type TypedValue = { DataKind: RuleValueKind; Unit: string; Value: RuleValue }
-and RuleValue = IntegerValue of int32 | FixedPointValue of FixedPoint | BooleanValue of bool | TextValue of string
-type FormulaExpr = Constant of TypedValue | Input of name: string * kind: RuleValueKind * unitName: string | Add of FormulaExpr * FormulaExpr | Subtract of FormulaExpr * FormulaExpr | Multiply of FormulaExpr * FormulaExpr | Divide of FormulaExpr * FormulaExpr | MinimumOf of FormulaExpr * FormulaExpr | MaximumOf of FormulaExpr * FormulaExpr | Clamp of minimum: FormulaExpr * maximum: FormulaExpr * value: FormulaExpr | LessThanOrEqual of FormulaExpr * FormulaExpr | IfThenElse of condition: FormulaExpr * whenTrue: FormulaExpr * whenFalse: FormulaExpr
-type TransitionContract = { Phase: string; Preconditions: RuleId list; Reads: string list; Effects: string list; Events: string list }
-type AlgorithmContract = { ImplementationSymbol: string; Fingerprint: string; Inputs: (string * RuleValueKind * string) list; ResultKind: RuleValueKind; ResultUnit: string; ExplanationFields: string list }
-type RuleSemantics = FactSemantics of TypedValue | PredicateSemantics of FormulaExpr | FormulaSemantics of resultKind: RuleValueKind * resultUnit: string * FormulaExpr | TransitionSemantics of TransitionContract | AlgorithmSemantics of AlgorithmContract | NarrativeSemantics
-type RuleDefinition = { Metadata: RuleMetadata; Semantics: RuleSemantics }
-type RuleApplication = { ApplicationId: string; RuleId: RuleId; Operands: (string * TypedValue) list; Outcome: TypedValue; Children: RuleApplication list; EventId: string; PackageManifestDigest: byte array }
-type RegistryError = DuplicateRuleId of string | DanglingRuleReference of owner: string * target: string | IncompleteRuleMetadata of ruleId: string * field: string | IncompatibleRuleKind of ruleId: string
-type EvaluationError = MissingInput of string | TypeMismatch of string | UnitMismatch of string * string | DivisionByZero | InvalidExpression of string
-type RulePackageIdentity = { SchemaVersion: int32; EngineIdentity: string; CompatibilityProfile: string; PackageVersion: string; SourceCommit: string; ImplementationDigest: byte array; SemanticDigest: byte array; ManifestDigest: byte array }
-
 [<RequireQualifiedAccess>]
 module Rules =
     let private bytes (value: string) = Encoding.UTF8.GetBytes value
@@ -165,10 +134,31 @@ module Rules =
               source
               list text metadata.Examples; list text metadata.Properties; list text metadata.Evidence; semanticsBytes rule.Semantics ]
 
+#if !SIR_WEB_CLIENT
     let validate rules =
         let ids = rules |> List.map (fun rule -> RuleId.value rule.Metadata.Id)
         let idSet = Set.ofList ids
         let duplicates = ids |> List.countBy id |> List.choose (fun (id, count) -> if count > 1 then Some(DuplicateRuleId id) else None)
+        let valueMatches value =
+            match value.DataKind, value.Value with
+            | Integer, IntegerValue _ | FixedPoint, FixedPointValue _ | Boolean, BooleanValue _ | Text, TextValue _ -> true
+            | _ -> false
+        let rec expressionShape = function
+            | Constant value when valueMatches value && not (String.IsNullOrWhiteSpace value.Unit) -> Ok(value.DataKind, value.Unit)
+            | Constant _ -> Error "constant kind/unit"
+            | Input(name, kind, unitName) when not (String.IsNullOrWhiteSpace name) && not (String.IsNullOrWhiteSpace unitName) -> Ok(kind, unitName)
+            | Input _ -> Error "input name/unit"
+            | Add(a,b) | Subtract(a,b) | MinimumOf(a,b) | MaximumOf(a,b) ->
+                match expressionShape a, expressionShape b with Ok left, Ok right when left = right && fst left = FixedPoint -> Ok left | _ -> Error "like fixed-point operands"
+            | Multiply(a,b) ->
+                match expressionShape a, expressionShape b with
+                | Ok(FixedPoint, "ratio"), Ok(FixedPoint, unitName) | Ok(FixedPoint, unitName), Ok(FixedPoint, "ratio") -> Ok(FixedPoint, unitName)
+                | Ok(FixedPoint, left), Ok(FixedPoint, right) when left = right -> Ok(FixedPoint, left)
+                | _ -> Error "compatible fixed-point multiply operands"
+            | Divide(a,b) -> match expressionShape a, expressionShape b with Ok left, Ok right when left = right && fst left = FixedPoint -> Ok(FixedPoint, "ratio") | _ -> Error "like fixed-point divide operands"
+            | Clamp(a,b,c) -> match expressionShape a, expressionShape b, expressionShape c with Ok x, Ok y, Ok z when x = y && y = z && fst x = FixedPoint -> Ok x | _ -> Error "like fixed-point clamp operands"
+            | LessThanOrEqual(a,b) -> match expressionShape a, expressionShape b with Ok left, Ok right when left = right && (fst left = FixedPoint || fst left = RuleValueKind.Integer) -> Ok(RuleValueKind.Boolean, "boolean") | _ -> Error "like numeric comparison operands"
+            | IfThenElse(c,t,f) -> match expressionShape c, expressionShape t, expressionShape f with Ok(RuleValueKind.Boolean,"boolean"), Ok left, Ok right when left = right -> Ok left | _ -> Error "Boolean condition and like branches"
         let errors =
             rules |> List.collect (fun rule ->
                 let id = RuleId.value rule.Metadata.Id
@@ -177,12 +167,30 @@ module Rules =
                   if List.isEmpty rule.Metadata.Statement.Responses then yield IncompleteRuleMetadata(id, "statement.responses")
                   if rule.Metadata.SemanticKind <> Narrative && Option.isNone rule.Metadata.RuleSource then yield IncompleteRuleMetadata(id, "source")
                   if rule.Metadata.SemanticKind <> Narrative && List.isEmpty rule.Metadata.Evidence then yield IncompleteRuleMetadata(id, "evidence")
+                  if rule.Metadata.SemanticKind <> Narrative && (List.isEmpty rule.Metadata.Examples || List.isEmpty rule.Metadata.Properties) then yield IncompleteRuleMetadata(id, "examples/properties")
+                  if rule.Metadata.Status = Superseded && List.isEmpty rule.Metadata.Supersedes then yield IncompatibleRuleStatus id
+                  match rule.Metadata.RuleSource with
+                  | Some source when String.IsNullOrWhiteSpace source.Symbol || String.IsNullOrWhiteSpace source.RepositoryPath || source.RepositoryPath.StartsWith("/") || source.RepositoryPath.Contains("..") || source.Commit.Length <> 40 -> yield IncompleteRuleMetadata(id, "source.identity")
+                  | _ -> ()
                   for dependency in rule.Metadata.Dependencies @ rule.Metadata.Supersedes do
                       if not (Set.contains (RuleId.value dependency) idSet) then yield DanglingRuleReference(id, RuleId.value dependency)
                   match rule.Metadata.SemanticKind, rule.Semantics with
                   | Fact, FactSemantics _ | Predicate, PredicateSemantics _ | Formula, FormulaSemantics _ | Transition, TransitionSemantics _ | Algorithm, AlgorithmSemantics _ | Narrative, NarrativeSemantics -> ()
-                  | _ -> yield IncompatibleRuleKind id ])
+                  | _ -> yield IncompatibleRuleKind id
+                  match rule.Semantics with
+                  | FactSemantics value when not (valueMatches value) || String.IsNullOrWhiteSpace value.Unit -> yield InvalidTypedValue(id, "fact")
+                  | PredicateSemantics expression -> match expressionShape expression with Ok(Boolean, "boolean") -> () | verdict -> yield InvalidFormulaResult(id, sprintf "%A" verdict)
+                  | FormulaSemantics(kind, unitName, expression) -> match expressionShape expression with Ok(actualKind, actualUnit) when actualKind = kind && actualUnit = unitName -> () | verdict -> yield InvalidFormulaResult(id, sprintf "%A" verdict)
+                  | TransitionSemantics contract when String.IsNullOrWhiteSpace contract.Phase || List.isEmpty contract.Reads || List.isEmpty contract.Effects || List.isEmpty contract.Events -> yield IncompleteRuleMetadata(id, "transition.contract")
+                  | AlgorithmSemantics contract ->
+                      if String.IsNullOrWhiteSpace contract.ImplementationSymbol then yield InvalidAlgorithmContract(id, "implementationSymbol")
+                      if String.IsNullOrWhiteSpace contract.Fingerprint then yield InvalidAlgorithmContract(id, "fingerprint")
+                      if String.IsNullOrWhiteSpace contract.ResultUnit then yield InvalidAlgorithmContract(id, "resultUnit")
+                      if List.isEmpty contract.Inputs then yield InvalidAlgorithmContract(id, "inputs")
+                      if List.isEmpty contract.ExplanationFields then yield InvalidAlgorithmContract(id, "explanationFields")
+                  | _ -> () ])
         match duplicates @ errors with [] -> Ok (rules |> List.sortBy (fun rule -> RuleId.value rule.Metadata.Id)) | failures -> Error failures
+#endif
 
     let canonicalManifestPayload schemaVersion sourceCommit rules =
         let canonical = rules |> List.sortBy (fun rule -> RuleId.value rule.Metadata.Id) |> List.map canonicalRuleBytes
@@ -207,6 +215,7 @@ module Rules =
         let manifestPayload = CanonicalEncoding.concatenate [ text engineIdentity; text compatibilityProfile; text packageVersion; text sourceCommit; segment implementationDigest; segment semanticDigest; canonicalManifestPayload 1 sourceCommit rules ]
         { SchemaVersion = 1; EngineIdentity = engineIdentity; CompatibilityProfile = compatibilityProfile; PackageVersion = packageVersion; SourceCommit = sourceCommit; ImplementationDigest = implementationDigest; SemanticDigest = semanticDigest; ManifestDigest = CanonicalHash.sha256 manifestPayload }
 
+#if !SIR_WEB_CLIENT
     let private jsonString (value: string) =
         "\"" + value.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "\\r").Replace("\n", "\\n") + "\""
 
@@ -240,8 +249,10 @@ module Rules =
         | FactSemantics value -> "{\"type\":\"fact\",\"value\":" + jsonString (valueNotation value) + ",\"kind\":" + jsonString (kindName value.DataKind) + ",\"unit\":" + jsonString value.Unit + "}"
         | PredicateSemantics expression -> "{\"type\":\"predicate\",\"notation\":" + jsonString (formulaNotation expression) + "}"
         | FormulaSemantics(kind, unitName, expression) -> "{\"type\":\"formula\",\"kind\":" + jsonString (kindName kind) + ",\"unit\":" + jsonString unitName + ",\"notation\":" + jsonString (formulaNotation expression) + "}"
-        | TransitionSemantics contract -> "{\"type\":\"transition\",\"phase\":" + jsonString contract.Phase + ",\"reads\":" + jsonArray jsonString contract.Reads + ",\"effects\":" + jsonArray jsonString contract.Effects + ",\"events\":" + jsonArray jsonString contract.Events + "}"
-        | AlgorithmSemantics contract -> "{\"type\":\"algorithm\",\"symbol\":" + jsonString contract.ImplementationSymbol + ",\"fingerprint\":" + jsonString contract.Fingerprint + ",\"resultKind\":" + jsonString (kindName contract.ResultKind) + ",\"resultUnit\":" + jsonString contract.ResultUnit + "}"
+        | TransitionSemantics contract -> "{\"type\":\"transition\",\"phase\":" + jsonString contract.Phase + ",\"preconditions\":" + jsonArray (RuleId.value >> jsonString) contract.Preconditions + ",\"reads\":" + jsonArray jsonString contract.Reads + ",\"effects\":" + jsonArray jsonString contract.Effects + ",\"events\":" + jsonArray jsonString contract.Events + "}"
+        | AlgorithmSemantics contract ->
+            let inputJson (name, kind, unitName) = "{\"name\":" + jsonString name + ",\"kind\":" + jsonString (kindName kind) + ",\"unit\":" + jsonString unitName + "}"
+            "{\"type\":\"algorithm\",\"symbol\":" + jsonString contract.ImplementationSymbol + ",\"fingerprint\":" + jsonString contract.Fingerprint + ",\"inputs\":" + jsonArray inputJson contract.Inputs + ",\"resultKind\":" + jsonString (kindName contract.ResultKind) + ",\"resultUnit\":" + jsonString contract.ResultUnit + ",\"explanationFields\":" + jsonArray jsonString contract.ExplanationFields + "}"
         | NarrativeSemantics -> "{\"type\":\"narrative\"}"
 
     let manifestJson identity rules =
@@ -250,18 +261,46 @@ module Rules =
             | Some source -> "{\"symbol\":" + jsonString source.Symbol + ",\"path\":" + jsonString source.RepositoryPath + ",\"commit\":" + jsonString source.Commit + "}"
         let ruleJson rule =
             let metadata = rule.Metadata
-            "{\"id\":" + jsonString (RuleId.value metadata.Id) + ",\"title\":" + jsonString metadata.Title + ",\"status\":" + jsonString (statusName metadata.Status) + ",\"kind\":" + jsonString (ruleKindName metadata.SemanticKind) + ",\"rationale\":" + jsonString metadata.Rationale + ",\"dependencies\":" + jsonArray (RuleId.value >> jsonString) (metadata.Dependencies |> List.sortBy RuleId.value) + ",\"examples\":" + jsonArray jsonString metadata.Examples + ",\"properties\":" + jsonArray jsonString metadata.Properties + ",\"evidence\":" + jsonArray jsonString metadata.Evidence + ",\"source\":" + sourceJson metadata.RuleSource + ",\"semantics\":" + semanticsProjection rule.Semantics + "}"
+            let statement = "{\"preconditions\":" + jsonArray jsonString metadata.Statement.Preconditions + ",\"trigger\":" + (metadata.Statement.Trigger |> Option.map jsonString |> Option.defaultValue "null") + ",\"system\":" + jsonString metadata.Statement.System + ",\"responses\":" + jsonArray jsonString metadata.Statement.Responses + "}"
+            "{\"id\":" + jsonString (RuleId.value metadata.Id) + ",\"title\":" + jsonString metadata.Title + ",\"status\":" + jsonString (statusName metadata.Status) + ",\"kind\":" + jsonString (ruleKindName metadata.SemanticKind) + ",\"statement\":" + statement + ",\"rationale\":" + jsonString metadata.Rationale + ",\"dependencies\":" + jsonArray (RuleId.value >> jsonString) (metadata.Dependencies |> List.sortBy RuleId.value) + ",\"supersedes\":" + jsonArray (RuleId.value >> jsonString) (metadata.Supersedes |> List.sortBy RuleId.value) + ",\"examples\":" + jsonArray jsonString metadata.Examples + ",\"properties\":" + jsonArray jsonString metadata.Properties + ",\"evidence\":" + jsonArray jsonString metadata.Evidence + ",\"source\":" + sourceJson metadata.RuleSource + ",\"explanationVocabulary\":[\"operands\",\"outcome\",\"children\",\"eventId\"],\"semantics\":" + semanticsProjection rule.Semantics + "}"
         "{\"schemaVersion\":" + string identity.SchemaVersion + ",\"engineIdentity\":" + jsonString identity.EngineIdentity + ",\"compatibilityProfile\":" + jsonString identity.CompatibilityProfile + ",\"packageVersion\":" + jsonString identity.PackageVersion + ",\"sourceCommit\":" + jsonString identity.SourceCommit + ",\"implementationDigest\":" + jsonString (hex identity.ImplementationDigest) + ",\"semanticDigest\":" + jsonString (hex identity.SemanticDigest) + ",\"manifestDigest\":" + jsonString (hex identity.ManifestDigest) + ",\"rules\":" + jsonArray ruleJson (rules |> List.sortBy (fun rule -> RuleId.value rule.Metadata.Id)) + "}"
 
     let coverageJson identity rules =
-        let edge rule target kind = "{\"ruleId\":" + jsonString (RuleId.value rule.Metadata.Id) + ",\"target\":" + jsonString target + ",\"kind\":" + jsonString kind + "}"
+        let node kind identity authority = "{\"kind\":" + jsonString kind + ",\"identity\":" + jsonString identity + ",\"authority\":" + jsonString authority + "}"
+        let edge rule target kind = "{\"from\":" + jsonString ("rule:" + RuleId.value rule.Metadata.Id) + ",\"to\":" + jsonString target + ",\"kind\":" + jsonString kind + "}"
+        let sortedRules = rules |> List.sortBy (fun rule -> RuleId.value rule.Metadata.Id)
+        let nodes =
+            sortedRules
+            |> List.collect (fun rule ->
+                let id = RuleId.value rule.Metadata.Id
+                let sourceIdentity = rule.Metadata.RuleSource |> Option.map (fun source -> source.RepositoryPath + "#" + source.Symbol) |> Option.defaultValue "unresolved"
+                [ node "rule" id "Corpus"
+                  node "implementation" sourceIdentity "Corpus"
+                  node "event" (id + ":application") "Corpus"
+                  node "explanation" (id + ":derivation") "Corpus"
+                  for example in rule.Metadata.Examples do node "example/property" example "Corpus"
+                  for property in rule.Metadata.Properties do node "example/property" property "Corpus"
+                  node "documentation" ("rules/" + id) "Corpus"
+                  node "source" sourceIdentity "Corpus"
+                  node "replay" "tests/fixtures/rules-corpus/v1" "Corpus" ])
+            |> List.distinct
+            |> List.sort
         let edges =
-            rules |> List.sortBy (fun rule -> RuleId.value rule.Metadata.Id) |> List.collect (fun rule ->
+            sortedRules |> List.collect (fun rule ->
+                let id = RuleId.value rule.Metadata.Id
+                let sourceIdentity = rule.Metadata.RuleSource |> Option.map (fun source -> source.RepositoryPath + "#" + source.Symbol) |> Option.defaultValue "unresolved"
                 [ for dependency in rule.Metadata.Dependencies do yield edge rule (RuleId.value dependency) "dependency"
+                  yield edge rule sourceIdentity "implementation"
+                  yield edge rule (id + ":application") "event/application"
+                  yield edge rule (id + ":derivation") "explanation"
                   for example in rule.Metadata.Examples do yield edge rule example "example"
-                  for evidence in rule.Metadata.Evidence do yield edge rule evidence "evidence"
-                  match rule.Metadata.RuleSource with Some source -> yield edge rule (source.RepositoryPath + "#" + source.Symbol) "source" | None -> () ])
-        "{\"schemaVersion\":1,\"packageManifestDigest\":" + jsonString (hex identity.ManifestDigest) + ",\"authorityBoundary\":{\"migrated\":\"first-combat-vertical-slice\",\"outside\":\"legacy\"},\"edges\":[" + String.concat "," edges + "]}"
+                  for property in rule.Metadata.Properties do yield edge rule property "property"
+                  yield edge rule ("rules/" + id) "documentation"
+                  yield edge rule sourceIdentity "source"
+                  yield edge rule "tests/fixtures/rules-corpus/v1" "replay" ])
+            |> List.sort
+        "{\"schemaVersion\":1,\"packageManifestDigest\":" + jsonString (hex identity.ManifestDigest) + ",\"authorityBoundary\":{\"migrated\":\"first-combat-vertical-slice\",\"outside\":\"legacy\"},\"nodes\":[" + String.concat "," nodes + "],\"edges\":[" + String.concat "," edges + "]}"
+#endif
 
     let rec canonicalApplicationBytes application =
         CanonicalEncoding.concatenate

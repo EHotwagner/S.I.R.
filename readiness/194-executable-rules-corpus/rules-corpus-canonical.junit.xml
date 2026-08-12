@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="5" failures="0" skipped="0"><testsuite name="rules-corpus-canonical" tests="5" failures="0" skipped="0">
+<testcase classname="RulesCorpusFixtures" name="registry validation and negative contracts pass" />
+<testcase classname="RulesCorpusFixtures" name="dotnet and fable canonical vectors agree" />
+<testcase classname="RulesCorpusFixtures" name="artifact identity and pinned source resolution pass" />
+<testcase classname="RulesCorpusFixtures" name="manifest and coverage reachability contracts pass" />
+<testcase classname="RulesCorpusFixtures" name="deliberate rules mutation fails at the first divergent byte" />
+</testsuite></testsuites>
