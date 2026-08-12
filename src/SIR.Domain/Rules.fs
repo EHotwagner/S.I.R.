@@ -136,6 +136,176 @@ module Rules =
               source
               list text metadata.Examples; list text metadata.Properties; list text metadata.Evidence; semanticsBytes rule.Semantics ]
 
+    exception private RuleDecodeFailure of string
+
+    type private RuleReader =
+        { Bytes: byte array
+          mutable Offset: int }
+
+    let private decodeFail detail = raise (RuleDecodeFailure detail)
+
+    let private readBytes count reader =
+        if count < 0 || reader.Offset > reader.Bytes.Length - count then
+            decodeFail "Unexpected end of canonical rule payload."
+        let value = reader.Bytes[reader.Offset .. reader.Offset + count - 1]
+        reader.Offset <- reader.Offset + count
+        value
+
+    let private readByte reader = (readBytes 1 reader)[0]
+
+    let private readInt32 reader =
+        let value = readBytes 4 reader
+        int32 value[0]
+        ||| (int32 value[1] <<< 8)
+        ||| (int32 value[2] <<< 16)
+        ||| (int32 value[3] <<< 24)
+
+    let private readCount field maximum reader =
+        let count = readInt32 reader
+        if count < 0 || count > int32 maximum then
+            decodeFail (sprintf "%s count %d is outside 0..%d." field count maximum)
+        int count
+
+    let private readText field reader =
+        let count = readCount field 65_536 reader
+        let encoded = readBytes count reader
+        let value = Encoding.UTF8.GetString encoded
+        if bytes value <> encoded then decodeFail (field + " is not canonical UTF-8.")
+        value
+
+    let private readList field maximum read reader =
+        [ for _ in 1 .. readCount field maximum reader -> read reader ]
+
+    let private readRuleId field reader =
+        match RuleId.create (readText field reader) with
+        | Ok value -> value
+        | Error detail -> decodeFail (field + ": " + detail)
+
+    let private readKind reader =
+        match readByte reader with
+        | 0uy -> RuleValueKind.Integer
+        | 1uy -> RuleValueKind.FixedPoint
+        | 2uy -> RuleValueKind.Boolean
+        | 3uy -> RuleValueKind.Text
+        | value -> decodeFail (sprintf "Unknown rule value kind %d." value)
+
+    let private readValue reader =
+        let kind = readKind reader
+        let unitName = readText "value unit" reader
+        let value =
+            match kind with
+            | RuleValueKind.Integer -> RuleValue.IntegerValue(readInt32 reader)
+            | RuleValueKind.FixedPoint -> RuleValue.FixedPointValue(FixedPoint.fromRaw (readInt32 reader))
+            | RuleValueKind.Boolean ->
+                match readByte reader with
+                | 0uy -> RuleValue.BooleanValue false
+                | 1uy -> RuleValue.BooleanValue true
+                | value -> decodeFail (sprintf "Invalid Boolean rule value %d." value)
+            | RuleValueKind.Text -> RuleValue.TextValue(readText "text rule value" reader)
+        { DataKind = kind; Unit = unitName; Value = value }
+
+    let rec private readExpression depth reader =
+        if depth > 64 then decodeFail "Formula nesting exceeds 64 levels."
+        let nested () = readExpression (depth + 1) reader
+        match readByte reader with
+        | 0uy -> Constant(readValue reader)
+        | 1uy ->
+            let kind = readKind reader
+            Input(readText "input name" reader, kind, readText "input unit" reader)
+        | 2uy -> Add(nested (), nested ())
+        | 3uy -> Subtract(nested (), nested ())
+        | 4uy -> Multiply(nested (), nested ())
+        | 5uy -> Divide(nested (), nested ())
+        | 6uy -> MinimumOf(nested (), nested ())
+        | 7uy -> MaximumOf(nested (), nested ())
+        | 8uy -> Clamp(nested (), nested (), nested ())
+        | 9uy -> LessThanOrEqual(nested (), nested ())
+        | 10uy -> IfThenElse(nested (), nested (), nested ())
+        | value -> decodeFail (sprintf "Unknown formula tag %d." value)
+
+    let private readSemantics reader =
+        match readByte reader with
+        | 0uy -> FactSemantics(readValue reader)
+        | 1uy -> PredicateSemantics(readExpression 0 reader)
+        | 2uy -> FormulaSemantics(readKind reader, readText "formula result unit" reader, readExpression 0 reader)
+        | 3uy ->
+            TransitionSemantics
+                { Phase = readText "transition phase" reader
+                  Preconditions = readList "transition preconditions" 4_096 (readRuleId "transition precondition") reader
+                  Reads = readList "transition reads" 4_096 (readText "transition read") reader
+                  Effects = readList "transition effects" 4_096 (readText "transition effect") reader
+                  Events = readList "transition events" 4_096 (readText "transition event") reader }
+        | 4uy ->
+            let resultKind = readKind reader
+            let symbol = readText "algorithm symbol" reader
+            let fingerprint = readText "algorithm fingerprint" reader
+            let inputs =
+                readList
+                    "algorithm inputs"
+                    4_096
+                    (fun reader -> readText "algorithm input name" reader, readKind reader, readText "algorithm input unit" reader)
+                    reader
+            AlgorithmSemantics
+                { ImplementationSymbol = symbol
+                  Fingerprint = fingerprint
+                  Inputs = inputs
+                  ResultKind = resultKind
+                  ResultUnit = readText "algorithm result unit" reader
+                  ExplanationFields = readList "algorithm explanation fields" 4_096 (readText "algorithm explanation field") reader }
+        | 5uy -> NarrativeSemantics
+        | value -> decodeFail (sprintf "Unknown rule semantics tag %d." value)
+
+    let private readRule reader =
+        let id = readRuleId "rule id" reader
+        let title = readText "rule title" reader
+        let status =
+            match readByte reader with
+            | 0uy -> Proposed | 1uy -> Prototype | 2uy -> Canonical | 3uy -> Deprecated | 4uy -> Superseded
+            | value -> decodeFail (sprintf "Unknown rule status %d." value)
+        let semanticKind =
+            match readByte reader with
+            | 0uy -> RuleKind.Fact
+            | 1uy -> RuleKind.Predicate
+            | 2uy -> RuleKind.Formula
+            | 3uy -> RuleKind.Transition
+            | 4uy -> RuleKind.Algorithm
+            | 5uy -> RuleKind.Narrative
+            | value -> decodeFail (sprintf "Unknown semantic kind %d." value)
+        let preconditions = readList "statement preconditions" 4_096 (readText "statement precondition") reader
+        let trigger =
+            match readByte reader with
+            | 0uy -> None
+            | 1uy -> Some(readText "statement trigger" reader)
+            | value -> decodeFail (sprintf "Invalid trigger option %d." value)
+        let system = readText "statement system" reader
+        let responses = readList "statement responses" 4_096 (readText "statement response") reader
+        let rationale = readText "rule rationale" reader
+        let dependencies = readList "rule dependencies" 4_096 (readRuleId "rule dependency") reader
+        let supersedes = readList "rule supersedes" 4_096 (readRuleId "superseded rule") reader
+        let source =
+            match readByte reader with
+            | 0uy -> None
+            | 1uy ->
+                Some
+                    { Symbol = readText "source symbol" reader
+                      RepositoryPath = readText "source path" reader
+                      Commit = readText "source commit" reader }
+            | value -> decodeFail (sprintf "Invalid source option %d." value)
+        { Metadata =
+            { Id = id
+              Title = title
+              Status = status
+              SemanticKind = semanticKind
+              Statement = { Preconditions = preconditions; Trigger = trigger; System = system; Responses = responses }
+              Rationale = rationale
+              Dependencies = dependencies
+              Supersedes = supersedes
+              RuleSource = source
+              Examples = readList "rule examples" 4_096 (readText "rule example") reader
+              Properties = readList "rule properties" 4_096 (readText "rule property") reader
+              Evidence = readList "rule evidence" 4_096 (readText "rule evidence item") reader }
+          Semantics = readSemantics reader }
+
 #if !SIR_WEB_CLIENT
     let validate rules =
         let ids = rules |> List.map (fun rule -> RuleId.value rule.Metadata.Id)
@@ -198,6 +368,19 @@ module Rules =
         let canonical = rules |> List.sortBy (fun rule -> RuleId.value rule.Metadata.Id) |> List.map canonicalRuleBytes
         CanonicalEncoding.concatenate ([ CanonicalEncoding.int32LittleEndian schemaVersion; text sourceCommit; CanonicalEncoding.int32LittleEndian canonical.Length ] @ canonical)
 
+    /// Decodes the canonical manifest preimage retained in replay v3.
+    let decodeCanonicalManifestPayload (payload: byte array) =
+        try
+            let reader = { Bytes = payload; Offset = 0 }
+            let schemaVersion = readInt32 reader
+            let sourceCommit = readText "manifest source commit" reader
+            let rules = readList "manifest rules" 4_096 readRule reader
+            if reader.Offset <> payload.Length then decodeFail "Canonical manifest payload has trailing bytes."
+            if canonicalManifestPayload schemaVersion sourceCommit rules <> payload then
+                decodeFail "Canonical manifest payload does not round-trip exactly."
+            Ok(schemaVersion, sourceCommit, rules)
+        with RuleDecodeFailure detail -> Error detail
+
     let private canonicalSemanticPayload rules =
         rules
         |> List.sortBy (fun rule -> RuleId.value rule.Metadata.Id)
@@ -210,12 +393,23 @@ module Rules =
         |> fun encoded -> CanonicalEncoding.concatenate ([ CanonicalEncoding.int32LittleEndian encoded.Length ] @ encoded)
 
     let private artifactBytes (name, digest) = CanonicalEncoding.concatenate [ text name; segment digest ]
+    let manifestDigestForPayload (identity: RulePackageIdentity) canonicalPayload =
+        CanonicalEncoding.concatenate
+            [ text identity.EngineIdentity
+              text identity.CompatibilityProfile
+              text identity.PackageVersion
+              text identity.SourceCommit
+              segment identity.ImplementationDigest
+              segment identity.SemanticDigest
+              canonicalPayload ]
+        |> CanonicalHash.sha256
+
     let packageIdentity engineIdentity compatibilityProfile packageVersion sourceCommit implementationArtifacts rules =
         let implementationDigest = implementationArtifacts |> List.sortBy fst |> List.map artifactBytes |> fun segments -> CanonicalEncoding.concatenate ([ text compatibilityProfile; text packageVersion ] @ segments) |> CanonicalHash.sha256
         let semanticPayload = CanonicalEncoding.concatenate [ segment implementationDigest; canonicalSemanticPayload rules ]
         let semanticDigest = CanonicalHash.sha256 semanticPayload
-        let manifestPayload = CanonicalEncoding.concatenate [ text engineIdentity; text compatibilityProfile; text packageVersion; text sourceCommit; segment implementationDigest; segment semanticDigest; canonicalManifestPayload 1 sourceCommit rules ]
-        { SchemaVersion = 1; EngineIdentity = engineIdentity; CompatibilityProfile = compatibilityProfile; PackageVersion = packageVersion; SourceCommit = sourceCommit; ImplementationDigest = implementationDigest; SemanticDigest = semanticDigest; ManifestDigest = CanonicalHash.sha256 manifestPayload }
+        let partial = { SchemaVersion = 1; EngineIdentity = engineIdentity; CompatibilityProfile = compatibilityProfile; PackageVersion = packageVersion; SourceCommit = sourceCommit; ImplementationDigest = implementationDigest; SemanticDigest = semanticDigest; ManifestDigest = [||] }
+        { partial with ManifestDigest = manifestDigestForPayload partial (canonicalManifestPayload 1 sourceCommit rules) }
 
 #if !SIR_WEB_CLIENT
     let private jsonString (value: string) =

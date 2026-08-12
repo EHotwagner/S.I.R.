@@ -51,6 +51,7 @@ and PerspectiveFrame =
 type ReplayRulesArchive =
     { SchemaVersion: int32
       Identity: RulePackageIdentity
+      CanonicalManifestPayload: byte array
       Applications: byte array list
       ContentDigest: byte array }
 
@@ -284,12 +285,47 @@ module Replay =
         CanonicalEncoding.concatenate
             ([ CanonicalEncoding.int32LittleEndian archive.SchemaVersion
                archiveIdentityBytes archive.Identity
+               lengthPrefixed archive.CanonicalManifestPayload
                CanonicalEncoding.int32LittleEndian archive.Applications.Length ]
              @ (archive.Applications |> List.map lengthPrefixed))
 
-    let createRulesArchive identity applications =
-        let partial = { SchemaVersion = archiveSchemaVersion; Identity = identity; Applications = applications; ContentDigest = [||] }
+    let createRulesArchive identity rules applications =
+        let partial =
+            { SchemaVersion = archiveSchemaVersion
+              Identity = identity
+              CanonicalManifestPayload = Rules.canonicalManifestPayload identity.SchemaVersion identity.SourceCommit rules
+              Applications = applications
+              ContentDigest = [||] }
         { partial with ContentDigest = archiveContentBytes partial |> CanonicalHash.sha256 }
+
+    /// Returns the replay-owned typed rules after revalidating their canonical package identity.
+    let resolveRulesArchive archive =
+        match Rules.decodeCanonicalManifestPayload archive.CanonicalManifestPayload with
+        | Error detail -> Error detail
+        | Ok(schemaVersion, sourceCommit, rules) when schemaVersion <> archive.Identity.SchemaVersion ->
+            Error "Rules archive manifest schema does not match its package identity."
+        | Ok(_, sourceCommit, _) when sourceCommit <> archive.Identity.SourceCommit ->
+            Error "Rules archive source commit does not match its package identity."
+        | Ok(_, _, _) when Rules.manifestDigestForPayload archive.Identity archive.CanonicalManifestPayload <> archive.Identity.ManifestDigest ->
+            Error "Rules archive canonical manifest does not match its package manifest digest."
+        | Ok(_, _, rules) ->
+            let ids = rules |> List.map (fun rule -> RuleId.value rule.Metadata.Id)
+            if ids.Length <> (ids |> Set.ofList |> Set.count) then
+                Error "Rules archive canonical manifest contains duplicate rule identifiers."
+            elif
+                rules
+                |> List.exists (fun rule ->
+                    match rule.Metadata.RuleSource with
+                    | Some source ->
+                        source.Commit <> archive.Identity.SourceCommit
+                        || System.String.IsNullOrWhiteSpace source.Symbol
+                        || System.String.IsNullOrWhiteSpace source.RepositoryPath
+                        || source.RepositoryPath.StartsWith "/"
+                        || source.RepositoryPath.Contains ".."
+                    | None -> rule.Metadata.SemanticKind <> RuleKind.Narrative)
+            then
+                Error "Rules archive canonical manifest contains an unsafe or mismatched source identity."
+            else Ok rules
 
     let private rulesArchiveBytes archive =
         CanonicalEncoding.concatenate [ archiveContentBytes archive; archive.ContentDigest ]
@@ -383,6 +419,7 @@ module Replay =
               ManifestDigest = readBytes 32 archiveReader }
         if identity.SourceCommit.Length <> 40 || identity.SourceCommit |> Seq.exists (fun value -> not ((value >= '0' && value <= '9') || (value >= 'a' && value <= 'f'))) then
             failDecode "Rules archive source commit is not a lowercase 40-character SHA."
+        let canonicalManifestPayload = readLengthPrefixed "rules archive canonical manifest" 524_288 archiveReader
         let applicationCount = readCount "rules archive applications" 1024 archiveReader
         let applications = [ for _ in 1 .. applicationCount -> readLengthPrefixed "rules archive application" 65_536 archiveReader ]
         let contentBoundary = archiveReader.Offset
@@ -391,7 +428,15 @@ module Replay =
         if bytes[0 .. contentBoundary - 1] |> CanonicalHash.sha256 <> contentDigest then failDecode "Rules archive content digest does not match."
         if applications |> List.exists (fun application -> application.Length < 32 || application[application.Length - 32 ..] <> identity.ManifestDigest) then
             failDecode "Rules archive application is not bound to its manifest identity."
-        { SchemaVersion = schemaVersion; Identity = identity; Applications = applications; ContentDigest = contentDigest }
+        let archive =
+            { SchemaVersion = schemaVersion
+              Identity = identity
+              CanonicalManifestPayload = canonicalManifestPayload
+              Applications = applications
+              ContentDigest = contentDigest }
+        match resolveRulesArchive archive with
+        | Ok _ -> archive
+        | Error detail -> failDecode detail
 
     let private readSide reader =
         match readByte reader with

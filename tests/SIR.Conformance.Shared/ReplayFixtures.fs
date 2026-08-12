@@ -45,6 +45,7 @@ module ReplayFixtures =
             |> Result.defaultWith failwith
         Replay.createRulesArchive
             CombatRules.packageIdentity
+            CombatRules.registry
             [ Rules.canonicalApplicationBytes attack.Explanation ]
 
     let private fullPackage () =
@@ -146,7 +147,55 @@ module ReplayFixtures =
 
         match decoded.RulesArchive with
         | None -> failwith "Replay v3 omitted its canonical rules archive."
-        | Some archive -> require (archive = rulesArchive ()) "Replay v3 did not retain exact typed rule-package/application identity."
+        | Some archive ->
+            require (archive = rulesArchive ()) "Replay v3 did not retain exact typed rule-package/application identity."
+            let historicalRules =
+                Replay.resolveRulesArchive archive
+                |> Result.defaultWith (fun detail -> failwith ("Replay v3 could not resolve its embedded historical rules: " + detail))
+            let damage =
+                historicalRules
+                |> List.find (fun rule -> RuleId.value rule.Metadata.Id = "COMBAT-DAMAGE-001")
+            require (not (System.String.IsNullOrWhiteSpace damage.Metadata.Rationale)) "Historical damage rationale was not retained."
+            match damage.Semantics, damage.Metadata.RuleSource with
+            | FormulaSemantics _, Some source ->
+                require (source.RepositoryPath = "src/SIR.Simulation/CombatRules.fs") "Historical damage source path was not retained."
+                require (source.Commit = archive.Identity.SourceCommit) "Historical damage source commit was not retained."
+            | _ -> failwith "Historical damage formula/source metadata was not retained."
+
+            let oldCommit = "1111111111111111111111111111111111111111"
+            let historicalRegistry =
+                CombatRules.registry
+                |> List.map (fun rule ->
+                    let historicalSource =
+                        rule.Metadata.RuleSource
+                        |> Option.map (fun source -> { source with Commit = oldCommit })
+                    let historicalRationale =
+                        if RuleId.value rule.Metadata.Id = "COMBAT-DAMAGE-001" then
+                            "Retained historical damage rationale."
+                        else rule.Metadata.Rationale
+                    { rule with
+                        Metadata =
+                            { rule.Metadata with
+                                Rationale = historicalRationale
+                                RuleSource = historicalSource } })
+            let historicalIdentity =
+                Rules.packageIdentity
+                    archive.Identity.EngineIdentity
+                    archive.Identity.CompatibilityProfile
+                    archive.Identity.PackageVersion
+                    oldCommit
+                    CombatRules.implementationArtifacts
+                    historicalRegistry
+            let historicalArchive =
+                Replay.createRulesArchive historicalIdentity historicalRegistry []
+            let historicalDamage =
+                Replay.resolveRulesArchive historicalArchive
+                |> Result.defaultWith failwith
+                |> List.find (fun rule -> RuleId.value rule.Metadata.Id = "COMBAT-DAMAGE-001")
+            require (historicalDamage.Metadata.Rationale = "Retained historical damage rationale.") "Current rationale replaced replay-owned historical metadata."
+            match historicalDamage.Metadata.RuleSource with
+            | Some source -> require (source.Commit = oldCommit) "Current source revision replaced the replay-owned historical revision."
+            | None -> failwith "Replay-owned historical source metadata became unavailable."
 
         let expectMalformedArchive label change =
             let changedArchive = rulesArchive () |> change
@@ -156,7 +205,7 @@ module ReplayFixtures =
                 (changed |> Replay.encode |> Replay.decode Replay.defaultLimits)
                 ("Rules archive accepted invalid " + label + ".")
 
-        let rehash identity applications = Replay.createRulesArchive identity applications
+        let rehash identity applications = Replay.createRulesArchive identity CombatRules.registry applications
         let identity = CombatRules.packageIdentity
         expectMalformedArchive "engine identity" (fun archive -> rehash { identity with EngineIdentity = "" } archive.Applications)
         expectMalformedArchive "compatibility profile" (fun archive -> rehash { identity with CompatibilityProfile = "" } archive.Applications)
@@ -165,7 +214,14 @@ module ReplayFixtures =
         expectMalformedArchive "implementation digest" (fun archive -> rehash { identity with ImplementationDigest = [| 1uy |] } archive.Applications)
         expectMalformedArchive "semantic digest" (fun archive -> rehash { identity with SemanticDigest = [| 1uy |] } archive.Applications)
         expectMalformedArchive "manifest digest" (fun archive -> rehash { identity with ManifestDigest = [| 1uy |] } archive.Applications)
-        expectMalformedArchive "application binding" (fun _ -> Replay.createRulesArchive identity [ Array.zeroCreate 32 ])
+        expectMalformedArchive "application binding" (fun _ -> Replay.createRulesArchive identity CombatRules.registry [ Array.zeroCreate 32 ])
+        let changedRule =
+            let first = CombatRules.registry.Head
+            { first with Metadata = { first.Metadata with Rationale = first.Metadata.Rationale + " tampered" } }
+            :: CombatRules.registry.Tail
+        expectMalformedArchive
+            "canonical manifest identity"
+            (fun archive -> Replay.createRulesArchive identity changedRule archive.Applications)
 
         let missingArchive = { package with RulesArchive = None }
         expectError

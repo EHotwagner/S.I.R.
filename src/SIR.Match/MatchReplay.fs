@@ -193,6 +193,7 @@ module MatchReplay =
                 Some(
                     Replay.createRulesArchive
                         CombatRules.packageIdentity
+                        CombatRules.registry
                         (explanations |> List.map Rules.canonicalApplicationBytes)
                 )
               Content =

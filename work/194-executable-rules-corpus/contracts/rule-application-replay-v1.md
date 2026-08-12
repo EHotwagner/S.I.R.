@@ -2,7 +2,7 @@
 
 A `RuleApplication` has a stable application ID, rule ID, decisive typed operands in declared order, typed outcome/effects, ordered child application IDs, authoritative event identity, phase/order identity, and complete rule-package identity. Summary, calculation, and engineering renderings project this record without changing it.
 
-Replay format v3 extends the existing versioned envelope with Game.Core compatibility profile/package identity, rule implementation/semantic/manifest digests, pinned source commit, and either an embedded schema-v1 rules package or a content-addressed package reference. Existing v1/v2 readers remain supported.
+Replay format v3 extends the existing versioned envelope with Game.Core compatibility profile/package identity, rule implementation/semantic/manifest digests, pinned source commit, and an embedded canonical schema-v1 manifest preimage plus canonical rule applications. The decoder reconstructs typed rules from that bounded payload, requires an exact canonical round trip, recomputes the manifest digest from the archived identity and payload, and rejects any application bound to another manifest. The archive is therefore sufficient to render historical rule titles, formulas, rationale, dependencies, and pinned source without consulting current or external content. Existing v1/v2 readers remain byte-compatible.
 
 Historical resolution is exact:
 
