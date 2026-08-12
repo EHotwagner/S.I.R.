@@ -267,8 +267,8 @@ module SpatialQuery =
 
     let private lineStepCount origin target =
         max
-            (abs (float target.Col - float origin.Col))
-            (abs (float target.Row - float origin.Row))
+            (abs (int64 target.Col - int64 origin.Col))
+            (abs (int64 target.Row - int64 origin.Row))
 
     let private lineCells origin target =
         // observedTrace proves this delta is within MaximumCrossedItems before
@@ -293,14 +293,11 @@ module SpatialQuery =
     let private observedTrace (world: ProjectedSpatialWorld) (request: SpatialQueryRequest) footprint =
         let origins = absoluteFootprint request.Origin footprint
         let targets = absoluteFootprint request.Target footprint
-        // All int32 coordinate deltas are exactly representable as IEEE-754
-        // doubles. This permits an overflow-free work check in both runtimes
-        // without pulling BigInt support into the eager browser graph.
-        let maximumWork = float request.Bounds.MaximumCrossedItems
+        let maximumWork = int64 request.Bounds.MaximumCrossedItems
         if origins.Length * targets.Length > int request.Bounds.MaximumCrossedItems then false, [], [], [], [], true
         else
             let pairs = [ for origin in origins do for target in targets do yield origin, target ]
-            if (pairs |> List.sumBy (fun (origin, target) -> lineStepCount origin target + 1.0)) > maximumWork then
+            if (pairs |> List.sumBy (fun (origin, target) -> lineStepCount origin target + 1L)) > maximumWork then
                 false, [], [], [], [], true
             else
                 let visiblePairs =

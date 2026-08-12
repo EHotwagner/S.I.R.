@@ -42,7 +42,7 @@ sed -i 's/|{request.Profile.Stance}|{request.Profile.HeightBand}|{directionCode 
 expect_mutation_failure profile-cache-key "Cache identity omitted stance, height, or facing."
 
 restore_subject
-sed -i 's/if (pairs |> List.sumBy (fun (origin, target) -> lineStepCount origin target + 1.0)) > maximumWork then/if false then/' "$subject"
+sed -i 's/if (pairs |> List.sumBy (fun (origin, target) -> lineStepCount origin target + 1L)) > maximumWork then/if false then/' "$subject"
 expect_mutation_failure trace-work-bound "Trace work was materialized beyond MaximumCrossedItems."
 
 restore_subject
