@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "384ad4be236c90e5118641a4bc2fccc24ba0ac4eb54a56be2c231a1266dd7702"
+        "value": "6c1d25bf062d356df50a2cb82b9f7c38347226f76532bc401ca36d8d94ed4812"
       }
     },
     {
@@ -715,7 +715,9 @@
       "requirementRefs": [
         "FR-002"
       ],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "work/187-fable-game-governance-parity/test-results/game-core-cross-runtime.json"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -739,7 +741,9 @@
       "requirementRefs": [
         "FR-003"
       ],
-      "artifactRefs": [],
+      "artifactRefs": [
+        "work/187-fable-game-governance-parity/test-results/game-core-cross-runtime.json"
+      ],
       "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
@@ -1037,7 +1041,7 @@
           "path": "work/187-fable-game-governance-parity/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "384ad4be236c90e5118641a4bc2fccc24ba0ac4eb54a56be2c231a1266dd7702"
+            "value": "6c1d25bf062d356df50a2cb82b9f7c38347226f76532bc401ca36d8d94ed4812"
           },
           "schemaVersion": 1
         },
@@ -1068,7 +1072,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "e22039d2472d957ecea3a154dce0a2a18a04dfff7c5b3d49677e86512584c3ec"
+        "value": "cee388e2a8bc15b23f9efb168ffb3bf01bbc46d59666d397d6091e57fe7ab93b"
       },
       "currency": "current"
     }

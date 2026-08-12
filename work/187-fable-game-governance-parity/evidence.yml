@@ -73,7 +73,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-002]
     obligationRefs: [EV002]
-    artifacts: []
+    artifacts: [work/187-fable-game-governance-parity/test-results/game-core-cross-runtime.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-conformance.sh
@@ -87,7 +87,7 @@ evidence:
       passed: 15
       failed: 0
       skipped: 0
-    notes: [Verified by the clean local conformance route.]
+    notes: ["Verified by the package-derived .NET/Fable primitive conformance route; durable baseline and mutation outcomes are recorded in game-core-cross-runtime.json."]
   - id: EV003
     kind: verification
     subject:
@@ -100,7 +100,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-003]
     obligationRefs: [EV003]
-    artifacts: []
+    artifacts: [work/187-fable-game-governance-parity/test-results/game-core-cross-runtime.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-conformance.sh
@@ -114,7 +114,7 @@ evidence:
       passed: 15
       failed: 0
       skipped: 0
-    notes: [Verified by the clean local conformance route.]
+    notes: ["Verified by the package-derived .NET/Fable primitive conformance route; durable baseline and mutation outcomes are recorded in game-core-cross-runtime.json."]
   - id: EV004
     kind: verification
     subject:

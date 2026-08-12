@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "ce34d635fa25b5e69f2a50fc73e41b5eb0ee985b09f9e6d7e1e4d17ec4b5d96c"
+        "value": "97bcb830d7a3ff3538bb25e02da38b5a33ab5d8006ca370e991f0ee0d3c51f25"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -240,5 +240,16 @@
       "kind": "skills"
     }
   ],
-  "diagnostics": []
+  "diagnostics": [
+    {
+      "id": "agents.staleGeneratedGuidance",
+      "severity": "warning",
+      "artifact": "readiness/187-fable-game-governance-parity/agent-commands/claude/guidance.json",
+      "message": "Generated agent guidance for target \u0027claude\u0027 no longer matches the current normalized work model.",
+      "correction": "Regenerate agent guidance so the generated view matches the current work model.",
+      "relatedIds": [
+        "claude"
+      ]
+    }
+  ]
 }
