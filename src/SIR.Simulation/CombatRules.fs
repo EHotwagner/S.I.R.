@@ -14,7 +14,7 @@ module CombatRules =
     let private requiredId value = RuleId.create value |> Result.defaultWith failwith
     let private fixedValue unitName value = { DataKind = RuleValueKind.FixedPoint; Unit = unitName; Value = RuleValue.FixedPointValue value }
     let private integerValue unitName value = { DataKind = RuleValueKind.Integer; Unit = unitName; Value = RuleValue.IntegerValue value }
-    let private source symbol = Some { Symbol = symbol; RepositoryPath = "src/SIR.Simulation/CombatRules.fs"; Commit = "87931073b13b3c74b2ce9dc4cd4321e9b237760e" }
+    let private source symbol = Some { Symbol = symbol; RepositoryPath = "src/SIR.Simulation/CombatRules.fs"; Commit = "1ed3483961f127b0ef27b15aa72fad567c17086a" }
     let private statement trigger response = { Preconditions = []; Trigger = trigger; System = "S.I.R. combat simulation"; Responses = [ response ] }
     let private metadata id title kind rationale dependencies symbol evidence =
         { Id = requiredId id; Title = title; Status = Canonical; SemanticKind = kind; Statement = statement None title; Rationale = rationale; Dependencies = dependencies |> List.map requiredId; Supersedes = []; RuleSource = source symbol; Examples = [ "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs" ]; Properties = [ "deterministic .NET/Fable canonical equality" ]; Evidence = [ evidence ] }
@@ -54,8 +54,8 @@ module CombatRules =
         [ weapon; body; engagement; trace; armor; damage; transition ] |> Rules.validate |> Result.defaultWith (fun errors -> failwithf "Invalid combat registry: %A" errors)
 #endif
     let implementationArtifacts =
-        [ "implementation", System.Text.Encoding.UTF8.GetBytes "a8aa0ec7f9ff31705bb25eb656176f10edc65c4d329121992c0ab696bec94149" ]
-    let packageIdentity = Rules.packageIdentity "sir-simulation-v1" "fs-gg-game-core-fable-lockstep-v1" "FS.GG.Game.Core@0.13.0" "87931073b13b3c74b2ce9dc4cd4321e9b237760e" implementationArtifacts registry
+        [ "implementation", System.Text.Encoding.UTF8.GetBytes "d1084ee4a284eb8910d03cf849d2e30fafd3b8ac8bd53c77e8076a07761711fa" ]
+    let packageIdentity = Rules.packageIdentity "sir-simulation-v1" "fs-gg-game-core-fable-lockstep-v1" "FS.GG.Game.Core@0.13.0" "1ed3483961f127b0ef27b15aa72fad567c17086a" implementationArtifacts registry
     let retainedPackage =
 #if SIR_WEB_CLIENT
         { Identity = packageIdentity; ManifestJson = ""; CoverageJson = "" }
@@ -91,10 +91,13 @@ module CombatRules =
     let private evaluate expression inputs = Rules.evaluate inputs expression |> Result.mapError (sprintf "%A")
     let private formula id = registry |> List.find (fun rule -> RuleId.value rule.Metadata.Id = id) |> fun rule -> match rule.Semantics with FormulaSemantics(_, _, expression) -> expression | _ -> failwith "Expected formula."
     let private application id eventId operands (outcome: TypedValue) children = { ApplicationId = eventId + ":" + id; RuleId = requiredId id; Operands = operands; Outcome = outcome; Children = children; EventId = eventId; PackageManifestDigest = packageIdentity.ManifestDigest }
+    let private traceProbability visible total =
+        FixedPoint.fromRatio (int visible) (int total)
+        |> Result.defaultWith (fun _ -> failwith "Authoritative non-empty sample division failed.")
     let resolveAttack input =
         if List.isEmpty input.TargetFootprint || input.TotalSamples <= 0 || input.VisibleSamples < 0 || input.VisibleSamples > input.TotalSamples then Error "Target footprint and authoritative spatial sample counts must be valid." else
         let visible, total = int input.VisibleSamples, int input.TotalSamples
-        let traceValue = FixedPoint.fromRatio visible total |> Result.defaultWith (fun _ -> failwith "Non-empty footprint division failed.")
+        let traceValue = traceProbability input.VisibleSamples input.TotalSamples
         let preparationInputs = Map.ofList [ "range", fixedValue "seconds" (fp input.RangeCells 1) ]
         let armorInputs = Map.ofList [ "retention", fixedValue "ratio" input.ArmorRetention ]
         let fixedOf (typed: TypedValue) = match typed.Value with RuleValue.FixedPointValue value -> value | _ -> failwith "Validated formula returned another kind."
