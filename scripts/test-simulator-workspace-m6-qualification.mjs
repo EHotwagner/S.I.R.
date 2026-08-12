@@ -48,7 +48,7 @@ for (const required of [
   'prop.ariaLabel "Simulator runtime tools"',
   'prop.ariaLabel "Simulation controllers"',
   'prop.ariaLabel "Simulator runtime diagnostics"',
-  'prop.ariaLabel "Simulator immutable revision state"',
+  'prop.ariaLabel "Simulator maintained revision state"',
   'svg.id "persistent-layer-routes"',
   'svg.id "persistent-layer-units"',
   'svg.id "persistent-layer-annotations"',

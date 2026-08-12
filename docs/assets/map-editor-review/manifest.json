@@ -1,7 +1,7 @@
 {
   "format": "sir-map-editor-review-v1",
   "generatedFrom": "production persistent Fable/React SVG workscreen after the M4 Editor migration",
-  "productionBundleSha256": "42583000bcd2d2639714606c93c7e2cd5244e23eb1a7d687a424c5a4bb7bd6b0",
+  "productionBundleSha256": "0e5acb0e73e2e8e53dae1f187c39703d8b4ed08c321efffd00416fae1c2b21c5",
   "rasterizer": "rsvg-convert 2.62.3",
   "width": 960,
   "height": 640,
@@ -11,7 +11,7 @@
       "description": "Authored terrain projected through the persistent Editor renderer.",
       "svg": "terrain.svg",
       "png": "terrain.png",
-      "svgSha256": "a5dbae6432b723f2fd49dd72e6b9d24779405e553ba08718a038b1da5bc63f58",
+      "svgSha256": "b93c0a75d619e5af82052d73e4e9e48598b912f73cc448fe1361e6a5f4ce0170",
       "pngSha256": "0a1a94639ab53c64c1271df908bc9add81da2d023f0d23467d016e984022e8b5"
     },
     {
@@ -19,7 +19,7 @@
       "description": "Semantic edges projected through the persistent Editor renderer.",
       "svg": "edges.svg",
       "png": "edges.png",
-      "svgSha256": "e2ffc142209b3429be7c37de02a11eecf01ab4127de4031b5cdcc85aaaca463b",
+      "svgSha256": "e847ad015bf977caac66d7d9557acd7601177d670af35ad34b931e394a2dad03",
       "pngSha256": "d781fb94291be76a67bf19bc24de1915b1a3a9b12bbc939585bece9794783103"
     },
     {
@@ -27,7 +27,7 @@
       "description": "Canonical square-unit footprints in the shared Editor projection.",
       "svg": "units.svg",
       "png": "units.png",
-      "svgSha256": "6ac9cc132e66388bf213cdc85ec8a9b4d79606779d4bb8c6141c1934777502c3",
+      "svgSha256": "dda98100b1a75b594bb8a7a33bc742bedee551b5e476125ccca19830f970a874",
       "pngSha256": "898f9c35da30304a659b8870e0ec7de40b103a7775bd1d0604bbd72e6a5db475"
     },
     {
@@ -35,23 +35,23 @@
       "description": "Imported objective and deployment regions projected as positioned annotations.",
       "svg": "zones.svg",
       "png": "zones.png",
-      "svgSha256": "5e2ae643c811e7085735b081210f65d17e08f2a07acb93ce53ef857139939681",
-      "pngSha256": "db5b1684b65f415c6aa6bfca5242370713ab7edf96c7b7cb68fb984a017f0963"
+      "svgSha256": "582bdbd40f6f528364cc00622249b95caa21214d02ee264f13dcb0970d1321fc",
+      "pngSha256": "a9c3d211b4a5795138ade94e5fc13881a158a5e9bede5ed6909c2eab8e71fb50"
     },
     {
       "domain": "background",
       "description": "Signature-validated local background rendered by the retained persistent SVG.",
       "svg": "background.svg",
       "png": "background.png",
-      "svgSha256": "2c8105c40ec8e17e81da1de1190431628ef22b61a8c6ebecbf0b14eb124aaec1",
-      "pngSha256": "7627379cf346eaeec756cf2b74d7ae533d6a329792680f05c29914da64cc777c"
+      "svgSha256": "513de8aef3df87449f47701542bb54777c551c71613ee046151e200dcdf6e098",
+      "pngSha256": "d1aa2c627846b4134616dbfa9f55ce05f879db41cc48bf8a46a4249528d0f139"
     },
     {
-      "domain": "simulator-handoff",
-      "description": "Immutable simulator handoff projected into the same retained SVG.",
-      "svg": "simulator-handoff.svg",
-      "png": "simulator-handoff.png",
-      "svgSha256": "ce7a8e3f7f1de6597c2020c18bb1693ff70490b94a8c168f50a6405c399a1382",
+      "domain": "continuous-simulation",
+      "description": "Continuously maintained simulation projected into the same retained SVG.",
+      "svg": "continuous-simulation.svg",
+      "png": "continuous-simulation.png",
+      "svgSha256": "46f078313dd1b5d42eb18d3c9f68080331f04e648786333fa5c8180d31e02701",
       "pngSha256": "0284c077fa653544cc48c3644569142a76431553ee5e08cdadf2b498f1b92f6d"
     },
     {
@@ -59,8 +59,8 @@
       "description": "Imported EDGE-GAP validation state shown with the authoritative persistent projection.",
       "svg": "validation.svg",
       "png": "validation.png",
-      "svgSha256": "6766814177cb580d0650b3e42ac4f7ff0b89b454dc18034eb8dfc487edf74e06",
-      "pngSha256": "84549ff044dfde9c1a49844a21c86a0a37c53796ed9b032ad4fb1fd78948f699"
+      "svgSha256": "6c5cdafcfdfcfc4581087ee96af3d4a7f0a07002b9906713f3b71d6d3950809a",
+      "pngSha256": "44d63b90ad956621167507c701c7f7f388a6326a1fd3db25e10a69de51413d1b"
     }
   ]
 }

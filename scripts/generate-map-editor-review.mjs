@@ -228,18 +228,15 @@ unit?.dispatchEvent(
   new window.MouseEvent("click", { bubbles: true, cancelable: true }),
 );
 await window.happyDOM.waitUntilComplete();
-buttonByText(
-  "Simulate revision",
-  window.document.querySelector('[aria-label="Map editor document actions"]'),
-)?.click();
+buttonByText("Simulate")?.click();
 await window.happyDOM.waitUntilComplete();
 if (worksurface()?.getAttribute("data-scene-owner") !== "SimulatorScene") {
-  throw new Error("The registry-routed simulator handoff did not project.");
+  throw new Error("The automatically maintained simulator did not project.");
 }
 await writeBoard(
-  "simulator-handoff",
+  "continuous-simulation",
   ["terrain", "edges", "routes", "units", "selection", "annotations"],
-  "Immutable simulator handoff projected into the same retained SVG.",
+  "Continuously maintained simulation projected into the same retained SVG.",
 );
 
 buttonByText("Editor")?.click();
@@ -294,7 +291,7 @@ and migrated visual semantics.
 
 Domains: imported terrain, semantic edges, units, positioned regions,
 signature-validated background rendering, imported validation state, and
-immutable simulator handoff.
+continuously maintained simulation state.
 `,
   "utf8",
 );

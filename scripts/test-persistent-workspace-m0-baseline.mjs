@@ -180,7 +180,7 @@ for (const token of [
   "simulatorPanelBody",
   'prop.ariaLabel "Simulator runtime tools"',
   'prop.ariaLabel "Simulator runtime diagnostics"',
-  'prop.ariaLabel "Simulator immutable revision state"',
+  'prop.ariaLabel "Simulator maintained revision state"',
   "planningPanelBody",
   "reviewPanelBody",
   "sourcePanel model dispatch",

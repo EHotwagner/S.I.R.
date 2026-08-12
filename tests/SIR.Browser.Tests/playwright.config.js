@@ -8,6 +8,7 @@ assertBrowserAvailable();
 
 export default defineConfig({
   testDir: import.meta.dirname,
+  testMatch: "**/*.spec.js",
   // The published server hosts one heavy Fable application.  Serial contexts
   // keep its startup budget deterministic instead of amplifying compilation
   // and browser initialization across the two available CI CPUs.

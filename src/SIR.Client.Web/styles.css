@@ -846,6 +846,16 @@
 #sir-replay-app [data-time-channel="Committed"] { color: #ffd166; }
 
 @media (min-width: 48.01rem) {
+  #sir-replay-app .tactical-timeline {
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: .1rem;
+    padding: 0;
+  }
+  #sir-replay-app .tactical-timeline-channel-legend { grid-area: 1 / 1; }
+  #sir-replay-app .tactical-time-cursor { grid-area: 1 / 2; align-self: center; text-align: right; }
+  #sir-replay-app .tactical-transport { grid-area: 2 / 1 / auto / 3; }
+  #sir-replay-app .tactical-time-ruler { grid-area: 3 / 1 / auto / 3; }
+  #sir-replay-app .tactical-command-lanes { grid-area: 4 / 1 / auto / 3; }
   #sir-replay-app .tactical-modality-controls,
   #sir-replay-app .tactical-supporting-controls,
   #sir-replay-app .tactical-toolbar-layout,

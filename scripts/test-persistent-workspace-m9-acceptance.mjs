@@ -170,7 +170,7 @@ for (const required of [
 }
 for (const required of [
   "Pointer timeline resize was not coalesced or changed unified timeline authority",
-  "projection-only-runtime-tick-unchanged",
+  "reconstructed-runtime-state-at-cursor",
   'ariaLabel "Authored, predicted, accepted, and committed timeline segments"',
 ]) {
   require(smoke.includes(required) || app.includes(required), `timeline authority evidence is missing: ${required}`);

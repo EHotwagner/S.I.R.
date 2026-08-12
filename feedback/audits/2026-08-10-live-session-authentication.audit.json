@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-10-live-session-authentication.md",
-  "reportSha256": "a431f3e7968b39c3e8c66ed4df56bc2fdbe14e475094dbee5460097a3015e137",
+  "reportSha256": "72c8191d19e2474825d6c211b08360f5822f6f332019a4dbc399082e99cd69f4",
   "criticMode": "separated-critic-pass",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -32,11 +32,6 @@
         {
           "locator": "command:node scripts/test-persistent-workspace-m9-acceptance.mjs",
           "result": "verified"
-        },
-        {
-          "locator": "file:docs/assets/persistent-workspace-m9-review/manifest.json",
-          "result": "verified",
-          "sha256": "98f1110b15291b114e0f4aeb00924ea6b9bfa942789ee6e7e806c24c9d2ed254"
         }
       ],
       "confidenceLimits": []

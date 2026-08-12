@@ -201,8 +201,13 @@ const collectGeometry = () => {
   const right = query("#tactical-sidebar-right");
   const bottom = query("#tactical-bottom-panel");
   const timeline = query('[aria-label="Unified tactical timeline"]');
+  const timelineLegend = query(".tactical-timeline-channel-legend");
+  const timelineTransport = query(".tactical-transport");
+  const timelineRuler = query(".tactical-time-ruler");
+  const timelineCursor = query(".tactical-time-cursor");
+  const timelineLanes = query(".tactical-command-lanes");
   const tools = query(".editor-tools-panel");
-  const elements = { shell, toolbar, frame, workscreen, svg, left, right, bottom, timeline };
+  const elements = { shell, toolbar, frame, workscreen, svg, left, right, bottom, timeline, timelineLegend, timelineTransport, timelineRuler, timelineCursor, timelineLanes };
   if (Object.values(elements).some((element) => !element)) throw new Error("required production shell element missing");
   const rectangles = Object.fromEntries(Object.entries(elements).map(([key, element]) => [key, rect(element)]));
   const toolbarChildren = [...toolbar.querySelectorAll("button, summary")]
@@ -308,7 +313,7 @@ const assertWide = (audit) => {
   if (Object.values(audit.overlaps).some(Boolean)) throw new Error(`1440 shell landmarks overlap: ${JSON.stringify(audit.overlaps)}`);
   if (audit.fieldFocusShare < 0.68 || r.workscreen.width <= r.left.width + r.right.width) throw new Error("live workscreen is not dominant in Field Focus");
   if (r.workscreen.height < 500 || r.bottom.height > r.workscreen.height / 3) throw new Error("live Field Focus vertical proportions drifted");
-  if (r.bottom.bottom > audit.viewport.height + 1 || r.timeline.bottom > r.bottom.bottom + 1) throw new Error("the expanded Field Focus timeline is clipped below the 1440×900 review viewport");
+  if (r.bottom.bottom > audit.viewport.height + 1 || r.timeline.bottom > r.bottom.bottom + 1) throw new Error(`the expanded Field Focus timeline is clipped below the 1440×900 review viewport: ${JSON.stringify({ viewport: audit.viewport, shell: r.shell, toolbar: r.toolbar, frame: r.frame, workscreen: r.workscreen, bottom: r.bottom, timeline: r.timeline, timelineLegend: r.timelineLegend, timelineTransport: r.timelineTransport, timelineRuler: r.timelineRuler, timelineCursor: r.timelineCursor, timelineLanes: r.timelineLanes })}`);
   if (audit.counts.worksurfaceRoots !== 1 || audit.counts.applicationLandmarks !== 1) throw new Error("live shell is not a singleton workscreen");
   if (audit.channels.length < 4 || !["Authored", "Predicted", "Accepted", "Committed"].every((name) => audit.channels.some(({ channel }) => channel === name))) throw new Error("live timeline does not expose all real channels");
   if (audit.channels.some(({ rect: channel }) => channel.y < r.bottom.y || channel.bottom > r.bottom.bottom)) throw new Error("a real timeline channel is not visible inside the bottom panel");

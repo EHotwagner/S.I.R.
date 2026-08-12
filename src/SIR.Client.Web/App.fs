@@ -48,24 +48,24 @@ let private tacticalCommandAvailable model (command: TacticalCommandDefinition) 
         | ReplayOperationRequired -> model.Shell.ActiveOperation.IsSome
 
     let currentTick, finalTick, transportReady =
-        match model.Workspace with
-        | ReplayWorkspace ->
+        match model.Workspace, model.SampleReplayFrames, model.Simulator with
+        | ReplayWorkspace, _, _ when model.Shell.Playback.FinalTick > 0 ->
             int64 model.Shell.Playback.CurrentTick,
             int64 model.Shell.Playback.FinalTick,
             model.Shell.Playback.FinalTick > 0
-        | SimulatorWorkspace ->
-            model.Simulator |> Option.map (fun simulator -> int64 simulator.Tick) |> Option.defaultValue 0L,
-            model.Tactical.Horizon,
-            model.Simulator.IsSome
+        | _, _, Some simulator ->
+            int64 simulator.Tick, model.Tactical.Horizon, true
+        | ReplayWorkspace, _, None ->
+            int64 model.Shell.Playback.CurrentTick,
+            int64 model.Shell.Playback.FinalTick,
+            model.Shell.Playback.FinalTick > 0
         | _ -> model.Tactical.Cursor, model.Tactical.Horizon, true
 
     let transportAvailability =
         match command.Id with
         | "timeline.play-toggle" ->
-            match model.Workspace with
-            | ReplayWorkspace
-            | SimulatorWorkspace -> transportReady
-            | _ -> false
+            model.Simulator.IsSome
+            || (model.Workspace = ReplayWorkspace && transportReady)
         | "timeline.step-back"
         | "timeline.home" -> currentTick > 0L
         | "timeline.step-forward"
@@ -138,6 +138,14 @@ let private currentInputTarget target =
     | "select" -> ModalInputTarget.SelectElement
     | "contenteditable" -> ModalInputTarget.ContentEditableElement
     | _ -> ModalInputTarget.ApplicationElement
+
+let private validSimulatorFor editor current =
+    match MapEditorSimulator.tryHandoff editor with
+    | Error _ -> current
+    | Ok initial ->
+        current
+        |> Option.map (MapEditorSimulator.reconcile editor)
+        |> Option.orElse (Some initial)
 
 /// Browser `key` represents shifted digits as printable symbols (for example
 /// Ctrl+Shift+2 arrives as `@`).  Registry gestures use the physical digit, so
@@ -463,6 +471,12 @@ let init () =
             editor.Map
             (MapEditor.selected editor)
             FitEditorBoard
+    let simulator = validSimulatorFor editor None
+    let simulatorSelectedUnit =
+        editor.SelectedUnit
+        |> Option.filter (fun id ->
+            simulator
+            |> Option.exists (fun value -> Map.containsKey id value.RuntimeMap.Units))
     let tacticalBindings, tacticalBindingDiagnostics =
         let stored = readTacticalBindings ()
         if isNull stored then
@@ -496,8 +510,8 @@ let init () =
 
     { Shell = Shell.init ()
       Editor = editor
-      Simulator = None
-      SimulatorSelectedUnit = None
+      Simulator = simulator
+      SimulatorSelectedUnit = simulatorSelectedUnit
       SimulatorControllerSelection = None
       Planning = None
       Tactical = UnifiedTacticalWorkspace.initial 600L
@@ -511,7 +525,7 @@ let init () =
       DesktopToolbarCommands = desktopToolbarCommands
       DesktopToolbarCustomizationOpen = false
       BottomPanelResizeActive = false
-      TacticalSelectedUnit = None
+      TacticalSelectedUnit = simulatorSelectedUnit
       Workspace = EditorWorkspace
       EditorToolPanel = TerrainTools
       EditorToolPanelVisible = false
@@ -670,6 +684,12 @@ let rec update msg model =
         | None -> model, Cmd.none
         | Some sample ->
             let editor = ExperienceSamples.editorState sample
+            let simulator = validSimulatorFor editor None
+            let simulatorSelectedUnit =
+                editor.SelectedUnit
+                |> Option.filter (fun id ->
+                    simulator
+                    |> Option.exists (fun value -> Map.containsKey id value.RuntimeMap.Units))
             let editorView =
                 MapEditorWorkspace.initial model.EditorView.ReducedMotion
                 |> MapEditorWorkspace.update
@@ -678,7 +698,9 @@ let rec update msg model =
                     FitEditorBoard
             { model with
                 Editor = editor
-                Simulator = None
+                Simulator = simulator
+                SimulatorSelectedUnit = simulatorSelectedUnit
+                TacticalSelectedUnit = simulatorSelectedUnit
                 Workspace = EditorWorkspace
                 HeldInputs = HeldInputSession.recover model.HeldInputs
                 EditorToolPanel = TerrainTools
@@ -687,7 +709,9 @@ let rec update msg model =
                 SampleReplayFrames = None
                 Battlefield =
                     Battlefield.reconcile
-                        (MapEditor.frame editor)
+                        (simulator
+                         |> Option.map (MapEditorSimulator.frame simulatorSelectedUnit)
+                         |> Option.defaultValue (MapEditor.frame editor))
                         model.Battlefield },
             Cmd.none
     | LoadSimulationSample sampleId ->
@@ -838,30 +862,42 @@ let rec update msg model =
                 Tactical =
                     model.Tactical
                     |> UnifiedTacticalWorkspace.scrub cursor }
-        match model.Workspace with
-        | ReplayWorkspace ->
+        match model.Workspace, projected.SampleReplayFrames, projected.Simulator with
+        | ReplayWorkspace, _, _ when model.Shell.Playback.FinalTick > 0 ->
+            update (ShellMsg(SeekRequested(int32 (min (int64 Int32.MaxValue) cursor)))) projected
+        | _, _, Some simulator ->
+            let simulator = MapEditorSimulator.seek (int cursor) simulator
+            let selected = projected.SimulatorSelectedUnit |> Option.filter (fun id -> Map.containsKey id simulator.RuntimeMap.Units)
+            { projected with
+                Simulator = Some simulator
+                SimulatorSelectedUnit = selected
+                Tactical = projected.Tactical |> UnifiedTacticalWorkspace.scrub (int64 simulator.Tick)
+                Battlefield = Battlefield.reconcile (MapEditorSimulator.frame selected simulator) projected.Battlefield }, Cmd.none
+        | ReplayWorkspace, _, _ ->
             update (ShellMsg(SeekRequested(int32 (min (int64 Int32.MaxValue) cursor)))) projected
         | _ -> projected, Cmd.none
     | TacticalTimeStepped delta ->
         let origin =
-            if model.Workspace = ReplayWorkspace then
+            if model.Workspace = ReplayWorkspace && model.Shell.Playback.FinalTick > 0 then
                 int64 model.Shell.Playback.CurrentTick
-            elif model.Workspace = SimulatorWorkspace then
+            elif model.Simulator.IsSome then
                 model.Simulator
                 |> Option.map (fun simulator -> int64 simulator.Tick)
                 |> Option.defaultValue model.Tactical.Cursor
+            elif model.Workspace = ReplayWorkspace then
+                int64 model.Shell.Playback.CurrentTick
             else model.Tactical.Cursor
         update (TacticalTimeChanged(origin + delta)) model
     | TacticalPlaybackToggled ->
-        match model.Workspace with
-        | ReplayWorkspace ->
+        match model.Workspace, model.SampleReplayFrames, model.Simulator with
+        | ReplayWorkspace, _, _ when model.Shell.Playback.FinalTick > 0 ->
             let next, effect = update (ShellMsg TogglePlayback) model
             { next with
                 Tactical =
                     next.Tactical
                     |> UnifiedTacticalWorkspace.setPlaying next.Shell.Playback.IsPlaying },
             effect
-        | SimulatorWorkspace when model.Simulator.IsSome ->
+        | _, _, Some _ ->
             let next, effect = update (SimulatorChanged ToggleSimulatorRun) model
             { next with
                 Tactical =
@@ -869,6 +905,13 @@ let rec update msg model =
                     |> UnifiedTacticalWorkspace.setPlaying (
                         next.Simulator |> Option.exists _.IsRunning
                     ) },
+            effect
+        | ReplayWorkspace, _, None ->
+            let next, effect = update (ShellMsg TogglePlayback) model
+            { next with
+                Tactical =
+                    next.Tactical
+                    |> UnifiedTacticalWorkspace.setPlaying next.Shell.Playback.IsPlaying },
             effect
         | _ ->
             { model with
@@ -878,18 +921,19 @@ let rec update msg model =
             Cmd.none
     | TacticalPulse ->
         let tactical =
-            match model.Workspace with
-            | ReplayWorkspace ->
+            match model.Workspace, model.SampleReplayFrames, model.Simulator with
+            | ReplayWorkspace, _, _ when model.Shell.Playback.FinalTick > 0 ->
                 model.Tactical
                 |> UnifiedTacticalWorkspace.scrub (int64 model.Shell.Playback.CurrentTick)
                 |> UnifiedTacticalWorkspace.setPlaying model.Shell.Playback.IsPlaying
-            | SimulatorWorkspace ->
-                match model.Simulator with
-                | Some simulator ->
-                    model.Tactical
-                    |> UnifiedTacticalWorkspace.scrub (int64 simulator.Tick)
-                    |> UnifiedTacticalWorkspace.setPlaying simulator.IsRunning
-                | None -> UnifiedTacticalWorkspace.setPlaying false model.Tactical
+            | _, _, Some simulator ->
+                model.Tactical
+                |> UnifiedTacticalWorkspace.scrub (int64 simulator.Tick)
+                |> UnifiedTacticalWorkspace.setPlaying simulator.IsRunning
+            | ReplayWorkspace, _, None ->
+                model.Tactical
+                |> UnifiedTacticalWorkspace.scrub (int64 model.Shell.Playback.CurrentTick)
+                |> UnifiedTacticalWorkspace.setPlaying model.Shell.Playback.IsPlaying
             | _ -> UnifiedTacticalWorkspace.pulse model.Tactical
         { model with Tactical = tactical }, Cmd.none
     | ToggleTacticalBindings ->
@@ -1145,35 +1189,6 @@ let rec update msg model =
             InputHelpExpanded = false
             HeldInputs = HeldInputSession.recover model.HeldInputs },
         Cmd.none
-    | SimulateEditorRevision ->
-        match MapEditorSimulator.tryHandoff model.Editor with
-        | Error message ->
-            { model with
-                Editor = { model.Editor with Validation = Some message } },
-            Cmd.none
-        | Ok simulator ->
-            let frame = MapEditorSimulator.frame model.Editor.SelectedUnit simulator
-            { model with
-                Editor =
-                    { model.Editor with
-                        SimulatedDigest = Some simulator.Revision.Digest
-                        Validation = None }
-                Simulator = Some simulator
-                SimulatorSelectedUnit = model.Editor.SelectedUnit
-                TacticalSelectedUnit =
-                    reconcileTacticalSelectedUnit
-                        SimulatorWorkspace
-                        { model with Simulator = Some simulator }
-                SimulatorControllerSelection = None
-                Workspace = SimulatorWorkspace
-                Tactical =
-                    model.Tactical
-                    |> UnifiedTacticalWorkspace.switchModality Simulate
-                HeldInputs = HeldInputSession.recover model.HeldInputs
-                Battlefield = Battlefield.reconcile frame model.Battlefield
-                PreviousFrame = None
-                PresentationAlpha = 1.0 },
-            Cmd.none
     | SimulatorChanged action ->
         match model.Simulator with
         | None -> model, Cmd.none
@@ -1244,7 +1259,7 @@ let rec update msg model =
         Cmd.ofEffect (fun dispatch ->
             if
                 window.confirm
-                    "Reset runtime-only simulator progress to this handoff's pinned immutable revision?"
+                    "Reset runtime-only simulation progress to the current authored baseline?"
             then
                 dispatch ResetSimulator)
     | ResetSimulator ->
@@ -1461,6 +1476,11 @@ let rec update msg model =
             Cmd.none
     | EditorChanged action ->
         let editor = MapEditor.update action model.Editor
+        let simulator = validSimulatorFor editor model.Simulator
+        let simulatorSelected =
+            (if model.Workspace = EditorWorkspace then editor.SelectedUnit
+             else model.SimulatorSelectedUnit)
+            |> Option.filter (fun id -> simulator |> Option.exists (fun value -> Map.containsKey id value.RuntimeMap.Units))
         let editorView =
             match action with
             | ChooseTool _ ->
@@ -1471,15 +1491,17 @@ let rec update msg model =
                     model.EditorView
             | _ -> model.EditorView
         let battlefield =
-            match model.Workspace, model.Simulator with
-            | SimulatorWorkspace, Some simulator ->
+            match simulator with
+            | Some simulator ->
                 Battlefield.reconcile
-                    (MapEditorSimulator.frame model.SimulatorSelectedUnit simulator)
+                    (MapEditorSimulator.frame simulatorSelected simulator)
                     model.Battlefield
             | _ ->
                 Battlefield.reconcile (MapEditor.frame editor) model.Battlefield
         { model with
             Editor = editor
+            Simulator = simulator
+            SimulatorSelectedUnit = simulatorSelected
             EditorView = editorView
             Battlefield = battlefield
             PreviousFrame = None
@@ -1787,8 +1809,6 @@ let rec update msg model =
         | "planning.validate" -> update ValidatePlanningRevision model
         | "planning.preview" -> update PreviewPlanningRevision model
         | "planning.commit" -> update CommitPlanningRevision model
-        | "editor.scene.create-simulator-handoff" ->
-            update SimulateEditorRevision model
         | id when
             id.StartsWith(
                 "editor.scene.select.unit.",
@@ -4335,7 +4355,6 @@ let private editorToolbar
                                 button "Fit" "Fit the complete map" false (fun _ -> dispatch (InvokeTacticalCommand "scene.camera.fit"))
                                 button "Actual size" "Reset map camera to one hundred percent" false (fun _ -> dispatch (EditorWorkspaceChanged ResetEditorCamera))
                                 button "Frame selection" "Frame selected map objects" state.SelectedUnits.IsEmpty (fun _ -> dispatch (EditorWorkspaceChanged FrameEditorSelection))
-                                button "Simulate revision" "Validate and send this revision to Simulator" false (fun _ -> dispatch (InvokeTacticalCommand "editor.scene.create-simulator-handoff"))
                             ]
                         ]
                         Html.fieldSet [
@@ -5432,15 +5451,11 @@ let private tacticalModalityControls model dispatch =
 let private tacticalTimeline model dispatch =
     let state = model.Tactical
     let playUnavailableReason =
-        match model.Workspace with
-        | EditorWorkspace ->
-            Some "Create a simulator handoff, then switch to Simulate."
-        | PlanningWorkspace ->
-            Some "Create a simulator handoff to run this plan."
-        | SimulatorWorkspace when model.Simulator.IsNone ->
-            Some "Create a simulator handoff from the Editor."
-        | ReplayWorkspace when model.Shell.Playback.FinalTick <= 0 ->
+        match model.Simulator, model.Workspace with
+        | None, ReplayWorkspace when model.Shell.Playback.FinalTick <= 0 ->
             Some "Load a replay package to start playback."
+        | None, _ ->
+            Some "Correct the current map so a valid simulation can be maintained."
         | _ -> None
     let available commandId =
         activeTacticalRegistry model
@@ -5449,8 +5464,16 @@ let private tacticalTimeline model dispatch =
             && Set.contains model.Tactical.Modality command.Modalities
             && tacticalCommandAvailable model command)
     let runtime =
-        match model.Workspace, model.Simulator with
-        | SimulatorWorkspace, Some simulator ->
+        match model.Workspace, model.SampleReplayFrames, model.Simulator with
+        | ReplayWorkspace, _, _ when model.Shell.Playback.FinalTick > 0 ->
+            [ { Id = "committed-replay"
+                UnitId = None
+                StartTick = 0L
+                EndTick = int64 model.Shell.Playback.FinalTick
+                Channel = Committed
+                Label = "Verified committed replay"
+                Issue = None } ]
+        | _, _, Some simulator ->
             [ { Id = "committed-simulator-runtime"
                 UnitId = model.SimulatorSelectedUnit
                 StartTick = 0L
@@ -5458,7 +5481,7 @@ let private tacticalTimeline model dispatch =
                 Channel = Committed
                 Label = "Committed simulator execution"
                 Issue = None } ]
-        | ReplayWorkspace, _ when model.Shell.Playback.FinalTick > 0 ->
+        | ReplayWorkspace, _, None when model.Shell.Playback.FinalTick > 0 ->
             [ { Id = "committed-replay"
                 UnitId = None
                 StartTick = 0L
@@ -5476,8 +5499,10 @@ let private tacticalTimeline model dispatch =
         prop.custom ("data-committed-through", string state.CommittedThrough)
         prop.custom (
             "data-scrub-semantics",
-            if model.Workspace = SimulatorWorkspace then
-                "projection-only-runtime-tick-unchanged"
+            if model.Workspace = ReplayWorkspace && model.Shell.Playback.FinalTick > 0 then
+                "reconstructed-replay-state-at-cursor"
+            elif model.Simulator.IsSome then
+                "reconstructed-runtime-state-at-cursor"
             else "projection-only"
         )
         prop.children [
@@ -5895,7 +5920,7 @@ let private tacticalContextHelp model dispatch =
                         commandButton [
                             prop.type'.button
                             prop.text "Reset simulation"
-                            prop.ariaLabel "Reset simulation to its immutable revision"
+                            prop.ariaLabel "Reset simulation to the current authored baseline"
                             prop.onClick (fun _ -> dispatch (InvokeTacticalCommand "simulator.reset.request"))
                         ]
                 ]
@@ -5995,45 +6020,88 @@ let private tacticalContextHelp model dispatch =
 let private activeSceneProjection (model: Model) =
     let focusedUnit =
         reconcileTacticalSelectedUnit model.Workspace model
+        |> Option.orElseWith (fun () ->
+            model.SimulatorSelectedUnit
+            |> Option.filter (fun id ->
+                model.Simulator
+                |> Option.exists (fun simulator ->
+                    Map.containsKey id simulator.RuntimeMap.Units)))
     let editorProjection editorFocusedUnit =
         TacticalSceneProjection.editor
             { EditorState = model.Editor
               EditorWorkspace = model.EditorView
               EditorFocusedUnit = editorFocusedUnit }
-    match model.Workspace with
-    | EditorWorkspace ->
-        Some(editorProjection focusedUnit)
-    | PlanningWorkspace ->
+    let simulatorProjection () =
+        model.Simulator
+        |> Option.map (fun simulator ->
+            TacticalSceneProjection.simulator
+                { SimulatorHandoff = simulator
+                  SimulatorSelectedUnit = focusedUnit
+                  SimulatorCamera = model.EditorView.Camera
+                  SimulatorFocusedUnit = focusedUnit })
+    let withRuntimeTruth (contextual: SharedSceneProjection) =
+        simulatorProjection ()
+        |> Option.map (fun runtime ->
+            let runtimeUnits =
+                runtime.Units
+                |> Array.map (fun unit -> unit.Visual.Id, unit)
+                |> Map.ofArray
+            let units =
+                Array.append
+                    (contextual.Units
+                     |> Array.choose (fun authored ->
+                         Map.tryFind authored.Visual.Id runtimeUnits
+                         |> Option.map (fun live ->
+                             { authored with
+                                 PresentationColumn = live.PresentationColumn
+                                 PresentationRow = live.PresentationRow
+                                 Visual = live.Visual })))
+                    (runtime.Units
+                     |> Array.filter (fun live ->
+                         contextual.Units
+                         |> Array.exists (fun authored ->
+                             authored.Visual.Id = live.Visual.Id)
+                         |> not))
+            { contextual with
+                RevisionIdentity = runtime.RevisionIdentity
+                Tick = runtime.Tick
+                Board = runtime.Board
+                Terrain = runtime.Terrain
+                Edges = runtime.Edges
+                Units = units
+                Routes = Array.append contextual.Routes runtime.Routes
+                Annotations = Array.append contextual.Annotations runtime.Annotations })
+        |> Option.defaultValue contextual
+    match model.Workspace, TacticalSceneProjection.acceptReview model.Shell with
+    | ReplayWorkspace, Some accepted ->
+        Some(
+            TacticalSceneProjection.review
+                { AcceptedReview = accepted
+                  ReviewCamera = model.EditorView.Camera
+                  ReviewFocusedUnit = focusedUnit }
+        )
+    | EditorWorkspace, _ ->
+        editorProjection focusedUnit |> withRuntimeTruth |> Some
+    | PlanningWorkspace, _ ->
         model.Planning
         |> Option.map (fun planning ->
             TacticalSceneProjection.planning
                 { PlanningMap = model.Editor.Map
                   PlanningState = planning
                   PlanningCamera = model.EditorView.Camera
-                  PlanningFocusedUnit = focusedUnit })
-    | SimulatorWorkspace ->
-        model.Simulator
-        |> Option.map (fun simulator ->
-            TacticalSceneProjection.simulator
-                { SimulatorHandoff = simulator
-                  SimulatorSelectedUnit = model.SimulatorSelectedUnit
-                  SimulatorCamera = model.EditorView.Camera
-                  SimulatorFocusedUnit = focusedUnit })
+                  PlanningFocusedUnit = focusedUnit }
+            |> withRuntimeTruth)
+    | SimulatorWorkspace, _ ->
+        simulatorProjection ()
         |> Option.orElseWith (fun () ->
             reconcileTacticalSelectedUnit EditorWorkspace model
             |> editorProjection
             |> Some)
-    | ReplayWorkspace ->
-        TacticalSceneProjection.acceptReview model.Shell
-        |> Option.map (fun accepted ->
-            TacticalSceneProjection.review
-                { AcceptedReview = accepted
-                  ReviewCamera = model.EditorView.Camera
-                  ReviewFocusedUnit = focusedUnit })
-        |> Option.orElseWith (fun () ->
-            reconcileTacticalSelectedUnit EditorWorkspace model
-            |> editorProjection
-            |> Some)
+    | ReplayWorkspace, _ ->
+        reconcileTacticalSelectedUnit EditorWorkspace model
+        |> editorProjection
+        |> withRuntimeTruth
+        |> Some
 
 let private activePresentedSceneProjection (model: Model) =
     let projection = activeSceneProjection model
@@ -7494,6 +7562,9 @@ let private simulatorPanelBody
                     "Authoritative runtime tick " + string handoff.Tick
                     + " · " + if handoff.IsRunning then "Running" else "Paused"
                 )
+                match handoff.ReconciliationMessage with
+                | Some message -> Html.p [ prop.role "status"; prop.text message ]
+                | None -> Html.none
                 Html.div [
                     prop.className "control-row simulation-controls"
                     prop.children [
@@ -7504,7 +7575,7 @@ let private simulatorPanelBody
                             (fun _ -> dispatch (InvokeTacticalCommand "simulator.run.toggle-k"))
                         button "Step" "Advance the map simulation one tick" handoff.IsRunning (fun _ ->
                             dispatch (InvokeTacticalCommand "simulator.step"))
-                        button "Reset" "Reset simulation to its immutable revision" handoff.IsRunning (fun _ ->
+                        button "Reset" "Reset simulation to the current authored baseline" handoff.IsRunning (fun _ ->
                             dispatch (InvokeTacticalCommand "simulator.reset.request"))
                     ]
                 ]
@@ -7568,23 +7639,22 @@ let private simulatorPanelBody
             prop.className "simulator-registered-revision"
             prop.role.status
             prop.ariaLive.polite
-            prop.ariaLabel "Simulator immutable revision state"
+            prop.ariaLabel "Simulator maintained revision state"
             prop.children [
                 Html.h4 (
-                    if stale then "Simulator behind editor draft"
-                    else "Simulator matches editor draft"
+                    if stale then "Simulator retains the last valid editor draft"
+                    else "Simulator matches the current editor draft"
                 )
                 Html.p (
-                    "Immutable revision " + string handoff.Revision.Number
+                    "Maintained revision " + string handoff.Revision.Number
                     + " · " + handoff.Revision.Digest.Substring(0, 12)
                 )
                 Html.p (
                     "Runtime tick " + string handoff.Tick
-                    + "; timeline cursor "
-                    + "is projection-only and cannot mutate this value."
+                    + "; timeline seeking reconstructs deterministic runtime state."
                 )
                 if stale then
-                    Html.p "Editor changes remain separate. Create a new handoff from Editor to replace this disposable sandbox."
+                    Html.p "The current editor draft is not valid for simulation; the last valid runtime remains available."
                 button "Open Editor" "Open the map editor" false (fun _ ->
                     dispatch (WorkspaceChanged EditorWorkspace))
                 button "Repository bundle" "Download editor and simulator design work" false (fun _ ->
@@ -7656,7 +7726,7 @@ let private tacticalPanelBody panelId model dispatch =
                 panelId
                 dispatch
         | None ->
-            Html.p "Create an immutable simulator handoff from the Editor."
+            Html.p "Correct the current map so a valid simulation can be maintained."
     elif model.Workspace = EditorWorkspace then
         match panelId with
         | "roster" -> editorOutlinerPanel model.Editor dispatch

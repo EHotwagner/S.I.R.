@@ -77,7 +77,7 @@ test("replay picker reads an exactly bounded file after rejecting an oversized o
   await expect.poll(() => page.evaluate(() => window.__sirImportReadCalls)).toBe(1);
 });
 
-test("empty derived modes retain the editor tactical scene and spatial context", async ({ page }) => {
+test("all modalities retain spatial context and expose the maintained runtime", async ({ page }) => {
   await page.goto("/");
   const battlefield = page.locator("#persistent-tactical-svg");
   const initial = {
@@ -97,11 +97,10 @@ test("empty derived modes retain the editor tactical scene and spatial context",
     await expect(battlefield).toHaveAttribute("data-camera-pan-x", initial.panX);
     await expect(battlefield).toHaveAttribute("data-camera-pan-y", initial.panY);
     await expect(battlefield).toHaveAttribute("data-camera-zoom", initial.zoom);
-    if (mode !== "Plan") {
-      await expect(battlefield).toHaveAttribute("data-scene-owner", initial.owner);
-      await expect(battlefield).toHaveAttribute("data-scene-revision", initial.revision);
-      await expect(battlefield).toHaveAttribute("data-semantic-selection-unit", initial.selection);
-    }
+    await expect(battlefield).toHaveAttribute("data-scene-owner", mode === "Plan" ? "PlanningScene" : mode === "Simulate" ? "SimulatorScene" : "EditorScene");
+    await expect(battlefield).toHaveAttribute("data-scene-tick", "0");
+    await expect(battlefield).toHaveAttribute("data-scene-revision", initial.revision);
+    await expect(battlefield).toHaveAttribute("data-semantic-selection-unit", initial.selection);
   }
 });
 

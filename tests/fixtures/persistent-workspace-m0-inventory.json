@@ -150,7 +150,7 @@
     "prop.ariaLabel \"Simulator runtime tools\"",
     "prop.ariaLabel \"Simulation controllers\"",
     "prop.ariaLabel \"Simulator runtime diagnostics\"",
-    "prop.ariaLabel \"Simulator immutable revision state\""
+    "prop.ariaLabel \"Simulator maintained revision state\""
   ],
   "responsiveTokens": [
     "#sir-replay-app .inspector-panel,",

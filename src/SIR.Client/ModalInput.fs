@@ -1317,7 +1317,7 @@ module ModalInput =
             if List.contains SimulatorControllerSelection contexts then
                 Unavailable "Finish or cancel controller selection first."
             elif handoff.IsSome then Available
-            else Unavailable "Create a simulator handoff from the Editor first."
+            else Unavailable "Correct the current map so a simulation can be maintained."
 
         let paused contexts =
             if List.contains SimulatorControllerSelection contexts then
@@ -1326,28 +1326,28 @@ module ModalInput =
                 match handoff with
                 | Some simulator when not simulator.IsRunning -> Available
                 | Some _ -> Unavailable "This command is unavailable while running."
-                | None -> Unavailable "Create a simulator handoff from the Editor first."
+                | None -> Unavailable "Correct the current map so a simulation can be maintained."
 
         let selectedPaused contexts =
             match paused contexts, selectedUnitId, handoff with
             | Available, Some _, Some _ -> Available
             | Available, None, Some _ -> Unavailable "Select a unit first."
             | Unavailable reason, _, _ -> Unavailable reason
-            | _ -> Unavailable "Create a simulator handoff from the Editor first."
+            | _ -> Unavailable "Correct the current map so a simulation can be maintained."
 
         let hasUnits contexts =
             match popupInactive contexts, handoff with
             | Available, Some simulator when not (Map.isEmpty simulator.RuntimeMap.Units) -> Available
             | Available, Some _ -> Unavailable "The simulator has no units."
             | Unavailable reason, _ -> Unavailable reason
-            | _ -> Unavailable "Create a simulator handoff from the Editor first."
+            | _ -> Unavailable "Correct the current map so a simulation can be maintained."
 
         let previewAvailable contexts =
             match paused contexts, handoff with
             | Available, Some simulator when simulator.PreviewDestination.IsSome -> Available
             | Available, Some _ -> Unavailable "No route preview is active."
             | Unavailable reason, _ -> Unavailable reason
-            | _ -> Unavailable "Create a simulator handoff from the Editor first."
+            | _ -> Unavailable "Correct the current map so a simulation can be maintained."
 
         let controllerActive contexts =
             match controllerSelection, selectedUnitId, handoff with
@@ -1355,7 +1355,7 @@ module ModalInput =
             | None, _, _ -> Unavailable "Controller selection is not active."
             | _, None, Some _ -> Unavailable "Select a unit first."
             | _, _, Some _ -> Unavailable "Controller mutation is unavailable while running."
-            | _, _, None -> Unavailable "Create a simulator handoff from the Editor first."
+            | _, _, None -> Unavailable "Correct the current map so a simulation can be maintained."
 
         [ yield binding "simulator.help.toggle" AnySimulatorContext WorkspaceCommands
               (key "?" { plain with Shift = true } KeyDown)
@@ -1683,8 +1683,8 @@ module ModalInput =
         let breadcrumb, detail =
             match handoff with
             | None ->
-                [ "Simulator"; "No handoff" ],
-                "Create an immutable simulator handoff from the Editor"
+                [ "Simulator"; "Unavailable" ],
+                "Correct the current map so a simulation can be maintained"
             | Some simulator when facts.SimulatorControllerSelection.IsSome ->
                 let choice = facts.SimulatorControllerSelection.Value
                 [ "Simulator"; "Controller" ],

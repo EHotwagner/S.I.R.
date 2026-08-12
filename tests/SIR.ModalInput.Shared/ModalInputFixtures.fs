@@ -1006,7 +1006,7 @@ let evaluate () =
             noHandoffCatalog
 
     require
-        (noHandoffProjection.Headline = "SIMULATOR / NO HANDOFF"
+        (noHandoffProjection.Headline = "SIMULATOR / UNAVAILABLE"
          && (noHandoffProjection.PossibleInputs |> List.map _.Id) =
             [ "simulator.help.toggle" ])
         "The no-handoff state disclosed simulator commands that cannot execute."

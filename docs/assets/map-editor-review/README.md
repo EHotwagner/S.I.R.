@@ -8,4 +8,4 @@ and migrated visual semantics.
 
 Domains: imported terrain, semantic edges, units, positioned regions,
 signature-validated background rendering, imported validation state, and
-immutable simulator handoff.
+continuously maintained simulation state.

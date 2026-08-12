@@ -63,7 +63,6 @@ type Msg =
     | ExecuteTacticalCommand of string
     | ExecuteModalCommand of ModalCommand
     | EditorPulse
-    | SimulateEditorRevision
     | SimulatorChanged of SimulatorAction
     | SimulatorUnitSelectionChanged of int32 option
     | BeginSimulatorControllerSelection

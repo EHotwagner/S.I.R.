@@ -1,0 +1,121 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/item-179-continuous-simulation-state.md",
+  "reportSha256": "a188492b582eb42c8451de35bf38512fa97e96678a99814a1d83fd3829e63018",
+  "criticMode": "separated-critic-pass",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:scripts/fsgg-coord claim EHotwagner/S.I.R.#179 --worker curlew-f49b --force --json", "result": "verified"},
+        {"locator": "command:scripts/fsgg-coord delivery-route record EHotwagner/S.I.R.#179 .delivery-route-179-recovery.json --json", "result": "verified"}
+      ],
+      "confidenceLimits": ["The current receipt file is an ephemeral recovery input; the durable board comment and claim receipt are external to this git head."]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:./scripts/build-docs.sh", "result": "verified"},
+        {"locator": "command:npm run test:browser", "result": "verified"}
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:timeout 180s node scripts/smoke-client.mjs",
+          "result": "verified"
+        },
+        {
+          "locator": "command:./scripts/build-docs.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.4",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "test:maintained runtime state is truthful at the cursor in every modality",
+          "result": "verified"
+        },
+        {
+          "locator": "test:advance pause place seek activation and resume preserve continuous state",
+          "result": "verified"
+        },
+        {
+          "locator": "test:terrain edits reset with a terrain-specific visible explanation",
+          "result": "verified"
+        },
+        {
+          "locator": "test:topology edits reset with a topology-specific visible explanation",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release",
+          "result": "verified"
+        },
+        {
+          "locator": "command:SIR_JUNIT_OUTPUT=artifacts/test-results/179-browser.junit.xml npm run test:browser",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": ["Same-critic confirmation and hosted exact-head CI are delivery gates outside this local feedback audit."]
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet run --project tests/SIR.ModalInput.Tests/SIR.ModalInput.Tests.fsproj -c Release",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fable tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj --outDir artifacts/test-results/item179-modal-fable --noCache",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node artifacts/test-results/item179-modal-fable/SIR.ModalInput.Shared/Program.js",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "test:maintained runtime state is truthful at the cursor in every modality",
+          "result": "verified"
+        },
+        {
+          "locator": "test:advance pause place seek activation and resume preserve continuous state",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release",
+          "result": "verified"
+        },
+        {
+          "locator": "command:SIR_JUNIT_OUTPUT=artifacts/test-results/179-browser.junit.xml npm run test:browser",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": ["Same-critic confirmation and hosted exact-head CI are delivery gates outside this local feedback audit."]
+    }
+  ]
+}
