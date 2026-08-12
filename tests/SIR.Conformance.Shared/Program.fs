@@ -58,6 +58,7 @@ let main arguments =
                       controlAbi
                       SimulationFixtures.canonicalBytes simulation
                       mapScale
+                      RulesCorpusFixtures.evaluate false
                       replay ]
                     |> SIR.Domain.CanonicalEncoding.concatenate
                     |> NumericFixtures.hex
@@ -85,6 +86,12 @@ let main arguments =
                 failwith "Simulation conformance failed."
             | None ->
                 failwith "The deliberately changed simulation checkpoint was accepted."
+    | [ "--inject-rules-corpus-divergence" ] ->
+        let expected = RulesCorpusFixtures.evaluate false
+        let actual = RulesCorpusFixtures.evaluate true
+        let offset = Array.zip expected actual |> Array.findIndex (fun (left, right) -> left <> right)
+        eprintfn "first divergence: fixture=rules-corpus byte=%d expected=%02x actual=%02x" offset expected[offset] actual[offset]
+        failwith "Rules corpus canonical conformance failed."
     | [ "--print-simulation-oracle" ] ->
         SimulationFixtures.evaluate None
         |> List.iter (fun (fixture, actual) ->
@@ -103,8 +110,17 @@ let main arguments =
         printfn "final-state-sha256=%s" (NumericFixtures.hex replayVector[32..63])
         printfn "perspective-package-sha256=%s" (NumericFixtures.hex replayVector[64..95])
         0
+    | [ "--print-rules-manifest" ] ->
+        printfn "%s" (RulesCorpusFixtures.manifestJson ())
+        0
+    | [ "--print-rules-coverage" ] ->
+        printfn "%s" (RulesCorpusFixtures.coverageJson ())
+        0
+    | [ "--print-rules-application" ] ->
+        printfn "%s" (RulesCorpusFixtures.representativeApplicationBytes () |> NumericFixtures.hex)
+        0
     | _ ->
         eprintfn
-            "Usage: conformance [--inject-divergence FIXTURE | --inject-simulation-divergence PHASE | --print-simulation-oracle | --print-replay-evidence]"
+            "Usage: conformance [--inject-divergence FIXTURE | --inject-simulation-divergence PHASE | --inject-rules-corpus-divergence | --print-simulation-oracle | --print-replay-evidence | --print-rules-manifest | --print-rules-coverage | --print-rules-application]"
 
         2

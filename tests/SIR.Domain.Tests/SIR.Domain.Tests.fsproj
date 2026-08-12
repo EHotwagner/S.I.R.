@@ -9,6 +9,7 @@
     <Compile Include="../SIR.Conformance.Shared/ControlAbiFixtures.fs" Link="ControlAbiFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/SimulationFixtures.fs" Link="SimulationFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/ReplayFixtures.fs" Link="ReplayFixtures.fs" />
+    <Compile Include="../SIR.Conformance.Shared/RulesCorpusFixtures.fs" Link="RulesCorpusFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/Program.fs" Link="Program.fs" />
   </ItemGroup>
   <ItemGroup>
