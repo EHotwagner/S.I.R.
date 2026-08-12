@@ -1,7 +1,7 @@
 {
   "schema": "sir-persistent-workspace-m9-live-review-v2",
   "captureKind": "actual-production-shell-chromium-screenshot",
-  "productionBundleSha256": "c1f0288755d1e2d41ac7d81859f46522ba92f48dbe0643592c4bb42857c27e7b",
+  "productionBundleSha256": "9955220af1c53a00aca94b18bba63076f4bf029546d2d43bec1bf1e295e11a3f",
   "productionStylesSha256": "7e1bf2e19ce4a7eff68c4d892bdb6671d1300018edb4f9d2ec794c56c8cabb63",
   "acceptedMockupSha256": "b2b0d444202aa9c76235fa7277ba2c6a4e89d3d7dc0dd009abb8e73c72c82270",
   "chromiumExecutable": "/usr/sbin/chromium",
