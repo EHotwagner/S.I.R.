@@ -1,0 +1,5 @@
+Authoritative modal catalog passed: 24 accepted Editor inputs, retained Simulator corpus, native boundaries, held-input recovery, conflicts, and possible-input enumeration.
+Tactical layout qualification passed: 10 registered panels, deterministic Field Focus JSON, migration, safe defaults, strict ASCII integer/malformed/trailing-comma rejection, reset, placement, drawer, and bottom-panel visibility/collapse behavior.
+Unhandled exception. System.Exception: Continuous simulation reconciliation, activation history, seek, or incompatible fallback diverged.
+   at SIR.Client.TestsTacticalSceneProjectionQualification.run() in /tmp/sir-item-179.Iunano/tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs:line 156
+   at SIR.Client.Tests.main(String[] arguments) in /tmp/sir-item-179.Iunano/tests/SIR.Client.Tests/Program.fs:line 72
