@@ -44,6 +44,7 @@ type ProjectedSpatialWorld =
       Maximum: Cell
       Terrain: Map<Cell, SpatialTerrain>
       Boundaries: SpatialBoundary list
+      /// Maps each disclosed occupied cell to its opaque disclosed revision token.
       Occupancy: Map<Cell, string>
       DisclosedRevisionTokens: Set<string> }
 

@@ -8,37 +8,91 @@ open SIR.Domain
 open SIR.Protocol.Http
 open Thoth.Json
 
-type private SpatialDiagnosticProjection =
-    { QueryKind: string
+type private SpatialDiagnosticCell =
+    { Column: int32
+      Row: int32 }
+
+type private SpatialDiagnosticEdge =
+    { Low: SpatialDiagnosticCell
+      High: SpatialDiagnosticCell }
+
+type private SpatialDiagnosticResult =
+    { QueryId: string
+      QueryKind: string
       Outcome: string
-      FootprintSampleCount: int32
-      CrossedCellCount: int32
-      CrossedEdgeCount: int32
-      CoverContributorCount: int32
-      ExposureDirections: string
+      Origin: SpatialDiagnosticCell
+      Target: SpatialDiagnosticCell
+      FootprintSamples: SpatialDiagnosticCell list
+      Path: SpatialDiagnosticCell list
+      MovementCost: int32
+      Visible: bool
+      CrossedCells: SpatialDiagnosticCell list
+      CrossedEdges: SpatialDiagnosticEdge list
+      CoverContributors: SpatialDiagnosticEdge list
+      ExposureDirections: string list
+      Decisions: string list
+      Expansions: int32
+      Truncated: bool
       SpatialRevision: int64
       KnowledgeIdentity: string
+      KnowledgeRevision: int64
+      ProfileId: string
       PackageIdentity: string
       CompatibilityProfile: string
       SourceSymbol: string }
 
+type private SpatialDiagnosticProjection =
+    { Queries: SpatialDiagnosticResult list }
+
 [<Global>]
 let private fetch (url: string, options: obj) : JS.Promise<obj> = jsNative
 
-let private responseDecoder : Decoder<SpatialDiagnosticProjection> =
+let private cellDecoder : Decoder<SpatialDiagnosticCell> =
     Decode.object (fun get ->
-        { QueryKind = get.Required.Field "QueryKind" Decode.string
+        { Column = get.Required.Field "Column" Decode.int
+          Row = get.Required.Field "Row" Decode.int })
+
+let private edgeDecoder : Decoder<SpatialDiagnosticEdge> =
+    Decode.object (fun get ->
+        { Low = get.Required.Field "Low" cellDecoder
+          High = get.Required.Field "High" cellDecoder })
+
+let private resultDecoder : Decoder<SpatialDiagnosticResult> =
+    Decode.object (fun get ->
+        { QueryId = get.Required.Field "QueryId" Decode.string
+          QueryKind = get.Required.Field "QueryKind" Decode.string
           Outcome = get.Required.Field "Outcome" Decode.string
-          FootprintSampleCount = get.Required.Field "FootprintSampleCount" Decode.int
-          CrossedCellCount = get.Required.Field "CrossedCellCount" Decode.int
-          CrossedEdgeCount = get.Required.Field "CrossedEdgeCount" Decode.int
-          CoverContributorCount = get.Required.Field "CoverContributorCount" Decode.int
-          ExposureDirections = get.Required.Field "ExposureDirections" Decode.string
+          Origin = get.Required.Field "Origin" cellDecoder
+          Target = get.Required.Field "Target" cellDecoder
+          FootprintSamples = get.Required.Field "FootprintSamples" (Decode.list cellDecoder)
+          Path = get.Required.Field "Path" (Decode.list cellDecoder)
+          MovementCost = get.Required.Field "MovementCost" Decode.int
+          Visible = get.Required.Field "Visible" Decode.bool
+          CrossedCells = get.Required.Field "CrossedCells" (Decode.list cellDecoder)
+          CrossedEdges = get.Required.Field "CrossedEdges" (Decode.list edgeDecoder)
+          CoverContributors = get.Required.Field "CoverContributors" (Decode.list edgeDecoder)
+          ExposureDirections = get.Required.Field "ExposureDirections" (Decode.list Decode.string)
+          Decisions = get.Required.Field "Decisions" (Decode.list Decode.string)
+          Expansions = get.Required.Field "Expansions" Decode.int
+          Truncated = get.Required.Field "Truncated" Decode.bool
           SpatialRevision = get.Required.Field "SpatialRevision" Decode.int64
           KnowledgeIdentity = get.Required.Field "KnowledgeIdentity" Decode.string
+          KnowledgeRevision = get.Required.Field "KnowledgeRevision" Decode.int64
+          ProfileId = get.Required.Field "ProfileId" Decode.string
           PackageIdentity = get.Required.Field "PackageIdentity" Decode.string
           CompatibilityProfile = get.Required.Field "CompatibilityProfile" Decode.string
           SourceSymbol = get.Required.Field "SourceSymbol" Decode.string })
+
+let private responseDecoder : Decoder<SpatialDiagnosticProjection> =
+    Decode.object (fun get ->
+        { Queries = get.Required.Field "Queries" (Decode.list resultDecoder) })
+
+let private cellText value = $"({value.Column},{value.Row})"
+let private edgeText value = cellText value.Low + "→" + cellText value.High
+let private valuesText render values =
+    match values with
+    | [] -> "none"
+    | _ -> values |> List.map render |> String.concat ", "
 
 let private terrainCode terrain =
     match terrain with
@@ -237,25 +291,42 @@ let DeferredDataPanel (simulator: SimulatorHandoff option) (selectedUnit: int32 
                     | Some _, Some error, _ -> Html.p ("Authoritative spatial diagnostics unavailable: " + error)
                     | Some _, None, None -> Html.p "Loading authoritative spatial diagnostics."
                     | Some _, None, Some result ->
-                        Html.dl [
-                            Html.dt "Query"
-                            Html.dd result.QueryKind
-                            Html.dt "Outcome"
-                            Html.dd result.Outcome
-                            Html.dt "Footprint samples"
-                            Html.dd (string result.FootprintSampleCount)
-                            Html.dt "Crossed cells / edges"
-                            Html.dd (string result.CrossedCellCount + " / " + string result.CrossedEdgeCount)
-                            Html.dt "Cover contributors"
-                            Html.dd (string result.CoverContributorCount)
-                            Html.dt "Exposure directions"
-                            Html.dd result.ExposureDirections
-                            Html.dt "Revision / knowledge policy"
-                            Html.dd (string result.SpatialRevision + " / " + result.KnowledgeIdentity)
-                            Html.dt "Package / profile"
-                            Html.dd (result.PackageIdentity + " / " + result.CompatibilityProfile)
-                            Html.dt "Pinned authority"
-                            Html.dd result.SourceSymbol
+                        Html.div [
+                            prop.children [
+                                for query in result.Queries do
+                                    Html.details [
+                                        prop.isOpen true
+                                        prop.children [
+                                            Html.summary (query.QueryKind + " · " + query.Outcome)
+                                            Html.dl [
+                                                Html.dt "Normalized inputs"
+                                                Html.dd (query.QueryId + " · " + cellText query.Origin + " → " + cellText query.Target + " · " + query.ProfileId)
+                                                Html.dt "Footprint samples"
+                                                Html.dd (valuesText cellText query.FootprintSamples)
+                                                Html.dt "Authoritative path"
+                                                Html.dd (valuesText cellText query.Path)
+                                                Html.dt "Crossed cells"
+                                                Html.dd (valuesText cellText query.CrossedCells)
+                                                Html.dt "Crossed edges"
+                                                Html.dd (valuesText edgeText query.CrossedEdges)
+                                                Html.dt "Cover contributors"
+                                                Html.dd (valuesText edgeText query.CoverContributors)
+                                                Html.dt "Exposure directions"
+                                                Html.dd (valuesText id query.ExposureDirections)
+                                                Html.dt "Decisions"
+                                                Html.dd (String.concat ", " query.Decisions)
+                                                Html.dt "Expansion / truncation"
+                                                Html.dd (string query.Expansions + " / " + string query.Truncated)
+                                                Html.dt "Revision / knowledge policy"
+                                                Html.dd (string query.SpatialRevision + " / " + query.KnowledgeIdentity + "@" + string query.KnowledgeRevision)
+                                                Html.dt "Package / profile"
+                                                Html.dd (query.PackageIdentity + " / " + query.CompatibilityProfile)
+                                                Html.dt "Pinned authority"
+                                                Html.dd query.SourceSymbol
+                                            ]
+                                        ]
+                                    ]
+                            ]
                         ]
                 ]
             ]

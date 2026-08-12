@@ -36,8 +36,8 @@ test("Release delivery uses cache-safe compression and defers spatial diagnostic
   await page.getByRole("menuitem", { name: /Spatial diagnostics/ }).click();
   const diagnostics = page.getByRole("region", { name: "Selected unit spatial diagnostics", exact: true });
   await expect(diagnostics).toBeVisible();
-  await expect(diagnostics.getByText("ExactLineOfSight", { exact: true })).toBeVisible();
-  await expect(diagnostics.getByText("SIR.Simulation.SpatialQuery.evaluate", { exact: true })).toBeVisible();
+  await expect(diagnostics.getByText(/ExactLineOfSight · Found/)).toBeVisible();
+  await expect(diagnostics.getByText("SIR.Simulation.SpatialQuery.evaluate", { exact: true }).first()).toBeVisible();
   expect(responses.some((response) => response.url().includes("RulesExplorer-"))).toBe(true);
   const deferredBytes = await responseBytes(responses.filter((response) => response.url().includes("RulesExplorer-")));
   const diagnosticResponses = responses.filter((response) => response.url().includes("/api/spatial/diagnostics"));

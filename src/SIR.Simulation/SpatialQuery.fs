@@ -46,6 +46,7 @@ type ProjectedSpatialWorld =
       Maximum: Cell
       Terrain: Map<Cell, SpatialTerrain>
       Boundaries: SpatialBoundary list
+      /// Maps each disclosed occupied cell to its opaque disclosed revision token.
       Occupancy: Map<Cell, string>
       DisclosedRevisionTokens: Set<string> }
 
@@ -169,45 +170,48 @@ module SpatialQuery =
         Edges.edgeBetween left right
         |> Option.bind (fun edge -> world.Boundaries |> List.tryFind (fun boundary -> boundary.Edge = edge))
 
-    let private edgePassable world modality left right =
+    let private edgePassable observeBoundary world modality left right =
         boundaryAt world left right
-        |> Option.forall (fun boundary -> permeability modality boundary.Permeability)
+        |> Option.forall (fun boundary ->
+            observeBoundary boundary
+            permeability modality boundary.Permeability)
 
     let private absoluteFootprint anchor footprint = footprint |> List.map (addCell anchor)
 
-    let private anchorPassable world request footprint anchor =
+    let private anchorPassable observeCell world request footprint anchor =
         absoluteFootprint anchor footprint
         |> List.forall (fun position ->
+            observeCell position
             inBounds world position
             && terrainAt world position |> terrainPassable request.Profile.Modality
             && not (Map.containsKey position world.Occupancy))
 
-    let private orthogonalEnvelope world modality footprint origin destination =
+    let private orthogonalEnvelope observeBoundary world modality footprint origin destination =
         footprint
-        |> List.forall (fun offset -> edgePassable world modality (addCell origin offset) (addCell destination offset))
+        |> List.forall (fun offset -> edgePassable observeBoundary world modality (addCell origin offset) (addCell destination offset))
 
-    let private transitionPassable world request footprint origin destination =
+    let private transitionPassable observeCell observeBoundary world request footprint origin destination =
         let dc = destination.Col - origin.Col
         let dr = destination.Row - origin.Row
         if (dc = 0 && dr = 0) || abs dc > 1 || abs dr > 1 then false
-        elif not (anchorPassable world request footprint destination) then false
-        elif dc = 0 || dr = 0 then orthogonalEnvelope world request.Profile.Modality footprint origin destination
+        elif not (anchorPassable observeCell world request footprint destination) then false
+        elif dc = 0 || dr = 0 then orthogonalEnvelope observeBoundary world request.Profile.Modality footprint origin destination
         else
             let horizontal = cell destination.Col origin.Row
             let vertical = cell origin.Col destination.Row
-            anchorPassable world request footprint horizontal
-            && anchorPassable world request footprint vertical
-            && orthogonalEnvelope world request.Profile.Modality footprint origin horizontal
-            && orthogonalEnvelope world request.Profile.Modality footprint horizontal destination
-            && orthogonalEnvelope world request.Profile.Modality footprint origin vertical
-            && orthogonalEnvelope world request.Profile.Modality footprint vertical destination
+            anchorPassable observeCell world request footprint horizontal
+            && anchorPassable observeCell world request footprint vertical
+            && orthogonalEnvelope observeBoundary world request.Profile.Modality footprint origin horizontal
+            && orthogonalEnvelope observeBoundary world request.Profile.Modality footprint horizontal destination
+            && orthogonalEnvelope observeBoundary world request.Profile.Modality footprint origin vertical
+            && orthogonalEnvelope observeBoundary world request.Profile.Modality footprint vertical destination
 
-    let private neighbours world request footprint origin =
+    let private neighbours observeCell observeBoundary world request footprint origin =
         [ for dr in -1 .. 1 do
               for dc in -1 .. 1 do
                   if dc <> 0 || dr <> 0 then
                       let destination = cell (origin.Col + dc) (origin.Row + dr)
-                      if transitionPassable world request footprint origin destination then yield destination ]
+                      if transitionPassable observeCell observeBoundary world request footprint origin destination then yield destination ]
         |> List.sortBy cellKey
 
     let private movementCost world path =
@@ -215,19 +219,19 @@ module SpatialQuery =
         |> List.skip 1
         |> List.sumBy (fun position -> if terrainAt world position = SpatialTerrain.Rough then 2 else 1)
 
-    let private boundedPath world request footprint =
+    let private boundedPath observeCell observeBoundary world request footprint =
         let packageCandidate =
             Pathfinding.astar
                 Neighbourhood.EightWay
                 request.Bounds.MaximumExpansions
-                (anchorPassable world request footprint)
+                (anchorPassable observeCell world request footprint)
                 request.Origin
                 request.Target
         let validPackageCandidate =
             packageCandidate
             |> Option.filter (fun path ->
                 path.Length <= int request.Bounds.MaximumResultCells
-                && (path |> List.pairwise |> List.forall (fun (origin, destination) -> transitionPassable world request footprint origin destination)))
+                && (path |> List.pairwise |> List.forall (fun (origin, destination) -> transitionPassable observeCell observeBoundary world request footprint origin destination)))
         let rec loop frontier best expansions =
             match frontier with
             | [] -> SpatialOutcome.Unreachable, [], 0, expansions
@@ -243,21 +247,21 @@ module SpatialQuery =
                     loop rest best expansions
                 else
                     let next =
-                        neighbours world request footprint current
+                        neighbours observeCell observeBoundary world request footprint current
                         |> List.fold (fun state candidate ->
                             let candidateCost = cost + (if terrainAt world candidate = SpatialTerrain.Rough then 2 else 1)
                             match Map.tryFind candidate best with
                             | Some known when known <= candidateCost -> state
                             | _ -> (candidateCost, candidate, path @ [ candidate ]) :: state) rest
                     let nextBest =
-                        neighbours world request footprint current
+                        neighbours observeCell observeBoundary world request footprint current
                         |> List.fold (fun state candidate ->
                             let candidateCost = cost + (if terrainAt world candidate = SpatialTerrain.Rough then 2 else 1)
                             match Map.tryFind candidate state with
                             | Some known when known <= candidateCost -> state
                             | _ -> Map.add candidate candidateCost state) best
                     loop next nextBest (expansions + 1)
-        if not (anchorPassable world request footprint request.Origin) || not (anchorPassable world request footprint request.Target) then
+        if not (anchorPassable observeCell world request footprint request.Origin) || not (anchorPassable observeCell world request footprint request.Target) then
             SpatialOutcome.Unreachable, [], 0, 0
         else
             match validPackageCandidate with
@@ -282,15 +286,15 @@ module SpatialQuery =
             |> List.map (fun index -> cell (origin.Col + dc * index / steps) (origin.Row + dr * index / steps))
             |> distinctCells
 
-    let private lineVisible world modality origin target =
+    let private lineVisible observeBoundary world modality origin target =
         let transparent position = inBounds world position && terrainAt world position |> terrainPassable modality
         Los.lineOfSightBy Supercover transparent origin target
-        && (lineCells origin target |> List.pairwise |> List.forall (fun (left, right) -> edgePassable world modality left right))
+        && (lineCells origin target |> List.pairwise |> List.forall (fun (left, right) -> edgePassable observeBoundary world modality left right))
 
     let private directionFrom origin target =
         Direction8.tryFromDelta (target.Col - origin.Col) (target.Row - origin.Row)
 
-    let private observedTrace (world: ProjectedSpatialWorld) (request: SpatialQueryRequest) footprint =
+    let private observedTrace observeCell observeBoundary (world: ProjectedSpatialWorld) (request: SpatialQueryRequest) footprint =
         let origins = absoluteFootprint request.Origin footprint
         let targets = absoluteFootprint request.Target footprint
         let maximumWork = int64 request.Bounds.MaximumCrossedItems
@@ -302,7 +306,9 @@ module SpatialQuery =
             else
                 let visiblePairs =
                     pairs
-                    |> List.filter (fun (origin, target) -> lineVisible world request.Profile.Modality origin target)
+                    |> List.filter (fun (origin, target) ->
+                        lineCells origin target |> List.iter observeCell
+                        lineVisible observeBoundary world request.Profile.Modality origin target)
                 let crossedCells = pairs |> List.collect (fun (origin, target) -> lineCells origin target) |> distinctCells
                 let crossedEdges =
                     pairs
@@ -361,12 +367,16 @@ module SpatialQuery =
             let explanation = emptyExplanation world request SpatialOutcome.InvalidInput footprint
             { Outcome = SpatialOutcome.InvalidInput; Path = []; MovementCost = 0; Visible = false; Explanation = explanation }, { RevisionTokens = Set.empty }
         | Ok footprint ->
-            // A result can depend on disclosed blockers it did not cross
-            // precisely because they forced a detour. Retain them all.
-            let dependencies = { RevisionTokens = world.DisclosedRevisionTokens }
+            let mutable dependedTokens = Set.empty
+            let observeToken token =
+                if Set.contains token world.DisclosedRevisionTokens then
+                    dependedTokens <- Set.add token dependedTokens
+            let observeCell position =
+                world.Occupancy |> Map.tryFind position |> Option.iter observeToken
+            let observeBoundary (boundary: SpatialBoundary) = observeToken boundary.RevisionToken
             match request.QueryKind with
             | SpatialQueryKind.BoundedPath | SpatialQueryKind.Reachability | SpatialQueryKind.MovementCost ->
-                let outcome, path, cost, expansions = boundedPath world request footprint
+                let outcome, path, cost, expansions = boundedPath observeCell observeBoundary world request footprint
                 let crossedEdges = path |> List.pairwise |> List.choose (fun (left, right) -> Edges.edgeBetween left right)
                 let crossedCells = path |> List.truncate (int request.Bounds.MaximumCrossedItems)
                 let explanation =
@@ -376,9 +386,9 @@ module SpatialQuery =
                         Expansions = expansions
                         Truncated = outcome = SpatialOutcome.Exhausted }
                 let result = { Outcome = outcome; Path = path; MovementCost = cost; Visible = false; Explanation = explanation }
-                result, dependencies
+                result, { RevisionTokens = dependedTokens }
             | SpatialQueryKind.LineTrace | SpatialQueryKind.ExactLineOfSight | SpatialQueryKind.Cover | SpatialQueryKind.Exposure ->
-                let visible, cells, edges, cover, exposure, truncated = observedTrace world request footprint
+                let visible, cells, edges, cover, exposure, truncated = observedTrace observeCell observeBoundary world request footprint
                 let outcome = if truncated then SpatialOutcome.Exhausted elif visible then SpatialOutcome.Found else SpatialOutcome.Unreachable
                 let explanation =
                     { emptyExplanation world request outcome footprint with
@@ -390,7 +400,7 @@ module SpatialQuery =
                         Truncated = truncated }
                 // Every truncated branch above returns visible=false.
                 let result = { Outcome = outcome; Path = []; MovementCost = 0; Visible = visible; Explanation = explanation }
-                result, dependencies
+                result, { RevisionTokens = dependedTokens }
 
     let private escapeJson (value: string) = value.Replace("\\", "\\\\").Replace("\"", "\\\"")
     let private cellJson position = $"{{\"col\":{position.Col},\"row\":{position.Row}}}"

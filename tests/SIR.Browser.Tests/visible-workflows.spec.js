@@ -125,10 +125,20 @@ test("the player-visible spatial diagnostics route shows authoritative selected-
   await page.getByRole("menuitem", { name: /Spatial diagnostics/ }).click();
   const diagnostics = page.getByRole("region", { name: "Selected unit spatial diagnostics", exact: true });
   await expect(diagnostics).toBeVisible();
-  await expect(diagnostics.getByText("ExactLineOfSight", { exact: true })).toBeVisible();
-  await expect(diagnostics.getByText(/player-disclosed/)).toBeVisible();
-  await expect(diagnostics.getByText(/FS\.GG\.Game\.Core@0\.13\.0.*fs-gg-game-core-fable-lockstep-v1/)).toBeVisible();
-  await expect(diagnostics.getByText("SIR.Simulation.SpatialQuery.evaluate", { exact: true })).toBeVisible();
+  await expect(diagnostics.getByText(/ExactLineOfSight · Found/)).toBeVisible();
+  await expect(diagnostics.getByText(/BoundedPath · Found/)).toBeVisible();
+  await expect(diagnostics.getByText(/Cover · Found/)).toBeVisible();
+  await expect(diagnostics.getByText("Normalized inputs", { exact: true }).first()).toBeVisible();
+  await expect(diagnostics.getByText("Footprint samples", { exact: true }).first()).toBeVisible();
+  await expect(diagnostics.getByText("Authoritative path", { exact: true }).first()).toBeVisible();
+  await expect(diagnostics.getByText("Crossed cells", { exact: true }).first()).toBeVisible();
+  await expect(diagnostics.getByText("Crossed edges", { exact: true }).first()).toBeVisible();
+  await expect(diagnostics.getByText("Cover contributors", { exact: true }).first()).toBeVisible();
+  await expect(diagnostics.getByText("Decisions", { exact: true }).first()).toBeVisible();
+  await expect(diagnostics.getByText("Expansion / truncation", { exact: true }).first()).toBeVisible();
+  await expect(diagnostics.getByText(/player-disclosed/).first()).toBeVisible();
+  await expect(diagnostics.getByText(/FS\.GG\.Game\.Core@0\.13\.0.*fs-gg-game-core-fable-lockstep-v1/).first()).toBeVisible();
+  await expect(diagnostics.getByText("SIR.Simulation.SpatialQuery.evaluate", { exact: true }).first()).toBeVisible();
 });
 
 test("the maintained simulation transport is available without a manual handoff in every modality", async ({ page }) => {

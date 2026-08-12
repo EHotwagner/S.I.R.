@@ -34,8 +34,32 @@ expect_mutation_failure() {
   }
 }
 
-sed -i 's/{ RevisionTokens = world.DisclosedRevisionTokens }/{ RevisionTokens = Set.empty }/' "$subject"
+sed -i 's/dependedTokens <- Set.add token dependedTokens/dependedTokens <- dependedTokens/' "$subject"
 expect_mutation_failure dependency-receipt "A disclosed blocker was not retained as a dynamic cache dependency."
+
+restore_subject
+sed -i 's/footprint |> List.map (addCell anchor)/footprint |> List.truncate 1 |> List.map (addCell anchor)/' "$subject"
+expect_mutation_failure footprint-envelope "Footprint evaluation ignored an occupied sample."
+
+restore_subject
+sed -i 's/| SpatialModality.GroundMovement -> value.Ground/| SpatialModality.GroundMovement -> true/' "$subject"
+expect_mutation_failure semantic-edge "A multi-cell diagonal cut through the blocked transition envelope."
+
+restore_subject
+sed -i 's/|{world.Identity.KnowledgeIdentity}|{world.Identity.KnowledgeRevision}//' "$subject"
+expect_mutation_failure knowledge-cache-key "Cache identity omitted requester knowledge identity or revision."
+
+restore_subject
+sed -i 's/|{world.Identity.SpatialRevision}//' "$subject"
+expect_mutation_failure spatial-revision-key "Cache identity omitted spatial revision."
+
+restore_subject
+sed -i 's/List.sortBy cellKey/List.sortByDescending cellKey/' "$subject"
+expect_mutation_failure deterministic-ordering "Footprint normalization lost deterministic cell ordering."
+
+restore_subject
+sed -i '/let packagePointPath/{n;s/maximumExpansions/(maximumExpansions - maximumExpansions)/;}' "$subject"
+expect_mutation_failure package-adapter "Package Pathfinding.astar adapter changed."
 
 restore_subject
 sed -i 's/|{request.Profile.Stance}|{request.Profile.HeightBand}|{directionCode request.Profile.Facing}//' "$subject"
@@ -47,4 +71,4 @@ expect_mutation_failure trace-work-bound "Trace work was materialized beyond Max
 
 restore_subject
 dotnet build "$project" -c Release --no-restore >/dev/null
-echo "Spatial subject mutations failed closed: dependency receipt, profile cache key, and trace work bound."
+echo "Spatial subject mutations failed closed: dependency receipt, footprint, edge, knowledge, revision, ordering, package adapter, profile key, and trace bound."

@@ -42,6 +42,10 @@ module SpatialQueryFixtures =
     let evaluate injectDivergence =
         let bounds = SpatialQuery.defaultBounds
         let footprint = [ cell 0 0; cell 0 1 ]
+        let normalizedFootprint =
+            SpatialQuery.normalizeFootprint bounds [ cell 1 0; cell 0 0; cell 1 0 ]
+            |> Result.defaultWith failwith
+        require (normalizedFootprint = [ cell 0 0; cell 1 0 ]) "Footprint normalization lost deterministic cell ordering."
         let blocker = boundary (cell 1 1) (cell 2 1) false false false "door:1:1:east"
         let blockedWorld = world 7L 3L [ blocker ] Map.empty (Set.ofList [ blocker.RevisionToken ])
         let diagonal = request "multi-cell-diagonal" SpatialQueryKind.BoundedPath SpatialModality.GroundMovement (cell 0 0) (cell 2 2) footprint bounds
@@ -49,6 +53,11 @@ module SpatialQueryFixtures =
         require (blocked.Outcome = SpatialOutcome.Found) "Bounded path should route around a blocked footprint edge."
         require (blocked.Path <> [ cell 0 0; cell 1 1; cell 2 2 ]) "A multi-cell diagonal cut through the blocked transition envelope."
         require (blocked.Explanation.Expansions <= bounds.MaximumExpansions) "Path exceeded its expansion bound."
+        let footprintBlockToken = "occupancy:1:1"
+        let footprintBlockWorld = world 7L 3L [] (Map.ofList [ cell 1 1, footprintBlockToken ]) (Set.singleton footprintBlockToken)
+        let footprintBlockedRequest = request "footprint-blocked" SpatialQueryKind.BoundedPath SpatialModality.GroundMovement (cell 0 0) (cell 1 0) footprint bounds
+        let footprintBlocked, _ = SpatialQuery.evaluate footprintBlockWorld footprintBlockedRequest
+        require (footprintBlocked.Outcome = SpatialOutcome.Unreachable) "Footprint evaluation ignored an occupied sample."
 
         let openWorld = world 7L 3L [] Map.empty Set.empty
         let equalCost = request "equal-cost" SpatialQueryKind.BoundedPath SpatialModality.GroundMovement (cell 0 0) (cell 2 1) [ cell 0 0 ] bounds
@@ -69,12 +78,17 @@ module SpatialQueryFixtures =
         require (cache1 = cache2) "Cache hit mutated cache state."
 
         let occupancyToken = "occupancy:1:0"
-        let disclosedOccupancy = Map.ofList [ cell 1 0, "known-unit" ]
+        let disclosedOccupancy = Map.ofList [ cell 1 0, occupancyToken ]
         let dynamicWorld = world 7L 3L [] disclosedOccupancy (Set.ofList [ occupancyToken ])
         let cacheRequest = request "dynamic-cache" SpatialQueryKind.BoundedPath SpatialModality.GroundMovement (cell 0 0) (cell 2 0) [ cell 0 0 ] bounds
         let dynamicResult, dynamicCache, _ = SpatialQuery.evaluateCached SpatialQuery.emptyCache dynamicWorld cacheRequest
         require (dynamicCache.StaticEntries.IsEmpty && dynamicCache.DynamicEntries.Length = 1) "A disclosed blocker was not retained as a dynamic cache dependency."
         require (dynamicCache.DynamicEntries.Head.Dependencies.RevisionTokens = Set.singleton occupancyToken) "Dynamic dependency receipt did not retain the disclosed blocker token."
+        let unrelatedToken = "occupancy:7:7"
+        let locallyDynamicWorld = { dynamicWorld with Occupancy = Map.add (cell 7 7) unrelatedToken dynamicWorld.Occupancy; DisclosedRevisionTokens = Set.add unrelatedToken dynamicWorld.DisclosedRevisionTokens }
+        let _, localCache, _ = SpatialQuery.evaluateCached SpatialQuery.emptyCache locallyDynamicWorld cacheRequest
+        require (localCache.DynamicEntries.Head.Dependencies.RevisionTokens = Set.singleton occupancyToken) "An unrelated disclosed occupancy token entered the local dependency receipt."
+        require (SpatialQuery.invalidate (Set.singleton unrelatedToken) localCache = localCache) "Unrelated disclosed occupancy invalidated a local cache entry."
         let invalidated = SpatialQuery.invalidate (Set.ofList [ "occupancy:1:0" ]) dynamicCache
         require invalidated.DynamicEntries.IsEmpty "Dependent dynamic cache entry survived invalidation."
         require (SpatialQuery.invalidate (Set.ofList [ "unrelated" ]) dynamicCache = dynamicCache) "Unrelated revision invalidated a cache entry."
@@ -90,6 +104,16 @@ module SpatialQueryFixtures =
             let changedRequest = { cacheRequest with Profile = changedProfile }
             let _, _, changedSource = SpatialQuery.evaluateCached dynamicCache dynamicWorld changedRequest
             require (changedSource = SpatialEvaluationSource.Uncached) "Cache identity omitted stance, height, or facing."
+
+        let changedKnowledgeIdentity =
+            SpatialAuthorityIdentity.create "fixture-map" "fixture-rules" 7L "blue-known" 4L
+            |> Result.defaultWith failwith
+        let changedKnowledgeWorld = { openWorld with Identity = changedKnowledgeIdentity }
+        let _, _, changedKnowledgeSource = SpatialQuery.evaluateCached cache1 changedKnowledgeWorld equalCost
+        require (changedKnowledgeSource = SpatialEvaluationSource.Uncached) "Cache identity omitted requester knowledge identity or revision."
+        let changedRevisionWorld = world 8L 3L [] Map.empty Set.empty
+        let _, _, changedRevisionSource = SpatialQuery.evaluateCached cache1 changedRevisionWorld equalCost
+        require (changedRevisionSource = SpatialEvaluationSource.Uncached) "Cache identity omitted spatial revision."
 
         let hiddenA = world 9L 4L [] Map.empty Set.empty
         let hiddenB = world 9L 4L [] Map.empty Set.empty
@@ -111,6 +135,8 @@ module SpatialQueryFixtures =
 
         let packagePath = SpatialQuery.packagePointPath 16 (fun position -> position.Row = 0 && position.Col >= 0 && position.Col <= 2) (cell 0 0) (cell 2 0)
         require (packagePath = Some [ cell 0 0; cell 1 0; cell 2 0 ]) "Package Pathfinding.astar adapter changed."
+        let diagonalOnlyPackagePath = SpatialQuery.packagePointPath 16 (fun position -> position = cell 0 0 || position = cell 1 1) (cell 0 0) (cell 1 1)
+        require diagonalOnlyPackagePath.IsNone "Package path adapter stopped enforcing FourWay neighbourhood semantics."
 
         let canonical =
             [ SpatialQuery.canonicalResultBytes blocked

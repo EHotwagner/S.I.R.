@@ -26,19 +26,44 @@ type SpatialDiagnosticRequestDto =
       Terrain: SpatialDiagnosticTerrainDto array }
 
 [<CLIMutable>]
-type SpatialDiagnosticResponseDto =
-    { QueryKind: string
+type SpatialDiagnosticCellDto =
+    { Column: int32
+      Row: int32 }
+
+[<CLIMutable>]
+type SpatialDiagnosticEdgeDto =
+    { Low: SpatialDiagnosticCellDto
+      High: SpatialDiagnosticCellDto }
+
+[<CLIMutable>]
+type SpatialDiagnosticResultDto =
+    { QueryId: string
+      QueryKind: string
       Outcome: string
-      FootprintSampleCount: int32
-      CrossedCellCount: int32
-      CrossedEdgeCount: int32
-      CoverContributorCount: int32
-      ExposureDirections: string
+      Origin: SpatialDiagnosticCellDto
+      Target: SpatialDiagnosticCellDto
+      FootprintSamples: SpatialDiagnosticCellDto array
+      Path: SpatialDiagnosticCellDto array
+      MovementCost: int32
+      Visible: bool
+      CrossedCells: SpatialDiagnosticCellDto array
+      CrossedEdges: SpatialDiagnosticEdgeDto array
+      CoverContributors: SpatialDiagnosticEdgeDto array
+      ExposureDirections: string array
+      Decisions: string array
+      Expansions: int32
+      Truncated: bool
       SpatialRevision: int64
       KnowledgeIdentity: string
+      KnowledgeRevision: int64
+      ProfileId: string
       PackageIdentity: string
       CompatibilityProfile: string
       SourceSymbol: string }
+
+[<CLIMutable>]
+type SpatialDiagnosticResponseDto =
+    { Queries: SpatialDiagnosticResultDto array }
 
 [<RequireQualifiedAccess>]
 module SpatialDiagnostics =
@@ -46,6 +71,37 @@ module SpatialDiagnostics =
     // lossless wire form while emitting normal typed response properties.
     let private jsonOptions = JsonSerializerOptions(PropertyNameCaseInsensitive = true, NumberHandling = JsonNumberHandling.AllowReadingFromString)
     let private cell col row: Cell = { Col = col; Row = row }
+    let private cellDto (value: Cell) = { Column = value.Col; Row = value.Row }
+    let private edgeDto (value: Edge) = { Low = cellDto value.Lo; High = cellDto value.Hi }
+
+    let private resultDto (result: SpatialQueryResult) =
+        let explanation = result.Explanation
+        { QueryId = explanation.QueryId
+          QueryKind = string explanation.QueryKind
+          Outcome = string result.Outcome
+          Origin = cellDto explanation.Origin
+          Target = cellDto explanation.Target
+          FootprintSamples = explanation.FootprintSamples |> List.map cellDto |> List.toArray
+          Path = result.Path |> List.map cellDto |> List.toArray
+          MovementCost = result.MovementCost
+          Visible = result.Visible
+          CrossedCells = explanation.CrossedCells |> List.map cellDto |> List.toArray
+          CrossedEdges = explanation.CrossedEdges |> List.map edgeDto |> List.toArray
+          CoverContributors = explanation.CoverContributors |> List.map edgeDto |> List.toArray
+          ExposureDirections = explanation.ExposureDirections |> List.map string |> List.toArray
+          Decisions =
+            [| "outcome=" + string result.Outcome
+               "visible=" + string result.Visible
+               "movementCost=" + string result.MovementCost |]
+          Expansions = explanation.Expansions
+          Truncated = explanation.Truncated
+          SpatialRevision = explanation.SpatialRevision
+          KnowledgeIdentity = explanation.KnowledgeIdentity
+          KnowledgeRevision = explanation.KnowledgeRevision
+          ProfileId = explanation.ProfileId
+          PackageIdentity = SpatialQuery.packageIdentity
+          CompatibilityProfile = SpatialQuery.compatibilityProfile
+          SourceSymbol = explanation.SourceSymbol }
 
     let evaluate (json: string) =
         try
@@ -97,33 +153,27 @@ module SpatialDiagnostics =
                               DisclosedRevisionTokens = Set.empty }
                         let origin = cell input.OriginColumn input.OriginRow
                         let target = cell (min (input.Width - 1) (input.OriginColumn + 4)) input.OriginRow
-                        let request =
-                            { QueryId = "selected-unit-diagnostics"
-                              QueryKind = SpatialQueryKind.ExactLineOfSight
+                        let footprint = [ for row in 0 .. input.UnitSize - 1 do for column in 0 .. input.UnitSize - 1 do yield cell column row ]
+                        let request queryId queryKind modality profileId =
+                            { QueryId = queryId
+                              QueryKind = queryKind
                               Origin = origin
                               Target = target
-                              Footprint = [ for row in 0 .. input.UnitSize - 1 do for column in 0 .. input.UnitSize - 1 do yield cell column row ]
+                              Footprint = footprint
                               Profile =
-                                { ProfileId = "selected-unit-sensor-v1"
-                                  Modality = SpatialModality.Vision
+                                { ProfileId = profileId
+                                  Modality = modality
                                   Stance = "standing"
                                   HeightBand = 1
                                   Facing = facing }
                               Bounds = SpatialQuery.defaultBounds }
-                        let result, _ = SpatialQuery.evaluate world request
-                        let response =
-                            { QueryKind = string result.Explanation.QueryKind
-                              Outcome = string result.Outcome
-                              FootprintSampleCount = int32 result.Explanation.FootprintSamples.Length
-                              CrossedCellCount = int32 result.Explanation.CrossedCells.Length
-                              CrossedEdgeCount = int32 result.Explanation.CrossedEdges.Length
-                              CoverContributorCount = int32 result.Explanation.CoverContributors.Length
-                              ExposureDirections = result.Explanation.ExposureDirections |> List.map string |> String.concat ", "
-                              SpatialRevision = result.Explanation.SpatialRevision
-                              KnowledgeIdentity = result.Explanation.KnowledgeIdentity
-                              PackageIdentity = SpatialQuery.packageIdentity
-                              CompatibilityProfile = SpatialQuery.compatibilityProfile
-                              SourceSymbol = result.Explanation.SourceSymbol }
+                        let queries =
+                            [ request "selected-unit-los" SpatialQueryKind.ExactLineOfSight SpatialModality.Vision "selected-unit-sensor-v1"
+                              request "selected-unit-route" SpatialQueryKind.BoundedPath SpatialModality.GroundMovement "selected-unit-movement-v1"
+                              request "selected-unit-cover" SpatialQueryKind.Cover SpatialModality.Vision "selected-unit-cover-v1" ]
+                            |> List.map (SpatialQuery.evaluate world >> fst >> resultDto)
+                            |> List.toArray
+                        let response = { Queries = queries }
                         Ok(JsonSerializer.Serialize(response, jsonOptions))
         with
         | :? JsonException -> Error "invalid spatial diagnostic JSON"

@@ -102,7 +102,10 @@ type LiveSessionAuthenticationTests() =
             let response = postSpatial client (Some admission.AccessToken) (spatialRequest 8 8)
             let body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
             require (response.StatusCode = HttpStatusCode.OK) $"authorized spatial diagnostics must succeed (got {response.StatusCode})"
-            require (body.Contains("ExactLineOfSight") && body.Contains("SIR.Simulation.SpatialQuery.evaluate") && body.Contains("player-disclosed")) "the endpoint must return renderer-neutral authoritative identity and outcome fields")
+            require (body.Contains("ExactLineOfSight") && body.Contains("BoundedPath") && body.Contains("Cover")) "the endpoint must return LOS, route, and cover projections"
+            require (body.Contains("\"Origin\"") && body.Contains("\"Target\"") && body.Contains("\"FootprintSamples\"") && body.Contains("\"Path\"")) "the endpoint must return exact normalized input and path fields"
+            require (body.Contains("\"CrossedCells\"") && body.Contains("\"CrossedEdges\"") && body.Contains("\"CoverContributors\"") && body.Contains("\"Decisions\"")) "the endpoint must return exact authoritative explanation fields"
+            require (body.Contains("\"Expansions\"") && body.Contains("\"Truncated\"") && body.Contains("SIR.Simulation.SpatialQuery.evaluate") && body.Contains("player-disclosed")) "the endpoint must return bounded authority and knowledge identity fields")
 
     [<Fact>]
     member _.``spatial diagnostics reject invalid dimensions before evaluation``() =
