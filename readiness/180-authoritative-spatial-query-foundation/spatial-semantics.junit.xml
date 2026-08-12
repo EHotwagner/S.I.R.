@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites tests="10" failures="0" skipped="0"><testsuite name="spatial-semantics" tests="10" failures="0" skipped="0">
+<testsuites tests="1" failures="0" skipped="0"><testsuite name="spatial-semantics" tests="1" failures="0" skipped="0">
 <properties><property name="producer" value="scripts/generate-item-180-evidence.sh"/><property name="command" value="./scripts/verify-spatial-query.sh"/></properties>
-<testcase classname="SpatialQueryFixtures" name="complete multi-cell footprints validate destination and swept envelopes"/>
-<testcase classname="SpatialQueryFixtures" name="diagonal movement rejects either blocked orthogonal envelope"/>
-<testcase classname="SpatialQueryFixtures" name="terrain and edge permeability are modality-specific"/>
-<testcase classname="SpatialQueryFixtures" name="equal-cost paths have deterministic canonical ordering"/>
-<testcase classname="SpatialQueryFixtures" name="bounded path reports stable found unreachable exhausted and invalid outcomes"/>
-<testcase classname="SpatialQueryFixtures" name="footprint-pair Supercover line of sight is authoritative"/>
-<testcase classname="SpatialQueryFixtures" name="cover contributors and exposure directions are renderer-neutral"/>
-<testcase classname="SpatialQueryFixtures" name="Simulation movement and observation delegate to SpatialQuery"/>
-<testcase classname="SpatialQueryFixtures" name="Match exposes bounded cached and uncached services"/>
-<testcase classname="SpatialQueryFixtures" name="canonical public result is deterministic"/>
+<testcase classname="SpatialQueryFixtures" name="the shared canonical fixture executes its path LOS footprint outcome and package-adapter assertions"/>
 </testsuite></testsuites>

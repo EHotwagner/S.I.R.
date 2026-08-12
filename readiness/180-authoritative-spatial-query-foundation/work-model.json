@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "7326f6a820ac701eff7df83fe0f681f44d6f90529ecaea8f5aa26812402d01df"
+        "value": "f414b002e08ab1a2bc7cd4f623a0b167e40145d107d10db0dcb0640d00c27bf7"
       }
     },
     {
@@ -3265,7 +3265,7 @@
           "path": "work/180-authoritative-spatial-query-foundation/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "7326f6a820ac701eff7df83fe0f681f44d6f90529ecaea8f5aa26812402d01df"
+            "value": "f414b002e08ab1a2bc7cd4f623a0b167e40145d107d10db0dcb0640d00c27bf7"
           },
           "schemaVersion": 1
         },
@@ -3296,7 +3296,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "53baa218b906fcb0e1b1a35ca8a0f77ab4b12998f059f8d749dc7f3f8929ef47"
+        "value": "0b79aa19744c45b4a1f91fe21452b80fe618a61314541b194caceed643e133f9"
       },
       "currency": "current"
     }

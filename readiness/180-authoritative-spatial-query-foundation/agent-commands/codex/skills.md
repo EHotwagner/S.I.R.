@@ -1,4 +1,5 @@
 # Agent skills for codex (generated)
+
 Generated from `readiness/180-authoritative-spatial-query-foundation/work-model.json`. This is a generated projection of the
 normalized work model, not an authored source of truth. See `guidance.json`.
 
@@ -27,3 +28,4 @@ For public-impact F# work, author or update the compiled `.fsi` signature before
 ## schema-versioning — schema-versioning
 - Capability: Required by tasks: T045, T046, T047.
 - Related: T045, T046, T047
+

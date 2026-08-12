@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/180-authoritative-spatial-query-foundation/ship.json",
-      "digest": "sha256:de5a4bb6339efbdc35bbbaff342b9faaf9e92e4a5c0a426f12569e434c37b1f7",
+      "digest": "sha256:b3c54ab5c59cfa7663c698c565bfbc5fa0eb1e629e5ec2085fc459e912704961",
       "schemaVersion": 1
     },
     {
       "path": "readiness/180-authoritative-spatial-query-foundation/verify.json",
-      "digest": "sha256:90df86ca93739b71ca306d991ffeb9fe61f86385d83e8d7168e7591f7319697f",
+      "digest": "sha256:10ad0f0312460bda7cd10f5f6ec3b5cbcb44ce1eb47e840460156a762e172e68",
       "schemaVersion": 1
     },
     {
       "path": "readiness/180-authoritative-spatial-query-foundation/work-model.json",
-      "digest": "sha256:92e5ca2c9153f9d5ae6b164487791f5d25cd336c69c3cb0ed4b2c19dec9fd66c",
+      "digest": "sha256:9fb81350a18ae6e0f96c57fa4831839118ed77ffd63223d884b20784afba481e",
       "schemaVersion": 1
     }
   ],

@@ -54,10 +54,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
-      digest: "sha256:af3414ff7d761b408bfc0cda104f5025abed3d504fca916c0d269696f7950ece"
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused native and Fable spatial semantics receipt.]
@@ -81,10 +81,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
-      digest: "sha256:af3414ff7d761b408bfc0cda104f5025abed3d504fca916c0d269696f7950ece"
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused native and Fable spatial semantics receipt.]
@@ -108,10 +108,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
-      digest: "sha256:af3414ff7d761b408bfc0cda104f5025abed3d504fca916c0d269696f7950ece"
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused native and Fable spatial semantics receipt.]
@@ -135,10 +135,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
-      digest: "sha256:af3414ff7d761b408bfc0cda104f5025abed3d504fca916c0d269696f7950ece"
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused native and Fable spatial semantics receipt.]
@@ -162,10 +162,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
-      digest: "sha256:17fce27e748806d139917714a5953d4ae8fa31a2b317ef56a2f60c84fb7194de"
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused cache and requester-knowledge receipt.]
@@ -189,10 +189,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
-      digest: "sha256:17fce27e748806d139917714a5953d4ae8fa31a2b317ef56a2f60c84fb7194de"
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused cache and requester-knowledge receipt.]
@@ -216,10 +216,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
-      digest: "sha256:17fce27e748806d139917714a5953d4ae8fa31a2b317ef56a2f60c84fb7194de"
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused cache and requester-knowledge receipt.]
@@ -243,10 +243,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:687d0d510b883492a9cc464a69db890c3a9be6b626b26517dc40817aa2ca7567"
+      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 6
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]
@@ -270,10 +270,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-integration-authority.junit.xml
-      digest: "sha256:16732f589439d9946361503ed4f0f0e884e090eacf2b2073cf729f0c3d88ccfb"
+      digest: "sha256:09be5be0af56aeb358cd5d721daa4fa04efd87a931862cfc4220562ec7231a38"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Match, Simulation, and authority-scan receipt., client-boundary]
@@ -324,10 +324,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-performance.junit.xml
-      digest: "sha256:616d3626b62770fd133cdbc80c22453884b916712cc95ff784e94018facb21c6"
+      digest: "sha256:7f03593c8347a22da1c9dc22b6b57231d61a59a8d14a05e1af686be9f12cef37"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 7
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Release latency and structural-envelope receipt.]
@@ -351,10 +351,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:687d0d510b883492a9cc464a69db890c3a9be6b626b26517dc40817aa2ca7567"
+      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 6
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]
@@ -378,10 +378,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-integration-authority.junit.xml
-      digest: "sha256:16732f589439d9946361503ed4f0f0e884e090eacf2b2073cf729f0c3d88ccfb"
+      digest: "sha256:09be5be0af56aeb358cd5d721daa4fa04efd87a931862cfc4220562ec7231a38"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Match, Simulation, and authority-scan receipt., client-boundary]
@@ -432,10 +432,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-integration-authority.junit.xml
-      digest: "sha256:16732f589439d9946361503ed4f0f0e884e090eacf2b2073cf729f0c3d88ccfb"
+      digest: "sha256:09be5be0af56aeb358cd5d721daa4fa04efd87a931862cfc4220562ec7231a38"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Match, Simulation, and authority-scan receipt., client-boundary]
@@ -459,10 +459,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
-      digest: "sha256:af3414ff7d761b408bfc0cda104f5025abed3d504fca916c0d269696f7950ece"
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused native and Fable spatial semantics receipt.]
@@ -486,10 +486,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
-      digest: "sha256:17fce27e748806d139917714a5953d4ae8fa31a2b317ef56a2f60c84fb7194de"
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused cache and requester-knowledge receipt.]
@@ -513,10 +513,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
-      digest: "sha256:17fce27e748806d139917714a5953d4ae8fa31a2b317ef56a2f60c84fb7194de"
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused cache and requester-knowledge receipt.]
@@ -567,10 +567,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
-      digest: "sha256:af3414ff7d761b408bfc0cda104f5025abed3d504fca916c0d269696f7950ece"
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused native and Fable spatial semantics receipt.]
@@ -594,10 +594,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
-      digest: "sha256:af3414ff7d761b408bfc0cda104f5025abed3d504fca916c0d269696f7950ece"
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused native and Fable spatial semantics receipt.]
@@ -621,10 +621,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
-      digest: "sha256:af3414ff7d761b408bfc0cda104f5025abed3d504fca916c0d269696f7950ece"
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused native and Fable spatial semantics receipt.]
@@ -648,10 +648,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
-      digest: "sha256:af3414ff7d761b408bfc0cda104f5025abed3d504fca916c0d269696f7950ece"
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused native and Fable spatial semantics receipt.]
@@ -675,10 +675,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
-      digest: "sha256:17fce27e748806d139917714a5953d4ae8fa31a2b317ef56a2f60c84fb7194de"
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused cache and requester-knowledge receipt.]
@@ -702,10 +702,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
-      digest: "sha256:17fce27e748806d139917714a5953d4ae8fa31a2b317ef56a2f60c84fb7194de"
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused cache and requester-knowledge receipt.]
@@ -729,10 +729,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
-      digest: "sha256:17fce27e748806d139917714a5953d4ae8fa31a2b317ef56a2f60c84fb7194de"
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused cache and requester-knowledge receipt.]
@@ -756,10 +756,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-integration-authority.junit.xml
-      digest: "sha256:16732f589439d9946361503ed4f0f0e884e090eacf2b2073cf729f0c3d88ccfb"
+      digest: "sha256:09be5be0af56aeb358cd5d721daa4fa04efd87a931862cfc4220562ec7231a38"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Match, Simulation, and authority-scan receipt., client-boundary]
@@ -810,10 +810,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-performance.junit.xml
-      digest: "sha256:616d3626b62770fd133cdbc80c22453884b916712cc95ff784e94018facb21c6"
+      digest: "sha256:7f03593c8347a22da1c9dc22b6b57231d61a59a8d14a05e1af686be9f12cef37"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 7
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Release latency and structural-envelope receipt.]
@@ -837,10 +837,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
-      digest: "sha256:af3414ff7d761b408bfc0cda104f5025abed3d504fca916c0d269696f7950ece"
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused native and Fable spatial semantics receipt.]
@@ -864,10 +864,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
-      digest: "sha256:af3414ff7d761b408bfc0cda104f5025abed3d504fca916c0d269696f7950ece"
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused native and Fable spatial semantics receipt.]
@@ -891,10 +891,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
-      digest: "sha256:17fce27e748806d139917714a5953d4ae8fa31a2b317ef56a2f60c84fb7194de"
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused cache and requester-knowledge receipt.]
@@ -945,10 +945,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:687d0d510b883492a9cc464a69db890c3a9be6b626b26517dc40817aa2ca7567"
+      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 6
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]
@@ -972,10 +972,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:687d0d510b883492a9cc464a69db890c3a9be6b626b26517dc40817aa2ca7567"
+      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 6
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]
@@ -999,10 +999,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:687d0d510b883492a9cc464a69db890c3a9be6b626b26517dc40817aa2ca7567"
+      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 6
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]
@@ -1026,10 +1026,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
-      digest: "sha256:af3414ff7d761b408bfc0cda104f5025abed3d504fca916c0d269696f7950ece"
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused native and Fable spatial semantics receipt.]
@@ -1053,10 +1053,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
-      digest: "sha256:17fce27e748806d139917714a5953d4ae8fa31a2b317ef56a2f60c84fb7194de"
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused cache and requester-knowledge receipt.]
@@ -1080,10 +1080,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:687d0d510b883492a9cc464a69db890c3a9be6b626b26517dc40817aa2ca7567"
+      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 6
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]
@@ -1107,10 +1107,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-integration-authority.junit.xml
-      digest: "sha256:16732f589439d9946361503ed4f0f0e884e090eacf2b2073cf729f0c3d88ccfb"
+      digest: "sha256:09be5be0af56aeb358cd5d721daa4fa04efd87a931862cfc4220562ec7231a38"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 2
       failed: 0
       skipped: 0
     notes: [Match, Simulation, and authority-scan receipt., client-boundary]
@@ -1161,10 +1161,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-performance.junit.xml
-      digest: "sha256:616d3626b62770fd133cdbc80c22453884b916712cc95ff784e94018facb21c6"
+      digest: "sha256:7f03593c8347a22da1c9dc22b6b57231d61a59a8d14a05e1af686be9f12cef37"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 7
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Release latency and structural-envelope receipt.]
@@ -1188,10 +1188,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:687d0d510b883492a9cc464a69db890c3a9be6b626b26517dc40817aa2ca7567"
+      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 6
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]
@@ -1242,10 +1242,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
-      digest: "sha256:af3414ff7d761b408bfc0cda104f5025abed3d504fca916c0d269696f7950ece"
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused native and Fable spatial semantics receipt.]
@@ -1269,10 +1269,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
-      digest: "sha256:af3414ff7d761b408bfc0cda104f5025abed3d504fca916c0d269696f7950ece"
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 10
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused native and Fable spatial semantics receipt.]
@@ -1296,10 +1296,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
-      digest: "sha256:17fce27e748806d139917714a5953d4ae8fa31a2b317ef56a2f60c84fb7194de"
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Focused cache and requester-knowledge receipt.]
@@ -1323,10 +1323,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
-      digest: "sha256:687d0d510b883492a9cc464a69db890c3a9be6b626b26517dc40817aa2ca7567"
+      digest: "sha256:c935dce93b0737e9c8eecb801fbe8aaec44c1482b793f92d6d6237657472b07c"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 5
+      passed: 6
       failed: 0
       skipped: 0
     notes: [Exact .NET/Fable package-adapter and mutation receipt.]

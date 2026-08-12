@@ -1,4 +1,5 @@
 # Agent commands for claude (generated)
+
 Generated from `readiness/180-authoritative-spatial-query-foundation/work-model.json`. This is a generated projection of the
 normalized work model, not an authored source of truth. See `guidance.json`.
 
@@ -251,3 +252,4 @@ normalized work model, not an authored source of truth. See `guidance.json`.
 - Stage: specify
 - Purpose: Carry out lifecycle task T050 (done) covering GV-003, PD-014.
 - Related: GV-003, PD-014
+
