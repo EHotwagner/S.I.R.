@@ -83,21 +83,6 @@ module Runner =
             worker <- Some(engine.Identity, active)
             active
 
-    let private engineIdentity (bytes: byte array) =
-        bytes
-        |> Array.map (fun value -> value.ToString("x2"))
-        |> String.concat ""
-
-    let private routedHeader (bytes: byte array) =
-        if bytes.Length >= 41
-           && bytes[0] = 0x53uy
-           && bytes[1] = 0x49uy
-           && bytes[2] = 0x52uy
-           && bytes[3] = 0x52uy then
-            let formatVersion = int32 bytes[4] ||| (int32 bytes[5] <<< 8) ||| (int32 bytes[6] <<< 16) ||| (int32 bytes[7] <<< 24)
-            Some(formatVersion, bytes[9..40])
-        else None
-
     let post operation request =
         let envelope: WorkerRequestEnvelope =
             { ProtocolVersion = int32 WorkerProtocol.CurrentVersion
@@ -105,25 +90,9 @@ module Runner =
               Request = request }
 
         match request with
-        | LoadPackage(_, bytes) ->
-            match routedHeader bytes with
-            | Some(formatVersion, engineHash) ->
-                match EngineCatalog.tryFind engineHash formatVersion with
-                | Some engine -> (activate engine)?postMessage (envelope)
-                | None ->
-                    dispatch (
-                        RunnerResponded(
-                            operation,
-                            RunnerUnsupported(
-                                "engine "
-                                + engineIdentity engineHash
-                                + " is not retained by this publication"
-                            )
-                        )
-                    )
-            | None ->
-                // The retained worker owns detailed validation errors for malformed packages.
-                (activate EngineCatalog.Current)?postMessage (envelope)
+        | LoadPackage _ ->
+            // The retained worker owns complete untrusted replay decoding and identity validation.
+            (activate EngineCatalog.Current)?postMessage (envelope)
         | _ -> (activate EngineCatalog.Current)?postMessage (envelope)
 
     /// Sends a simulator-session operation through the retained browser worker.

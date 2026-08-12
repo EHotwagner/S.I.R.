@@ -19,11 +19,6 @@ module EngineCatalog =
     let CurrentWorkerPath =
         "engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/worker.js"
 
-    let private identity (bytes: byte array) =
-        bytes
-        |> Array.map (fun value -> value.ToString("x2"))
-        |> String.concat ""
-
     let Current =
         { Version = "v1"
           Identity = CurrentIdentity
@@ -32,10 +27,3 @@ module EngineCatalog =
           WorkerPath = CurrentWorkerPath }
 
     let Retained = [ Current ]
-
-    /// Selects only a retained engine whose replay-format contract includes the fixed header.
-    let tryFind engineHash formatVersion =
-        Retained
-        |> List.tryFind (fun engine ->
-            engine.Identity = identity engineHash
-            && List.contains formatVersion engine.ReplayFormatVersions)

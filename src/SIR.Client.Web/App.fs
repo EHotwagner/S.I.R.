@@ -3167,7 +3167,7 @@ let private sandbox (model: SIR.Client.Model) dispatch =
         prop.ariaLabel "Sandbox parameters"
         prop.children [
             Html.h2 "Typed parameters"
-            Html.p "Every edit creates a derived sandbox; the immutable baseline remains visible in the comparison."
+            Html.p "Edits create a derived sandbox; the baseline stays immutable."
             match scenario with
             | None ->
                 Html.p "Load a design scenario or verified replay to edit parameters."
@@ -3212,7 +3212,7 @@ let private scenarioCatalog model dispatch =
         prop.children [
             Html.p [ prop.className "eyebrow"; prop.text "No replay file required" ]
             Html.h2 "Try an interactive scenario"
-            Html.p "Run a fixed example, edit its typed values, compare the fork with the immutable baseline, sweep either parameter, and export the result."
+            Html.p "Run an example, edit typed values, compare, sweep, and export."
             Html.div [
                 prop.className "scenario-grid"
                 prop.children [
@@ -3425,11 +3425,11 @@ let private comparisonPanel (model: Model) dispatch =
             Html.p [
                 prop.className "comparison-warning"
                 prop.role.note
-                prop.text "Neither side is a verified replay. Editing always creates a separately identified derived fork; the baseline cannot be edited."
+                prop.text "Neither side is verified replay evidence; edits create an identified fork."
             ]
             match report with
             | None ->
-                Html.p "Run a design scenario, then edit a typed parameter to create a linked fork comparison."
+                Html.p "Run a scenario, then edit a parameter to compare a linked fork."
             | Some report ->
                 let baseline = report.Comparison.Baseline
                 let fork = report.Comparison.Fork
@@ -3572,7 +3572,7 @@ let private rulesDataCatalog =
             Html.section [
                 prop.children [
             Html.h2 "Units, perks, weapons, and equipment"
-            Html.p "Expand a table below. Canonical roles, proposed content, and prototype balance values are labeled separately; prototype numbers are laboratory inputs, not accepted balance."
+            Html.p "Tables label canonical, proposed, and prototype laboratory values."
             Html.details [
                 prop.isOpen true
                 prop.children [
@@ -3810,7 +3810,7 @@ let private laboratoryResults model dispatch =
                     "Export reproducible laboratory experiment"
                     false
                     (fun _ -> dispatch ExportExperiment)
-                Html.p "Export includes the exact scenario revision, parameters, engine and ruleset identities, result identities, integer metrics, and optional sweep."
+                Html.p "Export preserves revision, identities, parameters, metrics, and sweep."
         ]
     ]
 
@@ -4216,7 +4216,7 @@ let private editorToolbar
                                      CellRow = cursor.CellRow + 2 } |]
                             )
                         Html.h3 "Zones and objectives"
-                        Html.p "Create authoritative geometry at the keyboard terrain cursor, then select and edit it below."
+                        Html.p "Create geometry at the terrain cursor, then select and edit it."
                         Html.div [
                             prop.className "control-row"
                             prop.role.group
@@ -4385,7 +4385,7 @@ let private editorToolbar
                             ]
                             match view.Background with
                             | None ->
-                                Html.p "No raster background. Remote URLs, SVG, and executable content are never fetched or accepted."
+                                Html.p "No raster background; remote or executable content is rejected."
                             | Some background ->
                                 Html.p (
                                     background.FileName + " · "
@@ -4826,7 +4826,7 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                 prop.children [
                     Html.article [ Html.h3 "Manual"; Html.p "Issue explicit movement commands." ]
                     Html.article [ Html.h3 "Scripted AI"; Html.p "Repeat a deterministic direction script." ]
-                    Html.article [ Html.h3 "General AI"; Html.p "Approach the nearest hostile until its class-specific melee or ranged attack is in range." ]
+                    Html.article [ Html.h3 "General AI"; Html.p "Approach the nearest hostile until its attack is in range." ]
                 ]
             ]
             match selected with
@@ -4910,7 +4910,7 @@ let private controllerPanel (handoff: SimulatorHandoff) state dispatch =
                     ]
                 ]
                 Html.h3 "Route planner"
-                Html.p "Choose a destination with the route controls below. The planner routes around terrain, blocking edges, and occupied footprints. The live Inputs panel lists commands for the current mode."
+                Html.p "Choose a destination; routing avoids terrain, edges, and occupied cells."
                 Html.div [
                     prop.className "manual-movement"
                     prop.children [
@@ -5093,7 +5093,7 @@ let private sampleCatalogView (dispatch: Msg -> unit) =
                 prop.children [
                     Html.p [ prop.className "eyebrow"; prop.text "Explore mechanics" ]
                     Html.h2 "Curated samples"
-                    Html.p "Open a canonical map for editing, run its deterministic controller sandbox, or inspect a precomputed replay walkthrough."
+                    Html.p "Open a map, run its sandbox, or inspect a replay walkthrough."
                 ]
             ]
             Html.h3 "Maps and simulations"
@@ -5114,7 +5114,7 @@ let private sampleCatalogView (dispatch: Msg -> unit) =
             ]
             Html.p [
                 prop.className "sample-disclosure"
-                prop.text "Curated walkthroughs are deterministic sandbox evidence, not cryptographically verified match replays."
+                prop.text "Walkthroughs are sandbox evidence, not verified match replays."
             ]
         ]
     ]
@@ -5638,7 +5638,7 @@ let private tacticalBindingDialog model dispatch =
                         ]
                     ]
                 ]
-                Html.p "Capture or type a gesture. Conflicts and browser reservations are validated before local storage is updated."
+                Html.p "Capture a gesture; conflicts are checked before saving."
                 if not (List.isEmpty model.TacticalBindingDiagnostics) then
                     Html.ul [
                         prop.role.alert
@@ -6430,7 +6430,7 @@ let private persistentSceneSvg
         svg.viewBox (0, 0, max 1 (int boardWidth), max 1 (int boardHeight))
         svg.children [
             Svg.title "Persistent tactical battlefield"
-            Svg.desc "One retained SVG renders presentation-only shared scene layers. Pointer and keyboard intent pass through the tactical command registry and availability boundary."
+            Svg.desc "Shared scene layers; input passes through the command registry."
             Svg.g [
                 svg.id "persistent-scene-camera"
                 svg.custom ("data-scene-layer", "camera")
@@ -7300,7 +7300,7 @@ let private tacticalLayoutToolbar model dispatch =
                     prop.ariaLabel "Customize top toolbar"
                     prop.children [
                         Html.h2 "Customize toolbar"
-                        Html.p "Add commands, adjust their order, or restore the default toolbar. Changes persist in this browser."
+                        Html.p "Add, reorder, or restore toolbar commands."
                         for commandId in model.DesktopToolbarCommands do
                             match registry |> List.tryFind (fun command -> command.Id = commandId) with
                             | Some command ->

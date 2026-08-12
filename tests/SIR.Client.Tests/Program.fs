@@ -86,17 +86,13 @@ let main arguments =
         |> Result.defaultWith (fun error ->
             failwithf "The retained v1 fixture did not decode: %A" error)
 
-    require
-        (EngineCatalog.tryFind decodedRetainedFixture.EngineHash decodedRetainedFixture.FormatVersion = Some EngineCatalog.Current)
-        "A retained replay did not select its exact engine bundle."
+    require (EngineCatalog.Retained = [ EngineCatalog.Current ]) "The retained worker catalog changed unexpectedly."
 
     let missingPackage =
         { retainedPackage with
             EngineHash = CanonicalHash.sha256 [| 2uy |] }
 
-    require
-        (EngineCatalog.tryFind missingPackage.EngineHash missingPackage.FormatVersion = None)
-        "An unavailable engine silently selected a retained bundle."
+    require (missingPackage.EngineHash <> EngineCatalog.Current.EngineHash) "The unavailable-engine fixture did not diverge."
 
     let initial = Shell.init ()
     let loading, effects =
