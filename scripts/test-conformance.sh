@@ -52,6 +52,7 @@ search_fixed() {
 }
 
 dotnet tool restore
+./scripts/verify-fable-game-governance.sh
 dotnet restore SIR.slnx --locked-mode
 dotnet build SIR.slnx --no-restore
 

@@ -1,0 +1,15 @@
+schemaVersion: 1
+id: s.i.r-fable-game-governance
+governedRoot: .
+domains:
+  - build
+  - test
+  - evidence
+  - gameplay
+  - fsharp
+packageSurfaces:
+  - src/SIR.Simulation
+  - src/SIR.Client.Web
+  - work/187-fable-game-governance-parity
+policyRef: .fsgg/policy.yml
+capabilitiesRef: .fsgg/capabilities.yml

@@ -28,6 +28,12 @@
       "commands": [
         "fsgg-coord-engine"
       ]
+    },
+    "fs.gg.governance.cli": {
+      "version": "1.12.0",
+      "commands": [
+        "fsgg-governance"
+      ]
     }
   }
 }
