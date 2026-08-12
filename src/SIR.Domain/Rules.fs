@@ -113,7 +113,9 @@ module Rules =
         | PredicateSemantics expression -> CanonicalEncoding.concatenate [ [| 1uy |]; expressionBytes expression ]
         | FormulaSemantics(kind, unitName, expression) -> CanonicalEncoding.concatenate [ [| 2uy; kindCode kind |]; text unitName; expressionBytes expression ]
         | TransitionSemantics transition -> CanonicalEncoding.concatenate [ [| 3uy |]; text transition.Phase; list (RuleId.value >> text) transition.Preconditions; list text transition.Reads; list text transition.Effects; list text transition.Events ]
-        | AlgorithmSemantics algorithm -> CanonicalEncoding.concatenate [ [| 4uy; kindCode algorithm.ResultKind |]; text algorithm.ImplementationSymbol; text algorithm.Fingerprint; text algorithm.ResultUnit; list text algorithm.ExplanationFields ]
+        | AlgorithmSemantics algorithm ->
+            let inputBytes (name, kind, unitName) = CanonicalEncoding.concatenate [ text name; [| kindCode kind |]; text unitName ]
+            CanonicalEncoding.concatenate [ [| 4uy; kindCode algorithm.ResultKind |]; text algorithm.ImplementationSymbol; text algorithm.Fingerprint; list inputBytes algorithm.Inputs; text algorithm.ResultUnit; list text algorithm.ExplanationFields ]
         | NarrativeSemantics -> [| 5uy |]
 
     let canonicalRuleBytes rule =
@@ -274,30 +276,30 @@ module Rules =
             |> List.collect (fun rule ->
                 let id = RuleId.value rule.Metadata.Id
                 let sourceIdentity = rule.Metadata.RuleSource |> Option.map (fun source -> source.RepositoryPath + "#" + source.Symbol) |> Option.defaultValue "unresolved"
-                [ node "rule" id "Corpus"
-                  node "implementation" sourceIdentity "Corpus"
-                  node "event" (id + ":application") "Corpus"
-                  node "explanation" (id + ":derivation") "Corpus"
-                  for example in rule.Metadata.Examples do node "example/property" example "Corpus"
-                  for property in rule.Metadata.Properties do node "example/property" property "Corpus"
-                  node "documentation" ("rules/" + id) "Corpus"
-                  node "source" sourceIdentity "Corpus"
-                  node "replay" "tests/fixtures/rules-corpus/v1" "Corpus" ])
+                [ node "rule" ("rule:" + id) "Corpus"
+                  node "implementation" ("implementation:" + sourceIdentity) "Corpus"
+                  node "event" ("event:" + id + ":application") "Corpus"
+                  node "explanation" ("explanation:" + id + ":derivation") "Corpus"
+                  for example in rule.Metadata.Examples do node "example/property" ("example:" + example) "Corpus"
+                  for property in rule.Metadata.Properties do node "example/property" ("property:" + property) "Corpus"
+                  node "documentation" ("documentation:rules/" + id) "Corpus"
+                  node "source" ("source:" + sourceIdentity) "Corpus"
+                  node "replay" "replay:tests/fixtures/rules-corpus/v1" "Corpus" ])
             |> List.distinct
             |> List.sort
         let edges =
             sortedRules |> List.collect (fun rule ->
                 let id = RuleId.value rule.Metadata.Id
                 let sourceIdentity = rule.Metadata.RuleSource |> Option.map (fun source -> source.RepositoryPath + "#" + source.Symbol) |> Option.defaultValue "unresolved"
-                [ for dependency in rule.Metadata.Dependencies do yield edge rule (RuleId.value dependency) "dependency"
-                  yield edge rule sourceIdentity "implementation"
-                  yield edge rule (id + ":application") "event/application"
-                  yield edge rule (id + ":derivation") "explanation"
-                  for example in rule.Metadata.Examples do yield edge rule example "example"
-                  for property in rule.Metadata.Properties do yield edge rule property "property"
-                  yield edge rule ("rules/" + id) "documentation"
-                  yield edge rule sourceIdentity "source"
-                  yield edge rule "tests/fixtures/rules-corpus/v1" "replay" ])
+                [ for dependency in rule.Metadata.Dependencies do yield edge rule ("rule:" + RuleId.value dependency) "dependency"
+                  yield edge rule ("implementation:" + sourceIdentity) "implementation"
+                  yield edge rule ("event:" + id + ":application") "event/application"
+                  yield edge rule ("explanation:" + id + ":derivation") "explanation"
+                  for example in rule.Metadata.Examples do yield edge rule ("example:" + example) "example"
+                  for property in rule.Metadata.Properties do yield edge rule ("property:" + property) "property"
+                  yield edge rule ("documentation:rules/" + id) "documentation"
+                  yield edge rule ("source:" + sourceIdentity) "source"
+                  yield edge rule "replay:tests/fixtures/rules-corpus/v1" "replay" ])
             |> List.sort
         "{\"schemaVersion\":1,\"packageManifestDigest\":" + jsonString (hex identity.ManifestDigest) + ",\"authorityBoundary\":{\"migrated\":\"first-combat-vertical-slice\",\"outside\":\"legacy\"},\"nodes\":[" + String.concat "," nodes + "],\"edges\":[" + String.concat "," edges + "]}"
 #endif

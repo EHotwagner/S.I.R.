@@ -96,7 +96,10 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   const explorer = page.getByRole("region", { name: "Rules data tables", exact: true });
   await expect(explorer).toBeVisible();
   await expect(explorer.getByRole("heading", { name: /FS\.GG\.Game\.Core@0\.13\.0/ })).toBeVisible();
-  await expect(explorer.getByRole("heading", { name: "AttackResolved event fixture-attack-1" })).toBeVisible();
+  await expect(explorer.getByRole("heading", { name: /AttackResolved event/ })).toHaveCount(0);
+  await explorer.getByRole("button", { name: "Execute canonical player attack" }).click();
+  await expect(explorer.getByRole("heading", { name: "AttackResolved event tick-1-attack-10-20" })).toBeVisible();
+  await expect(explorer.getByText(/Damage 25 · remaining health 75/)).toBeVisible();
   await expect(explorer.getByText(/COMBAT-DAMAGE-001.*baseDamage=.*trace=.*retention=.*→.*damage/)).toBeVisible();
   await explorer.getByRole("link", { name: "Open governing rule COMBAT-ATTACK-RESOLUTION-001" }).click();
   await expect(page).toHaveURL(/#rule-COMBAT-ATTACK-RESOLUTION-001$/);

@@ -55,6 +55,13 @@ module CombatRules =
 #endif
     let implementationArtifacts =
         [ "combat-rules-source-sha256", System.Text.Encoding.UTF8.GetBytes "5d82d4dae2acbf7b30e1c912f981ae920de423059ac94ef175796f3d5b9b2c65"
+          "source-sha256:src/SIR.Domain/Rules.fs", System.Text.Encoding.UTF8.GetBytes "0000000000000000000000000000000000000000000000000000000000000000"
+          "source-sha256:src/SIR.Domain/FixedPoint.fs", System.Text.Encoding.UTF8.GetBytes "0000000000000000000000000000000000000000000000000000000000000000"
+          "source-sha256:src/SIR.Domain/CanonicalEncoding.fs", System.Text.Encoding.UTF8.GetBytes "0000000000000000000000000000000000000000000000000000000000000000"
+          "source-sha256:src/SIR.Domain/CanonicalHash.fs", System.Text.Encoding.UTF8.GetBytes "0000000000000000000000000000000000000000000000000000000000000000"
+          "source-sha256:src/SIR.Simulation/Replay.fs", System.Text.Encoding.UTF8.GetBytes "0000000000000000000000000000000000000000000000000000000000000000"
+          "source-sha256:src/SIR.Simulation/Simulation.fs", System.Text.Encoding.UTF8.GetBytes "0000000000000000000000000000000000000000000000000000000000000000"
+          "source-sha256:src/SIR.Match/MatchReplay.fs", System.Text.Encoding.UTF8.GetBytes "0000000000000000000000000000000000000000000000000000000000000000"
           "fs-gg-game-core-nupkg-sha256", System.Text.Encoding.UTF8.GetBytes "2722ec4828960167da8e77c2699b0d0a679cd4791207d2bf6f3b644a2bab66f7"
           "los-line-of-sight-by-fingerprint", System.Text.Encoding.UTF8.GetBytes "FS.GG.Game.Core@0.13.0:Los.lineOfSightBy:Supercover" ]
     let packageIdentity = Rules.packageIdentity "sir-simulation-v1" "fs-gg-game-core-fable-lockstep-v1" "FS.GG.Game.Core@0.13.0" "4fbbb11ed3e34d50c28b04042ac8eba7753afb28" implementationArtifacts registry

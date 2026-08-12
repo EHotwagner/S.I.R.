@@ -47,13 +47,20 @@ and PerspectiveFrame =
     { Tick: int32
       ProjectionHash: byte array }
 
+/// Content-addressed rule identity and canonical applications retained by replay v3.
+type ReplayRulesArchive =
+    { SchemaVersion: int32
+      Identity: RulePackageIdentity
+      Applications: byte array list
+      ContentDigest: byte array }
+
 /// Versioned replay package header and disclosure-specific payload.
 type ReplayPackage =
     { FormatVersion: int32
       EngineHash: byte array
       RulesetHash: byte array
       FullReplayAuthorized: bool
-      RulesArchive: byte array option
+      RulesArchive: ReplayRulesArchive option
       Content: ReplayContent }
 
 /// Resource limits applied before and during package decoding.
@@ -99,11 +106,7 @@ type private ReplayReader =
 [<RequireQualifiedAccess>]
 module Replay =
     [<Literal>]
-#if SIR_WEB_CLIENT
-    let CurrentFormatVersion = 2
-#else
     let CurrentFormatVersion = 3
-#endif
 
     [<Literal>]
     let DirectionalFormatVersion = 2
@@ -122,6 +125,7 @@ module Replay =
           MaxObservations = 65_536 }
 
     let private magic = [| 0x53uy; 0x49uy; 0x52uy; 0x52uy |]
+    let private archiveSchemaVersion = 1
     let private requireHash field (hash: byte array) =
         if hash.Length = 32 then
             Ok()
@@ -264,6 +268,32 @@ module Replay =
                     [ CanonicalEncoding.int32LittleEndian frame.Tick
                       frame.ProjectionHash ])))
 
+    let private textBytes (value: string) = System.Text.Encoding.UTF8.GetBytes value
+    let private archiveIdentityBytes (identity: RulePackageIdentity) =
+        CanonicalEncoding.concatenate
+            [ CanonicalEncoding.int32LittleEndian identity.SchemaVersion
+              lengthPrefixed (textBytes identity.EngineIdentity)
+              lengthPrefixed (textBytes identity.CompatibilityProfile)
+              lengthPrefixed (textBytes identity.PackageVersion)
+              lengthPrefixed (textBytes identity.SourceCommit)
+              identity.ImplementationDigest
+              identity.SemanticDigest
+              identity.ManifestDigest ]
+
+    let private archiveContentBytes archive =
+        CanonicalEncoding.concatenate
+            ([ CanonicalEncoding.int32LittleEndian archive.SchemaVersion
+               archiveIdentityBytes archive.Identity
+               CanonicalEncoding.int32LittleEndian archive.Applications.Length ]
+             @ (archive.Applications |> List.map lengthPrefixed))
+
+    let createRulesArchive identity applications =
+        let partial = { SchemaVersion = archiveSchemaVersion; Identity = identity; Applications = applications; ContentDigest = [||] }
+        { partial with ContentDigest = archiveContentBytes partial |> CanonicalHash.sha256 }
+
+    let private rulesArchiveBytes archive =
+        CanonicalEncoding.concatenate [ archiveContentBytes archive; archive.ContentDigest ]
+
     /// Encodes a package in the stable version-1 binary format.
     let encode package =
         let disclosure, payload =
@@ -280,11 +310,7 @@ module Replay =
               package.RulesetHash
               [| if package.FullReplayAuthorized then 1uy else 0uy |]
               if package.FormatVersion >= 3 then
-#if SIR_WEB_CLIENT
-                  [||]
-#else
-                  match package.RulesArchive with None -> [| 0uy |] | Some archive -> CanonicalEncoding.concatenate [ [| 1uy |]; lengthPrefixed archive ]
-#endif
+                  match package.RulesArchive with None -> [| 0uy |] | Some archive -> CanonicalEncoding.concatenate [ [| 1uy |]; lengthPrefixed (rulesArchiveBytes archive) ]
               payload ]
 
     let private failDecode detail = raise (ReplayDecodeFailure detail)
@@ -334,6 +360,38 @@ module Replay =
     let private readLengthPrefixed field maximum reader =
         let count = readCount field maximum reader
         readBytes count reader
+
+    let private readText field reader =
+        let value = readLengthPrefixed field 256 reader |> System.Text.Encoding.UTF8.GetString
+        if System.String.IsNullOrWhiteSpace value then failDecode (field + " is empty.")
+        value
+
+    let private readRulesArchive bytes =
+        let archiveReader = { Bytes = bytes; Offset = 0 }
+        let schemaVersion = readInt32 archiveReader
+        if schemaVersion <> archiveSchemaVersion then failDecode (sprintf "Unsupported rules archive schema %d." schemaVersion)
+        let identitySchemaVersion = readInt32 archiveReader
+        if identitySchemaVersion <> 1 then failDecode (sprintf "Unsupported rule identity schema %d." identitySchemaVersion)
+        let identity =
+            { SchemaVersion = identitySchemaVersion
+              EngineIdentity = readText "rules archive engine identity" archiveReader
+              CompatibilityProfile = readText "rules archive compatibility profile" archiveReader
+              PackageVersion = readText "rules archive package version" archiveReader
+              SourceCommit = readText "rules archive source commit" archiveReader
+              ImplementationDigest = readBytes 32 archiveReader
+              SemanticDigest = readBytes 32 archiveReader
+              ManifestDigest = readBytes 32 archiveReader }
+        if identity.SourceCommit.Length <> 40 || identity.SourceCommit |> Seq.exists (fun value -> not ((value >= '0' && value <= '9') || (value >= 'a' && value <= 'f'))) then
+            failDecode "Rules archive source commit is not a lowercase 40-character SHA."
+        let applicationCount = readCount "rules archive applications" 1024 archiveReader
+        let applications = [ for _ in 1 .. applicationCount -> readLengthPrefixed "rules archive application" 65_536 archiveReader ]
+        let contentBoundary = archiveReader.Offset
+        let contentDigest = readBytes 32 archiveReader
+        if archiveReader.Offset <> bytes.Length then failDecode "Rules archive has trailing bytes."
+        if bytes[0 .. contentBoundary - 1] |> CanonicalHash.sha256 <> contentDigest then failDecode "Rules archive content digest does not match."
+        if applications |> List.exists (fun application -> application.Length < 32 || application[application.Length - 32 ..] <> identity.ManifestDigest) then
+            failDecode "Rules archive application is not bound to its manifest identity."
+        { SchemaVersion = schemaVersion; Identity = identity; Applications = applications; ContentDigest = contentDigest }
 
     let private readSide reader =
         match readByte reader with
@@ -518,14 +576,10 @@ module Replay =
                 let fullReplayAuthorized = readBool reader
                 let rulesArchive =
                     if version >= 3 then
-#if SIR_WEB_CLIENT
-                        None
-#else
                         match readByte reader with
                         | 0uy -> None
-                        | 1uy -> Some(readLengthPrefixed "rules archive" limits.MaxPackageBytes reader)
+                        | 1uy -> Some(readLengthPrefixed "rules archive" limits.MaxPackageBytes reader |> readRulesArchive)
                         | value -> failDecode (sprintf "Invalid rules archive byte %d." value)
-#endif
                     else None
 
                 let content =
@@ -569,6 +623,10 @@ module Replay =
             )
         elif package.EngineHash <> expectedEngine then
             Error(EngineMismatch(expectedEngine, package.EngineHash))
+        elif package.FormatVersion >= 3 && package.RulesArchive.IsNone && (match package.Content with AuthorizedFullReplay _ -> true | PerspectivePlayback _ -> false) then
+            Error(MalformedPackage "Replay v3 requires a rules archive.")
+        elif package.FormatVersion >= 3 && package.RulesArchive.IsSome && package.RulesArchive.Value.Identity.ManifestDigest <> package.RulesetHash then
+            Error(MalformedPackage "Replay rules archive manifest identity does not match the package ruleset hash.")
         else
             match requireHash "engine" package.EngineHash with
             | Error error -> Error error

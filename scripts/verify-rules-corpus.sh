@@ -4,7 +4,26 @@ set -euo pipefail
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 project="$repo_root/tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj"
 
+search_quiet() {
+  local pattern=$1
+  local path=$2
+  if test "${SIR_RULES_FORCE_GREP:-0}" != 1 && command -v rg >/dev/null 2>&1; then
+    rg -q -- "$pattern" "$path"
+  else
+    grep -Eq -- "$pattern" "$path"
+  fi
+}
+
 "$repo_root/scripts/generate-rules-corpus.sh" --check
+
+coverage_mutant=$(mktemp /tmp/sir-rules-coverage-mutant.XXXXXX)
+jq '.edges[0].to = "missing:node"' "$repo_root/tests/fixtures/rules-corpus/v2/coverage.json" > "$coverage_mutant"
+if "$repo_root/scripts/validate-rules-coverage.sh" "$coverage_mutant" >/dev/null 2>&1; then
+  echo "rules coverage dangling-endpoint mutation unexpectedly passed" >&2
+  rm -f "$coverage_mutant"
+  exit 1
+fi
+rm -f "$coverage_mutant"
 
 test "$(sha256sum "$repo_root/tests/fixtures/rules-corpus/v1/manifest.json" | cut -d' ' -f1)" = "e5bfe82d40e72ff8b41898e408c50dd0d8fb7e05b72c6acc24baab0e3b451ddc" || { echo "retained v1 manifest changed" >&2; exit 1; }
 test "$(sha256sum "$repo_root/tests/fixtures/rules-corpus/v1/coverage.json" | cut -d' ' -f1)" = "39eecda1018c504eab7b03c60228bf155c99aa42433724655da42d9ee470d554" || { echo "retained v1 coverage changed" >&2; exit 1; }
@@ -13,7 +32,7 @@ test "$(sha256sum "$repo_root/tests/fixtures/rules-corpus/v1/representative-appl
 while IFS=$'\t' read -r source_path source_symbol; do
   test -f "$repo_root/$source_path" || { echo "missing rule source: $source_path" >&2; exit 1; }
   symbol_name=${source_symbol##*.}
-  rg -q "let (private )?${symbol_name}( |$)" "$repo_root/$source_path" || {
+  search_quiet "let (private )?${symbol_name}( |$)" "$repo_root/$source_path" || {
     echo "unresolved rule source symbol: $source_symbol in $source_path" >&2
     exit 1
   }
@@ -27,7 +46,14 @@ declared_package_sha=$(sed -n 's/.*"fs-gg-game-core-nupkg-sha256", System.Text.E
 captured_package_sha=$(jq -r '.sha256' "$repo_root/docs/dependency-surface/FS.GG.Game.Core/0.13.0.json")
 test "$declared_package_sha" = "$captured_package_sha" || { echo "Game.Core implementation fingerprint does not match dependency receipt" >&2; exit 1; }
 
-if rg -n --glob '*.js' --glob '*.ts' --glob '!**/.fable/**' '(baseDamage|expectedDamage).*(trace|retention)|(trace|retention).*(baseDamage|expectedDamage)' "$repo_root/src"; then
+copied_semantics_pattern='(baseDamage|expectedDamage).*(trace|retention)|(trace|retention).*(baseDamage|expectedDamage)'
+if test "${SIR_RULES_FORCE_GREP:-0}" != 1 && command -v rg >/dev/null 2>&1; then
+  copied_semantics=$(rg -n --glob '*.js' --glob '*.ts' --glob '!**/.fable*/**' "$copied_semantics_pattern" "$repo_root/src" || true)
+else
+  copied_semantics=$(find "$repo_root/src" -type f \( -name '*.js' -o -name '*.ts' \) ! -path '*/.fable*/*' -exec grep -EnH -- "$copied_semantics_pattern" {} + || true)
+fi
+if test -n "$copied_semantics"; then
+  printf '%s\n' "$copied_semantics"
   echo "copied JavaScript/TypeScript combat semantics detected" >&2
   exit 1
 fi
@@ -38,7 +64,7 @@ if dotnet run --project "$project" -c Release --no-build -- --inject-rules-corpu
   echo "rules-corpus protected-subject mutation unexpectedly passed" >&2
   exit 1
 fi
-rg -q 'first divergence: fixture=rules-corpus' "$mutation_log" || {
+search_quiet 'first divergence: fixture=rules-corpus' "$mutation_log" || {
   echo "rules-corpus mutation failed without the actionable divergence diagnostic" >&2
   exit 1
 }

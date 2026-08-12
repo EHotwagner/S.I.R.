@@ -25,12 +25,7 @@ type MatchQualification =
 module MatchReplay =
     let private engineHash = [| for value in 1 .. 32 -> byte value |]
 
-    let private rulesetHash =
-        CanonicalHash.sha256 (
-            Text.Encoding.UTF8.GetBytes(
-                "sir-qualification-rules-v1;tick-hz=20;attack-power=25"
-            )
-        )
+    let private rulesetHash = CombatRules.packageIdentity.ManifestDigest
 
     let private executionProfileHash = ControlHost.defaultProfile.Identity
 
@@ -137,6 +132,7 @@ module MatchReplay =
         let mutable lastEvents = []
         let mutable checkpoints = [ checkpoint 0 state [] ]
         let mutable perspectives = [ perspectiveFrame state ]
+        let mutable explanations = []
 
         for tick in 1 .. 4 do
             let journal =
@@ -147,6 +143,12 @@ module MatchReplay =
             let result = Simulation.runTick state journal
             state <- result.State
             lastEvents <- result.Events
+            explanations <-
+                (result.Events
+                 |> List.choose (function
+                     | AttackResolved(_, _, _, _, explanation) -> Some explanation
+                     | _ -> None))
+                @ explanations
             perspectives <- perspectiveFrame state :: perspectives
 
             if tick < 4 then
@@ -155,7 +157,8 @@ module MatchReplay =
         state,
         lastEvents,
         List.rev checkpoints,
-        List.rev perspectives
+        List.rev perspectives,
+        List.rev explanations
 
     /// Runs a completed four-tick match and emits full and knowledge-filtered packages.
     let qualify () =
@@ -172,7 +175,7 @@ module MatchReplay =
                 artifact.ArtifactBytes
 
         let acceptedOutputs = executeArtifact artifact compiled 4
-        let finalState, finalEvents, checkpoints, perspectives =
+        let finalState, finalEvents, checkpoints, perspectives, explanations =
             runKernel acceptedOutputs
 
         let finalResult =
@@ -186,7 +189,12 @@ module MatchReplay =
               EngineHash = engineHash
               RulesetHash = rulesetHash
               FullReplayAuthorized = true
-              RulesArchive = None
+              RulesArchive =
+                Some(
+                    Replay.createRulesArchive
+                        CombatRules.packageIdentity
+                        (explanations |> List.map Rules.canonicalApplicationBytes)
+                )
               Content =
                 AuthorizedFullReplay
                     { InitialSnapshot = Simulation.initialState

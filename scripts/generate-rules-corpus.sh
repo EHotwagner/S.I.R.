@@ -14,6 +14,7 @@ dotnet run --project "$project" -c Release --no-build -- --print-rules-applicati
 
 jq -e '.schemaVersion == 1 and (.rules | length == 7)' "$temporary_dir/manifest.json" >/dev/null
 jq -e '.schemaVersion == 1 and .authorityBoundary.outside == "legacy"' "$temporary_dir/coverage.json" >/dev/null
+"$repo_root/scripts/validate-rules-coverage.sh" "$temporary_dir/coverage.json"
 
 case "$mode" in
   --write)

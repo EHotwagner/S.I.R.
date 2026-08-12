@@ -13,7 +13,7 @@ module ReplayFixtures =
         [| for value in start .. start + 31 -> byte value |]
 
     let engineHash = hashSeed 1
-    let private rulesetHash = hashSeed 65
+    let private rulesetHash = CombatRules.packageIdentity.ManifestDigest
 
     let private input tick sequence value: ReplayInput =
         { Tick = tick
@@ -43,18 +43,9 @@ module ReplayFixtures =
                   ArmorRetention = FixedPoint.fromRatio 4 5 |> Result.defaultWith (fun _ -> failwith "invalid retention")
                   EventId = "replay-v3-attack" }
             |> Result.defaultWith failwith
-        let identity = CombatRules.packageIdentity
-        let text (value: string) = System.Text.Encoding.UTF8.GetBytes value
-        CanonicalEncoding.concatenate
-            [ text identity.CompatibilityProfile
-              text identity.PackageVersion
-              text identity.SourceCommit
-              identity.ImplementationDigest
-              identity.SemanticDigest
-              identity.ManifestDigest
-              Rules.canonicalApplicationBytes attack.Explanation
-              text CombatRules.retainedPackage.ManifestJson
-              text CombatRules.retainedPackage.CoverageJson ]
+        Replay.createRulesArchive
+            CombatRules.packageIdentity
+            [ Rules.canonicalApplicationBytes attack.Explanation ]
 
     let private fullPackage () =
         let red = Simulation.unitId 10
@@ -155,7 +146,38 @@ module ReplayFixtures =
 
         match decoded.RulesArchive with
         | None -> failwith "Replay v3 omitted its canonical rules archive."
-        | Some archive -> require (archive = rulesArchive ()) "Replay v3 did not retain exact canonical rule-package/application bytes."
+        | Some archive -> require (archive = rulesArchive ()) "Replay v3 did not retain exact typed rule-package/application identity."
+
+        let expectMalformedArchive label change =
+            let changedArchive = rulesArchive () |> change
+            let changed = { package with RulesArchive = Some changedArchive }
+            expectError
+                (function MalformedPackage _ -> true | _ -> false)
+                (changed |> Replay.encode |> Replay.decode Replay.defaultLimits)
+                ("Rules archive accepted invalid " + label + ".")
+
+        let rehash identity applications = Replay.createRulesArchive identity applications
+        let identity = CombatRules.packageIdentity
+        expectMalformedArchive "engine identity" (fun archive -> rehash { identity with EngineIdentity = "" } archive.Applications)
+        expectMalformedArchive "compatibility profile" (fun archive -> rehash { identity with CompatibilityProfile = "" } archive.Applications)
+        expectMalformedArchive "package version" (fun archive -> rehash { identity with PackageVersion = "" } archive.Applications)
+        expectMalformedArchive "source commit" (fun archive -> rehash { identity with SourceCommit = "not-a-sha" } archive.Applications)
+        expectMalformedArchive "implementation digest" (fun archive -> rehash { identity with ImplementationDigest = [| 1uy |] } archive.Applications)
+        expectMalformedArchive "semantic digest" (fun archive -> rehash { identity with SemanticDigest = [| 1uy |] } archive.Applications)
+        expectMalformedArchive "manifest digest" (fun archive -> rehash { identity with ManifestDigest = [| 1uy |] } archive.Applications)
+        expectMalformedArchive "application binding" (fun _ -> Replay.createRulesArchive identity [ Array.zeroCreate 32 ])
+
+        let missingArchive = { package with RulesArchive = None }
+        expectError
+            (function MalformedPackage detail when detail.Contains "requires a rules archive" -> true | _ -> false)
+            (Replay.runKernelReplay Replay.defaultLimits engineHash missingArchive)
+            "Replay v3 full package accepted a missing rules archive."
+
+        let mismatchedRuleset = { decoded with RulesetHash = hashSeed 65 }
+        expectError
+            (function MalformedPackage detail when detail.Contains "ruleset hash" -> true | _ -> false)
+            (Replay.runKernelReplay Replay.defaultLimits engineHash mismatchedRuleset)
+            "Replay v3 accepted a rules archive whose manifest identity differs from the package ruleset."
 
         require
             (Replay.encode decoded = encoded)

@@ -10,34 +10,38 @@ let private valueText value =
     | BooleanValue flag -> string flag + " " + value.Unit
     | TextValue content -> content + " " + value.Unit
 
-let private representativeAttack =
-    SIR.Simulation.CombatRules.resolveAttack
-        { Attacker = { Col = 0; Row = 0 }
-          TargetFootprint = [ { Col = 1; Row = 0 }; { Col = 1; Row = 1 } ]
-          IsTransparent = fun _ -> true
-          RangeCells = 1
-          Suppression = FixedPoint.zero
-          BaseDamage = FixedPoint.fromRatio 25 1 |> Result.defaultWith (fun _ -> failwith "invalid representative damage")
-          ArmorRetention = FixedPoint.fromRatio 4 5 |> Result.defaultWith (fun _ -> failwith "invalid representative retention")
-          EventId = "fixture-attack-1" }
-    |> Result.defaultWith failwith
-
 [<ReactComponent>]
 let ExecutableRulesPanel () =
+    let resolvedAttack, setResolvedAttack = React.useState<SIR.Simulation.SimulationEvent option>(None)
     Html.div [
         prop.children [
             Html.h2 ("Executable combat rules · " + SIR.Simulation.CombatRules.packageIdentity.PackageVersion)
+            Html.button [
+                prop.text "Execute canonical player attack"
+                prop.onClick (fun _ ->
+                    let result = SIR.Simulation.Simulation.runTick SIR.Simulation.Simulation.initialState SIR.Simulation.Simulation.inputs
+                    result.Events
+                    |> List.tryFind (fun (event: SIR.Simulation.SimulationEvent) ->
+                        match event with
+                        | SIR.Simulation.SimulationEvent.AttackResolved _ -> true
+                        | _ -> false)
+                    |> setResolvedAttack)
+            ]
             Html.section [
                 prop.ariaLabel "Authoritative attack event"
                 prop.children [
-                    Html.h3 "AttackResolved event fixture-attack-1"
-                    Html.p ("Outcome · " + valueText representativeAttack.Explanation.Outcome)
-                    Html.a [ prop.href "#rule-COMBAT-ATTACK-RESOLUTION-001"; prop.text "Open governing rule COMBAT-ATTACK-RESOLUTION-001" ]
-                    Html.h4 "Decisive applications"
-                    Html.ul [
-                        for application in representativeAttack.Explanation.Children do
-                            Html.li (RuleId.value application.RuleId + " · " + (application.Operands |> List.map (fun (name, value) -> name + "=" + valueText value) |> String.concat "; ") + " → " + valueText application.Outcome)
-                    ]
+                    match resolvedAttack with
+                    | Some(SIR.Simulation.SimulationEvent.AttackResolved(_, _, damage, remainingHealth, explanation)) ->
+                        Html.h3 ("AttackResolved event " + explanation.EventId)
+                        Html.p ("Damage " + string damage + " · remaining health " + string remainingHealth + " · outcome " + valueText explanation.Outcome)
+                        let governingId = RuleId.value explanation.RuleId
+                        Html.a [ prop.href ("#rule-" + governingId); prop.text ("Open governing rule " + governingId) ]
+                        Html.h4 "Decisive applications"
+                        Html.ul [
+                            for application in explanation.Children do
+                                Html.li (RuleId.value application.RuleId + " · " + (application.Operands |> List.map (fun (name, value) -> name + "=" + valueText value) |> String.concat "; ") + " → " + valueText application.Outcome)
+                        ]
+                    | _ -> Html.p "No authoritative attack has been emitted yet."
                 ]
             ]
             for rule in SIR.Simulation.CombatRules.registry do
