@@ -111,10 +111,38 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   const source = explorer.getByRole("link", { name: /Pinned F# source · CombatRules.damage/ });
   await expect(source).toHaveAttribute(
     "href",
-    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/0f7128985a14ef3470e92d23ee5786236f97fb97\/src\/SIR\.Simulation\/CombatRules\.fs/,
+    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/87931073b13b3c74b2ce9dc4cd4321e9b237760e\/src\/SIR\.Simulation\/CombatRules\.fs/,
   );
   await expect(damageRule.getByText(/examples: tests\/SIR\.Conformance\.Shared\/RulesCorpusFixtures\.fs · properties:/)).toBeVisible();
   await expect(damageRule.getByRole("link", { name: "Coverage graph" })).toHaveAttribute("href", /rules-corpus\/v2\/coverage\.json/);
+});
+
+test("the player-visible spatial diagnostics route shows authoritative selected-unit evidence", async ({ page }) => {
+  await loadMaintainedSimulation(page);
+  const battlefield = page.locator("#persistent-tactical-svg");
+  await battlefield.locator("#persistent-layer-units [data-unit-id]").first().click();
+  await page.getByRole("button", { name: "View", exact: true }).click();
+  await page.getByRole("menuitem", { name: /Spatial diagnostics/ }).click();
+  const diagnostics = page.getByRole("region", { name: "Selected unit spatial diagnostics", exact: true });
+  await expect(diagnostics).toBeVisible();
+  await expect(diagnostics.getByText(/ExactLineOfSight · Found/)).toBeVisible();
+  await expect(diagnostics.getByText(/BoundedPath · Found/)).toBeVisible();
+  await expect(diagnostics.getByText(/Cover · Found/)).toBeVisible();
+  await expect(diagnostics.getByText("Normalized inputs", { exact: true }).first()).toBeVisible();
+  await expect(diagnostics.getByText("Footprint samples", { exact: true }).first()).toBeVisible();
+  await expect(diagnostics.getByText("Authoritative path", { exact: true }).first()).toBeVisible();
+  const boundedPath = diagnostics.locator("details").filter({ hasText: "BoundedPath · Found" });
+  const renderedPath = boundedPath.getByText("Authoritative path", { exact: true }).locator("+ dd");
+  await expect(renderedPath).not.toHaveText("none");
+  await expect(renderedPath).toHaveText(/^\(\d+,\d+\)(?:, \(\d+,\d+\))+$/);
+  await expect(diagnostics.getByText("Crossed cells", { exact: true }).first()).toBeVisible();
+  await expect(diagnostics.getByText("Crossed edges", { exact: true }).first()).toBeVisible();
+  await expect(diagnostics.getByText("Cover contributors", { exact: true }).first()).toBeVisible();
+  await expect(diagnostics.getByText("Decisions", { exact: true }).first()).toBeVisible();
+  await expect(diagnostics.getByText("Expansion / truncation", { exact: true }).first()).toBeVisible();
+  await expect(diagnostics.getByText(/player-disclosed/).first()).toBeVisible();
+  await expect(diagnostics.getByText(/FS\.GG\.Game\.Core@0\.13\.0.*fs-gg-game-core-fable-lockstep-v1/).first()).toBeVisible();
+  await expect(diagnostics.getByText("SIR.Simulation.SpatialQuery.evaluate", { exact: true }).first()).toBeVisible();
 });
 
 test("the maintained simulation transport is available without a manual handoff in every modality", async ({ page }) => {

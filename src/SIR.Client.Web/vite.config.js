@@ -5,6 +5,11 @@ export default defineConfig({
   root: resolve(import.meta.dirname),
   base: "./",
   build: {
+    minify: "terser",
+    terserOptions: {
+      compress: { passes: 3 },
+      format: { comments: false },
+    },
     outDir: resolve(import.meta.dirname, "../../artifacts/client"),
     emptyOutDir: true,
     rollupOptions: {

@@ -3531,149 +3531,9 @@ let private comparisonPanel (model: Model) dispatch =
         ]
     ]
 
-let private catalogTable
-    (label: string)
-    (headers: string list)
-    (rows: string list list)
-    =
-    Html.div [
-        prop.className "catalog-table-scroll"
-        prop.children [
-            Html.table [
-                prop.ariaLabel label
-                prop.children [
-                    Html.caption label
-                    Html.thead [
-                        Html.tr [
-                            for header in headers do
-                                Html.th header
-                        ]
-                    ]
-                    Html.tbody [
-                        for row in rows do
-                            Html.tr [
-                                for value in row do
-                                    Html.td value
-                            ]
-                    ]
-                ]
-            ]
-        ]
-    ]
-
 [<ReactLazyComponent>]
-let private LazyExecutableRulesPanel () =
+let private LazyDeferredDataPanel simulator selectedUnit bootstrap =
     React.DynamicImported("../RulesExplorer.js")
-let private rulesDataCatalog =
-    Html.section [
-        prop.ariaLabel "Rules data tables"
-        prop.children [
-            React.Suspense([ LazyExecutableRulesPanel () ], fallback = Html.p "Loading executable rules…")
-            Html.section [
-                prop.children [
-            Html.h2 "Units, perks, weapons, and equipment"
-            Html.p "Tables label canonical, proposed, and prototype laboratory values."
-            Html.details [
-                prop.isOpen true
-                prop.children [
-                    Html.summary "Units and body profiles"
-                    catalogTable
-                        "Unit roles"
-                        [ "Unit"; "Faction"; "Status"; "Role" ]
-                        [ for unit in RulesCatalog.unitRoles do
-                              [ unit.Name; unit.Faction; unit.Status; unit.Role ] ]
-                    catalogTable
-                        "Prototype body profiles"
-                        [ "Body"
-                          "Status"
-                          "HP"
-                          "Front armor"
-                          "Flank armor"
-                          "Rear armor"
-                          "Suppression resistance"
-                          "Regeneration/s" ]
-                        [ for body in RulesCatalog.bodyProfiles do
-                              [ body.Name
-                                body.Status
-                                body.Health
-                                body.FrontArmor
-                                body.FlankArmor
-                                body.RearArmor
-                                body.SuppressionResistance
-                                body.RegenerationPerSecond ] ]
-                ]
-            ]
-            Html.details [
-                Html.summary ("Perks · " + string RulesCatalog.perkProfiles.Length)
-                catalogTable
-                    "Perk families"
-                    [ "Family"; "Perk"; "Tactical change" ]
-                    [ for perk in RulesCatalog.perkProfiles do
-                          [ perk.Family; perk.Name; perk.TacticalChange ] ]
-            ]
-            Html.details [
-                Html.summary "Weapons and prototype profiles"
-                catalogTable
-                    "Canonical weapon roles"
-                    [ "Weapon"; "Engagement shape"; "Target"; "Tactical role" ]
-                    [ for weapon in RulesCatalog.weaponRoles do
-                          [ weapon.Name
-                            weapon.EngagementShape
-                            weapon.Target
-                            weapon.TacticalRole ] ]
-                catalogTable
-                    "Prototype weapon profiles"
-                    [ "Weapon"
-                      "Kind"
-                      "Base engage (s)"
-                      "Range slope"
-                      "Exponent"
-                      "Accuracy"
-                      "Dispersion/m"
-                      "Damage"
-                      "Penetration"
-                      "Shots/s"
-                      "Effect density"
-                      "Suppression/s" ]
-                    [ for weapon in RulesCatalog.weaponProfiles do
-                          [ weapon.Name
-                            weapon.Kind
-                            weapon.BaseEngageSeconds
-                            weapon.RangeSlope
-                            weapon.Exponent
-                            weapon.Accuracy
-                            weapon.DispersionPerMeter
-                            weapon.Damage
-                            weapon.Penetration
-                            weapon.ShotsPerSecond
-                            weapon.EffectDensity
-                            weapon.SuppressionPerSecond ] ]
-            ]
-            Html.details [
-                Html.summary "Armor and equipment"
-                catalogTable
-                    "Human armor packages"
-                    [ "Package"; "Coverage"; "Cost" ]
-                    [ for armor in RulesCatalog.armorProfiles do
-                          [ armor.Name; armor.Coverage; armor.Cost ] ]
-                catalogTable
-                    "Equipment catalog"
-                    [ "Faction"; "Status"; "Category"; "Items" ]
-                    [ for equipment in RulesCatalog.equipmentGroups do
-                          [ equipment.Faction
-                            equipment.Status
-                            equipment.Category
-                            equipment.Items ] ]
-            ]
-            Html.p [
-                Html.a [
-                    prop.href "gameplay-reference.html"
-                    prop.text "Read definitions, formulas, and design rationale in the Gameplay Reference."
-                ]
-            ]
-                ] ]
-        ]
-    ]
 let private laboratoryResults model dispatch =
     Html.section [
         prop.className "panel lab-results"
@@ -7693,7 +7553,10 @@ let private tacticalPanelBody panelId model dispatch =
             ]
         ]
     elif panelId = "data" then
-        rulesDataCatalog
+        React.Suspense(
+            [ LazyDeferredDataPanel model.Simulator model.SimulatorSelectedUnit model.Live.Bootstrap ],
+            fallback = Html.p "Loading authoritative data…"
+        )
     elif panelId = "samples" && model.Workspace <> SimulatorWorkspace then
         sampleCatalogView dispatch
     elif model.Workspace = PlanningWorkspace then

@@ -1,0 +1,145 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-12-sir-item-180-authoritative-spatial-query-foundation.md",
+  "reportSha256": "a0a0395f36032b21ac50da3d28a9f976dcb859ae7c9b7ec594d1ae10d6369b36",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:node scripts/test-production-delivery-budget.mjs",
+          "result": "verified"
+        },
+        {
+          "locator": "command:npx playwright test tests/SIR.Browser.Tests/production-delivery.spec.js --config tests/SIR.Browser.Tests/playwright.config.js",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Current budget measurements are exact; this is recurrence of the retained item-194 cap rather than a new actionable finding."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:./scripts/verify-spatial-query.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The final cross-runtime adapter and guards are verified; the abandoned first integration is not preserved."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:node scripts/smoke-docs.mjs",
+          "result": "verified"
+        },
+        {
+          "locator": "command:npx playwright test tests/SIR.Browser.Tests/visible-workflows.spec.js --config tests/SIR.Browser.Tests/playwright.config.js --grep \"player-visible spatial diagnostics route\"",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The current gap is directly observed: Happy DOM emits teardown exceptions and the focused spatial Playwright test does not assert complete deferred table content."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "duplicate",
+      "missingFacts": [
+        "This cycle did not preserve a durable pre-fix refresh receipt or candidate commit."
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet tool run fsgg-sdd refresh --work 180-authoritative-spatial-query-foundation --text",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet tool run fsgg-sdd verify --work 180-authoritative-spatial-query-foundation --text",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet tool run fsgg-sdd ship --work 180-authoritative-spatial-query-foundation --text",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The repaired current state and recurrence are verified; the exact pre-fix failure in this cycle is collector evidence."
+      ]
+    },
+    {
+      "id": "§4.5",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:find .agents/skills -path '*/fs-gg-feedback-report/SKILL.md'",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:FS-GG/.github#2380",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The skill absence and open upstream issue are exact; this report adds recurrence evidence rather than a new handoff."
+      ]
+    },
+    {
+      "id": "§4.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:gh run view 31638616764 --repo EHotwagner/S.I.R. --job 94255169628 --log-failed",
+          "result": "verified"
+        },
+        {
+          "locator": "command:./scripts/test-worker-cancellation-subject-mutation.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "command:./scripts/test-conformance.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The hosted failure and local mutation/restored-green evidence are exact; hosted exact-head verification of the repair remains pending."
+      ]
+    },
+    {
+      "id": "§4.7",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "review:https://github.com/EHotwagner/S.I.R./pull/200#issuecomment-5273040166",
+          "result": "verified"
+        },
+        {
+          "locator": "command:./scripts/verify-spatial-query.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "command:./scripts/test-spatial-diagnostic-subject-mutation.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Both critic reproductions and local red/restored-green subjects are exact; hosted exact-head confirmation remains pending."
+      ]
+    }
+  ]
+}

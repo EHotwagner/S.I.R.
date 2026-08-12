@@ -189,6 +189,18 @@ module LiveAuthority =
                     state.ConnectionId <- Some connectionId; state.DisconnectedAt <- None; Some(pair.Key, state.ActorId, snapshotAt state.FrameIndex)
                 else None))
 
+    /// Validates an admitted live-session token for an HTTP projection without
+    /// rebinding the session's SignalR connection.
+    let authorizeHttp accessToken =
+        removeExpired (); countValidation (); countLookup ()
+        sessions
+        |> Seq.exists (fun pair ->
+            let state = pair.Value
+            lock state.Gate (fun () ->
+                not state.Revoked
+                && state.ExpiresAt > timeProvider.GetUtcNow()
+                && validToken state.AccessToken accessToken))
+
     let advance sessionId actorId accessToken connectionId sequence =
         removeExpired (); countValidation (); countLookup ()
         match sessions.TryGetValue sessionId with

@@ -1,0 +1,1388 @@
+schemaVersion: 1
+workId: 180-authoritative-spatial-query-foundation
+stage: evidence
+status: evidenceReady
+sourceSpec: work/180-authoritative-spatial-query-foundation/spec.md
+sourceClarifications: work/180-authoritative-spatial-query-foundation/clarifications.md
+sourceChecklist: work/180-authoritative-spatial-query-foundation/checklist.md
+sourcePlan: work/180-authoritative-spatial-query-foundation/plan.md
+sourceTasks: work/180-authoritative-spatial-query-foundation/tasks.yml
+sourceAnalysis: readiness/180-authoritative-spatial-query-foundation/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/180-authoritative-spatial-query-foundation/analysis.json
+    digest: 715cfe7c24f96a27144a69a00eb202281f81de104fa5b723c3d761a93374517c
+    schemaVersion: 1
+  - label: checklist
+    path: work/180-authoritative-spatial-query-foundation/checklist.md
+    digest: 6d6ee8823b465ec09abc646b1a384acaea5df9203cbb230355e7d2a903a8aeec
+    schemaVersion: 1
+  - label: clarifications
+    path: work/180-authoritative-spatial-query-foundation/clarifications.md
+    digest: b2cae02393f9d49369f0c9a1fc83e1d89c6979c72e548be96a00b37a4c8a06bf
+    schemaVersion: 1
+  - label: plan
+    path: work/180-authoritative-spatial-query-foundation/plan.md
+    digest: f61eb7d16359a077094437b1a37d4e43e624e19db67321b40ac86ef6277e4a9c
+    schemaVersion: 1
+  - label: spec
+    path: work/180-authoritative-spatial-query-foundation/spec.md
+    digest: e8d67175a4ed8f11e22bb39ab3dccb9769169285497d4e986ad827ac759ca80f
+    schemaVersion: 1
+  - label: tasks
+    path: work/180-authoritative-spatial-query-foundation/tasks.yml
+    digest: 60b873311ddd73c839429fc7f0d74d742f053b93844049697c44e56317124e4e
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused native and Fable spatial semantics receipt.]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused native and Fable spatial semantics receipt.]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV003]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused native and Fable spatial semantics receipt.]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused native and Fable spatial semantics receipt.]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused cache and requester-knowledge receipt.]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV006]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused cache and requester-knowledge receipt.]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV007]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused cache and requester-knowledge receipt.]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV008]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml, scripts/verify-spatial-query.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-spatial-query.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Exact .NET/Fable package-adapter and mutation receipt.]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-integration-authority.junit.xml, scripts/verify-spatial-query.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-spatial-query.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-integration-authority.junit.xml
+      digest: "sha256:09be5be0af56aeb358cd5d721daa4fa04efd87a931862cfc4220562ec7231a38"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 2
+      failed: 0
+      skipped: 0
+    notes: [Match, Simulation, and authority-scan receipt., client-boundary]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-player-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-player-browser.junit.xml
+      digest: "sha256:f55600f650c8ce79601a9c5612c3146768b0ed962220430067471fd6c72db267"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Player-emittable production spatial diagnostics journey receipt.]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: [FR-011]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-performance.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-performance.junit.xml
+      digest: "sha256:7f03593c8347a22da1c9dc22b6b57231d61a59a8d14a05e1af686be9f12cef37"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Release latency and structural-envelope receipt.]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV012]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml, scripts/verify-spatial-query.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-spatial-query.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Exact .NET/Fable package-adapter and mutation receipt.]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: [FR-013]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-013]
+    obligationRefs: [EV013]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-integration-authority.junit.xml, scripts/verify-spatial-query.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-spatial-query.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-integration-authority.junit.xml
+      digest: "sha256:09be5be0af56aeb358cd5d721daa4fa04efd87a931862cfc4220562ec7231a38"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 2
+      failed: 0
+      skipped: 0
+    notes: [Match, Simulation, and authority-scan receipt., client-boundary]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: [FR-014]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-014]
+    obligationRefs: [EV014]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/full-conformance.junit.xml, scripts/test-conformance.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-conformance.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/full-conformance.junit.xml
+      digest: "sha256:a2a4d8eedda8ab8fe2044c9c576a5b0f8980becb9399b5d0015fe92229db6e55"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Fable, Full native, and production conformance receipt., browser, governance]
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV015]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-integration-authority.junit.xml, scripts/verify-spatial-query.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-spatial-query.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-integration-authority.junit.xml
+      digest: "sha256:09be5be0af56aeb358cd5d721daa4fa04efd87a931862cfc4220562ec7231a38"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 2
+      failed: 0
+      skipped: 0
+    notes: [Match, Simulation, and authority-scan receipt., client-boundary]
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV016]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused native and Fable spatial semantics receipt.]
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV017]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused cache and requester-knowledge receipt.]
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV018]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused cache and requester-knowledge receipt.]
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV019]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-player-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-player-browser.junit.xml
+      digest: "sha256:f55600f650c8ce79601a9c5612c3146768b0ed962220430067471fd6c72db267"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Player-emittable production spatial diagnostics journey receipt.]
+  - id: EV020
+    kind: verification
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV020]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused native and Fable spatial semantics receipt.]
+  - id: EV021
+    kind: verification
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV021]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused native and Fable spatial semantics receipt.]
+  - id: EV022
+    kind: verification
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV022]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused native and Fable spatial semantics receipt.]
+  - id: EV023
+    kind: verification
+    subject:
+      type: task
+      id: T023
+    taskRefs: [T023]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV023]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused native and Fable spatial semantics receipt.]
+  - id: EV024
+    kind: verification
+    subject:
+      type: task
+      id: T024
+    taskRefs: [T024]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV024]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused cache and requester-knowledge receipt.]
+  - id: EV025
+    kind: verification
+    subject:
+      type: task
+      id: T025
+    taskRefs: [T025]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV025]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused cache and requester-knowledge receipt.]
+  - id: EV026
+    kind: verification
+    subject:
+      type: task
+      id: T026
+    taskRefs: [T026]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV026]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused cache and requester-knowledge receipt.]
+  - id: EV027
+    kind: verification
+    subject:
+      type: task
+      id: T027
+    taskRefs: [T027]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV027]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-integration-authority.junit.xml, scripts/verify-spatial-query.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-spatial-query.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-integration-authority.junit.xml
+      digest: "sha256:09be5be0af56aeb358cd5d721daa4fa04efd87a931862cfc4220562ec7231a38"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 2
+      failed: 0
+      skipped: 0
+    notes: [Match, Simulation, and authority-scan receipt., client-boundary]
+  - id: EV028
+    kind: verification
+    subject:
+      type: task
+      id: T028
+    taskRefs: [T028]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV028]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-player-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-player-browser.junit.xml
+      digest: "sha256:f55600f650c8ce79601a9c5612c3146768b0ed962220430067471fd6c72db267"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Player-emittable production spatial diagnostics journey receipt.]
+  - id: EV029
+    kind: verification
+    subject:
+      type: task
+      id: T029
+    taskRefs: [T029]
+    requirementRefs: [FR-011]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV029]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-performance.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-performance.junit.xml
+      digest: "sha256:7f03593c8347a22da1c9dc22b6b57231d61a59a8d14a05e1af686be9f12cef37"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Release latency and structural-envelope receipt.]
+  - id: EV030
+    kind: verification
+    subject:
+      type: task
+      id: T030
+    taskRefs: [T030]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-003, PD-004]
+    obligationRefs: [EV030]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused native and Fable spatial semantics receipt.]
+  - id: EV031
+    kind: verification
+    subject:
+      type: task
+      id: T031
+    taskRefs: [T031]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002, PD-003, PD-004]
+    obligationRefs: [EV031]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused native and Fable spatial semantics receipt.]
+  - id: EV032
+    kind: verification
+    subject:
+      type: task
+      id: T032
+    taskRefs: [T032]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005, PD-006, PD-007]
+    obligationRefs: [EV032]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused cache and requester-knowledge receipt.]
+  - id: EV033
+    kind: verification
+    subject:
+      type: task
+      id: T033
+    taskRefs: [T033]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010, PD-011]
+    obligationRefs: [EV033]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-player-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-player-browser.junit.xml
+      digest: "sha256:f55600f650c8ce79601a9c5612c3146768b0ed962220430067471fd6c72db267"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Player-emittable production spatial diagnostics journey receipt.]
+  - id: EV034
+    kind: verification
+    subject:
+      type: task
+      id: T034
+    taskRefs: [T034]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV034]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml, scripts/verify-spatial-query.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-spatial-query.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Exact .NET/Fable package-adapter and mutation receipt.]
+  - id: EV035
+    kind: verification
+    subject:
+      type: task
+      id: T035
+    taskRefs: [T035]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV035]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml, scripts/verify-spatial-query.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-spatial-query.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Exact .NET/Fable package-adapter and mutation receipt.]
+  - id: EV036
+    kind: verification
+    subject:
+      type: task
+      id: T036
+    taskRefs: [T036]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV036]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml, scripts/verify-spatial-query.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-spatial-query.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Exact .NET/Fable package-adapter and mutation receipt.]
+  - id: EV037
+    kind: verification
+    subject:
+      type: task
+      id: T037
+    taskRefs: [T037]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-003, PD-004]
+    obligationRefs: [EV037]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused native and Fable spatial semantics receipt.]
+  - id: EV038
+    kind: verification
+    subject:
+      type: task
+      id: T038
+    taskRefs: [T038]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005, PD-006, PD-007]
+    obligationRefs: [EV038]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused cache and requester-knowledge receipt.]
+  - id: EV039
+    kind: verification
+    subject:
+      type: task
+      id: T039
+    taskRefs: [T039]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV039]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml, scripts/verify-spatial-query.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-spatial-query.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Exact .NET/Fable package-adapter and mutation receipt.]
+  - id: EV040
+    kind: verification
+    subject:
+      type: task
+      id: T040
+    taskRefs: [T040]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009, PD-013]
+    obligationRefs: [EV040]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-integration-authority.junit.xml, scripts/verify-spatial-query.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-spatial-query.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-integration-authority.junit.xml
+      digest: "sha256:09be5be0af56aeb358cd5d721daa4fa04efd87a931862cfc4220562ec7231a38"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 2
+      failed: 0
+      skipped: 0
+    notes: [Match, Simulation, and authority-scan receipt., client-boundary]
+  - id: EV041
+    kind: verification
+    subject:
+      type: task
+      id: T041
+    taskRefs: [T041]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV041]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-player-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-player-browser.junit.xml
+      digest: "sha256:f55600f650c8ce79601a9c5612c3146768b0ed962220430067471fd6c72db267"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Player-emittable production spatial diagnostics journey receipt.]
+  - id: EV042
+    kind: verification
+    subject:
+      type: task
+      id: T042
+    taskRefs: [T042]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV042]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-performance.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-performance.junit.xml
+      digest: "sha256:7f03593c8347a22da1c9dc22b6b57231d61a59a8d14a05e1af686be9f12cef37"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Release latency and structural-envelope receipt.]
+  - id: EV043
+    kind: verification
+    subject:
+      type: task
+      id: T043
+    taskRefs: [T043]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV043]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml, scripts/verify-spatial-query.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-spatial-query.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Exact .NET/Fable package-adapter and mutation receipt.]
+  - id: EV044
+    kind: verification
+    subject:
+      type: task
+      id: T044
+    taskRefs: [T044]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-014]
+    obligationRefs: [EV044]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/full-conformance.junit.xml, scripts/test-conformance.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-conformance.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/full-conformance.junit.xml
+      digest: "sha256:a2a4d8eedda8ab8fe2044c9c576a5b0f8980becb9399b5d0015fe92229db6e55"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 6
+      failed: 0
+      skipped: 0
+    notes: [Fable, Full native, and production conformance receipt., browser, governance]
+  - id: EV045
+    kind: verification
+    subject:
+      type: task
+      id: T045
+    taskRefs: [T045]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV045]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused native and Fable spatial semantics receipt.]
+  - id: EV046
+    kind: verification
+    subject:
+      type: task
+      id: T046
+    taskRefs: [T046]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV046]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-semantics.junit.xml
+      digest: "sha256:56cd5cc29216f6e134dc9ede0fc9c50a5f2796a8a5e91aa17d7538c353ba4577"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused native and Fable spatial semantics receipt.]
+  - id: EV047
+    kind: verification
+    subject:
+      type: task
+      id: T047
+    taskRefs: [T047]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV047]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml, tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cache-knowledge.junit.xml
+      digest: "sha256:143c0c9d6a85a55a46fae3b430bbc37052bef6a8e1ba825e88d81a6eddcfca4e"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused cache and requester-knowledge receipt.]
+  - id: EV048
+    kind: verification
+    subject:
+      type: task
+      id: T048
+    taskRefs: [T048]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV048]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml, scripts/verify-spatial-query.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-spatial-query.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-cross-runtime-mutation.junit.xml
+      digest: "sha256:589ff227c43ba4237d41702fffa78d16dec1f6a8d95629084c0d54bba26fb041"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Exact .NET/Fable package-adapter and mutation receipt.]
+  - id: EV049
+    kind: verification
+    subject:
+      type: task
+      id: T049
+    taskRefs: [T049]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV049]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/spatial-player-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/spatial-player-browser.junit.xml
+      digest: "sha256:f55600f650c8ce79601a9c5612c3146768b0ed962220430067471fd6c72db267"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Player-emittable production spatial diagnostics journey receipt.]
+  - id: EV050
+    kind: verification
+    subject:
+      type: task
+      id: T050
+    taskRefs: [T050]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-014]
+    obligationRefs: [EV050]
+    artifacts: [readiness/180-authoritative-spatial-query-foundation/documentation.junit.xml, scripts/build-docs.sh]
+    sourceRefs:
+      - kind: verification
+        path: scripts/build-docs.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/180-authoritative-spatial-query-foundation/documentation.junit.xml
+      digest: "sha256:54761e29959d9bbc907b84c9586d2f417895428ac9c4d056a3646bb5a8feb0e0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [API, and accessibility documentation receipt., architecture, publication, smoke]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

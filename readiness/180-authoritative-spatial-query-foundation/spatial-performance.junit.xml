@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="0" skipped="0"><testsuite name="spatial-performance" tests="1" failures="0" skipped="0">
+<properties><property name="producer" value="scripts/generate-item-180-evidence.sh"/><property name="command" value="./scripts/verify-spatial-query.sh"/></properties>
+<testcase classname="SpatialQueryFixtures" name="the executable Release performance workload enforces all declared latency and structural ceilings"/>
+</testsuite></testsuites>

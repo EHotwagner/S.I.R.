@@ -8,7 +8,8 @@ const maximum = (name, fallback) => Number(process.env[name] ?? fallback);
 const appPath = resolve(root, "content/sir-client/v1/app.js");
 const app = await readFile(appPath);
 const entries = await readdir(resolve(root, "content/sir-client/v1"));
-const deferred = entries.filter((entry) => entry.startsWith("deferred-delivery-support-") && entry.endsWith(".js"));
+const deferredSupport = entries.filter((entry) => entry.startsWith("deferred-delivery-support-") && entry.endsWith(".js"));
+const deferredSpatial = entries.filter((entry) => entry.startsWith("RulesExplorer-") && entry.endsWith(".js"));
 const enginePath = resolve(root, "engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/worker.js");
 const publication = JSON.parse(await readFile(resolve(root, "publication-manifest.json"), "utf8"));
 
@@ -20,10 +21,15 @@ requireBudget("app raw", app.byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_APP_RA
 requireBudget("app gzip", gzipSync(app).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_APP_GZIP", 320_000));
 requireBudget("app brotli", brotliCompressSync(app).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_APP_BROTLI", 280_000));
 
-if (deferred.length !== 1) throw new Error("Expected exactly one deferred delivery-support chunk.");
+if (deferredSupport.length !== 1) throw new Error("Expected exactly one deferred delivery-support chunk.");
+if (deferredSpatial.length !== 1) throw new Error("Expected exactly one deferred RulesExplorer spatial chunk.");
 if (app.toString("utf8").includes("This support panel loads on demand")) {
   throw new Error("The deferred support panel leaked into the initial application entry.");
 }
+const spatial = await readFile(resolve(root, "content/sir-client/v1", deferredSpatial[0]));
+requireBudget("RulesExplorer raw", spatial.byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_RAW", 60_000));
+requireBudget("RulesExplorer gzip", gzipSync(spatial).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_GZIP", 20_000));
+requireBudget("RulesExplorer brotli", brotliCompressSync(spatial).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_BROTLI", 16_000));
 const worker = await readFile(enginePath);
 const engine = publication.engines.find((entry) => entry.workerPath === "engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/worker.js");
 if (!engine || engine.bytes !== worker.byteLength || engine.integrity !== `sha384-${createHash("sha384").update(worker).digest("base64")}`) {
@@ -34,6 +40,7 @@ console.log(JSON.stringify({
   schema: "sir-production-delivery-budget-v1",
   throttle: { network: "CDP Slow 3G", cpuRate: 4 },
   initialRoute: { appRawBytes: app.byteLength, appGzipBytes: gzipSync(app).byteLength, appBrotliBytes: brotliCompressSync(app).byteLength },
-  deferredChunks: deferred,
+  deferredChunks: [...deferredSupport, ...deferredSpatial],
+  spatialDeferred: { chunk: deferredSpatial[0], rawBytes: spatial.byteLength, gzipBytes: gzipSync(spatial).byteLength, brotliBytes: brotliCompressSync(spatial).byteLength },
   immutableEngine: enginePath.slice(root.length + 1),
 }));

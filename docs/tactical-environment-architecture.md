@@ -17,6 +17,28 @@ related:
 
 # Tactical Environment Architecture
 
+## Authoritative spatial-query foundation
+
+Schema v1 is implemented by `SIR.Simulation.SpatialQuery`. It owns line trace,
+exact LOS, bounded path/reachability/cost, cover contributors, and exposure
+directions for complete square footprints. A move is legal only when every
+destination footprint cell and every swept semantic edge permits the query's
+modality. Diagonal movement validates both orthogonal transition envelopes, so
+corner cutting cannot hide behind one clear decomposition.
+
+The query key binds immutable map/ruleset identity, spatial revision,
+normalized footprint/endpoints/profile, and requester-knowledge identity and
+revision. Static geometry and dynamic disclosed occupancy/edge dependencies are
+separate cache partitions. Invalidation intersects dependency tokens, while
+cached and uncached public result bytes remain identical.
+
+The implementation consumes `FS.GG.Game.Core@0.13.0` package-only. Only the
+profiled `Cell`, `Edges.edgeBetween`, `Los.lineOfSightBy`, and
+`Pathfinding.astar` surfaces cross the adapter boundary; S.I.R. retains its own
+terrain, semantic-edge, footprint, knowledge, explanation, and cache meaning.
+See `work/180-authoritative-spatial-query-foundation/contracts/` for the exact
+schema and privacy contracts.
+
 ## Purpose
 
 This document defines what a S.I.R. battlefield contains, how one is

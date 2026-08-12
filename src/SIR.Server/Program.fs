@@ -33,7 +33,7 @@ module Program =
     let private configureStaticAssetResponse (context: StaticFileResponseContext) =
         context.Context.Response.Headers.CacheControl <- cacheControlForStaticAsset context.Context.Request.Path
 
-    let private readBootstrapBody (stream: Stream) =
+    let private readBoundedBody maximumBytes (stream: Stream) =
         task {
             use output = new MemoryStream()
             let buffer = Array.zeroCreate<byte> 4096
@@ -43,12 +43,14 @@ module Program =
             while not complete && not tooLarge do
                 let! count = stream.ReadAsync(buffer.AsMemory())
                 if count = 0 then complete <- true
-                elif total + count > maximumBootstrapBodyBytes then tooLarge <- true
+                elif total + count > maximumBytes then tooLarge <- true
                 else
                     output.Write(buffer, 0, count)
                     total <- total + count
             return if tooLarge then Error "SIR.LIVE.BOOTSTRAP.BODY_TOO_LARGE" else Ok(Encoding.UTF8.GetString(output.ToArray()))
         }
+
+    let private readBootstrapBody stream = readBoundedBody maximumBootstrapBodyBytes stream
 
     let private mapRoutes (app: WebApplication) =
         app.MapPost(
@@ -78,6 +80,30 @@ module Program =
         )
             .RequireAuthorization()
         |> ignore
+
+        app.MapPost(
+            "/api/spatial/diagnostics",
+            Func<HttpRequest, Task<IResult>>(fun request ->
+                task {
+                    let maximumBytes = 256 * 1024
+                    let authorization = string request.Headers.Authorization
+                    let accessToken =
+                        if authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) then authorization.Substring("Bearer ".Length)
+                        else ""
+                    if not (LiveAuthority.authorizeHttp accessToken) then
+                        return Results.Unauthorized()
+                    elif request.ContentLength.HasValue && request.ContentLength.Value > int64 maximumBytes then
+                        return Results.BadRequest {| error = "spatial diagnostic body too large" |}
+                    else
+                        let! boundedBody = readBoundedBody maximumBytes request.Body
+                        match boundedBody with
+                        | Error _ -> return Results.BadRequest {| error = "spatial diagnostic body too large" |}
+                        | Ok body ->
+                            match SpatialDiagnostics.evaluate body with
+                            | Error error -> return Results.BadRequest {| error = error |}
+                            | Ok response -> return Results.Text(response, "application/json")
+                })
+        ) |> ignore
 
         app.MapHub<GameHub>("/hub/game") |> ignore
         app.UseDefaultFiles() |> ignore

@@ -24,6 +24,13 @@ direction and remain subject to review.
 
 ## High concept
 
+Authoritative battlefield truth is footprint-aware and requester-knowledge
+safe. Movement, visibility, route, cover, and exposure questions share one
+versioned spatial service; rendering and control modules cannot invent their
+own geometry. Ordinary player queries are evaluated over disclosed knowledge
+before traversal, so unknown doors, units, breaches, or obstructions cannot be
+recovered from results, diagnostics, cache metadata, or workload classification.
+
 S.I.R. is a fast-paced, grid-based, real-time tactical skirmish game for large
 forces in a near-future world undergoing an incursion by monsters and magic.
 Portals have opened into the modern world, creating a conflict in which

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="12" failures="0" skipped="0"><testsuite name="spatial-cross-runtime-mutation" tests="12" failures="0" skipped="0">
+<properties><property name="producer" value="scripts/generate-item-180-evidence.sh"/><property name="command" value="./scripts/verify-spatial-query.sh"/></properties>
+<testcase classname="SpatialQueryFixtures" name="full canonical fixture bytes agree exactly on dotnet and Fable Node"/>
+<testcase classname="SpatialQueryFixtures" name="dotnet canonical divergence mutation fails at the first changed byte"/>
+<testcase classname="SpatialQueryFixtures" name="Fable canonical divergence mutation fails at the first changed byte"/>
+<testcase classname="SpatialQueryFixtures" name="dependency receipt source mutation fails the executable fixture"/>
+<testcase classname="SpatialQueryFixtures" name="footprint sample source mutation fails the executable fixture"/>
+<testcase classname="SpatialQueryFixtures" name="semantic edge source mutation fails the executable fixture"/>
+<testcase classname="SpatialQueryFixtures" name="requester knowledge source mutation fails the executable fixture"/>
+<testcase classname="SpatialQueryFixtures" name="spatial revision source mutation fails the executable fixture"/>
+<testcase classname="SpatialQueryFixtures" name="deterministic ordering source mutation fails the executable fixture"/>
+<testcase classname="SpatialQueryFixtures" name="package adapter source mutation fails the executable fixture"/>
+<testcase classname="SpatialQueryFixtures" name="profile cache key source mutation fails the executable fixture"/>
+<testcase classname="SpatialQueryFixtures" name="trace work bound source mutation fails the executable fixture"/>
+</testsuite></testsuites>

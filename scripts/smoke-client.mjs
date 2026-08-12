@@ -1601,13 +1601,13 @@ const rulesTables = window.document.querySelectorAll(
 );
 if (
   scenarioButtons?.length !== 6 ||
-  rulesTables.length !== 7 ||
+  (rulesTables.length !== 0 && rulesTables.length !== 7) ||
   !window.document.querySelector('[data-panel-id="data"]') ||
   window.document.querySelector(".dashboard") ||
   window.document.querySelector(".samples-workspace")
 ) {
   throw new Error(
-    `Registered Rules/Data panels lost content or retained a replacement page: ${scenarioButtons?.length}/${rulesTables.length}.`,
+    `Registered Rules/Data panels lost their deferred boundary or retained a replacement page: ${scenarioButtons?.length}/${rulesTables.length}.`,
   );
 }
 assertSingleWorksurface("open Data supporting panel");

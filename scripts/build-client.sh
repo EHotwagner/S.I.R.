@@ -27,7 +27,7 @@ cp "$rules_fable_output"/fable_modules/FS.GG.Game.Core.0.13.0/*.js \
 sed -i 's#./SIR.Simulation/CombatRules.js#./SIR.Simulation/CombatRulesAuthoring.js#' "$fable_output/RulesExplorer.js"
 sed -i 's#./SIR.Domain/Rules.js#./SIR.Domain/RulesAuthoring.js#' "$fable_output/RulesExplorer.js"
 sed -i 's#../SIR.Domain/Rules.js#../SIR.Domain/RulesAuthoring.js#' "$fable_output/SIR.Simulation/CombatRulesAuthoring.js"
-sed -i '$a export default ExecutableRulesPanel;' "$fable_output/RulesExplorer.js"
+sed -i '$a export default DeferredDataPanel;' "$fable_output/RulesExplorer.js"
 
 npx vite build --config src/SIR.Client.Web/vite.config.js
 node scripts/generate-publication-manifest.mjs artifacts/client

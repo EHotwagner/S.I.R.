@@ -1,6 +1,7 @@
 module SIR.Conformance.Program
 
 open SIR.Conformance
+open SIR.Simulation
 
 [<EntryPoint>]
 let main arguments =
@@ -59,6 +60,7 @@ let main arguments =
                       SimulationFixtures.canonicalBytes simulation
                       mapScale
                       RulesCorpusFixtures.evaluate false
+                      SpatialQueryFixtures.evaluate false
                       replay ]
                     |> SIR.Domain.CanonicalEncoding.concatenate
                     |> NumericFixtures.hex
@@ -92,6 +94,15 @@ let main arguments =
         let offset = Array.zip expected actual |> Array.findIndex (fun (left, right) -> left <> right)
         eprintfn "first divergence: fixture=rules-corpus byte=%d expected=%02x actual=%02x" offset expected[offset] actual[offset]
         failwith "Rules corpus canonical conformance failed."
+    | [ "--inject-spatial-query-divergence" ] ->
+        let expected = SpatialQueryFixtures.evaluate false
+        let actual = SpatialQueryFixtures.evaluate true
+        let offset = Array.zip expected actual |> Array.findIndex (fun (left, right) -> left <> right)
+        eprintfn "first divergence: fixture=spatial-query byte=%d expected=%02x actual=%02x" offset expected[offset] actual[offset]
+        failwith "Spatial query canonical conformance failed."
+    | [ "--print-spatial-query" ] ->
+        SpatialQueryFixtures.evaluate false |> NumericFixtures.hex |> printfn "%s"
+        0
     | [ "--print-simulation-oracle" ] ->
         SimulationFixtures.evaluate None
         |> List.iter (fun (fixture, actual) ->
@@ -123,6 +134,19 @@ let main arguments =
         printfn "%s" (RulesCorpusFixtures.representativeApplicationBytes () |> NumericFixtures.hex)
         0
 #if !FABLE_COMPILER
+    | [ "--print-spatial-performance" ] ->
+        let los, losMs, route, routeMs, invalidationMs, demand100, demand100Ms, demand200, demand200Ms = SpatialQueryFixtures.performanceWorkload ()
+        printfn "selected-los-ms=%d/20" losMs
+        printfn "route-preview-ms=%d/50" routeMs
+        printfn "local-invalidation-ms=%d/10" invalidationMs
+        printfn "demand-100-ms=%d/250 expansions=%d" demand100Ms demand100
+        printfn "demand-200-ms=%d/500 expansions=%d" demand200Ms demand200
+        printfn "route-cells=%d/64 expansions=%d/4096 explanation-bytes=%d/65536" route.Path.Length route.Explanation.Expansions (SpatialQuery.canonicalResultBytes los |> Array.length)
+        if los.Explanation.FootprintSamples.Length > 256 || los.Explanation.CrossedCells.Length > 4096 || route.Explanation.Expansions > 4096 || route.Path.Length > 64 || SpatialQuery.canonicalResultBytes los |> Array.length > 65_536 then
+            failwith "Spatial query structural performance budget exceeded."
+        if losMs > 20L || routeMs > 50L || invalidationMs > 10L || demand100Ms > 250L || demand200Ms > 500L then
+            failwith "Spatial query latency performance budget exceeded on the qualification host."
+        0
     | [ "--print-rules-performance" ] ->
         let stopwatch = System.Diagnostics.Stopwatch.StartNew()
         let checksum, applications, operands, explanationBytes, manifestBytes = RulesCorpusFixtures.performanceWorkload 10_000
@@ -140,6 +164,6 @@ let main arguments =
 #endif
     | _ ->
         eprintfn
-            "Usage: conformance [--inject-divergence FIXTURE | --inject-simulation-divergence PHASE | --inject-rules-corpus-divergence | --print-simulation-oracle | --print-replay-evidence | --print-rules-manifest | --print-rules-coverage | --print-rules-application]"
+            "Usage: conformance [--inject-divergence FIXTURE | --inject-simulation-divergence PHASE | --inject-rules-corpus-divergence | --inject-spatial-query-divergence | --print-spatial-query | --print-simulation-oracle | --print-replay-evidence | --print-rules-manifest | --print-rules-coverage | --print-rules-application]"
 
         2

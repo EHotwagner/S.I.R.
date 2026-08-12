@@ -5,6 +5,7 @@ open System.IO
 open System.Net
 open System.Net.Http
 open System.Text
+open System.Text.Json
 open System.Security.Cryptography
 open System.Collections.Concurrent
 open Microsoft.AspNetCore.Hosting
@@ -76,7 +77,56 @@ let withProductionClient assertion =
     use client = factory.CreateClient()
     assertion client
 
+let spatialRequest width height =
+    $"""{{"MapIdentity":"server-test-map","SpatialRevision":7,"Width":{width},"Height":{height},"OriginColumn":1,"OriginRow":1,"UnitSize":1,"Facing":2,"Terrain":[{{"Column":2,"Row":1,"Kind":1}}]}}"""
+
+let postSpatial (client: HttpClient) bearer body =
+    let request = new HttpRequestMessage(HttpMethod.Post, "/api/spatial/diagnostics")
+    request.Content <- new StringContent(body, Encoding.UTF8, "application/json")
+    bearer |> Option.iter (fun value -> request.Headers.Authorization <- Headers.AuthenticationHeaderValue("Bearer", value))
+    client.SendAsync(request).GetAwaiter().GetResult()
+
+let admittedSession (client: HttpClient) actor =
+    use response = post client actor (Some(productionToken actor)) None None
+    require (response.StatusCode = HttpStatusCode.OK) "the production identity must obtain a live-session admission"
+    response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+    |> BootstrapV1.responseFromJson
+    |> Result.defaultWith failwith
+
 type LiveSessionAuthenticationTests() =
+    [<Fact>]
+    member _.``spatial diagnostics require identity and return bounded authoritative projection``() =
+        withProductionClient (fun client ->
+            let unauthorized = postSpatial client None (spatialRequest 8 8)
+            require (unauthorized.StatusCode = HttpStatusCode.Unauthorized) "spatial diagnostics must reject an absent bearer identity"
+            let admission = admittedSession client "spatial-player"
+            let response = postSpatial client (Some admission.AccessToken) (spatialRequest 8 8)
+            let body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+            require (response.StatusCode = HttpStatusCode.OK) $"authorized spatial diagnostics must succeed (got {response.StatusCode})"
+            let projection =
+                JsonSerializer.Deserialize<SpatialDiagnosticResponseDto>(body)
+                |> box
+                |> function
+                    | null -> failwith "the endpoint must return a typed spatial diagnostic projection"
+                    | value -> unbox<SpatialDiagnosticResponseDto> value
+            let route = projection.Queries |> Array.find (fun query -> query.QueryKind = "BoundedPath")
+            require (route.Outcome = "Found" && route.Path.Length >= 2) "the endpoint must return the complete non-empty authoritative path for a found bounded route"
+            require (route.Path[0].Column = route.Origin.Column && route.Path[0].Row = route.Origin.Row) "the authoritative path must begin at the normalized origin"
+            let destination = route.Path[route.Path.Length - 1]
+            require (destination.Column = route.Target.Column && destination.Row = route.Target.Row) "the authoritative path must end at the normalized target"
+            require (body.Contains("ExactLineOfSight") && body.Contains("BoundedPath") && body.Contains("Cover")) "the endpoint must return LOS, route, and cover projections"
+            require (body.Contains("\"Origin\"") && body.Contains("\"Target\"") && body.Contains("\"FootprintSamples\"") && body.Contains("\"Path\"")) "the endpoint must return exact normalized input and path fields"
+            require (body.Contains("\"CrossedCells\"") && body.Contains("\"CrossedEdges\"") && body.Contains("\"CoverContributors\"") && body.Contains("\"Decisions\"")) "the endpoint must return exact authoritative explanation fields"
+            require (body.Contains("\"Expansions\"") && body.Contains("\"Truncated\"") && body.Contains("SIR.Simulation.SpatialQuery.evaluate") && body.Contains("player-disclosed")) "the endpoint must return bounded authority and knowledge identity fields")
+
+    [<Fact>]
+    member _.``spatial diagnostics reject invalid dimensions before evaluation``() =
+        withProductionClient (fun client ->
+            let admission = admittedSession client "spatial-bounds"
+            let response = postSpatial client (Some admission.AccessToken) (spatialRequest 81 8)
+            let body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+            require (response.StatusCode = HttpStatusCode.BadRequest && body.Contains("invalid spatial diagnostic dimensions")) "the endpoint must enforce the declared map bound")
+
     [<Fact>]
     member _.``production rejects absent bearer identity``() =
         withProductionClient (fun client ->

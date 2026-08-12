@@ -9,6 +9,9 @@ open SIR.Simulation
 
 let private scope: obj = emitJsExpr () "globalThis"
 
+[<Emit("new Promise(resolve => setTimeout(resolve, 1))")>]
+let private yieldToWorkerMessages () : JS.Promise<unit> = jsNative
+
 let private supportedEngine =
     EngineCatalog.Current.EngineHash
 
@@ -331,6 +334,13 @@ let private validateSimulatorCorrelation
     && correlation.MapRevision = session.MapRevision
     && correlation.Tick = session.CurrentProjection.Tick
 
+let private validateSimulatorWorkspace
+    (correlation: SimulatorCorrelation)
+    (session: SimulatorSessionState)
+    =
+    correlation.Session = session.Session
+    && correlation.MapRevision = session.MapRevision
+
 let private simulatorDelta tick (projection: InspectionProjectionTransport) =
     { projection with
         Tick = tick
@@ -437,7 +447,10 @@ let private executeSimulator
         | CancelOperation targetOperation ->
             match simulatorSession with
             | Some session
-                when validateSimulatorCorrelation correlation session
+                // Cancellation races the target operation by definition. Its tick is the
+                // caller's last observed progress and may legitimately trail the worker's
+                // current projection, while session/map/plan identities must still match.
+                when validateSimulatorWorkspace correlation session
                      && correlation.PlanRevision = session.PlanRevision ->
                 cancelledSimulatorOperations <-
                     Set.add targetOperation cancelledSimulatorOperations
@@ -695,7 +708,10 @@ let private executeSimulator
 
                         for batchEnd in batchEnds do
                             if not stopped then
-                                do! Async.Sleep 0
+                                // A zero-duration timer can repeatedly re-enter an already-due timer
+                                // chain before inbound worker messages are serviced under contention.
+                                // A positive delay gives the host a scheduling window between batches.
+                                do! yieldToWorkerMessages () |> Async.AwaitPromise
                                 if
                                     Set.contains
                                         correlation.Operation
