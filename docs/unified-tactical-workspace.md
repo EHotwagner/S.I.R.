@@ -26,7 +26,7 @@ last-updated: 2026-07-31
 > Simulate runtime positions, movement, queued and preview routes, controller
 > state, events, and explicit Sandbox disclosure now use those same shared
 > layers. Registered panels uniquely own simulator tools, controller
-> configuration, diagnostics, samples, and immutable revision state. Timeline
+> configuration, diagnostics, samples, and continuously maintained revision state. Timeline
 > scrubbing changes only the projection cursor, never the simulator-owned
 > runtime tick. The former simulator desktop chrome, command dock, and
 > map-stage layout have been removed; see the

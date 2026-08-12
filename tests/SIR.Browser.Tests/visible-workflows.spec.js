@@ -40,11 +40,17 @@ test("visible mode controls preserve a usable tactical workspace across authorin
   }
 });
 
-test("disabled playback names why it is unavailable before a simulation is loaded", async ({ page }) => {
+test("the maintained simulation transport is available without a manual handoff in every modality", async ({ page }) => {
   await page.goto("/");
-  const play = page.getByRole("button", { name: "Play tactical timeline", exact: true });
-  await expect(play).toBeDisabled();
-  await expect(page.getByText(/Play unavailable:/)).toBeVisible();
+  await page.getByRole("button", { name: "Simulate", exact: true }).click();
+  await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
+  await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
+  await page.getByRole("button", { name: /^Load simulation sample:/ }).first().click();
+  for (const mode of ["Editor", "Plan", "Simulate", "Review"]) {
+    await page.getByRole("button", { name: mode, exact: true }).click();
+    await expect(page.getByRole("button", { name: "Play tactical timeline", exact: true })).toBeEnabled();
+  }
+  await expect(page.getByText(/simulator handoff/i)).toHaveCount(0);
 });
 
 test("the normal UI remains operable at 400 percent browser zoom", async ({ page }) => {
@@ -116,10 +122,9 @@ test("the visible background picker rejects an oversized file then reports attac
   await expect(page.getByRole("alert")).toContainText("Attached background attached.png.");
 });
 
-test("a curated sample creates a visible simulator handoff and playback can reset", async ({ page }) => {
+test("a curated sample exposes maintained playback and can reset", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Simulate", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Play tactical timeline", exact: true })).toBeDisabled();
   await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
   await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
   await page.getByRole("button", { name: /^Load simulation sample:/ }).first().click();
@@ -135,7 +140,7 @@ test("a curated sample creates a visible simulator handoff and playback can rese
   await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();
   await expect(runtimeTick).toHaveText(new RegExp(`^Authoritative runtime tick ${beforeTick + 1}\\b`));
   page.once("dialog", (dialog) => dialog.accept());
-  await page.getByRole("button", { name: "Reset simulation to its immutable revision", exact: true }).filter({ hasText: "Reset simulation" }).click();
+  await page.getByRole("button", { name: "Reset simulation to the current authored baseline", exact: true }).filter({ hasText: "Reset simulation" }).click();
   await expect(page.getByText(/Authoritative runtime tick 0/)).toBeVisible();
 });
 

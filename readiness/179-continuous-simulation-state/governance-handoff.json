@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/179-continuous-simulation-state/ship.json",
-      "digest": "sha256:69fc39fd2547e2a7b4a38f1d6fa8dffe97bbf570a32f7666572dcad654e4bb1e",
+      "digest": "sha256:6c7b2dff6a4b6582c046228a0237a1414d3ee3c4c32d6d1d38b581f8864ad3c9",
       "schemaVersion": 1
     },
     {
       "path": "readiness/179-continuous-simulation-state/verify.json",
-      "digest": "sha256:e782433b809779f828d8775a382ba3bad5269cba3dcbfdf5dc905b7ea142d564",
+      "digest": "sha256:29992058055ba834d3c8d18e7300160a652c2685229bd058f28e0a3f16cbd6bd",
       "schemaVersion": 1
     },
     {
       "path": "readiness/179-continuous-simulation-state/work-model.json",
-      "digest": "sha256:8f2db49000c1ccaeb8199a10ea4af3d8c3c1eb4e7793666ec17d2deac111aedd",
+      "digest": "sha256:4eebeafea89bbc897c1cf23f5c8def75595aaea59829b6cebb5c71713d1e4f2a",
       "schemaVersion": 1
     }
   ],

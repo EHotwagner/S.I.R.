@@ -540,10 +540,9 @@ const waitFor = async (description, predicate, timeoutMilliseconds = 1500) => {
 
 assertSingleWorksurface("initial mount");
 assertModality("Editor", "initial mount");
-assertUnavailablePlay(
-  "Editor without a simulator handoff",
-  "Create a simulator handoff, then switch to Simulate.",
-);
+if (buttonByText(timeline, "Play")?.disabled) {
+  throw new Error("The automatically maintained simulation was unavailable in Editor.");
+}
 
 const leftSidebar = shell.querySelector(".tactical-sidebar-left");
 const rightSidebar = shell.querySelector(".tactical-sidebar-right");
@@ -595,43 +594,21 @@ if (
 ) {
   throw new Error("Empty Review did not retain the Editor fallback projection.");
 }
-assertUnavailablePlay("Review without a replay", "Load a replay package to start playback.");
+if (buttonByText(timeline, "Play")?.disabled) {
+  throw new Error("Review did not expose the maintained simulation transport.");
+}
 assertSingleWorksurface("empty Review editor fallback");
 assertSelection("empty Review editor fallback", 2);
 await clickModality("Editor", "return from empty Review");
 
 modalityButtons.get("Simulate").click();
 await window.happyDOM.waitUntilComplete();
-if (workscreenRegion.getAttribute("data-active-modality") !== "Simulate") {
-  throw new Error("Empty Simulate did not activate the simulator modality.");
+assertModality("Simulate", "automatically maintained simulator");
+assertSingleWorksurface("automatically maintained simulator");
+assertSelection("automatically maintained simulator", 2);
+if (buttonByText(timeline, "Play")?.disabled) {
+  throw new Error("Simulate did not expose the automatically maintained simulation.");
 }
-assertUnavailablePlay(
-  "Simulate without a handoff",
-  "Create a simulator handoff from the Editor.",
-);
-if (worksurface.getAttribute("data-scene-owner") !== "EditorScene") {
-  throw new Error("Empty Simulate did not retain the Editor fallback projection.");
-}
-assertSelection("empty Simulate editor fallback", 2);
-await clickModality("Editor", "return from empty Simulate");
-
-if (!shell.querySelector('[data-panel-id="document"]')) {
-  shell.querySelector("#layout-show-document")?.click();
-  await window.happyDOM.waitUntilComplete();
-}
-const editorDocumentPanel = shell.querySelector('[data-panel-id="document"]');
-if (editorDocumentPanel?.classList.contains("is-collapsed")) {
-  editorDocumentPanel.querySelector("#layout-panel-document-collapse")?.click();
-  await window.happyDOM.waitUntilComplete();
-}
-buttonByText(
-  shell.querySelector('[aria-label="Map editor document actions"]'),
-  "Simulate revision",
-)?.click();
-await window.happyDOM.waitUntilComplete();
-assertModality("Simulate", "simulator handoff");
-assertSingleWorksurface("simulator handoff");
-assertSelection("simulator handoff", 2);
 const pinnedSimulatorRevision = worksurface.getAttribute("data-scene-revision");
 const pinnedSimulatorBaseline = simulatorProjectionSnapshot();
 const pinnedControllerStatus = worksurface
@@ -647,7 +624,7 @@ const currentControllerPanel = () =>
 const currentSimulatorDiagnostics = () =>
   shell.querySelector('[aria-label="Simulator runtime diagnostics"]');
 const currentSimulatorRevision = () =>
-  shell.querySelector('[aria-label="Simulator immutable revision state"]');
+  shell.querySelector('[aria-label="Simulator maintained revision state"]');
 if (
   !shell.querySelector('[aria-label="Simulator runtime roster"]') ||
   !currentSimulatorTools() ||
@@ -657,7 +634,7 @@ if (
   shell.querySelectorAll('[aria-label="Simulator runtime tools"]').length !== 1 ||
   shell.querySelectorAll('[aria-label="Simulation controllers"]').length !== 1 ||
   shell.querySelectorAll('[aria-label="Simulator runtime diagnostics"]').length !== 1 ||
-  shell.querySelectorAll('[aria-label="Simulator immutable revision state"]').length !== 1 ||
+  shell.querySelectorAll('[aria-label="Simulator maintained revision state"]').length !== 1 ||
   shell.querySelector(".simulator-workspace") ||
   shell.querySelector(".simulator-owner-controls") ||
   shell.querySelector('[aria-label="Simulator menu and toolbar"]') ||
@@ -745,13 +722,13 @@ const authoritativeTickBeforeScrub = Number(
 buttonByText(timeline, "Home")?.click();
 await window.happyDOM.waitUntilComplete();
 if (
-  Number(worksurface.getAttribute("data-scene-tick")) !== authoritativeTickBeforeScrub ||
+  Number(worksurface.getAttribute("data-scene-tick")) !== 0 ||
   Number(timeline.getAttribute("data-time-cursor")) !== 0 ||
   timeline.getAttribute("data-scrub-semantics") !==
-    "projection-only-runtime-tick-unchanged"
+    "reconstructed-runtime-state-at-cursor"
 ) {
   throw new Error(
-    `Simulator timeline scrubbing mutated the authoritative runtime tick: scene=${worksurface.getAttribute("data-scene-tick")}, expected=${authoritativeTickBeforeScrub}, cursor=${timeline.getAttribute("data-time-cursor")}, semantics=${timeline.getAttribute("data-scrub-semantics")}.`,
+    `Simulator timeline scrubbing did not reconstruct the runtime state at the cursor: scene=${worksurface.getAttribute("data-scene-tick")}, expected=0, cursor=${timeline.getAttribute("data-time-cursor")}, semantics=${timeline.getAttribute("data-scrub-semantics")}.`,
   );
 }
 const simulatorTickBeforeRun = Number(
@@ -822,25 +799,23 @@ assertSingleWorksurface("cancelled Simulator reset");
 assertCamera("cancelled Simulator reset");
 assertSelection("cancelled Simulator reset", 2);
 
-await clickModality("Editor", "mutate Editor behind simulator handoff");
+await clickModality("Editor", "mutate Editor behind maintained simulation");
 await ensurePanelExpanded("selection");
 const editorController = shell.querySelector("#editor-unit-controller");
-if (!editorController) {
-  throw new Error("Editor controller input was unavailable for stale-handoff reset qualification.");
-}
+if (!editorController) throw new Error("Editor controller input was unavailable for reconciliation qualification.");
 editorController.value = "General AI";
 editorController.dispatchEvent(new window.Event("change", { bubbles: true }));
 await window.happyDOM.waitUntilComplete();
 const newerEditorRevision = worksurface.getAttribute("data-scene-revision");
-if (newerEditorRevision === pinnedSimulatorRevision) {
-  throw new Error("Editor mutation did not create a revision newer than the simulator handoff.");
-}
-await clickModality("Simulate", "return to stale simulator handoff");
+if (newerEditorRevision === pinnedSimulatorRevision) throw new Error("Editor mutation did not create a new authored revision.");
+await clickModality("Simulate", "inspect incompatible-edit rebuild");
 if (
-  worksurface.getAttribute("data-scene-revision") !== pinnedSimulatorRevision ||
-  !currentSimulatorRevision()?.textContent.includes("behind editor draft")
+  worksurface.getAttribute("data-scene-revision") !== newerEditorRevision ||
+  worksurface.getAttribute("data-scene-tick") !== "0" ||
+  !currentSimulatorTools()?.textContent.includes("Simulation restarted at tick 0 because terrain, geometry, topology, or an existing unit changed.") ||
+  !currentSimulatorRevision()?.textContent.includes("matches the current editor draft")
 ) {
-  throw new Error("Existing Simulator handoff adopted or hid the newer Editor revision before reset.");
+  throw new Error("An incompatible existing-unit edit did not deterministically rebuild the maintained simulation with a visible reason.");
 }
 window.confirm = () => {
   confirmationCalls += 1;
@@ -850,23 +825,18 @@ buttonByText(currentSimulatorTools(), "Reset")?.click();
 await window.happyDOM.waitUntilComplete();
 if (
   confirmationCalls !== 2 ||
-  simulatorProjectionSnapshot() !== pinnedSimulatorBaseline ||
-  worksurface.getAttribute("data-scene-revision") !== pinnedSimulatorRevision ||
+  worksurface.getAttribute("data-scene-revision") !== newerEditorRevision ||
   worksurface.getAttribute("data-scene-tick") !== "0" ||
-  worksurface.querySelector("#persistent-layer-routes polyline") ||
-  worksurface
-    .querySelector('[data-unit-id="2"]')
-    ?.getAttribute("data-unit-status") !== pinnedControllerStatus ||
-  !currentSimulatorRevision()?.textContent.includes("behind editor draft")
+  worksurface.querySelector("#persistent-layer-routes polyline")
 ) {
   throw new Error(
-    "Accepted Simulator reset did not restore the exact pinned baseline while preserving the newer Editor separately.",
+    "Accepted Simulator reset did not preserve the current maintained revision at tick zero.",
   );
 }
-assertSingleWorksurface("accepted pinned Simulator reset");
-assertCamera("accepted pinned Simulator reset");
-assertSelection("accepted pinned Simulator reset", 2);
-await clickModality("Editor", "return after pinned simulator reset");
+assertSingleWorksurface("accepted maintained Simulator reset");
+assertCamera("accepted maintained Simulator reset");
+assertSelection("accepted maintained Simulator reset", 2);
+await clickModality("Editor", "return after maintained simulator reset");
 
 modalityButtons.get("Review").click();
 await window.happyDOM.waitUntilComplete();
@@ -1403,15 +1373,19 @@ for (const [label, target] of committedMutationTargets) {
 }
 
 const play = buttonByText(timeline, "Play");
-if (
-  !play?.disabled ||
-  !timeline.textContent.includes("Create a simulator handoff to run this plan.")
-) {
-  throw new Error("Plan Play remained enabled without a runnable simulator or actionable reason.");
+if (!play || play.disabled) {
+  throw new Error("Plan did not expose the maintained simulation transport.");
 }
-assertSingleWorksurface("Plan unavailable transport");
-assertCamera("Plan unavailable transport");
-assertSelection("Plan unavailable transport", 2);
+play.click();
+await window.happyDOM.waitUntilComplete();
+if (workscreenRegion.getAttribute("data-active-modality") !== "Plan") {
+  throw new Error("Starting simulation playback silently switched the tactical modality.");
+}
+buttonByText(timeline, "Pause")?.click();
+await window.happyDOM.waitUntilComplete();
+assertSingleWorksurface("Plan maintained transport");
+assertCamera("Plan maintained transport");
+assertSelection("Plan maintained transport", 2);
 
 const helpKey = new window.KeyboardEvent("keydown", {
   key: "?",

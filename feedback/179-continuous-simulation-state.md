@@ -12,10 +12,10 @@ commit: pending-pr-head
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 1
+- **material events:** 2
 - **zero-event reason:** n/a
-- **checkpoint:** `feedback/checkpoints/179-continuous-simulation-state.jsonl` (1 event).
-- **confidence limits:** Local .NET and production-browser evidence passed; hosted exact-head CI and independent critique remain pending.
+- **checkpoint:** `feedback/checkpoints/179-continuous-simulation-state.jsonl` (2 events).
+- **confidence limits:** Local .NET, documentation, smoke, and production-browser evidence passed; hosted exact-head CI and independent critique remain pending.
 
 ## §2 What worked
 
@@ -23,7 +23,7 @@ The source-bound delivery-route guard prevented a recovery worker from silently 
 
 ## §3 What did not
 
-The inherited delivery-route receipt was stale after the issue subject changed, so the initial forced claim was correctly refused until a current receipt was recorded.
+The inherited delivery-route receipt was stale after the issue subject changed, so the initial forced claim was correctly refused until a current receipt was recorded. The inherited acceptance surface also retained manual-handoff and cursor-only assertions that contradicted the item contract and initially failed both documentation and cross-runtime CI.
 
 ## §4 Findings
 
@@ -40,6 +40,19 @@ The inherited delivery-route receipt was stale after the issue subject changed, 
 - **Avoidable cost:** one refused claim and one receipt refresh
 - **Disposition:** accepted
 
+#### §4.2 Acceptance gates retained the behavior this item removes
+
+- **Kind:** quality-gap
+- **Impact:** Hosted documentation and cross-runtime jobs failed even though deterministic seeking reconstructed the correct runtime state; browser coverage also omitted cross-modality transport availability.
+- **Expected:** Smoke and production-browser gates assert automatic maintenance, reconstructed timeline state, visible incompatible-edit rebuilds, and transport availability without modality changes.
+- **Observed:** The smoke expected the authoritative tick to remain unchanged after Home and later expected an edited simulator revision to remain pinned behind the Editor draft.
+- **Evidence:** command:./scripts/build-docs.sh; command:npm run test:browser
+- **Version:** PR #196 recovery head
+- **Owner:** EHotwagner/S.I.R. continuous simulation acceptance
+- **Recurrence:** new
+- **Avoidable cost:** three focused smoke/browser repair iterations
+- **Disposition:** product fix
+
 ## §5 Did not exercise
 
 No scaffold creation, package upgrade, or separate runtime playtest was needed for this recovery.
@@ -54,7 +67,7 @@ None observed.
 
 ## §8 Friction and avoidable cost
 
-One refused claim and one route-receipt refresh were required to preserve the recovery boundary. Evidence mapping then required one correction from a directory source reference to a concrete test file before `evidence` accepted it.
+One refused claim and one route-receipt refresh were required to preserve the recovery boundary. Three focused iterations updated stale smoke, review-generation, and browser expectations to the actual continuous-simulation contract.
 
 ## §9 Skill value and gaps
 
@@ -62,12 +75,13 @@ One refused claim and one route-receipt refresh were required to preserve the re
 
 ## §10 Outcome markers
 
-The focused client qualification passed, the 25-case production Playwright suite emitted `artifacts/test-results/179-browser.junit.xml` with zero failures, `verify` reported 17 observed evidence receipts and zero missing skills, and `ship` reported `shipReady`.
+The focused client qualification passed, the 25-case production Playwright suite emitted `artifacts/test-results/179-browser.junit.xml` with 24 passes and one intentional diagnostic self-test skip, documentation and smoke passed, `verify` reported 17 observed evidence receipts and zero missing skills, and `ship` reported `shipReady`.
 
 ## §11 Falsifiable improvements
 
 - Preserve the source-bound delivery-route refusal: a changed issue body must continue to make a recovery claim fail until a new receipt is recorded.
 - Keep the evidence diagnostic that rejects a directory used where a concrete verification artifact is required.
+- Bind acceptance language to FR-001/FR-004/FR-005: replacing reconstructed seek with cursor-only behavior or restoring manual handoff chrome must make documentation, smoke, or browser gates red.
 
 ## §12 Development-surface coverage
 
