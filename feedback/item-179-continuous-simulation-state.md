@@ -12,9 +12,9 @@ commit: pending-pr-head
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 4
+- **material events:** 5
 - **zero-event reason:** n/a
-- **checkpoint:** `feedback/checkpoints/item-179-continuous-simulation-state.jsonl` (4 events).
+- **checkpoint:** `feedback/checkpoints/item-179-continuous-simulation-state.jsonl` (5 events).
 - **confidence limits:** Local .NET, documentation, smoke, and the 29-case production-browser inventory pass after the first independent critique; hosted exact-head CI and same-critic confirmation remain pending.
 
 ## §2 What worked
@@ -79,6 +79,19 @@ The inherited delivery-route receipt was stale after the issue subject changed, 
 - **Avoidable cost:** one independent-review repair round
 - **Disposition:** product fix
 
+#### §4.5 Cross-runtime fixture retained the removed handoff breadcrumb
+
+- **Kind:** quality-gap
+- **Impact:** Successor exact-head cross-runtime CI stopped before its remaining release gates even though the unavailable simulator state still exposed only the Help command.
+- **Expected:** Native and Fable modal-input fixtures assert the truthful `SIMULATOR / UNAVAILABLE` breadcrumb after the obsolete manual-handoff language is removed.
+- **Observed:** CI run 31588832092 exited 134 because the shared fixture still expected `SIMULATOR / NO HANDOFF`; updating the shared source made both native and Fable executions emit the same new breadcrumb.
+- **Evidence:** command:dotnet run --project tests/SIR.ModalInput.Tests/SIR.ModalInput.Tests.fsproj -c Release; command:dotnet fable tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj --outDir artifacts/test-results/item179-modal-fable --noCache; command:node artifacts/test-results/item179-modal-fable/SIR.ModalInput.Shared/Program.js
+- **Version:** PR #196 repair round 1 successor CI
+- **Owner:** EHotwagner/S.I.R. modal-input cross-runtime fixture
+- **Recurrence:** new
+- **Avoidable cost:** one successor CI iteration
+- **Disposition:** product fix
+
 ## §5 Did not exercise
 
 No scaffold creation, package upgrade, or separate runtime playtest was needed for this recovery.
@@ -93,7 +106,7 @@ None observed.
 
 ## §8 Friction and avoidable cost
 
-One refused claim and one route-receipt refresh were required to preserve the recovery boundary. Three focused iterations updated stale smoke, review-generation, and browser expectations to the actual continuous-simulation contract. A bounded hang diagnosis then exposed and repaired timer teardown plus four masked documentation checks. Independent critique added one repair round for cursor truth, activation ordering, reset classification, and production-route coverage.
+One refused claim and one route-receipt refresh were required to preserve the recovery boundary. Three focused iterations updated stale smoke, review-generation, and browser expectations to the actual continuous-simulation contract. A bounded hang diagnosis then exposed and repaired timer teardown plus four masked documentation checks. Independent critique added one repair round for cursor truth, activation ordering, reset classification, and production-route coverage; successor CI then exposed one stale shared cross-runtime breadcrumb assertion.
 
 ## §9 Skill value and gaps
 

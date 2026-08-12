@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/item-179-continuous-simulation-state.md",
-  "reportSha256": "419cd6bdea472fcea40f75f40a426b85316c085f95b1edd90b62f996ac86afa5",
+  "reportSha256": "21f840ab40c42eac240c47ae9382d7fb8941d6de58ed2cc853652931aa3b43ae",
   "criticMode": "separated-critic-pass",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -72,6 +72,26 @@
         }
       ],
       "confidenceLimits": ["Same-critic confirmation and hosted exact-head CI are delivery gates outside this local feedback audit."]
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet run --project tests/SIR.ModalInput.Tests/SIR.ModalInput.Tests.fsproj -c Release",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fable tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj --outDir artifacts/test-results/item179-modal-fable --noCache",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node artifacts/test-results/item179-modal-fable/SIR.ModalInput.Shared/Program.js",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
     }
   ]
 }
