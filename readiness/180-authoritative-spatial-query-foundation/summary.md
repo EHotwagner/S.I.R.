@@ -4,8 +4,8 @@
        - readiness/180-authoritative-spatial-query-foundation/agent-commands/claude/guidance.json  digest:d598604ad8c65edad4a7e71d8fb9e47528982def32e9a45484cbc7351375632f  schema:1(current)
        - readiness/180-authoritative-spatial-query-foundation/agent-commands/codex/guidance.json  digest:ff72eab8f91067df4ded00a62d0c77debe0b453f395a30f0e5135da8f44737be  schema:1(current)
        - readiness/180-authoritative-spatial-query-foundation/analysis.json  digest:715cfe7c24f96a27144a69a00eb202281f81de104fa5b723c3d761a93374517c  schema:1(current)
-       - readiness/180-authoritative-spatial-query-foundation/ship.json  digest:b3c54ab5c59cfa7663c698c565bfbc5fa0eb1e629e5ec2085fc459e912704961  schema:1(current)
-       - readiness/180-authoritative-spatial-query-foundation/verify.json  digest:10ad0f0312460bda7cd10f5f6ec3b5cbcb44ce1eb47e840460156a762e172e68  schema:1(current)
+       - readiness/180-authoritative-spatial-query-foundation/ship.json  digest:41d4fc872b6a9d1085e7f3b50f076c1e0ed60aedcb7099a94be046a94c8511c8  schema:1(current)
+       - readiness/180-authoritative-spatial-query-foundation/verify.json  digest:7f9159a5b2f1c2a75c1ebdbbc26440f78f3aeb4a24a56d01abd288d0e88ec762  schema:1(current)
        - readiness/180-authoritative-spatial-query-foundation/work-model.json  digest:debfe60e9ad6841920495a93fe02088ed8f654ea51066fd87b226e36a8ac28bb  schema:1(current)
      outputDigest: dcfa2386a82f0ec5028757f752f367796b7c1bfa8efb6736c364c11b77da5ab3 -->
 

@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-12-sir-item-180-authoritative-spatial-query-foundation.md",
-  "reportSha256": "6d3b2a6dc321a8633a9b0b5af830b78ff20b897e26c13886de27748111f58e08",
+  "reportSha256": "9caa91d36755e7fd6ffc836508f8374883186ab6ba8f4da18061229a08ac0d1e",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
