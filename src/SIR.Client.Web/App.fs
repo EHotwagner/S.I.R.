@@ -847,7 +847,7 @@ let rec update msg model =
                 SimulatorSelectedUnit = selected
                 Tactical = projected.Tactical |> UnifiedTacticalWorkspace.scrub (int64 simulator.Tick)
                 Battlefield = Battlefield.reconcile (MapEditorSimulator.frame selected simulator) projected.Battlefield }, Cmd.none
-        | ReplayWorkspace ->
+        | ReplayWorkspace, _ ->
             update (ShellMsg(SeekRequested(int32 (min (int64 Int32.MaxValue) cursor)))) projected
         | _ -> projected, Cmd.none
     | TacticalTimeStepped delta ->
