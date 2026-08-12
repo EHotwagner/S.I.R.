@@ -5,17 +5,17 @@ workspace: S.I.R
 cycle: item-194-executable-rules-corpus
 lane: sdd
 toolVersion: 1.0.1
-commit: 87aefd77b3b7a653347dfef6260aa96920ab70c5
+commit: d146c9756b4b747fb31a2af6004860fded7dc997
 ---
 
 ## §1 Provenance and confidence
 
 - **activation:** active
 - **phases:** lifecycle-authoring, implementation-test-evidence, verify-ship-pr
-- **material events:** 5
+- **material events:** 6
 - **zero-event reason:** n/a
-- **checkpoint:** `feedback/checkpoints/item-194-executable-rules-corpus.jsonl` (5 events).
-- **confidence limits:** Local full conformance, documentation, SDD ship, and focused browser gates passed; hosted exact-head CI and final exact-head independent review remain pending.
+- **checkpoint:** `feedback/checkpoints/item-194-executable-rules-corpus.jsonl` (6 events).
+- **confidence limits:** Local full conformance, documentation, focused browser, replay-v3, coverage, identity, delivery, and SDD ship gates passed; hosted exact-head CI and exact-head independent review remain pending.
 
 ## §2 What worked
 
@@ -23,7 +23,7 @@ The typed SDD lifecycle kept 13 requirements, 44 tasks, and 44 observed evidence
 
 ## §3 What did not
 
-The isolated worktree needed an initial restore and `npm ci`. The first explorer projection lacked a registry-backed desktop command, and the first SDD evidence draft reused one browser receipt for obligations that test could not observe; independent critique correctly rejected both shortcuts.
+The isolated worktree needed an initial restore and `npm ci`. The first explorer projection lacked a registry-backed desktop command, the first SDD evidence draft reused one browser receipt for obligations that test could not observe, and the first reviewed head underimplemented historical replay, identity, coverage, and the player journey; independent critique correctly rejected each shortcut.
 
 ## §4 Findings
 
@@ -71,12 +71,12 @@ The isolated worktree needed an initial restore and `npm ci`. The first explorer
 - **Kind:** positive-pattern
 - **Impact:** The explorer could not silently bloat the production startup response.
 - **Expected:** The player-visible projection remains under the fixed 1,150,000-byte initial-response cap.
-- **Observed:** The corpus authoring/manifest projection was moved behind the player-opened Rules route while authoritative combat stayed shared; focused production qualification measured 1,146,515 initial response bytes, 3,485 below the unchanged cap.
+- **Observed:** The corpus projection was moved behind the player-opened Rules route, and complete replay validation remains solely in the retained worker; focused production qualification measured 1,149,457 initial response bytes, 543 below the unchanged cap, with a 302-byte deferred support chunk.
 - **Evidence:** command:npm run test:production-delivery-evidence
 - **Version:** S.I.R current candidate
 - **Owner:** S.I.R production delivery gate
 - **Recurrence:** new
-- **Avoidable cost:** four focused reduction iterations
+- **Avoidable cost:** multiple focused reduction and structural-split iterations
 - **Disposition:** accepted
 
 #### §4.5 Feedback skill distribution is incomplete in the consumer checkout
@@ -91,6 +91,19 @@ The isolated worktree needed an initial restore and `npm ci`. The first explorer
 - **Recurrence:** new
 - **Avoidable cost:** one cross-workspace discovery
 - **Disposition:** capability follow-up
+
+#### §4.6 Exact-head critique must probe semantic boundaries, not only green receipts
+
+- **Kind:** quality-gap
+- **Impact:** The first reviewed head could pass focused receipts while disabling replay v3 in the production Fable build, accepting an opaque archive, emitting a wholly dangling coverage graph, showing a synthetic attack, and omitting evaluator/codec surfaces from implementation identity.
+- **Expected:** Independent review reproduces production-target behavior, validates graph topology and every declared archive identity, traces player input to the authoritative event, and mutates every identity surface.
+- **Observed:** The repaired candidate removes the Fable downgrade; adds a typed, bounded, content-addressed archive with per-field rejection; emits 45 unique coverage nodes with zero dangling edges; executes `Simulation.runTick` from a visible command and deep-links from the emitted `AttackResolved`; and verifies an 11-source plus package/fingerprint implementation inventory at immutable source commit `d146c9756b4b747fb31a2af6004860fded7dc997`.
+- **Evidence:** command:./scripts/verify-rules-corpus.sh; command:SIR_RULES_FORCE_GREP=1 ./scripts/verify-rules-corpus.sh; command:node scripts/test-production-replay-v3.mjs; command:npx playwright test tests/SIR.Browser.Tests/visible-workflows.spec.js --grep "player-visible Rules explorer"
+- **Version:** S.I.R implementation pin d146c9756b4b747fb31a2af6004860fded7dc997
+- **Owner:** S.I.R replay, rules corpus, and browser acceptance
+- **Recurrence:** new
+- **Avoidable cost:** one exact-head independent-review repair cycle
+- **Disposition:** fixed in candidate
 
 ## §5 Did not exercise
 
@@ -114,7 +127,7 @@ The SDD, parallel-work, pnext, and Game.Core Fable skills bounded lifecycle, cla
 
 ## §10 Outcome markers
 
-Full conformance and full documentation passed; focused Rules explorer and production-delivery JUnit receipts passed; .NET/Fable emitted 24,664 identical canonical bytes; SDD verify reported 44/44 evidence and tests observed; SDD ship reported `shipReady` with no diagnostics.
+Full conformance and full documentation passed; focused Rules explorer, typed production replay-v3, coverage/identity mutation, and production-delivery gates passed. SDD verify reports 44/44 evidence and 44/44 tests observed with no self-attested, stale, synthetic, missing, or invalid evidence; ship reports `shipReady` with no diagnostics.
 
 ## §11 Falsifiable improvements
 
@@ -134,8 +147,8 @@ Full conformance and full documentation passed; focused Rules explorer and produ
 | dependencies-build | exercised | Locked restore, Game.Core surface receipt, Release builds, and Fable compile passed. |
 | testing | exercised | Full conformance, mutations, browser, performance, source, replay, and manifest gates passed. |
 | evidence | exercised | 44/44 obligations bind an exact parsed JUnit observed-run receipt. |
-| runtime-playtest | exercised | View → Rules data visible journey passed without direct dispatch or forced interaction. |
-| performance | exercised | 10,000 complete attacks ran in 148ms, within the 2,000ms cap. |
+| runtime-playtest | exercised | View → Rules data, visible execute command, actual `AttackResolved`, and event-derived rule deep link passed without direct dispatch or forced interaction. |
+| performance | exercised | 10,000 complete explained attacks remained within the 2,000ms cap. |
 | documentation | exercised | Full fsdocs/API/content/integrity/experience/accessibility route passed. |
 | packaging-upgrade | not-exercised | Existing published Game.Core 0.13.0 lockstep package was consumed unchanged. |
 | worker-git-pr | exercised | Minted claim, isolated worktree, immutable source commit, and protected-boundary handoff used. |

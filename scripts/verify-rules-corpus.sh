@@ -48,9 +48,15 @@ while IFS= read -r artifact_path; do
 done <<< "$(jq -r '.sources[]' "$source_manifest")"
 printf 'package\t%s\nalgorithm\t%s\n' "$(jq -r '.packageSha256' "$source_manifest")" "$(jq -r '.algorithmFingerprint' "$source_manifest")" >> "$source_digest_input"
 actual_sources_digest=$(sha256sum "$source_digest_input" | cut -d' ' -f1)
+identity_mutant=$(mktemp /tmp/sir-rules-source-digest-mutant.XXXXXX)
+sed 's#^src/SIR.Domain/Rules.fs\t[0-9a-f]\{64\}$#src/SIR.Domain/Rules.fs\t0000000000000000000000000000000000000000000000000000000000000000#' \
+  "$source_digest_input" > "$identity_mutant"
+mutated_sources_digest=$(sha256sum "$identity_mutant" | cut -d' ' -f1)
+rm -f "$identity_mutant"
 rm -f "$source_digest_input"
 declared_sources_digest=$(sed -n 's/.*"implementation", System.Text.Encoding.UTF8.GetBytes "\([0-9a-f]\{64\}\)".*/\1/p' "$repo_root/src/SIR.Simulation/CombatRules.fs")
 test "$declared_sources_digest" = "$actual_sources_digest" || { echo "implementation source manifest digest does not match pinned sources" >&2; exit 1; }
+test "$declared_sources_digest" != "$mutated_sources_digest" || { echo "implementation identity source mutation unexpectedly passed" >&2; exit 1; }
 declared_package_sha=$(jq -r '.packageSha256' "$source_manifest")
 captured_package_sha=$(jq -r '.sha256' "$repo_root/docs/dependency-surface/FS.GG.Game.Core/0.13.0.json")
 test "$declared_package_sha" = "$captured_package_sha" || { echo "Game.Core implementation fingerprint does not match dependency receipt" >&2; exit 1; }

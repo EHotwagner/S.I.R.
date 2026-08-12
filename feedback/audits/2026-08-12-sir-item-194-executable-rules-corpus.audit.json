@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-12-sir-item-194-executable-rules-corpus.md",
-  "reportSha256": "b7aae96ffec7d06771e408f420e487e3c6e3644c84ed0fdc9178fe35870c77eb",
+  "reportSha256": "e25dc3d446421190410944788cfedfe091d52eaaca30145efac23f8f9f54cba9",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -50,6 +50,18 @@
         {"locator": "command:find .agents/skills -path */fs-gg-feedback-report/SKILL.md", "result": "verified"}
       ],
       "confidenceLimits": ["The canonical provider copy was available in the adjacent FS.GG.Rendering checkout."]
+    },
+    {
+      "id": "§4.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:./scripts/verify-rules-corpus.sh", "result": "verified"},
+        {"locator": "command:SIR_RULES_FORCE_GREP=1 ./scripts/verify-rules-corpus.sh", "result": "verified"},
+        {"locator": "command:node scripts/test-production-replay-v3.mjs", "result": "verified"},
+        {"locator": "command:npx playwright test tests/SIR.Browser.Tests/visible-workflows.spec.js --grep \"player-visible Rules explorer\"", "result": "verified"}
+      ],
+      "confidenceLimits": ["The final exact-head hosted CI and independent confirmation review remain merge-boundary obligations."]
     }
   ]
 }
