@@ -131,7 +131,7 @@ if node "$fable_entry" \
 fi
 
 for game_core_fixture in game-core-cell-order game-core-edge-between game-core-los game-core-astar; do
-  game_core_pattern="first divergence: fixture=$game_core_fixture byte=0"
+  game_core_pattern="first divergence: fixture=$game_core_fixture byte="
 
   if dotnet run \
     --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj \
