@@ -5,18 +5,18 @@ workspace: S.I.R
 cycle: item-180-authoritative-spatial-query-foundation
 lane: sdd
 toolVersion: 1.0.1
-commit: 4a41a5c6c10bf759269e682f54ea499e7602c046
+commit: 5f2377e9c5a14f2826787675a3c3aaf94de62a91
 ---
 
 ## §1 Provenance and confidence
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 5
+- **material events:** 6
 - **zero-event reason:** n/a
-- **checkpoint:** `feedback/checkpoints/item-180-authoritative-spatial-query-foundation.jsonl` (5 events).
+- **checkpoint:** `feedback/checkpoints/item-180-authoritative-spatial-query-foundation.jsonl` (6 events).
 - **package/tool pins:** FS.GG.Game.Core 0.13.0, fsgg-sdd 1.0.1, Fable 5.13.0, Terser 5.50.0.
-- **confidence limits:** Local exact .NET/Fable, production browser, documentation, delivery, and SDD evidence are green at the implementation commit. Hosted exact-head CI, independent implementation critique, and protected-boundary landing remain pending. Historical failed candidates were not preserved as commits, so the report does not treat their exact byte counts or output as independently verified.
+- **confidence limits:** Local exact .NET/Fable, production browser, documentation, delivery, cancellation mutation, and SDD evidence are green at the repair commit. Hosted exact-head CI, independent implementation critique, and protected-boundary landing remain pending. Historical failed candidates were not preserved as commits, so the report does not treat their exact byte counts or output as independently verified.
 
 ## §2 What worked
 
@@ -24,7 +24,7 @@ The package-only Game.Core adapter boundary kept Cell, Edges, LOS, and A-star co
 
 ## §3 What did not
 
-The first browser projection made spatial diagnostics eager and exceeded the fixed initial-response budget. The first package A-star integration trusted package neighbours too broadly and required S.I.R transition revalidation. Documentation Happy DOM assumed eagerly rendered data after the product moved to a lazy chunk. Finally, a parser-tolerated clarification form let verify/ship warn while refresh could not generate a work model; canonical `DEC-###:` grammar and downstream lifecycle replay fixed the projection. These pre-fix details are checkpoint recollections rather than independently reproducible historical commits.
+The first browser projection made spatial diagnostics eager and exceeded the fixed initial-response budget. The first package A-star integration trusted package neighbours too broadly and required S.I.R transition revalidation. Documentation Happy DOM assumed eagerly rendered data after the product moved to a lazy chunk. A parser-tolerated clarification form let verify/ship warn while refresh could not generate a work model; canonical `DEC-###:` grammar and downstream lifecycle replay fixed the projection. Hosted conformance then exposed a cancellation race: the worker advanced past the caller's observed tick before processing its cancel request. The repair accepts lagging ticks only for cancellation while retaining session, map, and plan identity, and yields between bounded batches. These pre-fix details are checkpoint recollections except for the hosted run and executable cancellation mutation.
 
 ## §4 Findings
 
@@ -93,6 +93,19 @@ The first browser projection made spatial diagnostics eager and exceeded the fix
 - **Avoidable cost:** one cross-workspace discovery
 - **Disposition:** existing issue FS-GG/.github#2380
 
+#### §4.6 Cancellation correlation must permit the caller's last observed tick to lag
+
+- **Kind:** defect
+- **Impact:** Under hosted-runner contention, an active simulator run could complete while its queued cancellation was rejected as stale, failing conformance and making cancellation latency depend on scheduler timing.
+- **Expected:** A cancel from the same session, map, and plan stops its target operation even when progress advances after the caller observed the correlation tick.
+- **Observed:** Hosted run 31638616764 emitted every operation-110 progress response through completion, then rejected operation 111; the repair keeps strict workspace identity, permits the cancel tick to lag, and yields between bounded batches. The subject mutation turns the real worker smoke red when that yield is removed, and restored code passes 20/20 constrained runs plus the full 8/8 race stress.
+- **Evidence:** command:gh run view 31638616764 --repo EHotwagner/S.I.R. --job 94255169628 --log-failed; command:./scripts/test-worker-cancellation-subject-mutation.sh; command:./scripts/test-conformance.sh
+- **Version:** S.I.R repair commit 5f2377e9c5a14f2826787675a3c3aaf94de62a91; Node 26.5.0 hosted failure and Node 26.7.0 local verification
+- **Owner:** EHotwagner/S.I.R. browser worker cancellation protocol
+- **Recurrence:** new
+- **Avoidable cost:** two rejected yield candidates and one constrained-load reproduction cycle
+- **Disposition:** product fix
+
 ## §5 Did not exercise
 
 No scaffold creation or upstream Game.Core package release was exercised. Protected-boundary merge is intentionally outside the implementation commit and remains pending.
@@ -115,13 +128,14 @@ The work-board-best, pnext-item, intra-repo parallel-work, complete SDD lifecycl
 
 ## §10 Outcome markers
 
-The focused spatial verifier passed 17 grouped executable cases across five receipts; full conformance, documentation, delivery, and browser receipts add 14 cases, for 31 passing retained cases with no failures/skips. SDD verify reports 50/50 evidence and tests observed, zero self-attested, and ship reports `shipReady` with all generated views current. The exact production route measured 1,148,018 initial, 41,228 deferred RulesExplorer, and 8,582 diagnostic API bytes.
+The focused spatial verifier passed all nine spatial subject mutations plus exact .NET/Fable and Release-budget gates. The cancellation subject mutation failed closed and restored green; full conformance, its 8/8 race stress, documentation, delivery, and browser receipts pass with no failures/skips. SDD verify reports 50/50 evidence and tests observed, zero self-attested, and ship reports `shipReady` with all generated views current. The exact production route measured 1,148,018 initial, 41,228 deferred RulesExplorer, and 8,582 diagnostic API bytes.
 
 ## §11 Falsifiable improvements
 
 - FS.GG.SDD should name malformed clarification decision lines or reject them at clarify; acceptance is a direct location-bearing diagnostic rather than only derived unresolved references. This is recurrence evidence, not a new filing.
 - S.I.R documentation qualification should eliminate post-assertion Happy DOM teardown exceptions and add an explicit browser assertion for complete deferred table content if that content is an acceptance obligation.
 - FS-GG scaffold materialization should close FS-GG/.github#2380 by making the feedback-report skill discoverable in a clean product checkout.
+- Simulator cancellation gates should retain the subject mutation that removes the between-batch yield; acceptance is a red real-worker smoke followed by restored green, not a predicate-only inversion.
 
 ## §12 Development-surface coverage
 
@@ -133,7 +147,7 @@ The focused spatial verifier passed 17 grouped executable cases across five rece
 | sdd-authoring | exercised | Charter through ship plus refresh/agents are current; 50 obligations observed. |
 | implementation-apis | exercised | Typed Domain identity, Simulation evaluator/cache, Match service, and client projection shipped. |
 | dependencies-build | exercised | Locked restore and package-only Game.Core consumption passed in native and Fable builds. |
-| testing | exercised | 45 retained focused/full/docs/browser cases pass with divergence and authority scans. |
+| testing | exercised | Spatial and cancellation subject mutations, full conformance, 8/8 race stress, docs, and browser gates pass. |
 | evidence | exercised | 50/50 exact-digest observed-run declarations pass with zero self-attestation. |
 | runtime-playtest | exercised | Production browser unit selection and View → spatial diagnostics route passed. |
 | performance | exercised | Exact Release LOS/route/invalidation/100/200-demand and delivery budgets passed. |

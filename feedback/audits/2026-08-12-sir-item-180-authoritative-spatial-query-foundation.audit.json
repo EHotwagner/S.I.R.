@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-12-sir-item-180-authoritative-spatial-query-foundation.md",
-  "reportSha256": "9caa91d36755e7fd6ffc836508f8374883186ab6ba8f4da18061229a08ac0d1e",
+  "reportSha256": "a304e27e77a9c40501d9df1c79e693f56d3b6ffc74e6a508d3ab313201c6e1b5",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -95,6 +95,28 @@
       ],
       "confidenceLimits": [
         "The skill absence and open upstream issue are exact; this report adds recurrence evidence rather than a new handoff."
+      ]
+    },
+    {
+      "id": "§4.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:gh run view 31638616764 --repo EHotwagner/S.I.R. --job 94255169628 --log-failed",
+          "result": "verified"
+        },
+        {
+          "locator": "command:./scripts/test-worker-cancellation-subject-mutation.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "command:./scripts/test-conformance.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The hosted failure and local mutation/restored-green evidence are exact; hosted exact-head verification of the repair remains pending."
       ]
     }
   ]
