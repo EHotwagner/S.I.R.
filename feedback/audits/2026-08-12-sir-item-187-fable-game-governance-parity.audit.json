@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-12-sir-item-187-fable-game-governance-parity.md",
-  "reportSha256": "94d7f08536fe4c6e12551236aec85887ffc09579d7fa10f9e66d9fdc481dc469",
+  "reportSha256": "f16226578756a24afbaac7b87e6da747f87dc627bc9b6576d27aa95b9be7a8d1",
   "criticMode": "separated-critic-pass",
   "criticPromptVersion": "actionability-v1",
   "findings": [

@@ -8,8 +8,6 @@ domains:
   - gameplay
   - fsharp
 packageSurfaces:
-  - src/SIR.Simulation
-  - src/SIR.Client.Web
-  - work/187-fable-game-governance-parity
+  - src/SIR.Simulation/SIR.Simulation.fsproj
 policyRef: .fsgg/policy.yml
 capabilitiesRef: .fsgg/capabilities.yml

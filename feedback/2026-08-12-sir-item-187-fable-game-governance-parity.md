@@ -12,7 +12,7 @@ commit: pending-pr-head
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 4
+- **material events:** 5
 - **zero-event reason:** n/a
 - **checkpoint:** `feedback/checkpoints/item-187-fable-game-governance-parity.jsonl` (4 events).
 - **confidence limits:** Local exact-head conformance passed; hosted CI and fresh independent review remain pending.
@@ -94,6 +94,8 @@ None observed.
 ## §8 Friction and avoidable cost
 
 The coordination identifier and undeclared clarification grammar each required a recovery loop; both are captured above.
+
+Independent review also found that the prior generic conformance evidence did not exercise the four promised Game.Core primitives; the repaired route now does so in both .NET and Fable.
 
 ## §9 Skill value and gaps
 

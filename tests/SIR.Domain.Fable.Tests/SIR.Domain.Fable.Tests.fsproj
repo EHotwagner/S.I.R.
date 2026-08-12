@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../SIR.Conformance.Shared/NumericFixtures.fs" Link="NumericFixtures.fs" />
+    <Compile Include="../SIR.Conformance.Shared/GameCoreFixtures.fs" Link="GameCoreFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/OrientationFixtures.fs" Link="OrientationFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/ControlAbiFixtures.fs" Link="ControlAbiFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/SimulationFixtures.fs" Link="SimulationFixtures.fs" />

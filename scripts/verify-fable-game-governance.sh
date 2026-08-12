@@ -26,7 +26,8 @@ done
 dotnet fsi scripts/validate-governance-yaml.fsx
 dotnet tool run fsgg-governance route --root . --mode inner --format json >/dev/null
 # The producer writes the receipt SDD consumes for the declared F# surface.
-dotnet tool run fsgg-fsharp-surface -- --root . --project src/SIR.Simulation/SIR.Simulation.fsproj >/dev/null
+surface_project=$(dotnet fsi scripts/validate-governance-yaml.fsx -- --package-surface)
+dotnet tool run fsgg-fsharp-surface -- --root . --project "$surface_project" >/dev/null
 
 for root_name in .agents .claude .codex; do
   for skill in fs-gg-ai fs-gg-ballistics fs-gg-effects fs-gg-game-core fs-gg-grids fs-gg-line-drawing fs-gg-mapcraft fs-gg-persistence fs-gg-playtest fs-gg-visibility; do
