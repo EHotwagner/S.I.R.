@@ -1,9 +1,98 @@
 module SIR.Client.Web.RulesExplorer
 
 open Feliz
+open Fable.Core
+open Fable.Core.JsInterop
 open SIR.Client
 open SIR.Domain
-open SIR.Simulation
+open SIR.Protocol.Http
+open Thoth.Json
+
+type private SpatialDiagnosticProjection =
+    { QueryKind: string
+      Outcome: string
+      FootprintSampleCount: int32
+      CrossedCellCount: int32
+      CrossedEdgeCount: int32
+      CoverContributorCount: int32
+      ExposureDirections: string
+      SpatialRevision: int64
+      KnowledgeIdentity: string
+      PackageIdentity: string
+      CompatibilityProfile: string
+      SourceSymbol: string }
+
+[<Global>]
+let private fetch (url: string, options: obj) : JS.Promise<obj> = jsNative
+
+let private responseDecoder : Decoder<SpatialDiagnosticProjection> =
+    Decode.object (fun get ->
+        { QueryKind = get.Required.Field "QueryKind" Decode.string
+          Outcome = get.Required.Field "Outcome" Decode.string
+          FootprintSampleCount = get.Required.Field "FootprintSampleCount" Decode.int
+          CrossedCellCount = get.Required.Field "CrossedCellCount" Decode.int
+          CrossedEdgeCount = get.Required.Field "CrossedEdgeCount" Decode.int
+          CoverContributorCount = get.Required.Field "CoverContributorCount" Decode.int
+          ExposureDirections = get.Required.Field "ExposureDirections" Decode.string
+          SpatialRevision = get.Required.Field "SpatialRevision" Decode.int64
+          KnowledgeIdentity = get.Required.Field "KnowledgeIdentity" Decode.string
+          PackageIdentity = get.Required.Field "PackageIdentity" Decode.string
+          CompatibilityProfile = get.Required.Field "CompatibilityProfile" Decode.string
+          SourceSymbol = get.Required.Field "SourceSymbol" Decode.string })
+
+let private terrainCode terrain =
+    match terrain with
+    | MapTerrain.Open
+    | MapTerrain.Objective -> 0
+    | MapTerrain.Rough -> 1
+    | MapTerrain.Blocked -> 2
+
+let private requestBody (simulator: SimulatorHandoff option) selectedUnit =
+    match simulator, selectedUnit with
+    | Some handoff, Some unitId ->
+        match Map.tryFind unitId handoff.RuntimeMap.Units with
+        | None -> None
+        | Some unit ->
+            Some(
+                Encode.object [
+                    "MapIdentity", Encode.string handoff.Revision.Digest
+                    "SpatialRevision", Encode.int64 handoff.Revision.Number
+                    "Width", Encode.int handoff.RuntimeMap.Width
+                    "Height", Encode.int handoff.RuntimeMap.Height
+                    "OriginColumn", Encode.int unit.Column
+                    "OriginRow", Encode.int unit.Row
+                    "UnitSize", Encode.int unit.Size
+                    "Facing", Encode.int (int32 (Direction8.toCode unit.AttentionDirection))
+                    "Terrain",
+                        handoff.RuntimeMap.Terrain
+                        |> Map.toList
+                        |> List.map (fun ((column, row), terrain) ->
+                            Encode.object [
+                                "Column", Encode.int column
+                                "Row", Encode.int row
+                                "Kind", Encode.int (terrainCode terrain)
+                            ])
+                        |> Encode.list
+                ]
+                |> Encode.toString 0)
+    | _ -> None
+
+let private loadDiagnostics accessToken body =
+    async {
+        let options =
+            createObj [
+                "method" ==> "POST"
+                "headers" ==> createObj [ "Content-Type" ==> "application/json"; "Authorization" ==> ("Bearer " + accessToken) ]
+                "body" ==> body
+            ]
+        let! response = fetch ("/api/spatial/diagnostics", options) |> Async.AwaitPromise
+        let! responseBody = response?text() |> Async.AwaitPromise
+        if not (unbox<bool> response?ok) then
+            failwith $"spatial diagnostic request failed: {responseBody}"
+        return
+            Decode.fromString responseDecoder (string responseBody)
+            |> Result.defaultWith (fun error -> failwith $"spatial diagnostic response did not decode: {error}")
+    }
 
 let private valueText value =
     match value.Value with
@@ -118,74 +207,55 @@ let ExecutableRulesPanel () =
     ]
 
 [<ReactComponent>]
-let DeferredDataPanel (simulator: SimulatorHandoff option, selectedUnit: int32 option) =
-    let selected =
-        simulator
-        |> Option.bind (fun state ->
-            selectedUnit
-            |> Option.bind (fun id -> Map.tryFind id state.RuntimeMap.Units)
-            |> Option.map (fun unit -> state, unit))
-
+let DeferredDataPanel (simulator: SimulatorHandoff option) (selectedUnit: int32 option) (bootstrap: BootstrapV1.Response option) =
+    let request = requestBody simulator selectedUnit
+    let diagnostics, setDiagnostics = React.useState<SpatialDiagnosticProjection option>(None)
+    let failure, setFailure = React.useState<string option>(None)
+    React.useEffect(
+        (fun () ->
+            setDiagnostics None
+            setFailure None
+            match request, bootstrap with
+            | Some body, Some admission ->
+                Async.StartImmediate(async {
+                    try
+                        let! result = loadDiagnostics admission.AccessToken body
+                        setDiagnostics (Some result)
+                    with error ->
+                        setFailure (Some error.Message)
+                })
+            | _ -> ()),
+        [| box request; box bootstrap |])
     Html.div [
         prop.children [
             Html.section [
                 prop.ariaLabel "Selected unit spatial diagnostics"
                 prop.children [
                     Html.h2 "Spatial diagnostics"
-                    match selected with
-                    | None -> Html.p "Select a simulator unit to inspect authoritative spatial queries."
-                    | Some(state, unit) ->
-                        let cell col row: FS.GG.Game.Core.Cell = { Col = col; Row = row }
-                        let identity =
-                            SpatialAuthorityIdentity.create state.Revision.Digest "sir-spatial-v1" state.Revision.Number "player-disclosed" state.Revision.Number
-                            |> Result.defaultWith failwith
-                        let world =
-                            { Identity = identity
-                              Minimum = cell 0 0
-                              Maximum = cell (state.RuntimeMap.Width - 1) (state.RuntimeMap.Height - 1)
-                              Terrain =
-                                state.RuntimeMap.Terrain
-                                |> Map.toList
-                                |> List.map (fun ((column, row), terrain) ->
-                                    cell column row,
-                                    match terrain with
-                                    | MapTerrain.Open | MapTerrain.Objective -> SpatialTerrain.Open
-                                    | MapTerrain.Rough -> SpatialTerrain.Rough
-                                    | MapTerrain.Blocked -> SpatialTerrain.Blocked)
-                                |> Map.ofList
-                              Boundaries = []
-                              Occupancy = Map.empty
-                              DisclosedRevisionTokens = Set.empty }
-                        let origin = cell unit.Column unit.Row
-                        let target = cell (min (state.RuntimeMap.Width - 1) (unit.Column + 4)) unit.Row
-                        let request =
-                            { QueryId = "selected-unit-diagnostics"
-                              QueryKind = SpatialQueryKind.ExactLineOfSight
-                              Origin = origin
-                              Target = target
-                              Footprint = [ for row in 0 .. unit.Size - 1 do for column in 0 .. unit.Size - 1 do yield cell column row ]
-                              Profile = { ProfileId = "selected-unit-sensor-v1"; Modality = SpatialModality.Vision; Stance = "standing"; HeightBand = 1; Facing = unit.AttentionDirection }
-                              Bounds = SpatialQuery.defaultBounds }
-                        let result, _ = SpatialQuery.evaluate world request
+                    match request, failure, diagnostics with
+                    | None, _, _ -> Html.p "Select a simulator unit to inspect authoritative spatial queries."
+                    | Some _, Some error, _ -> Html.p ("Authoritative spatial diagnostics unavailable: " + error)
+                    | Some _, None, None -> Html.p "Loading authoritative spatial diagnostics."
+                    | Some _, None, Some result ->
                         Html.dl [
                             Html.dt "Query"
-                            Html.dd (string result.Explanation.QueryKind)
+                            Html.dd result.QueryKind
                             Html.dt "Outcome"
-                            Html.dd (string result.Outcome)
+                            Html.dd result.Outcome
                             Html.dt "Footprint samples"
-                            Html.dd (string result.Explanation.FootprintSamples.Length)
+                            Html.dd (string result.FootprintSampleCount)
                             Html.dt "Crossed cells / edges"
-                            Html.dd (string result.Explanation.CrossedCells.Length + " / " + string result.Explanation.CrossedEdges.Length)
+                            Html.dd (string result.CrossedCellCount + " / " + string result.CrossedEdgeCount)
                             Html.dt "Cover contributors"
-                            Html.dd (string result.Explanation.CoverContributors.Length)
+                            Html.dd (string result.CoverContributorCount)
                             Html.dt "Exposure directions"
-                            Html.dd (result.Explanation.ExposureDirections |> List.map string |> String.concat ", ")
+                            Html.dd result.ExposureDirections
                             Html.dt "Revision / knowledge policy"
-                            Html.dd (string result.Explanation.SpatialRevision + " / " + result.Explanation.KnowledgeIdentity)
+                            Html.dd (string result.SpatialRevision + " / " + result.KnowledgeIdentity)
                             Html.dt "Package / profile"
-                            Html.dd (SpatialQuery.packageIdentity + " / " + SpatialQuery.compatibilityProfile)
+                            Html.dd (result.PackageIdentity + " / " + result.CompatibilityProfile)
                             Html.dt "Pinned authority"
-                            Html.dd result.Explanation.SourceSymbol
+                            Html.dd result.SourceSymbol
                         ]
                 ]
             ]

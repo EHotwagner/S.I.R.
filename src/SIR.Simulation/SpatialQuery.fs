@@ -265,7 +265,14 @@ module SpatialQuery =
             | None when packageCandidate |> Option.exists (fun path -> path.Length > int request.Bounds.MaximumResultCells) -> SpatialOutcome.Exhausted, [], 0, request.Bounds.MaximumExpansions
             | None -> loop [ 0, request.Origin, [ request.Origin ] ] (Map.ofList [ request.Origin, 0 ]) 0
 
+    let private lineStepCount origin target =
+        max
+            (abs (float target.Col - float origin.Col))
+            (abs (float target.Row - float origin.Row))
+
     let private lineCells origin target =
+        // observedTrace proves this delta is within MaximumCrossedItems before
+        // any line cells are materialized, so bounded int32 arithmetic is safe.
         let dc = target.Col - origin.Col
         let dr = target.Row - origin.Row
         let steps = max (abs dc) (abs dr)
@@ -275,51 +282,47 @@ module SpatialQuery =
             |> List.map (fun index -> cell (origin.Col + dc * index / steps) (origin.Row + dr * index / steps))
             |> distinctCells
 
-    let private consecutivePairs values = values |> List.pairwise
-
     let private lineVisible world modality origin target =
         let transparent position = inBounds world position && terrainAt world position |> terrainPassable modality
-        let cells = lineCells origin target
         Los.lineOfSightBy Supercover transparent origin target
-        && (cells |> consecutivePairs |> List.forall (fun (left, right) -> edgePassable world modality left right))
+        && (lineCells origin target |> List.pairwise |> List.forall (fun (left, right) -> edgePassable world modality left right))
 
     let private directionFrom origin target =
         Direction8.tryFromDelta (target.Col - origin.Col) (target.Row - origin.Row)
 
-    let private edgeOfPair left right = Edges.edgeBetween left right
-
     let private observedTrace (world: ProjectedSpatialWorld) (request: SpatialQueryRequest) footprint =
         let origins = absoluteFootprint request.Origin footprint
         let targets = absoluteFootprint request.Target footprint
-        let pairs = [ for origin in origins do for target in targets do yield origin, target ]
-        let visiblePairs = pairs |> List.filter (fun (origin, target) -> lineVisible world request.Profile.Modality origin target)
-        let crossedCells = pairs |> List.collect (fun (origin, target) -> lineCells origin target) |> distinctCells
-        let crossedEdges = crossedCells |> consecutivePairs |> List.choose (fun (left, right) -> edgeOfPair left right) |> List.distinct
-        let cover =
-            crossedEdges
-            |> List.filter (fun edge ->
-                world.Boundaries
-                |> List.tryFind (fun boundary -> boundary.Edge = edge)
-                |> Option.exists (fun boundary -> not (permeability request.Profile.Modality boundary.Permeability)))
-        let exposure =
-            visiblePairs
-            |> List.choose (fun (origin, target) -> directionFrom target origin)
-            |> List.distinct
-            |> List.sortBy directionCode
-        not (List.isEmpty visiblePairs), crossedCells, crossedEdges, cover, exposure
-
-    let private dependencyReceipt world crossedCells crossedEdges =
-        let edgeTokens =
-            world.Boundaries
-            |> List.choose (fun boundary ->
-                if List.contains boundary.Edge crossedEdges && Set.contains boundary.RevisionToken world.DisclosedRevisionTokens
-                then Some boundary.RevisionToken else None)
-        let occupancyTokens =
-            crossedCells
-            |> List.choose (fun position ->
-                let token = $"occupancy:{position.Col}:{position.Row}"
-                if Set.contains token world.DisclosedRevisionTokens then Some token else None)
-        { RevisionTokens = Set.ofList (edgeTokens @ occupancyTokens) }
+        // All int32 coordinate deltas are exactly representable as IEEE-754
+        // doubles. This permits an overflow-free work check in both runtimes
+        // without pulling BigInt support into the eager browser graph.
+        let maximumWork = float request.Bounds.MaximumCrossedItems
+        if origins.Length * targets.Length > int request.Bounds.MaximumCrossedItems then false, [], [], [], [], true
+        else
+            let pairs = [ for origin in origins do for target in targets do yield origin, target ]
+            if (pairs |> List.sumBy (fun (origin, target) -> lineStepCount origin target + 1.0)) > maximumWork then
+                false, [], [], [], [], true
+            else
+                let visiblePairs =
+                    pairs
+                    |> List.filter (fun (origin, target) -> lineVisible world request.Profile.Modality origin target)
+                let crossedCells = pairs |> List.collect (fun (origin, target) -> lineCells origin target) |> distinctCells
+                let crossedEdges =
+                    pairs
+                    |> List.collect (fun (origin, target) -> lineCells origin target |> List.pairwise |> List.choose (fun (left, right) -> Edges.edgeBetween left right))
+                    |> List.distinct
+                let cover =
+                    crossedEdges
+                    |> List.filter (fun edge ->
+                        world.Boundaries
+                        |> List.tryFind (fun boundary -> boundary.Edge = edge)
+                        |> Option.exists (fun boundary -> not (permeability request.Profile.Modality boundary.Permeability)))
+                let exposure =
+                    visiblePairs
+                    |> List.choose (fun (origin, target) -> directionFrom target origin)
+                    |> List.distinct
+                    |> List.sortBy directionCode
+                not (List.isEmpty visiblePairs), crossedCells, crossedEdges, cover, exposure, false
 
     let private emptyExplanation (world: ProjectedSpatialWorld) (request: SpatialQueryRequest) outcome footprint : SpatialExplanation =
         { SchemaVersion = schemaVersion
@@ -361,10 +364,13 @@ module SpatialQuery =
             let explanation = emptyExplanation world request SpatialOutcome.InvalidInput footprint
             { Outcome = SpatialOutcome.InvalidInput; Path = []; MovementCost = 0; Visible = false; Explanation = explanation }, { RevisionTokens = Set.empty }
         | Ok footprint ->
+            // A result can depend on disclosed blockers it did not cross
+            // precisely because they forced a detour. Retain them all.
+            let dependencies = { RevisionTokens = world.DisclosedRevisionTokens }
             match request.QueryKind with
             | SpatialQueryKind.BoundedPath | SpatialQueryKind.Reachability | SpatialQueryKind.MovementCost ->
                 let outcome, path, cost, expansions = boundedPath world request footprint
-                let crossedEdges = path |> consecutivePairs |> List.choose (fun (left, right) -> edgeOfPair left right)
+                let crossedEdges = path |> List.pairwise |> List.choose (fun (left, right) -> Edges.edgeBetween left right)
                 let crossedCells = path |> List.truncate (int request.Bounds.MaximumCrossedItems)
                 let explanation =
                     { emptyExplanation world request outcome footprint with
@@ -373,13 +379,10 @@ module SpatialQuery =
                         Expansions = expansions
                         Truncated = outcome = SpatialOutcome.Exhausted }
                 let result = { Outcome = outcome; Path = path; MovementCost = cost; Visible = false; Explanation = explanation }
-                result, dependencyReceipt world crossedCells crossedEdges
+                result, dependencies
             | SpatialQueryKind.LineTrace | SpatialQueryKind.ExactLineOfSight | SpatialQueryKind.Cover | SpatialQueryKind.Exposure ->
-                let visible, cells, edges, cover, exposure = observedTrace world request footprint
-                let truncated = cells.Length > int request.Bounds.MaximumCrossedItems || edges.Length > int request.Bounds.MaximumCrossedItems
+                let visible, cells, edges, cover, exposure, truncated = observedTrace world request footprint
                 let outcome = if truncated then SpatialOutcome.Exhausted elif visible then SpatialOutcome.Found else SpatialOutcome.Unreachable
-                let cells = cells |> List.truncate (int request.Bounds.MaximumCrossedItems)
-                let edges = edges |> List.truncate (int request.Bounds.MaximumCrossedItems)
                 let explanation =
                     { emptyExplanation world request outcome footprint with
                         CrossedCells = cells
@@ -388,8 +391,9 @@ module SpatialQuery =
                         ExposureDirections = exposure
                         Expansions = int32 cells.Length
                         Truncated = truncated }
-                let result = { Outcome = outcome; Path = []; MovementCost = 0; Visible = visible && not truncated; Explanation = explanation }
-                result, dependencyReceipt world cells edges
+                // Every truncated branch above returns visible=false.
+                let result = { Outcome = outcome; Path = []; MovementCost = 0; Visible = visible; Explanation = explanation }
+                result, dependencies
 
     let private escapeJson (value: string) = value.Replace("\\", "\\\\").Replace("\"", "\\\"")
     let private cellJson position = $"{{\"col\":{position.Col},\"row\":{position.Row}}}"
@@ -414,7 +418,7 @@ module SpatialQuery =
 
     let private cacheKey world request =
         let footprint = request.Footprint |> distinctCells |> List.map (fun value -> $"{value.Col}:{value.Row}") |> String.concat ";"
-        SpatialCacheKey($"{world.Identity.MapIdentity}|{world.Identity.RulesetIdentity}|{world.Identity.SpatialRevision}|{world.Identity.KnowledgeIdentity}|{world.Identity.KnowledgeRevision}|{request.QueryId}|{queryKindCode request.QueryKind}|{modalityCode request.Profile.Modality}|{request.Profile.ProfileId}|{request.Origin.Col}:{request.Origin.Row}|{request.Target.Col}:{request.Target.Row}|{footprint}|{request.Bounds.MaximumExpansions}:{request.Bounds.MaximumResultCells}:{request.Bounds.MaximumCrossedItems}:{request.Bounds.MaximumFootprintSamples}")
+        SpatialCacheKey($"{world.Identity.MapIdentity}|{world.Identity.RulesetIdentity}|{world.Identity.SpatialRevision}|{world.Identity.KnowledgeIdentity}|{world.Identity.KnowledgeRevision}|{request.QueryId}|{queryKindCode request.QueryKind}|{modalityCode request.Profile.Modality}|{request.Profile.ProfileId}|{request.Profile.Stance}|{request.Profile.HeightBand}|{directionCode request.Profile.Facing}|{request.Origin.Col}:{request.Origin.Row}|{request.Target.Col}:{request.Target.Row}|{footprint}|{request.Bounds.MaximumExpansions}:{request.Bounds.MaximumResultCells}:{request.Bounds.MaximumCrossedItems}:{request.Bounds.MaximumFootprintSamples}")
 
     /// <summary>Returns a byte-equivalent cached result or stores a newly evaluated entry.</summary>
     let evaluateCached cache world request =

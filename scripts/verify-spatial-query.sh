@@ -7,6 +7,8 @@ trap 'rm -rf -- "$task_tmp"' EXIT
 
 cd "$repo_root"
 
+"$repo_root/scripts/test-spatial-subject-mutations.sh"
+
 search_fixed_quiet() {
   local pattern=$1
   local file=$2
@@ -19,12 +21,10 @@ search_fixed_quiet() {
 
 client_has_authority_calls() {
   if command -v rg >/dev/null 2>&1 && [[ "${SIR_SPATIAL_FORCE_GREP:-0}" != 1 ]]; then
-    rg -n 'Los\.lineOfSightBy|Pathfinding\.astar|Edges\.edgeBetween' src/SIR.Client src/SIR.Client.Web -g '*.fs' |
-      rg -v 'RulesExplorer' >/dev/null
+    rg -n 'Los\.lineOfSightBy|Pathfinding\.astar|Edges\.edgeBetween|SpatialQuery\.evaluate' src/SIR.Client.Web -g '*.fs' >/dev/null
   else
     grep -RInE --include='*.fs' --exclude-dir='.fable' --exclude-dir='.fable-rules' --exclude-dir=bin --exclude-dir=obj \
-      'Los\.lineOfSightBy|Pathfinding\.astar|Edges\.edgeBetween' src/SIR.Client src/SIR.Client.Web |
-      grep -v 'RulesExplorer' >/dev/null
+      'Los\.lineOfSightBy|Pathfinding\.astar|Edges\.edgeBetween|SpatialQuery\.evaluate' src/SIR.Client.Web >/dev/null
   fi
 }
 

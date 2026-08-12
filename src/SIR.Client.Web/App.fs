@@ -3532,7 +3532,7 @@ let private comparisonPanel (model: Model) dispatch =
     ]
 
 [<ReactLazyComponent>]
-let private LazyDeferredDataPanel simulator selectedUnit =
+let private LazyDeferredDataPanel simulator selectedUnit bootstrap =
     React.DynamicImported("../RulesExplorer.js")
 let private laboratoryResults model dispatch =
     Html.section [
@@ -7554,7 +7554,7 @@ let private tacticalPanelBody panelId model dispatch =
         ]
     elif panelId = "data" then
         React.Suspense(
-            [ LazyDeferredDataPanel model.Simulator model.SimulatorSelectedUnit ],
+            [ LazyDeferredDataPanel model.Simulator model.SimulatorSelectedUnit model.Live.Bootstrap ],
             fallback = Html.p "Loading authoritative data…"
         )
     elif panelId = "samples" && model.Workspace <> SimulatorWorkspace then

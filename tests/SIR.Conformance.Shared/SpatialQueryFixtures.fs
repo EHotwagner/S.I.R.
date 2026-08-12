@@ -68,12 +68,28 @@ module SpatialQueryFixtures =
         require (SpatialQuery.canonicalResultBytes uncached = SpatialQuery.canonicalResultBytes cached) "Cache hit changed public canonical bytes."
         require (cache1 = cache2) "Cache hit mutated cache state."
 
+        let occupancyToken = "occupancy:1:0"
         let disclosedOccupancy = Map.ofList [ cell 1 0, "known-unit" ]
-        let dynamicWorld = world 7L 3L [] disclosedOccupancy (Set.ofList [ "occupancy:1:0" ])
-        let dynamicResult, dynamicCache, _ = SpatialQuery.evaluateCached SpatialQuery.emptyCache dynamicWorld equalCost
+        let dynamicWorld = world 7L 3L [] disclosedOccupancy (Set.ofList [ occupancyToken ])
+        let cacheRequest = request "dynamic-cache" SpatialQueryKind.BoundedPath SpatialModality.GroundMovement (cell 0 0) (cell 2 0) [ cell 0 0 ] bounds
+        let dynamicResult, dynamicCache, _ = SpatialQuery.evaluateCached SpatialQuery.emptyCache dynamicWorld cacheRequest
+        require (dynamicCache.StaticEntries.IsEmpty && dynamicCache.DynamicEntries.Length = 1) "A disclosed blocker was not retained as a dynamic cache dependency."
+        require (dynamicCache.DynamicEntries.Head.Dependencies.RevisionTokens = Set.singleton occupancyToken) "Dynamic dependency receipt did not retain the disclosed blocker token."
         let invalidated = SpatialQuery.invalidate (Set.ofList [ "occupancy:1:0" ]) dynamicCache
-        require (invalidated.DynamicEntries.Length < dynamicCache.DynamicEntries.Length || dynamicCache.DynamicEntries.IsEmpty) "Dependent dynamic cache entry survived invalidation."
+        require invalidated.DynamicEntries.IsEmpty "Dependent dynamic cache entry survived invalidation."
         require (SpatialQuery.invalidate (Set.ofList [ "unrelated" ]) dynamicCache = dynamicCache) "Unrelated revision invalidated a cache entry."
+        let clearedWorld = world 7L 3L [] Map.empty Set.empty
+        let refreshed, _, refreshedSource = SpatialQuery.evaluateCached invalidated clearedWorld cacheRequest
+        require (refreshedSource = SpatialEvaluationSource.Uncached && refreshed.Path = [ cell 0 0; cell 1 0; cell 2 0 ]) "Invalidation reused the stale blocker detour."
+
+        let changedProfiles =
+            [ { cacheRequest.Profile with Stance = "prone" }
+              { cacheRequest.Profile with HeightBand = 2 }
+              { cacheRequest.Profile with Facing = West } ]
+        for changedProfile in changedProfiles do
+            let changedRequest = { cacheRequest with Profile = changedProfile }
+            let _, _, changedSource = SpatialQuery.evaluateCached dynamicCache dynamicWorld changedRequest
+            require (changedSource = SpatialEvaluationSource.Uncached) "Cache identity omitted stance, height, or facing."
 
         let hiddenA = world 9L 4L [] Map.empty Set.empty
         let hiddenB = world 9L 4L [] Map.empty Set.empty
@@ -84,6 +100,14 @@ module SpatialQueryFixtures =
         let exhaustedRequest = request "bounded-exhaustion" SpatialQueryKind.BoundedPath SpatialModality.GroundMovement (cell 0 0) (cell 7 7) [ cell 0 0 ] { bounds with MaximumExpansions = 1 }
         let exhausted, _ = SpatialQuery.evaluate openWorld exhaustedRequest
         require (exhausted.Outcome = SpatialOutcome.Exhausted) "Expansion exhaustion was not typed."
+
+        let distantWorld =
+            { openWorld with
+                Maximum = cell 10000 10000 }
+        let distantTrace =
+            request "bounded-trace-work" SpatialQueryKind.ExactLineOfSight SpatialModality.Vision (cell 0 0) (cell 10000 10000) [ cell 0 0 ] { bounds with MaximumCrossedItems = 8 }
+        let boundedTrace, _ = SpatialQuery.evaluate distantWorld distantTrace
+        require (boundedTrace.Outcome = SpatialOutcome.Exhausted && boundedTrace.Explanation.Truncated && boundedTrace.Explanation.CrossedCells.IsEmpty) "Trace work was materialized beyond MaximumCrossedItems."
 
         let packagePath = SpatialQuery.packagePointPath 16 (fun position -> position.Row = 0 && position.Col >= 0 && position.Col <= 2) (cell 0 0) (cell 2 0)
         require (packagePath = Some [ cell 0 0; cell 1 0; cell 2 0 ]) "Package Pathfinding.astar adapter changed."
