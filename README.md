@@ -39,6 +39,15 @@ Use the published pages when reading or linking documentation so navigation,
 cross-references, evaluated examples, API pages, and interactive content remain
 available together.
 
+## Project board
+
+The canonical planning and delivery board for this repository is the
+[EHotwagner / S.I.R. project](https://github.com/users/EHotwagner/projects/6).
+All issues owned by `EHotwagner/S.I.R.` belong there, including work that has
+cross-repository dependencies. The FS-GG organization Coordination project is
+not the S.I.R. product backlog. Producer-owned dependencies stay with their
+owning repository and are linked from S.I.R. issues with `Blocked by:`.
+
 ## Build and test
 
 The deterministic gameplay foundation is built from the root solution:
