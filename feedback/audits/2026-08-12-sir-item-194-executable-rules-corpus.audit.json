@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-12-sir-item-194-executable-rules-corpus.md",
-  "reportSha256": "331552503c8d12e523cf1c00d29307a3eb8cc5fa2ab390aaf9533b5ed01f1efe",
+  "reportSha256": "b7aae96ffec7d06771e408f420e487e3c6e3644c84ed0fdc9178fe35870c77eb",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [

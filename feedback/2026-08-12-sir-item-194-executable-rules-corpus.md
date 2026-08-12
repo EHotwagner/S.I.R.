@@ -5,7 +5,7 @@ workspace: S.I.R
 cycle: item-194-executable-rules-corpus
 lane: sdd
 toolVersion: 1.0.1
-commit: pending-pr-head
+commit: 87aefd77b3b7a653347dfef6260aa96920ab70c5
 ---
 
 ## §1 Provenance and confidence
