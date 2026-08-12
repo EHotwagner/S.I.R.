@@ -46,13 +46,15 @@ while IFS= read -r artifact_path; do
   actual_artifact_sha=$(git -C "$repo_root" show "$source_commit:$artifact_path" | sha256sum | cut -d' ' -f1)
   printf '%s\t%s\n' "$artifact_path" "$actual_artifact_sha" >> "$source_digest_input"
 done <<< "$(jq -r '.sources[]' "$source_manifest")"
+printf 'package\t%s\nalgorithm\t%s\n' "$(jq -r '.packageSha256' "$source_manifest")" "$(jq -r '.algorithmFingerprint' "$source_manifest")" >> "$source_digest_input"
 actual_sources_digest=$(sha256sum "$source_digest_input" | cut -d' ' -f1)
 rm -f "$source_digest_input"
-declared_sources_digest=$(sed -n 's/.*"sir-rules-implementation-sources-v1", System.Text.Encoding.UTF8.GetBytes "\([0-9a-f]\{64\}\)".*/\1/p' "$repo_root/src/SIR.Simulation/CombatRules.fs")
+declared_sources_digest=$(sed -n 's/.*"implementation", System.Text.Encoding.UTF8.GetBytes "\([0-9a-f]\{64\}\)".*/\1/p' "$repo_root/src/SIR.Simulation/CombatRules.fs")
 test "$declared_sources_digest" = "$actual_sources_digest" || { echo "implementation source manifest digest does not match pinned sources" >&2; exit 1; }
-declared_package_sha=$(sed -n 's/.*"fs-gg-game-core-nupkg-sha256", System.Text.Encoding.UTF8.GetBytes "\([0-9a-f]\{64\}\)".*/\1/p' "$repo_root/src/SIR.Simulation/CombatRules.fs")
+declared_package_sha=$(jq -r '.packageSha256' "$source_manifest")
 captured_package_sha=$(jq -r '.sha256' "$repo_root/docs/dependency-surface/FS.GG.Game.Core/0.13.0.json")
 test "$declared_package_sha" = "$captured_package_sha" || { echo "Game.Core implementation fingerprint does not match dependency receipt" >&2; exit 1; }
+test "$(jq -r '.algorithmFingerprint' "$source_manifest")" = "FS.GG.Game.Core@0.13.0:Los.lineOfSightBy:Supercover" || { echo "Game.Core algorithm fingerprint changed" >&2; exit 1; }
 
 copied_semantics_pattern='(baseDamage|expectedDamage).*(trace|retention)|(trace|retention).*(baseDamage|expectedDamage)'
 if test "${SIR_RULES_FORCE_GREP:-0}" != 1 && command -v rg >/dev/null 2>&1; then
