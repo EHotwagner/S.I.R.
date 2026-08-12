@@ -455,6 +455,22 @@ while (
   cancellationMessages.push(message);
   if (
     message.data?.Correlation?.Operation === 110 &&
+    message.data?.Response?.tag === 6
+  ) {
+    throw new Error(
+      "Simulator run-to completed before the queued cancellation was serviced.",
+    );
+  }
+  if (
+    message.data?.Correlation?.Operation === 111 &&
+    message.data?.Response?.tag === 9
+  ) {
+    throw new Error(
+      `Simulator cancellation was rejected before acknowledgement: ${JSON.stringify(describeMessage(message))}.`,
+    );
+  }
+  if (
+    message.data?.Correlation?.Operation === 110 &&
     message.data?.Response?.tag === 5
   ) {
     cancelledAtTick = message.data.Response.fields[1].Projection.Tick;

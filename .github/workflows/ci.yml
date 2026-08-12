@@ -31,6 +31,7 @@ jobs:
       - run: dotnet fsgg-sdd dependency-surface --check --param packageId=FS.GG.Game.Core --param version=0.13.0 --root . --text
       - run: ./scripts/verify-rules-corpus.sh
       - run: ./scripts/verify-spatial-query.sh
+      - run: ./scripts/test-worker-cancellation-subject-mutation.sh
       - run: ./scripts/test-conformance.sh
       - run: dotnet restore SIR.slnx --locked-mode
       - run: npm run verify:scaffold
