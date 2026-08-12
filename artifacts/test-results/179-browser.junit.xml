@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="25" failures="0" skipped="1">
+ <testsuite name="sir-browser" tests="25" failures="0" skipped="1">
+  <testcase classname="desktop-command-surface.spec.js" name="an intentionally empty toolbar persists until reset"></testcase>
+  <testcase classname="desktop-command-surface.spec.js" name="compact desktop chrome keeps a reachable overflow menu"></testcase>
+  <testcase classname="desktop-command-surface.spec.js" name="desktop menu exposes registry-backed commands and Escape dismisses it"></testcase>
+  <testcase classname="desktop-command-surface.spec.js" name="toolbar customization persists, reorders, and resets through the production route"></testcase>
+  <testcase classname="live-session.spec.js" name="authorized player journey advances and reconnects without credentials in runtime URLs"></testcase>
+  <testcase classname="live-session.spec.js" name="bootstrap fails closed for absent and cross-actor credentials"></testcase>
+  <testcase classname="live-session.spec.js" name="browser import read failures leave a visible recovery message"></testcase>
+  <testcase classname="live-session.spec.js" name="empty derived modes retain the editor tactical scene and spatial context"></testcase>
+  <testcase classname="live-session.spec.js" name="every visible actionable control is registry-bound or explicitly unassigned"></testcase>
+  <testcase classname="live-session.spec.js" name="map and raster pickers reject oversized metadata before reads"></testcase>
+  <testcase classname="live-session.spec.js" name="oversized browser imports are rejected from metadata before browser reads"></testcase>
+  <testcase classname="live-session.spec.js" name="replay picker reads an exactly bounded file after rejecting an oversized one"></testcase>
+  <testcase classname="live-session.spec.js" name="tactical command controls expose registry-derived shortcut metadata"></testcase>
+  <testcase classname="production-delivery.spec.js" name="Release delivery uses cache-safe compression and defers support code"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="a curated sample creates a visible simulator handoff and playback can reset"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="a valid map selected through the visible import control reports success"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="disabled playback names why it is unavailable before a simulation is loaded"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="explicitly allowed rejection diagnostics do not hide unrelated browser failures"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="live authority reconnect remains visible through the production command surface"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="production simulator status exposes continuous runtime time without handoff chrome"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="the normal UI remains operable at 400 percent browser zoom"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="the visible background picker rejects an oversized file then reports attachment"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="the visible replay picker rejects corruption then loads the engine-bound retained package"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="unexpected rejection diagnostics fail the journey gate">
+    <skipped/>
+  </testcase>
+  <testcase classname="visible-workflows.spec.js" name="visible mode controls preserve a usable tactical workspace across authoring modes"></testcase>
+ </testsuite>
+</testsuites>

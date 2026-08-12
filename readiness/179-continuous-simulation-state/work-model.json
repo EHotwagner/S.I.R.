@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "926dd24d9b263dbd7faf4f9260bd5f3266c66ccce5b6538a89e787f2512830e7"
+        "value": "c635dd2ae66202373ca3ea550812ceaabcc30bce0ddf03b66d7ea091837201a7"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "15fce67093521723bd260fcebe2f09ed903c43a1c5e964596338df7f0ffbb1a7"
+        "value": "f0b9ddf9af877d1f0ca9b724b1a7ece499b3d3112baca72dab2ae5d4cbd496eb"
       }
     }
   ],
@@ -322,7 +322,7 @@
     {
       "id": "T001",
       "title": "Implement requirement FR-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [],
       "requirements": [
@@ -349,7 +349,7 @@
     {
       "id": "T002",
       "title": "Implement requirement FR-002",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [],
       "requirements": [
@@ -376,7 +376,7 @@
     {
       "id": "T003",
       "title": "Implement requirement FR-003",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [],
       "requirements": [
@@ -403,7 +403,7 @@
     {
       "id": "T004",
       "title": "Implement requirement FR-004",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [],
       "requirements": [
@@ -430,7 +430,7 @@
     {
       "id": "T005",
       "title": "Implement requirement FR-005",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [],
       "requirements": [
@@ -458,7 +458,7 @@
     {
       "id": "T006",
       "title": "Implement clarification decision DEC-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -486,7 +486,7 @@
     {
       "id": "T007",
       "title": "Implement clarification decision DEC-002",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -514,7 +514,7 @@
     {
       "id": "T008",
       "title": "Implement clarification decision DEC-003",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -542,7 +542,7 @@
     {
       "id": "T009",
       "title": "Implement clarification decision DEC-004",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -570,7 +570,7 @@
     {
       "id": "T010",
       "title": "Implement plan decision PD-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -599,7 +599,7 @@
     {
       "id": "T011",
       "title": "Implement plan decision PD-002",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -628,7 +628,7 @@
     {
       "id": "T012",
       "title": "Implement plan decision PD-003",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -657,7 +657,7 @@
     {
       "id": "T013",
       "title": "Implement plan decision PD-004",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -686,7 +686,7 @@
     {
       "id": "T014",
       "title": "Update contract surface PC-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -713,7 +713,7 @@
     {
       "id": "T015",
       "title": "Record verification evidence VO-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -741,7 +741,7 @@
     {
       "id": "T016",
       "title": "Handle migration posture PM-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -767,7 +767,7 @@
     {
       "id": "T017",
       "title": "Refresh generated view impact GV-001",
-      "status": "pending",
+      "status": "done",
       "owner": "sdd",
       "dependencies": [
         "T001"
@@ -794,7 +794,7 @@
   "evidence": [
     {
       "id": "EV001",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T001",
       "taskRefs": [
@@ -803,8 +803,12 @@
       "requirementRefs": [
         "FR-001"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -818,7 +822,7 @@
     },
     {
       "id": "EV002",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T002",
       "taskRefs": [
@@ -827,8 +831,12 @@
       "requirementRefs": [
         "FR-002"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -842,7 +850,7 @@
     },
     {
       "id": "EV003",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T003",
       "taskRefs": [
@@ -851,8 +859,12 @@
       "requirementRefs": [
         "FR-003"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -866,7 +878,7 @@
     },
     {
       "id": "EV004",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T004",
       "taskRefs": [
@@ -875,8 +887,12 @@
       "requirementRefs": [
         "FR-004"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -890,7 +906,7 @@
     },
     {
       "id": "EV005",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T005",
       "taskRefs": [
@@ -899,8 +915,12 @@
       "requirementRefs": [
         "FR-005"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -914,15 +934,19 @@
     },
     {
       "id": "EV006",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T006",
       "taskRefs": [
         "T006"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -936,15 +960,19 @@
     },
     {
       "id": "EV007",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T007",
       "taskRefs": [
         "T007"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -958,15 +986,19 @@
     },
     {
       "id": "EV008",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T008",
       "taskRefs": [
         "T008"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -980,15 +1012,19 @@
     },
     {
       "id": "EV009",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T009",
       "taskRefs": [
         "T009"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1002,7 +1038,7 @@
     },
     {
       "id": "EV010",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T010",
       "taskRefs": [
@@ -1011,8 +1047,12 @@
       "requirementRefs": [
         "FR-001"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1026,7 +1066,7 @@
     },
     {
       "id": "EV011",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T011",
       "taskRefs": [
@@ -1035,8 +1075,12 @@
       "requirementRefs": [
         "FR-002"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1050,7 +1094,7 @@
     },
     {
       "id": "EV012",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T012",
       "taskRefs": [
@@ -1059,8 +1103,12 @@
       "requirementRefs": [
         "FR-003"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1074,7 +1122,7 @@
     },
     {
       "id": "EV013",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T013",
       "taskRefs": [
@@ -1083,8 +1131,12 @@
       "requirementRefs": [
         "FR-004"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1098,15 +1150,19 @@
     },
     {
       "id": "EV014",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T014",
       "taskRefs": [
         "T014"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1120,15 +1176,19 @@
     },
     {
       "id": "EV015",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T015",
       "taskRefs": [
         "T015"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1142,15 +1202,19 @@
     },
     {
       "id": "EV016",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T016",
       "taskRefs": [
         "T016"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1164,15 +1228,19 @@
     },
     {
       "id": "EV017",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T017",
       "taskRefs": [
         "T017"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "artifacts/test-results/179-browser.junit.xml",
+        "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1192,7 +1260,7 @@
       "schemaVersion": 1,
       "generator": {
         "id": "FS.GG.SDD.Artifacts",
-        "version": "1.0.0"
+        "version": "1.0.1"
       },
       "sources": [
         {
@@ -1239,7 +1307,7 @@
           "path": "work/179-continuous-simulation-state/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "926dd24d9b263dbd7faf4f9260bd5f3266c66ccce5b6538a89e787f2512830e7"
+            "value": "c635dd2ae66202373ca3ea550812ceaabcc30bce0ddf03b66d7ea091837201a7"
           },
           "schemaVersion": 1
         },
@@ -1263,14 +1331,14 @@
           "path": "work/179-continuous-simulation-state/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "15fce67093521723bd260fcebe2f09ed903c43a1c5e964596338df7f0ffbb1a7"
+            "value": "f0b9ddf9af877d1f0ca9b724b1a7ece499b3d3112baca72dab2ae5d4cbd496eb"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "8a2c58745a80a69e6a075095d59c4d0034e5dd0fcffa185b7db53287bb5c6b62"
+        "value": "3a2da1c6838c855fca3289a6e4b19a946bbed4ec1a1b51735c564835b669a48d"
       },
       "currency": "current"
     }

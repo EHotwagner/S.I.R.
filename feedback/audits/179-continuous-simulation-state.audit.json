@@ -1,0 +1,19 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/179-continuous-simulation-state.md",
+  "reportSha256": "5902695a093d21ad40f99ee95b64fe26335c4d0baf6fce8c05dd1c01916ba515",
+  "criticMode": "separated-critic-pass",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:scripts/fsgg-coord claim EHotwagner/S.I.R.#179 --worker curlew-f49b --force --json", "result": "verified"},
+        {"locator": "command:scripts/fsgg-coord delivery-route record EHotwagner/S.I.R.#179 .delivery-route-179-recovery.json --json", "result": "verified"}
+      ],
+      "confidenceLimits": ["The current receipt file is an ephemeral recovery input; the durable board comment and claim receipt are external to this git head."]
+    }
+  ]
+}

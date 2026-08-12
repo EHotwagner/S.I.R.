@@ -1,7 +1,7 @@
 schemaVersion: 1
 workId: 179-continuous-simulation-state
 stage: evidence
-status: needsEvidenceCorrection
+status: evidenceReady
 sourceSpec: work/179-continuous-simulation-state/spec.md
 sourceClarifications: work/179-continuous-simulation-state/clarifications.md
 sourceChecklist: work/179-continuous-simulation-state/checklist.md
@@ -31,11 +31,11 @@ sourceSnapshots:
     schemaVersion: 1
   - label: tasks
     path: work/179-continuous-simulation-state/tasks.yml
-    digest: 15fce67093521723bd260fcebe2f09ed903c43a1c5e964596338df7f0ffbb1a7
+    digest: f0b9ddf9af877d1f0ca9b724b1a7ece499b3d3112baca72dab2ae5d4cbd496eb
     schemaVersion: 1
 evidence:
   - id: EV001
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T001
@@ -46,15 +46,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV001]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV002
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T002
@@ -65,15 +73,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV002]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV003
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T003
@@ -84,15 +100,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV003]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV004
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T004
@@ -103,15 +127,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV004]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV005
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T005
@@ -122,15 +154,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-005]
     obligationRefs: [EV005]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV006
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T006
@@ -141,15 +181,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV006]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV007
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T007
@@ -160,15 +208,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV007]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV008
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T008
@@ -179,15 +235,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV008]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV009
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T009
@@ -198,15 +262,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV009]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV010
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T010
@@ -217,15 +289,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001]
     obligationRefs: [EV010]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV011
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T011
@@ -236,15 +316,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-002]
     obligationRefs: [EV011]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV012
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T012
@@ -255,15 +343,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-003]
     obligationRefs: [EV012]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV013
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T013
@@ -274,15 +370,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-004]
     obligationRefs: [EV013]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV014
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T014
@@ -293,15 +397,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001, PD-002]
     obligationRefs: [EV014]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV015
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T015
@@ -312,15 +424,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-005]
     obligationRefs: [EV015]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV016
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T016
@@ -331,15 +451,23 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV016]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
   - id: EV017
-    kind: missing
+    kind: verification
     subject:
       type: task
       id: T017
@@ -350,12 +478,20 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-005]
     obligationRefs: [EV017]
-    artifacts: []
+    artifacts: [artifacts/test-results/179-browser.junit.xml, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests
-    result: missing
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
     synthetic: false
-    notes: [Evidence required before verify.]
+    observedRun:
+      source: artifacts/test-results/179-browser.junit.xml
+      digest: "sha256:eea0a5d0ac5871a158e7ffbd9ccd5d7cd74f1ffdd0aa08f64ea91d87c7e7c00f"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 24
+      failed: 0
+      skipped: 1
+    notes: [Mapped to the focused client qualification and production-browser JUnit receipt.]
 lifecycleNotes:
   - "Next lifecycle action: verify."
