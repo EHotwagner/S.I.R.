@@ -49,12 +49,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -76,12 +76,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -103,12 +103,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -130,12 +130,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -157,12 +157,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -184,12 +184,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -211,12 +211,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-player-browser.junit.xml
-      digest: "sha256:6febe3c0af8da5613e766998ae093498a292d06f951043f654aac9f0f9425ac2"
+      digest: "sha256:a0cac027e3fdb212adf0d422f00c715d9f1c4e0e9e0198ddc5de11e2385401e9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -238,12 +238,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-player-browser.junit.xml
-      digest: "sha256:6febe3c0af8da5613e766998ae093498a292d06f951043f654aac9f0f9425ac2"
+      digest: "sha256:a0cac027e3fdb212adf0d422f00c715d9f1c4e0e9e0198ddc5de11e2385401e9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -265,15 +265,15 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/replay-v3.junit.xml
-      digest: "sha256:52a47d8016957dddc82894f92f03938b2fea801441c198b4284c1f92b3d76c8e"
+      digest: "sha256:c0520ba82ecfa202516b2479e8865ae06544912ab535f9ba4cc8d1355c17d3c8"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 4
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Bound to the acceptance-specific deterministic replay receipt from the successful 2026-08-12 candidate run.]
@@ -292,12 +292,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -319,12 +319,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -346,12 +346,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-performance.junit.xml
-      digest: "sha256:9b55641553cec266710999bd79cf3f3d19c09b3e16fe22714fdcb5f531e106a9"
+      digest: "sha256:36dfd48371646c75050038a0d307a349938f118e52bbf664d23d6440dcae24fe"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -373,12 +373,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/full-conformance.junit.xml
-      digest: "sha256:93c7323d1d54f864793aeb1da7fdd5403b304e5bda814aa914ad4de2464a589e"
+      digest: "sha256:1d338a4afa901d4a1ce765303e25d9ab0a0ba81e7882814f465824146f6be42e"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
@@ -400,12 +400,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -427,12 +427,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -454,15 +454,15 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/replay-v3.junit.xml
-      digest: "sha256:52a47d8016957dddc82894f92f03938b2fea801441c198b4284c1f92b3d76c8e"
+      digest: "sha256:c0520ba82ecfa202516b2479e8865ae06544912ab535f9ba4cc8d1355c17d3c8"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 4
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Bound to the acceptance-specific deterministic replay receipt from the successful 2026-08-12 candidate run.]
@@ -481,12 +481,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/full-conformance.junit.xml
-      digest: "sha256:93c7323d1d54f864793aeb1da7fdd5403b304e5bda814aa914ad4de2464a589e"
+      digest: "sha256:1d338a4afa901d4a1ce765303e25d9ab0a0ba81e7882814f465824146f6be42e"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
@@ -508,12 +508,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/full-conformance.junit.xml
-      digest: "sha256:93c7323d1d54f864793aeb1da7fdd5403b304e5bda814aa914ad4de2464a589e"
+      digest: "sha256:1d338a4afa901d4a1ce765303e25d9ab0a0ba81e7882814f465824146f6be42e"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
@@ -535,12 +535,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -562,12 +562,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -589,12 +589,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -616,15 +616,15 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/replay-v3.junit.xml
-      digest: "sha256:52a47d8016957dddc82894f92f03938b2fea801441c198b4284c1f92b3d76c8e"
+      digest: "sha256:c0520ba82ecfa202516b2479e8865ae06544912ab535f9ba4cc8d1355c17d3c8"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 4
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Bound to the acceptance-specific deterministic replay receipt from the successful 2026-08-12 candidate run.]
@@ -643,12 +643,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -670,12 +670,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -697,12 +697,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/full-conformance.junit.xml
-      digest: "sha256:93c7323d1d54f864793aeb1da7fdd5403b304e5bda814aa914ad4de2464a589e"
+      digest: "sha256:1d338a4afa901d4a1ce765303e25d9ab0a0ba81e7882814f465824146f6be42e"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
@@ -724,12 +724,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/full-conformance.junit.xml
-      digest: "sha256:93c7323d1d54f864793aeb1da7fdd5403b304e5bda814aa914ad4de2464a589e"
+      digest: "sha256:1d338a4afa901d4a1ce765303e25d9ab0a0ba81e7882814f465824146f6be42e"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
@@ -751,12 +751,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -778,12 +778,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-player-browser.junit.xml
-      digest: "sha256:6febe3c0af8da5613e766998ae093498a292d06f951043f654aac9f0f9425ac2"
+      digest: "sha256:a0cac027e3fdb212adf0d422f00c715d9f1c4e0e9e0198ddc5de11e2385401e9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -805,12 +805,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -832,15 +832,15 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/replay-v3.junit.xml
-      digest: "sha256:52a47d8016957dddc82894f92f03938b2fea801441c198b4284c1f92b3d76c8e"
+      digest: "sha256:c0520ba82ecfa202516b2479e8865ae06544912ab535f9ba4cc8d1355c17d3c8"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 4
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Bound to the acceptance-specific deterministic replay receipt from the successful 2026-08-12 candidate run.]
@@ -859,12 +859,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/full-conformance.junit.xml
-      digest: "sha256:93c7323d1d54f864793aeb1da7fdd5403b304e5bda814aa914ad4de2464a589e"
+      digest: "sha256:1d338a4afa901d4a1ce765303e25d9ab0a0ba81e7882814f465824146f6be42e"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
@@ -886,12 +886,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -913,12 +913,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -940,15 +940,15 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/replay-v3.junit.xml
-      digest: "sha256:52a47d8016957dddc82894f92f03938b2fea801441c198b4284c1f92b3d76c8e"
+      digest: "sha256:c0520ba82ecfa202516b2479e8865ae06544912ab535f9ba4cc8d1355c17d3c8"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 4
+      passed: 5
       failed: 0
       skipped: 0
     notes: [Bound to the acceptance-specific deterministic replay receipt from the successful 2026-08-12 candidate run.]
@@ -967,12 +967,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-player-browser.junit.xml
-      digest: "sha256:6febe3c0af8da5613e766998ae093498a292d06f951043f654aac9f0f9425ac2"
+      digest: "sha256:a0cac027e3fdb212adf0d422f00c715d9f1c4e0e9e0198ddc5de11e2385401e9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -994,12 +994,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/production-delivery.junit.xml
-      digest: "sha256:582ba0325d2a7b2e485fa93fd6cdbe8eaa5821030d50ec61ec9f9e89572601c1"
+      digest: "sha256:9daf98bc662b1e476daa4ffb7e2fc681e38d5afef34d0d09fe25dedfafed25c5"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1021,12 +1021,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-corpus-canonical.junit.xml
-      digest: "sha256:32f5f6270903a4e9d50238bb46a10d3d8a915c86842a651c33e9a5134e423d4e"
+      digest: "sha256:e6d0125e03551ab7b71ee82b2763497924b31287107f1248562e9c46293bc0ec"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
@@ -1048,12 +1048,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/rules-performance.junit.xml
-      digest: "sha256:9b55641553cec266710999bd79cf3f3d19c09b3e16fe22714fdcb5f531e106a9"
+      digest: "sha256:36dfd48371646c75050038a0d307a349938f118e52bbf664d23d6440dcae24fe"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -1075,12 +1075,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/full-conformance.junit.xml
-      digest: "sha256:93c7323d1d54f864793aeb1da7fdd5403b304e5bda814aa914ad4de2464a589e"
+      digest: "sha256:1d338a4afa901d4a1ce765303e25d9ab0a0ba81e7882814f465824146f6be42e"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
@@ -1102,12 +1102,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/full-conformance.junit.xml
-      digest: "sha256:93c7323d1d54f864793aeb1da7fdd5403b304e5bda814aa914ad4de2464a589e"
+      digest: "sha256:1d338a4afa901d4a1ce765303e25d9ab0a0ba81e7882814f465824146f6be42e"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
@@ -1129,12 +1129,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/full-conformance.junit.xml
-      digest: "sha256:93c7323d1d54f864793aeb1da7fdd5403b304e5bda814aa914ad4de2464a589e"
+      digest: "sha256:1d338a4afa901d4a1ce765303e25d9ab0a0ba81e7882814f465824146f6be42e"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
@@ -1156,12 +1156,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/full-conformance.junit.xml
-      digest: "sha256:93c7323d1d54f864793aeb1da7fdd5403b304e5bda814aa914ad4de2464a589e"
+      digest: "sha256:1d338a4afa901d4a1ce765303e25d9ab0a0ba81e7882814f465824146f6be42e"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
@@ -1183,12 +1183,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/full-conformance.junit.xml
-      digest: "sha256:93c7323d1d54f864793aeb1da7fdd5403b304e5bda814aa914ad4de2464a589e"
+      digest: "sha256:1d338a4afa901d4a1ce765303e25d9ab0a0ba81e7882814f465824146f6be42e"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6
@@ -1210,12 +1210,12 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: "./scripts/test-conformance.sh"
+        path: "./scripts/generate-item-194-evidence.sh"
     result: pass
     synthetic: false
     observedRun:
       source: readiness/194-executable-rules-corpus/full-conformance.junit.xml
-      digest: "sha256:93c7323d1d54f864793aeb1da7fdd5403b304e5bda814aa914ad4de2464a589e"
+      digest: "sha256:1d338a4afa901d4a1ce765303e25d9ab0a0ba81e7882814f465824146f6be42e"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 6

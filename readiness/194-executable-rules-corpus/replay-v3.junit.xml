@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites tests="4" failures="0" skipped="0"><testsuite name="rules-replay-v3" tests="4" failures="0" skipped="0">
-<testcase classname="ReplayFixtures" name="canonical replay v3 archives the rule package and explanation" />
+<testsuites tests="5" failures="0" skipped="0"><testsuite name="rules-replay-v3" tests="5" failures="0" skipped="0">
+<properties><property name="producer" value="scripts/generate-item-194-evidence.sh"/><property name="commands" value="--print-replay-evidence; node scripts/test-production-replay-v3.mjs"/></properties>
+<testcase classname="ReplayFixtures" name="canonical replay v3 archives typed retained manifest and explanations" />
+<testcase classname="ReplayFixtures" name="production Fable decodes and exactly re-encodes .NET replay v3" />
 <testcase classname="RulesCorpusFixtures" name="retained v1 resolves unchanged after current v2 changes" />
 <testcase classname="RulesCorpusFixtures" name="current and historical exact identities never substitute" />
-<testcase classname="RulesCorpusFixtures" name="unavailable historical identity fails explicitly" />
+<testcase classname="ReplayFixtures" name="unavailable or tampered historical identity fails explicitly" />
 </testsuite></testsuites>

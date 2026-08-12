@@ -5,7 +5,7 @@ workspace: S.I.R
 cycle: item-194-executable-rules-corpus
 lane: sdd
 toolVersion: 1.0.1
-commit: d146c9756b4b747fb31a2af6004860fded7dc997
+commit: 0f7128985a14ef3470e92d23ee5786236f97fb97
 ---
 
 ## §1 Provenance and confidence
@@ -32,8 +32,8 @@ The isolated worktree needed an initial restore and `npm ci`. The first explorer
 - **Kind:** quality-gap
 - **Impact:** The first ship-ready result overstated verification because one Rules-browser JUnit could not observe replay, codec, mutation, performance, or documentation obligations.
 - **Expected:** Each verification obligation binds a parsed receipt whose cases can observe the claimed behavior.
-- **Observed:** Independent critique rejected the single-receipt draft; the repaired evidence partitions 44 obligations across canonical corpus, replay, browser, performance, delivery, and full-conformance JUnits, and verify reports 44 observed with zero self-attested, stale, synthetic, or invalid evidence.
-- **Evidence:** command:dotnet fsgg-sdd verify --work 194-executable-rules-corpus --text
+- **Observed:** Independent critique rejected both the single-receipt draft and stale hand-authored labels; `scripts/generate-item-194-evidence.sh` now runs each owning command and writes its acceptance-specific JUnit only after that command passes. The repaired evidence partitions 44 obligations across canonical corpus, replay, browser, performance, delivery, and full-conformance JUnits, and verify reports 44 observed with zero self-attested, stale, synthetic, or invalid evidence.
+- **Evidence:** artifact:scripts/generate-item-194-evidence.sh; command:./scripts/generate-item-194-evidence.sh; command:dotnet fsgg-sdd verify --work 194-executable-rules-corpus --text
 - **Version:** FS.GG.SDD 1.0.1
 - **Owner:** S.I.R SDD evidence authoring
 - **Recurrence:** new
@@ -45,7 +45,7 @@ The isolated worktree needed an initial restore and `npm ci`. The first explorer
 - **Kind:** positive-pattern
 - **Impact:** One authoritative F# corpus can be qualified without a copied JavaScript semantics implementation.
 - **Expected:** Unsupported Fable constructs and canonical-byte divergence fail before delivery.
-- **Observed:** The Fable compile exposed unsupported APIs during implementation; the repaired full fixture then produced 24,664 identical canonical bytes in .NET and Fable/Node.
+- **Observed:** The Fable compile exposed unsupported APIs during implementation; the repaired full fixture then produced 25,730 identical canonical bytes in .NET and Fable/Node.
 - **Evidence:** command:./scripts/verify-rules-corpus.sh
 - **Version:** S.I.R current candidate
 - **Owner:** S.I.R cross-runtime conformance
@@ -71,7 +71,7 @@ The isolated worktree needed an initial restore and `npm ci`. The first explorer
 - **Kind:** positive-pattern
 - **Impact:** The explorer could not silently bloat the production startup response.
 - **Expected:** The player-visible projection remains under the fixed 1,150,000-byte initial-response cap.
-- **Observed:** The corpus projection was moved behind the player-opened Rules route, and complete replay validation remains solely in the retained worker; focused production qualification measured 1,149,457 initial response bytes, 543 below the unchanged cap, with a 302-byte deferred support chunk.
+- **Observed:** The corpus projection was moved behind the player-opened Rules route, and complete replay validation remains solely in the retained worker; focused production qualification measured 1,149,378 initial response bytes, 622 below the unchanged cap, with a 302-byte deferred support chunk.
 - **Evidence:** command:npm run test:production-delivery-evidence
 - **Version:** S.I.R current candidate
 - **Owner:** S.I.R production delivery gate
@@ -97,9 +97,9 @@ The isolated worktree needed an initial restore and `npm ci`. The first explorer
 - **Kind:** quality-gap
 - **Impact:** The first reviewed head could pass focused receipts while disabling replay v3 in the production Fable build, accepting an opaque archive, emitting a wholly dangling coverage graph, showing a synthetic attack, and omitting evaluator/codec surfaces from implementation identity.
 - **Expected:** Independent review reproduces production-target behavior, validates graph topology and every declared archive identity, traces player input to the authoritative event, and mutates every identity surface.
-- **Observed:** The repaired candidate removes the Fable downgrade; adds a typed, bounded, content-addressed archive with per-field rejection; emits 45 unique coverage nodes with zero dangling edges; executes `Simulation.runTick` from a visible command and deep-links from the emitted `AttackResolved`; and verifies an 11-source plus package/fingerprint implementation inventory at immutable source commit `d146c9756b4b747fb31a2af6004860fded7dc997`.
+- **Observed:** The repaired candidate removes the Fable downgrade; adds a typed, bounded, content-addressed archive with per-field rejection; emits 45 unique coverage nodes with zero dangling edges; executes `Simulation.runTick` from a visible command and deep-links from the emitted `AttackResolved`; and verifies an 11-source plus package/fingerprint implementation inventory at immutable source commit `0f7128985a14ef3470e92d23ee5786236f97fb97`.
 - **Evidence:** command:./scripts/verify-rules-corpus.sh; command:SIR_RULES_FORCE_GREP=1 ./scripts/verify-rules-corpus.sh; command:node scripts/test-production-replay-v3.mjs; command:npx playwright test tests/SIR.Browser.Tests/visible-workflows.spec.js --grep "player-visible Rules explorer"
-- **Version:** S.I.R implementation pin d146c9756b4b747fb31a2af6004860fded7dc997
+- **Version:** S.I.R implementation pin 0f7128985a14ef3470e92d23ee5786236f97fb97
 - **Owner:** S.I.R replay, rules corpus, and browser acceptance
 - **Recurrence:** new
 - **Avoidable cost:** one exact-head independent-review repair cycle

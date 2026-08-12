@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites tests="2" failures="0" skipped="0"><testsuite name="rules-performance" tests="2" failures="0" skipped="0">
+<properties><property name="producer" value="scripts/generate-item-194-evidence.sh"/><property name="command" value="--print-rules-performance"/></properties>
 <testcase classname="RulesCorpusFixtures" name="10000 explained attacks satisfy execution budget" />
 <testcase classname="RulesCorpusFixtures" name="application operand explanation and manifest size budgets pass" />
 </testsuite></testsuites>

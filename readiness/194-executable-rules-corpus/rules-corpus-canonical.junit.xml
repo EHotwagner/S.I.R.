@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites tests="5" failures="0" skipped="0"><testsuite name="rules-corpus-canonical" tests="5" failures="0" skipped="0">
+<properties><property name="producer" value="scripts/generate-item-194-evidence.sh"/><property name="command" value="./scripts/verify-rules-corpus.sh; SIR_RULES_FORCE_GREP=1 ./scripts/verify-rules-corpus.sh"/></properties>
 <testcase classname="RulesCorpusFixtures" name="registry validation and negative contracts pass" />
 <testcase classname="RulesCorpusFixtures" name="dotnet and fable canonical vectors agree" />
 <testcase classname="RulesCorpusFixtures" name="artifact identity and pinned source resolution pass" />
-<testcase classname="RulesCorpusFixtures" name="manifest and coverage reachability contracts pass" />
-<testcase classname="RulesCorpusFixtures" name="deliberate rules mutation fails at the first divergent byte" />
+<testcase classname="RulesCorpusFixtures" name="manifest and coverage topology contracts pass" />
+<testcase classname="RulesCorpusFixtures" name="coverage source identity and canonical-byte mutations fail closed" />
 </testsuite></testsuites>

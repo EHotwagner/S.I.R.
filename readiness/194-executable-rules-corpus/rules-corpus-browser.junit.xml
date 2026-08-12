@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites tests="1" failures="0" skipped="0">
- <testsuite name="sir-browser" tests="1" failures="0" skipped="0">
+<testsuites tests="2" failures="0" skipped="0">
+ <testsuite name="sir-browser" tests="2" failures="0" skipped="0">
   <testcase classname="visible-workflows.spec.js" name="the player-visible Rules explorer renders the executable combat corpus and pinned source"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="visible mode controls preserve a usable tactical workspace across authoring modes"></testcase>
  </testsuite>
 </testsuites>

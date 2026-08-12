@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-12-sir-item-194-executable-rules-corpus.md",
-  "reportSha256": "e25dc3d446421190410944788cfedfe091d52eaaca30145efac23f8f9f54cba9",
+  "reportSha256": "b5efa20da52165624aaf7ccf79a30c7db8a863fc1fc824256fee3c4e722505c1",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -10,6 +10,8 @@
       "status": "actionable",
       "missingFacts": [],
       "checkedEvidence": [
+        {"locator": "artifact:scripts/generate-item-194-evidence.sh", "result": "verified"},
+        {"locator": "command:./scripts/generate-item-194-evidence.sh", "result": "verified"},
         {"locator": "command:dotnet fsgg-sdd verify --work 194-executable-rules-corpus --text", "result": "verified"}
       ],
       "confidenceLimits": ["The repaired receipt partition is specific to this work item; the CLI does not itself assess whether a named testcase semantically observes every claim."]
@@ -40,7 +42,7 @@
       "checkedEvidence": [
         {"locator": "command:npm run test:production-delivery-evidence", "result": "verified"}
       ],
-      "confidenceLimits": ["The measured 3,485-byte margin is candidate-specific; the cap was not changed."]
+      "confidenceLimits": ["The measured 622-byte margin is candidate-specific; the cap was not changed."]
     },
     {
       "id": "§4.5",

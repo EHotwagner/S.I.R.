@@ -27,7 +27,7 @@ simulation, Fable execution, generated documentation, simulator explanations,
 and content-addressed historical replay references.
 
 The first implementation receipt is issue #194 and source-bearing commit
-`d146c9756b4b747fb31a2af6004860fded7dc997`. It establishes manifest schema v1
+`0f7128985a14ef3470e92d23ee5786236f97fb97`. It establishes manifest schema v1
 for one combat slice without claiming that unrelated mechanics have migrated
 or stabilizing the provisional authoring builders.
 

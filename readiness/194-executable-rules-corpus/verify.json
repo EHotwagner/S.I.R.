@@ -51,7 +51,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "e0f58f76fa4c03fb0c763ef5f04c736e146d216801c02619e84caf76bbd2c336"
+        "value": "518c362fc73ae55868a8383cacfbd4bf9390117efa6d109b5d855e363fbfb586"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +81,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "503152241e5ea9c3af303003e871cbf91e9ddcca39bb20f1847b83938974a461"
+        "value": "6d96b0b4debdbc0b1aeff9af3990a7647ac11ac682a173108b7c64fbd15503bb"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
