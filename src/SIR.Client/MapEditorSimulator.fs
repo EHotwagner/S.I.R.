@@ -73,6 +73,9 @@ type SimulatorMovementProgress =
 
 type SimulatorHandoff =
     { Revision: MapRevision
+      InitialRevision: MapRevision
+      ActivationTicks: Map<int32, int32>
+      ReconciliationMessage: string option
       RuntimeMap: MapDefinition
       KernelState: SIR.Simulation.MapScaleState
       Tick: int32
@@ -339,6 +342,9 @@ module MapEditorSimulator =
         let map = revision.Document
         let kernel = initialKernel map
         { Revision = revision
+          InitialRevision = revision
+          ActivationTicks = Map.empty
+          ReconciliationMessage = None
           RuntimeMap = map
           KernelState = kernel
           Tick = 0
@@ -374,6 +380,40 @@ module MapEditorSimulator =
 
     let isBehindDraft (state: MapEditorState) handoff =
         handoff.Revision.Digest <> state.Revision.Digest
+
+    /// Reconciles a valid authored revision with live simulation. Additions retain the live kernel;
+    /// all geometry or existing-unit changes restart from the deterministic initial revision.
+    let reconcile (state: MapEditorState) (handoff: SimulatorHandoff) =
+        let next = state.Revision
+        let before = handoff.Revision.Document
+        let after = next.Document
+        let unchangedBoard =
+            before.Width = after.Width && before.Height = after.Height
+            && before.Terrain = after.Terrain && before.Edges = after.Edges
+        let retained =
+            before.Units
+            |> Map.forall (fun id unit -> Map.tryFind id after.Units = Some unit)
+        if unchangedBoard && retained then
+            let introduced =
+                after.Units
+                |> Map.filter (fun id _ -> not (Map.containsKey id before.Units))
+            if Map.isEmpty introduced then { handoff with Revision = next; ReconciliationMessage = None }
+            else
+                let runtime = { handoff.RuntimeMap with Units = Map.fold (fun units id unit -> Map.add id unit units) handoff.RuntimeMap.Units introduced }
+                let kernel =
+                    { handoff.KernelState with
+                        Units = Map.fold (fun units id unit -> Map.add id (unitToKernel unit) units) handoff.KernelState.Units introduced }
+                { handoff with
+                    Revision = next
+                    RuntimeMap = runtime
+                    KernelState = kernel
+                    PresentationPositions = Map.fold (fun positions id unit -> Map.add id (float unit.Column, float unit.Row) positions) handoff.PresentationPositions introduced
+                    ActivationTicks = Map.fold (fun ticks id _ -> Map.add id handoff.Tick ticks) handoff.ActivationTicks introduced
+                    ReconciliationMessage = Some ("Added " + string (Map.count introduced) + " unit(s) at tick " + string handoff.Tick + ".") }
+        else
+            { fromRevision next with
+                InitialRevision = next
+                ReconciliationMessage = Some "Simulation restarted at tick 0 because terrain, geometry, topology, or an existing unit changed." }
 
     let perspectivePreview (projection: RenderFrame option) =
         match projection with
@@ -451,6 +491,32 @@ module MapEditorSimulator =
                 result.State.PlannedRoutes
                 |> Map.map (fun _ route -> route |> List.map fromCell)
             PreviewDestination = None }
+
+    /// Reconstructs actual simulation state at a timeline tick from its pinned initial revision.
+    let seek tick handoff =
+        let target = max 0 tick
+        let baseline = fromRevision handoff.InitialRevision
+        let activate atTick current =
+            handoff.ActivationTicks
+            |> Map.fold (fun state id activation ->
+                if activation = atTick then
+                    match Map.tryFind id handoff.Revision.Document.Units with
+                    | Some unit ->
+                        { state with
+                            RuntimeMap = { state.RuntimeMap with Units = Map.add id unit state.RuntimeMap.Units }
+                            KernelState = { state.KernelState with Units = Map.add id (unitToKernel unit) state.KernelState.Units }
+                            PresentationPositions = Map.add id (float unit.Column, float unit.Row) state.PresentationPositions }
+                    | None -> state
+                else state) current
+        [ 1 .. target ]
+        |> List.fold (fun current nextTick -> current |> activate nextTick |> step) baseline
+        |> fun replayed ->
+            { replayed with
+                Revision = handoff.Revision
+                InitialRevision = handoff.InitialRevision
+                ActivationTicks = handoff.ActivationTicks
+                ReconciliationMessage = handoff.ReconciliationMessage
+                IsRunning = handoff.IsRunning }
 
     let update action selectedUnitId handoff =
         let updateSelected transform =

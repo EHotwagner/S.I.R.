@@ -838,7 +838,15 @@ let rec update msg model =
                 Tactical =
                     model.Tactical
                     |> UnifiedTacticalWorkspace.scrub cursor }
-        match model.Workspace with
+        match model.Workspace, projected.Simulator with
+        | _, Some simulator ->
+            let simulator = MapEditorSimulator.seek (int cursor) simulator
+            let selected = projected.SimulatorSelectedUnit |> Option.filter (fun id -> Map.containsKey id simulator.RuntimeMap.Units)
+            { projected with
+                Simulator = Some simulator
+                SimulatorSelectedUnit = selected
+                Tactical = projected.Tactical |> UnifiedTacticalWorkspace.scrub (int64 simulator.Tick)
+                Battlefield = Battlefield.reconcile (MapEditorSimulator.frame selected simulator) projected.Battlefield }, Cmd.none
         | ReplayWorkspace ->
             update (ShellMsg(SeekRequested(int32 (min (int64 Int32.MaxValue) cursor)))) projected
         | _ -> projected, Cmd.none
@@ -1461,6 +1469,10 @@ let rec update msg model =
             Cmd.none
     | EditorChanged action ->
         let editor = MapEditor.update action model.Editor
+        let simulator = model.Simulator |> Option.map (MapEditorSimulator.reconcile editor)
+        let simulatorSelected =
+            model.SimulatorSelectedUnit
+            |> Option.filter (fun id -> simulator |> Option.exists (fun value -> Map.containsKey id value.RuntimeMap.Units))
         let editorView =
             match action with
             | ChooseTool _ ->
@@ -1471,15 +1483,17 @@ let rec update msg model =
                     model.EditorView
             | _ -> model.EditorView
         let battlefield =
-            match model.Workspace, model.Simulator with
-            | SimulatorWorkspace, Some simulator ->
+            match simulator with
+            | Some simulator ->
                 Battlefield.reconcile
-                    (MapEditorSimulator.frame model.SimulatorSelectedUnit simulator)
+                    (MapEditorSimulator.frame simulatorSelected simulator)
                     model.Battlefield
             | _ ->
                 Battlefield.reconcile (MapEditor.frame editor) model.Battlefield
         { model with
             Editor = editor
+            Simulator = simulator
+            SimulatorSelectedUnit = simulatorSelected
             EditorView = editorView
             Battlefield = battlefield
             PreviousFrame = None
