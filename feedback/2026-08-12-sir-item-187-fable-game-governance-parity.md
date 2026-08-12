@@ -12,9 +12,9 @@ commit: pending-pr-head
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 5
+- **material events:** 6
 - **zero-event reason:** n/a
-- **checkpoint:** `feedback/checkpoints/item-187-fable-game-governance-parity.jsonl` (4 events).
+- **checkpoint:** `feedback/checkpoints/item-187-fable-game-governance-parity.jsonl` (6 events).
 - **confidence limits:** Local exact-head conformance passed; hosted CI and fresh independent review remain pending.
 
 ## §2 What worked
@@ -79,6 +79,19 @@ An omitted trailing dot in the GitHub repository identifier crashed the coordina
 - **Avoidable cost:** none
 - **Disposition:** accepted
 
+#### §4.5 FSharp.Core 10.1.302 cannot yield a stable locked restore
+
+- **Kind:** defect
+- **Impact:** The same package version exposes incompatible registration metadata, flat-container bytes, and SDK-pack bytes, making a hash-only lock repair unsound.
+- **Expected:** A pinned package version must restore consistently through the locked CI route.
+- **Observed:** Clean diagnostics established three incompatible 10.1.302 identities; pinning 10.1.303 and regenerating locks restored clean locked solution restore.
+- **Evidence:** command:dotnet restore SIR.slnx --locked-mode --no-cache; artifact:Directory.Packages.props
+- **Version:** FSharp.Core 10.1.302 to 10.1.303
+- **Owner:** NuGet package metadata and S.I.R dependency maintenance
+- **Recurrence:** new
+- **Avoidable cost:** two failed exact-head CI restores plus clean-cache diagnosis
+- **Disposition:** fixed by compatible patch upgrade
+
 ## §5 Did not exercise
 
 No new player-reachable game route was added, so a bot-driven gameplay journey was not applicable.
@@ -93,7 +106,7 @@ None observed.
 
 ## §8 Friction and avoidable cost
 
-The coordination identifier and undeclared clarification grammar each required a recovery loop; both are captured above.
+The coordination identifier, undeclared clarification grammar, and corrupt FSharp.Core 10.1.302 package identity each required a recovery loop; all are captured above.
 
 Independent review also found that the prior generic conformance evidence did not exercise the four promised Game.Core primitives; the repaired route now does so in both .NET and Fable.
 
@@ -109,6 +122,7 @@ The governance verifier passed, the skill-equivalence subject mutation reddened 
 
 - The coordinator must reject a repository identifier lacking its trailing dot without throwing.
 - SDD must name malformed clarification declaration lines when they cause unresolved decision references.
+- Package producers must not republish or serve incompatible byte identities for one immutable version.
 
 ## §12 Development-surface coverage
 
@@ -119,7 +133,7 @@ The governance verifier passed, the skill-equivalence subject mutation reddened 
 | skills | exercised | Fable package-consumer and SDD skills used. |
 | sdd-authoring | exercised | Canonical 187 lifecycle regenerated through ship and refresh. |
 | implementation-apis | exercised | The governance verifier now produces and validates the public-surface receipt. |
-| dependencies-build | exercised | Published Governance tool 1.12.1 restored and full build passed. |
+| dependencies-build | exercised | FSharp.Core 10.1.303 lock regeneration and clean locked restore passed. |
 | testing | exercised | `./scripts/test-conformance.sh` passed; skill-equivalence mutation red. |
 | evidence | exercised | Public-surface receipt and observed SDD evidence are current. |
 | runtime-playtest | not-exercised | No new reachable gameplay was added. |

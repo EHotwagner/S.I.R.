@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-12-sir-item-187-fable-game-governance-parity.md",
-  "reportSha256": "f16226578756a24afbaac7b87e6da747f87dc627bc9b6576d27aa95b9be7a8d1",
+  "reportSha256": "9d122e37624378a4b8994a143208807ab56c03c1c3d8368b2674c464fa0f8213",
   "criticMode": "separated-critic-pass",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -35,6 +35,16 @@
       "missingFacts": [],
       "checkedEvidence": [{"locator": "command:./scripts/test-conformance.sh", "result": "verified"}],
       "confidenceLimits": ["Hosted CI remains pending."]
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:dotnet restore SIR.slnx --locked-mode --no-cache", "result": "verified"},
+        {"locator": "artifact:Directory.Packages.props", "result": "verified"}
+      ],
+      "confidenceLimits": ["The upstream 10.1.302 identity inconsistency is recorded; the consumer repair is the bounded patch upgrade."]
     }
   ]
 }

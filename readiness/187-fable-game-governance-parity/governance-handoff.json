@@ -6,12 +6,12 @@
   "sources": [
     {
       "path": "readiness/187-fable-game-governance-parity/ship.json",
-      "digest": "sha256:172dd0a1d4e34bb9b4458d3346c597e8c5a3b138056f18736216b802569dfedc",
+      "digest": "sha256:426144d02598a32d24f2d2c3b623dc41ade2ae62efdcfea6c02105356734aef6",
       "schemaVersion": 1
     },
     {
       "path": "readiness/187-fable-game-governance-parity/verify.json",
-      "digest": "sha256:267a8601207162dfc3c70f42795c2012b76be2d7dc8341b0ab5465a689ab2356",
+      "digest": "sha256:3e501a4d3a1c60074495445d076d37d57c719c0140c497a5a76a49476dc9844a",
       "schemaVersion": 1
     },
     {

@@ -43,7 +43,7 @@
   "toolchain": {
     "dotnetSdk": "10.0.302",
     "fable": "5.13.0",
-    "fsharpCore": "10.1.302",
+    "fsharpCore": "10.1.303",
     "fsGgGameCore": "0.13.0",
     "elmish": "5.0.2",
     "elmishReact": "5.6.0",

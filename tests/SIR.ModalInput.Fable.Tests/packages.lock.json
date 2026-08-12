@@ -4,53 +4,30 @@
     "net10.0": {
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[10.1.302, 10.1.302]",
-        "resolved": "10.1.302",
-        "contentHash": "bN7XMQrAQg1dyHScJ7FcsznERBkvm74LtIo1O6C5mUzgbDqSwNbDpb3+nBGaJAjDmtC/suK5Vx5pFysKY6Hm+Q=="
-      },
-      "Newtonsoft.Json": {
-        "type": "Transitive",
-        "resolved": "13.0.1",
-        "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
+        "requested": "[10.1.303, 10.1.303]",
+        "resolved": "10.1.303",
+        "contentHash": "juOEjKuOCZKBFbFO8TwWRQu5cY91m2BpDkrUcv1r8pfhc1yyt64H6jTYqoRWxZoRD31XB5dxyUg9j4brs7RZCg=="
       },
       "sir.domain": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[10.1.302, 10.1.302]"
-        }
-      },
-      "sir.protocol.generated": {
-        "type": "Project",
-        "dependencies": {
-          "FSharp.Core": "[10.1.302, 10.1.302]",
-          "Thoth.Json.Net": "[12.0.0, 12.0.0]"
+          "FSharp.Core": "[10.1.303, 10.1.303]"
         }
       },
       "sir.replay.core": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[10.1.302, 10.1.302]",
+          "FSharp.Core": "[10.1.303, 10.1.303]",
           "SIR.Domain": "[1.0.0, )",
-          "SIR.Protocol.Generated": "[1.0.0, )",
-          "SIR.Simulation": "[1.0.0, )",
-          "Thoth.Json": "[10.5.1, 10.5.1]"
+          "SIR.Simulation": "[1.0.0, )"
         }
       },
       "sir.simulation": {
         "type": "Project",
         "dependencies": {
           "FS.GG.Game.Core": "[0.13.0, 0.13.0]",
-          "FSharp.Core": "[10.1.302, 10.1.302]",
+          "FSharp.Core": "[10.1.303, 10.1.303]",
           "SIR.Domain": "[1.0.0, )"
-        }
-      },
-      "Fable.Core": {
-        "type": "CentralTransitive",
-        "requested": "[5.2.0, 5.2.0]",
-        "resolved": "5.2.0",
-        "contentHash": "3+HVoyYMjPGeKJEhMzRti0coDS6AkLVOWXmGwSvqokeTuwdZLyiKMoNgQrE6ZeJ0cSy9qHBB4VBpw5RAfb6zmQ==",
-        "dependencies": {
-          "FSharp.Core": "4.7.2"
         }
       },
       "FS.GG.Game.Core": {
@@ -60,27 +37,6 @@
         "contentHash": "h4IVQKlYkhOOLO9bPgrR6JsoPKBH3cozfO+qgk/gr67Tel02dvHPBe4buIs3L4Hq+fDwwDXA/qDFmis8qQiJKA==",
         "dependencies": {
           "FSharp.Core": "10.1.302"
-        }
-      },
-      "Thoth.Json": {
-        "type": "CentralTransitive",
-        "requested": "[10.5.1, 10.5.1]",
-        "resolved": "10.5.1",
-        "contentHash": "HMh+zRyOhz7ASGNLgcSQFsrZWv4mcMZfqIsya0aQ2ixFWZpav9RRvYR5C9tL33qmRDX4n+73Bpo6brSfUQ4nQA==",
-        "dependencies": {
-          "FSharp.Core": "10.1.203",
-          "Fable.Core": "5.0.0"
-        }
-      },
-      "Thoth.Json.Net": {
-        "type": "CentralTransitive",
-        "requested": "[12.0.0, 12.0.0]",
-        "resolved": "12.0.0",
-        "contentHash": "n2YyONYdWCFS4Pu7wrqgV/l5tPuN+t3gxEfs/2RwqCiQkRnbgKs9dK61zHeZS5YganAoFbxLSwbaNL7SvSrS9g==",
-        "dependencies": {
-          "FSharp.Core": "4.7.2",
-          "Fable.Core": "3.1.6",
-          "Newtonsoft.Json": "13.0.1"
         }
       }
     }
