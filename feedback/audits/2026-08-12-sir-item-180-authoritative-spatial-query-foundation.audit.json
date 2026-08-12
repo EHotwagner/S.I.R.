@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-12-sir-item-180-authoritative-spatial-query-foundation.md",
-  "reportSha256": "a304e27e77a9c40501d9df1c79e693f56d3b6ffc74e6a508d3ab313201c6e1b5",
+  "reportSha256": "a0a0395f36032b21ac50da3d28a9f976dcb859ae7c9b7ec594d1ae10d6369b36",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -117,6 +117,28 @@
       ],
       "confidenceLimits": [
         "The hosted failure and local mutation/restored-green evidence are exact; hosted exact-head verification of the repair remains pending."
+      ]
+    },
+    {
+      "id": "§4.7",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "review:https://github.com/EHotwagner/S.I.R./pull/200#issuecomment-5273040166",
+          "result": "verified"
+        },
+        {
+          "locator": "command:./scripts/verify-spatial-query.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "command:./scripts/test-spatial-diagnostic-subject-mutation.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Both critic reproductions and local red/restored-green subjects are exact; hosted exact-head confirmation remains pending."
       ]
     }
   ]

@@ -5,18 +5,18 @@ workspace: S.I.R
 cycle: item-180-authoritative-spatial-query-foundation
 lane: sdd
 toolVersion: 1.0.1
-commit: 5f2377e9c5a14f2826787675a3c3aaf94de62a91
+commit: 9a35dedff3112ccfa270064f751c2126f1bf64bf
 ---
 
 ## §1 Provenance and confidence
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 6
+- **material events:** 7
 - **zero-event reason:** n/a
-- **checkpoint:** `feedback/checkpoints/item-180-authoritative-spatial-query-foundation.jsonl` (6 events).
+- **checkpoint:** `feedback/checkpoints/item-180-authoritative-spatial-query-foundation.jsonl` (7 events).
 - **package/tool pins:** FS.GG.Game.Core 0.13.0, fsgg-sdd 1.0.1, Fable 5.13.0, Terser 5.50.0.
-- **confidence limits:** Local exact .NET/Fable, production browser, documentation, delivery, cancellation mutation, and SDD evidence are green at the repair commit. Hosted exact-head CI, independent implementation critique, and protected-boundary landing remain pending. Historical failed candidates were not preserved as commits, so the report does not treat their exact byte counts or output as independently verified.
+- **confidence limits:** Local exact .NET/Fable, production browser, documentation, delivery, cancellation mutation, diagnostic-boundary mutations, and SDD evidence are green at the repair commit. Hosted CI was green at the initial reviewed head; exact-head CI and critic confirmation for the round-1 repair remain pending. Historical failed candidates were not preserved as commits, so the report does not treat their exact byte counts or output as independently verified.
 
 ## §2 What worked
 
@@ -24,7 +24,7 @@ The package-only Game.Core adapter boundary kept Cell, Edges, LOS, and A-star co
 
 ## §3 What did not
 
-The first browser projection made spatial diagnostics eager and exceeded the fixed initial-response budget. The first package A-star integration trusted package neighbours too broadly and required S.I.R transition revalidation. Documentation Happy DOM assumed eagerly rendered data after the product moved to a lazy chunk. A parser-tolerated clarification form let verify/ship warn while refresh could not generate a work model; canonical `DEC-###:` grammar and downstream lifecycle replay fixed the projection. Hosted conformance then exposed a cancellation race: the worker advanced past the caller's observed tick before processing its cancel request. The repair accepts lagging ticks only for cancellation while retaining session, map, and plan identity, and yields between bounded batches. These pre-fix details are checkpoint recollections except for the hosted run and executable cancellation mutation.
+The first browser projection made spatial diagnostics eager and exceeded the fixed initial-response budget. The first package A-star integration trusted package neighbours too broadly and required S.I.R transition revalidation. Documentation Happy DOM assumed eagerly rendered data after the product moved to a lazy chunk. A parser-tolerated clarification form let verify/ship warn while refresh could not generate a work model; canonical `DEC-###:` grammar and downstream lifecycle replay fixed the projection. Hosted conformance then exposed a cancellation race: the worker advanced past the caller's observed tick before processing its cancel request. The repair accepts lagging ticks only for cancellation while retaining session, map, and plan identity, and yields between bounded batches. Fresh repair-phase review subsequently proved two verification gaps: authority scanning treated unreadable input as clean, and server/browser gates accepted an empty authoritative path. The repaired scanners distinguish clean status 1 from input errors, while typed server and rendered browser assertions reject the same real empty-path DTO mutation. These pre-fix details are checkpoint recollections except for the hosted run, durable critic marker, and executable subject mutations.
 
 ## §4 Findings
 
@@ -106,6 +106,19 @@ The first browser projection made spatial diagnostics eager and exceeded the fix
 - **Avoidable cost:** two rejected yield candidates and one constrained-load reproduction cycle
 - **Disposition:** product fix
 
+#### §4.7 Authority and diagnostic-boundary gates must fail closed on broken subjects
+
+- **Kind:** quality-gap
+- **Impact:** A clean gate could otherwise mean either “no copied authority exists” or “the source could not be inspected,” while a present `Path` property could conceal loss of the complete route at the server/browser boundary.
+- **Expected:** Search status 1 alone means clean; unreadable input is an error. A Found BoundedPath contains at least origin and target, and the player-visible route renders the same non-empty cell sequence.
+- **Observed:** The initial repair-phase critic reproduced both decorative gates at head `d3d56e4`. The repair exercises chmod-000 input through `rg` and forced `grep`, requires search status greater than 1, forces the real DTO `Path` to `[||]`, observes the server and both production-browser routes red, restores the subject, and observes all three green.
+- **Evidence:** review:https://github.com/EHotwagner/S.I.R./pull/200#issuecomment-5273040166; command:./scripts/verify-spatial-query.sh; command:./scripts/test-spatial-diagnostic-subject-mutation.sh
+- **Version:** S.I.R repair commit 9a35dedff3112ccfa270064f751c2126f1bf64bf
+- **Owner:** EHotwagner/S.I.R. spatial verification boundaries
+- **Recurrence:** new
+- **Avoidable cost:** one repair-phase review and one browser failure-signature correction
+- **Disposition:** test-boundary fix
+
 ## §5 Did not exercise
 
 No scaffold creation or upstream Game.Core package release was exercised. Protected-boundary merge is intentionally outside the implementation commit and remains pending.
@@ -128,7 +141,7 @@ The work-board-best, pnext-item, intra-repo parallel-work, complete SDD lifecycl
 
 ## §10 Outcome markers
 
-The focused spatial verifier passed all nine spatial subject mutations plus exact .NET/Fable and Release-budget gates. The cancellation subject mutation failed closed and restored green; full conformance, its 8/8 race stress, documentation, delivery, and browser receipts pass with no failures/skips. SDD verify reports 50/50 evidence and tests observed, zero self-attested, and ship reports `shipReady` with all generated views current. The exact production route measured 1,148,018 initial, 41,228 deferred RulesExplorer, and 8,582 diagnostic API bytes.
+The focused spatial verifier passed all nine spatial subject mutations, both unreadable-input search routes, exact .NET/Fable, and Release-budget gates. The empty-path DTO mutation turned the typed server and two production-browser gates red, then restored green; the cancellation subject mutation likewise failed closed and restored green. Full conformance, its 8/8 race stress, documentation, delivery, and browser receipts passed at the initial reviewed head; an exact-head rerun follows this repair. SDD verify reports 50/50 evidence and tests observed, zero self-attested, and ship reports `shipReady` with all generated views current. The exact production route measured 1,148,018 initial, 41,228 deferred RulesExplorer, and 8,582 diagnostic API bytes.
 
 ## §11 Falsifiable improvements
 
@@ -136,6 +149,7 @@ The focused spatial verifier passed all nine spatial subject mutations plus exac
 - S.I.R documentation qualification should eliminate post-assertion Happy DOM teardown exceptions and add an explicit browser assertion for complete deferred table content if that content is an acceptance obligation.
 - FS-GG scaffold materialization should close FS-GG/.github#2380 by making the feedback-report skill discoverable in a clean product checkout.
 - Simulator cancellation gates should retain the subject mutation that removes the between-batch yield; acceptance is a red real-worker smoke followed by restored green, not a predicate-only inversion.
+- Spatial authority and diagnostic gates should retain their real unreadable-file and empty-DTO-path subjects; acceptance is red on the broken input and green only after exact restoration.
 
 ## §12 Development-surface coverage
 
@@ -147,7 +161,7 @@ The focused spatial verifier passed all nine spatial subject mutations plus exac
 | sdd-authoring | exercised | Charter through ship plus refresh/agents are current; 50 obligations observed. |
 | implementation-apis | exercised | Typed Domain identity, Simulation evaluator/cache, Match service, and client projection shipped. |
 | dependencies-build | exercised | Locked restore and package-only Game.Core consumption passed in native and Fable builds. |
-| testing | exercised | Spatial and cancellation subject mutations, full conformance, 8/8 race stress, docs, and browser gates pass. |
+| testing | exercised | Nine spatial semantics mutations, unreadable authority scans, empty diagnostic-path server/browser mutation, cancellation mutation, full conformance, 8/8 race stress, docs, and browser gates pass. |
 | evidence | exercised | 50/50 exact-digest observed-run declarations pass with zero self-attestation. |
 | runtime-playtest | exercised | Production browser unit selection and View → spatial diagnostics route passed. |
 | performance | exercised | Exact Release LOS/route/invalidation/100/200-demand and delivery budgets passed. |
