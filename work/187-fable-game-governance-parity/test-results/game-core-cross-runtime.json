@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "subject": "FS.GG.Game.Core 0.13.0 LockstepExact consumer conformance",
+  "provenance": {
+    "fixtureSource": "tests/SIR.Conformance.Shared/GameCoreFixtures.fs",
+    "dotnetCommand": "dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj --no-build --no-restore --",
+    "fableCommand": "dotnet fable tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj --outDir <temp>/fable --noCache; node <temp>/fable/SIR.Conformance.Shared/Program.js"
+  },
+  "baseline": {
+    "dotnet": "pass",
+    "fable": "pass",
+    "comparison": "equal",
+    "sha256": "186ed6d846220fc5879345da3492a911c2b2b0146d7502b73b14d1f22af4ff1d"
+  },
+  "mutations": [
+    { "fixture": "game-core-cell-order", "runtime": "dotnet", "result": "red", "firstDivergenceByte": 24 },
+    { "fixture": "game-core-cell-order", "runtime": "fable", "result": "red", "firstDivergenceByte": 24 },
+    { "fixture": "game-core-edge-between", "runtime": "dotnet", "result": "red", "firstDivergenceByte": 1 },
+    { "fixture": "game-core-edge-between", "runtime": "fable", "result": "red", "firstDivergenceByte": 1 },
+    { "fixture": "game-core-los", "runtime": "dotnet", "result": "red", "firstDivergenceByte": 0 },
+    { "fixture": "game-core-los", "runtime": "fable", "result": "red", "firstDivergenceByte": 0 },
+    { "fixture": "game-core-astar", "runtime": "dotnet", "result": "red", "firstDivergenceByte": 25 },
+    { "fixture": "game-core-astar", "runtime": "fable", "result": "red", "firstDivergenceByte": 25 }
+  ],
+  "commands": [
+    "dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj --no-build --no-restore",
+    "dotnet fable tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj --outDir /tmp/sir187-round2-fable --noCache",
+    "node /tmp/sir187-round2-fable/SIR.Conformance.Shared/Program.js"
+  ]
+}

@@ -12,9 +12,9 @@ commit: pending-pr-head
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 6
+- **material events:** 7
 - **zero-event reason:** n/a
-- **checkpoint:** `feedback/checkpoints/item-187-fable-game-governance-parity.jsonl` (6 events).
+- **checkpoint:** `feedback/checkpoints/item-187-fable-game-governance-parity.jsonl` (7 events).
 - **confidence limits:** Local exact-head conformance passed; hosted CI and fresh independent review remain pending.
 
 ## §2 What worked
@@ -92,6 +92,19 @@ An omitted trailing dot in the GitHub repository identifier crashed the coordina
 - **Avoidable cost:** two failed exact-head CI restores plus clean-cache diagnosis
 - **Disposition:** fixed by compatible patch upgrade
 
+#### §4.6 Durable evidence must be force-tracked beneath ignored test-results
+
+- **Kind:** defect
+- **Impact:** SDD accepted the declared Game.Core cross-runtime receipt locally, but a fresh reviewer checkout could not read it because `test-results/` is globally ignored.
+- **Expected:** An evidence artifact bound to EV002/EV003 is committed and available from the exact review head.
+- **Observed:** Rebuilt the artifact from baseline equality plus all eight .NET/Fable subject-mutation executions and force-added the exact file.
+- **Evidence:** artifact:work/187-fable-game-governance-parity/test-results/game-core-cross-runtime.json; command:dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj --no-build --no-restore -- --inject-divergence game-core-cell-order
+- **Version:** S.I.R current candidate
+- **Owner:** S.I.R SDD evidence packaging
+- **Recurrence:** new
+- **Avoidable cost:** one critic-confirmation repair round and repeat cross-runtime execution
+- **Disposition:** fixed by tracked durable artifact
+
 ## §5 Did not exercise
 
 No new player-reachable game route was added, so a bot-driven gameplay journey was not applicable.
@@ -106,7 +119,7 @@ None observed.
 
 ## §8 Friction and avoidable cost
 
-The coordination identifier, undeclared clarification grammar, and corrupt FSharp.Core 10.1.302 package identity each required a recovery loop; all are captured above.
+The coordination identifier, undeclared clarification grammar, corrupt FSharp.Core 10.1.302 package identity, and ignored durable receipt each required a recovery loop; all are captured above.
 
 Independent review also found that the prior generic conformance evidence did not exercise the four promised Game.Core primitives; the repaired route now does so in both .NET and Fable.
 
@@ -123,6 +136,7 @@ The governance verifier passed, the skill-equivalence subject mutation reddened 
 - The coordinator must reject a repository identifier lacking its trailing dot without throwing.
 - SDD must name malformed clarification declaration lines when they cause unresolved decision references.
 - Package producers must not republish or serve incompatible byte identities for one immutable version.
+- Evidence tooling should flag a declared artifact that is ignored and not tracked.
 
 ## §12 Development-surface coverage
 
@@ -135,7 +149,7 @@ The governance verifier passed, the skill-equivalence subject mutation reddened 
 | implementation-apis | exercised | The governance verifier now produces and validates the public-surface receipt. |
 | dependencies-build | exercised | FSharp.Core 10.1.303 lock regeneration and clean locked restore passed. |
 | testing | exercised | `./scripts/test-conformance.sh` passed; skill-equivalence mutation red. |
-| evidence | exercised | Public-surface receipt and observed SDD evidence are current. |
+| evidence | exercised | Force-tracked Game.Core baseline and eight-mutation receipt is bound to EV002/EV003. |
 | runtime-playtest | not-exercised | No new reachable gameplay was added. |
 | performance | exercised | Existing conformance performance qualifications passed. |
 | documentation | exercised | Governance parity documentation remains part of the conformance route. |

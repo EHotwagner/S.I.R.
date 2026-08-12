@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-12-sir-item-187-fable-game-governance-parity.md",
-  "reportSha256": "9d122e37624378a4b8994a143208807ab56c03c1c3d8368b2674c464fa0f8213",
+  "reportSha256": "00b370dc156ab567faead52acb2fd2642e63d372a5d7982ab865e8ba199b1460",
   "criticMode": "separated-critic-pass",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -45,6 +45,16 @@
         {"locator": "artifact:Directory.Packages.props", "result": "verified"}
       ],
       "confidenceLimits": ["The upstream 10.1.302 identity inconsistency is recorded; the consumer repair is the bounded patch upgrade."]
+    },
+    {
+      "id": "§4.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "artifact:work/187-fable-game-governance-parity/test-results/game-core-cross-runtime.json", "result": "verified"},
+        {"locator": "command:dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj --no-build --no-restore -- --inject-divergence game-core-cell-order", "result": "verified"}
+      ],
+      "confidenceLimits": ["The artifact proves the current fixtures and runtime executions; hosted exact-head CI remains required."]
     }
   ]
 }
