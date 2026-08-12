@@ -34,8 +34,8 @@ expect_mutation_failure() {
   }
 }
 
-sed -i 's/dependedTokens <- Set.add token dependedTokens/dependedTokens <- dependedTokens/' "$subject"
-expect_mutation_failure dependency-receipt "A disclosed blocker was not retained as a dynamic cache dependency."
+sed -i '/observeToken $"occupancy:{position.Col}:{position.Row}"/d' "$subject"
+expect_mutation_failure dependency-receipt "An inspected empty cell was not retained as an occupancy-addition dependency."
 
 restore_subject
 sed -i 's/footprint |> List.map (addCell anchor)/footprint |> List.truncate 1 |> List.map (addCell anchor)/' "$subject"

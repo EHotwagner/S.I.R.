@@ -372,6 +372,7 @@ module SpatialQuery =
                 if Set.contains token world.DisclosedRevisionTokens then
                     dependedTokens <- Set.add token dependedTokens
             let observeCell position =
+                observeToken $"occupancy:{position.Col}:{position.Row}"
                 world.Occupancy |> Map.tryFind position |> Option.iter observeToken
             let observeBoundary (boundary: SpatialBoundary) = observeToken boundary.RevisionToken
             match request.QueryKind with

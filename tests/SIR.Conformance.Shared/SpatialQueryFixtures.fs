@@ -96,6 +96,18 @@ module SpatialQueryFixtures =
         let refreshed, _, refreshedSource = SpatialQuery.evaluateCached invalidated clearedWorld cacheRequest
         require (refreshedSource = SpatialEvaluationSource.Uncached && refreshed.Path = [ cell 0 0; cell 1 0; cell 2 0 ]) "Invalidation reused the stale blocker detour."
 
+        let addToken = "occupancy:1:0"
+        let emptyDisclosedWorld = world 7L 3L [] Map.empty (Set.singleton addToken)
+        let directResult, additionCache, _ = SpatialQuery.evaluateCached SpatialQuery.emptyCache emptyDisclosedWorld cacheRequest
+        require (directResult.Path = [ cell 0 0; cell 1 0; cell 2 0 ]) "Empty disclosed route did not begin direct."
+        require (additionCache.StaticEntries.IsEmpty && additionCache.DynamicEntries.Head.Dependencies.RevisionTokens = Set.singleton addToken) "An inspected empty cell was not retained as an occupancy-addition dependency."
+        let occupiedWorld = { emptyDisclosedWorld with Occupancy = Map.ofList [ cell 1 0, addToken ] }
+        let staleCandidate, _, staleSource = SpatialQuery.evaluateCached additionCache occupiedWorld cacheRequest
+        require (staleSource = SpatialEvaluationSource.Cached && staleCandidate.Path = directResult.Path) "Occupancy-addition fixture did not establish its stale pre-invalidation candidate."
+        let additionInvalidated = SpatialQuery.invalidate (Set.singleton addToken) additionCache
+        let additionRefreshed, _, additionSource = SpatialQuery.evaluateCached additionInvalidated occupiedWorld cacheRequest
+        require (additionSource = SpatialEvaluationSource.Uncached && additionRefreshed.Path <> directResult.Path) "Occupancy addition invalidation reused a stale direct path."
+
         let changedProfiles =
             [ { cacheRequest.Profile with Stance = "prone" }
               { cacheRequest.Profile with HeightBand = 2 }
