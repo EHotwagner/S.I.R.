@@ -12,10 +12,10 @@ commit: pending-pr-head
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 5
+- **material events:** 6
 - **zero-event reason:** n/a
-- **checkpoint:** `feedback/checkpoints/item-179-continuous-simulation-state.jsonl` (5 events).
-- **confidence limits:** Local .NET, documentation, smoke, and the 29-case production-browser inventory pass after the first independent critique; hosted exact-head CI and same-critic confirmation remain pending.
+- **checkpoint:** `feedback/checkpoints/item-179-continuous-simulation-state.jsonl` (6 events).
+- **confidence limits:** Local .NET, native/Fable, documentation, smoke, and the 29-case production-browser inventory pass after the second independent-critique repair; hosted exact-head CI and same-critic confirmation remain pending.
 
 ## §2 What worked
 
@@ -92,6 +92,19 @@ The inherited delivery-route receipt was stale after the issue subject changed, 
 - **Avoidable cost:** one successor CI iteration
 - **Disposition:** product fix
 
+#### §4.6 Contextual projection and Pause coverage were only partial
+
+- **Kind:** quality-gap
+- **Impact:** Editor, Plan, and Review could still replace runtime status and direction fields with authored values, while the addition/resume journey could pass even if Pause never stopped playback.
+- **Expected:** Contextual modalities preserve the complete maintained runtime visual payload, and the player-emittable journey proves running, paused placement, frozen state, activation-boundary seeking, resumption, and a later effective pause.
+- **Observed:** Same-critic confirmation found that the projection copied only position, anchors, and health, and that the browser journey never started or paused playback before placement. Copying the complete runtime `UnitVisual` and comparing full rendered unit payloads across modalities and around compatible addition closed the projection gap; four subject inversions (authored visual, always-running toggle, blanket reset, and cursor-only seek) each turned their named gate red.
+- **Evidence:** test:maintained runtime state is truthful at the cursor in every modality; test:advance pause place seek activation and resume preserve continuous state; command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release; command:SIR_JUNIT_OUTPUT=artifacts/test-results/179-browser.junit.xml npm run test:browser
+- **Version:** PR #196 repair round 2
+- **Owner:** EHotwagner/S.I.R. continuous simulation projection and transport
+- **Recurrence:** recurring
+- **Avoidable cost:** one same-critic confirmation repair round
+- **Disposition:** product fix
+
 ## §5 Did not exercise
 
 No scaffold creation, package upgrade, or separate runtime playtest was needed for this recovery.
@@ -106,7 +119,7 @@ None observed.
 
 ## §8 Friction and avoidable cost
 
-One refused claim and one route-receipt refresh were required to preserve the recovery boundary. Three focused iterations updated stale smoke, review-generation, and browser expectations to the actual continuous-simulation contract. A bounded hang diagnosis then exposed and repaired timer teardown plus four masked documentation checks. Independent critique added one repair round for cursor truth, activation ordering, reset classification, and production-route coverage; successor CI then exposed one stale shared cross-runtime breadcrumb assertion.
+One refused claim and one route-receipt refresh were required to preserve the recovery boundary. Three focused iterations updated stale smoke, review-generation, and browser expectations to the actual continuous-simulation contract. A bounded hang diagnosis then exposed and repaired timer teardown plus four masked documentation checks. Independent critique added one repair round for cursor truth, activation ordering, reset classification, and production-route coverage; successor CI then exposed one stale shared cross-runtime breadcrumb assertion. Same-critic confirmation added a second repair round to make the runtime overlay exhaustive and the Pause/addition/resume route behaviorally adversarial.
 
 ## §9 Skill value and gaps
 
@@ -114,7 +127,7 @@ One refused claim and one route-receipt refresh were required to preserve the re
 
 ## §10 Outcome markers
 
-The focused client qualification passed, the 29-case production Playwright suite emitted `artifacts/test-results/179-browser.junit.xml` with 28 passes and one intentional diagnostic self-test skip, and production smoke plus the complete documentation build passed. `verify` reports 17 observed evidence receipts and zero missing skills, while `ship` reports `shipReady`; exact-head CI and same-critic confirmation remain external delivery gates.
+The focused client qualification passed, the 29-case production Playwright suite emitted `artifacts/test-results/179-browser.junit.xml` with 28 passes and one intentional diagnostic self-test skip, and production smoke plus the complete documentation build passed. Native and Fable modal-input executions agree. `verify` reports 17 observed evidence receipts and zero missing skills, while `ship` reports `shipReady`; exact-head CI and same-critic confirmation remain external delivery gates.
 
 ## §11 Falsifiable improvements
 
@@ -123,6 +136,7 @@ The focused client qualification passed, the 29-case production Playwright suite
 - Bind acceptance language to FR-001/FR-004/FR-005: replacing reconstructed seek with cursor-only behavior or restoring manual handoff chrome must make documentation, smoke, or browser gates red.
 - Keep browser harness completion bounded: automatic simulation intervals must not prevent smoke or documentation processes from exiting after a successful assertion run.
 - Keep the four round-one adversarial browser cases and the kernel equality checks: restoring authored tick-zero state in Editor/Review, activating before the transition into an entity's authored tick, combining terrain/topology into one generic reset, or removing a specific visible reason must turn a named gate red.
+- Keep the round-two projection and transport subject mutations: restoring authored runtime visuals in contextual modes or making ToggleSimulatorRun always run must turn the corresponding named production journey red.
 
 ## §12 Development-surface coverage
 

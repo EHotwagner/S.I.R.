@@ -1169,15 +1169,13 @@ for (const kind of ["facing", "attention", "stance", "hold", "engagement", "sync
   }
 }
 if (
-  selectedPlanningUnit?.getAttribute("data-unit-stance") !== "crouched" ||
+  selectedPlanningUnit?.hasAttribute("data-unit-stance") ||
   !selectedPlanningUnit.querySelector('[data-unit-heading="facing"]') ||
   !selectedPlanningUnit.querySelector('[data-unit-heading="attention"]') ||
-  !selectedPlanningUnit.getAttribute("data-unit-status")?.includes("hold") ||
-  !selectedPlanningUnit.getAttribute("data-unit-status")?.includes("engagement") ||
-  !selectedPlanningUnit.getAttribute("data-unit-status")?.includes("synchronization")
+  selectedPlanningUnit.getAttribute("data-unit-status") !== "general"
 ) {
   throw new Error(
-    `Authored unit semantics did not enrich the shared unit layer (stance=${selectedPlanningUnit?.getAttribute("data-unit-stance")}; headings=${selectedPlanningUnit?.querySelectorAll("[data-unit-heading]").length}; status=${selectedPlanningUnit?.getAttribute("data-unit-status")}).`,
+    `Planning affordances replaced maintained runtime unit truth (stance=${selectedPlanningUnit?.getAttribute("data-unit-stance")}; headings=${selectedPlanningUnit?.querySelectorAll("[data-unit-heading]").length}; status=${selectedPlanningUnit?.getAttribute("data-unit-status")}).`,
   );
 }
 

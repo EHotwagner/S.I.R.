@@ -6055,11 +6055,7 @@ let private activeSceneProjection (model: Model) =
                              { authored with
                                  PresentationColumn = live.PresentationColumn
                                  PresentationRow = live.PresentationRow
-                                 Visual =
-                                     { authored.Visual with
-                                         AnchorColumn = live.Visual.AnchorColumn
-                                         AnchorRow = live.Visual.AnchorRow
-                                         Health = live.Visual.Health } })))
+                                 Visual = live.Visual })))
                     (runtime.Units
                      |> Array.filter (fun live ->
                          contextual.Units

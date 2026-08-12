@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/item-179-continuous-simulation-state.md",
-  "reportSha256": "21f840ab40c42eac240c47ae9382d7fb8941d6de58ed2cc853652931aa3b43ae",
+  "reportSha256": "a188492b582eb42c8451de35bf38512fa97e96678a99814a1d83fd3829e63018",
   "criticMode": "separated-critic-pass",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -92,6 +92,30 @@
         }
       ],
       "confidenceLimits": []
+    },
+    {
+      "id": "§4.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "test:maintained runtime state is truthful at the cursor in every modality",
+          "result": "verified"
+        },
+        {
+          "locator": "test:advance pause place seek activation and resume preserve continuous state",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release",
+          "result": "verified"
+        },
+        {
+          "locator": "command:SIR_JUNIT_OUTPUT=artifacts/test-results/179-browser.junit.xml npm run test:browser",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": ["Same-critic confirmation and hosted exact-head CI are delivery gates outside this local feedback audit."]
     }
   ]
 }

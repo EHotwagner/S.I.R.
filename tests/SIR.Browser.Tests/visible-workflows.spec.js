@@ -30,6 +30,34 @@ async function expandPanel(page, panelId) {
   return panel;
 }
 
+async function observableUnitState(battlefield, unitIds = null) {
+  return battlefield.locator("#persistent-layer-units [data-unit-id]").evaluateAll((units, retainedIds) =>
+    units
+      .filter((unit) => retainedIds === null || retainedIds.includes(unit.getAttribute("data-unit-id")))
+      .map((unit) => ({
+        id: unit.getAttribute("data-unit-id"),
+        classId: unit.getAttribute("data-unit-class"),
+        footprint: unit.getAttribute("data-unit-footprint"),
+        status: unit.getAttribute("data-unit-status"),
+        stance: unit.getAttribute("data-unit-stance"),
+        column: unit.getAttribute("data-presentation-column"),
+        row: unit.getAttribute("data-presentation-row"),
+        // Capture the complete rendered runtime payload: glyph, label, health,
+        // status markers, and direction geometry.
+        rendered: unit.innerHTML,
+        headings: [...unit.querySelectorAll("[data-unit-heading]")].map((heading) => ({
+          kind: heading.getAttribute("data-unit-heading"),
+          x1: heading.getAttribute("x1"),
+          y1: heading.getAttribute("y1"),
+          x2: heading.getAttribute("x2"),
+          y2: heading.getAttribute("y2"),
+        })),
+      }))
+      .sort((left, right) => Number(left.id) - Number(right.id)),
+    unitIds,
+  );
+}
+
 // Diagnostics-gate self-tests deliberately issue a browser fetch; they are not product-journey evidence.
 test("explicitly allowed rejection diagnostics do not hide unrelated browser failures", async ({ page }) => {
   await page.route("**/controlled-rejection", (route) => route.fulfill({ status: 418, body: "expected" }));
@@ -72,23 +100,39 @@ test("the maintained simulation transport is available without a manual handoff 
 
 test("maintained runtime state is truthful at the cursor in every modality", async ({ page }) => {
   await loadMaintainedSimulation(page);
-  await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();
   const battlefield = page.locator("#persistent-tactical-svg");
+  const unit = battlefield.locator("#persistent-layer-units [data-unit-id]").first();
+  await unit.click();
+  await page.locator("#unit-controller").selectOption({ label: "Scripted AI" });
+  await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();
+  const runtimeUnits = await observableUnitState(battlefield);
+  expect(runtimeUnits[0].status).toContain("scripted");
   for (const mode of ["Simulate", "Editor", "Plan", "Review"]) {
     await page.getByRole("button", { name: mode, exact: true }).click();
     const expectedOwner = mode === "Simulate" ? "SimulatorScene" : mode === "Plan" ? "PlanningScene" : "EditorScene";
     await expect(battlefield).toHaveAttribute("data-scene-owner", expectedOwner);
     await expect(battlefield).toHaveAttribute("data-scene-tick", "1");
     await expect(page.getByLabel("Unified tactical timeline")).toHaveAttribute("data-time-cursor", "1");
+    expect(await observableUnitState(battlefield)).toEqual(runtimeUnits);
   }
 });
 
 test("advance pause place seek activation and resume preserve continuous state", async ({ page }) => {
   await loadMaintainedSimulation(page);
   const battlefield = page.locator("#persistent-tactical-svg");
-  await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();
-  await expect(battlefield).toHaveAttribute("data-scene-tick", "1");
+  const play = page.getByRole("button", { name: "Play tactical timeline", exact: true });
+  const pause = page.getByRole("button", { name: "Pause tactical timeline", exact: true });
+  await play.click();
+  await expect(pause).toBeVisible();
+  await expect.poll(async () => Number(await battlefield.getAttribute("data-scene-tick"))).toBeGreaterThan(0);
+  await pause.click();
+  await expect(play).toBeVisible();
+  const activationTick = Number(await battlefield.getAttribute("data-scene-tick"));
+  await page.waitForTimeout(250);
+  await expect(battlefield).toHaveAttribute("data-scene-tick", String(activationTick));
   const originalUnitCount = await battlefield.locator("#persistent-layer-units [data-unit-id]").count();
+  const existingBefore = await observableUnitState(battlefield);
+  const existingIds = existingBefore.map((unit) => unit.id);
 
   await page.getByRole("button", { name: "Editor", exact: true }).click();
   const tools = await expandPanel(page, "tools");
@@ -96,20 +140,32 @@ test("advance pause place seek activation and resume preserve continuous state",
   await tools.locator(".unit-preset-group button").first().click();
   await battlefield.locator('[aria-label="Activate cell 12,4"]').click();
   await page.getByRole("button", { name: "Simulate", exact: true }).click();
-  await expect(page.getByText("Added 1 unit(s) at tick 1.", { exact: true })).toBeVisible();
+  await expect(page.getByText(`Added 1 unit(s) at tick ${activationTick}.`, { exact: true })).toBeVisible();
   await expect(battlefield.locator("#persistent-layer-units [data-unit-id]")).toHaveCount(originalUnitCount + 1);
+  expect(await observableUnitState(battlefield, existingIds)).toEqual(existingBefore);
   const liveActivationState = await battlefield.locator("#persistent-layer-units").innerHTML();
 
   await page.getByRole("button", { name: "Go to tactical timeline start", exact: true }).click();
   await expect(battlefield).toHaveAttribute("data-scene-tick", "0");
   await expect(battlefield.locator("#persistent-layer-units [data-unit-id]")).toHaveCount(originalUnitCount);
+  const slider = page.getByRole("slider", { name: "Current tactical time", exact: true });
+  if (activationTick > 1) {
+    await slider.fill(String(activationTick - 1));
+    await expect(battlefield).toHaveAttribute("data-scene-tick", String(activationTick - 1));
+    await expect(battlefield.locator("#persistent-layer-units [data-unit-id]")).toHaveCount(originalUnitCount);
+  }
   await page.getByRole("button", { name: "Step tactical timeline forward", exact: true }).click();
-  await expect(battlefield).toHaveAttribute("data-scene-tick", "1");
+  await expect(battlefield).toHaveAttribute("data-scene-tick", String(activationTick));
   await expect(battlefield.locator("#persistent-layer-units")).toHaveJSProperty("innerHTML", liveActivationState);
 
-  await page.getByRole("button", { name: "Play tactical timeline", exact: true }).click();
-  await expect.poll(async () => Number(await battlefield.getAttribute("data-scene-tick"))).toBeGreaterThan(1);
-  await page.getByRole("button", { name: "Pause tactical timeline", exact: true }).click();
+  await play.click();
+  await expect(pause).toBeVisible();
+  await expect.poll(async () => Number(await battlefield.getAttribute("data-scene-tick"))).toBeGreaterThan(activationTick);
+  await pause.click();
+  await expect(play).toBeVisible();
+  const finalPausedTick = await battlefield.getAttribute("data-scene-tick");
+  await page.waitForTimeout(250);
+  await expect(battlefield).toHaveAttribute("data-scene-tick", finalPausedTick);
 });
 
 test("terrain edits reset with a terrain-specific visible explanation", async ({ page }) => {
