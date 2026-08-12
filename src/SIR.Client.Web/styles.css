@@ -1156,6 +1156,9 @@
   #sir-replay-app .lab-results { grid-column: span 1; }
   #sir-replay-app .comparison-viewport { grid-template-columns: 1fr; }
   #sir-replay-app .editor-tools-panel { max-height: none; }
+  #sir-replay-app .editor-document-strip { flex-wrap: wrap; }
+  #sir-replay-app .editor-document-strip strong { flex-basis: 100%; }
+  #sir-replay-app .editor-menu-bar { overflow-x: auto; }
   #sir-replay-app .modal-input-summary {
     align-items: stretch;
     flex-direction: column;
