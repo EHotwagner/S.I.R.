@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/181-physical-combat-slice/ship.json",
-      "digest": "sha256:a2c208d2293b16d6591e2f10c1724786260af962266a52c10bde0faf71069e07",
+      "digest": "sha256:509399c8e4bc0b8007aeee838fe2637ecd83b148beb0d3e17a98a5c5774f1b66",
       "schemaVersion": 1
     },
     {
       "path": "readiness/181-physical-combat-slice/verify.json",
-      "digest": "sha256:2812e3caf572ff426b50701b840b906cf52b35bcef55d9b1d55e762b83216a5b",
+      "digest": "sha256:d38432916d01dbfa8cb4eae51c6caac362f52adc85d9edf8ad547d167dca682e",
       "schemaVersion": 1
     },
     {
       "path": "readiness/181-physical-combat-slice/work-model.json",
-      "digest": "sha256:ed21274979cd7b1dff36d7f87272775d99ef0e8736de2c21478c75bb5aa6f4b8",
+      "digest": "sha256:6e84c09035073647ef6d1b854a45796aa64bf85ab02ab898cd79e93573e5fafe",
       "schemaVersion": 1
     }
   ],
