@@ -7,29 +7,45 @@ open SIR.Simulation
 
 [<RequireQualifiedAccess>]
 module AwarenessReactionDiagnostics =
+    let private observer = Simulation.unitId 10
+    let private subject = Simulation.unitId 20
+    let private gate = obj ()
+    let mutable private timeline : TickResult list = []
+
+    let private initial () =
+        let blue = Simulation.initialState.Units[subject]
+        { Simulation.initialState with
+            Board = { Simulation.initialState.Board with Maximum = { Col = 3; Row = 1 }; Edges = [] }
+            Units = Simulation.initialState.Units |> Map.add subject { blue with Cell = { Col = 1; Row = 0 } } }
+
     let isDisclosureSafe (payload: string) =
         not (payload.Contains("\"Units\""))
         && not (payload.Contains("\"Board\""))
         && not (payload.Contains("\"SpatialEvidence\""))
 
-    let evaluate () =
-        let observer = Simulation.unitId 10
-        let subject = Simulation.unitId 20
-        let blue = Simulation.initialState.Units[subject]
-        let scenarioState =
-            { Simulation.initialState with
-                Board =
-                    { Simulation.initialState.Board with
-                        Maximum = { Col = 3; Row = 1 }
-                        Edges = [] }
-                Units = Simulation.initialState.Units |> Map.add subject { blue with Cell = { Col = 1; Row = 0 } } }
-        let prepared =
-            Simulation.runTick
-                scenarioState
-                [ SetAttention(observer, East)
-                  PrepareAreaReaction(observer, "player-area-east", [ { Col = 2; Row = 0 } ], East) ]
-        let acquired = Simulation.runTick prepared.State []
-        let reacted = Simulation.runTick acquired.State [ Move(subject, { Col = 2; Row = 0 }) ]
+    let evaluate body = lock gate (fun () ->
+        let action =
+            if System.String.IsNullOrWhiteSpace body then "snapshot"
+            else
+                use document = JsonDocument.Parse body
+                document.RootElement.GetProperty("action").GetString()
+                |> Option.ofObj
+                |> Option.defaultValue "snapshot"
+        if action = "reset" || timeline.IsEmpty then
+            timeline <- [ Simulation.runTick (initial ()) [] ]
+        let append inputs =
+            let result = Simulation.runTick timeline.Head.State inputs
+            timeline <- result :: timeline
+            result
+        let reacted =
+            match action with
+            | "rotate-attention" -> append [ SetAttention(observer, East); SetWeaponPosture(observer, WeaponPosture.Prepared) ]
+            | "prepare-coverage" -> append [ PrepareAreaReaction(observer, "player-area-east", [ { Col = 2; Row = 0 } ], East) ]
+            | "advance-preparation" -> append []
+            | "move-opponent" -> append [ Move(subject, { Col = 2; Row = 0 }) ]
+            | "seek-start" -> timeline |> List.last
+            | "seek-end" | "snapshot" | "reset" -> timeline.Head
+            | _ -> failwith $"Unknown awareness player action: {action}"
         let projection = AwarenessProjection.forObserver observer reacted.State
         let contacts =
             projection.Contacts
@@ -42,6 +58,7 @@ module AwarenessReactionDiagnostics =
                    HasLastKnownCell = contact.LastKnownCell.IsSome
                    LastKnownColumn = column
                    LastKnownRow = row
+                   Sector = contact.Sector |> Option.map string |> Option.defaultValue "Unknown"
                    Reason = string contact.Reason |})
         let engagement =
             projection.Engagement
@@ -50,6 +67,9 @@ module AwarenessReactionDiagnostics =
                    EngagementId = value.EngagementId
                    Phase = string value.Phase
                    RemainingTicks = value.RemainingTicks
+                   Target = value.Target
+                   RequiredAttention = string value.RequiredAttention
+                   WeaponPosture = string value.WeaponPosture
                    Reason = string value.Reason |})
         let events =
             reacted.Events
@@ -68,4 +88,4 @@ module AwarenessReactionDiagnostics =
                Engagement = engagement
                Events = events
                CandidatePairs = 2
-               LosEvaluations = 2 |})
+               LosEvaluations = reacted.AwarenessCounters.LosEvaluations |}))

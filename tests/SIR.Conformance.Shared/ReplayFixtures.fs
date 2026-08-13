@@ -1,5 +1,6 @@
 namespace SIR.Conformance
 
+open FS.GG.Game.Core
 open SIR.Domain
 open SIR.Simulation
 
@@ -196,14 +197,15 @@ module ReplayFixtures =
             Awareness = Map.ofList [ (observerId, subjectId), contact ]
             Engagements = Map.ofList [ observerId, engagement ] }
 
-    let private awarenessSnapshotPackage () =
+    let private awarenessSnapshotPackageFor version =
         let state = awarenessSnapshot ()
+        let versionStateHash = Replay.stateHashForFormatVersion version state
         let final =
             { Tick = state.Tick
               OutcomeCode = 0
-              StateHash = Replay.stateHash state
+              StateHash = versionStateHash
               EventHash = Replay.emptyEventHash }
-        { FormatVersion = int32 Replay.CurrentFormatVersion
+        { FormatVersion = int32 version
           EngineHash = engineHash
           RulesetHash = rulesetHash
           FullReplayAuthorized = true
@@ -213,15 +215,26 @@ module ReplayFixtures =
                 { InitialSnapshot = state
                   OrderedInputs =
                     [ input 1 1 (SetAttention(Simulation.unitId 10, East))
-                      input 1 2 (PrepareAreaReaction(Simulation.unitId 10, "replay-v5-area", [ { Col = 2; Row = 0 }; { Col = 1; Row = 0 } ], East)) ]
+                      input 1 2 (PrepareAreaReaction(Simulation.unitId 10, "replay-v5-area", [ { Col = 2; Row = 0 }; { Col = 1; Row = 0 } ], East))
+                      if version >= Replay.CurrentFormatVersion then
+                          input 1 3 (SetWeaponPosture(Simulation.unitId 10, WeaponPosture.Prepared))
+                          input 1 4 (PrepareUnitReaction(Simulation.unitId 10, "replay-v6-unit", Simulation.unitId 20, East))
+                          input 1 5 (PrepareEdgeReaction(Simulation.unitId 10, "replay-v6-edge", Edges.edgeBetween { Col = 1; Row = 0 } { Col = 2; Row = 0 } |> Option.defaultWith (fun () -> failwith "invalid replay edge"), East)) ]
                   AcceptedWasmOutputs = []
-                  Checkpoints = [ checkpoint state.Tick state [] ]
+                  Checkpoints =
+                    [ { Tick = state.Tick
+                        State = state
+                        StateHash = versionStateHash
+                        EventHash = Replay.emptyEventHash } ]
                   FinalResult = final } }
+
+    let private awarenessSnapshotPackage () =
+        awarenessSnapshotPackageFor Replay.CurrentFormatVersion
 
     let compatibilityEvidence () =
         let v3 = retainedV3Bytes ()
         let v4 = combatSnapshotPackage () |> Replay.encode
-        let v5 = awarenessSnapshotPackage () |> Replay.encode
+        let v5 = awarenessSnapshotPackageFor Replay.AwarenessFormatVersion |> Replay.encode
         v3, v4, v5
 
     let evaluateProtectedMutation mutation =
@@ -257,7 +270,7 @@ module ReplayFixtures =
     let evaluate () =
         let package = fullPackage ()
         let encoded = canonicalPackageBytes ()
-        require (Replay.CurrentFormatVersion = 5) "Awareness/reaction snapshots must use replay format v5."
+        require (Replay.CurrentFormatVersion = 6) "Weapon posture and fairness cursors must use replay format v6."
 
         let retainedV3 = retainedV3Bytes ()
         require (retainedV3.Length = 4_450) "The retained predecessor replay v3 fixture changed length."
@@ -366,7 +379,7 @@ module ReplayFixtures =
             require full.InitialSnapshot.Engagements.IsEmpty "Replay v4 did not apply empty engagement defaults."
         | PerspectivePlayback _ -> failwith "Replay v4 combat snapshot changed disclosure kind."
 
-        let awarenessPackage = awarenessSnapshotPackage ()
+        let awarenessPackage = awarenessSnapshotPackageFor Replay.AwarenessFormatVersion
         let awarenessBytes = Replay.encode awarenessPackage
         let decodedAwareness =
             Replay.decode Replay.defaultLimits awarenessBytes
@@ -378,6 +391,21 @@ module ReplayFixtures =
             require (full.InitialSnapshot.Engagements = (awarenessSnapshot ()).Engagements) "Replay v5 lost engagement state."
             require (full.OrderedInputs.Length = 2) "Replay v5 lost awareness/reaction inputs."
         | PerspectivePlayback _ -> failwith "Replay v5 awareness snapshot changed disclosure kind."
+
+        let currentAwarenessPackage = awarenessSnapshotPackage ()
+        let currentAwarenessBytes = Replay.encode currentAwarenessPackage
+        let currentAwarenessDecoded =
+            Replay.decode Replay.defaultLimits currentAwarenessBytes
+            |> Result.defaultWith (fun error -> failwithf "Replay v6 awareness snapshot did not decode: %A" error)
+        require (Replay.encode currentAwarenessDecoded = currentAwarenessBytes) "Replay v6 awareness snapshot did not round-trip byte-exactly."
+        match currentAwarenessDecoded.Content with
+        | AuthorizedFullReplay full ->
+            require (full.InitialSnapshot.AwarenessCursor = (awarenessSnapshot ()).AwarenessCursor) "Replay v6 lost the fairness cursor."
+            require (full.OrderedInputs.Length = 5) "Replay v6 lost posture, unit-target, or guarded-edge inputs."
+            require
+                (full.InitialSnapshot.Units[Simulation.unitId 10].WeaponPosture = (awarenessSnapshot ()).Units[Simulation.unitId 10].WeaponPosture)
+                "Replay v6 lost weapon posture."
+        | PerspectivePlayback _ -> failwith "Replay v6 awareness snapshot changed disclosure kind."
 
         let noAwarenessLimit = { Replay.defaultLimits with MaxAwarenessContacts = 0 }
         expectError

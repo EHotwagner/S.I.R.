@@ -32,6 +32,12 @@ module CanonicalHash =
 
     /// Computes the 32-byte SHA-256 digest of canonical bytes.
     let sha256 (bytes: byte array) =
+#if !FABLE_COMPILER
+        // The platform implementation is constant-space and hardware-backed on
+        // supported .NET hosts. Fable retains the portable implementation below;
+        // canonical fixtures prove both paths emit identical bytes.
+        System.Security.Cryptography.SHA256.HashData bytes
+#else
         let byteLength = uint32 bytes.Length
         let bitLengthHigh = byteLength >>> 29
         let bitLengthLow = byteLength <<< 3
@@ -128,3 +134,4 @@ module CanonicalHash =
             hash[7] <- hash[7] + h
 
         hash |> Array.collect bigEndian
+#endif

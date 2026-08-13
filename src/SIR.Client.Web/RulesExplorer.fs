@@ -61,9 +61,10 @@ type private PhysicalCombatProjection =
       Profiles: PhysicalCombatProfile list; Replay: PhysicalCombatReplay }
 type private AwarenessContactProjection =
     { ObserverId: int32; SubjectId: int32; Level: string; Acquisition: int32
-      HasLastKnownCell: bool; LastKnownColumn: int32; LastKnownRow: int32; Reason: string }
+      HasLastKnownCell: bool; LastKnownColumn: int32; LastKnownRow: int32; Sector: string; Reason: string }
 type private AwarenessEngagementProjection =
-    { OwnerId: int32; EngagementId: string; Phase: string; RemainingTicks: int32; Reason: string }
+    { OwnerId: int32; EngagementId: string; Phase: string; RemainingTicks: int32
+      Target: string; RequiredAttention: string; WeaponPosture: string; Reason: string }
 type private AwarenessProjectionResponse =
     { Schema: string; Tick: int32; ObserverId: int32; Contacts: AwarenessContactProjection list
       Engagement: AwarenessEngagementProjection option; Events: string list
@@ -163,6 +164,7 @@ let private awarenessContactDecoder : Decoder<AwarenessContactProjection> =
           HasLastKnownCell = get.Required.Field "HasLastKnownCell" Decode.bool
           LastKnownColumn = get.Required.Field "LastKnownColumn" Decode.int
           LastKnownRow = get.Required.Field "LastKnownRow" Decode.int
+          Sector = get.Required.Field "Sector" Decode.string
           Reason = get.Required.Field "Reason" Decode.string })
 
 let private awarenessEngagementDecoder : Decoder<AwarenessEngagementProjection> =
@@ -171,6 +173,9 @@ let private awarenessEngagementDecoder : Decoder<AwarenessEngagementProjection> 
           EngagementId = get.Required.Field "EngagementId" Decode.string
           Phase = get.Required.Field "Phase" Decode.string
           RemainingTicks = get.Required.Field "RemainingTicks" Decode.int
+          Target = get.Required.Field "Target" Decode.string
+          RequiredAttention = get.Required.Field "RequiredAttention" Decode.string
+          WeaponPosture = get.Required.Field "WeaponPosture" Decode.string
           Reason = get.Required.Field "Reason" Decode.string })
 
 let private awarenessResponseDecoder : Decoder<AwarenessProjectionResponse> =
@@ -266,12 +271,13 @@ let private loadPhysicalCombat accessToken =
         return Decode.fromString combatResponseDecoder (string responseBody) |> Result.defaultWith (fun error -> failwith $"physical combat response did not decode: {error}")
     }
 
-let private loadLocalAwareness accessToken =
+let private loadLocalAwareness accessToken action =
     async {
         let options =
             createObj [
                 "method" ==> "POST"
-                "headers" ==> createObj [ "Authorization" ==> ("Bearer " + accessToken) ]
+                "headers" ==> createObj [ "Authorization" ==> ("Bearer " + accessToken); "Content-Type" ==> "application/json" ]
+                "body" ==> Encode.toString 0 (Encode.object [ "action", Encode.string action ])
             ]
         let! response = fetch ("/api/awareness/local-projection", options) |> Async.AwaitPromise
         let! responseBody = response?text() |> Async.AwaitPromise
@@ -339,6 +345,14 @@ let ExecutableRulesPanel (bootstrap: BootstrapV1.Response option) =
     let physicalFailure, setPhysicalFailure = React.useState<string option>(None)
     let awarenessResult, setAwarenessResult = React.useState<AwarenessProjectionResponse option>(None)
     let awarenessFailure, setAwarenessFailure = React.useState<string option>(None)
+    let runAwarenessAction action =
+        setAwarenessFailure None
+        match bootstrap with
+        | None -> setAwarenessFailure (Some "Live authority admission is unavailable.")
+        | Some admission ->
+            Async.StartImmediate(async {
+                try let! result = loadLocalAwareness admission.AccessToken action in setAwarenessResult (Some result)
+                with error -> setAwarenessFailure (Some error.Message) })
     Html.section [
         prop.ariaLabel "Rules data tables"
         prop.children [
@@ -442,21 +456,16 @@ let ExecutableRulesPanel (bootstrap: BootstrapV1.Response option) =
                     Html.h3 "Local awareness and reaction projection"
                     Html.p "The authoritative host advances awareness, preparation, trigger ordering, and physical resolution; the browser receives only observer-local knowledge."
                     Html.button [
-                        prop.text "Run local awareness reaction"
+                        prop.text "Reset awareness drill"
                         prop.disabled (Option.isNone bootstrap)
-                        prop.onClick (fun _ ->
-                            setAwarenessResult None
-                            setAwarenessFailure None
-                            match bootstrap with
-                            | None -> setAwarenessFailure (Some "Live authority admission is unavailable.")
-                            | Some admission ->
-                                Async.StartImmediate(async {
-                                    try
-                                        let! result = loadLocalAwareness admission.AccessToken
-                                        setAwarenessResult (Some result)
-                                    with error -> setAwarenessFailure (Some error.Message)
-                                }))
+                        prop.onClick (fun _ -> runAwarenessAction "reset")
                     ]
+                    Html.button [ prop.text "Rotate attention east"; prop.disabled (Option.isNone bootstrap); prop.onClick (fun _ -> runAwarenessAction "rotate-attention") ]
+                    Html.button [ prop.text "Prepare covered sector"; prop.disabled (Option.isNone bootstrap); prop.onClick (fun _ -> runAwarenessAction "prepare-coverage") ]
+                    Html.button [ prop.text "Complete preparation"; prop.disabled (Option.isNone bootstrap); prop.onClick (fun _ -> runAwarenessAction "advance-preparation") ]
+                    Html.button [ prop.text "Move opposing unit through coverage"; prop.disabled (Option.isNone bootstrap); prop.onClick (fun _ -> runAwarenessAction "move-opponent") ]
+                    Html.button [ prop.text "Scrub awareness timeline to start"; prop.disabled (Option.isNone bootstrap); prop.onClick (fun _ -> runAwarenessAction "seek-start") ]
+                    Html.button [ prop.text "Scrub awareness timeline to reaction"; prop.disabled (Option.isNone bootstrap); prop.onClick (fun _ -> runAwarenessAction "seek-end") ]
                     match awarenessFailure, awarenessResult with
                     | Some failure, _ -> Html.p ("Local projection unavailable: " + failure)
                     | None, None -> Html.p "No observer-local awareness frame has been received yet."
@@ -467,12 +476,13 @@ let ExecutableRulesPanel (bootstrap: BootstrapV1.Response option) =
                                 prop.ariaLabel $"Local contact {contact.SubjectId}"
                                 prop.children [
                                     Html.h4 $"Contact {contact.SubjectId} · {contact.Level}"
-                                    Html.p $"Acquisition {contact.Acquisition} · reason {contact.Reason}"
+                                    Html.p $"Sector {contact.Sector} · acquisition {contact.Acquisition} · reason {contact.Reason}"
                                     if contact.HasLastKnownCell then Html.p $"Last known ({contact.LastKnownColumn},{contact.LastKnownRow})"
                                 ]
                             ]
                         match result.Engagement with
-                        | Some engagement -> Html.p $"Engagement {engagement.EngagementId} · {engagement.Phase} · {engagement.Reason}"
+                        | Some engagement ->
+                            Html.p $"Engagement {engagement.EngagementId} · {engagement.Target} · attention {engagement.RequiredAttention} · posture {engagement.WeaponPosture} · {engagement.Phase} · {engagement.Reason}"
                         | None -> Html.p "No local engagement."
                         Html.p ("Authoritative order " + String.concat " → " result.Events)
                 ]

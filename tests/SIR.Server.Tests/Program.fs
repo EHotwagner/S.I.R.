@@ -93,8 +93,9 @@ let postPhysicalCombat (client: HttpClient) bearer body =
     bearer |> Option.iter (fun value -> request.Headers.Authorization <- Headers.AuthenticationHeaderValue("Bearer", value))
     client.SendAsync(request).GetAwaiter().GetResult()
 
-let postAwarenessProjection (client: HttpClient) bearer =
+let postAwarenessProjection (client: HttpClient) bearer action =
     let request = new HttpRequestMessage(HttpMethod.Post, "/api/awareness/local-projection")
+    request.Content <- new StringContent($"{{\"action\":\"{action}\"}}", Encoding.UTF8, "application/json")
     bearer |> Option.iter (fun value -> request.Headers.Authorization <- Headers.AuthenticationHeaderValue("Bearer", value))
     client.SendAsync(request).GetAwaiter().GetResult()
 
@@ -109,13 +110,17 @@ type LiveSessionAuthenticationTests() =
     [<Fact>]
     member _.``awareness route returns observer-local projection without reconstructable world truth``() =
         withProductionClient (fun client ->
-            use unauthorized = postAwarenessProjection client None
+            use unauthorized = postAwarenessProjection client None "reset"
             require (unauthorized.StatusCode = HttpStatusCode.Unauthorized) "local awareness must reject an absent bearer admission"
             let admission = admittedSession client "awareness-player"
-            use response = postAwarenessProjection client (Some admission.AccessToken)
+            for action in [ "reset"; "rotate-attention"; "prepare-coverage"; "advance-preparation" ] do
+                use intermediate = postAwarenessProjection client (Some admission.AccessToken) action
+                require (intermediate.StatusCode = HttpStatusCode.OK) $"awareness player action failed: {action}"
+            use response = postAwarenessProjection client (Some admission.AccessToken) "move-opponent"
             let body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
             require (response.StatusCode = HttpStatusCode.OK) "authorized local awareness must succeed"
             require (body.Contains("sir-local-awareness-v1") && body.Contains("Acquired") && body.Contains("ResolvedByPhysicalAuthority")) ("local awareness omitted acquisition or reaction resolution: " + body)
+            require (body.Contains("\"Sector\":\"Forward\"") && body.Contains("\"Target\":\"area:2,0\"") && body.Contains("\"WeaponPosture\":\"Prepared\"")) "local awareness omitted sector, target, or posture context"
             require (body.Contains("committed:10:20:player-area-east") && body.Contains("physical:10") && body.Contains("resolved:10:20:player-area-east")) "local awareness changed canonical authority ordering"
             require (AwarenessReactionDiagnostics.isDisclosureSafe body) "local projection disclosed reconstructable world truth"
             let protectedSubjectMutation = body.Replace("\"Tick\"", "\"Board\":{\"Minimum\":0},\"Tick\"")

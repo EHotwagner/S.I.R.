@@ -166,18 +166,30 @@ test("the production browser consumes only the observer-local awareness and reac
   await page.getByRole("button", { name: "View", exact: true }).click();
   await page.getByRole("menuitem", { name: /Rules data/ }).click();
   const projection = page.getByRole("region", { name: "Local awareness and reaction projection", exact: true });
-  const responsePromise = page.waitForResponse((response) => response.url().includes("/api/awareness/local-projection") && response.status() === 200);
-  await projection.getByRole("button", { name: "Run local awareness reaction" }).click();
-  const response = await responsePromise;
+  const act = async (name) => {
+    const responsePromise = page.waitForResponse((response) => response.url().includes("/api/awareness/local-projection") && response.status() === 200);
+    await projection.getByRole("button", { name }).click();
+    return responsePromise;
+  };
+  await act("Reset awareness drill");
+  await act("Rotate attention east");
+  await act("Prepare covered sector");
+  await act("Complete preparation");
+  const response = await act("Move opposing unit through coverage");
   const body = await response.text();
-  expect(authorityRequests).toBe(1);
+  expect(authorityRequests).toBe(5);
   expect(body).not.toContain("Units");
   expect(body).not.toContain("Board");
   expect(body).not.toContain("SpatialEvidence");
-  await expect(projection.getByText(/Observer 10 · tick 3 · contacts 1 · candidate pairs 2 · LOS 2/)).toBeVisible();
+  await expect(projection.getByText(/Observer 10 · tick 5 · contacts 1 · candidate pairs 2 · LOS 2/)).toBeVisible();
   await expect(projection.getByRole("heading", { name: "Contact 20 · Acquired" })).toBeVisible();
-  await expect(projection.getByText(/Engagement player-area-east · Resolved · ResolvedByPhysicalAuthority/)).toBeVisible();
+  await expect(projection.getByText(/Engagement player-area-east · area:2,0 · attention East · posture Prepared · Resolved · ResolvedByPhysicalAuthority/)).toBeVisible();
   await expect(projection.getByText("Authoritative order committed:10:20:player-area-east → physical:10 → resolved:10:20:player-area-east", { exact: true })).toBeVisible();
+  await act("Scrub awareness timeline to start");
+  await expect(projection.getByText(/Observer 10 · tick 1/)).toBeVisible();
+  await act("Scrub awareness timeline to reaction");
+  await expect(projection.getByText(/Observer 10 · tick 5/)).toBeVisible();
+  expect(authorityRequests).toBe(7);
   console.log(JSON.stringify({ schema: "sir-local-awareness-browser-v1", authorityRequests, responseBytes: Buffer.byteLength(body, "utf8") }));
 });
 

@@ -69,6 +69,62 @@ module AwarenessReactionFixtures =
         let ordered = if mutation = Some "ordering" then List.rev ordered else ordered
         require (ordered |> List.map (fun item -> UnitId.value item.ReactorId, item.EngagementId) = [ 10, "a"; 10, "z"; 20, "b" ]) "Reaction candidates lost canonical simultaneous ordering."
 
+        let red = Simulation.initialState.Units[observer]
+        let blue = Simulation.initialState.Units[subject]
+        let integrationBase =
+            { Simulation.initialState with
+                Board = { Simulation.initialState.Board with Maximum = cell 4 2; Edges = [] }
+                Units =
+                    Simulation.initialState.Units
+                    |> Map.add observer { red with Cell = cell 0 0; AttentionDirection = East; WeaponPosture = WeaponPosture.Prepared }
+                    |> Map.add subject { blue with Cell = cell 1 0 } }
+        let prepare input state =
+            let first = Simulation.runTick state [ input ]
+            Simulation.runTick first.State []
+        let areaReady = prepare (PrepareAreaReaction(observer, "integration-area", [ cell 2 0 ], East)) integrationBase
+        let areaReaction = Simulation.runTick areaReady.State [ Move(subject, cell 2 0) ]
+        require
+            (areaReaction.Events |> List.exists (function ReactionResolved(id, source, "integration-area") -> id = observer && source = subject | _ -> false))
+            "Hostile covered-area entry did not resolve through physical authority."
+
+        let guarded = Edges.edgeBetween (cell 1 0) (cell 2 0) |> Option.defaultWith (fun () -> failwith "Integration edge is not canonical.")
+        let edgeReady = prepare (PrepareEdgeReaction(observer, "integration-edge", guarded, East)) integrationBase
+        let edgeReaction = Simulation.runTick edgeReady.State [ Move(subject, cell 2 0) ]
+        require
+            (edgeReaction.Events |> List.exists (function ReactionResolved(id, source, "integration-edge") -> id = observer && source = subject | _ -> false))
+            "Hostile guarded-edge crossing did not resolve through physical authority."
+
+        let acquiredContact =
+            { AwarenessReaction.emptyContact subject with
+                Level = AwarenessLevel.Acquired
+                Acquisition = profile.IdentificationThreshold
+                LastKnownCell = Some(cell 1 0)
+                Reason = AwarenessReason.IdentificationThresholdReached }
+        let unitBase = { integrationBase with Awareness = Map.ofList [ (observer, subject), acquiredContact ] }
+        let unitReady = prepare (PrepareUnitReaction(observer, "integration-unit", subject, East)) unitBase
+        let unitReaction = Simulation.runTick unitReady.State []
+        require
+            (unitReaction.Events |> List.exists (function ReactionResolved(id, source, "integration-unit") -> id = observer && source = subject | _ -> false))
+            "Known hostile unit exposure did not resolve through physical authority."
+
+        let allyId = unitId 30
+        let allyBase =
+            { integrationBase with
+                Units = integrationBase.Units |> Map.add allyId { red with Id = allyId; Cell = cell 1 1; AttentionDirection = East; WeaponPosture = WeaponPosture.Prepared } }
+        let allyReady = prepare (PrepareAreaReaction(observer, "integration-ally", [ cell 2 1 ], East)) allyBase
+        let allyMove = Simulation.runTick allyReady.State [ Move(allyId, cell 2 1) ]
+        require
+            (allyMove.Events |> List.forall (function ReactionCommitted(_, source, _) when source = allyId -> false | _ -> true))
+            "An allied covered-area entry produced a hostile reaction."
+
+        let interruptedPosture =
+            Simulation.runTick
+                (Simulation.runTick integrationBase [ PrepareAreaReaction(observer, "integration-posture", [ cell 2 0 ], East) ]).State
+                [ SetWeaponPosture(observer, WeaponPosture.Mobile) ]
+        require
+            (interruptedPosture.State.Engagements[observer].Reason = ReactionReason.PostureChanged)
+            "Losing prepared weapon posture did not interrupt the reaction window."
+
         [ AwarenessReaction.canonicalContactBytes first
           AwarenessReaction.canonicalContactBytes acquired
           AwarenessReaction.canonicalContactBytes lost
@@ -76,5 +132,10 @@ module AwarenessReactionFixtures =
           AwarenessReaction.canonicalEngagementBytes committed
           AwarenessReaction.canonicalEngagementBytes resolved
           AwarenessReaction.canonicalEngagementBytes interrupted
+          areaReaction.EventBytes
+          edgeReaction.EventBytes
+          unitReaction.EventBytes
+          allyMove.EventBytes
+          interruptedPosture.EventBytes
           yield! ordered |> List.map AwarenessReaction.canonicalCandidateBytes ]
         |> CanonicalEncoding.concatenate

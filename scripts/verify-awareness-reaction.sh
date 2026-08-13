@@ -31,8 +31,8 @@ for mutation in version hash bounds; do
 done
 
 dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --awareness
-for mutation in candidates los episodes evidence-bytes timing; do
-  if SIR_AWARENESS_PERF_MUTATE_CAP="$mutation" dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --awareness >"$task_tmp/perf-$mutation.log" 2>&1; then
+for mutation in cursor-reset no-movement no-engagements allocation; do
+  if SIR_AWARENESS_PERF_MUTATE_SUBJECT="$mutation" dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --awareness >"$task_tmp/perf-$mutation.log" 2>&1; then
     echo "Performance mutation survived: $mutation" >&2
     exit 1
   fi

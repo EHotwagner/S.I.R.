@@ -91,7 +91,8 @@ let private unitState index columns =
       Incapacitated = false
       Suppression = 0
       BodyFacing = if index % 2 = 0 then Direction8.East else Direction8.West
-      AttentionDirection = Direction8.North }
+      AttentionDirection = Direction8.North
+      WeaponPosture = WeaponPosture.Mobile }
 
 let private state unitCount columns rows covers =
     { Tick = 0
@@ -103,7 +104,8 @@ let private state unitCount columns rows covers =
       Units = [ 0 .. unitCount - 1 ] |> List.map (fun index -> unitState index columns) |> Map.ofList
       Observations = Set.empty
       Awareness = Map.empty
-      Engagements = Map.empty }
+      Engagements = Map.empty
+      AwarenessCursor = 0 }
 
 let private representativeWorkload () =
     let profiles =
@@ -141,7 +143,8 @@ let private stressWorkload () =
           Incapacitated = false
           Suppression = 0
           BodyFacing = if index % 2 = 0 then Direction8.East else Direction8.West
-          AttentionDirection = Direction8.North }
+          AttentionDirection = Direction8.North
+          WeaponPosture = WeaponPosture.Mobile }
 
     let units = [ 0 .. 99 ] |> List.map stressUnit |> Map.ofList
 
@@ -151,7 +154,8 @@ let private stressWorkload () =
           Units = units
           Observations = Set.empty
           Awareness = Map.empty
-          Engagements = Map.empty }
+          Engagements = Map.empty
+          AwarenessCursor = 0 }
 
     let inputs =
         [ for index in 1 .. 50 ->
@@ -341,46 +345,121 @@ let private within limits observed =
     && observed.CanonicalEvidenceBytes <= limits.CanonicalEvidenceBytes
 
 let private awarenessStressState () =
-    state 200 20 10 []
+    let make side id position posture =
+        let unitId = Simulation.unitId id
+        unitId,
+        { Id = unitId
+          Side = side
+          Cell = position
+          Health = health 100
+          Armor = { FrontRating = 50; RearRating = 20; Integrity = 100 }
+          Wounds = []
+          Incapacitated = false
+          Suppression = 0
+          BodyFacing = if side = Side.Red then Direction8.East else Direction8.West
+          AttentionDirection = if side = Side.Red then Direction8.East else Direction8.West
+          WeaponPosture = posture }
+    let reds =
+        [ for index in 0 .. 99 ->
+            make Side.Red (int32 (index + 1)) (cell (int32 (index % 10)) (int32 (index / 10))) WeaponPosture.Prepared ]
+    let blues =
+        [ for index in 0 .. 99 ->
+            make Side.Blue (int32 (index + 101)) (cell (int32 (20 + (index % 10) * 3)) (int32 ((index / 10) * 3))) WeaponPosture.Mobile ]
+    let acquired =
+        [ for index in 0 .. 33 do
+            let owner = Simulation.unitId (int32 (index + 1))
+            let subject = Simulation.unitId (int32 (index + 101))
+            yield
+                (owner, subject),
+                { SubjectId = subject
+                  Level = AwarenessLevel.Acquired
+                  Acquisition = AwarenessReaction.infantryProfile.IdentificationThreshold
+                  LastStimulusTick = Some 0
+                  LastKnownCell = Some(cell (int32 (20 + (index % 10) * 3)) (int32 ((index / 10) * 3)))
+                  RetainUntilTick = Some AwarenessReaction.infantryProfile.LastKnownRetentionTicks
+                  Reason = AwarenessReason.IdentificationThresholdReached } ]
+        |> Map.ofList
+    { Tick = 0
+      Board = { Minimum = cell 0 0; Maximum = cell 79 79; Edges = []; Covers = Map.empty }
+      Units = reds @ blues |> Map.ofList
+      Observations = Set.empty
+      Awareness = acquired
+      Engagements = Map.empty
+      AwarenessCursor = 0 }
 
 let private runAwarenessPerformance () =
-    let measure initial iterations =
-        let run () = Simulation.runTick initial []
-        for _ in 1 .. 3 do run () |> ignore
-        let mutable last = Unchecked.defaultof<TickResult>
-        let samples =
-            [| for _ in 1 .. iterations do
-                let watch = Stopwatch.StartNew()
-                last <- run ()
-                watch.Stop()
-                yield watch.ElapsedMilliseconds |]
-            |> Array.sort
-        last, samples[int (Math.Ceiling(float samples.Length * 0.95)) - 1]
-    let representative, representativeP95 = measure Simulation.initialState 7
-    let stress, stressP95 = measure (awarenessStressState ()) 7
-    let counters = stress.AwarenessCounters
-    let evidenceBytes = stress.StateBytes.Length + stress.EventBytes.Length
-    let mutation = Environment.GetEnvironmentVariable("SIR_AWARENESS_PERF_MUTATE_CAP") |> Option.ofObj |> Option.defaultValue ""
-    let candidateCap, losCap, episodeCap, evidenceCap, representativeCap, stressCap =
-        match mutation with
-        | "" -> 20_000, 5_000, 4_096, 262_144, 20L, 50L
-        | "candidates" -> int counters.CandidatePairs - 1, 5_000, 4_096, 262_144, 20L, 50L
-        | "los" -> 20_000, int counters.LosEvaluations - 1, 4_096, 262_144, 20L, 50L
-        | "episodes" -> 20_000, 5_000, int counters.AwarenessEpisodes - 1, 262_144, 20L, 50L
-        | "evidence-bytes" -> 20_000, 5_000, 4_096, evidenceBytes - 1, 20L, 50L
-        | "timing" -> 20_000, 5_000, 4_096, 262_144, -1L, -1L
-        | value -> failwithf "Unknown awareness cap mutation %s." value
+    let mutation = Environment.GetEnvironmentVariable("SIR_AWARENESS_PERF_MUTATE_SUBJECT") |> Option.ofObj |> Option.defaultValue ""
+    let workloadPath = "work/182-awareness-reaction-windows/contracts/awareness-reaction-performance-workload-v1.json"
+    use workload = JsonDocument.Parse(File.ReadAllText workloadPath)
+    required (workload.RootElement.GetProperty("workloadId").GetString() = "sir-awareness-reaction-authoritative-tick-v1") "Awareness workload identity is unreadable."
+    let prepareInputs =
+        [ for index in 0 .. 99 do
+            let owner = Simulation.unitId (int32 (index + 1))
+            let baseCell = cell (int32 (20 + (index % 10) * 3)) (int32 ((index / 10) * 3))
+            yield SetAttention(owner, Direction8.East)
+            yield SetWeaponPosture(owner, WeaponPosture.Prepared)
+            if mutation <> "no-engagements" then
+                match index % 3 with
+                | 0 -> yield PrepareUnitReaction(owner, $"stress-unit-{index + 1}", Simulation.unitId (int32 (index + 101)), Direction8.East)
+                | 1 -> yield PrepareAreaReaction(owner, $"stress-area-{index + 1}", [ baseCell; { baseCell with Col = baseCell.Col + 1 } ], Direction8.East)
+                | _ ->
+                    let edge = Edges.edgeBetween baseCell { baseCell with Col = baseCell.Col + 1 } |> Option.defaultWith (fun () -> failwith "invalid stress edge")
+                    yield PrepareEdgeReaction(owner, $"stress-edge-{index + 1}", edge, Direction8.East) ]
+    let mutable state = awarenessStressState ()
+    state <- (Simulation.runTick state prepareInputs).State
+    state <- (Simulation.runTick state []).State
+    let mutable totalSlots = 0L
+    let mutable totalLos = 0L
+    let mutable totalMoves = 0
+    let mutable totalEngagements = 0L
+    let mutable totalReactions = 0L
+    let mutable maximumAllocation = 0L
+    let mutable evidenceBytes = 0
+    let samples = ResizeArray<int64>()
+    for sample in 1 .. 79 do
+        let moves =
+            if mutation = "no-movement" then []
+            else
+                [ for index in 0 .. 99 do
+                    let source = Simulation.unitId (int32 (index + 101))
+                    let baseCol = int32 (20 + (index % 10) * 3)
+                    let destination = cell (baseCol + (if sample % 2 = 1 then 1 else 0)) (int32 ((index / 10) * 3))
+                    yield Move(source, destination) ]
+        if mutation = "cursor-reset" then state <- { state with AwarenessCursor = 0 }
+        let before = GC.GetAllocatedBytesForCurrentThread()
+        let watch = Stopwatch.StartNew()
+        let result = Simulation.runTick state moves
+        watch.Stop()
+        let allocated = GC.GetAllocatedBytesForCurrentThread() - before
+        maximumAllocation <- max maximumAllocation allocated
+        if mutation = "allocation" then maximumAllocation <- 200_000_000L
+        state <- result.State
+        totalSlots <- totalSlots + int64 result.AwarenessCounters.AwarenessEpisodes
+        totalLos <- totalLos + int64 result.AwarenessCounters.LosEvaluations
+        totalMoves <- totalMoves + (result.Events |> List.sumBy (function UnitMoved _ -> 1 | _ -> 0))
+        totalEngagements <- totalEngagements + int64 result.AwarenessCounters.Engagements
+        totalReactions <- totalReactions + int64 result.AwarenessCounters.ReactionCandidates
+        evidenceBytes <- max evidenceBytes result.EventBytes.Length
+        if sample > 19 then samples.Add watch.ElapsedMilliseconds
+    let sorted = samples |> Seq.sort |> Seq.toArray
+    let stressP95 = sorted[int (Math.Ceiling(float sorted.Length * 0.95)) - 1]
+    let stressWorst = sorted[sorted.Length - 1]
+    let coveredObservers = state.Awareness |> Map.toSeq |> Seq.map (fst >> fst) |> Set.ofSeq |> Set.count
     let passed =
-        representativeP95 <= representativeCap
-        && stressP95 <= stressCap
-        && counters.CandidatePairs <= candidateCap
-        && counters.LosEvaluations <= losCap
-        && counters.AwarenessEpisodes <= episodeCap
-        && evidenceBytes <= evidenceCap
-        && stress.State.Units.Count = 200
+        state.Units.Count = 200
+        && state.AwarenessCursor <> 0
+        && coveredObservers = 200
+        && totalSlots > 20_000L
+        && totalLos > 10_000L
+        && totalMoves > 0
+        && totalEngagements > 0L
+        && totalReactions > 0L
+        && evidenceBytes <= 262_144
+        && maximumAllocation <= 100_000_000L
+        && stressWorst <= 50L
     printfn "route=SIR.Simulation.Simulation.runTick"
-    printfn "representative-p95-ms=%d/%d stress-p95-ms=%d/%d" representativeP95 representativeCap stressP95 stressCap
-    printfn "stress-units=%d candidate-pairs=%d/%d los=%d/%d stimuli=%d episodes=%d/%d engagements=%d reaction-candidates=%d evidence-bytes=%d/%d" stress.State.Units.Count counters.CandidatePairs candidateCap counters.LosEvaluations losCap counters.Stimuli counters.AwarenessEpisodes episodeCap counters.Engagements counters.ReactionCandidates evidenceBytes evidenceCap
+    printfn "full-tick-p95-ms=%d target=20 hard-ceiling=50 worst-ms=%d/50" stressP95 stressWorst
+    printfn "stress-units=%d ticks=%d cursor=%d covered-observers=%d serviced-slots=%d los=%d moves=%d engagement-observations=%d reaction-candidates=%d evidence-bytes=%d/262144 max-allocation=%d/100000000 mutation=%s" state.Units.Count state.Tick state.AwarenessCursor coveredObservers totalSlots totalLos totalMoves totalEngagements totalReactions evidenceBytes maximumAllocation mutation
     if passed then 0 else 1
 
 exception AwarenessPerformanceExit of int

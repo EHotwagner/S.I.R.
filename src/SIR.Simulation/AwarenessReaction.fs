@@ -160,7 +160,40 @@ module AwarenessReaction =
     let private optionCell (value: Cell option) = match value with None -> [| 0uy |] | Some item -> CanonicalEncoding.concatenate [ [| 1uy |]; cell item ]
     let private levelCode = function AwarenessLevel.Unknown -> 0uy | AwarenessLevel.Suspected -> 1uy | AwarenessLevel.Acquired -> 2uy | AwarenessLevel.LostContact -> 3uy
     let private awarenessReasonCode = function AwarenessReason.NoStimulus -> 0uy | AwarenessReason.OutsideRange -> 1uy | AwarenessReason.Occluded -> 2uy | AwarenessReason.StimulusAccumulated -> 3uy | AwarenessReason.IdentificationThresholdReached -> 4uy | AwarenessReason.StimulusDecayed -> 5uy | AwarenessReason.ContactLost -> 6uy | AwarenessReason.ContactRetained -> 7uy | AwarenessReason.InvalidProfile -> 8uy
-    let canonicalContactBytes (contact: AwarenessContact) = CanonicalEncoding.concatenate [ [| byte schemaVersion |]; i32 (UnitId.value contact.SubjectId); [| levelCode contact.Level |]; i32 contact.Acquisition; optionI32 contact.LastStimulusTick; optionCell contact.LastKnownCell; optionI32 contact.RetainUntilTick; [| awarenessReasonCode contact.Reason |] ]
+    let canonicalContactBytes (contact: AwarenessContact) =
+        // Contacts dominate large-state snapshots. Encode the fixed schema into
+        // one exact-sized array rather than allocating a segment graph per row.
+        let optionI32Length = function None -> 1 | Some _ -> 5
+        let optionCellLength = function None -> 1 | Some _ -> 9
+        let bytes =
+            Array.zeroCreate<byte>
+                (11
+                 + optionI32Length contact.LastStimulusTick
+                 + optionCellLength contact.LastKnownCell
+                 + optionI32Length contact.RetainUntilTick)
+        let mutable offset = 0
+        let writeByte value = bytes[offset] <- value; offset <- offset + 1
+        let writeI32 (value: int32) =
+            bytes[offset] <- byte value
+            bytes[offset + 1] <- byte (value >>> 8)
+            bytes[offset + 2] <- byte (value >>> 16)
+            bytes[offset + 3] <- byte (value >>> 24)
+            offset <- offset + 4
+        let writeOptionI32 = function
+            | None -> writeByte 0uy
+            | Some value -> writeByte 1uy; writeI32 value
+        let writeOptionCell = function
+            | None -> writeByte 0uy
+            | Some value -> writeByte 1uy; writeI32 value.Col; writeI32 value.Row
+        writeByte (byte schemaVersion)
+        writeI32 (UnitId.value contact.SubjectId)
+        writeByte (levelCode contact.Level)
+        writeI32 contact.Acquisition
+        writeOptionI32 contact.LastStimulusTick
+        writeOptionCell contact.LastKnownCell
+        writeOptionI32 contact.RetainUntilTick
+        writeByte (awarenessReasonCode contact.Reason)
+        bytes
 
     let private targetBytes = function
         | EngagementTarget.KnownUnit id -> CanonicalEncoding.concatenate [ [| 0uy |]; i32 (UnitId.value id) ]

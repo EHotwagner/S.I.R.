@@ -70,8 +70,14 @@ let private inputSummary input =
         + string aim.Row
     | SetAttention(unitId, direction) ->
         "unit " + string (Simulation.unitIdValue unitId) + " sets attention " + string direction
+    | SetWeaponPosture(unitId, posture) ->
+        "unit " + string (Simulation.unitIdValue unitId) + " sets posture " + string posture
     | PrepareAreaReaction(unitId, engagementId, cells, direction) ->
         "unit " + string (Simulation.unitIdValue unitId) + " prepares " + engagementId + " over " + string cells.Length + " cells facing " + string direction
+    | PrepareUnitReaction(unitId, engagementId, targetId, direction) ->
+        "unit " + string (Simulation.unitIdValue unitId) + " prepares " + engagementId + " on unit " + string (Simulation.unitIdValue targetId) + " facing " + string direction
+    | PrepareEdgeReaction(unitId, engagementId, _, direction) ->
+        "unit " + string (Simulation.unitIdValue unitId) + " prepares " + engagementId + " on an edge facing " + string direction
 
 let private inputUnits input =
     match input with
@@ -83,7 +89,10 @@ let private inputUnits input =
     | PhysicalAttack(attackerId, _, _) ->
         Some(Simulation.unitIdValue attackerId), None
     | SetAttention(unitId, _) -> Some(Simulation.unitIdValue unitId), None
+    | SetWeaponPosture(unitId, _) -> Some(Simulation.unitIdValue unitId), None
     | PrepareAreaReaction(unitId, _, _, _) -> Some(Simulation.unitIdValue unitId), None
+    | PrepareUnitReaction(unitId, _, targetId, _) -> Some(Simulation.unitIdValue unitId), Some(Simulation.unitIdValue targetId)
+    | PrepareEdgeReaction(unitId, _, _, _) -> Some(Simulation.unitIdValue unitId), None
 
 let private journalAt tick (full: FullReplay) =
     let externalInputs =

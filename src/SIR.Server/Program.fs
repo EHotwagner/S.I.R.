@@ -131,13 +131,15 @@ module Program =
 
         app.MapPost(
             "/api/awareness/local-projection",
-            Func<HttpRequest, IResult>(fun request ->
+            Func<HttpRequest, Task<IResult>>(fun request -> task {
                 let authorization = string request.Headers.Authorization
-                let accessToken =
-                    if authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) then authorization.Substring("Bearer ".Length)
-                    else ""
-                if not (LiveAuthority.authorizeHttp accessToken) then Results.Unauthorized()
-                else Results.Text(AwarenessReactionDiagnostics.evaluate (), "application/json"))
+                let accessToken = if authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) then authorization.Substring("Bearer ".Length) else ""
+                if not (LiveAuthority.authorizeHttp accessToken) then return Results.Unauthorized()
+                else
+                    let! body = readBoundedBody 1024 request.Body
+                    match body with
+                    | Error _ -> return Results.BadRequest {| error = "awareness action body too large" |}
+                    | Ok value -> return Results.Text(AwarenessReactionDiagnostics.evaluate value, "application/json") })
         ) |> ignore
 
         app.MapHub<GameHub>("/hub/game") |> ignore

@@ -111,7 +111,10 @@ type private ReplayReader =
 [<RequireQualifiedAccess>]
 module Replay =
     [<Literal>]
-    let CurrentFormatVersion = 5
+    let CurrentFormatVersion = 6
+
+    [<Literal>]
+    let AwarenessFormatVersion = 5
 
     [<Literal>]
     let PhysicalCombatFormatVersion = 4
@@ -166,6 +169,11 @@ module Replay =
         | WeaponProfile.AntiArmor -> 2uy
         | WeaponProfile.LobbedArea -> 3uy
 
+    let private postureByte = function
+        | WeaponPosture.Mobile -> 0uy
+        | WeaponPosture.Ready -> 1uy
+        | WeaponPosture.Prepared -> 2uy
+
     let private woundSeverityByte = function
         | WoundSeverity.Serious -> 0uy
         | WoundSeverity.Critical -> 1uy
@@ -205,6 +213,12 @@ module Replay =
                    CanonicalEncoding.int32LittleEndian cells.Length ]
                  @ (cells |> List.map cellBytes)
                  @ [ CanonicalEncoding.direction8 direction ])
+        | SetWeaponPosture(unitId, posture) ->
+            CanonicalEncoding.concatenate [ [| 6uy |]; unitIdBytes unitId; [| postureByte posture |] ]
+        | PrepareUnitReaction(unitId, engagementId, targetId, direction) ->
+            CanonicalEncoding.concatenate [ [| 7uy |]; unitIdBytes unitId; stringBytes engagementId; unitIdBytes targetId; CanonicalEncoding.direction8 direction ]
+        | PrepareEdgeReaction(unitId, engagementId, edge, direction) ->
+            CanonicalEncoding.concatenate [ [| 8uy |]; unitIdBytes unitId; stringBytes engagementId; cellBytes edge.Lo; cellBytes edge.Hi; CanonicalEncoding.direction8 direction ]
 
     let private snapshotBytesForVersion formatVersion (state: SimulationState) =
         let edgeSegments =
@@ -231,7 +245,9 @@ module Replay =
                   if formatVersion >= DirectionalFormatVersion then
                       CanonicalEncoding.direction8 unit.BodyFacing
                   if formatVersion >= DirectionalFormatVersion then
-                      CanonicalEncoding.direction8 unit.AttentionDirection ])
+                      CanonicalEncoding.direction8 unit.AttentionDirection
+                  if formatVersion >= CurrentFormatVersion then
+                      [| postureByte unit.WeaponPosture |] ])
 
         let combatUnitSegments =
             if formatVersion >= PhysicalCombatFormatVersion then
@@ -272,7 +288,7 @@ module Replay =
                 [ unitIdBytes observerId; unitIdBytes targetId ])
 
         let awarenessSegments =
-            if formatVersion >= CurrentFormatVersion then
+            if formatVersion >= AwarenessFormatVersion then
                 state.Awareness
                 |> Map.toList
                 |> List.collect (fun ((observerId, subjectId), contact) ->
@@ -282,7 +298,7 @@ module Replay =
             else []
 
         let engagementSegments =
-            if formatVersion >= CurrentFormatVersion then
+            if formatVersion >= AwarenessFormatVersion then
                 state.Engagements
                 |> Map.toList
                 |> List.collect (fun (ownerId, engagement) ->
@@ -306,10 +322,11 @@ module Replay =
              @ coverSegments
              @ [ CanonicalEncoding.int32LittleEndian state.Observations.Count ]
              @ observationSegments
-             @ (if formatVersion >= CurrentFormatVersion then [ CanonicalEncoding.int32LittleEndian state.Awareness.Count ] else [])
+             @ (if formatVersion >= AwarenessFormatVersion then [ CanonicalEncoding.int32LittleEndian state.Awareness.Count ] else [])
              @ awarenessSegments
-             @ (if formatVersion >= CurrentFormatVersion then [ CanonicalEncoding.int32LittleEndian state.Engagements.Count ] else [])
-             @ engagementSegments)
+             @ (if formatVersion >= AwarenessFormatVersion then [ CanonicalEncoding.int32LittleEndian state.Engagements.Count ] else [])
+             @ engagementSegments
+             @ (if formatVersion >= CurrentFormatVersion then [ CanonicalEncoding.int32LittleEndian state.AwarenessCursor ] else []))
 
     /// Complete current-version snapshot encoding, including orientation.
     let snapshotBytes state =
@@ -566,6 +583,13 @@ module Replay =
         | 3uy -> WeaponProfile.LobbedArea
         | value -> failDecode (sprintf "Invalid weapon-profile byte %d." value)
 
+    let private readWeaponPosture reader =
+        match readByte reader with
+        | 0uy -> WeaponPosture.Mobile
+        | 1uy -> WeaponPosture.Ready
+        | 2uy -> WeaponPosture.Prepared
+        | value -> failDecode (sprintf "Invalid weapon-posture byte %d." value)
+
     let private readWoundSeverity reader =
         match readByte reader with
         | 0uy -> WoundSeverity.Serious
@@ -598,6 +622,17 @@ module Replay =
             let count = readCount "covered area cells" 256 reader
             let cells = [ for _ in 1 .. count -> readCell reader ]
             PrepareAreaReaction(unitId, engagementId, cells, readDirection "engagement attention" reader)
+        | 6uy -> SetWeaponPosture(Simulation.unitId (readInt32 reader), readWeaponPosture reader)
+        | 7uy ->
+            let unitId = Simulation.unitId (readInt32 reader)
+            let engagementId = readLengthPrefixed "engagement identifier" 96 reader |> System.Text.Encoding.UTF8.GetString
+            PrepareUnitReaction(unitId, engagementId, Simulation.unitId (readInt32 reader), readDirection "engagement attention" reader)
+        | 8uy ->
+            let unitId = Simulation.unitId (readInt32 reader)
+            let engagementId = readLengthPrefixed "engagement identifier" 96 reader |> System.Text.Encoding.UTF8.GetString
+            let left, right = readCell reader, readCell reader
+            let edge = Edges.edgeBetween left right |> Option.defaultWith (fun () -> failDecode "Prepared edge is not canonical.")
+            PrepareEdgeReaction(unitId, engagementId, edge, readDirection "engagement attention" reader)
         | value -> failDecode (sprintf "Invalid kernel-input tag %d." value)
 
     let private readOptionalInt32 reader = if readBool reader then Some(readInt32 reader) else None
@@ -721,7 +756,10 @@ module Replay =
                             if formatVersion >= DirectionalFormatVersion then
                                 readDirection "attention" reader
                             else
-                                North } ]
+                                North
+                        WeaponPosture =
+                            if formatVersion >= CurrentFormatVersion then readWeaponPosture reader
+                            else WeaponPosture.Mobile } ]
 
         if legacyUnits |> List.map fst |> Set.ofList |> Set.count <> unitCount then
             failDecode "Snapshot contains duplicate unit identifiers."
@@ -787,7 +825,7 @@ module Replay =
             failDecode "Snapshot contains duplicate observations."
 
         let awareness =
-            if formatVersion >= CurrentFormatVersion then
+            if formatVersion >= AwarenessFormatVersion then
                 let count = readCount "awareness contacts" limits.MaxAwarenessContacts reader
                 let values =
                     [ for _ in 1 .. count do
@@ -800,7 +838,7 @@ module Replay =
             else Map.empty
 
         let engagements =
-            if formatVersion >= CurrentFormatVersion then
+            if formatVersion >= AwarenessFormatVersion then
                 let count = readCount "engagements" limits.MaxEngagements reader
                 let values =
                     [ for _ in 1 .. count do
@@ -811,6 +849,9 @@ module Replay =
                 if values |> List.map fst |> Set.ofList |> Set.count <> count then failDecode "Snapshot contains duplicate engagements."
                 Map.ofList values
             else Map.empty
+
+        let awarenessCursor =
+            if formatVersion >= CurrentFormatVersion then readInt32 reader else 0
 
         if reader.Offset <> boundary then
             failDecode "Snapshot length does not match its canonical fields."
@@ -824,7 +865,8 @@ module Replay =
           Units = Map.ofList units
           Observations = observations
           Awareness = awareness
-          Engagements = engagements }
+          Engagements = engagements
+          AwarenessCursor = awarenessCursor }
 
     let private readReplayInput reader : ReplayInput =
         { Tick = readInt32 reader
@@ -894,6 +936,7 @@ module Replay =
                    && version <> DirectionalFormatVersion
                    && version <> RulesArchiveFormatVersion
                    && version <> PhysicalCombatFormatVersion
+                   && version <> AwarenessFormatVersion
                    && version <> CurrentFormatVersion then
                     failDecode (sprintf "Unsupported replay format %d." version)
 
@@ -943,6 +986,7 @@ module Replay =
            && package.FormatVersion <> int32 DirectionalFormatVersion
            && package.FormatVersion <> int32 RulesArchiveFormatVersion
            && package.FormatVersion <> int32 PhysicalCombatFormatVersion
+           && package.FormatVersion <> int32 AwarenessFormatVersion
            && package.FormatVersion <> int32 CurrentFormatVersion then
             Error(
                 UnsupportedFormat(

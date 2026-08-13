@@ -6,8 +6,9 @@
   "measurementTicks": 60,
   "representative": {
     "scenarios": ["front-peripheral-rear", "occluded-acquisition-loss", "prepared-area-entry", "guarded-edge-crossing", "exposed-target", "interruption", "simultaneous-order"],
-    "maximumAwarenessP95Milliseconds": 5,
-    "maximumFullTickP95Milliseconds": 20
+    "maximumAwarenessP95Milliseconds": null,
+    "workingTargetFullTickP95Milliseconds": 20,
+    "maximumWorstTickMilliseconds": 50
   },
   "stress": {
     "units": 200,

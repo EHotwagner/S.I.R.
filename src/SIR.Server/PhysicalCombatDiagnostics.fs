@@ -144,11 +144,11 @@ module PhysicalCombatDiagnostics =
         let red =
             { Id = Simulation.unitId 10; Side = Side.Red; Cell = cell 0 0; Health = bounded 100
               Armor = { FrontRating = 0; RearRating = 0; Integrity = 0 }; Wounds = []; Incapacitated = false
-              Suppression = 0; BodyFacing = Direction8.East; AttentionDirection = Direction8.East }
+              Suppression = 0; BodyFacing = Direction8.East; AttentionDirection = Direction8.East; WeaponPosture = WeaponPosture.Mobile }
         let blue =
             { Id = Simulation.unitId 20; Side = Side.Blue; Cell = cell 4 0; Health = bounded 100
               Armor = { FrontRating = 50; RearRating = 20; Integrity = 100 }; Wounds = []; Incapacitated = false
-              Suppression = 0; BodyFacing = Direction8.West; AttentionDirection = Direction8.West }
+              Suppression = 0; BodyFacing = Direction8.West; AttentionDirection = Direction8.West; WeaponPosture = WeaponPosture.Mobile }
         { Tick = 0
           Board =
             { Minimum = cell 0 0; Maximum = cell 6 2; Edges = []
@@ -156,7 +156,8 @@ module PhysicalCombatDiagnostics =
           Units = [ red.Id, red; blue.Id, blue ] |> Map.ofList
           Observations = Set.empty
           Awareness = Map.empty
-          Engagements = Map.empty }
+          Engagements = Map.empty
+          AwarenessCursor = 0 }
 
     let private replayEvidence () =
         let initial = replayInitialState ()
