@@ -370,9 +370,9 @@ let ExecutableRulesPanel (bootstrap: BootstrapV1.Response option) =
                                     ]
                                     Html.dl [
                                         Html.dt "Trace"; Html.dd (profile.Trace |> List.map combatCellText |> String.concat " → ")
-                                        Html.dt "Cover outcome"; Html.dd ($"{profile.CoverSource} · retained {profile.CoverRetainedPercent}%")
+                                        Html.dt "Cover outcome"; Html.dd ($"{profile.CoverSource} · retained {profile.CoverRetainedPercent}" + "%")
                                         Html.dt "Cover integrity"; Html.dd ($"{profile.CoverIntegrityBefore} → {profile.CoverIntegrityAfter} · destroyed {profile.CoverDestroyed}")
-                                        Html.dt "Armor outcome"; Html.dd ($"{profile.ArmorArc} rating {profile.ArmorRating} vs penetration {profile.Penetration} · retained {profile.ArmorRetainedPercent}%")
+                                        Html.dt "Armor outcome"; Html.dd ($"{profile.ArmorArc} rating {profile.ArmorRating} vs penetration {profile.Penetration} · retained {profile.ArmorRetainedPercent}" + "%")
                                         Html.dt "HP / wounds"; Html.dd (string profile.RemainingHealth + " / " + String.concat ", " profile.Wounds)
                                         Html.dt "Suppression / incapacity"; Html.dd ($"{profile.Suppression} / {profile.Incapacitated}")
                                     ]
