@@ -375,7 +375,15 @@ module ReplayFixtures =
         require (Replay.encode decodedCombat = combatBytes) "Replay v4 combat snapshot did not round-trip byte-exactly."
         match decodedCombat.Content with
         | AuthorizedFullReplay full ->
-            let expectedSnapshotBytes = Replay.snapshotBytes (combatSnapshot ())
+            let expectedLegacy =
+                let state = combatSnapshot ()
+                { state with
+                    Board =
+                        { state.Board with
+                            Edges =
+                                state.Board.Edges
+                                |> List.map (fun edge -> { edge with EdgeId = "legacy-semantic-edge"; SpatialRevision = 0 }) } }
+            let expectedSnapshotBytes = Replay.snapshotBytes expectedLegacy
             require (Replay.snapshotBytes full.InitialSnapshot = expectedSnapshotBytes) "Replay v4 did not retain the complete combat snapshot."
             require (Replay.snapshotBytes full.Checkpoints.Head.State = expectedSnapshotBytes) "Replay v4 seek point lost combat state."
             let retained = full.InitialSnapshot.Units[Simulation.unitId 10]
