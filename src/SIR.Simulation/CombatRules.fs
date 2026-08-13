@@ -16,7 +16,7 @@ module CombatRules =
     let private requiredId value = RuleId.create value |> Result.defaultWith failwith
     let private fixedValue unitName value = { DataKind = RuleValueKind.FixedPoint; Unit = unitName; Value = RuleValue.FixedPointValue value }
     let private integerValue unitName value = { DataKind = RuleValueKind.Integer; Unit = unitName; Value = RuleValue.IntegerValue value }
-    let private source symbol = Some { Symbol = symbol; RepositoryPath = "src/SIR.Simulation/CombatRules.fs"; Commit = "5363f9072214bf1128d423d450db46222f6564ad" }
+    let private source symbol = Some { Symbol = symbol; RepositoryPath = "src/SIR.Simulation/CombatRules.fs"; Commit = "3cffdea3665a29b57fe99f2cbd8ebc90b51bbd15" }
     let private statement trigger response = { Preconditions = []; Trigger = trigger; System = "S.I.R. combat simulation"; Responses = [ response ] }
     let private metadata id title kind rationale dependencies symbol evidence =
         { Id = requiredId id; Title = title; Status = Canonical; SemanticKind = kind; Statement = statement None title; Rationale = rationale; Dependencies = dependencies |> List.map requiredId; Supersedes = []; RuleSource = source symbol; Examples = [ "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs" ]; Properties = [ "deterministic .NET/Fable canonical equality" ]; Evidence = [ evidence ] }
@@ -69,8 +69,8 @@ module CombatRules =
         [ weapon; body; engagement; trace; armor; damage; collision; cover; penetration; health; wound; suppression; recovery; collateral; coverDestruction; transition ] |> Rules.validate |> Result.defaultWith (fun errors -> failwithf "Invalid combat registry: %A" errors)
 #endif
     let implementationArtifacts =
-        [ "implementation", System.Text.Encoding.UTF8.GetBytes "6d0994aa21d9192bd941dc0748291164f5dcf428d43b5b8e1e97e02e97a29d51" ]
-    let packageIdentity = Rules.packageIdentity "sir-simulation-v1" "fs-gg-game-core-fable-lockstep-v1" "FS.GG.Game.Core@0.13.0" "5363f9072214bf1128d423d450db46222f6564ad" implementationArtifacts registry
+        [ "implementation", System.Text.Encoding.UTF8.GetBytes "e0faec1c96a86501453176ec0816b934c19d71f517e45dd16ccb94a4dbf9f57f" ]
+    let packageIdentity = Rules.packageIdentity "sir-simulation-v1" "fs-gg-game-core-fable-lockstep-v1" "FS.GG.Game.Core@0.13.0" "3cffdea3665a29b57fe99f2cbd8ebc90b51bbd15" implementationArtifacts registry
     let retainedPackage =
 #if SIR_WEB_CLIENT
         { Identity = packageIdentity; ManifestJson = ""; CoverageJson = "" }
