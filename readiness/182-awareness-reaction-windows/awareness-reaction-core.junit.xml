@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <testsuite name="item-182-core" tests="1" failures="0">
   <testcase classname="Item182Evidence" name="awareness, reaction, replay, performance, disclosure, and browser gates pass"/>
-  <system-out>command=./scripts/verify-awareness-reaction.sh; log-sha256=82940c0dc98da3e79aa56ec5f34d447bf2a40535df4b89eaa91ef3706eb81f10</system-out>
+  <system-out>command=./scripts/verify-awareness-reaction.sh; log-sha256=bc975c52078c68f626a3e09e5afd52eaf1a264d93175d8167ad9eb7d189d18e9</system-out>
 </testsuite>

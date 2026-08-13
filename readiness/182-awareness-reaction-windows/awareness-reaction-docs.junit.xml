@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <testsuite name="item-182-docs" tests="1" failures="0">
   <testcase classname="Item182Evidence" name="documentation build, integrity, experience, browser smoke, and accessibility pass"/>
-  <system-out>command=./scripts/build-docs.sh; log-sha256=41a3b77f4e01e7bec0902665fa1223be29487db521ce714218c4ac601930f355</system-out>
+  <system-out>command=./scripts/build-docs.sh; log-sha256=09c6e27e10db2717397b32992a54738584e559c9afddef325928d50ae82f56a9</system-out>
 </testsuite>
