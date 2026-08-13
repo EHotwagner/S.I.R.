@@ -11,7 +11,7 @@ sourceAnalysis: readiness/183-tactical-overlays/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/183-tactical-overlays/analysis.json
-    digest: efb97f78a89e7844d50033d1093430954a22e93d5d5df296e5924acac79e8d27
+    digest: ea141b2cec52b4103b235543d07281805f08273542d7cacaee61b668e09b1da5
     schemaVersion: 1
   - label: checklist
     path: work/183-tactical-overlays/checklist.md
@@ -53,14 +53,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV002
     kind: verification
     subject:
@@ -80,14 +80,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV003
     kind: verification
     subject:
@@ -103,7 +103,7 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
     result: pass
     synthetic: false
     observedRun:
@@ -114,7 +114,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed through the published production Fable DOM journey in Chromium.]
   - id: EV004
     kind: verification
     subject:
@@ -134,14 +134,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV005
     kind: verification
     subject:
@@ -161,14 +161,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV006
     kind: verification
     subject:
@@ -188,14 +188,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV007
     kind: verification
     subject:
@@ -211,18 +211,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: scripts/test-conformance.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml
+      digest: "sha256:289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Fable, Observed by the self-contained native, and conformance aggregate., browser, documentation, replay]
   - id: EV008
     kind: verification
     subject:
@@ -242,14 +242,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV009
     kind: verification
     subject:
@@ -269,14 +269,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV010
     kind: verification
     subject:
@@ -292,7 +292,7 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
     result: pass
     synthetic: false
     observedRun:
@@ -303,7 +303,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed through the published production Fable DOM journey in Chromium.]
   - id: EV011
     kind: verification
     subject:
@@ -319,18 +319,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: scripts/test-conformance.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml
+      digest: "sha256:289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Fable, Observed by the self-contained native, and conformance aggregate., browser, documentation, replay]
   - id: EV012
     kind: verification
     subject:
@@ -346,18 +346,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: scripts/test-conformance.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml
+      digest: "sha256:289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Fable, Observed by the self-contained native, and conformance aggregate., browser, documentation, replay]
   - id: EV013
     kind: verification
     subject:
@@ -377,14 +377,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV014
     kind: verification
     subject:
@@ -404,14 +404,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV015
     kind: verification
     subject:
@@ -431,14 +431,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV016
     kind: verification
     subject:
@@ -454,7 +454,7 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
     result: pass
     synthetic: false
     observedRun:
@@ -465,7 +465,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed through the published production Fable DOM journey in Chromium.]
   - id: EV017
     kind: verification
     subject:
@@ -481,7 +481,7 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
     result: pass
     synthetic: false
     observedRun:
@@ -492,7 +492,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed through the published production Fable DOM journey in Chromium.]
   - id: EV018
     kind: verification
     subject:
@@ -512,14 +512,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV019
     kind: verification
     subject:
@@ -535,18 +535,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: scripts/test-conformance.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml
+      digest: "sha256:289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Fable, Observed by the self-contained native, and conformance aggregate., browser, documentation, replay]
   - id: EV020
     kind: verification
     subject:
@@ -566,14 +566,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV021
     kind: verification
     subject:
@@ -593,14 +593,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV022
     kind: verification
     subject:
@@ -616,7 +616,7 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
     result: pass
     synthetic: false
     observedRun:
@@ -627,7 +627,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed through the published production Fable DOM journey in Chromium.]
   - id: EV023
     kind: verification
     subject:
@@ -647,14 +647,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV024
     kind: verification
     subject:
@@ -674,14 +674,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV025
     kind: verification
     subject:
@@ -701,14 +701,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV026
     kind: verification
     subject:
@@ -724,18 +724,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: scripts/test-conformance.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml
+      digest: "sha256:289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Fable, Observed by the self-contained native, and conformance aggregate., browser, documentation, replay]
   - id: EV027
     kind: verification
     subject:
@@ -755,14 +755,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV028
     kind: verification
     subject:
@@ -782,14 +782,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV029
     kind: verification
     subject:
@@ -805,7 +805,7 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
     result: pass
     synthetic: false
     observedRun:
@@ -816,7 +816,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed through the published production Fable DOM journey in Chromium.]
   - id: EV030
     kind: verification
     subject:
@@ -832,18 +832,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: scripts/test-conformance.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml
+      digest: "sha256:289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Fable, Observed by the self-contained native, and conformance aggregate., browser, documentation, replay]
   - id: EV031
     kind: verification
     subject:
@@ -859,18 +859,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: scripts/test-conformance.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml
+      digest: "sha256:289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Fable, Observed by the self-contained native, and conformance aggregate., browser, documentation, replay]
   - id: EV032
     kind: verification
     subject:
@@ -890,14 +890,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV033
     kind: verification
     subject:
@@ -913,7 +913,7 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
     result: pass
     synthetic: false
     observedRun:
@@ -924,7 +924,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed through the published production Fable DOM journey in Chromium.]
   - id: EV034
     kind: verification
     subject:
@@ -944,14 +944,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV035
     kind: verification
     subject:
@@ -967,18 +967,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: scripts/test-conformance.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml
+      digest: "sha256:289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Fable, Observed by the self-contained native, and conformance aggregate., browser, documentation, replay]
   - id: EV036
     kind: verification
     subject:
@@ -998,14 +998,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV037
     kind: verification
     subject:
@@ -1021,7 +1021,7 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
     result: pass
     synthetic: false
     observedRun:
@@ -1032,7 +1032,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed through the published production Fable DOM journey in Chromium.]
   - id: EV038
     kind: verification
     subject:
@@ -1048,18 +1048,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: scripts/test-conformance.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml
+      digest: "sha256:289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Fable, Observed by the self-contained native, and conformance aggregate., browser, documentation, replay]
   - id: EV039
     kind: verification
     subject:
@@ -1075,7 +1075,7 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
     result: pass
     synthetic: false
     observedRun:
@@ -1086,7 +1086,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed through the published production Fable DOM journey in Chromium.]
   - id: EV040
     kind: verification
     subject:
@@ -1102,7 +1102,7 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
     result: pass
     synthetic: false
     observedRun:
@@ -1113,7 +1113,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed through the published production Fable DOM journey in Chromium.]
   - id: EV041
     kind: verification
     subject:
@@ -1133,14 +1133,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV042
     kind: verification
     subject:
@@ -1156,18 +1156,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: scripts/test-conformance.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml
+      digest: "sha256:289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Fable, Observed by the self-contained native, and conformance aggregate., browser, documentation, replay]
   - id: EV043
     kind: verification
     subject:
@@ -1187,14 +1187,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV044
     kind: verification
     subject:
@@ -1210,7 +1210,7 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
     result: pass
     synthetic: false
     observedRun:
@@ -1221,7 +1221,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed through the published production Fable DOM journey in Chromium.]
   - id: EV045
     kind: verification
     subject:
@@ -1241,14 +1241,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV046
     kind: verification
     subject:
@@ -1264,18 +1264,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: scripts/test-conformance.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml
+      digest: "sha256:289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Fable, Observed by the self-contained native, and conformance aggregate., browser, documentation, replay]
   - id: EV047
     kind: verification
     subject:
@@ -1291,18 +1291,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: scripts/test-conformance.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml
+      digest: "sha256:289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Fable, Observed by the self-contained native, and conformance aggregate., browser, documentation, replay]
   - id: EV048
     kind: verification
     subject:
@@ -1322,14 +1322,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV049
     kind: verification
     subject:
@@ -1345,7 +1345,7 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
     result: pass
     synthetic: false
     observedRun:
@@ -1356,7 +1356,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed through the published production Fable DOM journey in Chromium.]
   - id: EV050
     kind: verification
     subject:
@@ -1376,14 +1376,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV051
     kind: verification
     subject:
@@ -1399,18 +1399,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: scripts/test-conformance.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml
+      digest: "sha256:289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Fable, Observed by the self-contained native, and conformance aggregate., browser, documentation, replay]
   - id: EV052
     kind: verification
     subject:
@@ -1430,14 +1430,14 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-native.junit.xml
+      digest: "sha256:f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the Release renderer-neutral projection qualification.]
   - id: EV053
     kind: verification
     subject:
@@ -1453,18 +1453,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: scripts/build-client.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-fable-production.junit.xml
+      digest: "sha256:e4233829ab7718141cf6f8673455c304e2ec33f12a5244e730a20416e587d9ca"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Observed by the production Fable and Vite build route.]
   - id: EV054
     kind: verification
     subject:
@@ -1480,17 +1480,17 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+        path: scripts/test-conformance.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml
-      digest: "sha256:643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14"
+      source: readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml
+      digest: "sha256:289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Observed by the production browser and native qualification aggregate.]
+    notes: [Fable, Observed by the self-contained native, and conformance aggregate., browser, documentation, replay]
 lifecycleNotes:
   - "Next lifecycle action: verify."

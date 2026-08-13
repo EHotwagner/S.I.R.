@@ -98,6 +98,11 @@ test("View analysis overlays share pointer and keyboard commands and restore ind
   await page.getByRole("button", { name: "View", exact: true }).click();
   const exactLos = page.getByRole("menuitemcheckbox", { name: /Exact line of sight/ });
   await expect(exactLos).toHaveAttribute("aria-checked", "false");
+  await exactLos.dispatchEvent("pointerdown", { pointerId: 7, pointerType: "mouse", isPrimary: true });
+  await expect(exactLos).toHaveAttribute("aria-checked", "true");
+  await expect(exactLos).toHaveAttribute("data-overlay-mode", "InspectHeld");
+  await exactLos.dispatchEvent("pointerup", { pointerId: 7, pointerType: "mouse", isPrimary: true });
+  await expect(exactLos).toHaveAttribute("aria-checked", "false");
   await exactLos.click();
   await expect(battlefield).toHaveAttribute("data-overlay-preferences", /spatial\.exact-los=selection/);
 
@@ -106,12 +111,25 @@ test("View analysis overlays share pointer and keyboard commands and restore ind
   await page.keyboard.press("Alt+l");
   await expect(battlefield).toHaveAttribute("data-overlay-preferences", /spatial\.exact-los=off/);
 
+  const footprint = battlefield.locator('[data-overlay-id="unit.footprints"] rect').first();
+  await expect(footprint).toBeVisible();
+  await expect(footprint).toHaveCSS("vector-effect", "non-scaling-stroke");
+  const normalStroke = await footprint.evaluate((node) => getComputedStyle(node).strokeWidth);
+  expect(normalStroke).toBe("2px");
+  await page.emulateMedia({ forcedColors: "active" });
+  await expect.poll(() => footprint.evaluate((node) => getComputedStyle(node).strokeWidth)).toBe("3px");
   await page.evaluate(() => { document.documentElement.style.zoom = "4"; });
   await page.getByRole("button", { name: "View", exact: true }).click();
   await expect(page.getByRole("menuitemcheckbox", { name: /Unit footprints/ })).toBeVisible();
+  const overlayLayer = battlefield.locator("#persistent-tactical-overlay-layer");
   const overlayNodeEstimate = Number(await battlefield.getAttribute("data-overlay-node-estimate"));
-  expect(overlayNodeEstimate).toBeLessThanOrEqual(5000);
-  await expect(battlefield.locator("#persistent-tactical-overlay-layer")).toHaveAttribute("data-overlay-patterns", "non-color-only");
+  const actualOverlayNodes = await overlayLayer.locator("*").count();
+  expect(actualOverlayNodes).toBe(overlayNodeEstimate);
+  expect(actualOverlayNodes).toBeLessThanOrEqual(5000);
+  const footprintBox = await footprint.boundingBox();
+  expect(footprintBox?.width).toBeGreaterThan(20);
+  expect(footprintBox?.height).toBeGreaterThan(20);
+  await expect(overlayLayer).toHaveAttribute("data-overlay-patterns", "non-color-only");
 });
 
 test("the player-visible Rules explorer renders the executable combat corpus and pinned source", async ({ page }) => {

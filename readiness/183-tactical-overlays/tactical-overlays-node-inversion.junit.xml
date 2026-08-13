@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="1" skipped="0">
+ <testsuite name="sir-browser" tests="1" failures="1" skipped="0">
+  <testcase classname="visible-workflows.spec.js" name="View analysis overlays share pointer and keyboard commands and restore independently">
+    <failure message="Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 13
+Received: 22">Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 13
+Received: 22</failure>
+  </testcase>
+ </testsuite>
+</testsuites>

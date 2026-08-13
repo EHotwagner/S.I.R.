@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "reviewedBase": "8cb644986bdc79e7a06dd6733cae9397808203d7",
+  "round": 1,
+  "mutations": [
+    {
+      "gate": "production hold-to-inspect",
+      "subjectMutation": "Replace BeginTacticalOverlayHold/EndTacticalOverlayHold pointer dispatches with no-ops.",
+      "receipt": "readiness/183-tactical-overlays/tactical-overlays-hold-inversion.junit.xml",
+      "observed": "red: Exact LOS remained aria-checked=false instead of InspectHeld"
+    },
+    {
+      "gate": "production forced-colors styling",
+      "subjectMutation": "Remove the forced-colors child stroke-width rule while retaining the test unchanged.",
+      "receipt": "readiness/183-tactical-overlays/tactical-overlays-contrast-inversion.junit.xml",
+      "observed": "red: computed footprint stroke remained 2px instead of 3px"
+    },
+    {
+      "gate": "actual production overlay DOM node accounting",
+      "subjectMutation": "Replace structured geometry node accounting with payloads+labels.",
+      "receipt": "readiness/183-tactical-overlays/tactical-overlays-node-inversion.junit.xml",
+      "observed": "red: declared 13 nodes differed from 22 actual emitted descendants"
+    },
+    {
+      "gate": "100/200-unit typed initial-layer projection",
+      "subjectMutation": "Set every authoritative area/reservation radius to zero.",
+      "receipt": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-build",
+      "observed": "red: typed geometry qualification rejected the degenerate area payloads"
+    }
+  ]
+}

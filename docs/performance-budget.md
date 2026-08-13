@@ -359,6 +359,22 @@ and emitted no more than 94 projection messages; its slowest measured batch was
 0.003 ms. These numbers are dated review evidence, not portable hardware
 guarantees.
 
+## Tactical overlay projection and view
+
+The item-183 qualification builds the renderer-neutral tactical overlay view for
+two declared scenes: 100 disclosed units as the representative workload and 200
+as stress. Every registered overlay mode is enabled (including held modes), so
+the measurement includes footprints, directions, paths/cost/blockers, areas,
+traces/impacts, and status payloads rather than only the default footprint
+layer. Release projection must remain below 20 ms p95 for the 200-unit scene.
+
+Projection admits at most 4,096 payloads and 256 labels. Its 5,000-node view cap
+counts the actual overlay descendants emitted by the production SVG: each
+payload group, every shape/blocker mark, and every label text node. The built
+Chromium journey compares that declared count with `querySelectorAll("*")` on
+the overlay layer and fails on disagreement or overflow. This is a structural
+projection/view budget; compositor frame rate is not measured or claimed.
+
 ## Open parameters
 
 - Benchmark hardware and configuration.

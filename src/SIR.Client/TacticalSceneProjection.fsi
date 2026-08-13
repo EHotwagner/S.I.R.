@@ -69,6 +69,14 @@ type TacticalOverlayPreferenceDiagnostic =
     | MalformedOverlayPreferences
     | UnsupportedOverlayPreferenceSchema of int
 
+type TacticalOverlayGeometry =
+    | FootprintGeometry of centerX: float * centerY: float * width: float * depth: float
+    | DirectionGeometry of originX: float * originY: float * headingRadians: float * length: float * arcRadians: float
+    | PathGeometry of points: float array * movementCost: int32 * blockerIds: string array
+    | AreaGeometry of centerX: float * centerY: float * radius: float
+    | TraceGeometry of points: float array * impactX: float * impactY: float
+    | StatusGeometry of anchorX: float * anchorY: float * current: int32 option * maximum: int32 option * tokens: string array
+
 type TacticalOverlayPayload =
     { OverlayId: TacticalOverlayId
       PrimitiveId: ScenePrimitiveId
@@ -76,6 +84,7 @@ type TacticalOverlayPayload =
       Tick: int32
       Kind: string
       PayloadKind: TacticalOverlayPayloadKind
+      Geometry: TacticalOverlayGeometry
       Points: float array
       Label: Disclosure<string>
       Priority: int
@@ -109,13 +118,18 @@ type SceneUnitProjection =
 type SceneRouteProjection =
     { PrimitiveId: ScenePrimitiveId
       OwnerUnitId: int32 option
+      OverlayId: TacticalOverlayId
       Kind: string
       Points: float array
+      MovementCost: int32
+      BlockerIds: string array
       Label: Disclosure<string> }
 
 type SceneAnnotationProjection =
     { PrimitiveId: ScenePrimitiveId
       Kind: string
+      OverlayId: TacticalOverlayId option
+      SubjectUnitId: int32 option
       Column: int32 option
       Row: int32 option
       Text: Disclosure<string> }

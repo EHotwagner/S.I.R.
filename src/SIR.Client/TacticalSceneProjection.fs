@@ -72,6 +72,14 @@ type TacticalOverlayPreferenceDiagnostic =
     | MalformedOverlayPreferences
     | UnsupportedOverlayPreferenceSchema of int
 
+type TacticalOverlayGeometry =
+    | FootprintGeometry of centerX: float * centerY: float * width: float * depth: float
+    | DirectionGeometry of originX: float * originY: float * headingRadians: float * length: float * arcRadians: float
+    | PathGeometry of points: float array * movementCost: int32 * blockerIds: string array
+    | AreaGeometry of centerX: float * centerY: float * radius: float
+    | TraceGeometry of points: float array * impactX: float * impactY: float
+    | StatusGeometry of anchorX: float * anchorY: float * current: int32 option * maximum: int32 option * tokens: string array
+
 type TacticalOverlayPayload =
     { OverlayId: TacticalOverlayId
       PrimitiveId: ScenePrimitiveId
@@ -79,6 +87,7 @@ type TacticalOverlayPayload =
       Tick: int32
       Kind: string
       PayloadKind: TacticalOverlayPayloadKind
+      Geometry: TacticalOverlayGeometry
       Points: float array
       Label: Disclosure<string>
       Priority: int
@@ -112,13 +121,18 @@ type SceneUnitProjection =
 type SceneRouteProjection =
     { PrimitiveId: ScenePrimitiveId
       OwnerUnitId: int32 option
+      OverlayId: TacticalOverlayId
       Kind: string
       Points: float array
+      MovementCost: int32
+      BlockerIds: string array
       Label: Disclosure<string> }
 
 type SceneAnnotationProjection =
     { PrimitiveId: ScenePrimitiveId
       Kind: string
+      OverlayId: TacticalOverlayId option
+      SubjectUnitId: int32 option
       Column: int32 option
       Row: int32 option
       Text: Disclosure<string> }
@@ -457,9 +471,22 @@ module TacticalSceneProjection =
     let private eventAnnotations prefix (events: RenderEventVisual array) =
         events
         |> Array.map (fun event ->
+            let overlay =
+                match event.Kind.ToLowerInvariant() with
+                | kind when kind.Contains("attack") || kind.Contains("impact") -> Some(overlayId "combat.attack-traces")
+                | kind when kind.Contains("suppress") -> Some(overlayId "combat.suppression")
+                | kind when kind.Contains("wound") || kind.Contains("health") -> Some(overlayId "combat.hp-wounds")
+                | kind when kind.Contains("command") -> Some(overlayId "command.state")
+                | _ -> None
             { PrimitiveId =
                 primitive prefix (invariant event.Id)
               Kind = event.Kind
+              OverlayId = overlay
+              SubjectUnitId =
+                match event.TargetUnitId, event.SourceUnitId with
+                | Disclosed id, _ -> Some id
+                | _, Disclosed id -> Some id
+                | _ -> None
               Column = None
               Row = None
               Text = event.Summary })
@@ -484,6 +511,8 @@ module TacticalSceneProjection =
                 | DeploymentZone Blue -> "blue-deployment"
                 | DeploymentZone Red -> "red-deployment"
                 | DeploymentZone NeutralSide -> "neutral-deployment"
+              OverlayId = None
+              SubjectUnitId = None
               Column = column
               Row = row
               Text = Disclosed("Region " + invariant id) })
@@ -644,6 +673,16 @@ module TacticalSceneProjection =
         let owner = roster |> Array.tryFind (fun unit -> unit.UnitId = command.UnitId)
         { PrimitiveId = primitive "plan-command" command.Id
           Kind = kind
+          OverlayId =
+            match command.Kind with
+            | PlannedFacing _ -> Some(overlayId "unit.body-facing")
+            | PlannedAttention _ -> Some(overlayId "awareness.attention-vision")
+            | PlannedEngagement _ -> Some(overlayId "combat.area-engagements")
+            | PlannedHold
+            | PlannedSynchronization _ -> Some(overlayId "command.state")
+            | PlannedStance _
+            | PlannedRoute _ -> None
+          SubjectUnitId = Some command.UnitId
           Column = owner |> Option.map _.Column
           Row = owner |> Option.map _.Row
           Text = Disclosed text }
@@ -663,6 +702,8 @@ module TacticalSceneProjection =
             |> Option.bind (fun id -> state.Roster |> Array.tryFind (fun unit -> unit.UnitId = id))
         { PrimitiveId = primitive "planning-issue" (invariant index)
           Kind = "validation"
+          OverlayId = None
+          SubjectUnitId = unitId
           Column = owner |> Option.map _.Column
           Row = owner |> Option.map _.Row
           Text = Disclosed(issue.Code + " · " + issue.Detail) }
@@ -680,8 +721,11 @@ module TacticalSceneProjection =
                     Some
                         { PrimitiveId = primitive "route" command.Id
                           OwnerUnitId = Some command.UnitId
+                          OverlayId = overlayId "movement.planned-routes"
                           Kind = "planned"
                           Points = routePoints cells
+                          MovementCost = int32 (max 0 (Array.length cells - 1))
+                          BlockerIds = [||]
                           Label =
                             Disclosed(
                                 "Planned route for unit "
@@ -738,6 +782,8 @@ module TacticalSceneProjection =
                       |> Array.mapi (fun index disclosure ->
                           { PrimitiveId = primitive "prediction" (string prediction.Revision + ":" + invariant index)
                             Kind = "prediction"
+                            OverlayId = None
+                            SubjectUnitId = None
                             Column = None
                             Row = None
                             Text = Disclosed disclosure }))
@@ -755,13 +801,21 @@ module TacticalSceneProjection =
           Layers = Array.copy standardLayers }
 
     let private overlayRoute (overlay: OverlayVisual) : SceneRouteProjection =
+        let normalized = overlay.Kind.ToLowerInvariant()
         { PrimitiveId = primitive "route" overlay.Id
           OwnerUnitId =
             match overlay.Scope with
             | SelectedUnitOverlay id -> Some id
             | WholeForceOverlay -> None
+          OverlayId =
+            if normalized.Contains("los") then overlayId "spatial.exact-los"
+            elif normalized.Contains("reservation") then overlayId "movement.reservations"
+            elif normalized.Contains("attack") || normalized.Contains("impact") then overlayId "combat.attack-traces"
+            else overlayId "movement.planned-routes"
           Kind = overlay.Kind
           Points = Array.copy overlay.Points
+          MovementCost = int32 (max 0 (overlay.Points.Length / 2 - 1))
+          BlockerIds = [||]
           Label = overlay.Label }
 
     let private simulatorOverlayRoute
@@ -790,8 +844,15 @@ module TacticalSceneProjection =
             match overlay.Scope with
             | SelectedUnitOverlay id -> Some id
             | WholeForceOverlay -> None
+          OverlayId =
+            if overlay.Kind.Contains("los", StringComparison.OrdinalIgnoreCase) then overlayId "spatial.exact-los"
+            elif overlay.Kind.Contains("reservation", StringComparison.OrdinalIgnoreCase) then overlayId "movement.reservations"
+            elif overlay.Kind.Contains("attack", StringComparison.OrdinalIgnoreCase) then overlayId "combat.attack-traces"
+            else overlayId "movement.planned-routes"
           Kind = overlay.Kind
           Points = Array.copy overlay.Points
+          MovementCost = int32 (max 0 (overlay.Points.Length / 2 - 1))
+          BlockerIds = [||]
           Label = overlay.Label }
 
     let simulator (input: SimulatorProjectionInput) =
@@ -842,6 +903,8 @@ module TacticalSceneProjection =
                      let visual = unit.Visual
                      { PrimitiveId = primitive "simulator-state" (invariant visual.Id)
                        Kind = "simulator-state"
+                       OverlayId = Some(overlayId "command.state")
+                       SubjectUnitId = Some visual.Id
                        Column = Some visual.AnchorColumn
                        Row = Some visual.AnchorRow
                        Text =
@@ -927,6 +990,11 @@ module TacticalSceneProjection =
             |> Array.map (fun overlay ->
                 { PrimitiveId = primitive "overlay" overlay.Id
                   Kind = overlay.Kind
+                  OverlayId = None
+                  SubjectUnitId =
+                    match overlay.Scope with
+                    | SelectedUnitOverlay id -> Some id
+                    | WholeForceOverlay -> None
                   Column = None
                   Row = None
                   Text = overlay.Label })
@@ -935,6 +1003,8 @@ module TacticalSceneProjection =
         let verificationAnnotation =
             { PrimitiveId = primitive "review-verification" "accepted"
               Kind = input.AcceptedReview.AcceptedVerificationKind
+              OverlayId = None
+              SubjectUnitId = None
               Column = None
               Row = None
               Text =
@@ -1031,30 +1101,34 @@ module TacticalSceneProjection =
         overlayRegistry
         |> Array.find (fun item -> TacticalOverlayId.value item.Id = id)
 
-    let private overlayPayload descriptor primitiveId subject tick kind points label priority =
+    let private geometryPoints = function
+        | FootprintGeometry(x, y, _, _)
+        | DirectionGeometry(x, y, _, _, _)
+        | AreaGeometry(x, y, _)
+        | StatusGeometry(x, y, _, _, _) -> [| x; y |]
+        | PathGeometry(points, _, _)
+        | TraceGeometry(points, _, _) -> Array.copy points
+
+    let private geometryNodeCount = function
+        | FootprintGeometry _
+        | DirectionGeometry _
+        | AreaGeometry _
+        | StatusGeometry _ -> 2
+        | PathGeometry(_, _, blockers) -> 2 + blockers.Length
+        | TraceGeometry _ -> 3
+
+    let private overlayPayload descriptor primitiveId subject tick kind geometry label priority =
         { OverlayId = descriptor.Id
           PrimitiveId = primitiveId
           SubjectId = subject
           Tick = tick
           Kind = kind
           PayloadKind = descriptor.PayloadKind
-          Points = points
+          Geometry = geometry
+          Points = geometryPoints geometry
           Label = label
           Priority = priority
           Order = descriptor.Order }
-
-    let private annotationOverlayId (kind: string) =
-        let normalized = kind.ToLowerInvariant()
-        if normalized.Contains("reservation") then Some "movement.reservations"
-        elif normalized.Contains("engagement") then Some "combat.area-engagements"
-        elif normalized.Contains("suppress") then Some "combat.suppression"
-        elif normalized.Contains("attack") || normalized.Contains("impact") then Some "combat.attack-traces"
-        elif normalized.Contains("wound") || normalized.Contains("health") || normalized.Contains("hp") then Some "combat.hp-wounds"
-        elif normalized.Contains("command") || normalized.Contains("hold") || normalized.Contains("synchronization") then Some "command.state"
-        elif normalized.Contains("attention") || normalized.Contains("vision") then Some "awareness.attention-vision"
-        elif normalized.Contains("cover") || normalized.Contains("exposure") then Some "cover.exposure"
-        elif normalized.Contains("armor") then Some "combat.armor-coverage"
-        else None
 
     let projectOverlays preferences held (projection: SharedSceneProjection) =
         // A malformed authority/disclosure envelope is deliberately indistinguishable
@@ -1094,58 +1168,87 @@ module TacticalSceneProjection =
                 projection.Units
                 |> Array.collect (fun unit ->
                     let subject = string unit.Visual.Id
-                    let point = [| unit.PresentationColumn + 0.5; unit.PresentationRow + 0.5 |]
+                    let x, y = unit.PresentationColumn + 0.5, unit.PresentationRow + 0.5
+                    let direction overlay kind heading length arc label =
+                        match accepts overlay (Some unit.Visual.Id), heading with
+                        | Some(descriptor, _), Disclosed value ->
+                            Some(overlayPayload descriptor unit.PrimitiveId subject projection.Tick kind (DirectionGeometry(x, y, value, length, arc)) (Disclosed label) (priority descriptor.Id (Some unit.Visual.Id)))
+                        | _ -> None
                     [| match accepts "unit.footprints" (Some unit.Visual.Id) with
                        | Some(descriptor, _) ->
-                           yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "footprint" point (Disclosed "Footprint") (priority descriptor.Id (Some unit.Visual.Id))
+                           yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "footprint" (FootprintGeometry(x, y, float (CellExtent.value unit.Visual.FootprintWidth), float (CellExtent.value unit.Visual.FootprintDepth))) (Disclosed "Footprint") (priority descriptor.Id (Some unit.Visual.Id))
                        | None -> ()
-                       match accepts "unit.body-facing" (Some unit.Visual.Id), unit.Visual.BodyHeading with
-                       | Some(descriptor, _), Disclosed heading ->
-                           yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "body-facing" [| point[0]; point[1]; HeadingRadians.value heading |] (Disclosed "Body facing") (priority descriptor.Id (Some unit.Visual.Id))
-                       | _ -> ()
-                       match accepts "awareness.attention-vision" (Some unit.Visual.Id), unit.Visual.SecondaryHeading with
-                       | Some(descriptor, _), Disclosed heading ->
-                           yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "attention-vision" [| point[0]; point[1]; HeadingRadians.value heading.Radians |] (Disclosed "Attention and vision") (priority descriptor.Id (Some unit.Visual.Id))
-                       | _ -> ()
+                       yield! direction "unit.body-facing" "body-facing" (unit.Visual.BodyHeading |> function Disclosed h -> Disclosed(HeadingRadians.value h) | NotPresent -> NotPresent | NotApplicable -> NotApplicable | ExplicitlyUnknown -> ExplicitlyUnknown) 0.75 0.0 "Body facing" |> Option.toArray
+                       yield! direction "awareness.attention-vision" "attention-vision" (unit.Visual.SecondaryHeading |> function Disclosed h -> Disclosed(HeadingRadians.value h.Radians) | NotPresent -> NotPresent | NotApplicable -> NotApplicable | ExplicitlyUnknown -> ExplicitlyUnknown) 3.0 (Math.PI / 3.0) "Attention and vision" |> Option.toArray
                        match accepts "combat.hp-wounds" (Some unit.Visual.Id), unit.Visual.Health with
                        | Some(descriptor, _), Disclosed health ->
-                           yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "hp-wounds" point (Disclosed("Health " + string health)) (priority descriptor.Id (Some unit.Visual.Id))
+                           yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "hp-wounds" (StatusGeometry(x, y, Some(HealthVisual.remaining health), Some(HealthVisual.maximum health), unit.Visual.StatusIds |> Array.filter (fun token -> token.Contains("wound", StringComparison.OrdinalIgnoreCase)))) (Disclosed("Health " + string (HealthVisual.remaining health) + "/" + string (HealthVisual.maximum health))) (priority descriptor.Id (Some unit.Visual.Id))
+                       | _ -> ()
+                       let heading = unit.Visual.BodyHeading |> function Disclosed h -> Some(HeadingRadians.value h) | _ -> None
+                       for overlay, prefix, label in [| "cover.exposure", "cover", "Cover and exposure"; "combat.armor-coverage", "armor", "Armor coverage" |] do
+                           let tokens = unit.Visual.StatusIds |> Array.filter (fun token -> token.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                           match accepts overlay (Some unit.Visual.Id), heading with
+                           | Some(descriptor, _), Some radians when tokens.Length > 0 ->
+                               yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick prefix (DirectionGeometry(x, y, radians, 1.25, Math.PI / 2.0)) (Disclosed(String.concat ", " tokens)) (priority descriptor.Id (Some unit.Visual.Id))
+                           | _ -> ()
+                       let suppression = unit.Visual.StatusIds |> Array.filter (fun token -> token.StartsWith("suppression", StringComparison.OrdinalIgnoreCase))
+                       match accepts "combat.suppression" (Some unit.Visual.Id) with
+                       | Some(descriptor, _) when suppression.Length > 0 ->
+                           yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "suppression" (StatusGeometry(x, y, None, None, suppression)) (Disclosed(String.concat ", " suppression)) (priority descriptor.Id (Some unit.Visual.Id))
                        | _ -> ()
                        if unit.Visual.StatusIds.Length > 0 then
                            match accepts "command.state" (Some unit.Visual.Id) with
                            | Some(descriptor, _) ->
-                               yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "command-state" point (Disclosed(String.concat ", " unit.Visual.StatusIds)) (priority descriptor.Id (Some unit.Visual.Id))
+                               yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "command-state" (StatusGeometry(x, y, None, None, Array.copy unit.Visual.StatusIds)) (Disclosed(String.concat ", " unit.Visual.StatusIds)) (priority descriptor.Id (Some unit.Visual.Id))
                            | None -> () |])
             let routePayloads =
                 projection.Routes
-                |> Array.choose (fun route ->
-                    let normalized = route.Kind.ToLowerInvariant()
-                    let id =
-                        if normalized.Contains("los") then "spatial.exact-los"
-                        elif normalized.Contains("reservation") then "movement.reservations"
-                        elif normalized.Contains("planned") then "movement.planned-routes"
-                        else "movement.reachable-path-cost"
-                    match accepts id route.OwnerUnitId with
-                    | Some(descriptor, _) when disclosed route.Label ->
-                        Some(overlayPayload descriptor route.PrimitiveId (route.OwnerUnitId |> Option.map string |> Option.defaultValue "force") projection.Tick route.Kind (Array.copy route.Points) route.Label (priority descriptor.Id route.OwnerUnitId))
-                    | _ -> None)
+                |> Array.collect (fun route ->
+                    let subject = route.OwnerUnitId |> Option.map string |> Option.defaultValue "force"
+                    let emit id geometry =
+                        match accepts id route.OwnerUnitId with
+                        | Some(descriptor, _) when disclosed route.Label -> Some(overlayPayload descriptor route.PrimitiveId subject projection.Tick route.Kind geometry route.Label (priority descriptor.Id route.OwnerUnitId))
+                        | _ -> None
+                    [| yield! emit (TacticalOverlayId.value route.OverlayId) (PathGeometry(Array.copy route.Points, route.MovementCost, Array.copy route.BlockerIds)) |> Option.toArray
+                       if route.OverlayId = overlayId "movement.planned-routes" then
+                           yield! emit "movement.reachable-path-cost" (PathGeometry(Array.copy route.Points, route.MovementCost, Array.copy route.BlockerIds)) |> Option.toArray
+                           if route.Points.Length >= 2 then
+                               yield! emit "movement.reservations" (AreaGeometry(route.Points[route.Points.Length - 2], route.Points[route.Points.Length - 1], 0.5)) |> Option.toArray |])
             let annotationPayloads =
                 projection.Annotations
                 |> Array.choose (fun annotation ->
-                    annotationOverlayId annotation.Kind
+                    annotation.OverlayId
                     |> Option.bind (fun id ->
-                        match accepts id None with
+                        match accepts (TacticalOverlayId.value id) annotation.SubjectUnitId with
                         | Some(descriptor, _) when disclosed annotation.Text ->
-                            let points =
+                            let x, y =
                                 match annotation.Column, annotation.Row with
-                                | Some column, Some row -> [| float column + 0.5; float row + 0.5 |]
-                                | _ -> [||]
-                            Some(overlayPayload descriptor annotation.PrimitiveId (ScenePrimitiveId.value annotation.PrimitiveId) projection.Tick annotation.Kind points annotation.Text (priority descriptor.Id None))
+                                | Some column, Some row -> float column + 0.5, float row + 0.5
+                                | _ ->
+                                    annotation.SubjectUnitId
+                                    |> Option.bind (fun subject -> projection.Units |> Array.tryFind (fun unit -> unit.Visual.Id = subject))
+                                    |> Option.map (fun unit -> unit.PresentationColumn + 0.5, unit.PresentationRow + 0.5)
+                                    |> Option.defaultValue (0.0, 0.0)
+                            let geometry =
+                                match descriptor.PayloadKind with
+                                | AreaPayload -> AreaGeometry(x, y, 1.0)
+                                | DirectionPayload -> DirectionGeometry(x, y, 0.0, 1.0, Math.PI / 2.0)
+                                | TracePayload -> TraceGeometry([| x; y |], x, y)
+                                | _ -> StatusGeometry(x, y, None, None, [| annotation.Kind |])
+                            Some(overlayPayload descriptor annotation.PrimitiveId (annotation.SubjectUnitId |> Option.map string |> Option.defaultValue (ScenePrimitiveId.value annotation.PrimitiveId)) projection.Tick annotation.Kind geometry annotation.Text (priority descriptor.Id annotation.SubjectUnitId))
                         | _ -> None))
             let candidates =
                 Array.concat [ unitPayloads; routePayloads; annotationPayloads ]
                 |> Array.sortBy (fun item -> item.Priority, item.Order, item.SubjectId, ScenePrimitiveId.value item.PrimitiveId)
-            let payloads = candidates |> Array.truncate MaximumOverlayPayloads
+            let payloads =
+                let bounded = ResizeArray<TacticalOverlayPayload>()
+                let mutable nodes = 0
+                for candidate in candidates do
+                    let candidateNodes = geometryNodeCount candidate.Geometry
+                    if bounded.Count < MaximumOverlayPayloads && nodes + candidateNodes <= 4744 then
+                        bounded.Add candidate
+                        nodes <- nodes + candidateNodes
+                bounded.ToArray()
             let labels =
                 payloads
                 |> Array.filter (fun item -> disclosed item.Label)
@@ -1163,7 +1266,7 @@ module TacticalSceneProjection =
                   CandidatePayloads = candidates.Length
                   EmittedPayloads = payloads.Length
                   EmittedLabels = labels.Length
-                  EstimatedSvgNodes = payloads.Length + labels.Length } }
+                  EstimatedSvgNodes = (payloads |> Array.sumBy (fun payload -> geometryNodeCount payload.Geometry)) + labels.Length } }
 
     let primitiveIds (projection: SharedSceneProjection) =
         [| yield! projection.Terrain |> Array.map _.PrimitiveId

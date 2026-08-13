@@ -15,6 +15,9 @@
 
 #sir-replay-app #persistent-tactical-overlay-layer {
   color: #ffd166;
+}
+
+#sir-replay-app #persistent-tactical-overlay-layer * {
   vector-effect: non-scaling-stroke;
 }
 
@@ -37,6 +40,9 @@
   #sir-replay-app #persistent-tactical-overlay-layer [data-overlay-pattern] {
     stroke-width: 3px;
     stroke-dasharray: 8 4;
+  }
+  #sir-replay-app #persistent-tactical-overlay-layer [data-overlay-pattern] > * {
+    stroke-width: 3px;
   }
 }
 

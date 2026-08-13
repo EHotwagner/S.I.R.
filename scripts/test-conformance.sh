@@ -55,6 +55,9 @@ dotnet tool restore
 ./scripts/verify-fable-game-governance.sh
 dotnet restore SIR.slnx --locked-mode
 dotnet build SIR.slnx --no-restore
+# Later production worker qualification deliberately uses --no-build/--no-restore;
+# produce its declared Release prerequisite inside this clean aggregate route.
+dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
 
 dotnet_output=$(dotnet run \
   --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj \

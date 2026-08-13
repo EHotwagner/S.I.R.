@@ -18,6 +18,7 @@ open SIR.Client.Web.AppShell
 
 open SIR.Client.Web.CommandRegistry
 open SIR.Client.Web.ModeAdapters
+open SIR.Client.Web.TacticalOverlayView
 open SIR.Client.Web.SceneAdapters
 open SIR.Client.Web.PanelViews
 
@@ -6387,26 +6388,7 @@ let private persistentSceneSvg
                                     svg.custom ("data-overlay-id", TacticalOverlayId.value payload.OverlayId); svg.custom ("data-overlay-kind", payload.Kind)
                                     svg.custom ("data-overlay-payload-kind", string payload.PayloadKind); svg.custom ("data-overlay-order", string payload.Order)
                                     svg.custom ("data-overlay-priority", string payload.Priority); svg.custom ("data-overlay-pattern", "directional-hatch")
-                                    svg.children [
-                                        if payload.Points.Length >= 4 then
-                                            Svg.polyline [
-                                                svg.points (
-                                                    payload.Points
-                                                    |> Array.chunkBySize 2
-                                                    |> Array.choose (fun pair ->
-                                                        if pair.Length = 2 then Some(string (pair[0] * cellSize) + "," + string (pair[1] * cellSize))
-                                                        else None)
-                                                    |> String.concat " "
-                                                )
-                                                svg.fill "none"; svg.stroke "currentColor"; svg.strokeWidth 2; svg.custom ("stroke-dasharray", "6 3")
-                                            ]
-                                        elif payload.Points.Length >= 2 then
-                                            Svg.circle [
-                                                svg.cx (payload.Points[0] * cellSize)
-                                                svg.cy (payload.Points[1] * cellSize)
-                                                svg.r 7; svg.fill "none"; svg.stroke "currentColor"; svg.strokeWidth 2
-                                            ]
-                                    ]
+                                    svg.children (payloadChildren cellSize payload)
                                 ]
                             for label in tacticalOverlays.Labels do
                                 if label.Points.Length >= 2 then
