@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/182-awareness-reaction-windows/ship.json",
-      "digest": "sha256:2576691d11c52b76536ac246ba40635d3b789867ff2220fe32415eeb85882367",
+      "digest": "sha256:6e7ce9c2c8a261cb392da86aa35d6cbd72cc59841935b9ad4370a926ba0fa1c4",
       "schemaVersion": 1
     },
     {
       "path": "readiness/182-awareness-reaction-windows/verify.json",
-      "digest": "sha256:d3064ea9067489127d9889abf0bd9e851173d7c709d9f00fa4aa4c1eac80f0f5",
+      "digest": "sha256:952d9bed769a28ddbb9816498f23047d211a42e28d8b9c070e0e627a78feeaf3",
       "schemaVersion": 1
     },
     {
       "path": "readiness/182-awareness-reaction-windows/work-model.json",
-      "digest": "sha256:a871d3934e79fcd7fcdb17870fa245c827970c046b891838bb585e2f86c49f04",
+      "digest": "sha256:2003af64fa2697c38533168d4bb071a08174dce9d64ed3a1ec054f19b4f7c375",
       "schemaVersion": 1
     }
   ],
