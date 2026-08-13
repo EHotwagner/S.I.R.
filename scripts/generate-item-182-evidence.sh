@@ -3,8 +3,8 @@ set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 evidence_root="$repo_root/readiness/182-awareness-reaction-windows"
-staged_root="$task_tmp/staged"
 task_tmp=$(mktemp -d)
+staged_root="$task_tmp/staged"
 trap 'rm -rf "$task_tmp"' EXIT
 cd "$repo_root"
 mkdir -p "$evidence_root" "$staged_root"
