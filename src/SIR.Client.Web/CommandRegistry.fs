@@ -230,5 +230,20 @@ let activeTacticalRegistry model =
               "Spatial diagnostics · Rules data"
               "View"
               model.Tactical.Modality ]
-    UnifiedTacticalWorkspace.commandRegistry @ modal @ contextual @ cameraCommands @ panelCommands
+    let overlayCommands =
+        TacticalSceneProjection.overlayRegistry
+        |> Array.filter (fun overlay -> overlay.Availability = OverlayAvailable)
+        |> Array.map (fun overlay ->
+            { Id = overlay.CommandId
+              Label = overlay.Label
+              Category = "Analysis overlays"
+              Modalities = Set.ofList [ Editor; Plan; Simulate; Review ]
+              DefaultGesture = overlay.DefaultGesture
+              PointerAvailable = true
+              Precedence = 320 + overlay.Order
+              ModalContext = None
+              ModalPhase = None
+              Availability = AlwaysAvailable })
+        |> Array.toList
+    UnifiedTacticalWorkspace.commandRegistry @ modal @ contextual @ cameraCommands @ panelCommands @ overlayCommands
     |> List.distinctBy _.Id

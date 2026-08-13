@@ -15,6 +15,88 @@ type ScenePrimitiveId = private ScenePrimitiveId of string
 module ScenePrimitiveId =
     let value (ScenePrimitiveId value) = value
 
+type TacticalOverlayId = private TacticalOverlayId of string
+
+[<RequireQualifiedAccess>]
+module TacticalOverlayId =
+    let value (TacticalOverlayId value) = value
+
+type TacticalOverlayMode =
+    | OverlayOff
+    | InspectHeld
+    | SelectionScoped
+    | Persistent
+
+type TacticalOverlayCategory =
+    | UnitOverlay
+    | AwarenessOverlay
+    | MovementOverlay
+    | ProtectionOverlay
+    | CombatOverlay
+    | CommandOverlay
+
+type TacticalOverlayPayloadKind =
+    | FootprintPayload
+    | DirectionPayload
+    | PolylinePayload
+    | AreaPayload
+    | TracePayload
+    | StatusPayload
+
+type TacticalOverlayAvailability =
+    | OverlayAvailable
+    | OverlayUnavailable
+
+type TacticalOverlayDisclosurePolicy =
+    | DisclosedSceneFactsOnly
+    | SelectedDisclosedFactsOnly
+
+type TacticalOverlayDescriptor =
+    { Id: TacticalOverlayId
+      Label: string
+      Category: TacticalOverlayCategory
+      DefaultMode: TacticalOverlayMode
+      SupportedModes: Set<TacticalOverlayMode>
+      CommandId: string
+      DefaultGesture: string option
+      Availability: TacticalOverlayAvailability
+      DisclosurePolicy: TacticalOverlayDisclosurePolicy
+      PayloadKind: TacticalOverlayPayloadKind
+      Order: int }
+
+type TacticalOverlayPreferences =
+    { SchemaVersion: int
+      Modes: Map<TacticalOverlayId, TacticalOverlayMode> }
+
+type TacticalOverlayPreferenceDiagnostic =
+    | MalformedOverlayPreferences
+    | UnsupportedOverlayPreferenceSchema of int
+
+type TacticalOverlayPayload =
+    { OverlayId: TacticalOverlayId
+      PrimitiveId: ScenePrimitiveId
+      SubjectId: string
+      Tick: int32
+      Kind: string
+      PayloadKind: TacticalOverlayPayloadKind
+      Points: float array
+      Label: Disclosure<string>
+      Priority: int
+      Order: int }
+
+type TacticalOverlayCost =
+    { RegistryTraversals: int
+      DisclosurePasses: int
+      CandidatePayloads: int
+      EmittedPayloads: int
+      EmittedLabels: int
+      EstimatedSvgNodes: int }
+
+type TacticalOverlayProjection =
+    { Payloads: TacticalOverlayPayload array
+      Labels: TacticalOverlayPayload array
+      Cost: TacticalOverlayCost }
+
 type SceneTerrainProjection =
     { PrimitiveId: ScenePrimitiveId
       Column: int32
@@ -114,6 +196,112 @@ type ReviewProjectionInput =
 
 [<RequireQualifiedAccess>]
 module TacticalSceneProjection =
+    [<Literal>]
+    let private OverlayPreferenceSchemaVersion = 1
+
+    [<Literal>]
+    let private MaximumOverlayPayloads = 4096
+
+    [<Literal>]
+    let private MaximumOverlayLabels = 256
+
+    let private overlayId value = TacticalOverlayId value
+
+    let private descriptor id label category defaultMode supported payload order disclosure defaultGesture =
+        { Id = overlayId id
+          Label = label
+          Category = category
+          DefaultMode = defaultMode
+          SupportedModes = Set.ofList (OverlayOff :: supported)
+          CommandId = "view.overlay." + id
+          DefaultGesture = defaultGesture
+          Availability = OverlayAvailable
+          DisclosurePolicy = disclosure
+          PayloadKind = payload
+          Order = order }
+
+    let overlayRegistry =
+        [| descriptor "unit.footprints" "Unit footprints" UnitOverlay Persistent [ SelectionScoped; Persistent ] FootprintPayload 10 DisclosedSceneFactsOnly None
+           descriptor "unit.body-facing" "Body facing" UnitOverlay SelectionScoped [ InspectHeld; SelectionScoped; Persistent ] DirectionPayload 20 SelectedDisclosedFactsOnly None
+           descriptor "movement.reachable-path-cost" "Reachable path and movement cost" MovementOverlay SelectionScoped [ InspectHeld; SelectionScoped ] PolylinePayload 30 SelectedDisclosedFactsOnly None
+           descriptor "movement.planned-routes" "Planned routes" MovementOverlay Persistent [ SelectionScoped; Persistent ] PolylinePayload 40 DisclosedSceneFactsOnly None
+           descriptor "movement.reservations" "Reservations" MovementOverlay SelectionScoped [ InspectHeld; SelectionScoped; Persistent ] AreaPayload 50 SelectedDisclosedFactsOnly None
+           descriptor "awareness.attention-vision" "Attention and vision" AwarenessOverlay SelectionScoped [ InspectHeld; SelectionScoped; Persistent ] DirectionPayload 60 SelectedDisclosedFactsOnly None
+           descriptor "spatial.exact-los" "Exact line of sight" AwarenessOverlay InspectHeld [ InspectHeld; SelectionScoped ] PolylinePayload 70 SelectedDisclosedFactsOnly (Some "Alt+L")
+           descriptor "cover.exposure" "Cover and exposure" ProtectionOverlay SelectionScoped [ InspectHeld; SelectionScoped; Persistent ] DirectionPayload 80 SelectedDisclosedFactsOnly None
+           descriptor "combat.armor-coverage" "Armor coverage" ProtectionOverlay SelectionScoped [ InspectHeld; SelectionScoped; Persistent ] DirectionPayload 90 SelectedDisclosedFactsOnly None
+           descriptor "combat.area-engagements" "Area engagements" CombatOverlay SelectionScoped [ InspectHeld; SelectionScoped; Persistent ] AreaPayload 100 SelectedDisclosedFactsOnly None
+           descriptor "combat.suppression" "Suppression" CombatOverlay SelectionScoped [ InspectHeld; SelectionScoped; Persistent ] StatusPayload 110 SelectedDisclosedFactsOnly None
+           descriptor "combat.attack-traces" "Attack traces and impact" CombatOverlay SelectionScoped [ InspectHeld; SelectionScoped; Persistent ] TracePayload 120 DisclosedSceneFactsOnly None
+           descriptor "combat.hp-wounds" "HP and wounds" CombatOverlay SelectionScoped [ InspectHeld; SelectionScoped; Persistent ] StatusPayload 130 SelectedDisclosedFactsOnly None
+           descriptor "command.state" "Command state" CommandOverlay SelectionScoped [ InspectHeld; SelectionScoped; Persistent ] StatusPayload 140 SelectedDisclosedFactsOnly None |]
+
+    let initialOverlayPreferences =
+        { SchemaVersion = OverlayPreferenceSchemaVersion
+          Modes = overlayRegistry |> Array.map (fun value -> value.Id, value.DefaultMode) |> Map.ofArray }
+
+    let private modeToken = function
+        | OverlayOff -> "off"
+        | InspectHeld -> "held"
+        | SelectionScoped -> "selection"
+        | Persistent -> "persistent"
+
+    let private tryMode = function
+        | "off" -> Some OverlayOff
+        | "held" -> Some InspectHeld
+        | "selection" -> Some SelectionScoped
+        | "persistent" -> Some Persistent
+        | _ -> None
+
+    let exportOverlayPreferences preferences =
+        let body =
+            overlayRegistry
+            |> Array.map (fun item ->
+                TacticalOverlayId.value item.Id
+                + "="
+                + (preferences.Modes |> Map.tryFind item.Id |> Option.defaultValue item.DefaultMode |> modeToken))
+            |> String.concat ";"
+        "v" + string OverlayPreferenceSchemaVersion + "|" + body
+
+    let importOverlayPreferences (source: string) =
+        if String.IsNullOrWhiteSpace source || not (source.StartsWith("v", StringComparison.Ordinal)) then
+            Error MalformedOverlayPreferences
+        else
+            let separator = source.IndexOf('|')
+            let mutable schema = 0
+            if separator < 2 || not (Int32.TryParse(source.Substring(1, separator - 1), &schema)) then
+                Error MalformedOverlayPreferences
+            elif schema <> OverlayPreferenceSchemaVersion then
+                Error(UnsupportedOverlayPreferenceSchema schema)
+            else
+                let known = overlayRegistry |> Array.map (fun value -> TacticalOverlayId.value value.Id, value) |> Map.ofArray
+                let entries = source.Substring(separator + 1).Split(';', StringSplitOptions.RemoveEmptyEntries)
+                let folder (state: Result<Map<TacticalOverlayId, TacticalOverlayMode>, TacticalOverlayPreferenceDiagnostic>) (entry: string) =
+                    state
+                    |> Result.bind (fun modes ->
+                        let parts = entry.Split('=')
+                        if parts.Length <> 2 then Error MalformedOverlayPreferences
+                        else
+                            match Map.tryFind parts[0] known, tryMode parts[1] with
+                            | Some item, Some mode when Set.contains mode item.SupportedModes -> Ok(Map.add item.Id mode modes)
+                            | Some item, Some _ -> Ok(Map.add item.Id item.DefaultMode modes)
+                            | None, Some _ -> Ok modes
+                            | _, None -> Error MalformedOverlayPreferences)
+                entries
+                |> Array.fold folder (Ok initialOverlayPreferences.Modes)
+                |> Result.map (fun modes -> { SchemaVersion = schema; Modes = modes })
+
+    let effectiveOverlayMode preferences held hasSelection descriptor =
+        let requested =
+            if Set.contains descriptor.Id held && Set.contains InspectHeld descriptor.SupportedModes then InspectHeld
+            elif hasSelection && Set.contains SelectionScoped descriptor.SupportedModes then
+                preferences.Modes |> Map.tryFind descriptor.Id |> Option.defaultValue descriptor.DefaultMode
+            else preferences.Modes |> Map.tryFind descriptor.Id |> Option.defaultValue descriptor.DefaultMode
+        if requested = InspectHeld && not (Set.contains descriptor.Id held) then OverlayOff
+        elif requested = SelectionScoped && not hasSelection then OverlayOff
+        elif Set.contains requested descriptor.SupportedModes then requested
+        else descriptor.DefaultMode
+
     let private invariant (value: int32) =
         value.ToString(CultureInfo.InvariantCulture)
 
@@ -832,6 +1020,150 @@ module TacticalSceneProjection =
                             + (unit.PresentationRow - float previous.AnchorRow)
                               * effectiveAlpha })
             { current with Units = units }, effectiveAlpha
+
+    let private disclosed = function
+        | Disclosed _ -> true
+        | NotPresent
+        | NotApplicable
+        | ExplicitlyUnknown -> false
+
+    let private overlayDescriptor id =
+        overlayRegistry
+        |> Array.find (fun item -> TacticalOverlayId.value item.Id = id)
+
+    let private overlayPayload descriptor primitiveId subject tick kind points label priority =
+        { OverlayId = descriptor.Id
+          PrimitiveId = primitiveId
+          SubjectId = subject
+          Tick = tick
+          Kind = kind
+          PayloadKind = descriptor.PayloadKind
+          Points = points
+          Label = label
+          Priority = priority
+          Order = descriptor.Order }
+
+    let private annotationOverlayId (kind: string) =
+        let normalized = kind.ToLowerInvariant()
+        if normalized.Contains("reservation") then Some "movement.reservations"
+        elif normalized.Contains("engagement") then Some "combat.area-engagements"
+        elif normalized.Contains("suppress") then Some "combat.suppression"
+        elif normalized.Contains("attack") || normalized.Contains("impact") then Some "combat.attack-traces"
+        elif normalized.Contains("wound") || normalized.Contains("health") || normalized.Contains("hp") then Some "combat.hp-wounds"
+        elif normalized.Contains("command") || normalized.Contains("hold") || normalized.Contains("synchronization") then Some "command.state"
+        elif normalized.Contains("attention") || normalized.Contains("vision") then Some "awareness.attention-vision"
+        elif normalized.Contains("cover") || normalized.Contains("exposure") then Some "cover.exposure"
+        elif normalized.Contains("armor") then Some "combat.armor-coverage"
+        else None
+
+    let projectOverlays preferences held (projection: SharedSceneProjection) =
+        // A malformed authority/disclosure envelope is deliberately indistinguishable
+        // from an undisclosed one: payload construction never starts.
+        if not projection.Disclosure.PreservesFieldDisclosures then
+            { Payloads = [||]
+              Labels = [||]
+              Cost =
+                { RegistryTraversals = 1
+                  DisclosurePasses = 1
+                  CandidatePayloads = 0
+                  EmittedPayloads = 0
+                  EmittedLabels = 0
+                  EstimatedSvgNodes = 0 } }
+        else
+            let selected = projection.Selection.SelectedUnits |> Set.ofArray
+            let hasSelection = not selected.IsEmpty
+            let enabled =
+                overlayRegistry
+                |> Array.choose (fun item ->
+                    let mode = effectiveOverlayMode preferences held hasSelection item
+                    if mode = OverlayOff then None else Some(item.Id, (item, mode)))
+                |> Map.ofArray
+            let accepts id subject =
+                enabled
+                |> Map.tryFind (overlayId id)
+                |> Option.filter (fun (descriptor, mode) ->
+                    descriptor.Availability = OverlayAvailable
+                    && (mode <> SelectionScoped || subject |> Option.exists (fun value -> Set.contains value selected))
+                    && (descriptor.DisclosurePolicy = DisclosedSceneFactsOnly
+                        || subject |> Option.exists (fun value -> Set.contains value selected)))
+            let priority id subject =
+                let heldPriority = if Set.contains id held then 0 else 2
+                let selectionPriority = if subject |> Option.exists (fun value -> Set.contains value selected) then 0 else 1
+                heldPriority + selectionPriority
+            let unitPayloads =
+                projection.Units
+                |> Array.collect (fun unit ->
+                    let subject = string unit.Visual.Id
+                    let point = [| unit.PresentationColumn + 0.5; unit.PresentationRow + 0.5 |]
+                    [| match accepts "unit.footprints" (Some unit.Visual.Id) with
+                       | Some(descriptor, _) ->
+                           yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "footprint" point (Disclosed "Footprint") (priority descriptor.Id (Some unit.Visual.Id))
+                       | None -> ()
+                       match accepts "unit.body-facing" (Some unit.Visual.Id), unit.Visual.BodyHeading with
+                       | Some(descriptor, _), Disclosed heading ->
+                           yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "body-facing" [| point[0]; point[1]; HeadingRadians.value heading |] (Disclosed "Body facing") (priority descriptor.Id (Some unit.Visual.Id))
+                       | _ -> ()
+                       match accepts "awareness.attention-vision" (Some unit.Visual.Id), unit.Visual.SecondaryHeading with
+                       | Some(descriptor, _), Disclosed heading ->
+                           yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "attention-vision" [| point[0]; point[1]; HeadingRadians.value heading.Radians |] (Disclosed "Attention and vision") (priority descriptor.Id (Some unit.Visual.Id))
+                       | _ -> ()
+                       match accepts "combat.hp-wounds" (Some unit.Visual.Id), unit.Visual.Health with
+                       | Some(descriptor, _), Disclosed health ->
+                           yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "hp-wounds" point (Disclosed("Health " + string health)) (priority descriptor.Id (Some unit.Visual.Id))
+                       | _ -> ()
+                       if unit.Visual.StatusIds.Length > 0 then
+                           match accepts "command.state" (Some unit.Visual.Id) with
+                           | Some(descriptor, _) ->
+                               yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "command-state" point (Disclosed(String.concat ", " unit.Visual.StatusIds)) (priority descriptor.Id (Some unit.Visual.Id))
+                           | None -> () |])
+            let routePayloads =
+                projection.Routes
+                |> Array.choose (fun route ->
+                    let normalized = route.Kind.ToLowerInvariant()
+                    let id =
+                        if normalized.Contains("los") then "spatial.exact-los"
+                        elif normalized.Contains("reservation") then "movement.reservations"
+                        elif normalized.Contains("planned") then "movement.planned-routes"
+                        else "movement.reachable-path-cost"
+                    match accepts id route.OwnerUnitId with
+                    | Some(descriptor, _) when disclosed route.Label ->
+                        Some(overlayPayload descriptor route.PrimitiveId (route.OwnerUnitId |> Option.map string |> Option.defaultValue "force") projection.Tick route.Kind (Array.copy route.Points) route.Label (priority descriptor.Id route.OwnerUnitId))
+                    | _ -> None)
+            let annotationPayloads =
+                projection.Annotations
+                |> Array.choose (fun annotation ->
+                    annotationOverlayId annotation.Kind
+                    |> Option.bind (fun id ->
+                        match accepts id None with
+                        | Some(descriptor, _) when disclosed annotation.Text ->
+                            let points =
+                                match annotation.Column, annotation.Row with
+                                | Some column, Some row -> [| float column + 0.5; float row + 0.5 |]
+                                | _ -> [||]
+                            Some(overlayPayload descriptor annotation.PrimitiveId (ScenePrimitiveId.value annotation.PrimitiveId) projection.Tick annotation.Kind points annotation.Text (priority descriptor.Id None))
+                        | _ -> None))
+            let candidates =
+                Array.concat [ unitPayloads; routePayloads; annotationPayloads ]
+                |> Array.sortBy (fun item -> item.Priority, item.Order, item.SubjectId, ScenePrimitiveId.value item.PrimitiveId)
+            let payloads = candidates |> Array.truncate MaximumOverlayPayloads
+            let labels =
+                payloads
+                |> Array.filter (fun item -> disclosed item.Label)
+                |> Array.groupBy (fun item ->
+                    if item.Points.Length >= 2 then int (Math.Floor item.Points[0]), int (Math.Floor item.Points[1])
+                    else item.Order, 0)
+                |> Array.map (snd >> Array.head)
+                |> Array.sortBy (fun item -> item.Priority, item.Order, item.SubjectId, ScenePrimitiveId.value item.PrimitiveId)
+                |> Array.truncate MaximumOverlayLabels
+            { Payloads = payloads
+              Labels = labels
+              Cost =
+                { RegistryTraversals = 1
+                  DisclosurePasses = 1
+                  CandidatePayloads = candidates.Length
+                  EmittedPayloads = payloads.Length
+                  EmittedLabels = labels.Length
+                  EstimatedSvgNodes = payloads.Length + labels.Length } }
 
     let primitiveIds (projection: SharedSceneProjection) =
         [| yield! projection.Terrain |> Array.map _.PrimitiveId

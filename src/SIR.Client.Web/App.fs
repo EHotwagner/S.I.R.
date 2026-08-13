@@ -492,6 +492,15 @@ let init () =
                 UnifiedTacticalWorkspace.emptyBindingProfile,
                 [ "Stored binding overrides were malformed and defaults were restored: "
                   + string diagnostics ]
+    let tacticalOverlays =
+        let stored = readTacticalOverlays ()
+        if isNull stored then TacticalSceneProjection.initialOverlayPreferences
+        else
+            match TacticalSceneProjection.importOverlayPreferences stored with
+            | Ok preferences -> preferences
+            | Error _ ->
+                let restored = TacticalSceneProjection.initialOverlayPreferences
+                writeTacticalOverlays (TacticalSceneProjection.exportOverlayPreferences restored); restored
     let tacticalLayout, tacticalLayoutDiagnostics =
         let stored = readTacticalLayout ()
         if isNull stored then
@@ -520,6 +529,8 @@ let init () =
       TacticalBindingImport = ""
       TacticalBindingDiagnostics = tacticalBindingDiagnostics
       TacticalBindingsOpen = false
+      TacticalOverlays = tacticalOverlays
+      HeldTacticalOverlays = Set.empty
       TacticalLayout = tacticalLayout
       TacticalLayoutDiagnostics = tacticalLayoutDiagnostics
       DesktopToolbarCommands = desktopToolbarCommands
@@ -1010,6 +1021,47 @@ let rec update msg model =
             UnifiedTacticalWorkspace.restoreAll model.TacticalBindings
         writeTacticalBindings (UnifiedTacticalWorkspace.exportBindings bindings)
         { model with TacticalBindings = bindings }, Cmd.none
+    | CycleTacticalOverlay commandId ->
+        match TacticalSceneProjection.overlayRegistry |> Array.tryFind (fun overlay -> overlay.CommandId = commandId) with
+        | None -> model, Cmd.none
+        | Some overlay ->
+            let current =
+                model.TacticalOverlays.Modes
+                |> Map.tryFind overlay.Id
+                |> Option.defaultValue overlay.DefaultMode
+            let candidates =
+                [ OverlayOff; SelectionScoped; Persistent ]
+                |> List.filter (fun mode -> Set.contains mode overlay.SupportedModes)
+            let next =
+                candidates
+                |> List.tryFindIndex ((=) current)
+                |> Option.map (fun index -> candidates[(index + 1) % candidates.Length])
+                |> Option.defaultValue (
+                    candidates
+                    |> List.tryFind (fun mode -> mode <> OverlayOff)
+                    |> Option.defaultValue OverlayOff
+                )
+            let preferences =
+                { model.TacticalOverlays with
+                    Modes = Map.add overlay.Id next model.TacticalOverlays.Modes }
+            writeTacticalOverlays (TacticalSceneProjection.exportOverlayPreferences preferences)
+            { model with TacticalOverlays = preferences }, Cmd.none
+    | BeginTacticalOverlayHold commandId ->
+        let id =
+            TacticalSceneProjection.overlayRegistry
+            |> Array.tryFind (fun overlay -> overlay.CommandId = commandId && Set.contains InspectHeld overlay.SupportedModes)
+            |> Option.map _.Id
+        match id with
+        | Some value -> { model with HeldTacticalOverlays = Set.add value model.HeldTacticalOverlays }, Cmd.none
+        | None -> model, Cmd.none
+    | EndTacticalOverlayHold commandId ->
+        let id =
+            TacticalSceneProjection.overlayRegistry
+            |> Array.tryFind (fun overlay -> overlay.CommandId = commandId)
+            |> Option.map _.Id
+        match id with
+        | Some value -> { model with HeldTacticalOverlays = Set.remove value model.HeldTacticalOverlays }, Cmd.none
+        | None -> model, Cmd.none
     | TacticalBindingImportChanged value ->
         { model with TacticalBindingImport = value }, Cmd.none
     | ImportTacticalBindings ->
@@ -1749,6 +1801,8 @@ let rec update msg model =
         |> Option.defaultValue (model, Cmd.none)
     | ExecuteTacticalCommand commandId ->
         match commandId with
+        | id when id.StartsWith("view.overlay.", StringComparison.Ordinal) ->
+            update (CycleTacticalOverlay id) model
         | "workspace.editor" -> update (WorkspaceChanged EditorWorkspace) model
         | "workspace.plan" -> update (WorkspaceChanged PlanningWorkspace) model
         | "workspace.simulate" -> update (WorkspaceChanged SimulatorWorkspace) model
@@ -6036,6 +6090,19 @@ let private persistentSceneSvg
     // projection is temporarily unavailable (for example before Simulate or
     // Review has accepted input).
     let camera = model.EditorView.Camera
+    let tacticalOverlays =
+        projection
+        |> Option.map (TacticalSceneProjection.projectOverlays model.TacticalOverlays model.HeldTacticalOverlays)
+        |> Option.defaultValue
+            { Payloads = [||]
+              Labels = [||]
+              Cost =
+                { RegistryTraversals = 1
+                  DisclosurePasses = 1
+                  CandidatePayloads = 0
+                  EmittedPayloads = 0
+                  EmittedLabels = 0
+                  EstimatedSvgNodes = 0 } }
     let selectedPrimitiveIds =
         projection
         |> Option.map (fun scene ->
@@ -6124,6 +6191,10 @@ let private persistentSceneSvg
         svg.custom ("data-camera-pan-x", string camera.PanX)
         svg.custom ("data-camera-pan-y", string camera.PanY)
         svg.custom ("data-camera-zoom", string camera.Zoom)
+        svg.custom ("data-overlay-payload-count", string tacticalOverlays.Cost.EmittedPayloads); svg.custom ("data-overlay-label-count", string tacticalOverlays.Cost.EmittedLabels)
+        svg.custom ("data-overlay-node-estimate", string tacticalOverlays.Cost.EstimatedSvgNodes)
+        svg.custom ("data-overlay-registry-traversals", string tacticalOverlays.Cost.RegistryTraversals); svg.custom ("data-overlay-disclosure-passes", string tacticalOverlays.Cost.DisclosurePasses)
+        svg.custom ("data-overlay-preferences", TacticalSceneProjection.exportOverlayPreferences model.TacticalOverlays)
         svg.custom (
             "data-semantic-selection-unit",
             projection
@@ -6305,6 +6376,48 @@ let private persistentSceneSvg
                     + ")"
                 )
                 svg.children [
+                    Svg.g [
+                        svg.id "persistent-tactical-overlay-layer"
+                        svg.custom ("data-scene-layer", "tactical-overlays"); svg.custom ("data-overlay-order", "registry")
+                        svg.custom ("data-overlay-contrast", model.Battlefield.PaletteId); svg.custom ("data-overlay-patterns", "non-color-only"); svg.custom ("pointer-events", "none")
+                        svg.children [
+                            for payload in tacticalOverlays.Payloads do
+                                Svg.g [
+                                    svg.key (TacticalOverlayId.value payload.OverlayId + ":" + ScenePrimitiveId.value payload.PrimitiveId)
+                                    svg.custom ("data-overlay-id", TacticalOverlayId.value payload.OverlayId); svg.custom ("data-overlay-kind", payload.Kind)
+                                    svg.custom ("data-overlay-payload-kind", string payload.PayloadKind); svg.custom ("data-overlay-order", string payload.Order)
+                                    svg.custom ("data-overlay-priority", string payload.Priority); svg.custom ("data-overlay-pattern", "directional-hatch")
+                                    svg.children [
+                                        if payload.Points.Length >= 4 then
+                                            Svg.polyline [
+                                                svg.points (
+                                                    payload.Points
+                                                    |> Array.chunkBySize 2
+                                                    |> Array.choose (fun pair ->
+                                                        if pair.Length = 2 then Some(string (pair[0] * cellSize) + "," + string (pair[1] * cellSize))
+                                                        else None)
+                                                    |> String.concat " "
+                                                )
+                                                svg.fill "none"; svg.stroke "currentColor"; svg.strokeWidth 2; svg.custom ("stroke-dasharray", "6 3")
+                                            ]
+                                        elif payload.Points.Length >= 2 then
+                                            Svg.circle [
+                                                svg.cx (payload.Points[0] * cellSize)
+                                                svg.cy (payload.Points[1] * cellSize)
+                                                svg.r 7; svg.fill "none"; svg.stroke "currentColor"; svg.strokeWidth 2
+                                            ]
+                                    ]
+                                ]
+                            for label in tacticalOverlays.Labels do
+                                if label.Points.Length >= 2 then
+                                    Svg.text [
+                                        svg.key ("overlay-label:" + TacticalOverlayId.value label.OverlayId + ":" + label.SubjectId)
+                                        svg.custom ("data-overlay-label", TacticalOverlayId.value label.OverlayId)
+                                        svg.x (label.Points[0] * cellSize + 8.0); svg.y (label.Points[1] * cellSize - 8.0); svg.fill "currentColor"
+                                        svg.text (sceneDisclosureText label.Label)
+                                    ]
+                        ]
+                    ]
                     Svg.g [
                         svg.id "persistent-live-authority-layer"
                         svg.custom ("data-live-layer", "live-authority")
@@ -7039,11 +7152,27 @@ let private tacticalLayoutToolbar model dispatch =
     let registry = activeTacticalRegistry model
     let commandEntry command =
         let effective = UnifiedTacticalWorkspace.effectiveGesture model.TacticalBindings command
+        let overlay =
+            TacticalSceneProjection.overlayRegistry
+            |> Array.tryFind (fun value -> value.CommandId = command.Id)
+        let overlayMode =
+            overlay
+            |> Option.map (fun value ->
+                TacticalSceneProjection.effectiveOverlayMode
+                    model.TacticalOverlays
+                    model.HeldTacticalOverlays
+                    model.TacticalSelectedUnit.IsSome
+                    value)
         commandButton [
             prop.type'.button
-            prop.custom ("role", "menuitem")
+            prop.custom ("role", if overlay.IsSome then "menuitemcheckbox" else "menuitem")
             prop.tabIndex -1
             prop.disabled (not (tacticalCommandAvailable model command))
+            match overlayMode with
+            | Some mode ->
+                prop.custom ("aria-checked", (string (mode <> OverlayOff)).ToLowerInvariant())
+                prop.custom ("data-overlay-mode", string mode)
+            | None -> ()
             prop.ariaLabel (command.Label + " · " + UnifiedTacticalWorkspace.displayGestureFor shortcutPlatform effective)
             match UnifiedTacticalWorkspace.accessibleGestureFor shortcutPlatform effective with
             | Some shortcut -> prop.custom ("aria-keyshortcuts", shortcut)
@@ -7051,6 +7180,12 @@ let private tacticalLayoutToolbar model dispatch =
             prop.onClick (fun _ ->
                 closeDesktopMenus ()
                 dispatch (InvokeTacticalCommand command.Id))
+            match overlay with
+            | Some value when Set.contains InspectHeld value.SupportedModes ->
+                prop.onPointerDown (fun _ -> dispatch (BeginTacticalOverlayHold command.Id))
+                prop.onPointerUp (fun _ -> dispatch (EndTacticalOverlayHold command.Id))
+                prop.onPointerCancel (fun _ -> dispatch (EndTacticalOverlayHold command.Id))
+            | _ -> ()
             prop.children [ Html.span command.Label; Html.kbd (UnifiedTacticalWorkspace.displayGestureFor shortcutPlatform effective) ]
         ]
     let menu (label: string) categories =
@@ -7128,7 +7263,7 @@ let private tacticalLayoutToolbar model dispatch =
                 prop.children [
                     menu "File" [ "Document" ]
                     menu "Edit" [ "Plan" ]
-                    menu "View" [ "Modality"; "Shared camera"; "View" ]
+                    menu "View" [ "Modality"; "Shared camera"; "View"; "Analysis overlays" ]
                     menu "Tools" [ "Plan"; "Editor" ]
                     menu "Simulation" [ "Timeline"; "Simulator controllers"; "Simulator movement" ]
                     menu "Help" [ "Help" ]

@@ -982,6 +982,96 @@ let run () =
     let reviewAllocation =
         allocation (fun () ->
             TacticalSceneProjection.review denseReviewInput)
+    let overlayIds =
+        TacticalSceneProjection.overlayRegistry
+        |> Array.map (fun overlay -> TacticalOverlayId.value overlay.Id)
+    require
+        (overlayIds.Length = 14
+         && overlayIds |> Array.distinct |> Array.length = 14
+         && overlayIds
+            = [| "unit.footprints"; "unit.body-facing"; "movement.reachable-path-cost"
+                 "movement.planned-routes"; "movement.reservations"; "awareness.attention-vision"
+                 "spatial.exact-los"; "cover.exposure"; "combat.armor-coverage"
+                 "combat.area-engagements"; "combat.suppression"; "combat.attack-traces"
+                 "combat.hp-wounds"; "command.state" |])
+        "Tactical overlay registry IDs or deterministic order drifted."
+    let exportedPreferences =
+        TacticalSceneProjection.initialOverlayPreferences
+        |> TacticalSceneProjection.exportOverlayPreferences
+    require
+        (match TacticalSceneProjection.importOverlayPreferences exportedPreferences with
+         | Ok restored -> TacticalSceneProjection.exportOverlayPreferences restored = exportedPreferences
+         | Error _ -> false)
+        "Overlay preferences did not restore deterministically."
+    require
+        (match TacticalSceneProjection.importOverlayPreferences "v1|spatial.exact-los=approximate" with
+         | Error MalformedOverlayPreferences -> true
+         | _ -> false)
+        "Unreadable overlay preferences did not fail closed."
+    let denseOverlayScene = TacticalSceneProjection.planning densePlanningInput
+    let exactLosDescriptor =
+        TacticalSceneProjection.overlayRegistry
+        |> Array.find (fun overlay -> TacticalOverlayId.value overlay.Id = "spatial.exact-los")
+    let sourcePrimitive = denseOverlayScene.Units[0].PrimitiveId
+    let exactLosScene =
+        { denseOverlayScene with
+            Routes =
+                Array.append
+                    denseOverlayScene.Routes
+                    [| { PrimitiveId = sourcePrimitive
+                         OwnerUnitId = Some 1
+                         Kind = "exact-los:supercover:corner:door-solid:blocker=semantic-edge"
+                         Points = [| 0.5; 0.5; 0.5; 1.5; 1.5; 1.5 |]
+                         Label = Disclosed "Exact LOS blocked by closed door" } |] }
+    let exactLos =
+        TacticalSceneProjection.projectOverlays
+            TacticalSceneProjection.initialOverlayPreferences
+            (Set.singleton exactLosDescriptor.Id)
+            exactLosScene
+    require
+        (exactLos.Payloads
+         |> Array.exists (fun payload ->
+             payload.OverlayId = exactLosDescriptor.Id
+             && payload.Kind.Contains("supercover")
+             && payload.Kind.Contains("door-solid")
+             && payload.Points = [| 0.5; 0.5; 0.5; 1.5; 1.5; 1.5 |]))
+        "Exact LOS overlay approximated or discarded authoritative corner/door evidence."
+    let undisclosed =
+        TacticalSceneProjection.projectOverlays
+            TacticalSceneProjection.initialOverlayPreferences
+            Set.empty
+            { exactLosScene with
+                Disclosure =
+                    { exactLosScene.Disclosure with
+                        PreservesFieldDisclosures = false } }
+    require
+        (undisclosed.Payloads.Length = 0
+         && undisclosed.Labels.Length = 0
+         && undisclosed.Cost.RegistryTraversals = 1
+         && undisclosed.Cost.DisclosurePasses = 1
+         && undisclosed.Cost.CandidatePayloads = 0)
+        "Unavailable disclosure leaked overlay geometry, labels, counts, or diagnostic work shape."
+    let overlayTimings =
+        Array.init 80 (fun _ ->
+            milliseconds (fun () ->
+                TacticalSceneProjection.projectOverlays
+                    TacticalSceneProjection.initialOverlayPreferences
+                    Set.empty
+                    denseOverlayScene))
+    let overlayProjection =
+        TacticalSceneProjection.projectOverlays
+            TacticalSceneProjection.initialOverlayPreferences
+            Set.empty
+            denseOverlayScene
+    let overlayP95 = p95 overlayTimings
+    require
+        (overlayProjection.Cost.RegistryTraversals = 1
+         && overlayProjection.Cost.DisclosurePasses = 1
+         && overlayProjection.Cost.EmittedPayloads <= 4096
+         && overlayProjection.Cost.EmittedLabels <= 256
+         && overlayProjection.Cost.EstimatedSvgNodes <= 5000
+         && overlayP95 < 50.0)
+        (sprintf "Tactical overlay stress projection exceeded structural/timing budgets: %.3f ms, %A." overlayP95 overlayProjection.Cost)
     let editorP95 = p95 editorTimings
     let planningP95 = p95 planningTimings
     let simulatorP95 = p95 simulatorTimings
@@ -1007,11 +1097,12 @@ let run () =
             reviewAllocation)
 
     printfn
-        "Tactical scene projection qualification passed: validated replay owners, complete selections, stable IDs/revisions, dense p95 %.3f/%.3f/%.3f/%.3f ms, allocations %d/%d/%d/%d bytes."
+        "Tactical scene projection qualification passed: validated replay owners, overlay registry/disclosure/exact LOS/preference/order/bounds, dense p95 %.3f/%.3f/%.3f/%.3f/overlay %.3f ms, allocations %d/%d/%d/%d bytes."
         editorP95
         planningP95
         simulatorP95
         reviewP95
+        overlayP95
         editorAllocation
         planningAllocation
         simulatorAllocation

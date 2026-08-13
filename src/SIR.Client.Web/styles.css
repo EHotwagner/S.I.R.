@@ -13,6 +13,33 @@
   min-height: inherit;
 }
 
+#sir-replay-app #persistent-tactical-overlay-layer {
+  color: #ffd166;
+  vector-effect: non-scaling-stroke;
+}
+
+#sir-replay-app #persistent-tactical-overlay-layer [data-overlay-pattern="directional-hatch"] {
+  stroke-linecap: square;
+  stroke-linejoin: bevel;
+}
+
+#sir-replay-app #persistent-tactical-overlay-layer [data-overlay-label] {
+  paint-order: stroke fill;
+  stroke: #08100d;
+  stroke-width: 3px;
+  font-size: 12px;
+}
+
+@media (prefers-contrast: more), (forced-colors: active) {
+  #sir-replay-app #persistent-tactical-overlay-layer {
+    color: CanvasText;
+  }
+  #sir-replay-app #persistent-tactical-overlay-layer [data-overlay-pattern] {
+    stroke-width: 3px;
+    stroke-dasharray: 8 4;
+  }
+}
+
 #sir-replay-app,
 #sir-replay-app * { box-sizing: border-box; }
 

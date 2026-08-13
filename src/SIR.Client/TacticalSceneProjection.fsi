@@ -12,6 +12,88 @@ type ScenePrimitiveId = private ScenePrimitiveId of string
 module ScenePrimitiveId =
     val value: ScenePrimitiveId -> string
 
+type TacticalOverlayId = private TacticalOverlayId of string
+
+[<RequireQualifiedAccess>]
+module TacticalOverlayId =
+    val value: TacticalOverlayId -> string
+
+type TacticalOverlayMode =
+    | OverlayOff
+    | InspectHeld
+    | SelectionScoped
+    | Persistent
+
+type TacticalOverlayCategory =
+    | UnitOverlay
+    | AwarenessOverlay
+    | MovementOverlay
+    | ProtectionOverlay
+    | CombatOverlay
+    | CommandOverlay
+
+type TacticalOverlayPayloadKind =
+    | FootprintPayload
+    | DirectionPayload
+    | PolylinePayload
+    | AreaPayload
+    | TracePayload
+    | StatusPayload
+
+type TacticalOverlayAvailability =
+    | OverlayAvailable
+    | OverlayUnavailable
+
+type TacticalOverlayDisclosurePolicy =
+    | DisclosedSceneFactsOnly
+    | SelectedDisclosedFactsOnly
+
+type TacticalOverlayDescriptor =
+    { Id: TacticalOverlayId
+      Label: string
+      Category: TacticalOverlayCategory
+      DefaultMode: TacticalOverlayMode
+      SupportedModes: Set<TacticalOverlayMode>
+      CommandId: string
+      DefaultGesture: string option
+      Availability: TacticalOverlayAvailability
+      DisclosurePolicy: TacticalOverlayDisclosurePolicy
+      PayloadKind: TacticalOverlayPayloadKind
+      Order: int }
+
+type TacticalOverlayPreferences =
+    { SchemaVersion: int
+      Modes: Map<TacticalOverlayId, TacticalOverlayMode> }
+
+type TacticalOverlayPreferenceDiagnostic =
+    | MalformedOverlayPreferences
+    | UnsupportedOverlayPreferenceSchema of int
+
+type TacticalOverlayPayload =
+    { OverlayId: TacticalOverlayId
+      PrimitiveId: ScenePrimitiveId
+      SubjectId: string
+      Tick: int32
+      Kind: string
+      PayloadKind: TacticalOverlayPayloadKind
+      Points: float array
+      Label: Disclosure<string>
+      Priority: int
+      Order: int }
+
+type TacticalOverlayCost =
+    { RegistryTraversals: int
+      DisclosurePasses: int
+      CandidatePayloads: int
+      EmittedPayloads: int
+      EmittedLabels: int
+      EstimatedSvgNodes: int }
+
+type TacticalOverlayProjection =
+    { Payloads: TacticalOverlayPayload array
+      Labels: TacticalOverlayPayload array
+      Cost: TacticalOverlayCost }
+
 type SceneTerrainProjection =
     { PrimitiveId: ScenePrimitiveId
       Column: int32
@@ -104,6 +186,21 @@ type ReviewProjectionInput =
 
 [<RequireQualifiedAccess>]
 module TacticalSceneProjection =
+    val overlayRegistry: TacticalOverlayDescriptor array
+    val initialOverlayPreferences: TacticalOverlayPreferences
+    val exportOverlayPreferences: TacticalOverlayPreferences -> string
+    val importOverlayPreferences: string -> Result<TacticalOverlayPreferences, TacticalOverlayPreferenceDiagnostic>
+    val effectiveOverlayMode:
+        preferences: TacticalOverlayPreferences ->
+        held: Set<TacticalOverlayId> ->
+        hasSelection: bool ->
+        descriptor: TacticalOverlayDescriptor ->
+            TacticalOverlayMode
+    val projectOverlays:
+        preferences: TacticalOverlayPreferences ->
+        held: Set<TacticalOverlayId> ->
+        projection: SharedSceneProjection ->
+            TacticalOverlayProjection
     val editor: EditorProjectionInput -> SharedSceneProjection
     val planning: PlanningProjectionInput -> SharedSceneProjection
     val simulator: SimulatorProjectionInput -> SharedSceneProjection

@@ -1,0 +1,30 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-13-sir-item-183-tactical-overlays.md",
+  "reportSha256": "927b4aabb3f39c52ec894309f792d973ab44b157cfea171f5fc7117cd68ed85f",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [{ "locator": "command:npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js tests/SIR.Browser.Tests/visible-workflows.spec.js -g 'analysis overlays'", "result": "verified" }],
+      "confidenceLimits": ["Independent exact-head review remains pending with the parent worker."]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [{ "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-build", "result": "verified" }],
+      "confidenceLimits": ["The renderer can only expose tactical facts present in the existing disclosed scene vocabulary."]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [{ "locator": "readiness/183-tactical-overlays/tactical-overlays-all-browser.junit.xml", "result": "verified" }],
+      "confidenceLimits": ["The admission cap is test-only; production defaults were not exercised by this adjustment."]
+    }
+  ]
+}

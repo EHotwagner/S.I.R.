@@ -38,6 +38,9 @@ type Msg =
     | RestoreTacticalBinding of commandId: string
     | RestoreTacticalModalityBindings
     | RestoreAllTacticalBindings
+    | CycleTacticalOverlay of string
+    | BeginTacticalOverlayHold of string
+    | EndTacticalOverlayHold of string
     | TacticalBindingImportChanged of string
     | ImportTacticalBindings
     | ToggleLayoutPanelVisibility of string
@@ -135,6 +138,8 @@ type Model =
       TacticalBindingImport: string
       TacticalBindingDiagnostics: string list
       TacticalBindingsOpen: bool
+      TacticalOverlays: TacticalOverlayPreferences
+      HeldTacticalOverlays: Set<TacticalOverlayId>
       TacticalLayout: TacticalLayoutProfile
       TacticalLayoutDiagnostics: string list
       DesktopToolbarCommands: string list

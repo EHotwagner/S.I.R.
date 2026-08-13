@@ -148,6 +148,14 @@
         "resolved": "13.0.1",
         "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
       },
+      "sir.client": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[10.1.303, 10.1.303]",
+          "SIR.Domain": "[1.0.0, )",
+          "SIR.Protocol": "[1.0.0, )"
+        }
+      },
       "sir.domain": {
         "type": "Project",
         "dependencies": {
@@ -166,14 +174,6 @@
         "dependencies": {
           "FSharp.Core": "[10.1.303, 10.1.303]",
           "Thoth.Json.Net": "[12.0.0, 12.0.0]"
-        }
-      },
-      "sir.replay.core": {
-        "type": "Project",
-        "dependencies": {
-          "FSharp.Core": "[10.1.303, 10.1.303]",
-          "SIR.Domain": "[1.0.0, )",
-          "SIR.Simulation": "[1.0.0, )"
         }
       },
       "sir.simulation": {
