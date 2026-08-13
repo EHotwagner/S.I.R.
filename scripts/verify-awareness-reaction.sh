@@ -23,14 +23,24 @@ for mutation in los-awareness facing-attention preparation ordering unserviced-e
     exit 1
   fi
 done
-for mutation in version hash bounds posture cursor input-vocabulary; do
+for mutation in version hash bounds posture cursor input-vocabulary v5-guarded-edge; do
   if dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-build --no-restore -- --inject-replay-mutation "$mutation" >"$task_tmp/replay-$mutation.log" 2>&1; then
     echo "Replay mutation survived: $mutation" >&2
     exit 1
   fi
 done
+dotnet run --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj -c Release --no-build --no-restore
+if SIR_AWARENESS_STIMULUS_HISTORY_MUTATE_SUBJECT=1 dotnet run --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj -c Release --no-build --no-restore >"$task_tmp/stimulus-history-mutation.log" 2>&1; then
+  echo "Observer-local projection accepted rewritten historical stimulus facts." >&2
+  exit 1
+fi
 
-dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --awareness
+SIR_AWARENESS_PERF_RECEIPT="$task_tmp/perf-development-receipt.json" dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --awareness
+git show c6f0bd3be8ca08b5103c55e65ee48b89eb92c371:readiness/182-awareness-reaction-windows/awareness-performance-receipt.json > "$task_tmp/stale-93ba51c-receipt.json"
+if dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --verify-awareness-receipt "$task_tmp/stale-93ba51c-receipt.json" --candidate-commit "$(git rev-parse HEAD)" >"$task_tmp/perf-stale-candidate.log" 2>&1; then
+  echo "Stale 93ba51c awareness receipt survived exact-candidate acceptance." >&2
+  exit 1
+fi
 jq '.stress.units = 201' work/182-awareness-reaction-windows/contracts/awareness-reaction-performance-workload-v1.json > "$task_tmp/workload-201.json"
 if SIR_AWARENESS_WORKLOAD="$task_tmp/workload-201.json" SIR_AWARENESS_PERF_RECEIPT="$task_tmp/perf-workload-201-receipt.json" dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --awareness >"$task_tmp/perf-workload-201.log" 2>&1; then
   echo "Awareness workload identity mutation survived: stress.units 200 -> 201" >&2

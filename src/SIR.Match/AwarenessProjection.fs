@@ -27,8 +27,13 @@ type LocalStimulusProjection =
     { ObserverId: int32
       SubjectId: int32
       Tick: int32
+      Modality: SpatialModality
+      Source: string
       Sector: ObservationSector
       SubjectCell: int32 * int32
+      SpatialRevision: int64
+      KnowledgeIdentity: string
+      KnowledgeRevision: int64
       Reason: AwarenessReason }
 
 type LocalAwarenessFrame =
@@ -85,16 +90,19 @@ module AwarenessProjection =
         let stimuli =
             contacts
             |> List.choose (fun contact ->
-                match observer, contact.LastKnownCell,
-                      state.Awareness |> Map.tryFind (observerId, Simulation.unitId contact.SubjectId) |> Option.bind _.LastStimulusTick with
-                | Some owner, Some(col, row), Some stimulusTick ->
-                    let knownCell = { Col = col; Row = row }
+                match state.Awareness |> Map.tryFind (observerId, Simulation.unitId contact.SubjectId) |> Option.bind _.LastStimulus with
+                | Some stimulus ->
                     Some
                         { ObserverId = UnitId.value observerId
                           SubjectId = contact.SubjectId
-                          Tick = stimulusTick
-                          Sector = AwarenessReaction.sector owner.AttentionDirection owner.Cell knownCell
-                          SubjectCell = col, row
+                          Tick = stimulus.Tick
+                          Modality = stimulus.Modality
+                          Source = stimulus.Source
+                          Sector = stimulus.Sector
+                          SubjectCell = stimulus.SubjectCell.Col, stimulus.SubjectCell.Row
+                          SpatialRevision = stimulus.SpatialRevision
+                          KnowledgeIdentity = stimulus.KnowledgeIdentity
+                          KnowledgeRevision = stimulus.KnowledgeRevision
                           Reason = contact.Reason }
                 | _ -> None)
             |> List.sortBy (fun stimulus -> stimulus.Tick, stimulus.SubjectId)

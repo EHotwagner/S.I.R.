@@ -221,6 +221,41 @@ module Replay =
             CanonicalEncoding.concatenate [ [| 8uy |]; unitIdBytes unitId; stringBytes engagementId; cellBytes edge.Lo; cellBytes edge.Hi; CanonicalEncoding.direction8 direction ]
 
     let private snapshotBytesForVersion formatVersion (state: SimulationState) =
+        let legacyAwarenessLevel = function AwarenessLevel.Unknown -> 0uy | AwarenessLevel.Suspected -> 1uy | AwarenessLevel.Acquired -> 2uy | AwarenessLevel.LostContact -> 3uy
+        let legacyAwarenessReason = function AwarenessReason.NoStimulus -> 0uy | AwarenessReason.OutsideRange -> 1uy | AwarenessReason.Occluded -> 2uy | AwarenessReason.StimulusAccumulated -> 3uy | AwarenessReason.IdentificationThresholdReached -> 4uy | AwarenessReason.StimulusDecayed -> 5uy | AwarenessReason.ContactLost -> 6uy | AwarenessReason.ContactRetained -> 7uy | AwarenessReason.InvalidProfile -> 8uy
+        let optionalI32 = function None -> [| 0uy |] | Some value -> CanonicalEncoding.concatenate [ [| 1uy |]; CanonicalEncoding.int32LittleEndian value ]
+        let optionalCell = function None -> [| 0uy |] | Some value -> CanonicalEncoding.concatenate [ [| 1uy |]; cellBytes value ]
+        let contactBytes contact =
+            if formatVersion >= CurrentFormatVersion then AwarenessReaction.canonicalContactBytes contact
+            else
+                CanonicalEncoding.concatenate
+                    [ [| byte AwarenessReaction.schemaVersion |]
+                      unitIdBytes contact.SubjectId
+                      [| legacyAwarenessLevel contact.Level |]
+                      CanonicalEncoding.int32LittleEndian contact.Acquisition
+                      optionalI32 contact.LastStimulusTick
+                      optionalCell contact.LastKnownCell
+                      optionalI32 contact.RetainUntilTick
+                      [| legacyAwarenessReason contact.Reason |] ]
+        let legacyPhase = function EngagementPhase.Preparing -> 0uy | EngagementPhase.ActiveCoverage -> 1uy | EngagementPhase.TriggerEligible -> 2uy | EngagementPhase.Committed -> 3uy | EngagementPhase.Resolved -> 4uy | EngagementPhase.Interrupted -> 5uy | EngagementPhase.Recovering -> 6uy
+        let legacyReactionReason = function ReactionReason.PreparingNotComplete -> 0uy | ReactionReason.Eligible -> 1uy | ReactionReason.CommittedInCanonicalOrder -> 2uy | ReactionReason.TargetInvalidated -> 3uy | ReactionReason.AttentionChanged -> 4uy | ReactionReason.PostureChanged -> 5uy | ReactionReason.ReactorIncapacitated -> 6uy | ReactionReason.FireBlocked -> 7uy | ReactionReason.ResolvedByPhysicalAuthority -> 8uy | ReactionReason.RecoveryComplete -> 9uy
+        let engagementBytes engagement =
+            if formatVersion >= CurrentFormatVersion then AwarenessReaction.canonicalEngagementBytes engagement
+            else
+                let target =
+                    match engagement.Target with
+                    | EngagementTarget.KnownUnit id -> CanonicalEncoding.concatenate [ [| 0uy |]; unitIdBytes id ]
+                    | EngagementTarget.CoveredArea cells -> CanonicalEncoding.concatenate ([ [| 1uy |]; CanonicalEncoding.int32LittleEndian cells.Length ] @ (cells |> List.map cellBytes))
+                    | EngagementTarget.GuardedEdge(_, _, edge) -> CanonicalEncoding.concatenate [ [| 2uy |]; cellBytes edge.Lo; cellBytes edge.Hi ]
+                CanonicalEncoding.concatenate
+                    [ [| byte AwarenessReaction.schemaVersion |]
+                      stringBytes engagement.EngagementId
+                      unitIdBytes engagement.OwnerId
+                      target
+                      CanonicalEncoding.direction8 engagement.RequiredAttention
+                      [| legacyPhase engagement.Phase |]
+                      CanonicalEncoding.int32LittleEndian engagement.RemainingTicks
+                      [| legacyReactionReason engagement.Reason |] ]
         let edgeSegments =
             state.Board.Edges
             |> List.sortBy (fun edge ->
@@ -296,7 +331,7 @@ module Replay =
                 |> List.collect (fun ((observerId, subjectId), contact) ->
                     [ unitIdBytes observerId
                       unitIdBytes subjectId
-                      AwarenessReaction.canonicalContactBytes contact |> lengthPrefixed ])
+                      contactBytes contact |> lengthPrefixed ])
             else []
 
         let engagementSegments =
@@ -305,7 +340,7 @@ module Replay =
                 |> Map.toList
                 |> List.collect (fun (ownerId, engagement) ->
                     [ unitIdBytes ownerId
-                      AwarenessReaction.canonicalEngagementBytes engagement |> lengthPrefixed ])
+                      engagementBytes engagement |> lengthPrefixed ])
             else []
 
         CanonicalEncoding.concatenate
@@ -492,6 +527,10 @@ module Replay =
         ||| (int32 bytes[2] <<< 16)
         ||| (int32 bytes[3] <<< 24)
 
+    let private readInt64 reader =
+        let bytes = readBytes 8 reader
+        [ 0 .. 7 ] |> List.fold (fun value index -> value ||| (int64 bytes[index] <<< (index * 8))) 0L
+
     let private readCell reader: Cell =
         { Col = readInt32 reader
           Row = readInt32 reader }
@@ -652,7 +691,7 @@ module Replay =
         | 5uy -> AwarenessReason.StimulusDecayed | 6uy -> AwarenessReason.ContactLost | 7uy -> AwarenessReason.ContactRetained
         | 8uy -> AwarenessReason.InvalidProfile | value -> failDecode (sprintf "Invalid awareness-reason byte %d." value)
 
-    let private readCanonicalContact bytes =
+    let private readCanonicalContact formatVersion bytes =
         let nested = { Bytes = bytes; Offset = 0 }
         if readByte nested <> byte AwarenessReaction.schemaVersion then failDecode "Unsupported awareness-contact schema."
         let contact =
@@ -660,6 +699,34 @@ module Replay =
               Level = readAwarenessLevel nested
               Acquisition = readInt32 nested
               LastStimulusTick = readOptionalInt32 nested
+              LastStimulus =
+                if formatVersion < CurrentFormatVersion || not (readBool nested) then None
+                else
+                    let tick = readInt32 nested
+                    let modality =
+                        match readByte nested with
+                        | 0uy -> SpatialModality.GroundMovement
+                        | 1uy -> SpatialModality.Vision
+                        | 2uy -> SpatialModality.ProjectileTrace
+                        | value -> failDecode $"Invalid retained stimulus modality {value}."
+                    let source = readLengthPrefixed "retained stimulus source" 256 nested |> System.Text.Encoding.UTF8.GetString
+                    let origin, subjectCell = readCell nested, readCell nested
+                    let sector =
+                        match readByte nested with
+                        | 0uy -> ObservationSector.Forward
+                        | 1uy -> ObservationSector.Peripheral
+                        | 2uy -> ObservationSector.Rear
+                        | value -> failDecode $"Invalid retained stimulus sector {value}."
+                    Some
+                        { Tick = tick
+                          Modality = modality
+                          Source = source
+                          Origin = origin
+                          SubjectCell = subjectCell
+                          Sector = sector
+                          SpatialRevision = readInt64 nested
+                          KnowledgeIdentity = readLengthPrefixed "retained knowledge identity" 256 nested |> System.Text.Encoding.UTF8.GetString
+                          KnowledgeRevision = readInt64 nested }
               LastKnownCell = readOptionalCell nested
               RetainUntilTick = readOptionalInt32 nested
               Reason = readAwarenessReason nested }
@@ -838,7 +905,7 @@ module Replay =
                 let values =
                     [ for _ in 1 .. count do
                         let observerId, subjectId = Simulation.unitId (readInt32 reader), Simulation.unitId (readInt32 reader)
-                        let contact = readLengthPrefixed "awareness contact" 4096 reader |> readCanonicalContact
+                        let contact = readLengthPrefixed "awareness contact" 4096 reader |> readCanonicalContact formatVersion
                         if contact.SubjectId <> subjectId then failDecode "Awareness contact subject does not match its map key."
                         yield (observerId, subjectId), contact ]
                 if values |> List.map fst |> Set.ofList |> Set.count <> count then failDecode "Snapshot contains duplicate awareness contacts."

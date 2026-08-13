@@ -131,12 +131,16 @@ module AwarenessReactionFixtures =
                 Acquisition = 2
                 LastKnownCell = Some(cell 299 10)
                 LastStimulusTick = Some 0
+                LastStimulus = None
                 RetainUntilTick = Some 20
                 Reason = AwarenessReason.ContactRetained }
         let expiryState =
             { integrationBase with Tick = (if mutation = Some "unserviced-expiry" then 19 else 21); Units = manyUnits; Awareness = Map.ofList [ (expiryObserver, expirySubject), stale ]; AwarenessCursor = 0 }
         let expiryResult = Simulation.runTick expiryState []
-        let expired = expiryResult.State.Awareness[(expiryObserver, expirySubject)]
+        let expired =
+            expiryResult.State.Awareness
+            |> Map.tryFind (expiryObserver, expirySubject)
+            |> Option.defaultValue (AwarenessReaction.emptyContact expirySubject)
         require (expired.Level = AwarenessLevel.Unknown && expired.LastKnownCell.IsNone) "An unserviced contact did not expire by authoritative elapsed tick."
 
         let acquiredContact =

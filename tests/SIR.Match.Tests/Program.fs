@@ -1179,11 +1179,27 @@ let main _ =
     let otherObserver = Simulation.unitId 20
     let observerUnit = Simulation.initialState.Units[observer]
     let otherUnit = Simulation.initialState.Units[otherObserver]
+    let retainedSector =
+        if Environment.GetEnvironmentVariable("SIR_AWARENESS_STIMULUS_HISTORY_MUTATE_SUBJECT") = "1" then
+            ObservationSector.Peripheral
+        else
+            ObservationSector.Forward
     let suspected =
         { AwarenessReaction.emptyContact otherObserver with
             Level = AwarenessLevel.Suspected
             Acquisition = 4
             LastStimulusTick = Some 3
+            LastStimulus =
+                Some
+                    { Tick = 3
+                      Modality = SpatialModality.Vision
+                      Source = "SIR.Simulation.SpatialQuery.evaluate"
+                      Origin = observerUnit.Cell
+                      SubjectCell = otherUnit.Cell
+                      Sector = retainedSector
+                      SpatialRevision = 7L
+                      KnowledgeIdentity = "observer-10"
+                      KnowledgeRevision = 9L }
             LastKnownCell = Some otherUnit.Cell
             Reason = AwarenessReason.StimulusAccumulated }
     let differentlyInformed =
@@ -1191,16 +1207,29 @@ let main _ =
             Level = AwarenessLevel.Acquired
             Acquisition = 8
             LastStimulusTick = Some 2
+            LastStimulus =
+                Some
+                    { Tick = 2
+                      Modality = SpatialModality.Vision
+                      Source = "other-observer"
+                      Origin = otherUnit.Cell
+                      SubjectCell = observerUnit.Cell
+                      Sector = ObservationSector.Rear
+                      SpatialRevision = 8L
+                      KnowledgeIdentity = "observer-20"
+                      KnowledgeRevision = 10L }
             LastKnownCell = Some observerUnit.Cell
             Reason = AwarenessReason.IdentificationThresholdReached }
     let localState =
         { Simulation.initialState with
             Tick = 3
+            Units = Simulation.initialState.Units |> Map.change observer (Option.map (fun unit -> { unit with AttentionDirection = North }))
             Awareness = Map.ofList [ (observer, otherObserver), suspected; (otherObserver, observer), differentlyInformed ] }
     let local = AwarenessProjection.forObserver observer localState
     require (local.Contacts.Length = 1 && local.Contacts.Head.Level = AwarenessLevel.Suspected) "Observer-local projection mixed differently informed observers."
     require (local.Stimuli.Length = 1 && local.Stimuli.Head.Tick = 3 && local.Stimuli.Head.Reason = AwarenessReason.StimulusAccumulated) "Current suspected stimulus fact was not projected."
-    require (local.Stimuli.Head.Sector = AwarenessReaction.sector observerUnit.AttentionDirection observerUnit.Cell otherUnit.Cell) "Projected stimulus sector was not the observer-local factual sector."
+    require (local.Stimuli.Head.Sector = ObservationSector.Forward) "Later East-to-North attention rewrote the historical factual stimulus sector."
+    require (local.Stimuli.Head.Modality = SpatialModality.Vision && local.Stimuli.Head.Source = "SIR.Simulation.SpatialQuery.evaluate" && local.Stimuli.Head.SpatialRevision = 7L && local.Stimuli.Head.KnowledgeIdentity = "observer-10") "Projected stimulus omitted retained factual provenance."
 
     printfn
         "Full match replay qualified: %d full bytes, %d perspective bytes, 4 exact WASM outputs; %d Control ABI v1 reference-module bytes agree; 200 isolated reusable-host instances in %.3f ms."

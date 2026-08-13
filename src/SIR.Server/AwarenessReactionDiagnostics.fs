@@ -78,9 +78,14 @@ module AwarenessReactionDiagnostics =
                 {| ObserverId = stimulus.ObserverId
                    SubjectId = stimulus.SubjectId
                    Tick = stimulus.Tick
+                   Modality = string stimulus.Modality
+                   Source = stimulus.Source
                    Sector = string stimulus.Sector
                    SubjectColumn = column
                    SubjectRow = row
+                   SpatialRevision = stimulus.SpatialRevision
+                   KnowledgeIdentity = stimulus.KnowledgeIdentity
+                   KnowledgeRevision = stimulus.KnowledgeRevision
                    Reason = string stimulus.Reason |})
         let events =
             reacted.Events

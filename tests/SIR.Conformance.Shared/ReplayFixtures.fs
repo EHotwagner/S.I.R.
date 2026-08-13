@@ -183,14 +183,15 @@ module ReplayFixtures =
               Level = AwarenessLevel.Acquired
               Acquisition = AwarenessReaction.infantryProfile.IdentificationThreshold
               LastStimulusTick = Some 4
+              LastStimulus = None
               LastKnownCell = Some { Col = 1; Row = 0 }
               RetainUntilTick = Some 24
               Reason = AwarenessReason.IdentificationThresholdReached }
         let engagement =
             AwarenessReaction.declareEngagement
-                "replay-v5-area"
+                "replay-v5-edge"
                 observerId
-                (EngagementTarget.CoveredArea [ { Col = 2; Row = 0 }; { Col = 1; Row = 0 } ])
+                (EngagementTarget.GuardedEdge("minimal-east-boundary", 1, Edges.edgeBetween { Col = 1; Row = 0 } { Col = 2; Row = 0 } |> Option.defaultWith (fun () -> failwith "invalid retained v5 edge")))
                 East
             |> Result.defaultWith failwith
         { combatSnapshot () with
@@ -283,6 +284,16 @@ module ReplayFixtures =
                 |> Replay.encode
             if changed <> original then failwith "Replay protected input-vocabulary mutation detected."
             else failwith "Replay input-vocabulary mutation was accepted."
+        | "v5-guarded-edge" ->
+            let package = awarenessSnapshotPackageFor Replay.AwarenessFormatVersion
+            let encoded = Replay.encode package
+            let decoded = Replay.decode Replay.defaultLimits encoded |> Result.defaultWith (fun error -> failwithf "v5 guarded edge did not decode: %A" error)
+            match decoded.Content with
+            | AuthorizedFullReplay full ->
+                match full.InitialSnapshot.Engagements[Simulation.unitId 10].Target with
+                | EngagementTarget.GuardedEdge("legacy-guarded-edge", 0, _) when Replay.encode decoded = encoded -> failwith "Replay protected v5 guarded-edge mutation detected."
+                | target -> failwithf "v5 guarded edge lost legacy defaults: %A" target
+            | _ -> failwith "v5 guarded edge changed disclosure kind."
         | value -> failwithf "Unknown replay mutation: %s" value
 
     let evaluate () =
@@ -414,7 +425,14 @@ module ReplayFixtures =
         match decodedAwareness.Content with
         | AuthorizedFullReplay full ->
             require (full.InitialSnapshot.Awareness = (awarenessSnapshot ()).Awareness) "Replay v5 lost awareness state."
-            require (full.InitialSnapshot.Engagements = (awarenessSnapshot ()).Engagements) "Replay v5 lost engagement state."
+            let expectedLegacyEngagements =
+                (awarenessSnapshot ()).Engagements
+                |> Map.map (fun _ engagement ->
+                    match engagement.Target with
+                    | EngagementTarget.GuardedEdge(_, _, edge) ->
+                        { engagement with Target = EngagementTarget.GuardedEdge("legacy-guarded-edge", 0, edge) }
+                    | _ -> engagement)
+            require (full.InitialSnapshot.Engagements = expectedLegacyEngagements) "Replay v5 lost legacy guarded-edge engagement state."
             require (full.OrderedInputs.Length = 2) "Replay v5 lost awareness/reaction inputs."
         | PerspectivePlayback _ -> failwith "Replay v5 awareness snapshot changed disclosure kind."
 

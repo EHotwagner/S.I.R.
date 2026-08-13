@@ -32,11 +32,23 @@ type Stimulus =
       SubjectCell: Cell
       SpatialEvidence: SpatialQueryResult }
 
+type RetainedStimulus =
+    { Tick: int32
+      Modality: SpatialModality
+      Source: string
+      Origin: Cell
+      SubjectCell: Cell
+      Sector: ObservationSector
+      SpatialRevision: int64
+      KnowledgeIdentity: string
+      KnowledgeRevision: int64 }
+
 type AwarenessContact =
     { SubjectId: UnitId
       Level: AwarenessLevel
       Acquisition: int32
       LastStimulusTick: int32 option
+      LastStimulus: RetainedStimulus option
       LastKnownCell: Cell option
       RetainUntilTick: int32 option
       Reason: AwarenessReason }

@@ -339,6 +339,40 @@ let private argument name args =
 let private validSha (value: string) =
     value.Length = 64 && value |> Seq.forall Uri.IsHexDigit
 
+let private verifyAwarenessPerformanceReceipt (receiptPath: string) (expectedCommit: string) =
+    required (File.Exists receiptPath) "The awareness performance receipt is unreadable."
+    required (expectedCommit.Length = 40 && expectedCommit |> Seq.forall Uri.IsHexDigit) "The awareness candidate commit must be an exact 40-character SHA."
+    let exactCommit = expectedCommit.ToLowerInvariant()
+    let headCommit = commandOutput "git" "rev-parse HEAD" |> _.ToLowerInvariant()
+    required (headCommit = exactCommit) "The checked-out HEAD is not the requested awareness candidate."
+    use document = JsonDocument.Parse(File.ReadAllText receiptPath)
+    let root = document.RootElement
+    let property (name: string) (element: JsonElement) = element.GetProperty name
+    let textProperty (name: string) (element: JsonElement) = property name element |> _.GetString() |> Option.ofObj |> Option.defaultValue ""
+    required (textProperty "schema" root = "sir.awareness-reaction.performance-receipt/1") "The awareness receipt schema is unsupported."
+    required (textProperty "outcome" root = "pass") "The awareness receipt did not pass."
+    let candidate = property "candidate" root
+    required (textProperty "commit" candidate = exactCommit) "The awareness receipt is stale for the requested candidate commit."
+    required (String.IsNullOrEmpty(commandOutput "git" "diff --binary HEAD --")) "Exact-candidate awareness acceptance requires a clean working tree."
+    required (textProperty "headTree" candidate = commandOutput "git" $"rev-parse {exactCommit}^{{tree}}") "The awareness receipt tree does not belong to the requested candidate."
+    required (textProperty "workingTreeState" candidate = "clean") "The awareness receipt was not measured from a clean tree."
+    required (textProperty "workingTreeDiffSha256" candidate = sha256Text "") "The awareness receipt contains a working-tree diff."
+    required (textProperty "performanceAssemblySha256" candidate = sha256File (Assembly.GetExecutingAssembly().Location)) "The awareness receipt performance assembly is not the verifier assembly."
+    required (textProperty "simulationAssemblySha256" candidate = sha256File typeof<SimulationState>.Assembly.Location) "The awareness receipt simulation assembly is not the verifier assembly."
+    let workloadPath = "work/182-awareness-reaction-windows/contracts/awareness-reaction-performance-workload-v1.json"
+    required (textProperty "workloadDefinitionSha256" root = sha256File workloadPath) "The awareness receipt workload definition is stale."
+    let host = property "host" root
+    required (textProperty "operatingSystem" host = RuntimeInformation.OSDescription) "The awareness receipt operating system differs from the verifier host."
+    required (textProperty "architecture" host = RuntimeInformation.ProcessArchitecture.ToString()) "The awareness receipt architecture differs from the verifier host."
+    required (textProperty "framework" host = RuntimeInformation.FrameworkDescription) "The awareness receipt framework differs from the verifier host."
+    required (textProperty "runtimeVersion" host = Environment.Version.ToString()) "The awareness receipt runtime differs from the verifier host."
+    required (property "processorCount" host |> _.GetInt32() = Environment.ProcessorCount) "The awareness receipt processor count differs from the verifier host."
+    required (textProperty "processorModel" host = processorModel ()) "The awareness receipt processor model differs from the verifier host."
+    required (property "gcServer" host |> _.GetBoolean() = System.Runtime.GCSettings.IsServerGC) "The awareness receipt GC mode differs from the verifier host."
+    required (textProperty "gcLatencyMode" host = System.Runtime.GCSettings.LatencyMode.ToString()) "The awareness receipt GC latency mode differs from the verifier host."
+    printfn "verified-awareness-receipt=%s candidate=%s receipt-sha256=%s" receiptPath exactCommit (sha256File receiptPath)
+    0
+
 let private mutatedLimits mutation observation =
     let limits =
         { TraceCells = 256
@@ -394,6 +428,7 @@ let private awarenessStressState () =
                   Level = AwarenessLevel.Acquired
                   Acquisition = AwarenessReaction.infantryProfile.IdentificationThreshold
                   LastStimulusTick = Some 0
+                  LastStimulus = None
                   LastKnownCell = Some(cell (int32 (20 + (index % 10) * 3)) (int32 ((index / 10) * 3)))
                   RetainUntilTick = Some AwarenessReaction.infantryProfile.LastKnownRetentionTicks
                   Reason = AwarenessReason.IdentificationThresholdReached } ]
@@ -472,6 +507,7 @@ let private runAwarenessPerformance () =
     let mutable totalReactions = 0L
     let mutable maximumAllocation = 0L
     let mutable evidenceBytes = 0
+    let coveredObserverIds = System.Collections.Generic.HashSet<UnitId>()
     let samples = ResizeArray<int64>()
     for sample in 1 .. 79 do
         let moves =
@@ -491,6 +527,7 @@ let private runAwarenessPerformance () =
         maximumAllocation <- max maximumAllocation allocated
         if mutation = "allocation" then maximumAllocation <- 200_000_000L
         state <- result.State
+        state.Awareness |> Map.iter (fun (observerId, _) _ -> coveredObserverIds.Add observerId |> ignore)
         totalSlots <- totalSlots + int64 result.AwarenessCounters.AwarenessEpisodes
         totalLos <- totalLos + int64 result.AwarenessCounters.LosEvaluations
         totalMoves <- totalMoves + (result.Events |> List.sumBy (function UnitMoved _ -> 1 | _ -> 0))
@@ -501,7 +538,7 @@ let private runAwarenessPerformance () =
     let sorted = samples |> Seq.sort |> Seq.toArray
     let stressP95 = sorted[int (Math.Ceiling(float sorted.Length * 0.95)) - 1]
     let stressWorst = sorted[sorted.Length - 1]
-    let coveredObservers = state.Awareness |> Map.toSeq |> Seq.map (fst >> fst) |> Set.ofSeq |> Set.count
+    let coveredObservers = coveredObserverIds.Count
     let passed =
         state.Units.Count = 200
         && state.AwarenessCursor <> 0
@@ -517,8 +554,12 @@ let private runAwarenessPerformance () =
         && samples.Count = measurementTicks
     printfn "route=SIR.Simulation.Simulation.runTick"
     printfn "full-tick-p95-ms=%d target=%d hard-ceiling=%d worst-ms=%d/%d" stressP95 workingTarget representativeWorst stressWorst stressWorstLimit
-    printfn "stress-units=%d ticks=%d cursor=%d covered-observers=%d serviced-slots=%d los=%d moves=%d engagement-observations=%d reaction-candidates=%d evidence-bytes=%d/262144 max-allocation=%d/100000000 mutation=%s" state.Units.Count state.Tick state.AwarenessCursor coveredObservers totalSlots totalLos totalMoves totalEngagements totalReactions evidenceBytes maximumAllocation mutation
-    let receiptPath = Environment.GetEnvironmentVariable("SIR_AWARENESS_PERF_RECEIPT") |> Option.ofObj |> Option.defaultValue "readiness/182-awareness-reaction-windows/awareness-performance-receipt.json"
+    printfn "stress-units=%d ticks=%d cursor=%d contacts=%d covered-observers=%d serviced-slots=%d los=%d moves=%d engagement-observations=%d reaction-candidates=%d evidence-bytes=%d/262144 max-allocation=%d/100000000 mutation=%s" state.Units.Count state.Tick state.AwarenessCursor state.Awareness.Count coveredObservers totalSlots totalLos totalMoves totalEngagements totalReactions evidenceBytes maximumAllocation mutation
+    let receiptPath =
+        Environment.GetEnvironmentVariable("SIR_AWARENESS_PERF_RECEIPT")
+        |> Option.ofObj
+        |> Option.filter (String.IsNullOrWhiteSpace >> not)
+        |> Option.defaultWith (fun () -> failwith "SIR_AWARENESS_PERF_RECEIPT must name an external or temporary receipt path.")
     let receipt =
         {| schema = "sir.awareness-reaction.performance-receipt/1"
            outcome = if passed then "pass" else "fail"
@@ -543,7 +584,9 @@ exception AwarenessPerformanceExit of int
 [<EntryPoint>]
 let main args =
     try
-        if args |> Array.contains "--awareness" then
+        if args |> Array.contains "--verify-awareness-receipt" then
+            raise (AwarenessPerformanceExit(verifyAwarenessPerformanceReceipt (argument "--verify-awareness-receipt" args) (argument "--candidate-commit" args)))
+        elif args |> Array.contains "--awareness" then
             raise (AwarenessPerformanceExit(runAwarenessPerformance ()))
         let receiptPath = argument "--receipt" args
         let candidateCommit = argument "--candidate-commit" args
