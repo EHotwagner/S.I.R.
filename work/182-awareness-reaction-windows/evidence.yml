@@ -11,7 +11,7 @@ sourceAnalysis: readiness/182-awareness-reaction-windows/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/182-awareness-reaction-windows/analysis.json
-    digest: e24b70541ce29cabe1d89a0c26bd15a3d97272255fafb16aa6ad74212ced1fdc
+    digest: bbdea024c7e6aea5b7380b9528689bfab2dc929839b4c342b8457fe8b47f9216
     schemaVersion: 1
   - label: checklist
     path: work/182-awareness-reaction-windows/checklist.md
