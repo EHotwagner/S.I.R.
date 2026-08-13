@@ -10,8 +10,7 @@
       "status": "positive-pattern",
       "missingFacts": [],
       "checkedEvidence": [
-        {"locator": "command:./scripts/generate-item-181-evidence.sh", "result": "verified"},
-        {"locator": "artifact:readiness/181-physical-combat-slice/physical-combat-core.junit.xml", "result": "verified"}
+        {"locator": "command:./scripts/verify-physical-combat.sh", "result": "verified"}
       ],
       "confidenceLimits": ["The diagnostic route proves a bounded canonical scenario; future multiplayer controls must reuse the Match authority rather than this transport shape."]
     },
@@ -21,7 +20,7 @@
       "missingFacts": [],
       "checkedEvidence": [
         {"locator": "command:node scripts/test-production-delivery-budget.mjs", "result": "verified"},
-        {"locator": "command:npx playwright test tests/SIR.Browser.Tests/production-delivery.spec.js", "result": "verified"}
+        {"locator": "command:npx playwright test tests/SIR.Browser.Tests/visible-workflows.spec.js --config tests/SIR.Browser.Tests/playwright.config.js --grep \"player-visible Rules explorer\"", "result": "verified"}
       ],
       "confidenceLimits": ["The initial and deferred byte measurements are candidate-specific and retain the existing caps."]
     },
@@ -30,19 +29,20 @@
       "status": "actionable",
       "missingFacts": [],
       "checkedEvidence": [
-        {"locator": "artifact:work/181-physical-combat-slice/clarifications.md", "result": "verified"},
-        {"locator": "issue:FS-GG/FS.GG.SDD#265", "result": "verified"}
+        {"locator": "command:dotnet fsgg-sdd clarify --work 181-physical-combat-slice --text", "result": "verified"},
+        {"locator": "command:dotnet fsgg-sdd refresh --work 181-physical-combat-slice --text", "result": "verified"}
       ],
       "confidenceLimits": ["The repaired work model is current; the audit relies on the retained report for the rejected pre-repair punctuation transcript."]
     },
     {
       "id": "§4.4",
-      "status": "positive-pattern",
+      "status": "actionable",
       "missingFacts": [],
       "checkedEvidence": [
-        {"locator": "artifact:docs/assets/map-editor-review/manifest.json", "result": "verified"},
-        {"locator": "artifact:docs/assets/persistent-workspace-m9-review/manifest.json", "result": "verified"},
-        {"locator": "command:./scripts/test-conformance.sh", "result": "verified"}
+        {"locator": "command:npm run review:map-editor", "result": "verified"},
+        {"locator": "command:node scripts/test-map-editor-qualification.mjs", "result": "verified"},
+        {"locator": "command:npm run review:persistent-workspace-m9", "result": "verified"},
+        {"locator": "command:node scripts/test-persistent-workspace-m9-acceptance.mjs", "result": "verified"}
       ],
       "confidenceLimits": ["The manifests bind the current production bundle; any later shared-bundle change must regenerate them again."]
     },
@@ -51,8 +51,7 @@
       "status": "actionable",
       "missingFacts": [],
       "checkedEvidence": [
-        {"locator": "command:find .agents/skills -path */fs-gg-feedback-report/SKILL.md", "result": "verified"},
-        {"locator": "issue:FS-GG/.github#2380", "result": "reported-by-author"}
+        {"locator": "command:find .agents/skills -path '*/fs-gg-feedback-report/SKILL.md'", "result": "verified"}
       ],
       "confidenceLimits": ["The schema-v2 repository examples supplied the fallback contract because the projected feedback skill remains absent."]
     }
