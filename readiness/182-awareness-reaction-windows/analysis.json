@@ -37,6 +37,16 @@
       "schemaStatus": "current"
     },
     {
+      "path": "readiness/182-awareness-reaction-windows/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "a871d3934e79fcd7fcdb17870fa245c827970c046b891838bb585e2f86c49f04"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
       "path": "work/182-awareness-reaction-windows/checklist.md",
       "kind": "checklist",
       "digest": {
@@ -81,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "9cd621ef1364531476326d3378fd3d823f6e82acb7fb9eaaa1c66b791ff873e9"
+        "value": "cafc4f09fcb2ec481e54b1845c2ccee336833a0dfce962a9013f8c94bdf82dd3"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -1386,7 +1396,7 @@
     {
       "path": "readiness/182-awareness-reaction-windows/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
+      "currency": "current",
       "diagnosticIds": []
     }
   ],
