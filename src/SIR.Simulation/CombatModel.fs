@@ -80,9 +80,30 @@ module Combat =
         if evidence.Explanation.CrossedCells.Length > int request.Limits.MaximumTraceCells then Error(LimitExceeded("traceCells", int32 evidence.Explanation.CrossedCells.Length, request.Limits.MaximumTraceCells))
         elif evidence.Outcome = SpatialOutcome.InvalidInput || evidence.Outcome = SpatialOutcome.Exhausted then Error(SpatialUnavailable evidence.Outcome)
         else Ok evidence
-    let private candidates (world: CombatWorld) (attacker: CombatantState) (request: CombatRequest) (parameters: WeaponParameters) (evidence: SpatialQueryResult option) =
+    let private tracedImpactCell (world: CombatWorld) (request: CombatRequest) (evidence: SpatialQueryResult option) =
+        match evidence with
+        | None -> request.AimCell
+        | Some trace when trace.Outcome = SpatialOutcome.Found && trace.Visible ->
+            trace.Explanation.CrossedCells |> List.tryLast |> Option.defaultValue request.AimCell
+        | Some trace ->
+            let crossed = trace.Explanation.CrossedCells
+            let coverCell =
+                crossed
+                |> List.tryFind (fun cell ->
+                    world.Covers
+                    |> Map.exists (fun _ cover -> cover.Cell = cell && cover.ProjectileBlocking && cover.Integrity > 0))
+            let terrainCell = crossed |> List.tryFind (fun cell -> Map.tryFind cell world.Spatial.Terrain = Some SpatialTerrain.Blocked)
+            let boundaryCell =
+                crossed
+                |> List.pairwise
+                |> List.tryPick (fun (before, after) ->
+                    Edges.edgeBetween before after
+                    |> Option.filter (fun edge -> List.contains edge trace.Explanation.CoverContributors)
+                    |> Option.map (fun _ -> after))
+            coverCell |> Option.orElse terrainCell |> Option.orElse boundaryCell |> Option.defaultValue request.AimCell
+    let private candidates (world: CombatWorld) (attacker: CombatantState) (request: CombatRequest) (parameters: WeaponParameters) (impactCell: Cell) (evidence: SpatialQueryResult option) =
         let traceCells = evidence |> Option.map (fun item -> item.Explanation.CrossedCells) |> Option.defaultValue []
-        let cells = if parameters.AreaRadius > 0 then areaCells world.Spatial request.AimCell parameters.AreaRadius else traceCells
+        let cells = if parameters.AreaRadius > 0 then areaCells world.Spatial impactCell parameters.AreaRadius else traceCells
         if cells.Length > int request.Limits.MaximumAreaCells && parameters.AreaRadius > 0 then Error(LimitExceeded("areaCells", int32 cells.Length, request.Limits.MaximumAreaCells)) else
         let index = cells |> List.mapi (fun i cell -> cell, i) |> Map.ofList
         let covers = world.Covers |> Map.toList |> List.choose (fun (id, cover) -> Map.tryFind cover.Cell index |> Option.map (fun order -> order, 0, id, CoverCandidate cover))
@@ -128,12 +149,13 @@ module Combat =
                 match evidenceResult with
                 | Error rejection -> Error rejection
                 | Ok evidence ->
-                    match candidates world attacker request p evidence with
+                    let impactCell = tracedImpactCell world request evidence
+                    match candidates world attacker request p impactCell evidence with
                     | Error rejection -> Error rejection
                     | Ok ordered ->
                         let directTraceCanCommit =
-                            p.AreaRadius > 0
-                            || evidence |> Option.exists (fun spatial -> spatial.Outcome = SpatialOutcome.Found && spatial.Visible)
+                            p.Lobbed
+                            || (evidence |> Option.exists (fun spatial -> spatial.Outcome = SpatialOutcome.Found && spatial.Visible))
                         let ordered =
                             if directTraceCanCommit then ordered
                             else ordered |> List.filter (fun (_, _, _, subject) -> match subject with CoverCandidate _ -> true | CombatantCandidate _ -> false)

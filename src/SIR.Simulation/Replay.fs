@@ -109,7 +109,10 @@ type private ReplayReader =
 [<RequireQualifiedAccess>]
 module Replay =
     [<Literal>]
-    let CurrentFormatVersion = 3
+    let CurrentFormatVersion = 4
+
+    [<Literal>]
+    let RulesArchiveFormatVersion = 3
 
     [<Literal>]
     let DirectionalFormatVersion = 2
@@ -406,7 +409,7 @@ module Replay =
               package.EngineHash
               package.RulesetHash
               [| if package.FullReplayAuthorized then 1uy else 0uy |]
-              if package.FormatVersion >= 3 then
+              if package.FormatVersion >= RulesArchiveFormatVersion then
                   match package.RulesArchive with None -> [| 0uy |] | Some archive -> CanonicalEncoding.concatenate [ [| 1uy |]; lengthPrefixed (rulesArchiveBytes archive) ]
               payload ]
 
@@ -748,6 +751,7 @@ module Replay =
 
                 if version <> LegacyFormatVersion
                    && version <> DirectionalFormatVersion
+                   && version <> RulesArchiveFormatVersion
                    && version <> CurrentFormatVersion then
                     failDecode (sprintf "Unsupported replay format %d." version)
 
@@ -756,7 +760,7 @@ module Replay =
                 let rulesetHash = readBytes 32 reader
                 let fullReplayAuthorized = readBool reader
                 let rulesArchive =
-                    if version >= 3 then
+                    if version >= RulesArchiveFormatVersion then
                         match readByte reader with
                         | 0uy -> None
                         | 1uy -> Some(readLengthPrefixed "rules archive" limits.MaxPackageBytes reader |> readRulesArchive)
@@ -795,6 +799,7 @@ module Replay =
     let private validateHeader (expectedEngine: byte array) (package: ReplayPackage) =
         if package.FormatVersion <> int32 LegacyFormatVersion
            && package.FormatVersion <> int32 DirectionalFormatVersion
+           && package.FormatVersion <> int32 RulesArchiveFormatVersion
            && package.FormatVersion <> int32 CurrentFormatVersion then
             Error(
                 UnsupportedFormat(
@@ -804,9 +809,9 @@ module Replay =
             )
         elif package.EngineHash <> expectedEngine then
             Error(EngineMismatch(expectedEngine, package.EngineHash))
-        elif package.FormatVersion >= 3 && package.RulesArchive.IsNone && (match package.Content with AuthorizedFullReplay _ -> true | PerspectivePlayback _ -> false) then
-            Error(MalformedPackage "Replay v3 requires a rules archive.")
-        elif package.FormatVersion >= 3 && package.RulesArchive.IsSome && package.RulesArchive.Value.Identity.ManifestDigest <> package.RulesetHash then
+        elif package.FormatVersion >= RulesArchiveFormatVersion && package.RulesArchive.IsNone && (match package.Content with AuthorizedFullReplay _ -> true | PerspectivePlayback _ -> false) then
+            Error(MalformedPackage "Replay v3+ requires a rules archive.")
+        elif package.FormatVersion >= RulesArchiveFormatVersion && package.RulesArchive.IsSome && package.RulesArchive.Value.Identity.ManifestDigest <> package.RulesetHash then
             Error(MalformedPackage "Replay rules archive manifest identity does not match the package ruleset hash.")
         else
             match requireHash "engine" package.EngineHash with

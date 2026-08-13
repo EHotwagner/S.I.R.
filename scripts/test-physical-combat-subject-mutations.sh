@@ -50,6 +50,14 @@ sed -i 's/resolveConsequences target.Health target.Suppression p.Suppression/res
 expect_failure suppression "Friendly area recipient received implicit immunity or missed suppression."
 
 restore_subject
+sed -i 's/p.Lobbed$/p.Lobbed || p.AreaRadius > 0/' "$subject"
+expect_failure support-trace-bypass "Blocked support fire bypassed its authoritative trace."
+
+restore_subject
+sed -i 's/areaCells world.Spatial impactCell parameters.AreaRadius/areaCells world.Spatial request.AimCell parameters.AreaRadius/' "$subject"
+expect_failure support-impact-cell "Blocked support area was resolved from the aim cell instead of the traced impact."
+
+restore_subject
 sed -i 's/let orderedFacts = List.rev facts/let orderedFacts = facts/' "$subject"
 expect_failure consequence-ordering "Combat consequence facts lost canonical cover/armor/health/suppression ordering."
 
@@ -58,5 +66,5 @@ sed -i 's/RuleApplications = List.rev apps/RuleApplications = []/' "$subject"
 expect_failure rules-identity "Combat result was not bound to the executable rules identity."
 
 restore_subject
-dotnet build "$project" -c Release --no-restore >/dev/null
-echo "Physical combat subject mutations failed closed: collision, cover, armor, suppression, consequence ordering, and rules identity."
+dotnet build "$project" -c Release --no-restore -t:Rebuild >/dev/null
+echo "Physical combat subject mutations failed closed: collision, cover, armor, suppression, support trace, traced impact, consequence ordering, and rules identity."

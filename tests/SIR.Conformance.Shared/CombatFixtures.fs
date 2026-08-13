@@ -78,9 +78,26 @@ module CombatFixtures =
         require (Map.tryFind full.Cell fullResult.World.Spatial.Terrain = Some SpatialTerrain.Blocked) "Surviving full cover was not projected into projectile permeability."
 
         let supportCoverResult = resolved (world 31L [ attacker; openTarget ] [ { full with Cell = openTarget.Cell } ] (cell 12 12)) (request "support-full-cover" WeaponProfile.SupportWeapon openTarget.Cell)
-        require (health "open" supportCoverResult = 85) "Support-area impact failed to apply through the full-cover cell."
+        require (health "open" supportCoverResult = 85) "Support-area impact failed to apply at its accepted traced target impact."
         require (supportCoverResult.World.Covers["full"].Integrity = 93) "Support-area impact did not commit the cover rule result."
         require (supportCoverResult.RuleApplications |> List.exists (fun application -> RuleId.value application.RuleId = "COMBAT-COVER-DESTRUCTION-001")) "Cover impact was absent from executable rule applications."
+
+        let supportEdgeWorld =
+            let edge = Edges.edgeBetween (cell 1 0) (cell 2 0) |> Option.defaultWith (fun () -> failwith "fixture cells were not adjacent")
+            let edgeBystander = unarmored "edge-bystander" "blue" (cell 2 1) North 100
+            { world 32L [ attacker; edgeBystander; openTarget ] [] (cell 12 12) with
+                Spatial =
+                    { spatial 32L (cell 12 12) with
+                        Boundaries = [ { Edge = edge; Permeability = { Ground = true; Vision = true; Projectile = false }; RevisionToken = "support-edge" } ] } }
+        let supportEdgeResult = resolved supportEdgeWorld (request "support-semantic-edge" WeaponProfile.SupportWeapon openTarget.Cell)
+        require (supportEdgeResult.SpatialEvidence |> Option.exists (fun evidence -> evidence.Outcome = SpatialOutcome.Unreachable && not evidence.Visible)) "Support fire ignored the authoritative semantic-edge trace outcome."
+        require (health "open" supportEdgeResult = 100 && health "edge-bystander" supportEdgeResult = 100 && supportEdgeResult.RuleApplications.IsEmpty) "Blocked support fire bypassed its authoritative trace."
+
+        let interveningSupportCover = { full with CoverId = "support-intervening"; Cell = cell 2 0 }
+        let interveningSupportResult = resolved (world 33L [ attacker; openTarget ] [ interveningSupportCover ] (cell 12 12)) (request "support-intervening-cover" WeaponProfile.SupportWeapon openTarget.Cell)
+        require (health "open" interveningSupportResult = 100) "Intervening full cover failed to protect the aimed support area."
+        require (interveningSupportResult.World.Covers["support-intervening"].Integrity = 93) "Blocked support area was resolved from the aim cell instead of the traced impact."
+        require (interveningSupportResult.SpatialEvidence |> Option.exists (fun evidence -> evidence.Outcome = SpatialOutcome.Unreachable && not evidence.Visible)) "Intervening support cover did not produce an authoritative unreachable trace."
 
         let front = unit "armored" "blue" (cell 4 0) West 100
         let rear = { front with Facing = East }
@@ -124,7 +141,7 @@ module CombatFixtures =
         | verdict -> failwithf "Out-of-schema limits were accepted: %A" verdict
 
         let canonical =
-            [ openResult; unreachableResult; partialResult; fullResult; supportCoverResult; frontResult; rearResult; antiResult; interveningResult; areaResult; lobResult; secondLob; destruction; afterDestruction ]
+            [ openResult; unreachableResult; partialResult; fullResult; supportCoverResult; supportEdgeResult; interveningSupportResult; frontResult; rearResult; antiResult; interveningResult; areaResult; lobResult; secondLob; destruction; afterDestruction ]
             |> List.map Combat.canonicalResultBytes
             |> CanonicalEncoding.concatenate
         if injectDivergence then
