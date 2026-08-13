@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="1" skipped="0">
+ <testsuite name="item-183-authoritative-scalar-inversion" tests="1" failures="1" skipped="0">
+  <testcase classname="TacticalSceneProjectionQualification" name="authoritative movement cost is consumed exactly">
+   <failure message="Exact LOS typed cost, blockers, or geometry changed before overlay consumption.">Subject mutation: changed the injected authoritative exact-LOS MovementCost from Some 2 to Some 3 while retaining the expected authoritative value. Release qualification failed at TacticalSceneProjectionQualification.fs:1071.</failure>
+  </testcase>
+ </testsuite>
+</testsuites>

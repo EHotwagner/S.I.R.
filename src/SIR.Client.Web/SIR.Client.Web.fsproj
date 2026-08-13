@@ -19,6 +19,7 @@
     <Compile Include="ModeAdapters.fs" />
     <Compile Include="SceneAdapters.fs" />
     <Compile Include="PanelViews.fs" />
+    <Compile Include="TacticalOverlayView.fs" />
     <Compile Include="App.fs" />
   </ItemGroup>
   <ItemGroup>

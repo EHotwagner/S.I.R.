@@ -62,6 +62,12 @@ let readTacticalBindings () : string = jsNative
 [<Emit("window.localStorage.setItem('sir.tactical-bindings.v1', $0)")>]
 let writeTacticalBindings (_: string) : unit = jsNative
 
+[<Emit("window.localStorage.getItem('sir.tactical-overlays.v1')")>]
+let readTacticalOverlays () : string = jsNative
+
+[<Emit("window.localStorage.setItem('sir.tactical-overlays.v1', $0)")>]
+let writeTacticalOverlays (_: string) : unit = jsNative
+
 [<Emit("window.localStorage.getItem('sir.tactical-layout.v1')")>]
 let readTacticalLayout () : string = jsNative
 

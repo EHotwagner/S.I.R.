@@ -1,0 +1,3351 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "1.2.0",
+  "workId": "183-tactical-overlays",
+  "project": {
+    "id": "s.i.r",
+    "defaultWorkRoot": "work",
+    "profile": null
+  },
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      }
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      }
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      }
+    },
+    {
+      "path": "work/183-tactical-overlays/checklist.md",
+      "kind": "checklist",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "208ea798575d813797c4d2e7210cb1e3d6811c0f108dfb60df3d23d2881ddf45"
+      }
+    },
+    {
+      "path": "work/183-tactical-overlays/clarifications.md",
+      "kind": "clarifications",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "e4f263fc9559a4eba5d053ab0674ddaa10bd11935a29b84735ac293a20c20914"
+      }
+    },
+    {
+      "path": "work/183-tactical-overlays/evidence.yml",
+      "kind": "evidence",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "d50c895ddf0dde764d8fc0209af9f928421330da8fa04f401761960bca9b2483"
+      }
+    },
+    {
+      "path": "work/183-tactical-overlays/plan.md",
+      "kind": "plan",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "5a57227c9601905e8cd87272445de72065ef1ca9bd9e37178682ab0f4374727b"
+      }
+    },
+    {
+      "path": "work/183-tactical-overlays/spec.md",
+      "kind": "spec",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "bba9f80efc9a44733cea71067c06a03c6c7aabc771af8c364ce92e4ae3c949e1"
+      }
+    },
+    {
+      "path": "work/183-tactical-overlays/tasks.yml",
+      "kind": "tasks",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "e16a3f01fa3696909e5c137a392c8507720a31a88176e886531093784ea55c84"
+      }
+    }
+  ],
+  "workItem": {
+    "id": "183-tactical-overlays",
+    "title": "Tactical Overlays",
+    "stage": "specify",
+    "changeTier": "tier1",
+    "status": "specified"
+  },
+  "performanceIntent": null,
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "The system MUST declare one public renderer-neutral overlay registry with stable ID, label, category, default visibility, supported modes, shortcut command ID, availability, disclosure policy, deterministic z-order, and typed payload kind for every initial layer. (Stories: US-001; Acceptance: AC-001)",
+      "text": "The system MUST declare one public renderer-neutral overlay registry with stable ID, label, category, default visibility, supported modes, shortcut command ID, availability, disclosure policy, deterministic z-order, and typed payload kind for every initial layer. (Stories: US-001; Acceptance: AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/183-tactical-overlays/spec.md",
+      "sourceLocation": {
+        "line": 47,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001"
+      ],
+      "linkedEvidenceIds": [
+        "EV001",
+        "EV020"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "title": "Overlay visibility MUST support \u0060Off\u0060, temporary hold-to-inspect, selection-scoped, and persistent modes only where each descriptor declares support, with deterministic fallback for stale/unknown preference values. (Stories: US-001; Acceptance: AC-001)",
+      "text": "Overlay visibility MUST support \u0060Off\u0060, temporary hold-to-inspect, selection-scoped, and persistent modes only where each descriptor declares support, with deterministic fallback for stale/unknown preference values. (Stories: US-001; Acceptance: AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/183-tactical-overlays/spec.md",
+      "sourceLocation": {
+        "line": 48,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T002"
+      ],
+      "linkedEvidenceIds": [
+        "EV002",
+        "EV021"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "title": "Checked View-menu entries, pointer dispatch, keyboard dispatch, effective shortcut display/configuration, and preference restoration MUST resolve through the shared overlay/command registries, and overlay preferences MUST persist independently of panel layout. (Stories: US-001; Acceptance: AC-001)",
+      "text": "Checked View-menu entries, pointer dispatch, keyboard dispatch, effective shortcut display/configuration, and preference restoration MUST resolve through the shared overlay/command registries, and overlay preferences MUST persist independently of panel layout. (Stories: US-001; Acceptance: AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/183-tactical-overlays/spec.md",
+      "sourceLocation": {
+        "line": 49,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T003"
+      ],
+      "linkedEvidenceIds": [
+        "EV003",
+        "EV022"
+      ]
+    },
+    {
+      "id": "FR-004",
+      "title": "Client projection MUST consume disclosed authoritative spatial/combat/awareness state for footprints, facing, attention/vision, exact LOS, reachability/path/cost/blockers, directional cover/exposure, and directional armor; Web and scene adapters MUST NOT recompute tactical truth. (Stories: US-002; Acceptance: AC-002)",
+      "text": "Client projection MUST consume disclosed authoritative spatial/combat/awareness state for footprints, facing, attention/vision, exact LOS, reachability/path/cost/blockers, directional cover/exposure, and directional armor; Web and scene adapters MUST NOT recompute tactical truth. (Stories: US-002; Acceptance: AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/183-tactical-overlays/spec.md",
+      "sourceLocation": {
+        "line": 50,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T004"
+      ],
+      "linkedEvidenceIds": [
+        "EV004",
+        "EV023"
+      ]
+    },
+    {
+      "id": "FR-005",
+      "title": "Selected-unit LOS MUST preserve exact inherited supercover/corner/semantic-door results and path payloads MUST retain authoritative costs and typed blockers; no approximate line, float ray, or per-cell LOS loop may substitute. (Stories: US-002; Acceptance: AC-002)",
+      "text": "Selected-unit LOS MUST preserve exact inherited supercover/corner/semantic-door results and path payloads MUST retain authoritative costs and typed blockers; no approximate line, float ray, or per-cell LOS loop may substitute. (Stories: US-002; Acceptance: AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/183-tactical-overlays/spec.md",
+      "sourceLocation": {
+        "line": 51,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T005"
+      ],
+      "linkedEvidenceIds": [
+        "EV005",
+        "EV024"
+      ]
+    },
+    {
+      "id": "FR-006",
+      "title": "Renderer-neutral payloads MUST include planned routes/reservations, bounded area engagements, suppression, attack traces/impact, HP/wounds, and command state with stable subject/event/tick identity. (Stories: US-002, US-003; Acceptance: AC-003)",
+      "text": "Renderer-neutral payloads MUST include planned routes/reservations, bounded area engagements, suppression, attack traces/impact, HP/wounds, and command state with stable subject/event/tick identity. (Stories: US-002, US-003; Acceptance: AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/183-tactical-overlays/spec.md",
+      "sourceLocation": {
+        "line": 52,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T006"
+      ],
+      "linkedEvidenceIds": [
+        "EV006",
+        "EV025"
+      ]
+    },
+    {
+      "id": "FR-007",
+      "title": "Time-varying payloads MUST reconstruct deterministically from replay/timeline state, retain canonical ordering, and remain scrub-able without relying on mutable DOM history. (Stories: US-003; Acceptance: AC-003)",
+      "text": "Time-varying payloads MUST reconstruct deterministically from replay/timeline state, retain canonical ordering, and remain scrub-able without relying on mutable DOM history. (Stories: US-003; Acceptance: AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/183-tactical-overlays/spec.md",
+      "sourceLocation": {
+        "line": 53,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T007"
+      ],
+      "linkedEvidenceIds": [
+        "EV007",
+        "EV026"
+      ]
+    },
+    {
+      "id": "FR-008",
+      "title": "Knowledge and disclosure filters MUST run before payload construction so unavailable facts emit no geometry, count, label, diagnostic detail, timing-class distinction, or availability clue; malformed/unreadable disclosure input MUST fail closed. (Stories: US-002; Acceptance: AC-004)",
+      "text": "Knowledge and disclosure filters MUST run before payload construction so unavailable facts emit no geometry, count, label, diagnostic detail, timing-class distinction, or availability clue; malformed/unreadable disclosure input MUST fail closed. (Stories: US-002; Acceptance: AC-004)",
+      "acceptanceCriteria": [
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/183-tactical-overlays/spec.md",
+      "sourceLocation": {
+        "line": 54,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T008"
+      ],
+      "linkedEvidenceIds": [
+        "EV008",
+        "EV027"
+      ]
+    },
+    {
+      "id": "FR-009",
+      "title": "Multiple enabled layers MUST use registry-defined stable z-order plus bounded deterministic label/collision suppression, with selected/held information prioritized over persistent context. (Stories: US-004; Acceptance: AC-005)",
+      "text": "Multiple enabled layers MUST use registry-defined stable z-order plus bounded deterministic label/collision suppression, with selected/held information prioritized over persistent context. (Stories: US-004; Acceptance: AC-005)",
+      "acceptanceCriteria": [
+        "AC-005"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/183-tactical-overlays/spec.md",
+      "sourceLocation": {
+        "line": 55,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T009"
+      ],
+      "linkedEvidenceIds": [
+        "EV009",
+        "EV028"
+      ]
+    },
+    {
+      "id": "FR-010",
+      "title": "Projection and rendering MUST expose semantic zoom plus high-contrast and monochrome/pattern semantics, preserve keyboard/pointer operability and checked-state meaning at 400% browser zoom, and avoid color-only distinctions. (Stories: US-004; Acceptance: AC-005)",
+      "text": "Projection and rendering MUST expose semantic zoom plus high-contrast and monochrome/pattern semantics, preserve keyboard/pointer operability and checked-state meaning at 400% browser zoom, and avoid color-only distinctions. (Stories: US-004; Acceptance: AC-005)",
+      "acceptanceCriteria": [
+        "AC-005"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/183-tactical-overlays/spec.md",
+      "sourceLocation": {
+        "line": 56,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T010"
+      ],
+      "linkedEvidenceIds": [
+        "EV010",
+        "EV029"
+      ]
+    },
+    {
+      "id": "FR-011",
+      "title": "A versioned performance workload MUST exercise the production update/projection/view route for representative 100-unit and stress 200-unit scenes, declare projection/payload/label/SVG-node and timing budgets before implementation, report deterministic counters and host capability facts, and label headless/browser evidence without compositor overclaim. (Stories: US-005; Acceptance: AC-006)",
+      "text": "A versioned performance workload MUST exercise the production update/projection/view route for representative 100-unit and stress 200-unit scenes, declare projection/payload/label/SVG-node and timing budgets before implementation, report deterministic counters and host capability facts, and label headless/browser evidence without compositor overclaim. (Stories: US-005; Acceptance: AC-006)",
+      "acceptanceCriteria": [
+        "AC-006"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/183-tactical-overlays/spec.md",
+      "sourceLocation": {
+        "line": 57,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T011"
+      ],
+      "linkedEvidenceIds": [
+        "EV011",
+        "EV030"
+      ]
+    },
+    {
+      "id": "FR-012",
+      "title": "The change MUST ship synchronized \u0060.fsi\u0060 surfaces, tests/docs, real-entry browser journey, .NET/Fable/replay evidence, schema-v2 feedback/audit/checkpoints, SDD readiness, protected-subject and unreadable-input mutations for every added/modified gate, exact-head CI, independent review, and guarded delivery. (Stories: US-005; Acceptance: AC-007)",
+      "text": "The change MUST ship synchronized \u0060.fsi\u0060 surfaces, tests/docs, real-entry browser journey, .NET/Fable/replay evidence, schema-v2 feedback/audit/checkpoints, SDD readiness, protected-subject and unreadable-input mutations for every added/modified gate, exact-head CI, independent review, and guarded delivery. (Stories: US-005; Acceptance: AC-007)",
+      "acceptanceCriteria": [
+        "AC-007"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/183-tactical-overlays/spec.md",
+      "sourceLocation": {
+        "line": 58,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T012"
+      ],
+      "linkedEvidenceIds": [
+        "EV012",
+        "EV031"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Adopt the fourteen stable IDs and descriptor-declared supported modes; \u0060Off\u0060 is universal and unknown IDs/modes fail to deterministic defaults without becoming ad hoc layers.",
+      "decision": "Adopt the fourteen stable IDs and descriptor-declared supported modes; \u0060Off\u0060 is universal and unknown IDs/modes fail to deterministic defaults without becoming ad hoc layers.",
+      "requirementRefs": [
+        "FR-001",
+        "FR-002"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/183-tactical-overlays/clarifications.md",
+      "sourceLocation": {
+        "line": 36,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T013"
+      ]
+    },
+    {
+      "id": "DEC-002",
+      "title": "Extend \u0060TacticalSceneProjection\u0060 as the renderer-neutral aggregation boundary, consuming only existing disclosed projection values and preserving exact LOS/path/door evidence; absence never licenses recomputation.",
+      "decision": "Extend \u0060TacticalSceneProjection\u0060 as the renderer-neutral aggregation boundary, consuming only existing disclosed projection values and preserving exact LOS/path/door evidence; absence never licenses recomputation.",
+      "requirementRefs": [
+        "FR-004",
+        "FR-005",
+        "FR-006"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/183-tactical-overlays/clarifications.md",
+      "sourceLocation": {
+        "line": 37,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T014"
+      ]
+    },
+    {
+      "id": "DEC-003",
+      "title": "Filter disclosure before registry availability and payload construction, returning one indistinguishable fail-closed unavailable shape for hidden/malformed/unreadable authority.",
+      "decision": "Filter disclosure before registry availability and payload construction, returning one indistinguishable fail-closed unavailable shape for hidden/malformed/unreadable authority.",
+      "requirementRefs": [
+        "FR-008"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/183-tactical-overlays/clarifications.md",
+      "sourceLocation": {
+        "line": 38,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T015"
+      ]
+    },
+    {
+      "id": "DEC-004",
+      "title": "Keep overlay preferences schema/storage independent of layout, compute held/selection/persisted precedence purely, and route pointer/keyboard through the same shared command descriptor and effective binding.",
+      "decision": "Keep overlay preferences schema/storage independent of layout, compute held/selection/persisted precedence purely, and route pointer/keyboard through the same shared command descriptor and effective binding.",
+      "requirementRefs": [
+        "FR-002",
+        "FR-003"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/183-tactical-overlays/clarifications.md",
+      "sourceLocation": {
+        "line": 39,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T016"
+      ]
+    },
+    {
+      "id": "DEC-005",
+      "title": "Registry order owns z-order; deterministic priority/collision buckets cap labels at 256; three semantic-zoom bands and explicit contrast/pattern tokens preserve non-color-only meaning.",
+      "decision": "Registry order owns z-order; deterministic priority/collision buckets cap labels at 256; three semantic-zoom bands and explicit contrast/pattern tokens preserve non-color-only meaning.",
+      "requirementRefs": [
+        "FR-009",
+        "FR-010"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/183-tactical-overlays/clarifications.md",
+      "sourceLocation": {
+        "line": 40,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T017"
+      ]
+    },
+    {
+      "id": "DEC-006",
+      "title": "Qualify 100/200-unit production projection/view with caps 4,096 payloads, 256 labels, 5,000 SVG nodes, one traversal/filter pass, and Release 20/50 ms p95 posture while labeling compositor capability absent.",
+      "decision": "Qualify 100/200-unit production projection/view with caps 4,096 payloads, 256 labels, 5,000 SVG nodes, one traversal/filter pass, and Release 20/50 ms p95 posture while labeling compositor capability absent.",
+      "requirementRefs": [
+        "FR-011"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/183-tactical-overlays/clarifications.md",
+      "sourceLocation": {
+        "line": 41,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T018"
+      ]
+    },
+    {
+      "id": "DEC-007",
+      "title": "Require exact .NET/Fable fingerprints plus a built-entry Playwright pointer/keyboard/hold/restore/selection/replay-scrub journey; no direct message injection or mutable DOM history counts.",
+      "decision": "Require exact .NET/Fable fingerprints plus a built-entry Playwright pointer/keyboard/hold/restore/selection/replay-scrub journey; no direct message injection or mutable DOM history counts.",
+      "requirementRefs": [
+        "FR-007",
+        "FR-012"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/183-tactical-overlays/clarifications.md",
+      "sourceLocation": {
+        "line": 42,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T019"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement requirement FR-001",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [],
+      "requirements": [
+        "FR-001"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV001"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "T002",
+      "title": "Implement requirement FR-002",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [],
+      "requirements": [
+        "FR-002"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV002"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "T003",
+      "title": "Implement requirement FR-003",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [],
+      "requirements": [
+        "FR-003"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV003"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "T004",
+      "title": "Implement requirement FR-004",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [],
+      "requirements": [
+        "FR-004"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV004"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "T005",
+      "title": "Implement requirement FR-005",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [],
+      "requirements": [
+        "FR-005"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV005"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "T006",
+      "title": "Implement requirement FR-006",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [],
+      "requirements": [
+        "FR-006"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "FR-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV006"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "T007",
+      "title": "Implement requirement FR-007",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [],
+      "requirements": [
+        "FR-007"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "FR-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV007"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "T008",
+      "title": "Implement requirement FR-008",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [],
+      "requirements": [
+        "FR-008"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "FR-008"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV008"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "T009",
+      "title": "Implement requirement FR-009",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [],
+      "requirements": [
+        "FR-009"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "FR-009"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV009"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "T010",
+      "title": "Implement requirement FR-010",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [],
+      "requirements": [
+        "FR-010"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "FR-010"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV010"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "T011",
+      "title": "Implement requirement FR-011",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [],
+      "requirements": [
+        "FR-011"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-006",
+        "FR-011"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV011"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "T012",
+      "title": "Implement requirement FR-012",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [],
+      "requirements": [
+        "FR-012"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-007",
+        "FR-012"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV012"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "T013",
+      "title": "Implement clarification decision DEC-001",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-001"
+      ],
+      "sourceIds": [
+        "DEC-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV013"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "T014",
+      "title": "Implement clarification decision DEC-002",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-002"
+      ],
+      "sourceIds": [
+        "DEC-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV014"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "T015",
+      "title": "Implement clarification decision DEC-003",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-003"
+      ],
+      "sourceIds": [
+        "DEC-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV015"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "T016",
+      "title": "Implement clarification decision DEC-004",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-004"
+      ],
+      "sourceIds": [
+        "DEC-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV016"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 16,
+        "column": 1
+      }
+    },
+    {
+      "id": "T017",
+      "title": "Implement clarification decision DEC-005",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-005"
+      ],
+      "sourceIds": [
+        "DEC-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV017"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 17,
+        "column": 1
+      }
+    },
+    {
+      "id": "T018",
+      "title": "Implement clarification decision DEC-006",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-006"
+      ],
+      "sourceIds": [
+        "DEC-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV018"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "id": "T019",
+      "title": "Implement clarification decision DEC-007",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-007"
+      ],
+      "sourceIds": [
+        "DEC-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV019"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "id": "T020",
+      "title": "Implement plan decision PD-001",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "DEC-001",
+        "FR-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV020"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "id": "T021",
+      "title": "Implement plan decision PD-002",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "DEC-001",
+        "DEC-004",
+        "FR-002",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV021"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 21,
+        "column": 1
+      }
+    },
+    {
+      "id": "T022",
+      "title": "Implement plan decision PD-003",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "DEC-004",
+        "FR-003",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV022"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 22,
+        "column": 1
+      }
+    },
+    {
+      "id": "T023",
+      "title": "Implement plan decision PD-004",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "DEC-002",
+        "FR-004",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV023"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 23,
+        "column": 1
+      }
+    },
+    {
+      "id": "T024",
+      "title": "Implement plan decision PD-005",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "DEC-002",
+        "FR-005",
+        "PD-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV024"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 24,
+        "column": 1
+      }
+    },
+    {
+      "id": "T025",
+      "title": "Implement plan decision PD-006",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "DEC-002",
+        "FR-006",
+        "PD-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV025"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 25,
+        "column": 1
+      }
+    },
+    {
+      "id": "T026",
+      "title": "Implement plan decision PD-007",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "DEC-007",
+        "FR-007",
+        "PD-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV026"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 26,
+        "column": 1
+      }
+    },
+    {
+      "id": "T027",
+      "title": "Implement plan decision PD-008",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "DEC-003",
+        "FR-008",
+        "PD-008"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV027"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 27,
+        "column": 1
+      }
+    },
+    {
+      "id": "T028",
+      "title": "Implement plan decision PD-009",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "DEC-005",
+        "FR-009",
+        "PD-009"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV028"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 28,
+        "column": 1
+      }
+    },
+    {
+      "id": "T029",
+      "title": "Implement plan decision PD-010",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "DEC-005",
+        "FR-010",
+        "PD-010"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV029"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "id": "T030",
+      "title": "Implement plan decision PD-011",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-006",
+        "DEC-006",
+        "FR-011",
+        "PD-011"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV030"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      }
+    },
+    {
+      "id": "T031",
+      "title": "Implement plan decision PD-012",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-007",
+        "DEC-007",
+        "FR-012",
+        "PD-012"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV031"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 31,
+        "column": 1
+      }
+    },
+    {
+      "id": "T032",
+      "title": "Update contract surface PC-001",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV032"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "id": "T033",
+      "title": "Update contract surface PC-002",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV033"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 33,
+        "column": 1
+      }
+    },
+    {
+      "id": "T034",
+      "title": "Update contract surface PC-003",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PD-004",
+        "PD-005"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV034"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 34,
+        "column": 1
+      }
+    },
+    {
+      "id": "T035",
+      "title": "Update contract surface PC-004",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-004",
+        "PD-006",
+        "PD-007"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV035"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 35,
+        "column": 1
+      }
+    },
+    {
+      "id": "T036",
+      "title": "Update contract surface PC-005",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-005",
+        "PD-008"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV036"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 36,
+        "column": 1
+      }
+    },
+    {
+      "id": "T037",
+      "title": "Update contract surface PC-006",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-006",
+        "PD-009",
+        "PD-010"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV037"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 37,
+        "column": 1
+      }
+    },
+    {
+      "id": "T038",
+      "title": "Update contract surface PC-007",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-007",
+        "PD-011"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV038"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 38,
+        "column": 1
+      }
+    },
+    {
+      "id": "T039",
+      "title": "Record verification evidence VO-001",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "PD-002",
+        "VO-001"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV039"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 39,
+        "column": 1
+      }
+    },
+    {
+      "id": "T040",
+      "title": "Record verification evidence VO-002",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-003",
+        "VO-002"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV040"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 40,
+        "column": 1
+      }
+    },
+    {
+      "id": "T041",
+      "title": "Record verification evidence VO-003",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PD-004",
+        "PD-005",
+        "PD-006",
+        "VO-003"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV041"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 41,
+        "column": 1
+      }
+    },
+    {
+      "id": "T042",
+      "title": "Record verification evidence VO-004",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-004",
+        "PD-007",
+        "VO-004"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV042"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 42,
+        "column": 1
+      }
+    },
+    {
+      "id": "T043",
+      "title": "Record verification evidence VO-005",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-005",
+        "PD-008",
+        "VO-005"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV043"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 43,
+        "column": 1
+      }
+    },
+    {
+      "id": "T044",
+      "title": "Record verification evidence VO-006",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-006",
+        "PD-009",
+        "PD-010",
+        "VO-006"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV044"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 44,
+        "column": 1
+      }
+    },
+    {
+      "id": "T045",
+      "title": "Record verification evidence VO-007",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-007",
+        "PD-011",
+        "VO-007"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV045"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 45,
+        "column": 1
+      }
+    },
+    {
+      "id": "T046",
+      "title": "Record verification evidence VO-008",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PD-012",
+        "VO-008"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV046"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 46,
+        "column": 1
+      }
+    },
+    {
+      "id": "T047",
+      "title": "Record verification evidence VO-009",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PD-012",
+        "VO-009"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV047"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 47,
+        "column": 1
+      }
+    },
+    {
+      "id": "T048",
+      "title": "Handle migration posture PM-001",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PM-001"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV048"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 48,
+        "column": 1
+      }
+    },
+    {
+      "id": "T049",
+      "title": "Handle migration posture PM-002",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PM-002"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV049"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 49,
+        "column": 1
+      }
+    },
+    {
+      "id": "T050",
+      "title": "Handle migration posture PM-003",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PM-003"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV050"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 50,
+        "column": 1
+      }
+    },
+    {
+      "id": "T051",
+      "title": "Handle migration posture PM-004",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-004",
+        "PM-004"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV051"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 51,
+        "column": 1
+      }
+    },
+    {
+      "id": "T052",
+      "title": "Handle migration posture PM-005",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-005",
+        "PM-005"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV052"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 52,
+        "column": 1
+      }
+    },
+    {
+      "id": "T053",
+      "title": "Refresh generated view impact GV-001",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-001",
+        "PD-011"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV053"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 53,
+        "column": 1
+      }
+    },
+    {
+      "id": "T054",
+      "title": "Refresh generated view impact GV-002",
+      "status": "done",
+      "owner": "snipe-4f15",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-002",
+        "PD-012"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV054"
+      ],
+      "source": "work/183-tactical-overlays/tasks.yml",
+      "sourceLocation": {
+        "line": 54,
+        "column": 1
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV001",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T001",
+      "taskRefs": [
+        "T001"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV002",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T002",
+      "taskRefs": [
+        "T002"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV003",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T003",
+      "taskRefs": [
+        "T003"
+      ],
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV004",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T004",
+      "taskRefs": [
+        "T004"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV005",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T005",
+      "taskRefs": [
+        "T005"
+      ],
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV006",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T006",
+      "taskRefs": [
+        "T006"
+      ],
+      "requirementRefs": [
+        "FR-006"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV007",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T007",
+      "taskRefs": [
+        "T007"
+      ],
+      "requirementRefs": [
+        "FR-007"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV008",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T008",
+      "taskRefs": [
+        "T008"
+      ],
+      "requirementRefs": [
+        "FR-008"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV009",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T009",
+      "taskRefs": [
+        "T009"
+      ],
+      "requirementRefs": [
+        "FR-009"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV010",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T010",
+      "taskRefs": [
+        "T010"
+      ],
+      "requirementRefs": [
+        "FR-010"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV011",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T011",
+      "taskRefs": [
+        "T011"
+      ],
+      "requirementRefs": [
+        "FR-011"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV012",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T012",
+      "taskRefs": [
+        "T012"
+      ],
+      "requirementRefs": [
+        "FR-012"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV013",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T013",
+      "taskRefs": [
+        "T013"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV014",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T014",
+      "taskRefs": [
+        "T014"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV015",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T015",
+      "taskRefs": [
+        "T015"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV016",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T016",
+      "taskRefs": [
+        "T016"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 16,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV017",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T017",
+      "taskRefs": [
+        "T017"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 17,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV018",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T018",
+      "taskRefs": [
+        "T018"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV019",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T019",
+      "taskRefs": [
+        "T019"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV020",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T020",
+      "taskRefs": [
+        "T020"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV021",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T021",
+      "taskRefs": [
+        "T021"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 21,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV022",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T022",
+      "taskRefs": [
+        "T022"
+      ],
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 22,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV023",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T023",
+      "taskRefs": [
+        "T023"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 23,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV024",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T024",
+      "taskRefs": [
+        "T024"
+      ],
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 24,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV025",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T025",
+      "taskRefs": [
+        "T025"
+      ],
+      "requirementRefs": [
+        "FR-006"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 25,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV026",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T026",
+      "taskRefs": [
+        "T026"
+      ],
+      "requirementRefs": [
+        "FR-007"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 26,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV027",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T027",
+      "taskRefs": [
+        "T027"
+      ],
+      "requirementRefs": [
+        "FR-008"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 27,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV028",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T028",
+      "taskRefs": [
+        "T028"
+      ],
+      "requirementRefs": [
+        "FR-009"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 28,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV029",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T029",
+      "taskRefs": [
+        "T029"
+      ],
+      "requirementRefs": [
+        "FR-010"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV030",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T030",
+      "taskRefs": [
+        "T030"
+      ],
+      "requirementRefs": [
+        "FR-011"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV031",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T031",
+      "taskRefs": [
+        "T031"
+      ],
+      "requirementRefs": [
+        "FR-012"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 31,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV032",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T032",
+      "taskRefs": [
+        "T032"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV033",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T033",
+      "taskRefs": [
+        "T033"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 33,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV034",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T034",
+      "taskRefs": [
+        "T034"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 34,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV035",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T035",
+      "taskRefs": [
+        "T035"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 35,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV036",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T036",
+      "taskRefs": [
+        "T036"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 36,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV037",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T037",
+      "taskRefs": [
+        "T037"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 37,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV038",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T038",
+      "taskRefs": [
+        "T038"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 38,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV039",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T039",
+      "taskRefs": [
+        "T039"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 39,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV040",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T040",
+      "taskRefs": [
+        "T040"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 40,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV041",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T041",
+      "taskRefs": [
+        "T041"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 41,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV042",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T042",
+      "taskRefs": [
+        "T042"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 42,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV043",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T043",
+      "taskRefs": [
+        "T043"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 43,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV044",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T044",
+      "taskRefs": [
+        "T044"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 44,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV045",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T045",
+      "taskRefs": [
+        "T045"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 45,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV046",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T046",
+      "taskRefs": [
+        "T046"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 46,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV047",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T047",
+      "taskRefs": [
+        "T047"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 47,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV048",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T048",
+      "taskRefs": [
+        "T048"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 48,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV049",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T049",
+      "taskRefs": [
+        "T049"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 49,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV050",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T050",
+      "taskRefs": [
+        "T050"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 50,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV051",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T051",
+      "taskRefs": [
+        "T051"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 51,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV052",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T052",
+      "taskRefs": [
+        "T052"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 52,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV053",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T053",
+      "taskRefs": [
+        "T053"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 53,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV054",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T054",
+      "taskRefs": [
+        "T054"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/183-tactical-overlays/evidence.yml",
+      "sourceLocation": {
+        "line": 54,
+        "column": 1
+      }
+    }
+  ],
+  "generatedViews": [
+    {
+      "path": "readiness/183-tactical-overlays/work-model.json",
+      "kind": "workModel",
+      "schemaVersion": 1,
+      "generator": {
+        "id": "FS.GG.SDD.Artifacts",
+        "version": "1.0.1"
+      },
+      "sources": [
+        {
+          "path": ".fsgg/agents.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/project.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/sdd.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/183-tactical-overlays/checklist.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "208ea798575d813797c4d2e7210cb1e3d6811c0f108dfb60df3d23d2881ddf45"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/183-tactical-overlays/clarifications.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "e4f263fc9559a4eba5d053ab0674ddaa10bd11935a29b84735ac293a20c20914"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/183-tactical-overlays/evidence.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d50c895ddf0dde764d8fc0209af9f928421330da8fa04f401761960bca9b2483"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/183-tactical-overlays/plan.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5a57227c9601905e8cd87272445de72065ef1ca9bd9e37178682ab0f4374727b"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/183-tactical-overlays/spec.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "bba9f80efc9a44733cea71067c06a03c6c7aabc771af8c364ce92e4ae3c949e1"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/183-tactical-overlays/tasks.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "e16a3f01fa3696909e5c137a392c8507720a31a88176e886531093784ea55c84"
+          },
+          "schemaVersion": 1
+        }
+      ],
+      "outputDigest": {
+        "algorithm": "sha256",
+        "value": "be9bca9e8a8c29ed2ba083eba671c13526904a6cf2d6da193991ed2fa9fe3810"
+      },
+      "currency": "current"
+    }
+  ],
+  "diagnostics": [],
+  "governanceBoundaries": []
+}

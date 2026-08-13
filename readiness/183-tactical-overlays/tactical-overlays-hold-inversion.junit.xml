@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="1" skipped="0">
+ <testsuite name="sir-browser" tests="1" failures="1" skipped="0">
+  <testcase classname="visible-workflows.spec.js" name="View analysis overlays share pointer and keyboard commands and restore independently">
+    <failure message="Error: expect(locator).toHaveAttribute(expected) failed
+
+Locator:  getByRole(&apos;menuitemcheckbox&apos;, { name: /Exact line of sight/ })
+Expected: &quot;true&quot;
+Received: &quot;false&quot;
+Timeout:  5000ms
+
+Call log:
+  - Expect &quot;toHaveAttribute&quot; with timeout 5000ms
+  - waiting for getByRole(&apos;menuitemcheckbox&apos;, { name: /Exact line of sight/ })
+    14 × locator resolved to &lt;button type=&quot;button&quot; tabindex=&quot;-1&quot; aria-checked=&quot;false&quot; role=&quot;menuitemcheckbox&quot; aria-keyshortcuts=&quot;Alt+L&quot; data-overlay-mode=&quot;OverlayOff&quot; aria-label=&quot;Exact line of sight · Alt+L&quot;&gt;…&lt;/button&gt;
+       - unexpected value &quot;false&quot;">Error: expect(locator).toHaveAttribute(expected) failed
+
+Locator:  getByRole(&apos;menuitemcheckbox&apos;, { name: /Exact line of sight/ })
+Expected: &quot;true&quot;
+Received: &quot;false&quot;
+Timeout:  5000ms
+
+Call log:
+  - Expect &quot;toHaveAttribute&quot; with timeout 5000ms
+  - waiting for getByRole(&apos;menuitemcheckbox&apos;, { name: /Exact line of sight/ })
+    14 × locator resolved to &lt;button type=&quot;button&quot; tabindex=&quot;-1&quot; aria-checked=&quot;false&quot; role=&quot;menuitemcheckbox&quot; aria-keyshortcuts=&quot;Alt+L&quot; data-overlay-mode=&quot;OverlayOff&quot; aria-label=&quot;Exact line of sight · Alt+L&quot;&gt;…&lt;/button&gt;
+       - unexpected value &quot;false&quot;</failure>
+  </testcase>
+ </testsuite>
+</testsuites>

@@ -12,6 +12,97 @@ type ScenePrimitiveId = private ScenePrimitiveId of string
 module ScenePrimitiveId =
     val value: ScenePrimitiveId -> string
 
+type TacticalOverlayId = private TacticalOverlayId of string
+
+[<RequireQualifiedAccess>]
+module TacticalOverlayId =
+    val value: TacticalOverlayId -> string
+
+type TacticalOverlayMode =
+    | OverlayOff
+    | InspectHeld
+    | SelectionScoped
+    | Persistent
+
+type TacticalOverlayCategory =
+    | UnitOverlay
+    | AwarenessOverlay
+    | MovementOverlay
+    | ProtectionOverlay
+    | CombatOverlay
+    | CommandOverlay
+
+type TacticalOverlayPayloadKind =
+    | FootprintPayload
+    | DirectionPayload
+    | PolylinePayload
+    | AreaPayload
+    | TracePayload
+    | StatusPayload
+
+type TacticalOverlayAvailability =
+    | OverlayAvailable
+    | OverlayUnavailable
+
+type TacticalOverlayDisclosurePolicy =
+    | DisclosedSceneFactsOnly
+    | SelectedDisclosedFactsOnly
+
+type TacticalOverlayDescriptor =
+    { Id: TacticalOverlayId
+      Label: string
+      Category: TacticalOverlayCategory
+      DefaultMode: TacticalOverlayMode
+      SupportedModes: Set<TacticalOverlayMode>
+      CommandId: string
+      DefaultGesture: string option
+      Availability: TacticalOverlayAvailability
+      DisclosurePolicy: TacticalOverlayDisclosurePolicy
+      PayloadKind: TacticalOverlayPayloadKind
+      Order: int }
+
+type TacticalOverlayPreferences =
+    { SchemaVersion: int
+      Modes: Map<TacticalOverlayId, TacticalOverlayMode> }
+
+type TacticalOverlayPreferenceDiagnostic =
+    | MalformedOverlayPreferences
+    | UnsupportedOverlayPreferenceSchema of int
+
+type TacticalOverlayGeometry =
+    | FootprintGeometry of centerX: float * centerY: float * width: float * depth: float
+    | DirectionGeometry of originX: float * originY: float * headingRadians: float * arcRadians: float option
+    | PathGeometry of points: float array * movementCost: int32 option * blockerIds: string array
+    | AreaGeometry of centerX: float * centerY: float * radius: float
+    | TraceGeometry of points: float array * impactX: float * impactY: float
+    | StatusGeometry of anchorX: float * anchorY: float * current: int32 option * maximum: int32 option * tokens: string array
+
+type TacticalOverlayPayload =
+    { OverlayId: TacticalOverlayId
+      PrimitiveId: ScenePrimitiveId
+      SubjectId: string
+      Tick: int32
+      Kind: string
+      PayloadKind: TacticalOverlayPayloadKind
+      Geometry: TacticalOverlayGeometry
+      Points: float array
+      Label: Disclosure<string>
+      Priority: int
+      Order: int }
+
+type TacticalOverlayCost =
+    { RegistryTraversals: int
+      DisclosurePasses: int
+      CandidatePayloads: int
+      EmittedPayloads: int
+      EmittedLabels: int
+      EstimatedSvgNodes: int }
+
+type TacticalOverlayProjection =
+    { Payloads: TacticalOverlayPayload array
+      Labels: TacticalOverlayPayload array
+      Cost: TacticalOverlayCost }
+
 type SceneTerrainProjection =
     { PrimitiveId: ScenePrimitiveId
       Column: int32
@@ -27,15 +118,21 @@ type SceneUnitProjection =
 type SceneRouteProjection =
     { PrimitiveId: ScenePrimitiveId
       OwnerUnitId: int32 option
+      OverlayId: TacticalOverlayId
       Kind: string
       Points: float array
+      MovementCost: int32 option
+      BlockerIds: string array
       Label: Disclosure<string> }
 
 type SceneAnnotationProjection =
     { PrimitiveId: ScenePrimitiveId
       Kind: string
+      OverlayId: TacticalOverlayId option
+      SubjectUnitId: int32 option
       Column: int32 option
       Row: int32 option
+      Geometry: TacticalOverlayGeometry option
       Text: Disclosure<string> }
 
 type SceneDisclosureProjection =
@@ -104,6 +201,21 @@ type ReviewProjectionInput =
 
 [<RequireQualifiedAccess>]
 module TacticalSceneProjection =
+    val overlayRegistry: TacticalOverlayDescriptor array
+    val initialOverlayPreferences: TacticalOverlayPreferences
+    val exportOverlayPreferences: TacticalOverlayPreferences -> string
+    val importOverlayPreferences: string -> Result<TacticalOverlayPreferences, TacticalOverlayPreferenceDiagnostic>
+    val effectiveOverlayMode:
+        preferences: TacticalOverlayPreferences ->
+        held: Set<TacticalOverlayId> ->
+        hasSelection: bool ->
+        descriptor: TacticalOverlayDescriptor ->
+            TacticalOverlayMode
+    val projectOverlays:
+        preferences: TacticalOverlayPreferences ->
+        held: Set<TacticalOverlayId> ->
+        projection: SharedSceneProjection ->
+            TacticalOverlayProjection
     val editor: EditorProjectionInput -> SharedSceneProjection
     val planning: PlanningProjectionInput -> SharedSceneProjection
     val simulator: SimulatorProjectionInput -> SharedSceneProjection

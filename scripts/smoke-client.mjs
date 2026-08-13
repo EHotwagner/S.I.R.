@@ -1717,7 +1717,7 @@ if (
   reopenedShell !== shell ||
   reopenedSvg !== worksurface ||
   reopenedSvg.getAttribute("data-scene-owner") !== "EditorScene" ||
-  reopenedSvg.querySelectorAll("[data-scene-layer]").length !== 7 ||
+  reopenedSvg.querySelectorAll("[data-scene-layer]").length !== 8 ||
   !reopenedShell.querySelector('[data-panel-id="tools"]') ||
   !reopenedShell.querySelector('[data-panel-id="document"]')
 ) {

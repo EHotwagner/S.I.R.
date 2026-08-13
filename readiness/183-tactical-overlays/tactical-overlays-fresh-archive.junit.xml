@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="item-183-fresh-archive" tests="1" failures="0" errors="0" skipped="0">
+ <testsuite name="item-183-fresh-archive" tests="1" failures="0" errors="0" skipped="0">
+  <testcase classname="SIR.Item183" name="exact-head archive provisions and verifies independently">
+   <system-out><![CDATA[Archived exact commit f163be49eacbdc14be4d6e352e1d10e6a1215687 into /tmp/sir-item183-r2-archive.A0Cm8r. Preconditions asserted node_modules absent and artifacts/client absent. scripts/generate-item-183-evidence.sh provisioned 60 npm packages with npm ci, then passed Release native qualification, production Fable/Vite, production Chromium, and the full fake.sh build -t Test aggregate.]]></system-out>
+  </testcase>
+ </testsuite>
+</testsuites>

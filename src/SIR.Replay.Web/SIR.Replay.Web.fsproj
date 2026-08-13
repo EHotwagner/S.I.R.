@@ -17,6 +17,7 @@
     <Compile Include="../SIR.Client.Web/ModeAdapters.fs" Link="ModeAdapters.fs" />
     <Compile Include="../SIR.Client.Web/SceneAdapters.fs" Link="SceneAdapters.fs" />
     <Compile Include="../SIR.Client.Web/PanelViews.fs" Link="PanelViews.fs" />
+    <Compile Include="../SIR.Client.Web/TacticalOverlayView.fs" Link="TacticalOverlayView.fs" />
     <Compile Include="../SIR.Client.Web/App.fs" Link="App.fs" />
   </ItemGroup>
   <ItemGroup>

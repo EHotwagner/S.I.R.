@@ -89,6 +89,49 @@ test("visible mode controls preserve a usable tactical workspace across authorin
   }
 });
 
+test("View analysis overlays share pointer and keyboard commands and restore independently", async ({ page }) => {
+  await page.goto("/");
+  const battlefield = page.locator("#persistent-tactical-svg");
+  await expect(battlefield).toHaveAttribute("data-overlay-registry-traversals", "1");
+  await expect(battlefield).toHaveAttribute("data-overlay-disclosure-passes", "1");
+
+  await page.getByRole("button", { name: "View", exact: true }).click();
+  const exactLos = page.getByRole("menuitemcheckbox", { name: /Exact line of sight/ });
+  await expect(exactLos).toHaveAttribute("aria-checked", "false");
+  await exactLos.dispatchEvent("pointerdown", { pointerId: 7, pointerType: "mouse", isPrimary: true });
+  await expect(exactLos).toHaveAttribute("aria-checked", "true");
+  await expect(exactLos).toHaveAttribute("data-overlay-mode", "InspectHeld");
+  await exactLos.dispatchEvent("pointerup", { pointerId: 7, pointerType: "mouse", isPrimary: true });
+  await expect(exactLos).toHaveAttribute("aria-checked", "false");
+  await exactLos.click();
+  await expect(battlefield).toHaveAttribute("data-overlay-preferences", /spatial\.exact-los=selection/);
+
+  await page.reload();
+  await expect(battlefield).toHaveAttribute("data-overlay-preferences", /spatial\.exact-los=selection/);
+  await page.keyboard.press("Alt+l");
+  await expect(battlefield).toHaveAttribute("data-overlay-preferences", /spatial\.exact-los=off/);
+
+  const footprint = battlefield.locator('[data-overlay-id="unit.footprints"] rect').first();
+  await expect(footprint).toBeVisible();
+  await expect(footprint).toHaveCSS("vector-effect", "non-scaling-stroke");
+  const normalStroke = await footprint.evaluate((node) => getComputedStyle(node).strokeWidth);
+  expect(normalStroke).toBe("2px");
+  await page.emulateMedia({ forcedColors: "active" });
+  await expect.poll(() => footprint.evaluate((node) => getComputedStyle(node).strokeWidth)).toBe("3px");
+  await page.evaluate(() => { document.documentElement.style.zoom = "4"; });
+  await page.getByRole("button", { name: "View", exact: true }).click();
+  await expect(page.getByRole("menuitemcheckbox", { name: /Unit footprints/ })).toBeVisible();
+  const overlayLayer = battlefield.locator("#persistent-tactical-overlay-layer");
+  const overlayNodeEstimate = Number(await battlefield.getAttribute("data-overlay-node-estimate"));
+  const actualOverlayNodes = await overlayLayer.locator("*").count();
+  expect(actualOverlayNodes).toBe(overlayNodeEstimate);
+  expect(actualOverlayNodes).toBeLessThanOrEqual(5000);
+  const footprintBox = await footprint.boundingBox();
+  expect(footprintBox?.width).toBeGreaterThan(20);
+  expect(footprintBox?.height).toBeGreaterThan(20);
+  await expect(overlayLayer).toHaveAttribute("data-overlay-patterns", "non-color-only");
+});
+
 test("the player-visible Rules explorer renders the executable combat corpus and pinned source", async ({ page }) => {
   let physicalAuthorityRequests = 0;
   page.on("request", (request) => {
@@ -118,7 +161,7 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   }
   await expect(source).toHaveAttribute(
     "href",
-    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/3a201c89590e5f14e42a1f84c1b7e7585a6b4475\/src\/SIR\.Simulation\/CombatRules\.fs/,
+    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/1194ce757373f0443430e0fbf142a232c2916062\/src\/SIR\.Simulation\/CombatRules\.fs/,
   );
   await expect(damageRule.getByText(/examples: tests\/SIR\.Conformance\.Shared\/RulesCorpusFixtures\.fs · properties:/)).toBeVisible();
   await expect(damageRule.getByRole("link", { name: "Coverage graph" })).toHaveAttribute("href", /rules-corpus\/v2\/coverage\.json/);
