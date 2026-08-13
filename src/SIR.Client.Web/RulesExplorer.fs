@@ -404,7 +404,7 @@ let ExecutableRulesPanel (bootstrap: BootstrapV1.Response option) =
                 prop.ariaLabel "Physical combat drill"
                 prop.children [
                     Html.h3 "Physical combat drill"
-                    Html.p "One authoritative scenario resolves rifle, support-weapon, anti-armor, and lobbed-area fire against evolving cover, then verifies replay reconstruction from every retained seek point."
+                    Html.p "One authoritative scenario verifies four weapon profiles, evolving cover, and replay from every seek point."
                     Html.button [
                         prop.text "Run four-profile combat scenario"
                         prop.disabled (Option.isNone bootstrap)
@@ -466,7 +466,7 @@ let ExecutableRulesPanel (bootstrap: BootstrapV1.Response option) =
                 prop.ariaLabel "Local awareness and reaction projection"
                 prop.children [
                     Html.h3 "Local awareness and reaction projection"
-                    Html.p "The authoritative host advances awareness, preparation, trigger ordering, and physical resolution; the browser receives only observer-local knowledge."
+                    Html.p "The host advances awareness and reactions; the browser receives only observer-local knowledge."
                     Html.button [
                         prop.text "Reset awareness drill"
                         prop.disabled (Option.isNone bootstrap)
