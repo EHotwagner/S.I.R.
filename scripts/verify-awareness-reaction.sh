@@ -32,12 +32,12 @@ done
 
 dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --awareness
 jq '.stress.units = 201' work/182-awareness-reaction-windows/contracts/awareness-reaction-performance-workload-v1.json > "$task_tmp/workload-201.json"
-if SIR_AWARENESS_WORKLOAD="$task_tmp/workload-201.json" dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --awareness >"$task_tmp/perf-workload-201.log" 2>&1; then
+if SIR_AWARENESS_WORKLOAD="$task_tmp/workload-201.json" SIR_AWARENESS_PERF_RECEIPT="$task_tmp/perf-workload-201-receipt.json" dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --awareness >"$task_tmp/perf-workload-201.log" 2>&1; then
   echo "Awareness workload identity mutation survived: stress.units 200 -> 201" >&2
   exit 1
 fi
 for mutation in cursor-reset no-movement no-engagements allocation; do
-  if SIR_AWARENESS_PERF_MUTATE_SUBJECT="$mutation" dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --awareness >"$task_tmp/perf-$mutation.log" 2>&1; then
+  if SIR_AWARENESS_PERF_MUTATE_SUBJECT="$mutation" SIR_AWARENESS_PERF_RECEIPT="$task_tmp/perf-$mutation-receipt.json" dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --awareness >"$task_tmp/perf-$mutation.log" 2>&1; then
     echo "Performance mutation survived: $mutation" >&2
     exit 1
   fi
