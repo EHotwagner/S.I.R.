@@ -18,7 +18,18 @@ module CanonicalEncoding =
         value |> FixedPoint.raw |> int32LittleEndian
 
     let concatenate (segments: byte array seq) =
-        segments |> Seq.collect id |> Seq.toArray
+        // Canonical payloads can contain tens of thousands of small segments.
+        // Materialize them once and copy each segment as a block; enumerating
+        // every byte through Seq.collect made snapshot cost scale in allocator
+        // overhead instead of encoded size.
+        let materialized = segments |> Seq.toArray
+        let length = materialized |> Array.sumBy _.Length
+        let result = Array.zeroCreate<byte> length
+        let mutable offset = 0
+        for segment in materialized do
+            Array.blit segment 0 result offset segment.Length
+            offset <- offset + segment.Length
+        result
 
     let direction8 value =
         value |> Direction8.toCode |> byteValue

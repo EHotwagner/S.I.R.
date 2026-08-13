@@ -64,6 +64,8 @@ const replayLimits = {
   MaxUnits: replay.limits.maxUnits,
   MaxEdges: replay.limits.maxEdges,
   MaxObservations: replay.limits.maxObservations,
+  MaxAwarenessContacts: replay.limits.maxAwarenessContacts,
+  MaxEngagements: replay.limits.maxEngagements,
 };
 
 for (const [name, value] of Object.entries(replayLimits)) {
@@ -85,7 +87,7 @@ requireValue(
 );
 requireSourceValue(
   replaySource,
-  /let stateHash state\s*=\s*stateHashForVersion CurrentFormatVersion state/,
+  /let stateHash state\s*=\s*stateHashForFormatVersion CurrentFormatVersion state/,
   "state hash",
 );
 requireSourceValue(

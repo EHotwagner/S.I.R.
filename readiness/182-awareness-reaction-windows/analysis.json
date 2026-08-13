@@ -1,0 +1,1432 @@
+{
+  "schemaVersion": 1,
+  "viewVersion": "1.0",
+  "workId": "182-awareness-reaction-windows",
+  "stage": "analyze",
+  "status": "implementationReady",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "readiness/182-awareness-reaction-windows/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "785f51a28a764ae5e3d372866cd70ae08608cc4510d62502e825c0f4a8140be8"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/182-awareness-reaction-windows/checklist.md",
+      "kind": "checklist",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "0ddafe86ac0265cc0dab434f877951d85e88aad4d7c52bfc7e67092c5fa30fba"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/182-awareness-reaction-windows/clarifications.md",
+      "kind": "clarification",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "a163dce40fa899af7d6ce3f90018ee90af6c2b2212cf407c0324b8d18514396a"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/182-awareness-reaction-windows/plan.md",
+      "kind": "plan",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "f1b7e54fca6dbcba67c48435da35e3497d2f859e061d49f08b11e9bd05983f4d"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/182-awareness-reaction-windows/spec.md",
+      "kind": "specification",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "31e99abef43be0a0841b455787a01cff600420c4485b8b05f46a36025122d011"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "work/182-awareness-reaction-windows/tasks.yml",
+      "kind": "tasks",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "cafc4f09fcb2ec481e54b1845c2ccee336833a0dfce962a9013f8c94bdf82dd3"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    }
+  ],
+  "sourceRelationships": [
+    {
+      "id": "AR001",
+      "sourcePath": "work/182-awareness-reaction-windows/checklist.md",
+      "targetPath": "work/182-awareness-reaction-windows/plan.md",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "planSourceChecklist",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR002",
+      "sourcePath": "work/182-awareness-reaction-windows/checklist.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "taskSourceChecklist",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR003",
+      "sourcePath": "work/182-awareness-reaction-windows/clarifications.md",
+      "targetPath": "work/182-awareness-reaction-windows/checklist.md",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "checklistSourceClarifications",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR004",
+      "sourcePath": "work/182-awareness-reaction-windows/clarifications.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "DEC-001",
+      "targetId": null,
+      "relationship": "clarificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR005",
+      "sourcePath": "work/182-awareness-reaction-windows/clarifications.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "DEC-002",
+      "targetId": null,
+      "relationship": "clarificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR006",
+      "sourcePath": "work/182-awareness-reaction-windows/clarifications.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "DEC-003",
+      "targetId": null,
+      "relationship": "clarificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR007",
+      "sourcePath": "work/182-awareness-reaction-windows/clarifications.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "DEC-004",
+      "targetId": null,
+      "relationship": "clarificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR008",
+      "sourcePath": "work/182-awareness-reaction-windows/clarifications.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "DEC-005",
+      "targetId": null,
+      "relationship": "clarificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR009",
+      "sourcePath": "work/182-awareness-reaction-windows/clarifications.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "DEC-006",
+      "targetId": null,
+      "relationship": "clarificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR010",
+      "sourcePath": "work/182-awareness-reaction-windows/clarifications.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "DEC-007",
+      "targetId": null,
+      "relationship": "clarificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR011",
+      "sourcePath": "work/182-awareness-reaction-windows/clarifications.md",
+      "targetPath": "work/182-awareness-reaction-windows/plan.md",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "planSourceClarifications",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR012",
+      "sourcePath": "work/182-awareness-reaction-windows/clarifications.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "taskSourceClarifications",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR013",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PC-001",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR014",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PC-002",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR015",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PC-003",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR016",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PC-004",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR017",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PC-005",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR018",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PC-006",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR019",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PC-007",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR020",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PC-008",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR021",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PC-009",
+      "targetId": null,
+      "relationship": "contractDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR022",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "GV-001",
+      "targetId": null,
+      "relationship": "generatedViewDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR023",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "GV-002",
+      "targetId": null,
+      "relationship": "generatedViewDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR024",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "GV-003",
+      "targetId": null,
+      "relationship": "generatedViewDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR025",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PM-001",
+      "targetId": null,
+      "relationship": "migrationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR026",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PM-002",
+      "targetId": null,
+      "relationship": "migrationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR027",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PM-003",
+      "targetId": null,
+      "relationship": "migrationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR028",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PM-004",
+      "targetId": null,
+      "relationship": "migrationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR029",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PM-005",
+      "targetId": null,
+      "relationship": "migrationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR030",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PD-001",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR031",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PD-002",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR032",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PD-003",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR033",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PD-004",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR034",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PD-005",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR035",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PD-006",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR036",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PD-007",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR037",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PD-008",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR038",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PD-009",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR039",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PD-010",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR040",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PD-011",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR041",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PD-012",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR042",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PD-013",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR043",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "PD-014",
+      "targetId": null,
+      "relationship": "planDecisionDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR044",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "taskSourcePlan",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR045",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "VO-001",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR046",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "VO-002",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR047",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "VO-003",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR048",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "VO-004",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR049",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "VO-005",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR050",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "VO-006",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR051",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "VO-007",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR052",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "VO-008",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR053",
+      "sourcePath": "work/182-awareness-reaction-windows/plan.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "VO-009",
+      "targetId": null,
+      "relationship": "verificationDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR054",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "AC-001",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR055",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "AC-002",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR056",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "AC-003",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR057",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "AC-004",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR058",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "AC-005",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR059",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "AC-006",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR060",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "AC-007",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR061",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "AC-008",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR062",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "AC-009",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR063",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "AC-010",
+      "targetId": null,
+      "relationship": "acceptanceDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR064",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/checklist.md",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "checklistSourceSpec",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR065",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/plan.md",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "planSourceSpec",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR066",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "FR-001",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR067",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "FR-002",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR068",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "FR-003",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR069",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "FR-004",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR070",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "FR-005",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR071",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "FR-006",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR072",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "FR-007",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR073",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "FR-008",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR074",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "FR-009",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR075",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "FR-010",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR076",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "FR-011",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR077",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "FR-012",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR078",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "FR-013",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR079",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "FR-014",
+      "targetId": null,
+      "relationship": "requirementDisposition",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR080",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/clarifications.md",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "sourceSpec",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR081",
+      "sourcePath": "work/182-awareness-reaction-windows/spec.md",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": null,
+      "targetId": null,
+      "relationship": "taskSourceSpec",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR082",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T015",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR083",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T016",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR084",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T017",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR085",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T018",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR086",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T019",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR087",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T020",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR088",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T021",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR089",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T022",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR090",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T023",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR091",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T024",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR092",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T025",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR093",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T026",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR094",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T027",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR095",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T028",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR096",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T029",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR097",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T030",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR098",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T031",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR099",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T032",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR100",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T033",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR101",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T034",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR102",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T035",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR103",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T036",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR104",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T037",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR105",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T038",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR106",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T039",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR107",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T040",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR108",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T041",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR109",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T042",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR110",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T043",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR111",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T044",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR112",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T045",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR113",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T046",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR114",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T047",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR115",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T048",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR116",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T049",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR117",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T050",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR118",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T051",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR119",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T052",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR120",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T053",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR121",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T054",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR122",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T055",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR123",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T056",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR124",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T057",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR125",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T058",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR126",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T059",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR127",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T060",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    },
+    {
+      "id": "AR128",
+      "sourcePath": "work/182-awareness-reaction-windows/tasks.yml",
+      "targetPath": "work/182-awareness-reaction-windows/tasks.yml",
+      "sourceId": "T061",
+      "targetId": "T001",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
+    }
+  ],
+  "readiness": {
+    "status": "implementationReady",
+    "readyCount": 128,
+    "advisoryCount": 0,
+    "warningCount": 0,
+    "blockingCount": 0,
+    "staleSourceCount": 0,
+    "missingDispositionCount": 0,
+    "malformedSourceCount": 0,
+    "generatedViewFindingCount": 0,
+    "acceptedDeferralCount": 0
+  },
+  "findings": [],
+  "generatedViews": [
+    {
+      "path": "readiness/182-awareness-reaction-windows/work-model.json",
+      "kind": "workModel",
+      "currency": "current",
+      "diagnosticIds": []
+    }
+  ],
+  "optionalBoundaryFacts": [
+    {
+      "path": ".fsgg/policy.yml",
+      "relationship": "optionalGovernancePolicy",
+      "requiredBySdd": false,
+      "state": "notEvaluated",
+      "diagnosticIds": []
+    },
+    {
+      "path": ".fsgg/capabilities.yml",
+      "relationship": "optionalGovernanceCapabilities",
+      "requiredBySdd": false,
+      "state": "notEvaluated",
+      "diagnosticIds": []
+    },
+    {
+      "path": ".fsgg/tooling.yml",
+      "relationship": "optionalGovernanceTooling",
+      "requiredBySdd": false,
+      "state": "notEvaluated",
+      "diagnosticIds": []
+    }
+  ],
+  "diagnostics": [],
+  "nextAction": {
+    "actionId": "analysis.next.implement",
+    "command": null,
+    "reason": "Lifecycle sources are current and ready for implementation."
+  }
+}

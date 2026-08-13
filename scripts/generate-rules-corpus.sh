@@ -3,7 +3,7 @@ set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 mode=${1:---check}
-fixture_dir="$repo_root/tests/fixtures/rules-corpus/v2"
+fixture_dir=${SIR_RULES_FIXTURE_DIR:-"$repo_root/tests/fixtures/rules-corpus/v2"}
 project="$repo_root/tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj"
 temporary_dir=$(mktemp -d /tmp/sir-rules-corpus.XXXXXX)
 trap 'rm -rf "$temporary_dir"' EXIT

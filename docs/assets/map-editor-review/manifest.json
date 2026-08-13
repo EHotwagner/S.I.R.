@@ -1,7 +1,7 @@
 {
   "format": "sir-map-editor-review-v1",
   "generatedFrom": "production persistent Fable/React SVG workscreen after the M4 Editor migration",
-  "productionBundleSha256": "5f8b39ef034246869b891bce89427d7511961a0cefb26f655be3cff356ad3b5e",
+  "productionBundleSha256": "02df66ea121d02a9626bcc442f25b7afbe5459ac57536fad61e59c20fa36efd2",
   "rasterizer": "rsvg-convert 2.62.3",
   "width": 960,
   "height": 640,

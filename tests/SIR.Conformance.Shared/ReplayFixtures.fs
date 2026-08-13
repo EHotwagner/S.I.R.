@@ -1,5 +1,6 @@
 namespace SIR.Conformance
 
+open FS.GG.Game.Core
 open SIR.Domain
 open SIR.Simulation
 
@@ -150,12 +151,14 @@ module ReplayFixtures =
 
     let private combatSnapshotPackage () =
         let state = combatSnapshot ()
+        let version = int32 Replay.PhysicalCombatFormatVersion
+        let versionStateHash = Replay.stateHashForFormatVersion version state
         let final =
             { Tick = state.Tick
               OutcomeCode = 0
-              StateHash = Replay.stateHash state
+              StateHash = versionStateHash
               EventHash = Replay.emptyEventHash }
-        { FormatVersion = int32 Replay.CurrentFormatVersion
+        { FormatVersion = version
           EngineHash = engineHash
           RulesetHash = rulesetHash
           FullReplayAuthorized = true
@@ -165,13 +168,138 @@ module ReplayFixtures =
                 { InitialSnapshot = state
                   OrderedInputs = []
                   AcceptedWasmOutputs = []
-                  Checkpoints = [ checkpoint state.Tick state [] ]
+                  Checkpoints =
+                    [ { Tick = state.Tick
+                        State = state
+                        StateHash = versionStateHash
+                        EventHash = Replay.emptyEventHash } ]
                   FinalResult = final } }
+
+    let private awarenessSnapshot () =
+        let observerId = Simulation.unitId 10
+        let subjectId = Simulation.unitId 20
+        let contact =
+            { SubjectId = subjectId
+              Level = AwarenessLevel.Acquired
+              Acquisition = AwarenessReaction.infantryProfile.IdentificationThreshold
+              LastStimulusTick = Some 4
+              LastStimulus = None
+              LastKnownCell = Some { Col = 1; Row = 0 }
+              RetainUntilTick = Some 24
+              Reason = AwarenessReason.IdentificationThresholdReached }
+        let engagement =
+            AwarenessReaction.declareEngagement
+                "replay-v5-edge"
+                observerId
+                (EngagementTarget.GuardedEdge("minimal-east-boundary", 1, Edges.edgeBetween { Col = 1; Row = 0 } { Col = 2; Row = 0 } |> Option.defaultWith (fun () -> failwith "invalid retained v5 edge")))
+                East
+            |> Result.defaultWith failwith
+        { combatSnapshot () with
+            Awareness = Map.ofList [ (observerId, subjectId), contact ]
+            Engagements = Map.ofList [ observerId, engagement ] }
+
+    let private awarenessSnapshotPackageFor version =
+        let state = awarenessSnapshot ()
+        let versionStateHash = Replay.stateHashForFormatVersion version state
+        let final =
+            { Tick = state.Tick
+              OutcomeCode = 0
+              StateHash = versionStateHash
+              EventHash = Replay.emptyEventHash }
+        { FormatVersion = int32 version
+          EngineHash = engineHash
+          RulesetHash = rulesetHash
+          FullReplayAuthorized = true
+          RulesArchive = Some(rulesArchive ())
+          Content =
+            AuthorizedFullReplay
+                { InitialSnapshot = state
+                  OrderedInputs =
+                    [ input 1 1 (SetAttention(Simulation.unitId 10, East))
+                      input 1 2 (PrepareAreaReaction(Simulation.unitId 10, "replay-v5-area", [ { Col = 2; Row = 0 }; { Col = 1; Row = 0 } ], East))
+                      if version >= Replay.CurrentFormatVersion then
+                          input 1 3 (SetWeaponPosture(Simulation.unitId 10, WeaponPosture.Prepared))
+                          input 1 4 (PrepareUnitReaction(Simulation.unitId 10, "replay-v6-unit", Simulation.unitId 20, East))
+                          input 1 5 (PrepareEdgeReaction(Simulation.unitId 10, "replay-v6-edge", Edges.edgeBetween { Col = 1; Row = 0 } { Col = 2; Row = 0 } |> Option.defaultWith (fun () -> failwith "invalid replay edge"), East)) ]
+                  AcceptedWasmOutputs = []
+                  Checkpoints =
+                    [ { Tick = state.Tick
+                        State = state
+                        StateHash = versionStateHash
+                        EventHash = Replay.emptyEventHash } ]
+                  FinalResult = final } }
+
+    let private awarenessSnapshotPackage () =
+        awarenessSnapshotPackageFor Replay.CurrentFormatVersion
+
+    let compatibilityEvidence () =
+        let v3 = retainedV3Bytes ()
+        let v4 = combatSnapshotPackage () |> Replay.encode
+        let v5 = awarenessSnapshotPackageFor Replay.AwarenessFormatVersion |> Replay.encode
+        v3, v4, v5
+
+    let evaluateProtectedMutation mutation =
+        match mutation with
+        | "version" ->
+            let incompatible =
+                { awarenessSnapshotPackage () with
+                    FormatVersion = int32 Replay.CurrentFormatVersion + 1 }
+            match Replay.decode Replay.defaultLimits (Replay.encode incompatible) with
+            | Error(UnsupportedFormat _) -> failwith "Replay protected version mutation detected."
+            | result -> failwithf "Replay version mutation was accepted: %A" result
+        | "hash" ->
+            let changed =
+                awarenessSnapshotPackage ()
+                |> mapFull (fun full ->
+                    let first = full.Checkpoints.Head
+                    { full with
+                        Checkpoints =
+                            [ { first with
+                                  State = { first.State with Awareness = Map.empty } } ] })
+            match Replay.runKernelReplay Replay.defaultLimits engineHash changed with
+            | Error(InvalidCheckpoint _) -> failwith "Replay protected hash mutation detected."
+            | result -> failwithf "Replay hash mutation was accepted: %A" result
+        | "bounds" ->
+            let bytes = awarenessSnapshotPackage () |> Replay.encode
+            let zero = { Replay.defaultLimits with MaxAwarenessContacts = 0 }
+            match Replay.decode zero bytes with
+            | Error(MalformedPackage detail) when detail.Contains "awareness contacts" ->
+                failwith "Replay protected bounds mutation detected."
+            | result -> failwithf "Replay bounds mutation was accepted: %A" result
+        | "posture" ->
+            let state = awarenessSnapshot ()
+            let owner = Simulation.unitId 10
+            let changed = { state with Units = state.Units |> Map.change owner (Option.map (fun unit -> { unit with WeaponPosture = WeaponPosture.Prepared })) }
+            if Replay.stateHash changed <> Replay.stateHash state then failwith "Replay protected posture mutation detected."
+            else failwith "Replay posture mutation was accepted."
+        | "cursor" ->
+            let state = awarenessSnapshot ()
+            if Replay.stateHash { state with AwarenessCursor = state.AwarenessCursor + 1 } <> Replay.stateHash state then failwith "Replay protected cursor mutation detected."
+            else failwith "Replay cursor mutation was accepted."
+        | "input-vocabulary" ->
+            let original = awarenessSnapshotPackage () |> Replay.encode
+            let changed =
+                awarenessSnapshotPackage ()
+                |> mapFull (fun full -> { full with OrderedInputs = full.OrderedInputs |> List.tail })
+                |> Replay.encode
+            if changed <> original then failwith "Replay protected input-vocabulary mutation detected."
+            else failwith "Replay input-vocabulary mutation was accepted."
+        | "v5-guarded-edge" ->
+            let package = awarenessSnapshotPackageFor Replay.AwarenessFormatVersion
+            let encoded = Replay.encode package
+            let decoded = Replay.decode Replay.defaultLimits encoded |> Result.defaultWith (fun error -> failwithf "v5 guarded edge did not decode: %A" error)
+            match decoded.Content with
+            | AuthorizedFullReplay full ->
+                match full.InitialSnapshot.Engagements[Simulation.unitId 10].Target with
+                | EngagementTarget.GuardedEdge("legacy-guarded-edge", 0, _) when Replay.encode decoded = encoded -> failwith "Replay protected v5 guarded-edge mutation detected."
+                | target -> failwithf "v5 guarded edge lost legacy defaults: %A" target
+            | _ -> failwith "v5 guarded edge changed disclosure kind."
+        | value -> failwithf "Unknown replay mutation: %s" value
 
     let evaluate () =
         let package = fullPackage ()
         let encoded = canonicalPackageBytes ()
-        require (Replay.CurrentFormatVersion = 4) "Combat-state snapshots must use replay format v4."
+        require (Replay.CurrentFormatVersion = 6) "Weapon posture and fairness cursors must use replay format v6."
 
         let retainedV3 = retainedV3Bytes ()
         require (retainedV3.Length = 4_450) "The retained predecessor replay v3 fixture changed length."
@@ -258,7 +386,15 @@ module ReplayFixtures =
         require (Replay.encode decodedCombat = combatBytes) "Replay v4 combat snapshot did not round-trip byte-exactly."
         match decodedCombat.Content with
         | AuthorizedFullReplay full ->
-            let expectedSnapshotBytes = Replay.snapshotBytes (combatSnapshot ())
+            let expectedLegacy =
+                let state = combatSnapshot ()
+                { state with
+                    Board =
+                        { state.Board with
+                            Edges =
+                                state.Board.Edges
+                                |> List.map (fun edge -> { edge with EdgeId = "legacy-semantic-edge"; SpatialRevision = 0 }) } }
+            let expectedSnapshotBytes = Replay.snapshotBytes expectedLegacy
             require (Replay.snapshotBytes full.InitialSnapshot = expectedSnapshotBytes) "Replay v4 did not retain the complete combat snapshot."
             require (Replay.snapshotBytes full.Checkpoints.Head.State = expectedSnapshotBytes) "Replay v4 seek point lost combat state."
             let retained = full.InitialSnapshot.Units[Simulation.unitId 10]
@@ -269,8 +405,62 @@ module ReplayFixtures =
         | PerspectivePlayback _ -> failwith "Replay v4 combat snapshot changed disclosure kind."
         match Replay.runKernelReplay Replay.defaultLimits engineHash decodedCombat with
         | Ok(BrowserKernelVerified result) ->
-            require (result.StateHash = Replay.stateHash (combatSnapshot ())) "Replay v4 combat seek verification returned the wrong hash."
+            require
+                (result.StateHash = Replay.stateHashForFormatVersion Replay.PhysicalCombatFormatVersion (combatSnapshot ()))
+                "Replay v4 combat seek verification returned the wrong hash."
         | result -> failwithf "Replay v4 combat seek verification failed: %A" result
+
+        match decodedCombat.Content with
+        | AuthorizedFullReplay full ->
+            require full.InitialSnapshot.Awareness.IsEmpty "Replay v4 did not apply empty awareness defaults."
+            require full.InitialSnapshot.Engagements.IsEmpty "Replay v4 did not apply empty engagement defaults."
+        | PerspectivePlayback _ -> failwith "Replay v4 combat snapshot changed disclosure kind."
+
+        let awarenessPackage = awarenessSnapshotPackageFor Replay.AwarenessFormatVersion
+        let awarenessBytes = Replay.encode awarenessPackage
+        let decodedAwareness =
+            Replay.decode Replay.defaultLimits awarenessBytes
+            |> Result.defaultWith (fun error -> failwithf "Replay v5 awareness snapshot did not decode: %A" error)
+        require (Replay.encode decodedAwareness = awarenessBytes) "Replay v5 awareness snapshot did not round-trip byte-exactly."
+        match decodedAwareness.Content with
+        | AuthorizedFullReplay full ->
+            require (full.InitialSnapshot.Awareness = (awarenessSnapshot ()).Awareness) "Replay v5 lost awareness state."
+            let expectedLegacyEngagements =
+                (awarenessSnapshot ()).Engagements
+                |> Map.map (fun _ engagement ->
+                    match engagement.Target with
+                    | EngagementTarget.GuardedEdge(_, _, edge) ->
+                        { engagement with Target = EngagementTarget.GuardedEdge("legacy-guarded-edge", 0, edge) }
+                    | _ -> engagement)
+            require (full.InitialSnapshot.Engagements = expectedLegacyEngagements) "Replay v5 lost legacy guarded-edge engagement state."
+            require (full.OrderedInputs.Length = 2) "Replay v5 lost awareness/reaction inputs."
+        | PerspectivePlayback _ -> failwith "Replay v5 awareness snapshot changed disclosure kind."
+
+        let currentAwarenessPackage = awarenessSnapshotPackage ()
+        let currentAwarenessBytes = Replay.encode currentAwarenessPackage
+        let currentAwarenessDecoded =
+            Replay.decode Replay.defaultLimits currentAwarenessBytes
+            |> Result.defaultWith (fun error -> failwithf "Replay v6 awareness snapshot did not decode: %A" error)
+        require (Replay.encode currentAwarenessDecoded = currentAwarenessBytes) "Replay v6 awareness snapshot did not round-trip byte-exactly."
+        match currentAwarenessDecoded.Content with
+        | AuthorizedFullReplay full ->
+            require (full.InitialSnapshot.AwarenessCursor = (awarenessSnapshot ()).AwarenessCursor) "Replay v6 lost the fairness cursor."
+            require (full.OrderedInputs.Length = 5) "Replay v6 lost posture, unit-target, or guarded-edge inputs."
+            require
+                (full.InitialSnapshot.Units[Simulation.unitId 10].WeaponPosture = (awarenessSnapshot ()).Units[Simulation.unitId 10].WeaponPosture)
+                "Replay v6 lost weapon posture."
+        | PerspectivePlayback _ -> failwith "Replay v6 awareness snapshot changed disclosure kind."
+
+        let noAwarenessLimit = { Replay.defaultLimits with MaxAwarenessContacts = 0 }
+        expectError
+            (function MalformedPackage detail when detail.Contains "Resource limit exceeded for awareness contacts" -> true | _ -> false)
+            (Replay.decode noAwarenessLimit awarenessBytes)
+            "Replay v5 decoded awareness contacts beyond its resource limit."
+        let noEngagementLimit = { Replay.defaultLimits with MaxEngagements = 0 }
+        expectError
+            (function MalformedPackage detail when detail.Contains "Resource limit exceeded for engagements" -> true | _ -> false)
+            (Replay.decode noEngagementLimit awarenessBytes)
+            "Replay v5 decoded engagements beyond its resource limit."
 
         let noCoverLimit = { Replay.defaultLimits with MaxCovers = 0 }
         expectError
@@ -304,6 +494,13 @@ module ReplayFixtures =
         requireHashMutation "incapacitation" (changeRed (fun unit -> { unit with Incapacitated = not unit.Incapacitated }))
         requireHashMutation "suppression" (changeRed (fun unit -> { unit with Suppression = unit.Suppression + 1 }))
         requireHashMutation "covers" (fun state -> { state with Board = { state.Board with Covers = Map.empty } })
+        let originalAwarenessHash = Replay.stateHash (awarenessSnapshot ())
+        let requireAwarenessHashMutation label change =
+            require
+                (Replay.stateHash (change (awarenessSnapshot ())) <> originalAwarenessHash)
+                ("Replay v5 state hash ignored " + label + ".")
+        requireAwarenessHashMutation "awareness contacts" (fun state -> { state with Awareness = Map.empty })
+        requireAwarenessHashMutation "engagements" (fun state -> { state with Engagements = Map.empty })
 
         let staleSeekHash =
             decodedCombat

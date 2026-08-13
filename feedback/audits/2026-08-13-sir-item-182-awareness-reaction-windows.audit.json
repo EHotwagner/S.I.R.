@@ -1,0 +1,71 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-13-sir-item-182-awareness-reaction-windows.md",
+  "reportSha256": "ac84fb606f13a476f243d613b9193d1c5ab2d532cd46f457ed393a7a140b78cc",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [{ "locator": "command:./scripts/verify-awareness-reaction.sh", "result": "verified" }],
+      "confidenceLimits": ["The canonical diagnostic scenario proves the authority boundary, not final multiplayer transport."]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [{ "locator": "command:bash -lc 'tmp_receipt=$(mktemp) && export SIR_AWARENESS_PERF_RECEIPT=\"$tmp_receipt\" && dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release -- --awareness && jq \"{candidate,observation}\" \"$tmp_receipt\" && rm -f \"$tmp_receipt\"'", "result": "verified" }],
+      "confidenceLimits": ["Timing varies with host load; the repaired aggregate measured p95 31 ms/raw worst 36 ms, the hard gate applies to raw maximum, and structural counters are deterministic."]
+    },
+    {
+      "id": "§4.3",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:node scripts/test-production-delivery-budget.mjs", "result": "verified" },
+        { "locator": "command:node scripts/test-persistent-workspace-m9-acceptance.mjs", "result": "verified" }
+      ],
+      "confidenceLimits": ["The pattern duplicates item-181 §4.4 and earlier bundle-binding reports; the current cap revision is item-specific."]
+    },
+    {
+      "id": "§4.4",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [{ "locator": "command:find .agents/skills -path '*/fs-gg-feedback-report/SKILL.md'", "result": "verified" }],
+      "confidenceLimits": ["The gap duplicates item-180 §4.5 and item-181 §4.5 under open FS-GG/.github#2380; an adjacent provider supplied the fallback contract."]
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "issue:EHotwagner/S.I.R.#182", "result": "verified" },
+        { "locator": "issue:EHotwagner/S.I.R.#202", "result": "verified" },
+        { "locator": "command:git worktree list --porcelain", "result": "verified" }
+      ],
+      "confidenceLimits": ["The prior checkout's disappearance cannot be attributed to a specific actor or cleanup event."]
+    },
+    {
+      "id": "§4.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:test -e docs/examples/lifecycle-artifacts/charter.md", "result": "verified" },
+        { "locator": "command:test -e docs/reference/authoring-contracts.md", "result": "verified" }
+      ],
+      "confidenceLimits": ["The complete skill text provided sufficient embedded grammar to complete this cycle."]
+    },
+    {
+      "id": "§4.7",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:./scripts/generate-item-182-evidence.sh", "result": "verified" },
+        { "locator": "command:dotnet tool run fsgg-sdd -- ship --work 182-awareness-reaction-windows --json", "result": "verified" }
+      ],
+      "confidenceLimits": ["Atomic staging and the no-partial-write protected subject are verified; failed-run logs remain intentionally temporary."]
+    }
+  ]
+}

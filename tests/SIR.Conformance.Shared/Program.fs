@@ -61,6 +61,7 @@ let main arguments =
                       mapScale
                       RulesCorpusFixtures.evaluate false
                       SpatialQueryFixtures.evaluate false
+                      AwarenessReactionFixtures.evaluate None
                       CombatFixtures.evaluate false
                       replay ]
                     |> SIR.Domain.CanonicalEncoding.concatenate
@@ -107,29 +108,45 @@ let main arguments =
         let offset = Array.zip expected actual |> Array.findIndex (fun (left, right) -> left <> right)
         eprintfn "first divergence: fixture=physical-combat byte=%d expected=%02x actual=%02x" offset expected[offset] actual[offset]
         failwith "Physical combat canonical conformance failed."
+    | [ "--inject-awareness-mutation"; mutation ] ->
+        AwarenessReactionFixtures.evaluate (Some mutation) |> ignore
+        failwith "The awareness/reaction protected-subject mutation was accepted."
+    | [ "--inject-replay-mutation"; mutation ] ->
+        ReplayFixtures.evaluateProtectedMutation mutation
+        failwith "The replay protected-subject mutation was accepted."
     | [ "--print-spatial-query" ] ->
         SpatialQueryFixtures.evaluate false |> NumericFixtures.hex |> printfn "%s"
         0
     | [ "--print-combat" ] ->
         CombatFixtures.evaluate false |> NumericFixtures.hex |> printfn "%s"
         0
+    | [ "--print-awareness-reaction" ] ->
+        AwarenessReactionFixtures.evaluate None |> NumericFixtures.hex |> printfn "%s"
+        0
     | [ "--print-simulation-oracle" ] ->
-        SimulationFixtures.evaluate None
-        |> List.iter (fun (fixture, actual) ->
+        let result = Simulation.runTick Simulation.initialState Simulation.inputs
+        result.Checkpoints
+        |> List.iter (fun checkpoint ->
+            let encoded = Simulation.checkpointBytes checkpoint
+            let actual = if checkpoint.Phase = SimulationPhase.CommitPhase then SIR.Domain.CanonicalEncoding.concatenate [ encoded; result.StateDigest ] else encoded
             printfn
                 "%s=%s"
-                (SimulationFixtures.phaseName fixture.Phase)
+                (SimulationFixtures.phaseName checkpoint.Phase)
                 (NumericFixtures.hex actual))
 
         0
     | [ "--print-replay-evidence" ] ->
         let packageBytes = ReplayFixtures.canonicalPackageBytes ()
         let replayVector = ReplayFixtures.evaluate ()
+        let retainedV3, retainedV4, currentV5 = ReplayFixtures.compatibilityEvidence ()
 
         printfn "package-bytes=%d" packageBytes.Length
         printfn "package-sha256=%s" (NumericFixtures.hex replayVector[0..31])
         printfn "final-state-sha256=%s" (NumericFixtures.hex replayVector[32..63])
         printfn "perspective-package-sha256=%s" (NumericFixtures.hex replayVector[64..95])
+        printfn "retained-v3-bytes=%d sha256=%s" retainedV3.Length (retainedV3 |> SIR.Domain.CanonicalHash.sha256 |> NumericFixtures.hex)
+        printfn "physical-v4-bytes=%d sha256=%s" retainedV4.Length (retainedV4 |> SIR.Domain.CanonicalHash.sha256 |> NumericFixtures.hex)
+        printfn "awareness-v5-bytes=%d sha256=%s" currentV5.Length (currentV5 |> SIR.Domain.CanonicalHash.sha256 |> NumericFixtures.hex)
         0
     | [ "--print-replay-package" ] ->
         ReplayFixtures.canonicalPackageBytes () |> NumericFixtures.hex |> printfn "%s"
@@ -181,6 +198,6 @@ let main arguments =
 #endif
     | _ ->
         eprintfn
-            "Usage: conformance [--inject-divergence FIXTURE | --inject-simulation-divergence PHASE | --inject-rules-corpus-divergence | --inject-spatial-query-divergence | --inject-combat-divergence | --print-spatial-query | --print-combat | --print-combat-performance | --print-simulation-oracle | --print-replay-evidence | --print-rules-manifest | --print-rules-coverage | --print-rules-application]"
+            "Usage: conformance [--inject-divergence FIXTURE | --inject-simulation-divergence PHASE | --inject-rules-corpus-divergence | --inject-spatial-query-divergence | --inject-combat-divergence | --inject-awareness-mutation NAME | --inject-replay-mutation NAME | --print-spatial-query | --print-combat | --print-awareness-reaction | --print-combat-performance | --print-simulation-oracle | --print-replay-evidence | --print-rules-manifest | --print-rules-coverage | --print-rules-application]"
 
         2

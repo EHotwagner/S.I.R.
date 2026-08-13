@@ -75,7 +75,9 @@ type ReplayLimits =
       MaxEdges: int
       MaxCovers: int
       MaxWoundsPerUnit: int
-      MaxObservations: int }
+      MaxObservations: int
+      MaxAwarenessContacts: int
+      MaxEngagements: int }
 
 /// Why an untrusted replay package was rejected.
 type ReplayError =
@@ -109,7 +111,13 @@ type private ReplayReader =
 [<RequireQualifiedAccess>]
 module Replay =
     [<Literal>]
-    let CurrentFormatVersion = 4
+    let CurrentFormatVersion = 6
+
+    [<Literal>]
+    let AwarenessFormatVersion = 5
+
+    [<Literal>]
+    let PhysicalCombatFormatVersion = 4
 
     [<Literal>]
     let RulesArchiveFormatVersion = 3
@@ -130,7 +138,9 @@ module Replay =
           MaxEdges = 16_384
           MaxCovers = 4_096
           MaxWoundsPerUnit = 256
-          MaxObservations = 65_536 }
+          MaxObservations = 65_536
+          MaxAwarenessContacts = 65_536
+          MaxEngagements = 4_096 }
 
     let private magic = [| 0x53uy; 0x49uy; 0x52uy; 0x52uy |]
     let private archiveSchemaVersion = 1
@@ -158,6 +168,11 @@ module Replay =
         | WeaponProfile.SupportWeapon -> 1uy
         | WeaponProfile.AntiArmor -> 2uy
         | WeaponProfile.LobbedArea -> 3uy
+
+    let private postureByte = function
+        | WeaponPosture.Mobile -> 0uy
+        | WeaponPosture.Ready -> 1uy
+        | WeaponPosture.Prepared -> 2uy
 
     let private woundSeverityByte = function
         | WoundSeverity.Serious -> 0uy
@@ -188,8 +203,59 @@ module Replay =
                   unitIdBytes attackerId
                   cellBytes aim
                   CanonicalEncoding.byteValue (weaponProfileByte profile) ]
+        | SetAttention(unitId, direction) ->
+            CanonicalEncoding.concatenate [ [| 4uy |]; unitIdBytes unitId; CanonicalEncoding.direction8 direction ]
+        | PrepareAreaReaction(unitId, engagementId, cells, direction) ->
+            CanonicalEncoding.concatenate
+                ([ [| 5uy |]
+                   unitIdBytes unitId
+                   stringBytes engagementId
+                   CanonicalEncoding.int32LittleEndian cells.Length ]
+                 @ (cells |> List.map cellBytes)
+                 @ [ CanonicalEncoding.direction8 direction ])
+        | SetWeaponPosture(unitId, posture) ->
+            CanonicalEncoding.concatenate [ [| 6uy |]; unitIdBytes unitId; [| postureByte posture |] ]
+        | PrepareUnitReaction(unitId, engagementId, targetId, direction) ->
+            CanonicalEncoding.concatenate [ [| 7uy |]; unitIdBytes unitId; stringBytes engagementId; unitIdBytes targetId; CanonicalEncoding.direction8 direction ]
+        | PrepareEdgeReaction(unitId, engagementId, edge, direction) ->
+            CanonicalEncoding.concatenate [ [| 8uy |]; unitIdBytes unitId; stringBytes engagementId; cellBytes edge.Lo; cellBytes edge.Hi; CanonicalEncoding.direction8 direction ]
 
     let private snapshotBytesForVersion formatVersion (state: SimulationState) =
+        let legacyAwarenessLevel = function AwarenessLevel.Unknown -> 0uy | AwarenessLevel.Suspected -> 1uy | AwarenessLevel.Acquired -> 2uy | AwarenessLevel.LostContact -> 3uy
+        let legacyAwarenessReason = function AwarenessReason.NoStimulus -> 0uy | AwarenessReason.OutsideRange -> 1uy | AwarenessReason.Occluded -> 2uy | AwarenessReason.StimulusAccumulated -> 3uy | AwarenessReason.IdentificationThresholdReached -> 4uy | AwarenessReason.StimulusDecayed -> 5uy | AwarenessReason.ContactLost -> 6uy | AwarenessReason.ContactRetained -> 7uy | AwarenessReason.InvalidProfile -> 8uy
+        let optionalI32 = function None -> [| 0uy |] | Some value -> CanonicalEncoding.concatenate [ [| 1uy |]; CanonicalEncoding.int32LittleEndian value ]
+        let optionalCell = function None -> [| 0uy |] | Some value -> CanonicalEncoding.concatenate [ [| 1uy |]; cellBytes value ]
+        let contactBytes contact =
+            if formatVersion >= CurrentFormatVersion then AwarenessReaction.canonicalContactBytes contact
+            else
+                CanonicalEncoding.concatenate
+                    [ [| byte AwarenessReaction.schemaVersion |]
+                      unitIdBytes contact.SubjectId
+                      [| legacyAwarenessLevel contact.Level |]
+                      CanonicalEncoding.int32LittleEndian contact.Acquisition
+                      optionalI32 contact.LastStimulusTick
+                      optionalCell contact.LastKnownCell
+                      optionalI32 contact.RetainUntilTick
+                      [| legacyAwarenessReason contact.Reason |] ]
+        let legacyPhase = function EngagementPhase.Preparing -> 0uy | EngagementPhase.ActiveCoverage -> 1uy | EngagementPhase.TriggerEligible -> 2uy | EngagementPhase.Committed -> 3uy | EngagementPhase.Resolved -> 4uy | EngagementPhase.Interrupted -> 5uy | EngagementPhase.Recovering -> 6uy
+        let legacyReactionReason = function ReactionReason.PreparingNotComplete -> 0uy | ReactionReason.Eligible -> 1uy | ReactionReason.CommittedInCanonicalOrder -> 2uy | ReactionReason.TargetInvalidated -> 3uy | ReactionReason.AttentionChanged -> 4uy | ReactionReason.PostureChanged -> 5uy | ReactionReason.ReactorIncapacitated -> 6uy | ReactionReason.FireBlocked -> 7uy | ReactionReason.ResolvedByPhysicalAuthority -> 8uy | ReactionReason.RecoveryComplete -> 9uy
+        let engagementBytes engagement =
+            if formatVersion >= CurrentFormatVersion then AwarenessReaction.canonicalEngagementBytes engagement
+            else
+                let target =
+                    match engagement.Target with
+                    | EngagementTarget.KnownUnit id -> CanonicalEncoding.concatenate [ [| 0uy |]; unitIdBytes id ]
+                    | EngagementTarget.CoveredArea cells -> CanonicalEncoding.concatenate ([ [| 1uy |]; CanonicalEncoding.int32LittleEndian cells.Length ] @ (cells |> List.map cellBytes))
+                    | EngagementTarget.GuardedEdge(_, _, edge) -> CanonicalEncoding.concatenate [ [| 2uy |]; cellBytes edge.Lo; cellBytes edge.Hi ]
+                CanonicalEncoding.concatenate
+                    [ [| byte AwarenessReaction.schemaVersion |]
+                      stringBytes engagement.EngagementId
+                      unitIdBytes engagement.OwnerId
+                      target
+                      CanonicalEncoding.direction8 engagement.RequiredAttention
+                      [| legacyPhase engagement.Phase |]
+                      CanonicalEncoding.int32LittleEndian engagement.RemainingTicks
+                      [| legacyReactionReason engagement.Reason |] ]
         let edgeSegments =
             state.Board.Edges
             |> List.sortBy (fun edge ->
@@ -199,7 +265,9 @@ module Replay =
                 edge.Edge.Hi.Row,
                 edge.BlocksMovement)
             |> List.collect (fun edge ->
-                [ cellBytes edge.Edge.Lo
+                [ if formatVersion >= CurrentFormatVersion then stringBytes edge.EdgeId
+                  if formatVersion >= CurrentFormatVersion then CanonicalEncoding.int32LittleEndian edge.SpatialRevision
+                  cellBytes edge.Edge.Lo
                   cellBytes edge.Edge.Hi
                   [| if edge.BlocksMovement then 1uy else 0uy |] ])
 
@@ -214,10 +282,12 @@ module Replay =
                   if formatVersion >= DirectionalFormatVersion then
                       CanonicalEncoding.direction8 unit.BodyFacing
                   if formatVersion >= DirectionalFormatVersion then
-                      CanonicalEncoding.direction8 unit.AttentionDirection ])
+                      CanonicalEncoding.direction8 unit.AttentionDirection
+                  if formatVersion >= CurrentFormatVersion then
+                      [| postureByte unit.WeaponPosture |] ])
 
         let combatUnitSegments =
-            if formatVersion >= CurrentFormatVersion then
+            if formatVersion >= PhysicalCombatFormatVersion then
                 state.Units
                 |> Map.toList
                 |> List.collect (fun (_, unit) ->
@@ -237,7 +307,7 @@ module Replay =
                 []
 
         let coverSegments =
-            if formatVersion >= CurrentFormatVersion then
+            if formatVersion >= PhysicalCombatFormatVersion then
                 state.Board.Covers
                 |> Map.toList
                 |> List.collect (fun (coverId, cover) ->
@@ -254,6 +324,25 @@ module Replay =
             |> List.collect (fun (observerId, targetId) ->
                 [ unitIdBytes observerId; unitIdBytes targetId ])
 
+        let awarenessSegments =
+            if formatVersion >= AwarenessFormatVersion then
+                state.Awareness
+                |> Map.toList
+                |> List.collect (fun ((observerId, subjectId), contact) ->
+                    [ unitIdBytes observerId
+                      unitIdBytes subjectId
+                      contactBytes contact |> lengthPrefixed ])
+            else []
+
+        let engagementSegments =
+            if formatVersion >= AwarenessFormatVersion then
+                state.Engagements
+                |> Map.toList
+                |> List.collect (fun (ownerId, engagement) ->
+                    [ unitIdBytes ownerId
+                      engagementBytes engagement |> lengthPrefixed ])
+            else []
+
         CanonicalEncoding.concatenate
             ([ CanonicalEncoding.int32LittleEndian state.Tick
                cellBytes state.Board.Minimum
@@ -263,25 +352,30 @@ module Replay =
              @ [ CanonicalEncoding.int32LittleEndian state.Units.Count ]
              @ unitSegments
              @ combatUnitSegments
-             @ (if formatVersion >= CurrentFormatVersion then
+             @ (if formatVersion >= PhysicalCombatFormatVersion then
                     [ CanonicalEncoding.int32LittleEndian state.Board.Covers.Count ]
                 else
                     [])
              @ coverSegments
              @ [ CanonicalEncoding.int32LittleEndian state.Observations.Count ]
-             @ observationSegments)
+             @ observationSegments
+             @ (if formatVersion >= AwarenessFormatVersion then [ CanonicalEncoding.int32LittleEndian state.Awareness.Count ] else [])
+             @ awarenessSegments
+             @ (if formatVersion >= AwarenessFormatVersion then [ CanonicalEncoding.int32LittleEndian state.Engagements.Count ] else [])
+             @ engagementSegments
+             @ (if formatVersion >= CurrentFormatVersion then [ CanonicalEncoding.int32LittleEndian state.AwarenessCursor ] else []))
 
     /// Complete current-version snapshot encoding, including orientation.
     let snapshotBytes state =
         snapshotBytesForVersion CurrentFormatVersion state
 
-    let private stateHashForVersion formatVersion state =
+    let stateHashForFormatVersion formatVersion state =
         state
         |> snapshotBytesForVersion formatVersion
         |> CanonicalHash.sha256
 
     let stateHash state =
-        stateHashForVersion CurrentFormatVersion state
+        stateHashForFormatVersion CurrentFormatVersion state
     let eventHash events = events |> Simulation.eventsBytes |> CanonicalHash.sha256
 
     let private replayInputBytes (input: ReplayInput) =
@@ -433,6 +527,10 @@ module Replay =
         ||| (int32 bytes[2] <<< 16)
         ||| (int32 bytes[3] <<< 24)
 
+    let private readInt64 reader =
+        let bytes = readBytes 8 reader
+        [ 0 .. 7 ] |> List.fold (fun value index -> value ||| (int64 bytes[index] <<< (index * 8))) 0L
+
     let private readCell reader: Cell =
         { Col = readInt32 reader
           Row = readInt32 reader }
@@ -526,6 +624,13 @@ module Replay =
         | 3uy -> WeaponProfile.LobbedArea
         | value -> failDecode (sprintf "Invalid weapon-profile byte %d." value)
 
+    let private readWeaponPosture reader =
+        match readByte reader with
+        | 0uy -> WeaponPosture.Mobile
+        | 1uy -> WeaponPosture.Ready
+        | 2uy -> WeaponPosture.Prepared
+        | value -> failDecode (sprintf "Invalid weapon-posture byte %d." value)
+
     let private readWoundSeverity reader =
         match readByte reader with
         | 0uy -> WoundSeverity.Serious
@@ -551,7 +656,121 @@ module Replay =
                 readCell reader,
                 readWeaponProfile reader
             )
+        | 4uy -> SetAttention(Simulation.unitId (readInt32 reader), readDirection "attention input" reader)
+        | 5uy ->
+            let unitId = Simulation.unitId (readInt32 reader)
+            let engagementId = readLengthPrefixed "engagement identifier" 96 reader |> System.Text.Encoding.UTF8.GetString
+            let count = readCount "covered area cells" 256 reader
+            let cells = [ for _ in 1 .. count -> readCell reader ]
+            PrepareAreaReaction(unitId, engagementId, cells, readDirection "engagement attention" reader)
+        | 6uy -> SetWeaponPosture(Simulation.unitId (readInt32 reader), readWeaponPosture reader)
+        | 7uy ->
+            let unitId = Simulation.unitId (readInt32 reader)
+            let engagementId = readLengthPrefixed "engagement identifier" 96 reader |> System.Text.Encoding.UTF8.GetString
+            PrepareUnitReaction(unitId, engagementId, Simulation.unitId (readInt32 reader), readDirection "engagement attention" reader)
+        | 8uy ->
+            let unitId = Simulation.unitId (readInt32 reader)
+            let engagementId = readLengthPrefixed "engagement identifier" 96 reader |> System.Text.Encoding.UTF8.GetString
+            let left, right = readCell reader, readCell reader
+            let edge = Edges.edgeBetween left right |> Option.defaultWith (fun () -> failDecode "Prepared edge is not canonical.")
+            PrepareEdgeReaction(unitId, engagementId, edge, readDirection "engagement attention" reader)
         | value -> failDecode (sprintf "Invalid kernel-input tag %d." value)
+
+    let private readOptionalInt32 reader = if readBool reader then Some(readInt32 reader) else None
+    let private readOptionalCell reader = if readBool reader then Some(readCell reader) else None
+
+    let private readAwarenessLevel reader =
+        match readByte reader with
+        | 0uy -> AwarenessLevel.Unknown | 1uy -> AwarenessLevel.Suspected | 2uy -> AwarenessLevel.Acquired | 3uy -> AwarenessLevel.LostContact
+        | value -> failDecode (sprintf "Invalid awareness-level byte %d." value)
+
+    let private readAwarenessReason reader =
+        match readByte reader with
+        | 0uy -> AwarenessReason.NoStimulus | 1uy -> AwarenessReason.OutsideRange | 2uy -> AwarenessReason.Occluded
+        | 3uy -> AwarenessReason.StimulusAccumulated | 4uy -> AwarenessReason.IdentificationThresholdReached
+        | 5uy -> AwarenessReason.StimulusDecayed | 6uy -> AwarenessReason.ContactLost | 7uy -> AwarenessReason.ContactRetained
+        | 8uy -> AwarenessReason.InvalidProfile | value -> failDecode (sprintf "Invalid awareness-reason byte %d." value)
+
+    let private readCanonicalContact formatVersion bytes =
+        let nested = { Bytes = bytes; Offset = 0 }
+        if readByte nested <> byte AwarenessReaction.schemaVersion then failDecode "Unsupported awareness-contact schema."
+        let contact =
+            { SubjectId = Simulation.unitId (readInt32 nested)
+              Level = readAwarenessLevel nested
+              Acquisition = readInt32 nested
+              LastStimulusTick = readOptionalInt32 nested
+              LastStimulus =
+                if formatVersion < CurrentFormatVersion || not (readBool nested) then None
+                else
+                    let tick = readInt32 nested
+                    let modality =
+                        match readByte nested with
+                        | 0uy -> SpatialModality.GroundMovement
+                        | 1uy -> SpatialModality.Vision
+                        | 2uy -> SpatialModality.ProjectileTrace
+                        | value -> failDecode $"Invalid retained stimulus modality {value}."
+                    let source = readLengthPrefixed "retained stimulus source" 256 nested |> System.Text.Encoding.UTF8.GetString
+                    let origin, subjectCell = readCell nested, readCell nested
+                    let sector =
+                        match readByte nested with
+                        | 0uy -> ObservationSector.Forward
+                        | 1uy -> ObservationSector.Peripheral
+                        | 2uy -> ObservationSector.Rear
+                        | value -> failDecode $"Invalid retained stimulus sector {value}."
+                    Some
+                        { Tick = tick
+                          Modality = modality
+                          Source = source
+                          Origin = origin
+                          SubjectCell = subjectCell
+                          Sector = sector
+                          SpatialRevision = readInt64 nested
+                          KnowledgeIdentity = readLengthPrefixed "retained knowledge identity" 256 nested |> System.Text.Encoding.UTF8.GetString
+                          KnowledgeRevision = readInt64 nested }
+              LastKnownCell = readOptionalCell nested
+              RetainUntilTick = readOptionalInt32 nested
+              Reason = readAwarenessReason nested }
+        if nested.Offset <> bytes.Length then failDecode "Awareness-contact length does not match its canonical fields."
+        contact
+
+    let private readEngagementPhase reader =
+        match readByte reader with
+        | 0uy -> EngagementPhase.Preparing | 1uy -> EngagementPhase.ActiveCoverage | 2uy -> EngagementPhase.TriggerEligible
+        | 3uy -> EngagementPhase.Committed | 4uy -> EngagementPhase.Resolved | 5uy -> EngagementPhase.Interrupted | 6uy -> EngagementPhase.Recovering
+        | value -> failDecode (sprintf "Invalid engagement-phase byte %d." value)
+
+    let private readReactionReason reader =
+        match readByte reader with
+        | 0uy -> ReactionReason.PreparingNotComplete | 1uy -> ReactionReason.Eligible | 2uy -> ReactionReason.CommittedInCanonicalOrder
+        | 3uy -> ReactionReason.TargetInvalidated | 4uy -> ReactionReason.AttentionChanged | 5uy -> ReactionReason.PostureChanged
+        | 6uy -> ReactionReason.ReactorIncapacitated | 7uy -> ReactionReason.FireBlocked | 8uy -> ReactionReason.ResolvedByPhysicalAuthority
+        | 9uy -> ReactionReason.RecoveryComplete | value -> failDecode (sprintf "Invalid reaction-reason byte %d." value)
+
+    let private readCanonicalEngagement formatVersion bytes =
+        let nested = { Bytes = bytes; Offset = 0 }
+        if readByte nested <> byte AwarenessReaction.schemaVersion then failDecode "Unsupported engagement schema."
+        let engagementId = readLengthPrefixed "engagement identifier" 96 nested |> System.Text.Encoding.UTF8.GetString
+        let ownerId = Simulation.unitId (readInt32 nested)
+        let target =
+            match readByte nested with
+            | 0uy -> EngagementTarget.KnownUnit(Simulation.unitId (readInt32 nested))
+            | 1uy -> EngagementTarget.CoveredArea [ for _ in 1 .. readCount "covered area cells" 256 nested -> readCell nested ]
+            | 2uy ->
+                let edgeId = if formatVersion >= CurrentFormatVersion then readLengthPrefixed "guarded edge identity" 96 nested |> System.Text.Encoding.UTF8.GetString else "legacy-guarded-edge"
+                let revision = if formatVersion >= CurrentFormatVersion then readInt32 nested else 0
+                let left, right = readCell nested, readCell nested
+                Edges.edgeBetween left right |> Option.map (fun edge -> EngagementTarget.GuardedEdge(edgeId, revision, edge)) |> Option.defaultWith (fun () -> failDecode "Replay guarded edge is not canonical.")
+            | value -> failDecode (sprintf "Invalid engagement-target byte %d." value)
+        let engagement =
+            { EngagementId = engagementId
+              OwnerId = ownerId
+              Target = target
+              RequiredAttention = readDirection "engagement required attention" nested
+              Phase = readEngagementPhase nested
+              RemainingTicks = readInt32 nested
+              Reason = readReactionReason nested }
+        if nested.Offset <> bytes.Length then failDecode "Engagement length does not match its canonical fields."
+        engagement
 
     let private readSnapshot formatVersion limits reader =
         let declaredLength = readInt32 reader
@@ -568,6 +787,8 @@ module Replay =
 
         let edges =
             [ for _ in 1 .. edgeCount do
+                  let edgeId = if formatVersion >= CurrentFormatVersion then readLengthPrefixed "semantic edge identity" 96 reader |> System.Text.Encoding.UTF8.GetString else "legacy-semantic-edge"
+                  let revision = if formatVersion >= CurrentFormatVersion then readInt32 reader else 0
                   let left = readCell reader
                   let right = readCell reader
 
@@ -577,7 +798,9 @@ module Replay =
                           failDecode "A semantic edge is not orthogonal.")
 
                   yield
-                      { Edge = edge
+                      { EdgeId = edgeId
+                        SpatialRevision = revision
+                        Edge = edge
                         BlocksMovement = readBool reader } ]
 
         let unitCount = readCount "units" limits.MaxUnits reader
@@ -608,13 +831,16 @@ module Replay =
                             if formatVersion >= DirectionalFormatVersion then
                                 readDirection "attention" reader
                             else
-                                North } ]
+                                North
+                        WeaponPosture =
+                            if formatVersion >= CurrentFormatVersion then readWeaponPosture reader
+                            else WeaponPosture.Mobile } ]
 
         if legacyUnits |> List.map fst |> Set.ofList |> Set.count <> unitCount then
             failDecode "Snapshot contains duplicate unit identifiers."
 
         let units =
-            if formatVersion >= CurrentFormatVersion then
+            if formatVersion >= PhysicalCombatFormatVersion then
                 legacyUnits
                 |> List.map (fun (unitId, unit) ->
                     let armor =
@@ -641,7 +867,7 @@ module Replay =
                 legacyUnits
 
         let covers =
-            if formatVersion >= CurrentFormatVersion then
+            if formatVersion >= PhysicalCombatFormatVersion then
                 let coverCount = readCount "covers" limits.MaxCovers reader
                 let values =
                     [ for _ in 1 .. coverCount do
@@ -673,6 +899,35 @@ module Replay =
         if observations.Count <> observationCount then
             failDecode "Snapshot contains duplicate observations."
 
+        let awareness =
+            if formatVersion >= AwarenessFormatVersion then
+                let count = readCount "awareness contacts" limits.MaxAwarenessContacts reader
+                let values =
+                    [ for _ in 1 .. count do
+                        let observerId, subjectId = Simulation.unitId (readInt32 reader), Simulation.unitId (readInt32 reader)
+                        let contact = readLengthPrefixed "awareness contact" 4096 reader |> readCanonicalContact formatVersion
+                        if contact.SubjectId <> subjectId then failDecode "Awareness contact subject does not match its map key."
+                        yield (observerId, subjectId), contact ]
+                if values |> List.map fst |> Set.ofList |> Set.count <> count then failDecode "Snapshot contains duplicate awareness contacts."
+                Map.ofList values
+            else Map.empty
+
+        let engagements =
+            if formatVersion >= AwarenessFormatVersion then
+                let count = readCount "engagements" limits.MaxEngagements reader
+                let values =
+                    [ for _ in 1 .. count do
+                        let ownerId = Simulation.unitId (readInt32 reader)
+                        let engagement = readLengthPrefixed "engagement" 8192 reader |> readCanonicalEngagement formatVersion
+                        if engagement.OwnerId <> ownerId then failDecode "Engagement owner does not match its map key."
+                        yield ownerId, engagement ]
+                if values |> List.map fst |> Set.ofList |> Set.count <> count then failDecode "Snapshot contains duplicate engagements."
+                Map.ofList values
+            else Map.empty
+
+        let awarenessCursor =
+            if formatVersion >= CurrentFormatVersion then readInt32 reader else 0
+
         if reader.Offset <> boundary then
             failDecode "Snapshot length does not match its canonical fields."
 
@@ -683,7 +938,10 @@ module Replay =
               Edges = edges
               Covers = covers }
           Units = Map.ofList units
-          Observations = observations }
+          Observations = observations
+          Awareness = awareness
+          Engagements = engagements
+          AwarenessCursor = awarenessCursor }
 
     let private readReplayInput reader : ReplayInput =
         { Tick = readInt32 reader
@@ -752,6 +1010,8 @@ module Replay =
                 if version <> LegacyFormatVersion
                    && version <> DirectionalFormatVersion
                    && version <> RulesArchiveFormatVersion
+                   && version <> PhysicalCombatFormatVersion
+                   && version <> AwarenessFormatVersion
                    && version <> CurrentFormatVersion then
                     failDecode (sprintf "Unsupported replay format %d." version)
 
@@ -800,6 +1060,8 @@ module Replay =
         if package.FormatVersion <> int32 LegacyFormatVersion
            && package.FormatVersion <> int32 DirectionalFormatVersion
            && package.FormatVersion <> int32 RulesArchiveFormatVersion
+           && package.FormatVersion <> int32 PhysicalCombatFormatVersion
+           && package.FormatVersion <> int32 AwarenessFormatVersion
            && package.FormatVersion <> int32 CurrentFormatVersion then
             Error(
                 UnsupportedFormat(
@@ -911,13 +1173,13 @@ module Replay =
                                 full.Checkpoints
                                 |> List.exists (fun checkpoint ->
                                     checkpoint.StateHash
-                                    <> stateHashForVersion formatVersion checkpoint.State)
+                                    <> stateHashForFormatVersion formatVersion checkpoint.State)
                             then
                                 let checkpoint =
                                     full.Checkpoints
                                     |> List.find (fun checkpoint ->
                                         checkpoint.StateHash
-                                        <> stateHashForVersion formatVersion checkpoint.State)
+                                        <> stateHashForFormatVersion formatVersion checkpoint.State)
 
                                 Error(
                                     InvalidCheckpoint(
@@ -982,6 +1244,22 @@ module Replay =
                                                     "observations",
                                                     state.Observations.Count,
                                                     limits.MaxObservations
+                                                )
+                                            )
+                                        elif state.Awareness.Count > limits.MaxAwarenessContacts then
+                                            Some(
+                                                ResourceLimitExceeded(
+                                                    "awareness contacts",
+                                                    state.Awareness.Count,
+                                                    limits.MaxAwarenessContacts
+                                                )
+                                            )
+                                        elif state.Engagements.Count > limits.MaxEngagements then
+                                            Some(
+                                                ResourceLimitExceeded(
+                                                    "engagements",
+                                                    state.Engagements.Count,
+                                                    limits.MaxEngagements
                                                 )
                                             )
                                         else
@@ -1058,7 +1336,7 @@ module Replay =
             if Option.isNone failure then
                 let result = Simulation.runTick state (journalAt tick full)
                 let actualStateHash =
-                    stateHashForVersion formatVersion result.State
+                    stateHashForFormatVersion formatVersion result.State
                 let actualEventHash = eventHash result.Events
 
                 match checkpointAt tick full with
@@ -1078,7 +1356,7 @@ module Replay =
         match failure with
         | Some error -> Error error
         | None ->
-            let actualStateHash = stateHashForVersion formatVersion state
+            let actualStateHash = stateHashForFormatVersion formatVersion state
             let actualEventHash = eventHash lastEvents
 
             if actualStateHash <> full.FinalResult.StateHash then

@@ -8,6 +8,12 @@ type Side =
     | Red
     | Blue
 
+[<RequireQualifiedAccess>]
+type WeaponPosture =
+    | Mobile
+    | Ready
+    | Prepared
+
 /// Authoritative state for one unit.
 type UnitState =
     { Id: UnitId
@@ -19,11 +25,14 @@ type UnitState =
       Incapacitated: bool
       Suppression: int32
       BodyFacing: Direction8
-      AttentionDirection: Direction8 }
+      AttentionDirection: Direction8
+      WeaponPosture: WeaponPosture }
 
 /// A canonical boundary with semantics owned by S.I.R.
 type SemanticEdge =
-    { Edge: Edge
+    { EdgeId: string
+      SpatialRevision: int32
+      Edge: Edge
       BlocksMovement: bool }
 
 /// The fixed board and its semantic boundaries.
@@ -38,7 +47,10 @@ type SimulationState =
     { Tick: int32
       Board: Board
       Units: Map<UnitId, UnitState>
-      Observations: Set<UnitId * UnitId> }
+      Observations: Set<UnitId * UnitId>
+      Awareness: Map<UnitId * UnitId, AwarenessContact>
+      Engagements: Map<UnitId, Engagement>
+      AwarenessCursor: int32 }
 
 /// Validated replay-driving inputs consumed by the shared kernel.
 type KernelInput =
@@ -46,6 +58,11 @@ type KernelInput =
     | Observe of observerId: UnitId * targetId: UnitId
     | Attack of attackerId: UnitId * targetId: UnitId
     | PhysicalAttack of attackerId: UnitId * aimCell: Cell * profile: WeaponProfile
+    | SetAttention of unitId: UnitId * direction: Direction8
+    | SetWeaponPosture of unitId: UnitId * posture: WeaponPosture
+    | PrepareAreaReaction of unitId: UnitId * engagementId: string * cells: Cell list * requiredAttention: Direction8
+    | PrepareUnitReaction of unitId: UnitId * engagementId: string * targetId: UnitId * requiredAttention: Direction8
+    | PrepareEdgeReaction of unitId: UnitId * engagementId: string * edge: Edge * requiredAttention: Direction8
 
 /// Stable logical phases used by conformance diagnostics.
 type SimulationPhase =
@@ -53,6 +70,7 @@ type SimulationPhase =
     | ObservationPhase
     | AttackPhase
     | CommitPhase
+    | AwarenessReactionPhase
 
 /// The authoritative event stream emitted by the minimal slice.
 type SimulationEvent =
@@ -63,6 +81,10 @@ type SimulationEvent =
     | PhysicalAttackResolved of attackerId: UnitId * profile: WeaponProfile * facts: CombatFact list * applications: RuleApplication list
     | PhysicalAttackRejected of attackerId: UnitId * profile: WeaponProfile * rejection: CombatRejection
     | CombatRecoveryCommitted of facts: CombatFact list
+    | AwarenessChanged of observerId: UnitId * subjectId: UnitId * level: AwarenessLevel * reason: AwarenessReason
+    | EngagementChanged of ownerId: UnitId * engagementId: string * phase: EngagementPhase * reason: ReactionReason
+    | ReactionCommitted of reactorId: UnitId * sourceId: UnitId * engagementId: string
+    | ReactionResolved of reactorId: UnitId * sourceId: UnitId * engagementId: string
 
 /// One logical-phase checkpoint for first-divergence diagnosis.
 type PhaseCheckpoint =
@@ -78,6 +100,7 @@ type TickResult =
       StateBytes: byte array
       EventBytes: byte array
       StateDigest: byte array
+      AwarenessCounters: AwarenessCounters
       Checkpoints: PhaseCheckpoint list }
 
 /// Bounded authoritative rules that may be varied by a derived design scenario.
@@ -132,7 +155,8 @@ module Simulation =
               Incapacitated = false
               Suppression = 0
               BodyFacing = North
-              AttentionDirection = North }
+              AttentionDirection = North
+              WeaponPosture = WeaponPosture.Mobile }
 
         let blue =
             { Id = unitId 20
@@ -144,10 +168,13 @@ module Simulation =
               Incapacitated = false
               Suppression = 0
               BodyFacing = North
-              AttentionDirection = North }
+              AttentionDirection = North
+              WeaponPosture = WeaponPosture.Mobile }
 
         let edge =
-            { Edge = requiredEdge (cell 1 0) (cell 2 0)
+            { EdgeId = "minimal-east-boundary"
+              SpatialRevision = 1
+              Edge = requiredEdge (cell 1 0) (cell 2 0)
               BlocksMovement = true }
 
         { Tick = 0
@@ -157,7 +184,10 @@ module Simulation =
               Edges = [ edge ]
               Covers = Map.empty }
           Units = [ red.Id, red; blue.Id, blue ] |> Map.ofList
-          Observations = Set.empty }
+          Observations = Set.empty
+          Awareness = Map.empty
+          Engagements = Map.empty
+          AwarenessCursor = 0 }
 
     /// The canonical M6 journal. Its list order is deliberately non-semantic.
     let inputs =
@@ -166,15 +196,10 @@ module Simulation =
           Observe(unitId 10, unitId 20)
           Move(unitId 10, cell 1 1) ]
 
-    let private inputCompare (left: KernelInput) (right: KernelInput) =
-        let key (input: KernelInput) =
-            match input with
-            | Move(id, destination) -> 0, unitIdValue id, destination.Col, destination.Row, 0
-            | Observe(observerId, targetId) -> 1, unitIdValue observerId, 0, 0, unitIdValue targetId
-            | Attack(attackerId, targetId) -> 2, unitIdValue attackerId, 0, 0, unitIdValue targetId
-            | PhysicalAttack(attackerId, aim, profile) -> 3, unitIdValue attackerId, aim.Col, aim.Row, (match profile with WeaponProfile.Rifle -> 0 | WeaponProfile.SupportWeapon -> 1 | WeaponProfile.AntiArmor -> 2 | WeaponProfile.LobbedArea -> 3)
-
-        compare (key left) (key right)
+    // Every field participates in F# structural comparison. This prevents two
+    // distinct preparation commands from comparing equal and making the final
+    // one depend on journal insertion order.
+    let private inputCompare (left: KernelInput) (right: KernelInput) = compare left right
 
     let private inBounds board position =
         position.Col >= board.Minimum.Col
@@ -247,9 +272,9 @@ module Simulation =
             diagonalEdges origin destination
             |> List.tryPick (fun (left, right) -> blockingEdge board left right)
 
-    let private authoritativeMovementBlocker tick board origin destination =
+    let private authoritativeMovementBlocker world board origin destination =
         let request = spatialRequest "simulation-movement" SpatialQueryKind.MovementCost SpatialModality.GroundMovement origin destination
-        let result, _ = SpatialQuery.evaluate (spatialWorld tick board) request
+        let result, _ = SpatialQuery.evaluate world request
         if result.Outcome = SpatialOutcome.Found && result.Path = [ origin; destination ] then None
         else movementBlocker board origin destination
 
@@ -258,7 +283,8 @@ module Simulation =
     let private replaceUnit unit state =
         { state with Units = Map.add unit.Id unit state.Units }
 
-    let private movementPhase state inputs =
+    let private movementPhase (state: SimulationState) inputs =
+        let movementWorld = spatialWorld state.Tick state.Board
         let moves =
             inputs
             |> List.choose (function
@@ -271,7 +297,7 @@ module Simulation =
                 match tryUnit unitId state with
                 | None -> None
                 | Some unit ->
-                    match authoritativeMovementBlocker state.Tick state.Board unit.Cell destination with
+                    match authoritativeMovementBlocker movementWorld state.Board unit.Cell destination with
                     | Some edge -> Some(unit, destination, Some edge)
                     | None when
                         inBounds state.Board destination
@@ -336,6 +362,178 @@ module Simulation =
                     current, events
             | _ -> current, events)
         |> fun (next, events) -> next, List.rev events
+
+    let private attentionAndEngagementPhase state inputs =
+        ((state, []), inputs)
+        ||> List.fold (fun (current, events) input ->
+            match input with
+            | SetAttention(unitId, direction) ->
+                match tryUnit unitId current with
+                | Some unit -> replaceUnit { unit with AttentionDirection = direction } current, events
+                | None -> current, events
+            | SetWeaponPosture(unitId, posture) ->
+                match tryUnit unitId current with
+                | Some unit -> replaceUnit { unit with WeaponPosture = posture } current, events
+                | None -> current, events
+            | PrepareAreaReaction(unitId, engagementId, cells, requiredAttention) ->
+                match tryUnit unitId current, AwarenessReaction.declareEngagement engagementId unitId (EngagementTarget.CoveredArea cells) requiredAttention with
+                | Some _, Ok engagement ->
+                    { current with Engagements = Map.add unitId engagement current.Engagements },
+                    EngagementChanged(unitId, engagementId, engagement.Phase, engagement.Reason) :: events
+                | _ -> current, events
+            | PrepareUnitReaction(unitId, engagementId, targetId, requiredAttention) ->
+                match tryUnit unitId current, Map.tryFind (unitId, targetId) current.Awareness, AwarenessReaction.declareEngagement engagementId unitId (EngagementTarget.KnownUnit targetId) requiredAttention with
+                | Some _, Some contact, Ok engagement when contact.Level = AwarenessLevel.Acquired ->
+                    { current with Engagements = Map.add unitId engagement current.Engagements },
+                    EngagementChanged(unitId, engagementId, engagement.Phase, engagement.Reason) :: events
+                | _ -> current, events
+            | PrepareEdgeReaction(unitId, engagementId, edge, requiredAttention) ->
+                let semantic = current.Board.Edges |> List.tryFind (fun candidate -> candidate.Edge = edge)
+                match tryUnit unitId current, semantic with
+                | Some _, Some declared ->
+                    match AwarenessReaction.declareEngagement engagementId unitId (EngagementTarget.GuardedEdge(declared.EdgeId, declared.SpatialRevision, declared.Edge)) requiredAttention with
+                    | Error _ -> current, events
+                    | Ok engagement ->
+                    { current with Engagements = Map.add unitId engagement current.Engagements },
+                    EngagementChanged(unitId, engagementId, engagement.Phase, engagement.Reason) :: events
+                | _ -> current, events
+            | _ -> current, events)
+        |> fun (next, events) -> next, List.rev events
+
+    let private awarenessReactionPhase state movementEvents =
+        let mutable counters = { CandidatePairs = 0; SectorSurvivors = 0; LosEvaluations = 0; Stimuli = 0; AwarenessEpisodes = 0; Engagements = int32 state.Engagements.Count; ReactionCandidates = 0 }
+        let mutable contacts = state.Awareness
+        let mutable events = []
+        let units = state.Units |> Map.toArray
+        let redUnits = units |> Array.filter (fun (_, unit) -> unit.Side = Side.Red)
+        let blueUnits = units |> Array.filter (fun (_, unit) -> unit.Side = Side.Blue)
+        let pairCount =
+            redUnits.Length * blueUnits.Length * 2
+        counters <- { counters with CandidatePairs = int32 pairCount }
+        let serviceCount = min 256 pairCount
+        let start = if pairCount = 0 then 0 else int state.AwarenessCursor % pairCount
+        let mutable subjectIndex = 0
+        let mutable selectedObserverIndex = 0
+        let servicedPairs = System.Collections.Generic.HashSet<UnitId * UnitId>()
+        if pairCount > 0 then
+            let mutable prefix = start
+            selectedObserverIndex <- 0
+            while prefix >= (if (snd units[selectedObserverIndex]).Side = Side.Red then blueUnits.Length else redUnits.Length) do
+                prefix <- prefix - (if (snd units[selectedObserverIndex]).Side = Side.Red then blueUnits.Length else redUnits.Length)
+                selectedObserverIndex <- selectedObserverIndex + 1
+            subjectIndex <- prefix
+        let advancePair () =
+            subjectIndex <- subjectIndex + 1
+            let subjects = if (snd units[selectedObserverIndex]).Side = Side.Red then blueUnits else redUnits
+            if subjectIndex >= subjects.Length then
+                selectedObserverIndex <- (selectedObserverIndex + 1) % units.Length
+                subjectIndex <- 0
+        // Every stimulus in the phase observes the same authoritative snapshot.
+        // Build that immutable adapter once instead of rebuilding its occupancy
+        // map for each candidate pair.
+        let awarenessWorld = spatialWorld state.Tick state.Board
+        for offset in 0 .. serviceCount - 1 do
+                    let observerId, observer = units[selectedObserverIndex]
+                    let subjects = if observer.Side = Side.Red then blueUnits else redUnits
+                    let subjectId, subject = subjects[subjectIndex]
+                    servicedPairs.Add((observerId, subjectId)) |> ignore
+                    let observedSector = AwarenessReaction.sector observer.AttentionDirection observer.Cell subject.Cell
+                    // The 256-slot cursor bounds work while guaranteeing a complete
+                    // 20,000-pair sweep within 79 ticks on the declared 100v100 workload.
+                    if counters.LosEvaluations < 256 && counters.AwarenessEpisodes < 256 then
+                        counters <- { counters with SectorSurvivors = counters.SectorSurvivors + 1; LosEvaluations = counters.LosEvaluations + 1 }
+                        let stimulus, _ = AwarenessReaction.evaluateVisualStimulus awarenessWorld AwarenessReaction.infantryProfile state.Tick observerId observer.AttentionDirection observer.Cell subjectId subject.Cell |> Result.defaultWith failwith
+                        if stimulus.IsSome then counters <- { counters with Stimuli = counters.Stimuli + 1 }
+                        let previousContact = Map.tryFind (observerId, subjectId) contacts
+                        let previous = previousContact |> Option.defaultValue (AwarenessReaction.emptyContact subjectId)
+                        let next = AwarenessReaction.advanceContact AwarenessReaction.infantryProfile state.Tick subject.Cell stimulus previous
+                        // Absence is the canonical representation of a never-known
+                        // contact; do not populate the elapsed-time index with inert
+                        // out-of-range pairs.
+                        if previousContact.IsSome || next.Level <> AwarenessLevel.Unknown || next.LastKnownCell.IsSome then
+                            contacts <- Map.add (observerId, subjectId) next contacts
+                        counters <- { counters with AwarenessEpisodes = counters.AwarenessEpisodes + 1 }
+                        if next.Level <> previous.Level || next.Reason <> previous.Reason then events <- AwarenessChanged(observerId, subjectId, next.Level, next.Reason) :: events
+                    advancePair ()
+
+        // Expensive spatial queries are cursor-bounded, but authoritative time
+        // is not. Existing knowledge outside this tick's service slice still
+        // decays and expires against the current committed tick.
+        contacts
+        |> Map.iter (fun (observerId, subjectId) previous ->
+            if not (servicedPairs.Contains((observerId, subjectId))) then
+                let subjectCell =
+                    Map.tryFind subjectId state.Units
+                    |> Option.map _.Cell
+                    |> Option.orElse previous.LastKnownCell
+                    |> Option.defaultValue { Col = 0; Row = 0 }
+                let next = AwarenessReaction.advanceContact AwarenessReaction.infantryProfile state.Tick subjectCell None previous
+                // The no-stimulus transition cannot rewrite retained stimulus facts;
+                // compare only the fields it owns and avoid walking retained strings.
+                if next.Level = AwarenessLevel.Unknown then
+                    contacts <- Map.remove (observerId, subjectId) contacts
+                elif next.Acquisition <> previous.Acquisition
+                     || next.Level <> previous.Level
+                     || next.LastKnownCell <> previous.LastKnownCell
+                     || next.RetainUntilTick <> previous.RetainUntilTick
+                     || next.Reason <> previous.Reason then
+                    contacts <- Map.add (observerId, subjectId) next contacts
+                if next.Level <> previous.Level || next.Reason <> previous.Reason then
+                    events <- AwarenessChanged(observerId, subjectId, next.Level, next.Reason) :: events)
+
+        let moved =
+            movementEvents
+            |> List.choose (function UnitMoved(unitId, origin, destination) -> Some(unitId, origin, destination) | _ -> None)
+        let mutable engagements = state.Engagements
+        let mutable candidates = []
+        for KeyValue(ownerId, engagement) in state.Engagements do
+            match Map.tryFind ownerId state.Units with
+            | None -> ()
+            | Some owner ->
+                let trigger =
+                    match engagement.Target with
+                    | EngagementTarget.CoveredArea cells ->
+                        moved
+                        |> List.tryPick (fun (sourceId, _, destination) ->
+                            if sourceId <> ownerId && state.Units[sourceId].Side <> owner.Side && List.contains destination cells then
+                                Some(sourceId, destination, ReactionTriggerKind.CoveredAreaEntered)
+                            else None)
+                    | EngagementTarget.KnownUnit target ->
+                        match Map.tryFind (ownerId, target) contacts, Map.tryFind target state.Units with
+                        | Some contact, Some subject when contact.Level = AwarenessLevel.Acquired ->
+                            Some(target, subject.Cell, ReactionTriggerKind.ValidTargetExposed)
+                        | _ -> None
+                    | EngagementTarget.GuardedEdge(edgeId, revision, guarded) ->
+                        let stillAuthoritative =
+                            state.Board.Edges
+                            |> List.exists (fun edge -> edge.EdgeId = edgeId && edge.SpatialRevision = revision && edge.Edge = guarded)
+                        if not stillAuthoritative then None
+                        else
+                            moved
+                            |> List.tryPick (fun (sourceId, origin, destination) ->
+                                match Edges.edgeBetween origin destination with
+                                | Some crossed when sourceId <> ownerId && state.Units[sourceId].Side <> owner.Side && crossed = guarded ->
+                                    Some(sourceId, destination, ReactionTriggerKind.GuardedEdgeCrossed)
+                                | _ -> None)
+                let targetValid =
+                    match engagement.Target with
+                    | EngagementTarget.GuardedEdge(edgeId, revision, guarded) -> state.Board.Edges |> List.exists (fun edge -> edge.EdgeId = edgeId && edge.SpatialRevision = revision && edge.Edge = guarded)
+                    | _ -> true
+                let maintained =
+                    if not targetValid then { engagement with Phase = EngagementPhase.Interrupted; RemainingTicks = 0; Reason = ReactionReason.TargetInvalidated }
+                    else AwarenessReaction.advanceEngagement (owner.AttentionDirection = engagement.RequiredAttention) (owner.WeaponPosture = WeaponPosture.Prepared) (not owner.Incapacitated) trigger.IsSome engagement
+                let advanced = if maintained.Phase = EngagementPhase.TriggerEligible then AwarenessReaction.advanceEngagement true true true true maintained else maintained
+                engagements <- Map.add ownerId advanced engagements
+                if advanced.Phase <> engagement.Phase then events <- EngagementChanged(ownerId, advanced.EngagementId, advanced.Phase, advanced.Reason) :: events
+                match trigger with
+                | Some(sourceId, sourceCell, triggerKind) when advanced.Phase = EngagementPhase.Committed ->
+                    candidates <- { ReactorId = ownerId; EngagementId = engagement.EngagementId; TriggerKind = triggerKind; SourceId = sourceId; SourceCell = sourceCell; Tick = state.Tick } :: candidates
+                | _ -> ()
+        let ordered = AwarenessReaction.orderCandidates candidates
+        counters <- { counters with ReactionCandidates = int32 ordered.Length }
+        let reactionEvents = ordered |> List.map (fun candidate -> ReactionCommitted(candidate.ReactorId, candidate.SourceId, candidate.EngagementId))
+        let nextCursor = if pairCount = 0 then 0 else int32 ((start + serviceCount) % pairCount)
+        { state with Awareness = contacts; Engagements = engagements; AwarenessCursor = nextCursor }, List.rev events @ reactionEvents, counters, ordered
 
     let private attackPhase rules state inputs =
         let attacks =
@@ -452,6 +650,7 @@ module Simulation =
         | ObservationPhase -> 1uy
         | AttackPhase -> 2uy
         | CommitPhase -> 3uy
+        | AwarenessReactionPhase -> 4uy
 
     let private cellBytes position =
         CanonicalEncoding.concatenate
@@ -480,49 +679,55 @@ module Simulation =
               CanonicalEncoding.int32LittleEndian wound.Damage ]
 
     /// Provisional canonical M6 state encoding. The versioned replay schema is selected in M7.
-    let stateBytes state =
-        let unitBytes =
-            state.Units
-            |> Map.toList
-            |> List.collect (fun (id, unit) ->
-                [ unitIdBytes id
-                  CanonicalEncoding.byteValue (sideCode unit.Side)
-                  cellBytes unit.Cell
-                  CanonicalEncoding.boundedInt32 unit.Health
-                  CanonicalEncoding.int32LittleEndian unit.Armor.FrontRating
-                  CanonicalEncoding.int32LittleEndian unit.Armor.RearRating
-                  CanonicalEncoding.int32LittleEndian unit.Armor.Integrity
-                  CanonicalEncoding.int32LittleEndian unit.Wounds.Length
-                  yield! unit.Wounds |> List.map woundBytes
-                  CanonicalEncoding.byteValue (if unit.Incapacitated then 1uy else 0uy)
-                  CanonicalEncoding.int32LittleEndian unit.Suppression
-                  CanonicalEncoding.direction8 unit.BodyFacing
-                  CanonicalEncoding.direction8 unit.AttentionDirection ])
-
-        let coverBytes =
-            state.Board.Covers
-            |> Map.toList
-            |> List.collect (fun (id, cover) ->
-                [ textBytes id
-                  cellBytes cover.Cell
-                  CanonicalEncoding.int32LittleEndian cover.Integrity
-                  CanonicalEncoding.byteValue (if cover.ProjectileBlocking then 1uy else 0uy) ])
-
-        let observationBytes =
-            state.Observations
-            |> Set.toList
-            |> List.collect (fun (observerId, targetId) ->
-                [ unitIdBytes observerId; unitIdBytes targetId ])
-
-        CanonicalEncoding.concatenate
-            ([ CanonicalEncoding.byteValue 2uy
-               CanonicalEncoding.int32LittleEndian state.Tick
-               CanonicalEncoding.int32LittleEndian state.Units.Count ]
-             @ unitBytes
-             @ [ CanonicalEncoding.int32LittleEndian state.Board.Covers.Count ]
-             @ coverBytes
-             @ [ CanonicalEncoding.int32LittleEndian state.Observations.Count ]
-             @ observationBytes)
+    let stateBytes (state: SimulationState) =
+        // Stream the already canonical field encodings into one buffer. Large
+        // awareness maps otherwise construct several temporary linked lists and
+        // segment arrays for every authoritative tick.
+        // Retained factual stimuli make contact records variable-width. Reserve
+        // the bounded common-case size so buffer growth does not copy multi-MB
+        // authoritative states on the timed path.
+        let estimatedCapacity = 64 + state.Units.Count * 64 + state.Awareness.Count * 160 + state.Engagements.Count * 96
+        let buffer = ResizeArray<byte>(estimatedCapacity)
+        let append (bytes: byte array) = buffer.AddRange bytes
+        append (CanonicalEncoding.byteValue 3uy)
+        append (CanonicalEncoding.int32LittleEndian state.Tick)
+        append (CanonicalEncoding.int32LittleEndian state.Units.Count)
+        for KeyValue(id, unit) in state.Units do
+            append (unitIdBytes id)
+            append (CanonicalEncoding.byteValue (sideCode unit.Side))
+            append (cellBytes unit.Cell)
+            append (CanonicalEncoding.boundedInt32 unit.Health)
+            append (CanonicalEncoding.int32LittleEndian unit.Armor.FrontRating)
+            append (CanonicalEncoding.int32LittleEndian unit.Armor.RearRating)
+            append (CanonicalEncoding.int32LittleEndian unit.Armor.Integrity)
+            append (CanonicalEncoding.int32LittleEndian unit.Wounds.Length)
+            for wound in unit.Wounds do append (woundBytes wound)
+            append (CanonicalEncoding.byteValue (if unit.Incapacitated then 1uy else 0uy))
+            append (CanonicalEncoding.int32LittleEndian unit.Suppression)
+            append (CanonicalEncoding.direction8 unit.BodyFacing)
+            append (CanonicalEncoding.direction8 unit.AttentionDirection)
+            append (CanonicalEncoding.byteValue (match unit.WeaponPosture with WeaponPosture.Mobile -> 0uy | WeaponPosture.Ready -> 1uy | WeaponPosture.Prepared -> 2uy))
+        append (CanonicalEncoding.int32LittleEndian state.Board.Covers.Count)
+        for KeyValue(id, cover) in state.Board.Covers do
+            append (textBytes id)
+            append (cellBytes cover.Cell)
+            append (CanonicalEncoding.int32LittleEndian cover.Integrity)
+            append (CanonicalEncoding.byteValue (if cover.ProjectileBlocking then 1uy else 0uy))
+        append (CanonicalEncoding.int32LittleEndian state.Observations.Count)
+        for observerId, targetId in state.Observations do
+            append (unitIdBytes observerId)
+            append (unitIdBytes targetId)
+        append (CanonicalEncoding.int32LittleEndian state.Awareness.Count)
+        for KeyValue((observerId, subjectId), contact) in state.Awareness do
+            append (unitIdBytes observerId)
+            append (unitIdBytes subjectId)
+            append (AwarenessReaction.canonicalContactBytes contact)
+        append (CanonicalEncoding.int32LittleEndian state.Engagements.Count)
+        for KeyValue(ownerId, engagement) in state.Engagements do
+            append (unitIdBytes ownerId)
+            append (AwarenessReaction.canonicalEngagementBytes engagement)
+        append (CanonicalEncoding.int32LittleEndian state.AwarenessCursor)
+        buffer.ToArray()
 
     let private eventBytes event =
         match event with
@@ -571,6 +776,27 @@ module Simulation =
             CanonicalEncoding.concatenate
                 [ CanonicalEncoding.byteValue 6uy
                   Combat.canonicalFactsBytes facts ]
+        | AwarenessChanged(observerId, subjectId, level, reason) ->
+            CanonicalEncoding.concatenate
+                [ CanonicalEncoding.byteValue 7uy
+                  unitIdBytes observerId
+                  unitIdBytes subjectId
+                  AwarenessReaction.canonicalContactBytes
+                      { (AwarenessReaction.emptyContact subjectId) with Level = level; Reason = reason } ]
+        | EngagementChanged(ownerId, engagementId, phase, reason) ->
+            let placeholder =
+                { EngagementId = engagementId
+                  OwnerId = ownerId
+                  Target = EngagementTarget.KnownUnit ownerId
+                  RequiredAttention = North
+                  Phase = phase
+                  RemainingTicks = 0
+                  Reason = reason }
+            CanonicalEncoding.concatenate [ CanonicalEncoding.byteValue 8uy; AwarenessReaction.canonicalEngagementBytes placeholder ]
+        | ReactionCommitted(reactorId, sourceId, engagementId) ->
+            CanonicalEncoding.concatenate [ CanonicalEncoding.byteValue 9uy; unitIdBytes reactorId; unitIdBytes sourceId; textBytes engagementId ]
+        | ReactionResolved(reactorId, sourceId, engagementId) ->
+            CanonicalEncoding.concatenate [ CanonicalEncoding.byteValue 10uy; unitIdBytes reactorId; unitIdBytes sourceId; textBytes engagementId ]
 
     /// Provisional canonical M6 event encoding. Event order is phase order then canonical input order.
     let eventsBytes (events: SimulationEvent list) =
@@ -607,8 +833,50 @@ module Simulation =
               State = movementState
               Events = movementEvents }
 
-        let observationState, observationEvents = observationPhase movementState canonicalInputs
-        let throughObservation = movementEvents @ observationEvents
+        let commandedState, engagementCommandEvents = attentionAndEngagementPhase movementState canonicalInputs
+        let awarenessState, awarenessEvents, awarenessCounters, reactionCandidates = awarenessReactionPhase commandedState movementEvents
+        let reactionInputs =
+            reactionCandidates
+            |> List.map (fun candidate -> PhysicalAttack(candidate.ReactorId, candidate.SourceCell, WeaponProfile.Rifle))
+        let physicallyReactedState, reactionPhysicalEvents = physicalPhase awarenessState reactionInputs
+        let reactionState, reactionResolutionEvents =
+            ((physicallyReactedState, []), List.zip (reactionCandidates |> List.truncate reactionPhysicalEvents.Length) reactionPhysicalEvents)
+            ||> List.fold (fun (current, events) (candidate, physicalEvent) ->
+                let engagement = Map.tryFind candidate.ReactorId current.Engagements
+                match physicalEvent, engagement with
+                | PhysicalAttackResolved _, Some active ->
+                    let resolved =
+                        { active with
+                            Phase = EngagementPhase.Resolved
+                            RemainingTicks = 0
+                            Reason = ReactionReason.ResolvedByPhysicalAuthority }
+                    { current with Engagements = Map.add candidate.ReactorId resolved current.Engagements },
+                    ReactionResolved(candidate.ReactorId, candidate.SourceId, candidate.EngagementId) :: events
+                | PhysicalAttackRejected _, Some active ->
+                    let interrupted =
+                        { active with
+                            Phase = EngagementPhase.Interrupted
+                            RemainingTicks = 0
+                            Reason = ReactionReason.FireBlocked }
+                    { current with Engagements = Map.add candidate.ReactorId interrupted current.Engagements },
+                    EngagementChanged(candidate.ReactorId, candidate.EngagementId, interrupted.Phase, interrupted.Reason) :: events
+                | _ -> current, events)
+            |> fun (current, events) -> current, List.rev events
+        let throughAwareness =
+            movementEvents
+            @ engagementCommandEvents
+            @ awarenessEvents
+            @ reactionPhysicalEvents
+            @ reactionResolutionEvents
+
+        let awarenessCheckpoint =
+            { Tick = nextTick
+              Phase = AwarenessReactionPhase
+              State = reactionState
+              Events = throughAwareness }
+
+        let observationState, observationEvents = observationPhase reactionState canonicalInputs
+        let throughObservation = throughAwareness @ observationEvents
 
         let observationCheckpoint =
             { Tick = nextTick
@@ -644,8 +912,10 @@ module Simulation =
           StateBytes = canonicalState
           EventBytes = eventsBytes committedEvents
           StateDigest = CanonicalEncoding.digest32 canonicalState
+          AwarenessCounters = awarenessCounters
           Checkpoints =
             [ movementCheckpoint
+              awarenessCheckpoint
               observationCheckpoint
               attackCheckpoint
               commitCheckpoint ] }
