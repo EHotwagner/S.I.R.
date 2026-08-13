@@ -101,7 +101,9 @@ let private state unitCount columns rows covers =
           Edges = []
           Covers = covers |> List.map (fun cover -> cover.CoverId, cover) |> Map.ofList }
       Units = [ 0 .. unitCount - 1 ] |> List.map (fun index -> unitState index columns) |> Map.ofList
-      Observations = Set.empty }
+      Observations = Set.empty
+      Awareness = Map.empty
+      Engagements = Map.empty }
 
 let private representativeWorkload () =
     let profiles =
@@ -147,7 +149,9 @@ let private stressWorkload () =
         { Tick = 0
           Board = { Minimum = cell 0 0; Maximum = cell 20 20; Edges = []; Covers = Map.empty }
           Units = units
-          Observations = Set.empty }
+          Observations = Set.empty
+          Awareness = Map.empty
+          Engagements = Map.empty }
 
     let inputs =
         [ for index in 1 .. 50 ->
@@ -336,9 +340,56 @@ let private within limits observed =
     && observed.Facts <= limits.Facts
     && observed.CanonicalEvidenceBytes <= limits.CanonicalEvidenceBytes
 
+let private awarenessStressState () =
+    state 200 20 10 []
+
+let private runAwarenessPerformance () =
+    let measure initial iterations =
+        let run () = Simulation.runTick initial []
+        for _ in 1 .. 3 do run () |> ignore
+        let mutable last = Unchecked.defaultof<TickResult>
+        let samples =
+            [| for _ in 1 .. iterations do
+                let watch = Stopwatch.StartNew()
+                last <- run ()
+                watch.Stop()
+                yield watch.ElapsedMilliseconds |]
+            |> Array.sort
+        last, samples[int (Math.Ceiling(float samples.Length * 0.95)) - 1]
+    let representative, representativeP95 = measure Simulation.initialState 7
+    let stress, stressP95 = measure (awarenessStressState ()) 7
+    let counters = stress.AwarenessCounters
+    let evidenceBytes = stress.StateBytes.Length + stress.EventBytes.Length
+    let mutation = Environment.GetEnvironmentVariable("SIR_AWARENESS_PERF_MUTATE_CAP") |> Option.ofObj |> Option.defaultValue ""
+    let candidateCap, losCap, episodeCap, evidenceCap, representativeCap, stressCap =
+        match mutation with
+        | "" -> 20_000, 5_000, 4_096, 262_144, 20L, 50L
+        | "candidates" -> int counters.CandidatePairs - 1, 5_000, 4_096, 262_144, 20L, 50L
+        | "los" -> 20_000, int counters.LosEvaluations - 1, 4_096, 262_144, 20L, 50L
+        | "episodes" -> 20_000, 5_000, int counters.AwarenessEpisodes - 1, 262_144, 20L, 50L
+        | "evidence-bytes" -> 20_000, 5_000, 4_096, evidenceBytes - 1, 20L, 50L
+        | "timing" -> 20_000, 5_000, 4_096, 262_144, -1L, -1L
+        | value -> failwithf "Unknown awareness cap mutation %s." value
+    let passed =
+        representativeP95 <= representativeCap
+        && stressP95 <= stressCap
+        && counters.CandidatePairs <= candidateCap
+        && counters.LosEvaluations <= losCap
+        && counters.AwarenessEpisodes <= episodeCap
+        && evidenceBytes <= evidenceCap
+        && stress.State.Units.Count = 200
+    printfn "route=SIR.Simulation.Simulation.runTick"
+    printfn "representative-p95-ms=%d/%d stress-p95-ms=%d/%d" representativeP95 representativeCap stressP95 stressCap
+    printfn "stress-units=%d candidate-pairs=%d/%d los=%d/%d stimuli=%d episodes=%d/%d engagements=%d reaction-candidates=%d evidence-bytes=%d/%d" stress.State.Units.Count counters.CandidatePairs candidateCap counters.LosEvaluations losCap counters.Stimuli counters.AwarenessEpisodes episodeCap counters.Engagements counters.ReactionCandidates evidenceBytes evidenceCap
+    if passed then 0 else 1
+
+exception AwarenessPerformanceExit of int
+
 [<EntryPoint>]
 let main args =
     try
+        if args |> Array.contains "--awareness" then
+            raise (AwarenessPerformanceExit(runAwarenessPerformance ()))
         let receiptPath = argument "--receipt" args
         let candidateCommit = argument "--candidate-commit" args
         let sourceTreeState = argument "--source-tree-state" args
@@ -412,6 +463,8 @@ let main args =
         printfn "observed trace=%d area=%d recipients=%d facts=%d evidence-bytes=%d" maximumObserved.TraceCells maximumObserved.AreaCells maximumObserved.Recipients maximumObserved.Facts maximumObserved.CanonicalEvidenceBytes
 
         if passed then 0 else 1
-    with error ->
+    with
+    | AwarenessPerformanceExit code -> code
+    | error ->
         eprintfn "Physical combat performance qualification failed: %s" error.Message
         2

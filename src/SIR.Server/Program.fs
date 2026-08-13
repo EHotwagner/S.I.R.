@@ -129,6 +129,17 @@ module Program =
                 })
         ) |> ignore
 
+        app.MapPost(
+            "/api/awareness/local-projection",
+            Func<HttpRequest, IResult>(fun request ->
+                let authorization = string request.Headers.Authorization
+                let accessToken =
+                    if authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) then authorization.Substring("Bearer ".Length)
+                    else ""
+                if not (LiveAuthority.authorizeHttp accessToken) then Results.Unauthorized()
+                else Results.Text(AwarenessReactionDiagnostics.evaluate (), "application/json"))
+        ) |> ignore
+
         app.MapHub<GameHub>("/hub/game") |> ignore
         app.UseDefaultFiles() |> ignore
         app.UseStaticFiles(StaticFileOptions(OnPrepareResponse = Action<StaticFileResponseContext>(configureStaticAssetResponse))) |> ignore

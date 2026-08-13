@@ -154,7 +154,9 @@ module PhysicalCombatDiagnostics =
             { Minimum = cell 0 0; Maximum = cell 6 2; Edges = []
               Covers = [ coverId, { CoverId = coverId; Cell = cell 2 0; Integrity = 50; ProjectileBlocking = false } ] |> Map.ofList }
           Units = [ red.Id, red; blue.Id, blue ] |> Map.ofList
-          Observations = Set.empty }
+          Observations = Set.empty
+          Awareness = Map.empty
+          Engagements = Map.empty }
 
     let private replayEvidence () =
         let initial = replayInitialState ()

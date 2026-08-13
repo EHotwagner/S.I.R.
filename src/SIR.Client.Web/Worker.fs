@@ -68,6 +68,10 @@ let private inputSummary input =
         + string aim.Col
         + ","
         + string aim.Row
+    | SetAttention(unitId, direction) ->
+        "unit " + string (Simulation.unitIdValue unitId) + " sets attention " + string direction
+    | PrepareAreaReaction(unitId, engagementId, cells, direction) ->
+        "unit " + string (Simulation.unitIdValue unitId) + " prepares " + engagementId + " over " + string cells.Length + " cells facing " + string direction
 
 let private inputUnits input =
     match input with
@@ -78,6 +82,8 @@ let private inputUnits input =
         Some(Simulation.unitIdValue targetId)
     | PhysicalAttack(attackerId, _, _) ->
         Some(Simulation.unitIdValue attackerId), None
+    | SetAttention(unitId, _) -> Some(Simulation.unitIdValue unitId), None
+    | PrepareAreaReaction(unitId, _, _, _) -> Some(Simulation.unitIdValue unitId), None
 
 let private journalAt tick (full: FullReplay) =
     let externalInputs =
@@ -161,6 +167,28 @@ let private fullProjection tick (full: FullReplay) : InspectionProjection =
               SourceUnitId = sourceUnitId
               TargetUnitId = targetUnitId })
 
+    let awarenessEvents =
+        state.Awareness
+        |> Map.toList
+        |> List.mapi (fun index ((observerId, subjectId), contact) ->
+            { Id = List.length externalEvents + List.length wasmEvents + index
+              Tick = state.Tick
+              Source = "Authoritative awareness"
+              Summary = "Awareness " + string contact.Level + " · " + string contact.Reason + " · acquisition " + string contact.Acquisition
+              SourceUnitId = Some(Simulation.unitIdValue observerId)
+              TargetUnitId = Some(Simulation.unitIdValue subjectId) })
+
+    let engagementEvents =
+        state.Engagements
+        |> Map.toList
+        |> List.mapi (fun index (ownerId, engagement) ->
+            { Id = List.length externalEvents + List.length wasmEvents + List.length awarenessEvents + index
+              Tick = state.Tick
+              Source = "Authoritative reaction"
+              Summary = engagement.EngagementId + " · " + string engagement.Phase + " · " + string engagement.Reason
+              SourceUnitId = Some(Simulation.unitIdValue ownerId)
+              TargetUnitId = None })
+
     let edges =
         state.Board.Edges
         |> List.mapi (fun index edge ->
@@ -187,7 +215,7 @@ let private fullProjection tick (full: FullReplay) : InspectionProjection =
       BoardMaximumRow = state.Board.Maximum.Row
       Units = units
       Edges = edges
-      Events = externalEvents @ wasmEvents
+      Events = externalEvents @ wasmEvents @ awarenessEvents @ engagementEvents
       Checkpoints = checkpoints
       PerspectiveHash = None }
 

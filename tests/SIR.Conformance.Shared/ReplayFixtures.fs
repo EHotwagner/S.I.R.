@@ -150,6 +150,54 @@ module ReplayFixtures =
 
     let private combatSnapshotPackage () =
         let state = combatSnapshot ()
+        let version = int32 Replay.PhysicalCombatFormatVersion
+        let versionStateHash = Replay.stateHashForFormatVersion version state
+        let final =
+            { Tick = state.Tick
+              OutcomeCode = 0
+              StateHash = versionStateHash
+              EventHash = Replay.emptyEventHash }
+        { FormatVersion = version
+          EngineHash = engineHash
+          RulesetHash = rulesetHash
+          FullReplayAuthorized = true
+          RulesArchive = Some(rulesArchive ())
+          Content =
+            AuthorizedFullReplay
+                { InitialSnapshot = state
+                  OrderedInputs = []
+                  AcceptedWasmOutputs = []
+                  Checkpoints =
+                    [ { Tick = state.Tick
+                        State = state
+                        StateHash = versionStateHash
+                        EventHash = Replay.emptyEventHash } ]
+                  FinalResult = final } }
+
+    let private awarenessSnapshot () =
+        let observerId = Simulation.unitId 10
+        let subjectId = Simulation.unitId 20
+        let contact =
+            { SubjectId = subjectId
+              Level = AwarenessLevel.Acquired
+              Acquisition = AwarenessReaction.infantryProfile.IdentificationThreshold
+              LastStimulusTick = Some 4
+              LastKnownCell = Some { Col = 1; Row = 0 }
+              RetainUntilTick = Some 24
+              Reason = AwarenessReason.IdentificationThresholdReached }
+        let engagement =
+            AwarenessReaction.declareEngagement
+                "replay-v5-area"
+                observerId
+                (EngagementTarget.CoveredArea [ { Col = 2; Row = 0 }; { Col = 1; Row = 0 } ])
+                East
+            |> Result.defaultWith failwith
+        { combatSnapshot () with
+            Awareness = Map.ofList [ (observerId, subjectId), contact ]
+            Engagements = Map.ofList [ observerId, engagement ] }
+
+    let private awarenessSnapshotPackage () =
+        let state = awarenessSnapshot ()
         let final =
             { Tick = state.Tick
               OutcomeCode = 0
@@ -163,15 +211,53 @@ module ReplayFixtures =
           Content =
             AuthorizedFullReplay
                 { InitialSnapshot = state
-                  OrderedInputs = []
+                  OrderedInputs =
+                    [ input 1 1 (SetAttention(Simulation.unitId 10, East))
+                      input 1 2 (PrepareAreaReaction(Simulation.unitId 10, "replay-v5-area", [ { Col = 2; Row = 0 }; { Col = 1; Row = 0 } ], East)) ]
                   AcceptedWasmOutputs = []
                   Checkpoints = [ checkpoint state.Tick state [] ]
                   FinalResult = final } }
 
+    let compatibilityEvidence () =
+        let v3 = retainedV3Bytes ()
+        let v4 = combatSnapshotPackage () |> Replay.encode
+        let v5 = awarenessSnapshotPackage () |> Replay.encode
+        v3, v4, v5
+
+    let evaluateProtectedMutation mutation =
+        match mutation with
+        | "version" ->
+            let incompatible =
+                { awarenessSnapshotPackage () with
+                    FormatVersion = int32 Replay.CurrentFormatVersion + 1 }
+            match Replay.decode Replay.defaultLimits (Replay.encode incompatible) with
+            | Error(UnsupportedFormat _) -> failwith "Replay protected version mutation detected."
+            | result -> failwithf "Replay version mutation was accepted: %A" result
+        | "hash" ->
+            let changed =
+                awarenessSnapshotPackage ()
+                |> mapFull (fun full ->
+                    let first = full.Checkpoints.Head
+                    { full with
+                        Checkpoints =
+                            [ { first with
+                                  State = { first.State with Awareness = Map.empty } } ] })
+            match Replay.runKernelReplay Replay.defaultLimits engineHash changed with
+            | Error(InvalidCheckpoint _) -> failwith "Replay protected hash mutation detected."
+            | result -> failwithf "Replay hash mutation was accepted: %A" result
+        | "bounds" ->
+            let bytes = awarenessSnapshotPackage () |> Replay.encode
+            let zero = { Replay.defaultLimits with MaxAwarenessContacts = 0 }
+            match Replay.decode zero bytes with
+            | Error(MalformedPackage detail) when detail.Contains "awareness contacts" ->
+                failwith "Replay protected bounds mutation detected."
+            | result -> failwithf "Replay bounds mutation was accepted: %A" result
+        | value -> failwithf "Unknown replay mutation: %s" value
+
     let evaluate () =
         let package = fullPackage ()
         let encoded = canonicalPackageBytes ()
-        require (Replay.CurrentFormatVersion = 4) "Combat-state snapshots must use replay format v4."
+        require (Replay.CurrentFormatVersion = 5) "Awareness/reaction snapshots must use replay format v5."
 
         let retainedV3 = retainedV3Bytes ()
         require (retainedV3.Length = 4_450) "The retained predecessor replay v3 fixture changed length."
@@ -269,8 +355,40 @@ module ReplayFixtures =
         | PerspectivePlayback _ -> failwith "Replay v4 combat snapshot changed disclosure kind."
         match Replay.runKernelReplay Replay.defaultLimits engineHash decodedCombat with
         | Ok(BrowserKernelVerified result) ->
-            require (result.StateHash = Replay.stateHash (combatSnapshot ())) "Replay v4 combat seek verification returned the wrong hash."
+            require
+                (result.StateHash = Replay.stateHashForFormatVersion Replay.PhysicalCombatFormatVersion (combatSnapshot ()))
+                "Replay v4 combat seek verification returned the wrong hash."
         | result -> failwithf "Replay v4 combat seek verification failed: %A" result
+
+        match decodedCombat.Content with
+        | AuthorizedFullReplay full ->
+            require full.InitialSnapshot.Awareness.IsEmpty "Replay v4 did not apply empty awareness defaults."
+            require full.InitialSnapshot.Engagements.IsEmpty "Replay v4 did not apply empty engagement defaults."
+        | PerspectivePlayback _ -> failwith "Replay v4 combat snapshot changed disclosure kind."
+
+        let awarenessPackage = awarenessSnapshotPackage ()
+        let awarenessBytes = Replay.encode awarenessPackage
+        let decodedAwareness =
+            Replay.decode Replay.defaultLimits awarenessBytes
+            |> Result.defaultWith (fun error -> failwithf "Replay v5 awareness snapshot did not decode: %A" error)
+        require (Replay.encode decodedAwareness = awarenessBytes) "Replay v5 awareness snapshot did not round-trip byte-exactly."
+        match decodedAwareness.Content with
+        | AuthorizedFullReplay full ->
+            require (full.InitialSnapshot.Awareness = (awarenessSnapshot ()).Awareness) "Replay v5 lost awareness state."
+            require (full.InitialSnapshot.Engagements = (awarenessSnapshot ()).Engagements) "Replay v5 lost engagement state."
+            require (full.OrderedInputs.Length = 2) "Replay v5 lost awareness/reaction inputs."
+        | PerspectivePlayback _ -> failwith "Replay v5 awareness snapshot changed disclosure kind."
+
+        let noAwarenessLimit = { Replay.defaultLimits with MaxAwarenessContacts = 0 }
+        expectError
+            (function MalformedPackage detail when detail.Contains "Resource limit exceeded for awareness contacts" -> true | _ -> false)
+            (Replay.decode noAwarenessLimit awarenessBytes)
+            "Replay v5 decoded awareness contacts beyond its resource limit."
+        let noEngagementLimit = { Replay.defaultLimits with MaxEngagements = 0 }
+        expectError
+            (function MalformedPackage detail when detail.Contains "Resource limit exceeded for engagements" -> true | _ -> false)
+            (Replay.decode noEngagementLimit awarenessBytes)
+            "Replay v5 decoded engagements beyond its resource limit."
 
         let noCoverLimit = { Replay.defaultLimits with MaxCovers = 0 }
         expectError
@@ -304,6 +422,13 @@ module ReplayFixtures =
         requireHashMutation "incapacitation" (changeRed (fun unit -> { unit with Incapacitated = not unit.Incapacitated }))
         requireHashMutation "suppression" (changeRed (fun unit -> { unit with Suppression = unit.Suppression + 1 }))
         requireHashMutation "covers" (fun state -> { state with Board = { state.Board with Covers = Map.empty } })
+        let originalAwarenessHash = Replay.stateHash (awarenessSnapshot ())
+        let requireAwarenessHashMutation label change =
+            require
+                (Replay.stateHash (change (awarenessSnapshot ())) <> originalAwarenessHash)
+                ("Replay v5 state hash ignored " + label + ".")
+        requireAwarenessHashMutation "awareness contacts" (fun state -> { state with Awareness = Map.empty })
+        requireAwarenessHashMutation "engagements" (fun state -> { state with Engagements = Map.empty })
 
         let staleSeekHash =
             decodedCombat

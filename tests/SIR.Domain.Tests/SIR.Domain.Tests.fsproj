@@ -11,6 +11,7 @@
     <Compile Include="../SIR.Conformance.Shared/ReplayFixtures.fs" Link="ReplayFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/RulesCorpusFixtures.fs" Link="RulesCorpusFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/SpatialQueryFixtures.fs" Link="SpatialQueryFixtures.fs" />
+    <Compile Include="../SIR.Conformance.Shared/AwarenessReactionFixtures.fs" Link="AwarenessReactionFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/CombatFixtures.fs" Link="CombatFixtures.fs" />
     <Compile Include="../SIR.Conformance.Shared/Program.fs" Link="Program.fs" />
   </ItemGroup>

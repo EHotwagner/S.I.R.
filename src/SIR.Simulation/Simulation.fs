@@ -38,7 +38,9 @@ type SimulationState =
     { Tick: int32
       Board: Board
       Units: Map<UnitId, UnitState>
-      Observations: Set<UnitId * UnitId> }
+      Observations: Set<UnitId * UnitId>
+      Awareness: Map<UnitId * UnitId, AwarenessContact>
+      Engagements: Map<UnitId, Engagement> }
 
 /// Validated replay-driving inputs consumed by the shared kernel.
 type KernelInput =
@@ -46,6 +48,8 @@ type KernelInput =
     | Observe of observerId: UnitId * targetId: UnitId
     | Attack of attackerId: UnitId * targetId: UnitId
     | PhysicalAttack of attackerId: UnitId * aimCell: Cell * profile: WeaponProfile
+    | SetAttention of unitId: UnitId * direction: Direction8
+    | PrepareAreaReaction of unitId: UnitId * engagementId: string * cells: Cell list * requiredAttention: Direction8
 
 /// Stable logical phases used by conformance diagnostics.
 type SimulationPhase =
@@ -53,6 +57,7 @@ type SimulationPhase =
     | ObservationPhase
     | AttackPhase
     | CommitPhase
+    | AwarenessReactionPhase
 
 /// The authoritative event stream emitted by the minimal slice.
 type SimulationEvent =
@@ -63,6 +68,10 @@ type SimulationEvent =
     | PhysicalAttackResolved of attackerId: UnitId * profile: WeaponProfile * facts: CombatFact list * applications: RuleApplication list
     | PhysicalAttackRejected of attackerId: UnitId * profile: WeaponProfile * rejection: CombatRejection
     | CombatRecoveryCommitted of facts: CombatFact list
+    | AwarenessChanged of observerId: UnitId * subjectId: UnitId * level: AwarenessLevel * reason: AwarenessReason
+    | EngagementChanged of ownerId: UnitId * engagementId: string * phase: EngagementPhase * reason: ReactionReason
+    | ReactionCommitted of reactorId: UnitId * sourceId: UnitId * engagementId: string
+    | ReactionResolved of reactorId: UnitId * sourceId: UnitId * engagementId: string
 
 /// One logical-phase checkpoint for first-divergence diagnosis.
 type PhaseCheckpoint =
@@ -78,6 +87,7 @@ type TickResult =
       StateBytes: byte array
       EventBytes: byte array
       StateDigest: byte array
+      AwarenessCounters: AwarenessCounters
       Checkpoints: PhaseCheckpoint list }
 
 /// Bounded authoritative rules that may be varied by a derived design scenario.
@@ -157,7 +167,9 @@ module Simulation =
               Edges = [ edge ]
               Covers = Map.empty }
           Units = [ red.Id, red; blue.Id, blue ] |> Map.ofList
-          Observations = Set.empty }
+          Observations = Set.empty
+          Awareness = Map.empty
+          Engagements = Map.empty }
 
     /// The canonical M6 journal. Its list order is deliberately non-semantic.
     let inputs =
@@ -173,6 +185,8 @@ module Simulation =
             | Observe(observerId, targetId) -> 1, unitIdValue observerId, 0, 0, unitIdValue targetId
             | Attack(attackerId, targetId) -> 2, unitIdValue attackerId, 0, 0, unitIdValue targetId
             | PhysicalAttack(attackerId, aim, profile) -> 3, unitIdValue attackerId, aim.Col, aim.Row, (match profile with WeaponProfile.Rifle -> 0 | WeaponProfile.SupportWeapon -> 1 | WeaponProfile.AntiArmor -> 2 | WeaponProfile.LobbedArea -> 3)
+            | SetAttention(unitId, direction) -> 4, unitIdValue unitId, 0, 0, int32 (Direction8.toCode direction)
+            | PrepareAreaReaction(unitId, engagementId, cells, direction) -> 5, unitIdValue unitId, cells.Length, engagementId.Length, int32 (Direction8.toCode direction)
 
         compare (key left) (key right)
 
@@ -337,6 +351,87 @@ module Simulation =
             | _ -> current, events)
         |> fun (next, events) -> next, List.rev events
 
+    let private attentionAndEngagementPhase state inputs =
+        ((state, []), inputs)
+        ||> List.fold (fun (current, events) input ->
+            match input with
+            | SetAttention(unitId, direction) ->
+                match tryUnit unitId current with
+                | Some unit -> replaceUnit { unit with AttentionDirection = direction } current, events
+                | None -> current, events
+            | PrepareAreaReaction(unitId, engagementId, cells, requiredAttention) ->
+                match tryUnit unitId current, AwarenessReaction.declareEngagement engagementId unitId (EngagementTarget.CoveredArea cells) requiredAttention with
+                | Some _, Ok engagement ->
+                    { current with Engagements = Map.add unitId engagement current.Engagements },
+                    EngagementChanged(unitId, engagementId, engagement.Phase, engagement.Reason) :: events
+                | _ -> current, events
+            | _ -> current, events)
+        |> fun (next, events) -> next, List.rev events
+
+    let private awarenessReactionPhase state movementEvents =
+        let mutable counters = { CandidatePairs = 0; SectorSurvivors = 0; LosEvaluations = 0; Stimuli = 0; AwarenessEpisodes = 0; Engagements = int32 state.Engagements.Count; ReactionCandidates = 0 }
+        let mutable contacts = state.Awareness
+        let mutable events = []
+        for KeyValue(observerId, observer) in state.Units do
+            for KeyValue(subjectId, subject) in state.Units do
+                if observerId <> subjectId && observer.Side <> subject.Side then
+                    counters <- { counters with CandidatePairs = counters.CandidatePairs + 1 }
+                    let observedSector = AwarenessReaction.sector observer.AttentionDirection observer.Cell subject.Cell
+                    // The public caps remain 5,000 LOS evaluations and 4,096 episodes;
+                    // the production scheduler deliberately reserves most of the episode
+                    // envelope for reaction/serialization work in the same tick.
+                    if counters.LosEvaluations < 1_024 && counters.AwarenessEpisodes < 1_024 then
+                        counters <- { counters with SectorSurvivors = counters.SectorSurvivors + 1; LosEvaluations = counters.LosEvaluations + 1 }
+                        let stimulus, _ = AwarenessReaction.evaluateVisualStimulus (spatialWorld state.Tick state.Board) AwarenessReaction.infantryProfile state.Tick observerId observer.AttentionDirection observer.Cell subjectId subject.Cell |> Result.defaultWith failwith
+                        if stimulus.IsSome then counters <- { counters with Stimuli = counters.Stimuli + 1 }
+                        let previous = Map.tryFind (observerId, subjectId) contacts |> Option.defaultValue (AwarenessReaction.emptyContact subjectId)
+                        let next = AwarenessReaction.advanceContact AwarenessReaction.infantryProfile state.Tick subject.Cell stimulus previous
+                        contacts <- Map.add (observerId, subjectId) next contacts
+                        counters <- { counters with AwarenessEpisodes = counters.AwarenessEpisodes + 1 }
+                        if next.Level <> previous.Level || next.Reason <> previous.Reason then events <- AwarenessChanged(observerId, subjectId, next.Level, next.Reason) :: events
+
+        let moved =
+            movementEvents
+            |> List.choose (function UnitMoved(unitId, origin, destination) -> Some(unitId, origin, destination) | _ -> None)
+        let mutable engagements = state.Engagements
+        let mutable candidates = []
+        for KeyValue(ownerId, engagement) in state.Engagements do
+            match Map.tryFind ownerId state.Units with
+            | None -> ()
+            | Some owner ->
+                let trigger =
+                    match engagement.Target with
+                    | EngagementTarget.CoveredArea cells ->
+                        moved
+                        |> List.tryPick (fun (sourceId, _, destination) ->
+                            if sourceId <> ownerId && List.contains destination cells then
+                                Some(sourceId, destination, ReactionTriggerKind.CoveredAreaEntered)
+                            else None)
+                    | EngagementTarget.KnownUnit target ->
+                        match Map.tryFind (ownerId, target) contacts, Map.tryFind target state.Units with
+                        | Some contact, Some subject when contact.Level = AwarenessLevel.Acquired ->
+                            Some(target, subject.Cell, ReactionTriggerKind.ValidTargetExposed)
+                        | _ -> None
+                    | EngagementTarget.GuardedEdge guarded ->
+                        moved
+                        |> List.tryPick (fun (sourceId, origin, destination) ->
+                            match Edges.edgeBetween origin destination with
+                            | Some crossed when sourceId <> ownerId && crossed = guarded ->
+                                Some(sourceId, destination, ReactionTriggerKind.GuardedEdgeCrossed)
+                            | _ -> None)
+                let maintained = AwarenessReaction.advanceEngagement (owner.AttentionDirection = engagement.RequiredAttention) true (not owner.Incapacitated) trigger.IsSome engagement
+                let advanced = if maintained.Phase = EngagementPhase.TriggerEligible then AwarenessReaction.advanceEngagement true true true true maintained else maintained
+                engagements <- Map.add ownerId advanced engagements
+                if advanced.Phase <> engagement.Phase then events <- EngagementChanged(ownerId, advanced.EngagementId, advanced.Phase, advanced.Reason) :: events
+                match trigger with
+                | Some(sourceId, sourceCell, triggerKind) when advanced.Phase = EngagementPhase.Committed ->
+                    candidates <- { ReactorId = ownerId; EngagementId = engagement.EngagementId; TriggerKind = triggerKind; SourceId = sourceId; SourceCell = sourceCell; Tick = state.Tick } :: candidates
+                | _ -> ()
+        let ordered = AwarenessReaction.orderCandidates candidates
+        counters <- { counters with ReactionCandidates = int32 ordered.Length }
+        let reactionEvents = ordered |> List.map (fun candidate -> ReactionCommitted(candidate.ReactorId, candidate.SourceId, candidate.EngagementId))
+        { state with Awareness = contacts; Engagements = engagements }, List.rev events @ reactionEvents, counters, ordered
+
     let private attackPhase rules state inputs =
         let attacks =
             inputs
@@ -452,6 +547,7 @@ module Simulation =
         | ObservationPhase -> 1uy
         | AttackPhase -> 2uy
         | CommitPhase -> 3uy
+        | AwarenessReactionPhase -> 4uy
 
     let private cellBytes position =
         CanonicalEncoding.concatenate
@@ -514,6 +610,18 @@ module Simulation =
             |> List.collect (fun (observerId, targetId) ->
                 [ unitIdBytes observerId; unitIdBytes targetId ])
 
+        let awarenessBytes =
+            state.Awareness
+            |> Map.toList
+            |> List.collect (fun ((observerId, subjectId), contact) ->
+                [ unitIdBytes observerId; unitIdBytes subjectId; AwarenessReaction.canonicalContactBytes contact ])
+
+        let engagementBytes =
+            state.Engagements
+            |> Map.toList
+            |> List.collect (fun (ownerId, engagement) ->
+                [ unitIdBytes ownerId; AwarenessReaction.canonicalEngagementBytes engagement ])
+
         CanonicalEncoding.concatenate
             ([ CanonicalEncoding.byteValue 2uy
                CanonicalEncoding.int32LittleEndian state.Tick
@@ -522,7 +630,11 @@ module Simulation =
              @ [ CanonicalEncoding.int32LittleEndian state.Board.Covers.Count ]
              @ coverBytes
              @ [ CanonicalEncoding.int32LittleEndian state.Observations.Count ]
-             @ observationBytes)
+             @ observationBytes
+             @ [ CanonicalEncoding.int32LittleEndian state.Awareness.Count ]
+             @ awarenessBytes
+             @ [ CanonicalEncoding.int32LittleEndian state.Engagements.Count ]
+             @ engagementBytes)
 
     let private eventBytes event =
         match event with
@@ -571,6 +683,27 @@ module Simulation =
             CanonicalEncoding.concatenate
                 [ CanonicalEncoding.byteValue 6uy
                   Combat.canonicalFactsBytes facts ]
+        | AwarenessChanged(observerId, subjectId, level, reason) ->
+            CanonicalEncoding.concatenate
+                [ CanonicalEncoding.byteValue 7uy
+                  unitIdBytes observerId
+                  unitIdBytes subjectId
+                  AwarenessReaction.canonicalContactBytes
+                      { (AwarenessReaction.emptyContact subjectId) with Level = level; Reason = reason } ]
+        | EngagementChanged(ownerId, engagementId, phase, reason) ->
+            let placeholder =
+                { EngagementId = engagementId
+                  OwnerId = ownerId
+                  Target = EngagementTarget.KnownUnit ownerId
+                  RequiredAttention = North
+                  Phase = phase
+                  RemainingTicks = 0
+                  Reason = reason }
+            CanonicalEncoding.concatenate [ CanonicalEncoding.byteValue 8uy; AwarenessReaction.canonicalEngagementBytes placeholder ]
+        | ReactionCommitted(reactorId, sourceId, engagementId) ->
+            CanonicalEncoding.concatenate [ CanonicalEncoding.byteValue 9uy; unitIdBytes reactorId; unitIdBytes sourceId; textBytes engagementId ]
+        | ReactionResolved(reactorId, sourceId, engagementId) ->
+            CanonicalEncoding.concatenate [ CanonicalEncoding.byteValue 10uy; unitIdBytes reactorId; unitIdBytes sourceId; textBytes engagementId ]
 
     /// Provisional canonical M6 event encoding. Event order is phase order then canonical input order.
     let eventsBytes (events: SimulationEvent list) =
@@ -607,8 +740,50 @@ module Simulation =
               State = movementState
               Events = movementEvents }
 
-        let observationState, observationEvents = observationPhase movementState canonicalInputs
-        let throughObservation = movementEvents @ observationEvents
+        let commandedState, engagementCommandEvents = attentionAndEngagementPhase movementState canonicalInputs
+        let awarenessState, awarenessEvents, awarenessCounters, reactionCandidates = awarenessReactionPhase commandedState movementEvents
+        let reactionInputs =
+            reactionCandidates
+            |> List.map (fun candidate -> PhysicalAttack(candidate.ReactorId, candidate.SourceCell, WeaponProfile.Rifle))
+        let physicallyReactedState, reactionPhysicalEvents = physicalPhase awarenessState reactionInputs
+        let reactionState, reactionResolutionEvents =
+            ((physicallyReactedState, []), List.zip (reactionCandidates |> List.truncate reactionPhysicalEvents.Length) reactionPhysicalEvents)
+            ||> List.fold (fun (current, events) (candidate, physicalEvent) ->
+                let engagement = Map.tryFind candidate.ReactorId current.Engagements
+                match physicalEvent, engagement with
+                | PhysicalAttackResolved _, Some active ->
+                    let resolved =
+                        { active with
+                            Phase = EngagementPhase.Resolved
+                            RemainingTicks = 0
+                            Reason = ReactionReason.ResolvedByPhysicalAuthority }
+                    { current with Engagements = Map.add candidate.ReactorId resolved current.Engagements },
+                    ReactionResolved(candidate.ReactorId, candidate.SourceId, candidate.EngagementId) :: events
+                | PhysicalAttackRejected _, Some active ->
+                    let interrupted =
+                        { active with
+                            Phase = EngagementPhase.Interrupted
+                            RemainingTicks = 0
+                            Reason = ReactionReason.FireBlocked }
+                    { current with Engagements = Map.add candidate.ReactorId interrupted current.Engagements },
+                    EngagementChanged(candidate.ReactorId, candidate.EngagementId, interrupted.Phase, interrupted.Reason) :: events
+                | _ -> current, events)
+            |> fun (current, events) -> current, List.rev events
+        let throughAwareness =
+            movementEvents
+            @ engagementCommandEvents
+            @ awarenessEvents
+            @ reactionPhysicalEvents
+            @ reactionResolutionEvents
+
+        let awarenessCheckpoint =
+            { Tick = nextTick
+              Phase = AwarenessReactionPhase
+              State = reactionState
+              Events = throughAwareness }
+
+        let observationState, observationEvents = observationPhase reactionState canonicalInputs
+        let throughObservation = throughAwareness @ observationEvents
 
         let observationCheckpoint =
             { Tick = nextTick
@@ -644,8 +819,10 @@ module Simulation =
           StateBytes = canonicalState
           EventBytes = eventsBytes committedEvents
           StateDigest = CanonicalEncoding.digest32 canonicalState
+          AwarenessCounters = awarenessCounters
           Checkpoints =
             [ movementCheckpoint
+              awarenessCheckpoint
               observationCheckpoint
               attackCheckpoint
               commitCheckpoint ] }
