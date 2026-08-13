@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="item-181-physical-combat-rules" tests="1" failures="0">
+  <testcase classname="Item181Evidence" name="normal and forced rules generation, source correspondence, and identity mutations pass"/>
+  <system-out>command=./scripts/verify-rules-corpus.sh &amp;&amp; SIR_RULES_FORCE_GREP=1 ./scripts/verify-rules-corpus.sh; log-sha256=23fede77afabeda59fb37b93e726f6c15504cd21bdb19753c313f6e42d3dda5c</system-out>
+</testsuite>

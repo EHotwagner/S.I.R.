@@ -90,6 +90,10 @@ test("visible mode controls preserve a usable tactical workspace across authorin
 });
 
 test("the player-visible Rules explorer renders the executable combat corpus and pinned source", async ({ page }) => {
+  let physicalAuthorityRequests = 0;
+  page.on("request", (request) => {
+    if (request.url().includes("/api/combat/physical-drill")) physicalAuthorityRequests += 1;
+  });
   await page.goto("/");
   await page.getByRole("button", { name: "View", exact: true }).click();
   await page.getByRole("menuitem", { name: /Rules data/ }).click();
@@ -103,7 +107,7 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   await expect(explorer.getByText(/COMBAT-DAMAGE-001.*baseDamage=.*trace=.*retention=.*→.*damage/)).toBeVisible();
   await explorer.getByRole("link", { name: "Open governing rule COMBAT-ATTACK-RESOLUTION-001" }).click();
   await expect(page).toHaveURL(/#rule-COMBAT-ATTACK-RESOLUTION-001$/);
-  await expect(explorer.getByText(/Transition · AttackPhase · events AttackResolved/)).toBeVisible();
+  await expect(explorer.getByText("Transition · AttackPhase · events AttackResolved, CoverDestroyed", { exact: true })).toBeVisible();
   const damage = explorer.getByText(/^COMBAT-DAMAGE-001 · Expected damage$/);
   await damage.click();
   const damageRule = damage.locator("..");
@@ -111,10 +115,46 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   const source = explorer.getByRole("link", { name: /Pinned F# source · CombatRules.damage/ });
   await expect(source).toHaveAttribute(
     "href",
-    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/87931073b13b3c74b2ce9dc4cd4321e9b237760e\/src\/SIR\.Simulation\/CombatRules\.fs/,
+    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/707cfb1a18df9967e10da5269749e30f7481abc4\/src\/SIR\.Simulation\/CombatRules\.fs/,
   );
   await expect(damageRule.getByText(/examples: tests\/SIR\.Conformance\.Shared\/RulesCorpusFixtures\.fs · properties:/)).toBeVisible();
   await expect(damageRule.getByRole("link", { name: "Coverage graph" })).toHaveAttribute("href", /rules-corpus\/v2\/coverage\.json/);
+
+  const drill = explorer.getByRole("region", { name: "Physical combat drill", exact: true });
+  await expect(drill.getByRole("button", { name: "Run four-profile combat scenario" })).toBeEnabled();
+  const authorityResponse = page.waitForResponse((response) => response.url().includes("/api/combat/physical-drill") && response.status() === 200);
+  await drill.getByRole("button", { name: "Run four-profile combat scenario" }).click();
+  const response = await authorityResponse;
+  const responseBody = await response.text();
+  expect(physicalAuthorityRequests).toBe(1);
+  await expect(drill.getByText("Cover integrity 50 → 0 · destroyed true", { exact: true })).toBeVisible();
+  await expect(drill.getByText(/Replay v4 verified true from 4 seek points · final tick 4 · state [0-9a-f]{64}/)).toBeVisible();
+
+  const expectedProfiles = [
+    ["Rifle", "50 → 38 · destroyed false"],
+    ["SupportWeapon", "38 → 38 · destroyed false"],
+    ["AntiArmor", "38 → 13 · destroyed false"],
+    ["LobbedArea", "13 → 0 · destroyed true"],
+  ];
+  for (const [profile, coverIntegrity] of expectedProfiles) {
+    const outcome = drill.getByRole("article", { name: `${profile} authoritative outcome`, exact: true });
+    await expect(outcome).toBeVisible();
+    await expect(outcome.getByRole("heading", { name: profile, exact: true })).toBeVisible();
+    await expect(outcome.getByLabel(`${profile} visible attack trace`, { exact: true })).toBeVisible();
+    await expect(outcome.getByText(coverIntegrity, { exact: true })).toBeVisible();
+    await expect(outcome.getByRole("list")).toContainText("HP");
+    await expect(outcome.getByRole("list")).toContainText("Suppression");
+  }
+  const antiArmor = drill.getByRole("article", { name: "AntiArmor authoritative outcome", exact: true });
+  await expect(antiArmor.getByText(/roadblock-2 · retained 50%/)).toBeVisible();
+  await expect(antiArmor.getByText(/Front rating 50 vs penetration 70 · retained 100%/)).toBeVisible();
+  await expect(antiArmor.getByText("67 / Serious", { exact: true })).toBeVisible();
+  const antiArmorExplanation = antiArmor.getByRole("list");
+  await expect(antiArmorExplanation).toContainText("Physical trace");
+  await expect(antiArmorExplanation).toContainText("Cover");
+  await expect(antiArmorExplanation).toContainText("Armor");
+  await expect(antiArmorExplanation).toContainText("Wound");
+  console.log(JSON.stringify({ schema: "sir-physical-combat-route-v1", authorityRequests: physicalAuthorityRequests, responseBytes: Buffer.byteLength(responseBody, "utf8") }));
 });
 
 test("the player-visible spatial diagnostics route shows authoritative selected-unit evidence", async ({ page }) => {

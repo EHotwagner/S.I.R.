@@ -6,7 +6,7 @@ index: 5
 status: proposed
 document-type: living-design
 version: "0.7"
-last-updated: 2026-07-29
+last-updated: 2026-08-13
 related:
   - docs/simulation-core-architecture.md
   - docs/skirmish-development-plan.md
@@ -17,6 +17,22 @@ related:
 ---
 
 # Performance Budget
+
+## Physical-combat v1 budget
+
+The v1 schema caps a trace at 256 cells, area delivery at 256 cells, recipients
+at 256, ordered facts at 4,096, and canonical explanation at 64 KiB. Release
+qualification measures the complete representative scenario matrix and a
+deterministic 100-unit/50-area-attack firefight after warm-up. The observed
+candidate was 4 ms for the representative matrix and 17 ms for the stress
+workload, against explicit 20 ms and 50 ms gates respectively.
+
+The measured published route is also retained: under Slow-3G and 4× CPU the
+initial response set is 1,119,915 bytes, the on-demand Rules explorer chunk is
+51,702 bytes, and one authenticated physical-combat authority projection is
+1,243 bytes. The route invokes that authority exactly once. Physical evaluator
+code is absent from presentation chunks and retained only in the immutable
+replay worker and Server/Match authority.
 
 ## Spatial-query budget
 

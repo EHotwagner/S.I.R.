@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "workloadId": "sir-physical-combat-authoritative-tick-v1",
+  "productionRoute": "SIR.Simulation.Simulation.runPhysicalTickWithRules(Simulation.defaultRules)",
+  "warmupIterations": 3,
+  "measurementIterations": 5,
+  "representative": {
+    "units": 25,
+    "attacks": 12,
+    "profiles": ["Rifle", "SupportWeapon", "AntiArmor", "LobbedArea"],
+    "maximumElapsedMilliseconds": 20
+  },
+  "stress": {
+    "units": 100,
+    "attacks": 50,
+    "profile": "SupportWeapon",
+    "layout": "ten-by-ten two-cell lattice within a 20-cell range",
+    "maximumElapsedMilliseconds": 50
+  },
+  "structuralCapsPerResolvedAttack": {
+    "traceCells": 256,
+    "areaCells": 256,
+    "recipients": 256,
+    "facts": 4096,
+    "canonicalEvidenceBytes": 65536
+  }
+}

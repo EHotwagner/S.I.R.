@@ -61,6 +61,7 @@ let main arguments =
                       mapScale
                       RulesCorpusFixtures.evaluate false
                       SpatialQueryFixtures.evaluate false
+                      CombatFixtures.evaluate false
                       replay ]
                     |> SIR.Domain.CanonicalEncoding.concatenate
                     |> NumericFixtures.hex
@@ -100,8 +101,17 @@ let main arguments =
         let offset = Array.zip expected actual |> Array.findIndex (fun (left, right) -> left <> right)
         eprintfn "first divergence: fixture=spatial-query byte=%d expected=%02x actual=%02x" offset expected[offset] actual[offset]
         failwith "Spatial query canonical conformance failed."
+    | [ "--inject-combat-divergence" ] ->
+        let expected = CombatFixtures.evaluate false
+        let actual = CombatFixtures.evaluate true
+        let offset = Array.zip expected actual |> Array.findIndex (fun (left, right) -> left <> right)
+        eprintfn "first divergence: fixture=physical-combat byte=%d expected=%02x actual=%02x" offset expected[offset] actual[offset]
+        failwith "Physical combat canonical conformance failed."
     | [ "--print-spatial-query" ] ->
         SpatialQueryFixtures.evaluate false |> NumericFixtures.hex |> printfn "%s"
+        0
+    | [ "--print-combat" ] ->
+        CombatFixtures.evaluate false |> NumericFixtures.hex |> printfn "%s"
         0
     | [ "--print-simulation-oracle" ] ->
         SimulationFixtures.evaluate None
@@ -161,9 +171,16 @@ let main arguments =
         printfn "manifest-bytes=%d/524288" manifestBytes
         printfn "elapsed-ms=%d/2000" stopwatch.ElapsedMilliseconds
         0
+    | [ "--print-combat-performance" ] ->
+        let final, representativeBytes, representativeMs, stressMs = CombatFixtures.performanceWorkload ()
+        printfn "representative-ms=%d/20 bytes=%d" representativeMs representativeBytes
+        printfn "stress-units=%d/100 attacks=50 stress-ms=%d/50" final.Combatants.Count stressMs
+        printfn "trace-cells=256 area-cells=256 recipients=256 facts=4096 explanation-bytes=65536"
+        if final.Combatants.Count <> 100 || representativeMs > 20L || stressMs > 50L then failwith "Physical combat performance budget exceeded."
+        0
 #endif
     | _ ->
         eprintfn
-            "Usage: conformance [--inject-divergence FIXTURE | --inject-simulation-divergence PHASE | --inject-rules-corpus-divergence | --inject-spatial-query-divergence | --print-spatial-query | --print-simulation-oracle | --print-replay-evidence | --print-rules-manifest | --print-rules-coverage | --print-rules-application]"
+            "Usage: conformance [--inject-divergence FIXTURE | --inject-simulation-divergence PHASE | --inject-rules-corpus-divergence | --inject-spatial-query-divergence | --inject-combat-divergence | --print-spatial-query | --print-combat | --print-combat-performance | --print-simulation-oracle | --print-replay-evidence | --print-rules-manifest | --print-rules-coverage | --print-rules-application]"
 
         2

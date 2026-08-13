@@ -59,6 +59,15 @@ let private inputSummary input =
         + string (Simulation.unitIdValue attackerId)
         + " attacks unit "
         + string (Simulation.unitIdValue targetId)
+    | PhysicalAttack(attackerId, aim, profile) ->
+        "unit "
+        + string (Simulation.unitIdValue attackerId)
+        + " fires "
+        + string profile
+        + " at "
+        + string aim.Col
+        + ","
+        + string aim.Row
 
 let private inputUnits input =
     match input with
@@ -67,6 +76,8 @@ let private inputUnits input =
     | Attack(observerId, targetId) ->
         Some(Simulation.unitIdValue observerId),
         Some(Simulation.unitIdValue targetId)
+    | PhysicalAttack(attackerId, _, _) ->
+        Some(Simulation.unitIdValue attackerId), None
 
 let private journalAt tick (full: FullReplay) =
     let externalInputs =

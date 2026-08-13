@@ -15,6 +15,11 @@ module ReplayFixtures =
     let engineHash = hashSeed 1
     let private rulesetHash = CombatRules.packageIdentity.ManifestDigest
 
+    let private retainedV3Bytes () =
+        System.IO.File.ReadAllText("tests/fixtures/replay/v3-minimal-pre-combat.sirr.base64")
+        |> fun value -> value.Trim()
+        |> System.Convert.FromBase64String
+
     let private input tick sequence value: ReplayInput =
         { Tick = tick
           Sequence = sequence
@@ -36,12 +41,13 @@ module ReplayFixtures =
             CombatRules.resolveAttack
                 { Attacker = { Col = 0; Row = 0 }
                   TargetFootprint = [ { Col = 1; Row = 0 } ]
-                  IsTransparent = fun _ -> true
+                  VisibleSamples = 1
+                  TotalSamples = 1
                   RangeCells = 1
                   Suppression = FixedPoint.zero
                   BaseDamage = FixedPoint.fromRatio 25 1 |> Result.defaultWith (fun _ -> failwith "invalid damage")
                   ArmorRetention = FixedPoint.fromRatio 4 5 |> Result.defaultWith (fun _ -> failwith "invalid retention")
-                  EventId = "replay-v3-attack" }
+                  EventId = "replay-v4-attack" }
             |> Result.defaultWith failwith
         Replay.createRulesArchive
             CombatRules.packageIdentity
@@ -113,9 +119,87 @@ module ReplayFixtures =
                 Content = AuthorizedFullReplay(change full) }
         | PerspectivePlayback _ -> failwith "Expected a full replay."
 
+    let private combatSnapshot () =
+        let redId = Simulation.unitId 10
+        let red = Simulation.initialState.Units[redId]
+        let wounded =
+            { red with
+                Armor =
+                    { FrontRating = 61
+                      RearRating = 23
+                      Integrity = 74 }
+                Wounds =
+                    [ { AttackId = "replay-v4-serious"
+                        Severity = WoundSeverity.Serious
+                        Damage = 17 }
+                      { AttackId = "replay-v4-critical"
+                        Severity = WoundSeverity.Critical
+                        Damage = 41 } ]
+                Incapacitated = true
+                Suppression = 37 }
+        let cover =
+            { CoverId = "stone-wall"
+              Cell = { Col = 1; Row = 0 }
+              Integrity = 63
+              ProjectileBlocking = true }
+        { Simulation.initialState with
+            Units = Simulation.initialState.Units |> Map.add redId wounded
+            Board =
+                { Simulation.initialState.Board with
+                    Covers = Map.ofList [ cover.CoverId, cover ] } }
+
+    let private combatSnapshotPackage () =
+        let state = combatSnapshot ()
+        let final =
+            { Tick = state.Tick
+              OutcomeCode = 0
+              StateHash = Replay.stateHash state
+              EventHash = Replay.emptyEventHash }
+        { FormatVersion = int32 Replay.CurrentFormatVersion
+          EngineHash = engineHash
+          RulesetHash = rulesetHash
+          FullReplayAuthorized = true
+          RulesArchive = Some(rulesArchive ())
+          Content =
+            AuthorizedFullReplay
+                { InitialSnapshot = state
+                  OrderedInputs = []
+                  AcceptedWasmOutputs = []
+                  Checkpoints = [ checkpoint state.Tick state [] ]
+                  FinalResult = final } }
+
     let evaluate () =
         let package = fullPackage ()
         let encoded = canonicalPackageBytes ()
+        require (Replay.CurrentFormatVersion = 4) "Combat-state snapshots must use replay format v4."
+
+        let retainedV3 = retainedV3Bytes ()
+        require (retainedV3.Length = 4_450) "The retained predecessor replay v3 fixture changed length."
+        let retainedV3Digest = retainedV3 |> CanonicalHash.sha256 |> NumericFixtures.hex
+        require
+            (retainedV3Digest = "f820f32f86765f6be867caf7e91e5ab54ad67a68f30e85ea0cfce2dbaf44b88d")
+            "The retained predecessor replay v3 fixture changed digest."
+        let decodedV3 =
+            Replay.decode Replay.defaultLimits retainedV3
+            |> Result.defaultWith (fun error -> failwithf "Retained predecessor replay v3 did not decode: %A" error)
+        require (decodedV3.FormatVersion = Replay.RulesArchiveFormatVersion) "The retained predecessor package is no longer replay v3."
+        require (Replay.encode decodedV3 = retainedV3) "Retained predecessor replay v3 did not re-encode byte-exactly."
+        match decodedV3.Content with
+        | AuthorizedFullReplay full ->
+            full.InitialSnapshot.Units
+            |> Map.iter (fun _ unit ->
+                require
+                    (unit.Armor = { FrontRating = 0; RearRating = 0; Integrity = 0 }
+                     && unit.Wounds.IsEmpty
+                     && not unit.Incapacitated
+                     && unit.Suppression = 0)
+                    "Retained replay v3 did not apply deterministic combat defaults.")
+            require full.InitialSnapshot.Board.Covers.IsEmpty "Retained replay v3 did not default covers deterministically."
+        | PerspectivePlayback _ -> failwith "Retained full replay v3 changed disclosure kind."
+        match Replay.runKernelReplay Replay.defaultLimits (Array.create 32 1uy) decodedV3 with
+        | Ok(BrowserKernelVerified finalResult) ->
+            require (finalResult.Tick = 0) "Retained zero-tick replay v3 changed its final tick."
+        | result -> failwithf "Retained predecessor replay v3 did not verify: %A" result
 
         let legacyPackage =
             { package with
@@ -135,10 +219,118 @@ module ReplayFixtures =
             |> Map.iter (fun _ unit ->
                 require
                     (unit.BodyFacing = North
-                     && unit.AttentionDirection = North)
-                    "Legacy replay orientation defaults were not deterministic.")
+                     && unit.AttentionDirection = North
+                     && unit.Armor = { FrontRating = 0; RearRating = 0; Integrity = 0 }
+                     && unit.Wounds.IsEmpty
+                     && not unit.Incapacitated
+                     && unit.Suppression = 0)
+                    "Legacy replay orientation/combat defaults were not deterministic.")
+            require legacy.InitialSnapshot.Board.Covers.IsEmpty "Legacy replay cover defaults were not deterministic."
         | PerspectivePlayback _ ->
             failwith "Legacy full replay changed disclosure kind."
+
+        let directionalDecoded =
+            { package with
+                FormatVersion = Replay.DirectionalFormatVersion
+                RulesArchive = None }
+            |> Replay.encode
+            |> Replay.decode Replay.defaultLimits
+            |> Result.defaultWith (fun error ->
+                failwithf "Directional replay did not import: %A" error)
+        match directionalDecoded.Content with
+        | AuthorizedFullReplay directional ->
+            directional.InitialSnapshot.Units
+            |> Map.iter (fun _ unit ->
+                require
+                    (unit.Armor = { FrontRating = 0; RearRating = 0; Integrity = 0 }
+                     && unit.Wounds.IsEmpty
+                     && not unit.Incapacitated
+                     && unit.Suppression = 0)
+                    "Replay v2 combat defaults were not deterministic.")
+            require directional.InitialSnapshot.Board.Covers.IsEmpty "Replay v2 cover defaults were not deterministic."
+        | PerspectivePlayback _ -> failwith "Replay v2 full replay changed disclosure kind."
+
+        let combatPackage = combatSnapshotPackage ()
+        let combatBytes = Replay.encode combatPackage
+        let decodedCombat =
+            Replay.decode Replay.defaultLimits combatBytes
+            |> Result.defaultWith (fun error -> failwithf "Replay v4 combat snapshot did not decode: %A" error)
+        require (Replay.encode decodedCombat = combatBytes) "Replay v4 combat snapshot did not round-trip byte-exactly."
+        match decodedCombat.Content with
+        | AuthorizedFullReplay full ->
+            let expectedSnapshotBytes = Replay.snapshotBytes (combatSnapshot ())
+            require (Replay.snapshotBytes full.InitialSnapshot = expectedSnapshotBytes) "Replay v4 did not retain the complete combat snapshot."
+            require (Replay.snapshotBytes full.Checkpoints.Head.State = expectedSnapshotBytes) "Replay v4 seek point lost combat state."
+            let retained = full.InitialSnapshot.Units[Simulation.unitId 10]
+            require (retained.Armor = { FrontRating = 61; RearRating = 23; Integrity = 74 }) "Replay v4 lost armor state."
+            require (retained.Wounds.Length = 2 && retained.Wounds.Head.AttackId = "replay-v4-serious") "Replay v4 lost wound state."
+            require (retained.Incapacitated && retained.Suppression = 37) "Replay v4 lost incapacity or suppression state."
+            require (full.InitialSnapshot.Board.Covers["stone-wall"].Integrity = 63) "Replay v4 lost cover state."
+        | PerspectivePlayback _ -> failwith "Replay v4 combat snapshot changed disclosure kind."
+        match Replay.runKernelReplay Replay.defaultLimits engineHash decodedCombat with
+        | Ok(BrowserKernelVerified result) ->
+            require (result.StateHash = Replay.stateHash (combatSnapshot ())) "Replay v4 combat seek verification returned the wrong hash."
+        | result -> failwithf "Replay v4 combat seek verification failed: %A" result
+
+        let noCoverLimit = { Replay.defaultLimits with MaxCovers = 0 }
+        expectError
+            (function ResourceLimitExceeded("covers", 1, 0) -> true | _ -> false)
+            (Replay.runKernelReplay noCoverLimit engineHash decodedCombat)
+            "Replay v4 ignored its retained-cover resource limit."
+        let oneWoundLimit = { Replay.defaultLimits with MaxWoundsPerUnit = 1 }
+        expectError
+            (function ResourceLimitExceeded("wounds per unit", 2, 1) -> true | _ -> false)
+            (Replay.runKernelReplay oneWoundLimit engineHash decodedCombat)
+            "Replay v4 ignored its retained-wound resource limit."
+        expectError
+            (function MalformedPackage detail when detail.Contains "Resource limit exceeded for covers" -> true | _ -> false)
+            (Replay.decode noCoverLimit combatBytes)
+            "Replay v4 decoded covers beyond its resource limit."
+        expectError
+            (function MalformedPackage detail when detail.Contains "Resource limit exceeded for wounds per unit" -> true | _ -> false)
+            (Replay.decode oneWoundLimit combatBytes)
+            "Replay v4 decoded wounds beyond its per-unit resource limit."
+
+        let originalCombatHash = Replay.stateHash (combatSnapshot ())
+        let requireHashMutation label (change: SimulationState -> SimulationState) =
+            let changed = change (combatSnapshot ())
+            require (Replay.stateHash changed <> originalCombatHash) ("Replay v4 state hash ignored " + label + ".")
+        let redId = Simulation.unitId 10
+        let changeRed (change: UnitState -> UnitState) (state: SimulationState) =
+            let red = state.Units[redId]
+            { state with Units = state.Units |> Map.add redId (change red) }
+        requireHashMutation "armor" (changeRed (fun unit -> { unit with Armor = { unit.Armor with Integrity = unit.Armor.Integrity - 1 } }))
+        requireHashMutation "wounds" (changeRed (fun unit -> { unit with Wounds = unit.Wounds.Tail }))
+        requireHashMutation "incapacitation" (changeRed (fun unit -> { unit with Incapacitated = not unit.Incapacitated }))
+        requireHashMutation "suppression" (changeRed (fun unit -> { unit with Suppression = unit.Suppression + 1 }))
+        requireHashMutation "covers" (fun state -> { state with Board = { state.Board with Covers = Map.empty } })
+
+        let staleSeekHash =
+            decodedCombat
+            |> mapFull (fun full ->
+                let changedState =
+                    full.Checkpoints.Head.State
+                    |> changeRed (fun unit -> { unit with Suppression = unit.Suppression + 1 })
+                { full with
+                    Checkpoints =
+                        [ { full.Checkpoints.Head with
+                              State = changedState } ] })
+        expectError
+            (function InvalidCheckpoint(0, detail) when detail.Contains "state hash" -> true | _ -> false)
+            (Replay.runKernelReplay Replay.defaultLimits engineHash staleSeekHash)
+            "Replay v4 accepted a combat-mutated seek snapshot under its retained hash."
+
+        let physicalCodecPackage =
+            package
+            |> mapFull (fun full ->
+                { full with
+                    OrderedInputs =
+                        [ input 1 1 (PhysicalAttack(Simulation.unitId 10, { Col = 2; Row = 0 }, WeaponProfile.AntiArmor)) ] })
+        let physicalCodecBytes = Replay.encode physicalCodecPackage
+        let physicalCodecDecoded =
+            Replay.decode Replay.defaultLimits physicalCodecBytes
+            |> Result.defaultWith (fun error -> failwithf "Replay v4 physical input did not decode: %A" error)
+        require (Replay.encode physicalCodecDecoded = physicalCodecBytes) "Replay v4 physical input did not round-trip byte-exactly."
 
         let decoded =
             match Replay.decode Replay.defaultLimits encoded with

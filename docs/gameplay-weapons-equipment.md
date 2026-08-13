@@ -6,7 +6,7 @@ category: Forces & Equipment
 categoryindex: 3
 index: 1
 version: "0.1"
-last-updated: 2026-07-28
+last-updated: 2026-08-13
 related:
   - docs/gameplay-reference.md
   - docs/human-forces.md
@@ -68,6 +68,12 @@ do not require new per-target preparation.
 Fast projectiles resolve as physical traces on the resolution tick. Slow
 rockets, grenades, arrows, and comparable effects occupy authoritative state
 across ticks and use swept paths.
+
+The executable v1 profiles deliberately cover one point rifle, an area support
+weapon, a penetrating anti-armor point attack, and a lobbed area attack. Their
+parameters are typed integers exposed in every result. They establish delivery
+semantics and evidence, not final balance; campaign inventory and complete
+equipment tuning remain outside this slice.
 
 ### Weapon trade-offs
 

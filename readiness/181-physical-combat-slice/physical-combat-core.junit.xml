@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="item-181-physical-combat-core" tests="1" failures="0">
+  <testcase classname="Item181Evidence" name="authoritative combat fixtures, mutations, server boundary, performance, native/Fable, and browser journey pass"/>
+  <system-out>command=./scripts/verify-physical-combat.sh; log-sha256=6e653a94beb4c2085c38367708b0e9abeb8d848bc214fa4dff1928f8cf3e9f62</system-out>
+</testsuite>
