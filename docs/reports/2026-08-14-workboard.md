@@ -79,4 +79,3 @@ feedback phase ran because no worker was claimed.
 - Rate-limit state: healthy; no back-off required.
 - Product PRs merged: none.
 - Completed item cycles requiring schema-v2 roll-up: none.
-
