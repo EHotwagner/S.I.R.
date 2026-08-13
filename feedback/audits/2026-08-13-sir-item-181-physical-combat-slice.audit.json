@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-13-sir-item-181-physical-combat-slice.md",
-  "reportSha256": "987039a9146bfbb4bb3bc6d024f77b95025bc764a5f27cd1324ba927e6939f5a",
+  "reportSha256": "4c60954c7158b8c6f717bda81bbc6b63cb246001d7cd86bc378c05abfbf9de66",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
