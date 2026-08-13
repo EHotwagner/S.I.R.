@@ -687,13 +687,8 @@ module Simulation =
         // the bounded common-case size so buffer growth does not copy multi-MB
         // authoritative states on the timed path.
         let estimatedCapacity = 64 + state.Units.Count * 64 + state.Awareness.Count * 160 + state.Engagements.Count * 96
-#if FABLE_COMPILER
         let buffer = ResizeArray<byte>(estimatedCapacity)
         let append (bytes: byte array) = buffer.AddRange bytes
-#else
-        use buffer = new System.IO.MemoryStream(estimatedCapacity)
-        let append (bytes: byte array) = buffer.Write(bytes, 0, bytes.Length)
-#endif
         append (CanonicalEncoding.byteValue 3uy)
         append (CanonicalEncoding.int32LittleEndian state.Tick)
         append (CanonicalEncoding.int32LittleEndian state.Units.Count)
