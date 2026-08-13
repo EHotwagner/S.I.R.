@@ -307,4 +307,3 @@ normalized work model, not an authored source of truth. See `guidance.json`.
 - Stage: specify
 - Purpose: Carry out lifecycle task T061 (pending) covering GV-003, PD-014.
 - Related: GV-003, PD-014
-
