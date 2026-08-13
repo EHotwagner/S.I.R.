@@ -5,18 +5,18 @@ workspace: S.I.R
 cycle: item-182-awareness-reaction-windows
 lane: sdd
 toolVersion: 1.0.1
-commit: b029cdcbb8c7aac733635996e4c099f65e9dfe38
+commit: 6fe3b8f32f478cfd97f174dbbaaf639955869bc0
 ---
 
 ## §1 Provenance and confidence
 
 - **activation:** active
 - **phases:** onboarding-first-build, lifecycle-authoring-or-not-used, implementation-test-evidence, verify-ship-pr
-- **material events:** 8
-- **checkpoint:** `feedback/checkpoints/item-182-awareness-reaction-windows.jsonl` (8 records)
+- **material events:** 9
+- **checkpoint:** `feedback/checkpoints/item-182-awareness-reaction-windows.jsonl` (9 records)
 - **zero-event reason:** n/a
 - **package/tool pins:** FS.GG.Game.Core 0.13.0, fsgg-sdd 1.0.1, Fable 5.13.0.
-- **confidence limits:** Native/Fable equality, replay v1-v6 compatibility, authoritative tick performance, projection disclosure, production browser delivery, full conformance, docs, and 61 observed SDD obligations are green. Same-critic confirmation, exact-head hosted CI, and guarded landing remain pending.
+- **confidence limits:** Native/Fable equality, replay v1-v6 compatibility, authoritative tick performance, projection disclosure, production browser delivery, full conformance, docs, and 61 observed SDD obligations are green. Same-critic final confirmation, exact-head hosted CI, and guarded landing remain pending.
 
 ## §2 What worked
 
@@ -24,7 +24,7 @@ Keeping awareness and engagement state in Simulation, physical reaction resoluti
 
 ## §3 What did not
 
-The first 200-unit workload exceeded 50 ms until cursor-addressed traversal and changed-contact updates brought the full tick below the hard ceiling. Independent review found that unserviced elapsed decay, semantic guarded-edge validity, observer-local stimuli, workload identity, and protected-subject inversions were incomplete in the initial candidate. The bounded repair also exposed stale phase oracles, v4 edge defaults, and hash-bound review manifests before atomic evidence installation. The issue's recovery comment named a preserved dirty checkout that was absent, requiring reconstruction from the immutable remote PR head and review evidence.
+The first 200-unit workload exceeded 50 ms until cursor-addressed traversal and changed-contact updates brought the full tick below the hard ceiling. Independent review found that unserviced elapsed decay, semantic guarded-edge validity, observer-local stimuli, workload identity, protected-subject inversions, and receipt semantic validation were incomplete across the candidates. The bounded repairs also exposed stale phase oracles, v4 edge defaults, and hash-bound review manifests before atomic evidence installation. The issue's recovery comment named a preserved dirty checkout that was absent, requiring reconstruction from the immutable remote PR head and review evidence.
 
 ## §4 Findings
 
@@ -46,7 +46,7 @@ The first 200-unit workload exceeded 50 ms until cursor-addressed traversal and 
 - **Kind:** positive-pattern
 - **Impact:** Structural bounds alone did not keep the 200-unit authoritative tick below 50 ms.
 - **Expected:** 200 units and 20,000 candidate pairs with a 20 ms working p95 target and a 50 ms hard worst-tick ceiling.
-- **Observed:** Qualification reruns retained deterministic structural counters—20,224 serviced pair slots/LOS checks, all 200 observers covered, 7,900 moves, 6,162 engagement observations, and a persisted cursor of 736—while timing varied by host load; a fresh audit rerun measured p95 34 ms and raw worst 39 ms. The 20 ms working target was missed while the unchanged 50 ms raw-maximum hard gate passed. The post-push external receipt mechanism binds the complete workload, exact candidate commit/tree, both assemblies, host, and GC without a self-referential committed artifact. The original `stress.units` 200→201 escape plus fairness, movement, engagement, allocation, evidence-byte, and timing inversions all fail.
+- **Observed:** Qualification reruns retained deterministic structural counters—20,224 serviced pair slots/LOS checks, all 200 observers covered, 7,900 moves, 6,162 engagement observations, and a persisted cursor of 736—while timing varied by host load; the repaired aggregate measured p95 31 ms and raw worst 36 ms. The 20 ms working target was missed while the unchanged 50 ms raw-maximum hard gate passed. The post-push external receipt mechanism binds the complete workload, exact candidate commit/tree, both assemblies, host, and GC without a self-referential committed artifact; its verifier now checks raw worst, p95, allocation, structural counters, workload cardinality, and internal consistency. The original `stress.units` 200→201 escape and a pass/worst=999 receipt plus missing, malformed, negative, boundary, p95>worst, allocation, and structural mutations are retained.
 - **Evidence:** command:bash -lc 'tmp_receipt=$(mktemp) && export SIR_AWARENESS_PERF_RECEIPT="$tmp_receipt" && dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release -- --awareness && jq "{candidate,observation}" "$tmp_receipt" && rm -f "$tmp_receipt"'
 - **Version:** development aggregate preceding exact-head external qualification
 - **Owner:** EHotwagner/S.I.R. simulation performance
@@ -133,7 +133,7 @@ The visible journey uses a canonical server diagnostic scenario rather than live
 
 ## §8 Friction and avoidable cost
 
-The cycle incurred two independent-review repair rounds, multiple performance iterations, replay/oracle fixture regeneration, two bundle-manifest regenerations, three pre-review aggregate reruns plus five repair-round aggregate attempts, and two broad conformance reruns before the repaired atomic receipts were installed.
+The cycle incurred three independent-review repair rounds, multiple performance iterations, replay/oracle fixture regeneration, two bundle-manifest regenerations, three pre-review aggregate reruns plus six repair-round aggregate attempts, and two broad conformance reruns before the repaired atomic receipts were installed.
 
 ## §9 Skill value and gaps
 
