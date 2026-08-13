@@ -127,7 +127,8 @@ type LiveSessionAuthenticationTests() =
             require (antiArmor.ArmorArc = "Front" && antiArmor.ArmorRating = 50 && antiArmor.ArmorRetainedPercent = 100 && antiArmor.RemainingHealth = 67) "anti-armor directional armor and HP projection changed"
             let steps = antiArmor.Facts |> Array.map _.Step
             let index step = steps |> Array.findIndex ((=) step)
-            require (index "Physical trace" < index "Cover" && index "Cover" < index "Armor" && index "Armor" < index "HP" && index "HP" < index "Suppression") "authority facts lost canonical consequence ordering"
+            let stepsText = String.concat "," steps
+            require (index "Physical trace" < index "Cover" && index "Cover" < index "Armor" && index "Armor" < index "HP" && index "HP" < index "Suppression") $"authority facts lost canonical consequence ordering: {stepsText}"
             require (projection.Replay.FormatVersion = Replay.CurrentFormatVersion && projection.Replay.Verified) "the scenario must run replay verification"
             require (projection.Replay.SeekPointsVerified = 4 && projection.Replay.FinalTick = 4 && projection.Replay.FinalStateHash.Length = 64) "replay evidence must cover the initial snapshot and three retained seek points")
 

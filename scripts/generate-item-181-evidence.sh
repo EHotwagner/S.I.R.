@@ -14,6 +14,7 @@ receipts=(
   physical-combat-docs.junit.xml
 )
 for receipt in "${receipts[@]}"; do rm -f "$evidence_root/$receipt"; done
+rm -f "$evidence_root/physical-combat.junit.xml"
 mkdir -p "$evidence_root"
 
 xml_escape() {
