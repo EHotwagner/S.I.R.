@@ -73,6 +73,8 @@ type ReplayLimits =
       MaxPerspectiveFrames: int
       MaxUnits: int
       MaxEdges: int
+      MaxCovers: int
+      MaxWoundsPerUnit: int
       MaxObservations: int }
 
 /// Why an untrusted replay package was rejected.
@@ -123,6 +125,8 @@ module Replay =
           MaxPerspectiveFrames = 65_536
           MaxUnits = 4_096
           MaxEdges = 16_384
+          MaxCovers = 4_096
+          MaxWoundsPerUnit = 256
           MaxObservations = 65_536 }
 
     let private magic = [| 0x53uy; 0x49uy; 0x52uy; 0x52uy |]
@@ -151,6 +155,18 @@ module Replay =
         | WeaponProfile.SupportWeapon -> 1uy
         | WeaponProfile.AntiArmor -> 2uy
         | WeaponProfile.LobbedArea -> 3uy
+
+    let private woundSeverityByte = function
+        | WoundSeverity.Serious -> 0uy
+        | WoundSeverity.Critical -> 1uy
+
+    let private textBytes (value: string) = System.Text.Encoding.UTF8.GetBytes value
+
+    let private lengthPrefixed (bytes: byte array) =
+        CanonicalEncoding.concatenate
+            [ CanonicalEncoding.int32LittleEndian bytes.Length; bytes ]
+
+    let private stringBytes value = value |> textBytes |> lengthPrefixed
 
     let private inputBytes input =
         match input with
@@ -197,6 +213,38 @@ module Replay =
                   if formatVersion >= DirectionalFormatVersion then
                       CanonicalEncoding.direction8 unit.AttentionDirection ])
 
+        let combatUnitSegments =
+            if formatVersion >= CurrentFormatVersion then
+                state.Units
+                |> Map.toList
+                |> List.collect (fun (_, unit) ->
+                    [ CanonicalEncoding.int32LittleEndian unit.Armor.FrontRating
+                      CanonicalEncoding.int32LittleEndian unit.Armor.RearRating
+                      CanonicalEncoding.int32LittleEndian unit.Armor.Integrity
+                      CanonicalEncoding.int32LittleEndian unit.Wounds.Length
+                      yield!
+                          unit.Wounds
+                          |> List.collect (fun wound ->
+                              [ stringBytes wound.AttackId
+                                CanonicalEncoding.byteValue (woundSeverityByte wound.Severity)
+                                CanonicalEncoding.int32LittleEndian wound.Damage ])
+                      CanonicalEncoding.byteValue (if unit.Incapacitated then 1uy else 0uy)
+                      CanonicalEncoding.int32LittleEndian unit.Suppression ])
+            else
+                []
+
+        let coverSegments =
+            if formatVersion >= CurrentFormatVersion then
+                state.Board.Covers
+                |> Map.toList
+                |> List.collect (fun (coverId, cover) ->
+                    [ stringBytes coverId
+                      cellBytes cover.Cell
+                      CanonicalEncoding.int32LittleEndian cover.Integrity
+                      CanonicalEncoding.byteValue (if cover.ProjectileBlocking then 1uy else 0uy) ])
+            else
+                []
+
         let observationSegments =
             state.Observations
             |> Set.toList
@@ -211,6 +259,12 @@ module Replay =
              @ edgeSegments
              @ [ CanonicalEncoding.int32LittleEndian state.Units.Count ]
              @ unitSegments
+             @ combatUnitSegments
+             @ (if formatVersion >= CurrentFormatVersion then
+                    [ CanonicalEncoding.int32LittleEndian state.Board.Covers.Count ]
+                else
+                    [])
+             @ coverSegments
              @ [ CanonicalEncoding.int32LittleEndian state.Observations.Count ]
              @ observationSegments)
 
@@ -226,10 +280,6 @@ module Replay =
     let stateHash state =
         stateHashForVersion CurrentFormatVersion state
     let eventHash events = events |> Simulation.eventsBytes |> CanonicalHash.sha256
-
-    let private lengthPrefixed (bytes: byte array) =
-        CanonicalEncoding.concatenate
-            [ CanonicalEncoding.int32LittleEndian bytes.Length; bytes ]
 
     let private replayInputBytes (input: ReplayInput) =
         CanonicalEncoding.concatenate
@@ -281,7 +331,6 @@ module Replay =
                     [ CanonicalEncoding.int32LittleEndian frame.Tick
                       frame.ProjectionHash ])))
 
-    let private textBytes (value: string) = System.Text.Encoding.UTF8.GetBytes value
     let private archiveIdentityBytes (identity: RulePackageIdentity) =
         CanonicalEncoding.concatenate
             [ CanonicalEncoding.int32LittleEndian identity.SchemaVersion
@@ -466,6 +515,20 @@ module Replay =
         | Some direction -> direction
         | None -> failDecode ("Invalid " + field + " direction code.")
 
+    let private readWeaponProfile reader =
+        match readByte reader with
+        | 0uy -> WeaponProfile.Rifle
+        | 1uy -> WeaponProfile.SupportWeapon
+        | 2uy -> WeaponProfile.AntiArmor
+        | 3uy -> WeaponProfile.LobbedArea
+        | value -> failDecode (sprintf "Invalid weapon-profile byte %d." value)
+
+    let private readWoundSeverity reader =
+        match readByte reader with
+        | 0uy -> WoundSeverity.Serious
+        | 1uy -> WoundSeverity.Critical
+        | value -> failDecode (sprintf "Invalid wound-severity byte %d." value)
+
     let private readInput reader =
         match readByte reader with
         | 0uy -> Move(Simulation.unitId (readInt32 reader), readCell reader)
@@ -478,6 +541,12 @@ module Replay =
             Attack(
                 Simulation.unitId (readInt32 reader),
                 Simulation.unitId (readInt32 reader)
+            )
+        | 3uy ->
+            PhysicalAttack(
+                Simulation.unitId (readInt32 reader),
+                readCell reader,
+                readWeaponProfile reader
             )
         | value -> failDecode (sprintf "Invalid kernel-input tag %d." value)
 
@@ -510,7 +579,7 @@ module Replay =
 
         let unitCount = readCount "units" limits.MaxUnits reader
 
-        let units =
+        let legacyUnits =
             [ for _ in 1 .. unitCount do
                   let unitId = Simulation.unitId (readInt32 reader)
 
@@ -538,8 +607,55 @@ module Replay =
                             else
                                 North } ]
 
-        if units |> List.map fst |> Set.ofList |> Set.count <> unitCount then
+        if legacyUnits |> List.map fst |> Set.ofList |> Set.count <> unitCount then
             failDecode "Snapshot contains duplicate unit identifiers."
+
+        let units =
+            if formatVersion >= CurrentFormatVersion then
+                legacyUnits
+                |> List.map (fun (unitId, unit) ->
+                    let armor =
+                        { FrontRating = readInt32 reader
+                          RearRating = readInt32 reader
+                          Integrity = readInt32 reader }
+                    let woundCount =
+                        readCount "wounds per unit" limits.MaxWoundsPerUnit reader
+                    let wounds =
+                        [ for _ in 1 .. woundCount do
+                              yield
+                                  { AttackId =
+                                      readLengthPrefixed "wound attack identifier" 96 reader
+                                      |> System.Text.Encoding.UTF8.GetString
+                                    Severity = readWoundSeverity reader
+                                    Damage = readInt32 reader } ]
+                    unitId,
+                    { unit with
+                        Armor = armor
+                        Wounds = wounds
+                        Incapacitated = readBool reader
+                        Suppression = readInt32 reader })
+            else
+                legacyUnits
+
+        let covers =
+            if formatVersion >= CurrentFormatVersion then
+                let coverCount = readCount "covers" limits.MaxCovers reader
+                let values =
+                    [ for _ in 1 .. coverCount do
+                          let coverId =
+                              readLengthPrefixed "cover identifier" 96 reader
+                              |> System.Text.Encoding.UTF8.GetString
+                          yield
+                              coverId,
+                              { CoverId = coverId
+                                Cell = readCell reader
+                                Integrity = readInt32 reader
+                                ProjectileBlocking = readBool reader } ]
+                if values |> List.map fst |> Set.ofList |> Set.count <> coverCount then
+                    failDecode "Snapshot contains duplicate cover identifiers."
+                Map.ofList values
+            else
+                Map.empty
 
         let observationCount =
             readCount "observations" limits.MaxObservations reader
@@ -562,7 +678,7 @@ module Replay =
             { Minimum = minimum
               Maximum = maximum
               Edges = edges
-              Covers = Map.empty }
+              Covers = covers }
           Units = Map.ofList units
           Observations = observations }
 
@@ -828,6 +944,31 @@ module Replay =
                                                     "edges",
                                                     state.Board.Edges.Length,
                                                     limits.MaxEdges
+                                                )
+                                            )
+                                        elif state.Board.Covers.Count > limits.MaxCovers then
+                                            Some(
+                                                ResourceLimitExceeded(
+                                                    "covers",
+                                                    state.Board.Covers.Count,
+                                                    limits.MaxCovers
+                                                )
+                                            )
+                                        elif
+                                            state.Units
+                                            |> Map.exists (fun _ unit ->
+                                                unit.Wounds.Length > limits.MaxWoundsPerUnit)
+                                        then
+                                            let actual =
+                                                state.Units
+                                                |> Map.toSeq
+                                                |> Seq.map (fun (_, unit) -> unit.Wounds.Length)
+                                                |> Seq.max
+                                            Some(
+                                                ResourceLimitExceeded(
+                                                    "wounds per unit",
+                                                    actual,
+                                                    limits.MaxWoundsPerUnit
                                                 )
                                             )
                                         elif state.Observations.Count > limits.MaxObservations then
