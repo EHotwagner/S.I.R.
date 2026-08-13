@@ -1,0 +1,47 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-13-sir-item-182-awareness-reaction-windows.md",
+  "reportSha256": "e80e1742005f190469617c8c581ac4fa51017b5a5af1f9ce2e634db08cdd23e4",
+  "criticMode": "fresh-context-subagent-pending-independent-pr-review",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [{ "locator": "command:./scripts/verify-awareness-reaction.sh", "result": "verified" }],
+      "confidenceLimits": ["The canonical diagnostic scenario proves the authority boundary, not final multiplayer transport."]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [{ "locator": "command:dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release -- --print-replay-evidence", "result": "verified" }],
+      "confidenceLimits": ["Compatibility evidence covers formats v1-v5 and retained v3 bytes; future formats require another predecessor fixture."]
+    },
+    {
+      "id": "§4.3",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [{ "locator": "command:dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release -- --awareness", "result": "verified" }],
+      "confidenceLimits": ["Timing is qualification-host evidence; structural counters and mutations are deterministic."]
+    },
+    {
+      "id": "§4.4",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:node scripts/test-production-delivery-budget.mjs", "result": "verified" },
+        { "locator": "command:node scripts/test-persistent-workspace-m9-acceptance.mjs", "result": "verified" }
+      ],
+      "confidenceLimits": ["The 65,536-byte raw cap is a reviewed feature revision; gzip and brotli caps remain unchanged."]
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [{ "locator": "command:find .agents/skills -path '*/fs-gg-feedback-report/SKILL.md'", "result": "verified" }],
+      "confidenceLimits": ["Repository examples supplied the fallback schema contract."]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "viewVersion": "1.0",
+  "workId": "182-awareness-reaction-windows",
+  "stage": "ship",
+  "status": "shipReady",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
+  "sourcesDigest": {
+    "algorithm": "sha256",
+    "value": "b92f7c1bd6f50822dec05deb99183b18232900708c0d106d5a0340b22777a3a9"
+  },
+  "verificationReadiness": {
+    "status": "verificationReady",
+    "evidenceSupportedCount": 61,
+    "evidenceSelfAttestedCount": 0,
+    "evidenceObservedCount": 61
+  },
+  "disposition": {
+    "state": "shipReady",
+    "blockingFindingIds": []
+  },
+  "readiness": "shipReady"
+}
