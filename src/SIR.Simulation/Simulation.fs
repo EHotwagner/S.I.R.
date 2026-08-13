@@ -454,20 +454,18 @@ module Simulation =
         // Expensive spatial queries are cursor-bounded, but authoritative time
         // is not. Existing knowledge outside this tick's service slice still
         // decays and expires against the current committed tick.
-        contacts <-
-            contacts
-            |> Map.map (fun (observerId, subjectId) previous ->
-                if servicedPairs.Contains((observerId, subjectId)) then previous
-                else
-                    let subjectCell =
-                        Map.tryFind subjectId state.Units
-                        |> Option.map _.Cell
-                        |> Option.orElse previous.LastKnownCell
-                        |> Option.defaultValue { Col = 0; Row = 0 }
-                    let next = AwarenessReaction.advanceContact AwarenessReaction.infantryProfile state.Tick subjectCell None previous
-                    if next.Level <> previous.Level || next.Reason <> previous.Reason then
-                        events <- AwarenessChanged(observerId, subjectId, next.Level, next.Reason) :: events
-                    next)
+        contacts
+        |> Map.iter (fun (observerId, subjectId) previous ->
+            if not (servicedPairs.Contains((observerId, subjectId))) then
+                let subjectCell =
+                    Map.tryFind subjectId state.Units
+                    |> Option.map _.Cell
+                    |> Option.orElse previous.LastKnownCell
+                    |> Option.defaultValue { Col = 0; Row = 0 }
+                let next = AwarenessReaction.advanceContact AwarenessReaction.infantryProfile state.Tick subjectCell None previous
+                if next <> previous then contacts <- Map.add (observerId, subjectId) next contacts
+                if next.Level <> previous.Level || next.Reason <> previous.Reason then
+                    events <- AwarenessChanged(observerId, subjectId, next.Level, next.Reason) :: events)
 
         let moved =
             movementEvents
