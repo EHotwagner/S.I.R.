@@ -1,7 +1,7 @@
 {
   "format": "sir-map-editor-review-v1",
   "generatedFrom": "production persistent Fable/React SVG workscreen after the M4 Editor migration",
-  "productionBundleSha256": "315b4922e57cecc95f4af8fb0d60b6f4c984b29d8084519fd317155cb110361d",
+  "productionBundleSha256": "d7bac2fd52d0e9af05d4d6623cdc5e0968c5e041bf9a9b718c38862d2b3ba9c7",
   "rasterizer": "rsvg-convert 2.62.3",
   "width": 960,
   "height": 640,
@@ -51,7 +51,7 @@
       "description": "Continuously maintained simulation projected into the same retained SVG.",
       "svg": "continuous-simulation.svg",
       "png": "continuous-simulation.png",
-      "svgSha256": "04c3f54e59f999dee7ae4f6154e9407b6e8ed5aba47568fcdc5fd003a96733ff",
+      "svgSha256": "23551cba0e3722f2495737dbea94d104a85f1db9eb4d7fab118c02fb9f20d7a9",
       "pngSha256": "0284c077fa653544cc48c3644569142a76431553ee5e08cdadf2b498f1b92f6d"
     },
     {

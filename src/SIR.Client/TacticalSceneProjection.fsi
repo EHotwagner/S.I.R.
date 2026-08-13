@@ -71,8 +71,8 @@ type TacticalOverlayPreferenceDiagnostic =
 
 type TacticalOverlayGeometry =
     | FootprintGeometry of centerX: float * centerY: float * width: float * depth: float
-    | DirectionGeometry of originX: float * originY: float * headingRadians: float * length: float * arcRadians: float
-    | PathGeometry of points: float array * movementCost: int32 * blockerIds: string array
+    | DirectionGeometry of originX: float * originY: float * headingRadians: float * arcRadians: float option
+    | PathGeometry of points: float array * movementCost: int32 option * blockerIds: string array
     | AreaGeometry of centerX: float * centerY: float * radius: float
     | TraceGeometry of points: float array * impactX: float * impactY: float
     | StatusGeometry of anchorX: float * anchorY: float * current: int32 option * maximum: int32 option * tokens: string array
@@ -121,7 +121,7 @@ type SceneRouteProjection =
       OverlayId: TacticalOverlayId
       Kind: string
       Points: float array
-      MovementCost: int32
+      MovementCost: int32 option
       BlockerIds: string array
       Label: Disclosure<string> }
 
@@ -132,6 +132,7 @@ type SceneAnnotationProjection =
       SubjectUnitId: int32 option
       Column: int32 option
       Row: int32 option
+      Geometry: TacticalOverlayGeometry option
       Text: Disclosure<string> }
 
 type SceneDisclosureProjection =

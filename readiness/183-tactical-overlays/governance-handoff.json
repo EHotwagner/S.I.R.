@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/183-tactical-overlays/ship.json",
-      "digest": "sha256:011aa296c8cc8eb22fb2da28cd217553a6ce7111b523cd8c84f137fdeacf613d",
+      "digest": "sha256:dbc1c13dfad4e351223e31e06e522732a5669a8d6642404b4d691112af7a963e",
       "schemaVersion": 1
     },
     {
       "path": "readiness/183-tactical-overlays/verify.json",
-      "digest": "sha256:0ccc5fdef762f3ab6653d1468a9be4416737ae4c2f2e881b830fbc3af8e17fa7",
+      "digest": "sha256:7c26ca546542439650cc8aa6baf71bf6b2f1c4771b4bf16e1e3e451193ebc863",
       "schemaVersion": 1
     },
     {
       "path": "readiness/183-tactical-overlays/work-model.json",
-      "digest": "sha256:ed8c684c23a910c704b3c43ee346ba667898b8bcd52d71001cf0068c748c0af1",
+      "digest": "sha256:87f04614c383103019346d079c18d5bad280fc07b3e9fd3e95a549f2cbe4f1e1",
       "schemaVersion": 1
     }
   ],

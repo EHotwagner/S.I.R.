@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="1" skipped="0">
+ <testsuite name="item-183-authoritative-geometry-inversion" tests="1" failures="1" skipped="0">
+  <testcase classname="TacticalSceneProjectionQualification" name="authoritative geometry points are consumed exactly">
+   <failure message="Exact LOS overlay approximated or discarded authoritative corner/door evidence.">Subject mutation: changed the injected authoritative exact-LOS penultimate X coordinate from 1.5 to 1.75 while retaining the expected geometry. Release qualification failed at TacticalSceneProjectionQualification.fs:1060.</failure>
+  </testcase>
+ </testsuite>
+</testsuites>

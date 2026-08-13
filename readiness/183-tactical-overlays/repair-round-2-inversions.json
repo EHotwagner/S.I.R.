@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "reviewedBase": "5033d442eeb2973d15127424da1247bf1595e83a",
+  "round": 2,
+  "mutations": [
+    {
+      "gate": "authoritative typed scalar",
+      "subjectMutation": "Change exact-LOS MovementCost from Some 2 to Some 3.",
+      "receipt": "readiness/183-tactical-overlays/tactical-overlays-authoritative-scalar-inversion.junit.xml",
+      "observed": "red: exact typed cost assertion rejected the changed authoritative scalar"
+    },
+    {
+      "gate": "authoritative overlay identity",
+      "subjectMutation": "Change exact-LOS route OverlayId to movement.planned-routes.",
+      "receipt": "readiness/183-tactical-overlays/tactical-overlays-authoritative-identity-inversion.junit.xml",
+      "observed": "red: exact layer identity assertion found no exact-LOS payload"
+    },
+    {
+      "gate": "authoritative geometry",
+      "subjectMutation": "Change exact-LOS penultimate X coordinate from 1.5 to 1.75.",
+      "receipt": "readiness/183-tactical-overlays/tactical-overlays-authoritative-geometry-inversion.junit.xml",
+      "observed": "red: exact point-array assertion rejected the changed authoritative geometry"
+    }
+  ]
+}

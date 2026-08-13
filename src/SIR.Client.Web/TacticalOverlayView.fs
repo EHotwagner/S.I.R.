@@ -15,10 +15,11 @@ let payloadChildren (cellSize: float) (payload: TacticalOverlayPayload) =
     [ match payload.Geometry with
       | FootprintGeometry(centerX, centerY, width, depth) ->
           Svg.rect [ svg.x ((centerX - width / 2.0) * cellSize); svg.y ((centerY - depth / 2.0) * cellSize); svg.width (width * cellSize); svg.height (depth * cellSize); svg.fill "none"; svg.stroke "currentColor"; svg.strokeWidth 2 ]
-      | DirectionGeometry(originX, originY, heading, length, arc) ->
-          Svg.line [ svg.x1 (originX * cellSize); svg.y1 (originY * cellSize); svg.x2 ((originX + cos heading * length) * cellSize); svg.y2 ((originY + sin heading * length) * cellSize); svg.stroke "currentColor"; svg.strokeWidth 3; svg.custom ("data-direction-arc", string arc) ]
+      | DirectionGeometry(originX, originY, heading, arc) ->
+          let presentationLength = 0.75
+          Svg.line [ svg.x1 (originX * cellSize); svg.y1 (originY * cellSize); svg.x2 ((originX + cos heading * presentationLength) * cellSize); svg.y2 ((originY + sin heading * presentationLength) * cellSize); svg.stroke "currentColor"; svg.strokeWidth 3; svg.custom ("data-direction-arc", arc |> Option.map string |> Option.defaultValue "") ]
       | PathGeometry(points, movementCost, blockerIds) ->
-          Svg.polyline [ svg.points (pointString cellSize points); svg.fill "none"; svg.stroke "currentColor"; svg.strokeWidth 2; svg.custom ("stroke-dasharray", "6 3"); svg.custom ("data-movement-cost", string movementCost) ]
+          Svg.polyline [ svg.points (pointString cellSize points); svg.fill "none"; svg.stroke "currentColor"; svg.strokeWidth 2; svg.custom ("stroke-dasharray", "6 3"); svg.custom ("data-movement-cost", movementCost |> Option.map string |> Option.defaultValue "") ]
           for index, blocker in Array.indexed blockerIds do
               let anchor = max 0 (points.Length - 2)
               Svg.circle [ svg.cx ((points[anchor] + float index * 0.08) * cellSize); svg.cy (points[anchor + 1] * cellSize); svg.r 4; svg.fill "currentColor"; svg.custom ("data-blocker-id", blocker) ]

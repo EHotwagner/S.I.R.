@@ -24,6 +24,7 @@ native_summary=$(grep 'Tactical scene projection qualification passed:' "$stage/
 junit_pass "$stage/tactical-overlays-native.junit.xml" tactical-overlays-native "$((SECONDS-start))" "$native_summary"
 
 start=$SECONDS
+npm ci --ignore-scripts
 npm run build:client
 junit_pass "$stage/tactical-overlays-fable-production.junit.xml" tactical-overlays-fable-production "$((SECONDS-start))"
 

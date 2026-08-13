@@ -331,6 +331,26 @@ let run () =
                 && Set.ofArray unit.Visual.StatusIds
                    = Set.ofList [ "planning"; "hold"; "engagement"; "synchronization" ]))
         "Planning projection mutated input or disclosed editor/runtime-only unit state."
+    let planningFacing =
+        planningProjection.Annotations
+        |> Array.find (fun annotation -> annotation.Kind = "facing")
+    let planningAttention =
+        planningProjection.Annotations
+        |> Array.find (fun annotation -> annotation.Kind = "attention")
+    require
+        ((match planningFacing.Geometry with
+          | Some(DirectionGeometry(_, _, heading, arc)) ->
+              heading = (HeadingRadians.ofDirection8 East |> HeadingRadians.value)
+              && arc.IsNone
+          | _ -> false)
+         && (match planningAttention.Geometry with
+             | Some(DirectionGeometry(_, _, heading, arc)) ->
+                 heading = (HeadingRadians.ofDirection8 NorthEast |> HeadingRadians.value)
+                 && arc.IsNone
+             | _ -> false)
+         && planningProjection.Routes[0].MovementCost.IsNone
+         && planningProjection.Routes[0].BlockerIds.Length = 0)
+        "Planning authority did not preserve exact typed direction/route facts or invented unavailable cost/blockers."
     let annotationSelection =
         TacticalSceneProjection.planning
             { planningInput with
@@ -1023,7 +1043,7 @@ let run () =
                          OverlayId = exactLosDescriptor.Id
                          Kind = "exact-los:supercover:corner:door-solid:blocker=semantic-edge"
                          Points = [| 0.5; 0.5; 0.5; 1.5; 1.5; 1.5 |]
-                         MovementCost = 2
+                         MovementCost = Some 2
                          BlockerIds = [| "semantic-edge"; "door-solid" |]
                          Label = Disclosed "Exact LOS blocked by closed door" } |] }
     let exactLos =
@@ -1039,6 +1059,17 @@ let run () =
              && payload.Kind.Contains("door-solid")
              && payload.Points = [| 0.5; 0.5; 0.5; 1.5; 1.5; 1.5 |]))
         "Exact LOS overlay approximated or discarded authoritative corner/door evidence."
+    require
+        (exactLos.Payloads
+         |> Array.exists (fun payload ->
+             match payload.Geometry with
+             | PathGeometry(points, movementCost, blockerIds) ->
+                 payload.OverlayId = exactLosDescriptor.Id
+                 && points = [| 0.5; 0.5; 0.5; 1.5; 1.5; 1.5 |]
+                 && movementCost = Some 2
+                 && blockerIds = [| "semantic-edge"; "door-solid" |]
+             | _ -> false))
+        "Exact LOS typed cost, blockers, or geometry changed before overlay consumption."
     let undisclosed =
         TacticalSceneProjection.projectOverlays
             TacticalSceneProjection.initialOverlayPreferences
@@ -1069,43 +1100,87 @@ let run () =
         |> Array.filter (fun descriptor -> Set.contains InspectHeld descriptor.SupportedModes)
         |> Array.map _.Id
         |> Set.ofArray
+    let genericAnnotation = planningProjection.Annotations[0]
+    let genericAnnotationPrimitive = genericAnnotation.PrimitiveId
+    let genericAnnotationScene =
+        { denseOverlayScene with
+            Annotations =
+                [| { genericAnnotation with
+                       OverlayId = Some exactLosDescriptor.Id
+                       Geometry = None
+                       Text = Disclosed "exact-los radius=99 heading=42 impact=7,7 cost=500 blocker=secret" } |] }
+    let genericAnnotationProjection =
+        TacticalSceneProjection.projectOverlays
+            allOverlayPreferences
+            heldOverlays
+            genericAnnotationScene
+    require
+        (genericAnnotationProjection.Payloads
+         |> Array.forall (fun payload -> payload.PrimitiveId <> genericAnnotationPrimitive))
+        "Generic annotation text was disguised as authoritative tactical geometry."
     let workloadScene unitCount =
         let units = denseOverlayScene.Units |> Array.truncate unitCount
         let ids = units |> Array.map _.Visual.Id
+        let overlayId value =
+            TacticalSceneProjection.overlayRegistry
+            |> Array.find (fun descriptor -> TacticalOverlayId.value descriptor.Id = value)
+            |> _.Id
         let factAnnotations =
             units
             |> Array.collect (fun unit ->
-                [| "unit.body-facing", "facing", "Facing east"
-                   "awareness.attention-vision", "attention", "Attention east"
-                   "cover.exposure", "cover", "Cover 60%"
-                   "combat.armor-coverage", "armor", "Front armor 40"
-                   "combat.area-engagements", "engagement", "Engagement radius 1"
-                   "combat.suppression", "suppression", "Suppression 20"
-                   "combat.attack-traces", "attack", "Attack impact"
-                   "combat.hp-wounds", "wound", "Wound serious"
-                   "command.state", "command", "Command hold" |]
-                |> Array.mapi (fun index (overlay, kind, text) ->
+                let x = unit.PresentationColumn + 0.5
+                let y = unit.PresentationRow + 0.5
+                [| "unit.body-facing", "body-facing", DirectionGeometry(x, y, 0.25, None), "Body facing"
+                   "awareness.attention-vision", "attention", DirectionGeometry(x, y, 1.25, Some 0.5), "Attention sector"
+                   "movement.reservations", "reservation", AreaGeometry(x, y, 0.625), "Reserved footprint"
+                   "cover.exposure", "cover", DirectionGeometry(x, y, 0.375, Some 1.125), "Cover sector"
+                   "combat.armor-coverage", "armor", DirectionGeometry(x, y, 1.875, Some 0.75), "Armor sector"
+                   "combat.area-engagements", "engagement", AreaGeometry(x, y, 2.25), "Engagement area"
+                   "combat.suppression", "suppression", StatusGeometry(x, y, Some 20, Some 100, [| "suppressed" |]), "Suppression"
+                   "combat.attack-traces", "attack", TraceGeometry([| x; y; x + 1.0; y + 0.25 |], x + 1.0, y + 0.25), "Attack trace"
+                   "combat.hp-wounds", "wound", StatusGeometry(x, y, Some 7, Some 10, [| "wound:serious" |]), "Wounds"
+                   "command.state", "command", StatusGeometry(x, y, Some 2, Some 3, [| "command:hold" |]), "Command state" |]
+                |> Array.map (fun (overlay, kind, geometry, text) ->
                     { PrimitiveId = unit.PrimitiveId
                       Kind = kind
-                      OverlayId = Some(TacticalSceneProjection.overlayRegistry |> Array.find (fun descriptor -> TacticalOverlayId.value descriptor.Id = overlay) |> _.Id)
+                      OverlayId = Some(overlayId overlay)
                       SubjectUnitId = Some unit.Visual.Id
                       Column = Some(int32 unit.PresentationColumn)
                       Row = Some(int32 unit.PresentationRow)
+                      Geometry = Some geometry
                       Text = Disclosed text }))
-        let los =
+        let routes =
             units
-            |> Array.map (fun unit ->
-                { PrimitiveId = unit.PrimitiveId
-                  OwnerUnitId = Some unit.Visual.Id
-                  OverlayId = exactLosDescriptor.Id
-                  Kind = "exact-los:supercover"
-                  Points = [| unit.PresentationColumn + 0.5; unit.PresentationRow + 0.5; unit.PresentationColumn + 1.5; unit.PresentationRow + 0.5 |]
-                  MovementCost = 1
-                  BlockerIds = [| "edge:" + string unit.Visual.Id |]
-                  Label = Disclosed "Exact LOS" })
+            |> Array.collect (fun unit ->
+                let x = unit.PresentationColumn + 0.5
+                let y = unit.PresentationRow + 0.5
+                [| { PrimitiveId = unit.PrimitiveId
+                     OwnerUnitId = Some unit.Visual.Id
+                     OverlayId = overlayId "movement.reachable-path-cost"
+                     Kind = "reachable-path"
+                     Points = [| x; y; x + 1.0; y |]
+                     MovementCost = Some 3
+                     BlockerIds = [| "edge:" + string unit.Visual.Id |]
+                     Label = Disclosed "Reachable path" }
+                   { PrimitiveId = unit.PrimitiveId
+                     OwnerUnitId = Some unit.Visual.Id
+                     OverlayId = overlayId "movement.planned-routes"
+                     Kind = "planned-route"
+                     Points = [| x; y; x; y + 1.0 |]
+                     MovementCost = Some 4
+                     BlockerIds = [||]
+                     Label = Disclosed "Planned route" }
+                   { PrimitiveId = unit.PrimitiveId
+                     OwnerUnitId = Some unit.Visual.Id
+                     OverlayId = exactLosDescriptor.Id
+                     Kind = "exact-los:supercover"
+                     Points = [| x; y; x + 1.5; y + 0.5 |]
+                     MovementCost = None
+                     BlockerIds = [| "door:" + string unit.Visual.Id |]
+                     Label = Disclosed "Exact LOS" } |])
         { denseOverlayScene with
             Units = units
-            Routes = Array.append (denseOverlayScene.Routes |> Array.truncate unitCount) los
+            Routes = routes
             Annotations = factAnnotations
             Selection = { denseOverlayScene.Selection with SelectedUnits = ids } }
     let representativeProjection = TacticalSceneProjection.projectOverlays allOverlayPreferences heldOverlays (workloadScene 100)
@@ -1120,11 +1195,12 @@ let run () =
         ((workloadScene 100).Units.Length = 100 && stressScene.Units.Length = 200 && Array.isEmpty missingOverlayIds)
         ("The representative production-view projection did not emit every advertised initial overlay family: " + String.concat ", " missingOverlayIds)
     require
-        (representativeProjection.Payloads |> Array.exists (fun payload -> match payload.Geometry with FootprintGeometry(_, _, width, depth) -> width > 0.0 && depth > 0.0 | _ -> false)
-         && representativeProjection.Payloads |> Array.exists (fun payload -> match payload.Geometry with DirectionGeometry(_, _, heading, length, _) -> not (Double.IsNaN heading) && length > 0.0 | _ -> false)
-         && representativeProjection.Payloads |> Array.exists (fun payload -> match payload.Geometry with PathGeometry(_, cost, blockers) -> cost >= 0 && blockers.Length > 0 | _ -> false)
-         && representativeProjection.Payloads |> Array.exists (fun payload -> match payload.Geometry with AreaGeometry(_, _, radius) -> radius > 0.0 | _ -> false)
-         && representativeProjection.Payloads |> Array.exists (fun payload -> match payload.Geometry with TraceGeometry(_, impactX, impactY) -> impactX >= 0.0 && impactY >= 0.0 | _ -> false))
+        (representativeProjection.Payloads |> Array.exists (fun payload -> TacticalOverlayId.value payload.OverlayId = "unit.footprints" && match payload.Geometry with FootprintGeometry(_, _, width, depth) -> width = 1.0 && depth = 1.0 | _ -> false)
+         && representativeProjection.Payloads |> Array.exists (fun payload -> TacticalOverlayId.value payload.OverlayId = "cover.exposure" && match payload.Geometry with DirectionGeometry(_, _, heading, arc) -> heading = 0.375 && arc = Some 1.125 | _ -> false)
+         && representativeProjection.Payloads |> Array.exists (fun payload -> TacticalOverlayId.value payload.OverlayId = "movement.reachable-path-cost" && match payload.Geometry with PathGeometry(points, cost, blockers) -> points.Length = 4 && cost = Some 3 && blockers |> Array.exists (fun blocker -> blocker.StartsWith("edge:")) | _ -> false)
+         && representativeProjection.Payloads |> Array.exists (fun payload -> TacticalOverlayId.value payload.OverlayId = "combat.area-engagements" && match payload.Geometry with AreaGeometry(_, _, radius) -> radius = 2.25 | _ -> false)
+         && representativeProjection.Payloads |> Array.exists (fun payload -> TacticalOverlayId.value payload.OverlayId = "combat.attack-traces" && match payload.Geometry with TraceGeometry(points, impactX, impactY) -> points.Length = 4 && impactX = points[2] && impactY = points[3] | _ -> false)
+         && representativeProjection.Payloads |> Array.exists (fun payload -> TacticalOverlayId.value payload.OverlayId = "command.state" && payload.SubjectId = "1" && match payload.Geometry with StatusGeometry(_, _, current, maximum, tokens) -> current = Some 2 && maximum = Some 3 && tokens = [| "command:hold" |] | _ -> false))
         "Typed footprint/direction/path-blocker/trace geometry was lost before rendering."
     require
         (representativeProjection.Cost.EstimatedSvgNodes <= 5000
