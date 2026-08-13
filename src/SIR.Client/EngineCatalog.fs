@@ -23,7 +23,7 @@ module EngineCatalog =
         { Version = "v1"
           Identity = CurrentIdentity
           EngineHash = [| for value in 1 .. 32 -> byte value |]
-          ReplayFormatVersions = [ 1; 2; 3 ]
+          ReplayFormatVersions = [ 1; 2; 3; 4 ]
           WorkerPath = CurrentWorkerPath }
 
     let Retained = [ Current ]
