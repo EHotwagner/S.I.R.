@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-13-sir-item-183-tactical-overlays.md",
-  "reportSha256": "6b8b6958864ebf383c59f61a215e62d9d2124f23479d52def7e8911ac3b2d493",
+  "reportSha256": "ac9476e508d47f4dc8d49b44ea08ab20851ea723c08cb4a683145414d29c840e",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -10,15 +10,19 @@
       "status": "positive-pattern",
       "missingFacts": [],
       "checkedEvidence": [
-        { "locator": "file:src/SIR.Client/TacticalSceneProjection.fsi", "result": "verified", "sha256": "20dc5178c8709a77ae76c21b6b249a89c740059f4c269c636b1adb3f490f6694" },
-        { "locator": "file:src/SIR.Client/TacticalSceneProjection.fs", "result": "verified", "sha256": "8b9ece1c8676720f7f8609d394e621485704f98294a9221366a6da193a3135ac" },
-        { "locator": "file:src/SIR.Client.Web/TacticalOverlayView.fs", "result": "verified", "sha256": "cd063798d122101d35a2be4980da1e21afe0f503e87449de4aab653ea0078604" },
-        { "locator": "file:tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs", "result": "verified", "sha256": "38967ed45c4cf521c548150f752012c7078c91a38aee43deda5fce493d04b3b3" },
-        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-native.junit.xml", "result": "verified", "sha256": "f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b" },
-        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-fable-production.junit.xml", "result": "verified", "sha256": "e4233829ab7718141cf6f8673455c304e2ec33f12a5244e730a20416e587d9ca" }
+        { "locator": "file:src/SIR.Client/TacticalSceneProjection.fsi", "result": "verified", "sha256": "f3530a116006106364c7d8358c13c47169db37cab0397561c5f14907a44a5319" },
+        { "locator": "file:src/SIR.Client/TacticalSceneProjection.fs", "result": "verified", "sha256": "0271550f873d84d86fcb1d9ed0fa5be8c193abb211296ea6da91bb84a8d1a618" },
+        { "locator": "file:src/SIR.Client.Web/TacticalOverlayView.fs", "result": "verified", "sha256": "27e3d822ea7dc1baf946bc67609890cd3b817682c1eda2282fcc0cab22c81978" },
+        { "locator": "file:tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs", "result": "verified", "sha256": "954257e0d99c609914165a48faf0bfcb9d5642ca6156994cf80191210eead5e7" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-native.junit.xml", "result": "verified", "sha256": "1dd30c5ab6d58739f62adb42bce4f135b5f3e2ba6eac1b240c1fc44de57825d8" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-fable-production.junit.xml", "result": "verified", "sha256": "e4233829ab7718141cf6f8673455c304e2ec33f12a5244e730a20416e587d9ca" },
+        { "locator": "file:readiness/183-tactical-overlays/repair-round-2-inversions.json", "result": "verified", "sha256": "408dc39094cdb5219b57fdc09d31f624eac58296cd99c0100680593aa87f3adc" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-authoritative-scalar-inversion.junit.xml", "result": "verified", "sha256": "a084dc508a7981c4a2edf2c459d416eee6a0d3dbc027ce3a454ab3a67d9688ac" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-authoritative-identity-inversion.junit.xml", "result": "verified", "sha256": "8dc8cb116568e6825f00ca74130af08f1aaff90fa42b5a7606ee85028e3ab053" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-authoritative-geometry-inversion.junit.xml", "result": "verified", "sha256": "48d401fc3208af2dc42ddcd7fb8bc753b5f4621d9796e3825085845fe94b9516" }
       ],
       "confidenceLimits": [
-        "Adapters can preserve only tactical facts present in the existing disclosed scene vocabulary.",
+        "Geometry-bearing annotations with unavailable geometry intentionally produce no tactical payload; optional route fields remain explicitly absent.",
         "Same-critic exact-head confirmation remains pending."
       ]
     },
@@ -27,7 +31,7 @@
       "status": "positive-pattern",
       "missingFacts": [],
       "checkedEvidence": [
-        { "locator": "file:tests/SIR.Browser.Tests/visible-workflows.spec.js", "result": "verified", "sha256": "70c9d462db1a22fa0c47b85dbdfd10f7ee75adad7a6521b884bdcbf44226e3ac" },
+        { "locator": "file:tests/SIR.Browser.Tests/visible-workflows.spec.js", "result": "verified", "sha256": "5a2db78f8ddb7ac593ddc5b52c92f24ef7076ac80905ce86433e674700ac4f42" },
         { "locator": "file:src/SIR.Client.Web/styles.css", "result": "verified", "sha256": "971f77e0dc1a46baf6b9fd6b51a1375540e7c762baebcc9cf3e2236ebf51652a" },
         { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml", "result": "verified", "sha256": "643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14" },
         { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-hold-inversion.junit.xml", "result": "verified", "sha256": "98e09a64ca95a582a8ead97a4445c8358d08d9775cbf26cb84f7fcc2db876939" },
@@ -45,18 +49,19 @@
       "status": "positive-pattern",
       "missingFacts": [],
       "checkedEvidence": [
-        { "locator": "file:scripts/generate-item-183-evidence.sh", "result": "verified", "sha256": "fc9c3d8cdba2e6720ae5582a4d1a6a957e45bbbff0db3d51b00163e638b0dc27" },
+        { "locator": "file:scripts/generate-item-183-evidence.sh", "result": "verified", "sha256": "b166bc07fe684c73b0129b2724e54e542eb94cabcf7b7b22016dc9cf5205c3cb" },
         { "locator": "file:scripts/test-conformance.sh", "result": "verified", "sha256": "74f29e715a9e2b3f282c68cf2554b5ad0648d9a7471ad604b4e1bc5e9a0de98e" },
-        { "locator": "file:work/183-tactical-overlays/evidence.yml", "result": "verified", "sha256": "78551950ff678f48b86b0cbb964d2840cab493ae3e964d03f2e8d72d800182a1" },
-        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-native.junit.xml", "result": "verified", "sha256": "f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b" },
+        { "locator": "file:work/183-tactical-overlays/evidence.yml", "result": "verified", "sha256": "5640807660b90d1f482c58c46ae962191d8cbfc41f83b153c10c3d171fe2d4cc" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-native.junit.xml", "result": "verified", "sha256": "1dd30c5ab6d58739f62adb42bce4f135b5f3e2ba6eac1b240c1fc44de57825d8" },
         { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-fable-production.junit.xml", "result": "verified", "sha256": "e4233829ab7718141cf6f8673455c304e2ec33f12a5244e730a20416e587d9ca" },
         { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml", "result": "verified", "sha256": "643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14" },
-        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml", "result": "verified", "sha256": "289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3" },
-        { "locator": "file:readiness/183-tactical-overlays/verify.json", "result": "verified", "sha256": "0ccc5fdef762f3ab6653d1468a9be4416737ae4c2f2e881b830fbc3af8e17fa7" }
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml", "result": "verified", "sha256": "5f06f00a7cd658b53871ec61425323ceeb8aff15bd1606abd1ea2350bee83abe" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-fresh-archive.junit.xml", "result": "verified", "sha256": "9fc5ce0babc278c1e5878db5bf9e798395ee0cff4af565f69a2fdeb9a798a3d1" },
+        { "locator": "file:readiness/183-tactical-overlays/verify.json", "result": "verified", "sha256": "7c26ca546542439650cc8aa6baf71bf6b2f1c4771b4bf16e1e3e451193ebc863" }
       ],
       "confidenceLimits": [
         "The aggregate JUnit records command success as one testcase; focused receipts and source mappings carry subsystem-specific claims.",
-        "Hosted exact-head CI remains pending."
+        "The clean archive receipt binds exact commit f163be49; hosted exact-head CI remains pending."
       ]
     }
   ]
