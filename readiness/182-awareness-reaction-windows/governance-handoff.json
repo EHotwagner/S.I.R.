@@ -6,12 +6,12 @@
   "sources": [
     {
       "path": "readiness/182-awareness-reaction-windows/ship.json",
-      "digest": "sha256:6e7ce9c2c8a261cb392da86aa35d6cbd72cc59841935b9ad4370a926ba0fa1c4",
+      "digest": "sha256:1aa21c7c30393288e91ed62da5c17482a265450babbfdbe5971955d1d8e96de5",
       "schemaVersion": 1
     },
     {
       "path": "readiness/182-awareness-reaction-windows/verify.json",
-      "digest": "sha256:952d9bed769a28ddbb9816498f23047d211a42e28d8b9c070e0e627a78feeaf3",
+      "digest": "sha256:14a6121a652d548f25d101424f01bf5ee05fc0a232615f8184df480c979ff745",
       "schemaVersion": 1
     },
     {

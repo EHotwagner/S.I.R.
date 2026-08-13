@@ -3,9 +3,9 @@
      sources:
        - readiness/182-awareness-reaction-windows/agent-commands/claude/guidance.json  digest:573a860b86a3ecd38234ed6d7509e6103e9f4b8282ea34614c9049200c61adec  schema:1(current)
        - readiness/182-awareness-reaction-windows/agent-commands/codex/guidance.json  digest:91442e62038421293c9efd7fcea180317ce8a0fdc3d56349704d922a4de0c8d6  schema:1(current)
-       - readiness/182-awareness-reaction-windows/analysis.json  digest:7f6b4a0a739f4a7592bf030549447957b1636606613c3080e8397c6cc6f25686  schema:1(current)
-       - readiness/182-awareness-reaction-windows/ship.json  digest:6e7ce9c2c8a261cb392da86aa35d6cbd72cc59841935b9ad4370a926ba0fa1c4  schema:1(current)
-       - readiness/182-awareness-reaction-windows/verify.json  digest:952d9bed769a28ddbb9816498f23047d211a42e28d8b9c070e0e627a78feeaf3  schema:1(current)
+       - readiness/182-awareness-reaction-windows/analysis.json  digest:bbdea024c7e6aea5b7380b9528689bfab2dc929839b4c342b8457fe8b47f9216  schema:1(current)
+       - readiness/182-awareness-reaction-windows/ship.json  digest:1aa21c7c30393288e91ed62da5c17482a265450babbfdbe5971955d1d8e96de5  schema:1(current)
+       - readiness/182-awareness-reaction-windows/verify.json  digest:14a6121a652d548f25d101424f01bf5ee05fc0a232615f8184df480c979ff745  schema:1(current)
        - readiness/182-awareness-reaction-windows/work-model.json  digest:785f51a28a764ae5e3d372866cd70ae08608cc4510d62502e825c0f4a8140be8  schema:1(current)
      outputDigest: b28c8c4e79541149d97ec3e3d4436c15325b501bd49969062e0a03768c0c704f -->
 
