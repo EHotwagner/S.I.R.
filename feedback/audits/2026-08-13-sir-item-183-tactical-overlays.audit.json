@@ -1,30 +1,63 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-13-sir-item-183-tactical-overlays.md",
-  "reportSha256": "927b4aabb3f39c52ec894309f792d973ab44b157cfea171f5fc7117cd68ed85f",
+  "reportSha256": "6b8b6958864ebf383c59f61a215e62d9d2124f23479d52def7e8911ac3b2d493",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
     {
       "id": "§4.1",
-      "status": "actionable",
+      "status": "positive-pattern",
       "missingFacts": [],
-      "checkedEvidence": [{ "locator": "command:npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js tests/SIR.Browser.Tests/visible-workflows.spec.js -g 'analysis overlays'", "result": "verified" }],
-      "confidenceLimits": ["Independent exact-head review remains pending with the parent worker."]
+      "checkedEvidence": [
+        { "locator": "file:src/SIR.Client/TacticalSceneProjection.fsi", "result": "verified", "sha256": "20dc5178c8709a77ae76c21b6b249a89c740059f4c269c636b1adb3f490f6694" },
+        { "locator": "file:src/SIR.Client/TacticalSceneProjection.fs", "result": "verified", "sha256": "8b9ece1c8676720f7f8609d394e621485704f98294a9221366a6da193a3135ac" },
+        { "locator": "file:src/SIR.Client.Web/TacticalOverlayView.fs", "result": "verified", "sha256": "cd063798d122101d35a2be4980da1e21afe0f503e87449de4aab653ea0078604" },
+        { "locator": "file:tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs", "result": "verified", "sha256": "38967ed45c4cf521c548150f752012c7078c91a38aee43deda5fce493d04b3b3" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-native.junit.xml", "result": "verified", "sha256": "f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-fable-production.junit.xml", "result": "verified", "sha256": "e4233829ab7718141cf6f8673455c304e2ec33f12a5244e730a20416e587d9ca" }
+      ],
+      "confidenceLimits": [
+        "Adapters can preserve only tactical facts present in the existing disclosed scene vocabulary.",
+        "Same-critic exact-head confirmation remains pending."
+      ]
     },
     {
       "id": "§4.2",
-      "status": "actionable",
+      "status": "positive-pattern",
       "missingFacts": [],
-      "checkedEvidence": [{ "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-build", "result": "verified" }],
-      "confidenceLimits": ["The renderer can only expose tactical facts present in the existing disclosed scene vocabulary."]
+      "checkedEvidence": [
+        { "locator": "file:tests/SIR.Browser.Tests/visible-workflows.spec.js", "result": "verified", "sha256": "70c9d462db1a22fa0c47b85dbdfd10f7ee75adad7a6521b884bdcbf44226e3ac" },
+        { "locator": "file:src/SIR.Client.Web/styles.css", "result": "verified", "sha256": "971f77e0dc1a46baf6b9fd6b51a1375540e7c762baebcc9cf3e2236ebf51652a" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml", "result": "verified", "sha256": "643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-hold-inversion.junit.xml", "result": "verified", "sha256": "98e09a64ca95a582a8ead97a4445c8358d08d9775cbf26cb84f7fcc2db876939" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-contrast-inversion.junit.xml", "result": "verified", "sha256": "316c5c99cc916c0d9cb2934a7d09435399d8cd5805a80c3190cede6c5403fad0" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-node-inversion.junit.xml", "result": "verified", "sha256": "d2a0c97473a542cd389bc7836974f1db3e56b687020d372be8fd98a1ed887a80" },
+        { "locator": "file:readiness/183-tactical-overlays/repair-round-1-inversions.json", "result": "verified", "sha256": "33eb68bcdccc2d9ad56ff3dec900ed34e7fc998b3fd885cc452492bc5c086f17" }
+      ],
+      "confidenceLimits": [
+        "The three retained browser inversions cover hold handlers, forced-colors styling, and node accounting; they do not claim a separate 400-percent geometry mutation.",
+        "Projection timing is host evidence and structural browser evidence does not measure compositor frame rate."
+      ]
     },
     {
       "id": "§4.3",
-      "status": "actionable",
+      "status": "positive-pattern",
       "missingFacts": [],
-      "checkedEvidence": [{ "locator": "readiness/183-tactical-overlays/tactical-overlays-all-browser.junit.xml", "result": "verified" }],
-      "confidenceLimits": ["The admission cap is test-only; production defaults were not exercised by this adjustment."]
+      "checkedEvidence": [
+        { "locator": "file:scripts/generate-item-183-evidence.sh", "result": "verified", "sha256": "fc9c3d8cdba2e6720ae5582a4d1a6a957e45bbbff0db3d51b00163e638b0dc27" },
+        { "locator": "file:scripts/test-conformance.sh", "result": "verified", "sha256": "74f29e715a9e2b3f282c68cf2554b5ad0648d9a7471ad604b4e1bc5e9a0de98e" },
+        { "locator": "file:work/183-tactical-overlays/evidence.yml", "result": "verified", "sha256": "78551950ff678f48b86b0cbb964d2840cab493ae3e964d03f2e8d72d800182a1" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-native.junit.xml", "result": "verified", "sha256": "f6a2f3d2225ae0e817bb89f0583ee579a2233b10ebf6d16ff39c5853b4f7848b" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-fable-production.junit.xml", "result": "verified", "sha256": "e4233829ab7718141cf6f8673455c304e2ec33f12a5244e730a20416e587d9ca" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml", "result": "verified", "sha256": "643d9d596b3020dc0fba583e3fe029d28a2b4df161de233978464ee0104abc14" },
+        { "locator": "file:readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml", "result": "verified", "sha256": "289397c742411d835830eb43c789dba82966640b54df7fc7337c5e18789763f3" },
+        { "locator": "file:readiness/183-tactical-overlays/verify.json", "result": "verified", "sha256": "0ccc5fdef762f3ab6653d1468a9be4416737ae4c2f2e881b830fbc3af8e17fa7" }
+      ],
+      "confidenceLimits": [
+        "The aggregate JUnit records command success as one testcase; focused receipts and source mappings carry subsystem-specific claims.",
+        "Hosted exact-head CI remains pending."
+      ]
     }
   ]
 }

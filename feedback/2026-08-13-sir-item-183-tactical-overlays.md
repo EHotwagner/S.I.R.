@@ -5,7 +5,7 @@ workspace: S.I.R
 cycle: item-183-tactical-overlays
 lane: sdd
 toolVersion: 1.0.1
-commit: development-head
+commit: 1194ce757373f0443430e0fbf142a232c2916062
 ---
 
 ## §1 Provenance and confidence
@@ -33,7 +33,7 @@ The initial exact-head review found that generic point/string payloads could not
 - **Impact:** Initial layers can express and render their disclosed tactical values without browser-side reconstruction from strings.
 - **Expected:** Authority adapters provide structured geometry/state and the renderer consumes the corresponding union case exactly.
 - **Observed:** `TacticalOverlayGeometry` carries footprint, direction, path/cost/blockers, area, trace/impact, and status shapes. The Release 100-unit workload emits every one of the fourteen registry IDs, the 200-unit stress workload emits more payloads, and assertions reject zero-radius areas or missing blocker-bearing paths. The published Fable SVG renders union-specific rectangles, lines, polylines, blocker marks, circles, impacts, and status marks.
-- **Evidence:** source:src/SIR.Client/TacticalSceneProjection.fsi; source:src/SIR.Client/TacticalSceneProjection.fs; source:src/SIR.Client.Web/TacticalOverlayView.fs; source:tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs; readiness/183-tactical-overlays/tactical-overlays-native.junit.xml; readiness/183-tactical-overlays/tactical-overlays-fable-production.junit.xml
+- **Evidence:** file:src/SIR.Client/TacticalSceneProjection.fsi; file:src/SIR.Client/TacticalSceneProjection.fs; file:src/SIR.Client.Web/TacticalOverlayView.fs; file:tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs; file:readiness/183-tactical-overlays/tactical-overlays-native.junit.xml; file:readiness/183-tactical-overlays/tactical-overlays-fable-production.junit.xml
 - **Version:** repair-round-1 development head
 - **Owner:** EHotwagner/S.I.R. tactical overlays
 - **Recurrence:** repair of initial-review F1
@@ -48,7 +48,7 @@ The adapters preserve only facts available in the existing disclosed scene vocab
 - **Impact:** Hold-to-inspect, forced-colors styling, 400% geometry, and the 5,000-node cap can no longer pass from static attributes or undercounted estimates.
 - **Expected:** Tests interact with built DOM controls and compare computed/emitted results with declared budgets.
 - **Observed:** The production journey dispatches pointer down/up and observes `InspectHeld` enter/exit, checks computed stroke width before and after forced-colors emulation, verifies non-scaling footprint geometry at 400% zoom, and compares every emitted overlay descendant with the renderer-neutral count. Separate subject mutations for hold handlers, forced-colors styling, and node accounting each produced a red JUnit. Release qualification exercises all modes over 100 and 200 units, enforces the declared 20 ms p95 cap, and records the measured p95 in its native JUnit.
-- **Evidence:** source:tests/SIR.Browser.Tests/visible-workflows.spec.js; source:src/SIR.Client.Web/styles.css; readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml; readiness/183-tactical-overlays/tactical-overlays-hold-inversion.junit.xml; readiness/183-tactical-overlays/tactical-overlays-contrast-inversion.junit.xml; readiness/183-tactical-overlays/tactical-overlays-node-inversion.junit.xml; readiness/183-tactical-overlays/repair-round-1-inversions.json
+- **Evidence:** file:tests/SIR.Browser.Tests/visible-workflows.spec.js; file:src/SIR.Client.Web/styles.css; file:readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml; file:readiness/183-tactical-overlays/tactical-overlays-hold-inversion.junit.xml; file:readiness/183-tactical-overlays/tactical-overlays-contrast-inversion.junit.xml; file:readiness/183-tactical-overlays/tactical-overlays-node-inversion.junit.xml; file:readiness/183-tactical-overlays/repair-round-1-inversions.json
 - **Version:** repair-round-1 development head
 - **Owner:** EHotwagner/S.I.R. browser and projection qualification
 - **Recurrence:** repair of initial-review F2
@@ -63,7 +63,7 @@ The Release timing is host evidence and the browser node check is structural; ne
 - **Impact:** A failed prerequisite cannot partially replace canonical receipts, and unrelated obligations no longer inherit one narrow browser result.
 - **Expected:** One reproducible command runs declared prerequisites and installs only completed native, Fable, browser, and aggregate receipts; SDD entries point to the route that observes their subject.
 - **Observed:** `generate-item-183-evidence.sh` stages four receipts in a temporary directory and installs them only after Release native qualification, production Fable/Vite, focused published Chromium, and the self-contained `Test` aggregate pass. `test-conformance.sh` now builds the Release Domain.Tests prerequisite before the no-build worker smoke. Evidence entries are split among native projection, production browser/accessibility, Fable production build, and complete aggregate sources; verify records 54 observed evidence and 54 observed test dispositions with zero findings.
-- **Evidence:** source:scripts/generate-item-183-evidence.sh; source:scripts/test-conformance.sh; work/183-tactical-overlays/evidence.yml; readiness/183-tactical-overlays/tactical-overlays-native.junit.xml; readiness/183-tactical-overlays/tactical-overlays-fable-production.junit.xml; readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml; readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml; readiness/183-tactical-overlays/verify.json
+- **Evidence:** file:scripts/generate-item-183-evidence.sh; file:scripts/test-conformance.sh; file:work/183-tactical-overlays/evidence.yml; file:readiness/183-tactical-overlays/tactical-overlays-native.junit.xml; file:readiness/183-tactical-overlays/tactical-overlays-fable-production.junit.xml; file:readiness/183-tactical-overlays/tactical-overlays-browser.junit.xml; file:readiness/183-tactical-overlays/tactical-overlays-aggregate.junit.xml; file:readiness/183-tactical-overlays/verify.json
 - **Version:** repair-round-1 development head
 - **Owner:** EHotwagner/S.I.R. evidence and lifecycle
 - **Recurrence:** repair of initial-review F3
@@ -108,12 +108,12 @@ Native Release qualification is green with every advertised family present in 10
 | Surface | Status | Evidence and result |
 |---|---|---|
 | sdd-authoring | exercised | Analyze/evidence/verify/ship are current; refresh reached `noChange`. |
-| scaffolding | not-used | Existing repository and SDD package were repaired in place; no scaffold changed. |
+| scaffolding | not-exercised | Existing repository and SDD package were repaired in place; no scaffold changed. |
 | onboarding-guidance | exercised | AGENTS and generated lifecycle guidance were read and refreshed. |
 | implementation-apis | exercised | Public typed geometry, routes, annotations, and projections compile in .NET and Fable. |
 | dependencies-build | exercised | Native Release and production Fable/Vite builds pass. |
 | skills | exercised | SDD, project, grids, line-drawing, visibility, playtest, and parallel-work contracts guided the repair. |
-| packaging-upgrade | not-used | No package version or dependency contract changed. |
+| packaging-upgrade | not-exercised | No package version or dependency contract changed. |
 | testing | exercised | Native, focused published Chromium, protected-subject inversions, and full aggregate pass in restored state. |
 | evidence | exercised | 54 observed obligations use native, Fable, browser, or aggregate receipts according to subject. |
 | runtime-playtest | exercised | Built DOM View, pointer hold/release, shortcut, reload, computed contrast, node count, and 400% geometry pass. |
