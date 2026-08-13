@@ -21,6 +21,22 @@ type CombatAttackResult =
       ExpectedDamage: int32
       Explanation: RuleApplication }
 
+type CombatConsequences =
+    { Damage: int32
+      RemainingHealth: int32
+      WoundSeverityCode: int32 option
+      Incapacitated: bool
+      SuppressionDelta: int32
+      TotalSuppression: int32
+      Explanation: RuleApplication }
+
+type CombatCoverImpact =
+    { Damage: int32
+      RemainingIntegrity: int32
+      Destroyed: bool
+      StopsProjectile: bool
+      Explanation: RuleApplication }
+
 type RuleReplayBinding =
     { BoundEngineIdentity: string
       BoundCompatibilityProfile: string
@@ -49,3 +65,6 @@ module CombatRules =
     val replayBinding: RuleApplication -> RuleReplayBinding
     val resolveHistoricalPackage: RetainedRulePackage list -> RuleReplayBinding -> HistoricalRuleResolution
     val resolveAttack: CombatAttackInput -> Result<CombatAttackResult, string>
+    val resolveConsequences: currentHealth: int32 -> currentSuppression: int32 -> suppressionDelta: int32 -> CombatAttackInput -> Result<CombatConsequences, string>
+    val resolveCoverImpact: baseDamage: int32 -> currentIntegrity: int32 -> projectileBlocking: bool -> directAttack: bool -> eventId: string -> CombatCoverImpact
+    val resolveRecovery: currentSuppression: int32 -> entityId: string -> int32 * RuleApplication option

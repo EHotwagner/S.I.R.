@@ -13,6 +13,7 @@ open Microsoft.AspNetCore.Mvc.Testing
 open Microsoft.Extensions.Logging
 open SIR.Protocol.Http
 open SIR.Server
+open SIR.Simulation
 open Xunit
 
 let require condition message = if not condition then failwith message
@@ -101,31 +102,41 @@ let admittedSession (client: HttpClient) actor =
 
 type LiveSessionAuthenticationTests() =
     [<Fact>]
-    member _.``physical combat drill requires admission and returns ordered authority projection``() =
+    member _.``physical combat drill requires admission and returns four-profile replay projection``() =
         withProductionClient (fun client ->
-            use unauthorized = postPhysicalCombat client None "{\"AttackId\":\"unauthorized\",\"Weapon\":\"AntiArmor\"}"
+            use unauthorized = postPhysicalCombat client None "{\"AttackId\":\"unauthorized\",\"Scenario\":\"four-profile-cover-replay-v1\"}"
             require (unauthorized.StatusCode = HttpStatusCode.Unauthorized) "physical combat must reject an absent bearer admission"
             let admission = admittedSession client "combat-player"
-            use response = postPhysicalCombat client (Some admission.AccessToken) "{\"AttackId\":\"server-combat-test\",\"Weapon\":\"AntiArmor\"}"
+            use response = postPhysicalCombat client (Some admission.AccessToken) "{\"AttackId\":\"server-combat-test\",\"Scenario\":\"four-profile-cover-replay-v1\"}"
             let body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
             require (response.StatusCode = HttpStatusCode.OK) "authorized physical combat must resolve"
             let projection =
                 JsonSerializer.Deserialize<PhysicalCombatResponseDto>(body)
                 |> box
                 |> function null -> failwith "physical combat must return its typed projection" | value -> unbox<PhysicalCombatResponseDto> value
-            require (projection.Profile = "AntiArmor" && projection.Trace.Length >= 2 && projection.CanonicalByteCount > 0) "physical combat must disclose effective parameters, trace, and canonical evidence"
-            require (projection.Cover.Contains("roadblock-2") && projection.Armor.Contains("Front") && projection.RemainingHealth = 75) "cover, directional armor, and HP projection changed"
-            require (projection.Wounds = [| "Serious" |] && projection.Suppression = 12 && not projection.Incapacitated) "wound, suppression, and incapacity must remain distinct"
-            let steps = projection.Facts |> Array.map _.Step
+            require (projection.Scenario = "four-profile-cover-replay-v1") "the bounded scenario identity changed"
+            require (projection.Profiles |> Array.map _.Profile = [| "Rifle"; "SupportWeapon"; "AntiArmor"; "LobbedArea" |]) "the real entry path must exercise all four profiles in canonical order"
+            require (projection.Profiles |> Array.forall (fun profile -> profile.CanonicalByteCount > 0)) "every profile must retain canonical authority evidence"
+            require (projection.Profiles |> Array.filter (fun profile -> profile.Profile <> "LobbedArea") |> Array.forall (fun profile -> profile.Trace.Length >= 2)) "every direct-fire profile must disclose its physical trace"
+            require (projection.InitialCoverIntegrity = 50 && projection.FinalCoverIntegrity = 0 && projection.CoverDestroyed) "the scenario must expose cover degradation and destruction"
+            let integrity = projection.Profiles |> Array.map (fun profile -> profile.CoverIntegrityBefore, profile.CoverIntegrityAfter)
+            let integrityText = integrity |> Array.map (fun (before, after) -> $"{before}->{after}") |> String.concat ","
+            require (integrity = [| (50, 38); (38, 38); (38, 13); (13, 0) |]) $"per-profile cover integrity changed: {integrityText}"
+            let antiArmor = projection.Profiles |> Array.find (fun profile -> profile.Profile = "AntiArmor")
+            require (antiArmor.CoverSource = "roadblock-2" && antiArmor.CoverRetainedPercent = 50) "anti-armor cover projection changed"
+            require (antiArmor.ArmorArc = "Front" && antiArmor.ArmorRating = 50 && antiArmor.ArmorRetainedPercent = 100 && antiArmor.RemainingHealth = 67) "anti-armor directional armor and HP projection changed"
+            let steps = antiArmor.Facts |> Array.map _.Step
             let index step = steps |> Array.findIndex ((=) step)
-            require (index "Physical trace" < index "Cover" && index "Cover" < index "Armor" && index "Armor" < index "HP" && index "HP" < index "Suppression") "authority facts lost canonical consequence ordering")
+            require (index "Physical trace" < index "Cover" && index "Cover" < index "Armor" && index "Armor" < index "HP" && index "HP" < index "Suppression") "authority facts lost canonical consequence ordering"
+            require (projection.Replay.FormatVersion = Replay.CurrentFormatVersion && projection.Replay.Verified) "the scenario must run replay verification"
+            require (projection.Replay.SeekPointsVerified = 4 && projection.Replay.FinalTick = 4 && projection.Replay.FinalStateHash.Length = 64) "replay evidence must cover the initial snapshot and three retained seek points")
 
     [<Fact>]
-    member _.``physical combat drill rejects unknown profiles before evaluation``() =
+    member _.``physical combat drill rejects unknown scenarios before evaluation``() =
         withProductionClient (fun client ->
             let admission = admittedSession client "combat-bounds"
-            use response = postPhysicalCombat client (Some admission.AccessToken) "{\"AttackId\":\"invalid-profile\",\"Weapon\":\"UnboundedLaser\"}"
-            require (response.StatusCode = HttpStatusCode.BadRequest) "unknown weapon profiles must fail closed")
+            use response = postPhysicalCombat client (Some admission.AccessToken) "{\"AttackId\":\"invalid-scenario\",\"Scenario\":\"unbounded-skirmish\"}"
+            require (response.StatusCode = HttpStatusCode.BadRequest) "unknown scenarios must fail closed")
 
     [<Fact>]
     member _.``spatial diagnostics require identity and return bounded authoritative projection``() =

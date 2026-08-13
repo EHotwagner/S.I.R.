@@ -107,7 +107,7 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   await expect(explorer.getByText(/COMBAT-DAMAGE-001.*baseDamage=.*trace=.*retention=.*→.*damage/)).toBeVisible();
   await explorer.getByRole("link", { name: "Open governing rule COMBAT-ATTACK-RESOLUTION-001" }).click();
   await expect(page).toHaveURL(/#rule-COMBAT-ATTACK-RESOLUTION-001$/);
-  await expect(explorer.getByText(/Transition · AttackPhase · events AttackResolved/)).toBeVisible();
+  await expect(explorer.getByText("Transition · AttackPhase · events AttackResolved, CoverDestroyed", { exact: true })).toBeVisible();
   const damage = explorer.getByText(/^COMBAT-DAMAGE-001 · Expected damage$/);
   await damage.click();
   const damageRule = damage.locator("..");
@@ -121,24 +121,39 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   await expect(damageRule.getByRole("link", { name: "Coverage graph" })).toHaveAttribute("href", /rules-corpus\/v2\/coverage\.json/);
 
   const drill = explorer.getByRole("region", { name: "Physical combat drill", exact: true });
-  await expect(drill.getByRole("button", { name: "Fire anti-armor attack" })).toBeEnabled();
+  await expect(drill.getByRole("button", { name: "Run four-profile combat scenario" })).toBeEnabled();
   const authorityResponse = page.waitForResponse((response) => response.url().includes("/api/combat/physical-drill") && response.status() === 200);
-  await drill.getByRole("button", { name: "Fire anti-armor attack" }).click();
+  await drill.getByRole("button", { name: "Run four-profile combat scenario" }).click();
   const response = await authorityResponse;
   const responseBody = await response.text();
   expect(physicalAuthorityRequests).toBe(1);
-  await expect(drill.getByLabel("Visible attack trace")).toBeVisible();
-  await expect(drill.getByText(/roadblock-2 · retained 50%/)).toBeVisible();
-  await expect(drill.getByText(/Front rating 50 vs penetration 70 · retained 100%/)).toBeVisible();
-  await expect(drill.getByText("75 / Serious", { exact: true })).toBeVisible();
-  await expect(drill.getByText("12 / false", { exact: true })).toBeVisible();
-  const explanation = drill.getByRole("list");
-  await expect(explanation).toContainText("Physical trace");
-  await expect(explanation).toContainText("Cover");
-  await expect(explanation).toContainText("Armor");
-  await expect(explanation).toContainText("HP");
-  await expect(explanation).toContainText("Wound");
-  await expect(explanation).toContainText("Suppression");
+  await expect(drill.getByText("Cover integrity 50 → 0 · destroyed true", { exact: true })).toBeVisible();
+  await expect(drill.getByText(/Replay v3 verified true from 4 seek points · final tick 4 · state [0-9a-f]{64}/)).toBeVisible();
+
+  const expectedProfiles = [
+    ["Rifle", "50 → 38 · destroyed false"],
+    ["SupportWeapon", "38 → 38 · destroyed false"],
+    ["AntiArmor", "38 → 13 · destroyed false"],
+    ["LobbedArea", "13 → 0 · destroyed true"],
+  ];
+  for (const [profile, coverIntegrity] of expectedProfiles) {
+    const outcome = drill.getByRole("article", { name: `${profile} authoritative outcome`, exact: true });
+    await expect(outcome).toBeVisible();
+    await expect(outcome.getByRole("heading", { name: profile, exact: true })).toBeVisible();
+    await expect(outcome.getByLabel(`${profile} visible attack trace`, { exact: true })).toBeVisible();
+    await expect(outcome.getByText(coverIntegrity, { exact: true })).toBeVisible();
+    await expect(outcome.getByRole("list")).toContainText("HP");
+    await expect(outcome.getByRole("list")).toContainText("Suppression");
+  }
+  const antiArmor = drill.getByRole("article", { name: "AntiArmor authoritative outcome", exact: true });
+  await expect(antiArmor.getByText(/roadblock-2 · retained 50%/)).toBeVisible();
+  await expect(antiArmor.getByText(/Front rating 50 vs penetration 70 · retained 100%/)).toBeVisible();
+  await expect(antiArmor.getByText("67 / Serious", { exact: true })).toBeVisible();
+  const antiArmorExplanation = antiArmor.getByRole("list");
+  await expect(antiArmorExplanation).toContainText("Physical trace");
+  await expect(antiArmorExplanation).toContainText("Cover");
+  await expect(antiArmorExplanation).toContainText("Armor");
+  await expect(antiArmorExplanation).toContainText("Wound");
   console.log(JSON.stringify({ schema: "sir-physical-combat-route-v1", authorityRequests: physicalAuthorityRequests, responseBytes: Buffer.byteLength(responseBody, "utf8") }));
 });
 

@@ -46,7 +46,7 @@ sed -i 's/else max 10 (penetration \* 100 \/ effective)/else 100/' "$subject"
 expect_failure directional-armor "Directional armor or penetration changed."
 
 restore_subject
-sed -i 's/target.Suppression + p.Suppression/target.Suppression + 0/' "$subject"
+sed -i 's/resolveConsequences target.Health target.Suppression p.Suppression/resolveConsequences target.Health target.Suppression 0/' "$subject"
 expect_failure suppression "Friendly area recipient received implicit immunity or missed suppression."
 
 restore_subject

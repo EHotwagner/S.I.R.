@@ -47,11 +47,18 @@ type private SpatialDiagnosticProjection =
 
 type private PhysicalCombatCell = { Column: int32; Row: int32 }
 type private PhysicalCombatFact = { Step: string; Subject: string; Detail: string }
-type private PhysicalCombatProjection =
+type private PhysicalCombatProfile =
     { AttackId: string; Profile: string; BaseDamage: int32; Penetration: int32
-      Trace: PhysicalCombatCell list; Cover: string; Armor: string; RemainingHealth: int32
+      Trace: PhysicalCombatCell list; CoverSource: string; CoverRetainedPercent: int32
+      ArmorArc: string; ArmorRating: int32; ArmorRetainedPercent: int32; RemainingHealth: int32
       Wounds: string list; Suppression: int32; Incapacitated: bool
+      CoverIntegrityBefore: int32; CoverIntegrityAfter: int32; CoverDestroyed: bool
       Facts: PhysicalCombatFact list; CanonicalByteCount: int32 }
+type private PhysicalCombatReplay =
+    { FormatVersion: int32; Verified: bool; SeekPointsVerified: int32; FinalTick: int32; FinalStateHash: string }
+type private PhysicalCombatProjection =
+    { Scenario: string; InitialCoverIntegrity: int32; FinalCoverIntegrity: int32; CoverDestroyed: bool
+      Profiles: PhysicalCombatProfile list; Replay: PhysicalCombatReplay }
 
 [<Global>]
 let private fetch (url: string, options: obj) : JS.Promise<obj> = jsNative
@@ -102,15 +109,41 @@ let private combatCellDecoder : Decoder<PhysicalCombatCell> =
 let private combatFactDecoder : Decoder<PhysicalCombatFact> =
     Decode.object (fun get -> { Step = get.Required.Field "Step" Decode.string; Subject = get.Required.Field "Subject" Decode.string; Detail = get.Required.Field "Detail" Decode.string })
 
-let private combatResponseDecoder : Decoder<PhysicalCombatProjection> =
+let private combatProfileDecoder : Decoder<PhysicalCombatProfile> =
     Decode.object (fun get ->
         { AttackId = get.Required.Field "AttackId" Decode.string; Profile = get.Required.Field "Profile" Decode.string
           BaseDamage = get.Required.Field "BaseDamage" Decode.int; Penetration = get.Required.Field "Penetration" Decode.int
-          Trace = get.Required.Field "Trace" (Decode.list combatCellDecoder); Cover = get.Required.Field "Cover" Decode.string
-          Armor = get.Required.Field "Armor" Decode.string; RemainingHealth = get.Required.Field "RemainingHealth" Decode.int
+          Trace = get.Required.Field "Trace" (Decode.list combatCellDecoder)
+          CoverSource = get.Required.Field "CoverSource" Decode.string
+          CoverRetainedPercent = get.Required.Field "CoverRetainedPercent" Decode.int
+          ArmorArc = get.Required.Field "ArmorArc" Decode.string
+          ArmorRating = get.Required.Field "ArmorRating" Decode.int
+          ArmorRetainedPercent = get.Required.Field "ArmorRetainedPercent" Decode.int
+          RemainingHealth = get.Required.Field "RemainingHealth" Decode.int
           Wounds = get.Required.Field "Wounds" (Decode.list Decode.string); Suppression = get.Required.Field "Suppression" Decode.int
-          Incapacitated = get.Required.Field "Incapacitated" Decode.bool; Facts = get.Required.Field "Facts" (Decode.list combatFactDecoder)
+          Incapacitated = get.Required.Field "Incapacitated" Decode.bool
+          CoverIntegrityBefore = get.Required.Field "CoverIntegrityBefore" Decode.int
+          CoverIntegrityAfter = get.Required.Field "CoverIntegrityAfter" Decode.int
+          CoverDestroyed = get.Required.Field "CoverDestroyed" Decode.bool
+          Facts = get.Required.Field "Facts" (Decode.list combatFactDecoder)
           CanonicalByteCount = get.Required.Field "CanonicalByteCount" Decode.int })
+
+let private combatReplayDecoder : Decoder<PhysicalCombatReplay> =
+    Decode.object (fun get ->
+        { FormatVersion = get.Required.Field "FormatVersion" Decode.int
+          Verified = get.Required.Field "Verified" Decode.bool
+          SeekPointsVerified = get.Required.Field "SeekPointsVerified" Decode.int
+          FinalTick = get.Required.Field "FinalTick" Decode.int
+          FinalStateHash = get.Required.Field "FinalStateHash" Decode.string })
+
+let private combatResponseDecoder : Decoder<PhysicalCombatProjection> =
+    Decode.object (fun get ->
+        { Scenario = get.Required.Field "Scenario" Decode.string
+          InitialCoverIntegrity = get.Required.Field "InitialCoverIntegrity" Decode.int
+          FinalCoverIntegrity = get.Required.Field "FinalCoverIntegrity" Decode.int
+          CoverDestroyed = get.Required.Field "CoverDestroyed" Decode.bool
+          Profiles = get.Required.Field "Profiles" (Decode.list combatProfileDecoder)
+          Replay = get.Required.Field "Replay" combatReplayDecoder })
 
 let private cellText (value: SpatialDiagnosticCell) = $"({value.Column},{value.Row})"
 let private combatCellText (value: PhysicalCombatCell) = $"({value.Column},{value.Row})"
@@ -176,7 +209,12 @@ let private loadDiagnostics accessToken body =
 
 let private loadPhysicalCombat accessToken =
     async {
-        let body = Encode.object [ "AttackId", Encode.string "player-visible-anti-armor"; "Weapon", Encode.string "AntiArmor" ] |> Encode.toString 0
+        let body =
+            Encode.object [
+                "AttackId", Encode.string "player-visible-four-profile"
+                "Scenario", Encode.string "four-profile-cover-replay-v1"
+            ]
+            |> Encode.toString 0
         let options =
             createObj [
                 "method" ==> "POST"
@@ -286,9 +324,9 @@ let ExecutableRulesPanel (bootstrap: BootstrapV1.Response option) =
                 prop.ariaLabel "Physical combat drill"
                 prop.children [
                     Html.h3 "Physical combat drill"
-                    Html.p "Anti-armor point fire crosses partial external cover before resolving front armor, HP, wounds, and suppression."
+                    Html.p "One authoritative scenario resolves rifle, support-weapon, anti-armor, and lobbed-area fire against evolving cover, then verifies replay reconstruction from every retained seek point."
                     Html.button [
-                        prop.text "Fire anti-armor attack"
+                        prop.text "Run four-profile combat scenario"
                         prop.disabled (Option.isNone bootstrap)
                         prop.onClick (fun _ ->
                             setPhysicalResult None
@@ -307,25 +345,41 @@ let ExecutableRulesPanel (bootstrap: BootstrapV1.Response option) =
                     | Some failure, _ -> Html.p ("Authoritative physical combat unavailable: " + failure)
                     | None, None -> Html.p "No physical attack has been committed yet."
                     | None, Some result ->
-                        Html.p ($"{result.AttackId} · {result.Profile} · damage {result.BaseDamage} · penetration {result.Penetration} · canonical bytes {result.CanonicalByteCount}")
-                        Svg.svg [
-                            svg.custom ("aria-label", "Visible attack trace")
-                            svg.viewBox (0, 0, 500, 80)
-                            svg.children [
-                                Svg.line [ svg.x1 30; svg.y1 40; svg.x2 470; svg.y2 40; svg.stroke "#ffb347"; svg.strokeWidth 5 ]
-                                Svg.circle [ svg.cx 250; svg.cy 40; svg.r 18; svg.fill "#65737e" ]
-                                Svg.text [ svg.x 220; svg.y 75; svg.text "partial cover" ]
+                        Html.p [
+                            prop.custom ("data-combat-scenario", result.Scenario)
+                            prop.text ($"Cover integrity {result.InitialCoverIntegrity} → {result.FinalCoverIntegrity} · destroyed {result.CoverDestroyed}")
+                        ]
+                        Html.p [
+                            prop.custom ("data-replay-verified", string result.Replay.Verified)
+                            prop.text ($"Replay v{result.Replay.FormatVersion} verified {result.Replay.Verified} from {result.Replay.SeekPointsVerified} seek points · final tick {result.Replay.FinalTick} · state {result.Replay.FinalStateHash}")
+                        ]
+                        for profile in result.Profiles do
+                            Html.article [
+                                prop.ariaLabel (profile.Profile + " authoritative outcome")
+                                prop.children [
+                                    Html.h4 profile.Profile
+                                    Html.p ($"{profile.AttackId} · damage {profile.BaseDamage} · penetration {profile.Penetration} · canonical bytes {profile.CanonicalByteCount}")
+                                    Svg.svg [
+                                        svg.custom ("aria-label", profile.Profile + " visible attack trace")
+                                        svg.viewBox (0, 0, 500, 80)
+                                        svg.children [
+                                            Svg.line [ svg.x1 30; svg.y1 40; svg.x2 470; svg.y2 40; svg.stroke "#ffb347"; svg.strokeWidth 5 ]
+                                            Svg.circle [ svg.cx 250; svg.cy 40; svg.r 18; svg.fill "#65737e" ]
+                                            Svg.text [ svg.x 220; svg.y 75; svg.text "evolving cover" ]
+                                        ]
+                                    ]
+                                    Html.dl [
+                                        Html.dt "Trace"; Html.dd (profile.Trace |> List.map combatCellText |> String.concat " → ")
+                                        Html.dt "Cover outcome"; Html.dd ($"{profile.CoverSource} · retained {profile.CoverRetainedPercent}%")
+                                        Html.dt "Cover integrity"; Html.dd ($"{profile.CoverIntegrityBefore} → {profile.CoverIntegrityAfter} · destroyed {profile.CoverDestroyed}")
+                                        Html.dt "Armor outcome"; Html.dd ($"{profile.ArmorArc} rating {profile.ArmorRating} vs penetration {profile.Penetration} · retained {profile.ArmorRetainedPercent}%")
+                                        Html.dt "HP / wounds"; Html.dd (string profile.RemainingHealth + " / " + String.concat ", " profile.Wounds)
+                                        Html.dt "Suppression / incapacity"; Html.dd ($"{profile.Suppression} / {profile.Incapacitated}")
+                                    ]
+                                    Html.h5 "Ordered resolution explanation"
+                                    Html.ol [ for fact in profile.Facts do Html.li ($"{fact.Step} · {fact.Subject} · {fact.Detail}") ]
+                                ]
                             ]
-                        ]
-                        Html.dl [
-                            Html.dt "Trace"; Html.dd (result.Trace |> List.map combatCellText |> String.concat " → ")
-                            Html.dt "Cover outcome"; Html.dd result.Cover
-                            Html.dt "Armor outcome"; Html.dd result.Armor
-                            Html.dt "HP / wounds"; Html.dd (string result.RemainingHealth + " / " + String.concat ", " result.Wounds)
-                            Html.dt "Suppression / incapacity"; Html.dd ($"{result.Suppression} / {result.Incapacitated}")
-                        ]
-                        Html.h4 "Ordered resolution explanation"
-                        Html.ol [ for fact in result.Facts do Html.li ($"{fact.Step} · {fact.Subject} · {fact.Detail}") ]
                 ]
             ]
             for rule in SIR.Simulation.CombatRules.registry do

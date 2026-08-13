@@ -46,6 +46,19 @@ module Combat =
         { ProfileId = "combat-projectile-v1"; Modality = SpatialModality.ProjectileTrace; Stance = "standing"; HeightBand = 1; Facing = attacker.Facing }
     let private spatialRequest (attacker: CombatantState) (request: CombatRequest) =
         { QueryId = request.AttackId + ":trace"; QueryKind = SpatialQueryKind.LineTrace; Origin = attacker.Cell; Target = request.AimCell; Footprint = [ { Col = 0; Row = 0 } ]; Profile = profileFor attacker; Bounds = { SpatialQuery.defaultBounds with MaximumCrossedItems = request.Limits.MaximumTraceCells } }
+    let private coverProjectionToken coverId = "combat-cover:" + coverId
+    let private projectCovers (world: CombatWorld) =
+        let terrain, tokens =
+            ((world.Spatial.Terrain, world.Spatial.DisclosedRevisionTokens), world.Covers |> Map.toList)
+            ||> List.fold (fun (projected, tokens) (coverId, cover) ->
+                if cover.ProjectileBlocking && cover.Integrity > 0 then
+                    let token = coverProjectionToken coverId
+                    let wasProjected = Set.contains token tokens
+                    let underlyingBlocked = Map.tryFind cover.Cell projected = Some SpatialTerrain.Blocked && not wasProjected
+                    let nextTokens = if underlyingBlocked then tokens else Set.add token tokens
+                    Map.add cover.Cell SpatialTerrain.Blocked projected, nextTokens
+                else projected, tokens)
+        { world with Spatial = { world.Spatial with Terrain = terrain; DisclosedRevisionTokens = tokens } }
     let private areaCells (spatial: ProjectedSpatialWorld) (center: Cell) (radius: int32) =
         [ for row in center.Row - radius .. center.Row + radius do
             for col in center.Col - radius .. center.Col + radius do
@@ -106,6 +119,8 @@ module Combat =
             | None -> Error(Ineligible "Attacker does not exist in the projected combat world.")
             | Some attacker when attacker.Incapacitated -> Error(Ineligible "An incapacitated attacker cannot commit an attack.")
             | Some attacker ->
+                let world = projectCovers world
+                let attacker = world.Combatants[attacker.EntityId]
                 let p = parameters request.Weapon
                 let range = distance attacker.Cell request.AimCell
                 if range > p.RangeCells then Error(OutOfRange(range, p.RangeCells)) else
@@ -116,6 +131,12 @@ module Combat =
                     match candidates world attacker request p evidence with
                     | Error rejection -> Error rejection
                     | Ok ordered ->
+                        let directTraceCanCommit =
+                            p.AreaRadius > 0
+                            || evidence |> Option.exists (fun spatial -> spatial.Outcome = SpatialOutcome.Found && spatial.Visible)
+                        let ordered =
+                            if directTraceCanCommit then ordered
+                            else ordered |> List.filter (fun (_, _, _, subject) -> match subject with CoverCandidate _ -> true | CombatantCandidate _ -> false)
                         let preparation = 100 + range * 10
                         let startFacts = [ Committed(p.Profile, preparation); Eligible attacker.EntityId ]
                         let startFacts = match evidence with None -> startFacts | Some spatial -> TraceEvaluated(spatial.Explanation.CrossedCells, spatial.Explanation.CrossedEdges, SpatialQuery.canonicalResultBytes spatial) :: startFacts
@@ -126,12 +147,17 @@ module Combat =
                             | Ok(currentWorld, facts, apps, _) ->
                                 match subject with
                                 | CoverCandidate cover ->
-                                    let applied = max 1 (p.BaseDamage / 2)
-                                    let remaining = clamp 100 (cover.Integrity - applied)
+                                    let impact = CombatRules.resolveCoverImpact p.BaseDamage cover.Integrity cover.ProjectileBlocking (p.AreaRadius = 0) (request.AttackId + ":" + id)
+                                    let applied = impact.Damage
+                                    let remaining = impact.RemainingIntegrity
                                     let updated = { cover with Integrity = remaining; ProjectileBlocking = cover.ProjectileBlocking && remaining > 0 }
                                     let covers = if remaining = 0 then Map.remove id currentWorld.Covers else Map.add id updated currentWorld.Covers
+                                    let projectionToken = coverProjectionToken id
+                                    let wasProjected = Set.contains projectionToken currentWorld.Spatial.DisclosedRevisionTokens
+                                    let terrain = if remaining = 0 && cover.ProjectileBlocking && wasProjected then Map.remove cover.Cell currentWorld.Spatial.Terrain else currentWorld.Spatial.Terrain
+                                    let tokens = if remaining = 0 then Set.remove projectionToken currentWorld.Spatial.DisclosedRevisionTokens else currentWorld.Spatial.DisclosedRevisionTokens
                                     let added = if remaining = 0 then [ CoverDestroyed id; CoverDamaged(id, applied, remaining); Contact(id, cover.Cell, int32 order) ] else [ CoverDamaged(id, applied, remaining); Contact(id, cover.Cell, int32 order) ]
-                                    Ok({ currentWorld with Covers = covers }, List.rev added @ facts, apps, cover.ProjectileBlocking && p.AreaRadius = 0)
+                                    Ok({ currentWorld with Covers = covers; Spatial = { currentWorld.Spatial with Terrain = terrain; DisclosedRevisionTokens = tokens } }, List.rev added @ facts, impact.Explanation :: apps, impact.StopsProjectile)
                                 | CombatantCandidate target ->
                                     let precedingCover =
                                         currentWorld.Covers
@@ -144,19 +170,11 @@ module Combat =
                                     let coverId, coverRetained = match precedingCover with Some(_, coverId, _) -> Some coverId, 50 | None -> None, 100
                                     let arc, effectiveArmor, armorRetained = armorResolution attacker.Cell p.Penetration target.Armor target
                                     let retained = coverRetained * armorRetained / 100
-                                    let damage = p.BaseDamage * retained / 100
-                                    let health = clamp 100 (target.Health - damage)
-                                    let suppression = clamp 100 (target.Suppression + p.Suppression)
-                                    let wound =
-                                        if damage >= 50 then Some { AttackId = request.AttackId; Severity = WoundSeverity.Critical; Damage = damage }
-                                        elif damage >= 25 then Some { AttackId = request.AttackId; Severity = WoundSeverity.Serious; Damage = damage }
-                                        else None
-                                    let nextTarget = { target with Health = health; Suppression = suppression; Wounds = wound |> Option.map (fun item -> target.Wounds @ [ item ]) |> Option.defaultValue target.Wounds; Incapacitated = target.Incapacitated || health = 0 }
-                                    let combat =
-                                        CombatRules.resolveAttack
+                                    let consequences =
+                                        CombatRules.resolveConsequences target.Health target.Suppression p.Suppression
                                             { Attacker = attacker.Cell
                                               TargetFootprint = [ target.Cell ]
-                                              VisibleSamples = (if evidence |> Option.exists (fun item -> item.Visible) || p.Lobbed then 1 else 0)
+                                              VisibleSamples = (if directTraceCanCommit then 1 else 0)
                                               TotalSamples = 1
                                               RangeCells = range
                                               Suppression = fixedRatio target.Suppression 100
@@ -164,6 +182,15 @@ module Combat =
                                               ArmorRetention = fixedRatio retained 100
                                               EventId = request.AttackId + ":" + id }
                                         |> Result.defaultWith failwith
+                                    let damage = consequences.Damage
+                                    let health = consequences.RemainingHealth
+                                    let suppression = consequences.TotalSuppression
+                                    let wound =
+                                        consequences.WoundSeverityCode
+                                        |> Option.map (fun code ->
+                                            let severity = if code = 1 then WoundSeverity.Critical else WoundSeverity.Serious
+                                            { AttackId = request.AttackId; Severity = severity; Damage = damage })
+                                    let nextTarget = { target with Health = health; Suppression = suppression; Wounds = wound |> Option.map (fun item -> target.Wounds @ [ item ]) |> Option.defaultValue target.Wounds; Incapacitated = target.Incapacitated || consequences.Incapacitated }
                                     let added =
                                         [ yield Contact(id, target.Cell, int32 order)
                                           yield CoverResolved(id, coverId, coverRetained)
@@ -171,9 +198,9 @@ module Combat =
                                           yield HealthChanged(id, damage, health)
                                           match wound with Some item -> yield WoundApplied(id, item.Severity) | None -> ()
                                           if nextTarget.Incapacitated && not target.Incapacitated then yield Incapacitated id
-                                          yield SuppressionChanged(id, p.Suppression, suppression) ]
+                                          yield SuppressionChanged(id, consequences.SuppressionDelta, suppression) ]
                                     let nextWorld = { currentWorld with Combatants = Map.add id nextTarget currentWorld.Combatants }
-                                    Ok(nextWorld, List.rev added @ facts, combat.Explanation :: apps, p.AreaRadius = 0)
+                                    Ok(nextWorld, List.rev added @ facts, consequences.Explanation :: apps, p.AreaRadius = 0)
                         match List.fold folder (Ok(world, startFacts, [], false)) ordered with
                         | Error rejection -> Error rejection
                         | Ok(updated, facts, apps, _) ->
@@ -187,16 +214,15 @@ module Combat =
         let combatants, facts =
             ((Map.empty, []), world.Combatants |> Map.toList)
             ||> List.fold (fun (next, facts) (id, unit) ->
-                let recovered = min 5 unit.Suppression
-                let updated = { unit with Suppression = unit.Suppression - recovered }
+                let remaining, _ = CombatRules.resolveRecovery unit.Suppression id
+                let recovered = unit.Suppression - remaining
+                let updated = { unit with Suppression = remaining }
                 let nextFacts = if recovered = 0 then facts else SuppressionChanged(id, -recovered, updated.Suppression) :: facts
                 Map.add id updated next, nextFacts)
         { world with Combatants = combatants }, List.rev facts
 
     and canonicalResultBytes (result: CombatResult) =
         CanonicalEncoding.concatenate
-            ([ CanonicalEncoding.int32LittleEndian result.SchemaVersion; textBytes result.Request.AttackId; textBytes result.Request.AttackerId; cellBytes result.Request.AimCell; [| profileCode result.Request.Weapon |]; canonicalFactsBytes result.Facts
-             
-             ]
+            ([ CanonicalEncoding.int32LittleEndian result.SchemaVersion; textBytes result.Request.AttackId; textBytes result.Request.AttackerId; cellBytes result.Request.AimCell; [| profileCode result.Request.Weapon |]; canonicalFactsBytes result.Facts ]
              @ [ CanonicalEncoding.int32LittleEndian result.RuleApplications.Length ]
              @ (result.RuleApplications |> List.map Rules.canonicalApplicationBytes))

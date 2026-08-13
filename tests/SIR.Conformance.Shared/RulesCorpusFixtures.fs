@@ -57,8 +57,15 @@ module RulesCorpusFixtures =
         checksum, applications, operands, (Rules.canonicalApplicationBytes explanation).Length, (System.Text.Encoding.UTF8.GetBytes CombatRules.retainedPackage.ManifestJson).Length
 
     let evaluate injectDivergence =
-        require (CombatRules.registry.Length = 7) "The combat registry must cover two facts, three formulas, one algorithm, and one transition."
-        require (CombatRules.registry |> List.map (fun rule -> RuleId.value rule.Metadata.Id) |> List.distinct |> List.length = 7) "Rule IDs are not unique."
+        require (CombatRules.registry.Length = 16) "The combat registry must cover the complete physical-combat consequence chain."
+        require (CombatRules.registry |> List.map (fun rule -> RuleId.value rule.Metadata.Id) |> List.distinct |> List.length = 16) "Rule IDs are not unique."
+        let requiredPhysicalRules =
+            [ "COMBAT-COLLISION-001"; "COMBAT-COVER-003"; "COMBAT-PENETRATION-001"; "COMBAT-HEALTH-001"
+              "COMBAT-WOUND-001"; "COMBAT-SUPPRESSION-001"; "COMBAT-SUPPRESSION-RECOVERY-001"
+              "COMBAT-COLLATERAL-001"; "COMBAT-COVER-DESTRUCTION-001" ]
+        let registeredIds = CombatRules.registry |> List.map (fun rule -> RuleId.value rule.Metadata.Id) |> Set.ofList
+        for id in requiredPhysicalRules do
+            require (Set.contains id registeredIds) ("The executable physical-combat registry omitted " + id + ".")
 
         let result = attack "fixture-attack-1"
         require (FixedPoint.raw result.TraceProbability = FixedPoint.Scale) "The fully exposed footprint did not produce probability one."
@@ -66,6 +73,21 @@ module RulesCorpusFixtures =
         require (result.ExpectedDamage = 20) "Expected damage must be 25 × 1.0 × 0.8 = 20."
         require (result.Explanation.Children.Length = 4) "The attack explanation must expose engagement, trace, armor, and damage."
         require (result.Explanation.Children |> List.exists (fun application -> RuleId.value application.RuleId = "COMBAT-TRACE-002")) "The registered trace algorithm is absent from the derivation."
+        let consequences =
+            CombatRules.resolveConsequences 100 0 10
+                { Attacker = { Col = 0; Row = 0 }
+                  TargetFootprint = [ { Col = 1; Row = 0 } ]
+                  VisibleSamples = 1
+                  TotalSamples = 1
+                  RangeCells = 1
+                  Suppression = FixedPoint.zero
+                  BaseDamage = fp 25 1
+                  ArmorRetention = fp 4 5
+                  EventId = "fixture-consequences" }
+            |> Result.defaultWith failwith
+        let appliedIds = consequences.Explanation.Children |> List.map (fun application -> RuleId.value application.RuleId) |> Set.ofList
+        for id in [ "COMBAT-COLLISION-001"; "COMBAT-COVER-003"; "COMBAT-PENETRATION-001"; "COMBAT-HEALTH-001"; "COMBAT-WOUND-001"; "COMBAT-SUPPRESSION-001"; "COMBAT-COLLATERAL-001" ] do
+            require (Set.contains id appliedIds) ("The authoritative consequence derivation omitted " + id + ".")
 
         let overRetained = attackWithRetention "fixture-attack-over-retained" (fp 6 5)
         require (FixedPoint.raw overRetained.ArmorRetention = FixedPoint.Scale) "Armor retention was not clamped to one."

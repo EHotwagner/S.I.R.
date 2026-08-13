@@ -258,11 +258,11 @@ module ReplayFixtures =
             "Replay v3 decoded wounds beyond its per-unit resource limit."
 
         let originalCombatHash = Replay.stateHash (combatSnapshot ())
-        let requireHashMutation label change =
+        let requireHashMutation label (change: SimulationState -> SimulationState) =
             let changed = change (combatSnapshot ())
             require (Replay.stateHash changed <> originalCombatHash) ("Replay v3 state hash ignored " + label + ".")
         let redId = Simulation.unitId 10
-        let changeRed change state =
+        let changeRed (change: UnitState -> UnitState) (state: SimulationState) =
             let red = state.Units[redId]
             { state with Units = state.Units |> Map.add redId (change red) }
         requireHashMutation "armor" (changeRed (fun unit -> { unit with Armor = { unit.Armor with Integrity = unit.Armor.Integrity - 1 } }))
