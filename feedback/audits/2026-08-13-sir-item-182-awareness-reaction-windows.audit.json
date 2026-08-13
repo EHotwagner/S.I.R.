@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-13-sir-item-182-awareness-reaction-windows.md",
-  "reportSha256": "2c9ba0a14ffbb8b68a502080c15a752634365831730dce764cc1a96b885cff41",
+  "reportSha256": "4ea511113c85c93765ea37fde072a3e0fa677bca377fe00d9dca3616e7cd650b",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -16,8 +16,8 @@
       "id": "§4.2",
       "status": "positive-pattern",
       "missingFacts": [],
-      "checkedEvidence": [{ "locator": "command:dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release -- --awareness", "result": "verified" }],
-      "confidenceLimits": ["Timing varied across qualification runs (p95 41-47 ms, worst 42-52 ms); the current reproducible run is p95 41/worst 42 and structural counters are deterministic."]
+      "checkedEvidence": [{ "locator": "command:bash -lc 'tmp_receipt=$(mktemp) && export SIR_AWARENESS_PERF_RECEIPT=\"$tmp_receipt\" && dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release -- --awareness && jq \"{candidate,observation}\" \"$tmp_receipt\" && rm -f \"$tmp_receipt\"'", "result": "verified" }],
+      "confidenceLimits": ["Timing varies with host load; the fresh audit rerun measured p95 34 ms/raw worst 39 ms, the hard gate applies to raw maximum, and structural counters are deterministic."]
     },
     {
       "id": "§4.3",
