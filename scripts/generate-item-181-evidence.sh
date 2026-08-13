@@ -13,8 +13,6 @@ receipts=(
   physical-combat-conformance.junit.xml
   physical-combat-docs.junit.xml
 )
-for receipt in "${receipts[@]}"; do rm -f "$evidence_root/$receipt"; done
-rm -f "$evidence_root/physical-combat.junit.xml"
 mkdir -p "$evidence_root"
 
 xml_escape() {
@@ -47,30 +45,33 @@ npm ci
 
 core_command='./scripts/verify-physical-combat.sh'
 $core_command 2>&1 | tee "$task_tmp/core.log"
-write_receipt "$evidence_root/physical-combat-core.junit.xml" \
+write_receipt "$task_tmp/physical-combat-core.junit.xml" \
   item-181-physical-combat-core \
   'authoritative combat fixtures, mutations, server boundary, performance, native/Fable, and browser journey pass' \
   "$core_command" "$task_tmp/core.log"
 
 rules_command='./scripts/verify-rules-corpus.sh && SIR_RULES_FORCE_GREP=1 ./scripts/verify-rules-corpus.sh'
 bash -c "$rules_command" 2>&1 | tee "$task_tmp/rules.log"
-write_receipt "$evidence_root/physical-combat-rules.junit.xml" \
+write_receipt "$task_tmp/physical-combat-rules.junit.xml" \
   item-181-physical-combat-rules \
   'normal and forced rules generation, source correspondence, and identity mutations pass' \
   "$rules_command" "$task_tmp/rules.log"
 
 conformance_command='./scripts/test-conformance.sh'
 $conformance_command 2>&1 | tee "$task_tmp/conformance.log"
-write_receipt "$evidence_root/physical-combat-conformance.junit.xml" \
+write_receipt "$task_tmp/physical-combat-conformance.junit.xml" \
   item-181-physical-combat-conformance \
   'full native/Fable replay, seek, worker, WASM, browser, and delivery conformance passes' \
   "$conformance_command" "$task_tmp/conformance.log"
 
 docs_command='./scripts/build-docs.sh'
 $docs_command 2>&1 | tee "$task_tmp/docs.log"
-write_receipt "$evidence_root/physical-combat-docs.junit.xml" \
+write_receipt "$task_tmp/physical-combat-docs.junit.xml" \
   item-181-physical-combat-docs \
   'documentation build, integrity, experience, browser smoke, and accessibility pass' \
   "$docs_command" "$task_tmp/docs.log"
 
+for receipt in "${receipts[@]}"; do
+  cp "$task_tmp/$receipt" "$evidence_root/$receipt"
+done
 printf '%s\n' "${receipts[@]/#/$evidence_root/}"
