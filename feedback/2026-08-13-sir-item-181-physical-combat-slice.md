@@ -5,7 +5,7 @@ workspace: S.I.R
 cycle: item-181-physical-combat-slice
 lane: sdd
 toolVersion: 1.0.1
-commit: d0e44ca2a53942638ccf86c32ccb3c991ee32428
+commit: d0e44ca3d67c7c030678ff1b471d1eb0cafb681c
 ---
 
 ## §1 Provenance and confidence
