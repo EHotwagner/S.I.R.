@@ -115,7 +115,7 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   const source = explorer.getByRole("link", { name: /Pinned F# source · CombatRules.damage/ });
   await expect(source).toHaveAttribute(
     "href",
-    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/3cffdea3665a29b57fe99f2cbd8ebc90b51bbd15\/src\/SIR\.Simulation\/CombatRules\.fs/,
+    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/707cfb1a18df9967e10da5269749e30f7481abc4\/src\/SIR\.Simulation\/CombatRules\.fs/,
   );
   await expect(damageRule.getByText(/examples: tests\/SIR\.Conformance\.Shared\/RulesCorpusFixtures\.fs · properties:/)).toBeVisible();
   await expect(damageRule.getByRole("link", { name: "Coverage graph" })).toHaveAttribute("href", /rules-corpus\/v2\/coverage\.json/);
