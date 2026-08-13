@@ -59,6 +59,15 @@ type private PhysicalCombatReplay =
 type private PhysicalCombatProjection =
     { Scenario: string; InitialCoverIntegrity: int32; FinalCoverIntegrity: int32; CoverDestroyed: bool
       Profiles: PhysicalCombatProfile list; Replay: PhysicalCombatReplay }
+type private AwarenessContactProjection =
+    { ObserverId: int32; SubjectId: int32; Level: string; Acquisition: int32
+      HasLastKnownCell: bool; LastKnownColumn: int32; LastKnownRow: int32; Reason: string }
+type private AwarenessEngagementProjection =
+    { OwnerId: int32; EngagementId: string; Phase: string; RemainingTicks: int32; Reason: string }
+type private AwarenessProjectionResponse =
+    { Schema: string; Tick: int32; ObserverId: int32; Contacts: AwarenessContactProjection list
+      Engagement: AwarenessEngagementProjection option; Events: string list
+      CandidatePairs: int32; LosEvaluations: int32 }
 
 [<Global>]
 let private fetch (url: string, options: obj) : JS.Promise<obj> = jsNative
@@ -145,6 +154,36 @@ let private combatResponseDecoder : Decoder<PhysicalCombatProjection> =
           Profiles = get.Required.Field "Profiles" (Decode.list combatProfileDecoder)
           Replay = get.Required.Field "Replay" combatReplayDecoder })
 
+let private awarenessContactDecoder : Decoder<AwarenessContactProjection> =
+    Decode.object (fun get ->
+        { ObserverId = get.Required.Field "ObserverId" Decode.int
+          SubjectId = get.Required.Field "SubjectId" Decode.int
+          Level = get.Required.Field "Level" Decode.string
+          Acquisition = get.Required.Field "Acquisition" Decode.int
+          HasLastKnownCell = get.Required.Field "HasLastKnownCell" Decode.bool
+          LastKnownColumn = get.Required.Field "LastKnownColumn" Decode.int
+          LastKnownRow = get.Required.Field "LastKnownRow" Decode.int
+          Reason = get.Required.Field "Reason" Decode.string })
+
+let private awarenessEngagementDecoder : Decoder<AwarenessEngagementProjection> =
+    Decode.object (fun get ->
+        { OwnerId = get.Required.Field "OwnerId" Decode.int
+          EngagementId = get.Required.Field "EngagementId" Decode.string
+          Phase = get.Required.Field "Phase" Decode.string
+          RemainingTicks = get.Required.Field "RemainingTicks" Decode.int
+          Reason = get.Required.Field "Reason" Decode.string })
+
+let private awarenessResponseDecoder : Decoder<AwarenessProjectionResponse> =
+    Decode.object (fun get ->
+        { Schema = get.Required.Field "Schema" Decode.string
+          Tick = get.Required.Field "Tick" Decode.int
+          ObserverId = get.Required.Field "ObserverId" Decode.int
+          Contacts = get.Required.Field "Contacts" (Decode.list awarenessContactDecoder)
+          Engagement = get.Optional.Field "Engagement" awarenessEngagementDecoder
+          Events = get.Required.Field "Events" (Decode.list Decode.string)
+          CandidatePairs = get.Required.Field "CandidatePairs" Decode.int
+          LosEvaluations = get.Required.Field "LosEvaluations" Decode.int })
+
 let private cellText (value: SpatialDiagnosticCell) = $"({value.Column},{value.Row})"
 let private combatCellText (value: PhysicalCombatCell) = $"({value.Column},{value.Row})"
 let private edgeText (value: SpatialDiagnosticEdge) = cellText value.Low + "→" + cellText value.High
@@ -227,6 +266,19 @@ let private loadPhysicalCombat accessToken =
         return Decode.fromString combatResponseDecoder (string responseBody) |> Result.defaultWith (fun error -> failwith $"physical combat response did not decode: {error}")
     }
 
+let private loadLocalAwareness accessToken =
+    async {
+        let options =
+            createObj [
+                "method" ==> "POST"
+                "headers" ==> createObj [ "Authorization" ==> ("Bearer " + accessToken) ]
+            ]
+        let! response = fetch ("/api/awareness/local-projection", options) |> Async.AwaitPromise
+        let! responseBody = response?text() |> Async.AwaitPromise
+        if not (unbox<bool> response?ok) then failwith $"local awareness request failed: {responseBody}"
+        return Decode.fromString awarenessResponseDecoder (string responseBody) |> Result.defaultWith (fun error -> failwith $"local awareness response did not decode: {error}")
+    }
+
 let private valueText value =
     match value.Value with
     | IntegerValue number -> string number + " " + value.Unit
@@ -285,6 +337,8 @@ let ExecutableRulesPanel (bootstrap: BootstrapV1.Response option) =
     let resolvedAttack, setResolvedAttack = React.useState<(int32 * int32 * RuleApplication) option>(None)
     let physicalResult, setPhysicalResult = React.useState<PhysicalCombatProjection option>(None)
     let physicalFailure, setPhysicalFailure = React.useState<string option>(None)
+    let awarenessResult, setAwarenessResult = React.useState<AwarenessProjectionResponse option>(None)
+    let awarenessFailure, setAwarenessFailure = React.useState<string option>(None)
     Html.section [
         prop.ariaLabel "Rules data tables"
         prop.children [
@@ -380,6 +434,47 @@ let ExecutableRulesPanel (bootstrap: BootstrapV1.Response option) =
                                     Html.ol [ for fact in profile.Facts do Html.li ($"{fact.Step} · {fact.Subject} · {fact.Detail}") ]
                                 ]
                             ]
+                ]
+            ]
+            Html.section [
+                prop.ariaLabel "Local awareness and reaction projection"
+                prop.children [
+                    Html.h3 "Local awareness and reaction projection"
+                    Html.p "The authoritative host advances awareness, preparation, trigger ordering, and physical resolution; the browser receives only observer-local knowledge."
+                    Html.button [
+                        prop.text "Run local awareness reaction"
+                        prop.disabled (Option.isNone bootstrap)
+                        prop.onClick (fun _ ->
+                            setAwarenessResult None
+                            setAwarenessFailure None
+                            match bootstrap with
+                            | None -> setAwarenessFailure (Some "Live authority admission is unavailable.")
+                            | Some admission ->
+                                Async.StartImmediate(async {
+                                    try
+                                        let! result = loadLocalAwareness admission.AccessToken
+                                        setAwarenessResult (Some result)
+                                    with error -> setAwarenessFailure (Some error.Message)
+                                }))
+                    ]
+                    match awarenessFailure, awarenessResult with
+                    | Some failure, _ -> Html.p ("Local projection unavailable: " + failure)
+                    | None, None -> Html.p "No observer-local awareness frame has been received yet."
+                    | None, Some result ->
+                        Html.p $"Observer {result.ObserverId} · tick {result.Tick} · contacts {result.Contacts.Length} · candidate pairs {result.CandidatePairs} · LOS {result.LosEvaluations}"
+                        for contact in result.Contacts do
+                            Html.article [
+                                prop.ariaLabel $"Local contact {contact.SubjectId}"
+                                prop.children [
+                                    Html.h4 $"Contact {contact.SubjectId} · {contact.Level}"
+                                    Html.p $"Acquisition {contact.Acquisition} · reason {contact.Reason}"
+                                    if contact.HasLastKnownCell then Html.p $"Last known ({contact.LastKnownColumn},{contact.LastKnownRow})"
+                                ]
+                            ]
+                        match result.Engagement with
+                        | Some engagement -> Html.p $"Engagement {engagement.EngagementId} · {engagement.Phase} · {engagement.Reason}"
+                        | None -> Html.p "No local engagement."
+                        Html.p ("Authoritative order " + String.concat " → " result.Events)
                 ]
             ]
             for rule in SIR.Simulation.CombatRules.registry do

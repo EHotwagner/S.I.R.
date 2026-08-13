@@ -1,7 +1,7 @@
 {
   "schema": "sir-fable-client-baseline-v1",
   "replay": {
-    "formatVersion": 4,
+    "formatVersion": 5,
     "encoding": "canonical-binary-little-endian",
     "compression": "none",
     "stateHash": "sha-256",
@@ -15,7 +15,9 @@
       "maxPerspectiveFrames": 65536,
       "maxUnits": 4096,
       "maxEdges": 16384,
-      "maxObservations": 65536
+      "maxObservations": 65536,
+      "maxAwarenessContacts": 65536,
+      "maxEngagements": 4096
     }
   },
   "numerics": {

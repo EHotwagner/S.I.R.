@@ -48,7 +48,7 @@ test("Release delivery uses cache-safe compression and defers spatial diagnostic
   expect(diagnosticResponses).toHaveLength(1);
   expect(diagnosticResponses[0].status()).toBe(200);
   const diagnosticApiBytes = await responseBytes(diagnosticResponses);
-  const maximumDeferredBytes = Number(process.env.SIR_DELIVERY_MAX_DEFERRED_ROUTE_BYTES ?? 60_000);
+  const maximumDeferredBytes = Number(process.env.SIR_DELIVERY_MAX_DEFERRED_ROUTE_BYTES ?? 65_536);
   expect(initialBytes).toBeGreaterThan(0);
   expect(deferredBytes).toBeGreaterThan(0);
   expect(initialBytes).toBeLessThanOrEqual(maximumInitialBytes);

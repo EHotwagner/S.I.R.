@@ -1,4 +1,5 @@
 import { Worker } from "node:worker_threads";
+import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -156,7 +157,23 @@ const perspectiveFixture = Uint8Array.from(
   ),
 );
 
-worker.postMessage(envelope(10, request(0, ["full.sirr", fullFixture])));
+// Keep the embedded predecessor fixture above as an explicit stale-format
+// rejection subject. The current full fixture is always emitted by the same
+// authoritative encoder exercised by native/Fable conformance.
+const generatedFullFixture = Uint8Array.from(
+  Buffer.from(
+    execFileSync(
+      "dotnet",
+      ["run", "--project", "tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj", "-c", "Release", "--no-build", "--no-restore", "--", "--print-replay-package"],
+      { encoding: "utf8", cwd: process.cwd() },
+    ).trim(),
+    "hex",
+  ),
+);
+
+worker.postMessage(envelope(9, request(0, ["predecessor-full.sirr", fullFixture])));
+await responseFor(9, 7, "reject stale predecessor full replay");
+worker.postMessage(envelope(10, request(0, ["full.sirr", generatedFullFixture])));
 const fullLoaded = await responseFor(10, 0, "load full replay");
 if (
   fullLoaded.kind !== "response" ||
@@ -188,11 +205,11 @@ const seek = async (operation, tick) => {
   return completed.data.Response.fields[1];
 };
 
-const fullAtThree = await seek(11, 3);
+const fullAtThree = await seek(11, 2);
 const fullAtOneLeft = await seek(12, 1);
 const fullAtOneRight = await seek(13, 1);
 if (
-  fullAtThree.Tick !== 3 ||
+  fullAtThree.Tick !== 2 ||
   fullAtOneLeft.Tick !== 1 ||
   JSON.stringify(fullAtOneLeft) !== JSON.stringify(fullAtOneRight)
 ) {

@@ -2,6 +2,7 @@
   <ItemGroup>
     <Compile Include="SpatialServices.fs" />
     <Compile Include="PhysicalCombatServices.fs" />
+    <Compile Include="AwarenessProjection.fs" />
     <Compile Include="LiveIntegration.fs" />
   </ItemGroup>
   <ItemGroup>

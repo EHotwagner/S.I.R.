@@ -128,7 +128,7 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   const responseBody = await response.text();
   expect(physicalAuthorityRequests).toBe(1);
   await expect(drill.getByText("Cover integrity 50 → 0 · destroyed true", { exact: true })).toBeVisible();
-  await expect(drill.getByText(/Replay v4 verified true from 4 seek points · final tick 4 · state [0-9a-f]{64}/)).toBeVisible();
+  await expect(drill.getByText(/Replay v5 verified true from 4 seek points · final tick 4 · state [0-9a-f]{64}/)).toBeVisible();
 
   const expectedProfiles = [
     ["Rifle", "50 → 38 · destroyed false"],
@@ -155,6 +155,30 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   await expect(antiArmorExplanation).toContainText("Armor");
   await expect(antiArmorExplanation).toContainText("Wound");
   console.log(JSON.stringify({ schema: "sir-physical-combat-route-v1", authorityRequests: physicalAuthorityRequests, responseBytes: Buffer.byteLength(responseBody, "utf8") }));
+});
+
+test("the production browser consumes only the observer-local awareness and reaction projection", async ({ page }) => {
+  let authorityRequests = 0;
+  page.on("request", (request) => {
+    if (request.url().includes("/api/awareness/local-projection")) authorityRequests += 1;
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "View", exact: true }).click();
+  await page.getByRole("menuitem", { name: /Rules data/ }).click();
+  const projection = page.getByRole("region", { name: "Local awareness and reaction projection", exact: true });
+  const responsePromise = page.waitForResponse((response) => response.url().includes("/api/awareness/local-projection") && response.status() === 200);
+  await projection.getByRole("button", { name: "Run local awareness reaction" }).click();
+  const response = await responsePromise;
+  const body = await response.text();
+  expect(authorityRequests).toBe(1);
+  expect(body).not.toContain("Units");
+  expect(body).not.toContain("Board");
+  expect(body).not.toContain("SpatialEvidence");
+  await expect(projection.getByText(/Observer 10 · tick 3 · contacts 1 · candidate pairs 2 · LOS 2/)).toBeVisible();
+  await expect(projection.getByRole("heading", { name: "Contact 20 · Acquired" })).toBeVisible();
+  await expect(projection.getByText(/Engagement player-area-east · Resolved · ResolvedByPhysicalAuthority/)).toBeVisible();
+  await expect(projection.getByText("Authoritative order committed:10:20:player-area-east → physical:10 → resolved:10:20:player-area-east", { exact: true })).toBeVisible();
+  console.log(JSON.stringify({ schema: "sir-local-awareness-browser-v1", authorityRequests, responseBytes: Buffer.byteLength(body, "utf8") }));
 });
 
 test("the player-visible spatial diagnostics route shows authoritative selected-unit evidence", async ({ page }) => {
