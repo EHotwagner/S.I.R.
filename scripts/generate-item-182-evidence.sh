@@ -42,5 +42,11 @@ run_receipt awareness-reaction-docs item-182-docs \
   'documentation build, integrity, experience, browser smoke, and accessibility pass' \
   './scripts/build-docs.sh'
 
+aggregate_log="$task_tmp/awareness-reaction-all.log"
+sha256sum "$staged_root"/*.junit.xml > "$aggregate_log"
+write_receipt "$staged_root/awareness-reaction-all.junit.xml" item-182-all \
+  'all implementation, conformance, production-browser, documentation, and inversion gates pass' \
+  './scripts/generate-item-182-evidence.sh' "$aggregate_log"
+
 cp "$staged_root"/*.junit.xml "$evidence_root/"
 printf '%s\n' "$evidence_root"/*.junit.xml

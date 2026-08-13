@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="item-182-all" tests="1" failures="0">
+  <testcase classname="Item182Evidence" name="all implementation, conformance, production-browser, documentation, and inversion gates pass"/>
+  <system-out>command=./scripts/generate-item-182-evidence.sh; log-sha256=00ea13eb5f8a96aec4d098cd1940e1ace0305206c69a780da1dab78bae4a16ec</system-out>
+</testsuite>

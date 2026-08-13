@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="item-182-conformance" tests="1" failures="0">
+  <testcase classname="Item182Evidence" name="complete native/Fable, replay, worker, WASM, server, browser, and delivery conformance passes"/>
+  <system-out>command=./scripts/test-conformance.sh; log-sha256=85af0c72589cb97b12a63d4ce0c38297d8839c3ba0ee5a60ebc45e5f90229260</system-out>
+</testsuite>

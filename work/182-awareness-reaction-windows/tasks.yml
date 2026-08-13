@@ -30,8 +30,8 @@ sources:
 tasks:
   - id: T001
     title: Implement requirement FR-001
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: []
     requirements: [FR-001]
     decisions: []
@@ -40,8 +40,8 @@ tasks:
     requiredEvidence: [EV001]
   - id: T002
     title: Implement requirement FR-002
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: []
     requirements: [FR-002]
     decisions: []
@@ -50,8 +50,8 @@ tasks:
     requiredEvidence: [EV002]
   - id: T003
     title: Implement requirement FR-003
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: []
     requirements: [FR-003]
     decisions: []
@@ -60,8 +60,8 @@ tasks:
     requiredEvidence: [EV003]
   - id: T004
     title: Implement requirement FR-004
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: []
     requirements: [FR-004]
     decisions: []
@@ -70,8 +70,8 @@ tasks:
     requiredEvidence: [EV004]
   - id: T005
     title: Implement requirement FR-005
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: []
     requirements: [FR-005]
     decisions: []
@@ -80,8 +80,8 @@ tasks:
     requiredEvidence: [EV005]
   - id: T006
     title: Implement requirement FR-006
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: []
     requirements: [FR-006]
     decisions: []
@@ -90,8 +90,8 @@ tasks:
     requiredEvidence: [EV006]
   - id: T007
     title: Implement requirement FR-007
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: []
     requirements: [FR-007]
     decisions: []
@@ -100,8 +100,8 @@ tasks:
     requiredEvidence: [EV007]
   - id: T008
     title: Implement requirement FR-008
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: []
     requirements: [FR-008]
     decisions: []
@@ -110,8 +110,8 @@ tasks:
     requiredEvidence: [EV008]
   - id: T009
     title: Implement requirement FR-009
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: []
     requirements: [FR-009]
     decisions: []
@@ -120,8 +120,8 @@ tasks:
     requiredEvidence: [EV009]
   - id: T010
     title: Implement requirement FR-010
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: []
     requirements: [FR-010]
     decisions: []
@@ -130,8 +130,8 @@ tasks:
     requiredEvidence: [EV010]
   - id: T011
     title: Implement requirement FR-011
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: []
     requirements: [FR-011]
     decisions: []
@@ -140,8 +140,8 @@ tasks:
     requiredEvidence: [EV011]
   - id: T012
     title: Implement requirement FR-012
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: []
     requirements: [FR-012]
     decisions: []
@@ -150,8 +150,8 @@ tasks:
     requiredEvidence: [EV012]
   - id: T013
     title: Implement requirement FR-013
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: []
     requirements: [FR-013]
     decisions: []
@@ -160,8 +160,8 @@ tasks:
     requiredEvidence: [EV013]
   - id: T014
     title: Implement requirement FR-014
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: []
     requirements: [FR-014]
     decisions: []
@@ -170,8 +170,8 @@ tasks:
     requiredEvidence: [EV014]
   - id: T015
     title: Implement clarification decision DEC-001
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: [DEC-001]
@@ -180,8 +180,8 @@ tasks:
     requiredEvidence: [EV015]
   - id: T016
     title: Implement clarification decision DEC-002
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: [DEC-002]
@@ -190,8 +190,8 @@ tasks:
     requiredEvidence: [EV016]
   - id: T017
     title: Implement clarification decision DEC-003
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: [DEC-003]
@@ -200,8 +200,8 @@ tasks:
     requiredEvidence: [EV017]
   - id: T018
     title: Implement clarification decision DEC-004
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: [DEC-004]
@@ -210,8 +210,8 @@ tasks:
     requiredEvidence: [EV018]
   - id: T019
     title: Implement clarification decision DEC-005
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: [DEC-005]
@@ -220,8 +220,8 @@ tasks:
     requiredEvidence: [EV019]
   - id: T020
     title: Implement clarification decision DEC-006
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: [DEC-006]
@@ -230,8 +230,8 @@ tasks:
     requiredEvidence: [EV020]
   - id: T021
     title: Implement clarification decision DEC-007
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: [DEC-007]
@@ -240,8 +240,8 @@ tasks:
     requiredEvidence: [EV021]
   - id: T022
     title: Implement plan decision PD-001
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -250,8 +250,8 @@ tasks:
     requiredEvidence: [EV022]
   - id: T023
     title: Implement plan decision PD-002
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -260,8 +260,8 @@ tasks:
     requiredEvidence: [EV023]
   - id: T024
     title: Implement plan decision PD-003
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -270,8 +270,8 @@ tasks:
     requiredEvidence: [EV024]
   - id: T025
     title: Implement plan decision PD-004
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -280,8 +280,8 @@ tasks:
     requiredEvidence: [EV025]
   - id: T026
     title: Implement plan decision PD-005
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -290,8 +290,8 @@ tasks:
     requiredEvidence: [EV026]
   - id: T027
     title: Implement plan decision PD-006
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -300,8 +300,8 @@ tasks:
     requiredEvidence: [EV027]
   - id: T028
     title: Implement plan decision PD-007
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -310,8 +310,8 @@ tasks:
     requiredEvidence: [EV028]
   - id: T029
     title: Implement plan decision PD-008
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -320,8 +320,8 @@ tasks:
     requiredEvidence: [EV029]
   - id: T030
     title: Implement plan decision PD-009
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -330,8 +330,8 @@ tasks:
     requiredEvidence: [EV030]
   - id: T031
     title: Implement plan decision PD-010
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -340,8 +340,8 @@ tasks:
     requiredEvidence: [EV031]
   - id: T032
     title: Implement plan decision PD-011
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -350,8 +350,8 @@ tasks:
     requiredEvidence: [EV032]
   - id: T033
     title: Implement plan decision PD-012
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -360,8 +360,8 @@ tasks:
     requiredEvidence: [EV033]
   - id: T034
     title: Implement plan decision PD-013
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -370,8 +370,8 @@ tasks:
     requiredEvidence: [EV034]
   - id: T035
     title: Implement plan decision PD-014
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -380,8 +380,8 @@ tasks:
     requiredEvidence: [EV035]
   - id: T036
     title: Update contract surface PC-001
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -390,8 +390,8 @@ tasks:
     requiredEvidence: [EV036]
   - id: T037
     title: Update contract surface PC-002
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -400,8 +400,8 @@ tasks:
     requiredEvidence: [EV037]
   - id: T038
     title: Update contract surface PC-003
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -410,8 +410,8 @@ tasks:
     requiredEvidence: [EV038]
   - id: T039
     title: Update contract surface PC-004
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -420,8 +420,8 @@ tasks:
     requiredEvidence: [EV039]
   - id: T040
     title: Update contract surface PC-005
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -430,8 +430,8 @@ tasks:
     requiredEvidence: [EV040]
   - id: T041
     title: Update contract surface PC-006
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -440,8 +440,8 @@ tasks:
     requiredEvidence: [EV041]
   - id: T042
     title: Update contract surface PC-007
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -450,8 +450,8 @@ tasks:
     requiredEvidence: [EV042]
   - id: T043
     title: Update contract surface PC-008
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -460,8 +460,8 @@ tasks:
     requiredEvidence: [EV043]
   - id: T044
     title: Update contract surface PC-009
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -470,8 +470,8 @@ tasks:
     requiredEvidence: [EV044]
   - id: T045
     title: Record verification evidence VO-001
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -480,8 +480,8 @@ tasks:
     requiredEvidence: [EV045]
   - id: T046
     title: Record verification evidence VO-002
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -490,8 +490,8 @@ tasks:
     requiredEvidence: [EV046]
   - id: T047
     title: Record verification evidence VO-003
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -500,8 +500,8 @@ tasks:
     requiredEvidence: [EV047]
   - id: T048
     title: Record verification evidence VO-004
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -510,8 +510,8 @@ tasks:
     requiredEvidence: [EV048]
   - id: T049
     title: Record verification evidence VO-005
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -520,8 +520,8 @@ tasks:
     requiredEvidence: [EV049]
   - id: T050
     title: Record verification evidence VO-006
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -530,8 +530,8 @@ tasks:
     requiredEvidence: [EV050]
   - id: T051
     title: Record verification evidence VO-007
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -540,8 +540,8 @@ tasks:
     requiredEvidence: [EV051]
   - id: T052
     title: Record verification evidence VO-008
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -550,8 +550,8 @@ tasks:
     requiredEvidence: [EV052]
   - id: T053
     title: Record verification evidence VO-009
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -560,8 +560,8 @@ tasks:
     requiredEvidence: [EV053]
   - id: T054
     title: Handle migration posture PM-001
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -570,8 +570,8 @@ tasks:
     requiredEvidence: [EV054]
   - id: T055
     title: Handle migration posture PM-002
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -580,8 +580,8 @@ tasks:
     requiredEvidence: [EV055]
   - id: T056
     title: Handle migration posture PM-003
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -590,8 +590,8 @@ tasks:
     requiredEvidence: [EV056]
   - id: T057
     title: Handle migration posture PM-004
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -600,8 +600,8 @@ tasks:
     requiredEvidence: [EV057]
   - id: T058
     title: Handle migration posture PM-005
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -610,8 +610,8 @@ tasks:
     requiredEvidence: [EV058]
   - id: T059
     title: Refresh generated view impact GV-001
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -620,8 +620,8 @@ tasks:
     requiredEvidence: [EV059]
   - id: T060
     title: Refresh generated view impact GV-002
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []
@@ -630,8 +630,8 @@ tasks:
     requiredEvidence: [EV060]
   - id: T061
     title: Refresh generated view impact GV-003
-    status: pending
-    owner: sdd
+    status: done
+    owner: finch-223e
     dependencies: [T001]
     requirements: []
     decisions: []

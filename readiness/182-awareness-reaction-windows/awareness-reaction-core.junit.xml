@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="item-182-core" tests="1" failures="0">
+  <testcase classname="Item182Evidence" name="awareness, reaction, replay, performance, disclosure, and browser gates pass"/>
+  <system-out>command=./scripts/verify-awareness-reaction.sh; log-sha256=0ce6ebeb3d0d90cab6c0558b349e75a77974225a57c72cdfc374080fcafd6624</system-out>
+</testsuite>

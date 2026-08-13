@@ -115,7 +115,7 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   const source = explorer.getByRole("link", { name: /Pinned F# source · CombatRules.damage/ });
   await expect(source).toHaveAttribute(
     "href",
-    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/9169fdff4b27e5de2ad9fcfeab7a45cf5d2fce0a\/src\/SIR\.Simulation\/CombatRules\.fs/,
+    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/b9d1d3344b2ccfed81122b652c7ce3b56ffb6a61\/src\/SIR\.Simulation\/CombatRules\.fs/,
   );
   await expect(damageRule.getByText(/examples: tests\/SIR\.Conformance\.Shared\/RulesCorpusFixtures\.fs · properties:/)).toBeVisible();
   await expect(damageRule.getByRole("link", { name: "Coverage graph" })).toHaveAttribute("href", /rules-corpus\/v2\/coverage\.json/);
@@ -128,7 +128,7 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   const responseBody = await response.text();
   expect(physicalAuthorityRequests).toBe(1);
   await expect(drill.getByText("Cover integrity 50 → 0 · destroyed true", { exact: true })).toBeVisible();
-  await expect(drill.getByText(/Replay v5 verified true from 4 seek points · final tick 4 · state [0-9a-f]{64}/)).toBeVisible();
+  await expect(drill.getByText(/Replay v6 verified true from 4 seek points · final tick 4 · state [0-9a-f]{64}/)).toBeVisible();
 
   const expectedProfiles = [
     ["Rifle", "50 → 38 · destroyed false"],
