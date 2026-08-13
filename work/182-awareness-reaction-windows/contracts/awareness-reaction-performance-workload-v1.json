@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "workloadId": "sir-awareness-reaction-authoritative-tick-v1",
+  "productionRoute": "SIR.Simulation.Simulation.runPhysicalTickWithRules(Simulation.defaultRules) with awareness/reaction phase",
+  "warmupTicks": 10,
+  "measurementTicks": 60,
+  "representative": {
+    "scenarios": ["front-peripheral-rear", "occluded-acquisition-loss", "prepared-area-entry", "guarded-edge-crossing", "exposed-target", "interruption", "simultaneous-order"],
+    "maximumAwarenessP95Milliseconds": 5,
+    "maximumFullTickP95Milliseconds": 20
+  },
+  "stress": {
+    "units": 200,
+    "unitsPerSide": 100,
+    "mapWidth": 80,
+    "mapHeight": 80,
+    "levels": 2,
+    "sensorRangeCells": 60,
+    "exposureSamplesPerTarget": 4,
+    "motion": "deterministic contact movement and turning on every tick",
+    "engagements": "canonical mixture of known-unit, covered-area, and guarded-edge targets",
+    "maximumWorstTickMilliseconds": 50
+  },
+  "structuralCapsPerTick": {
+    "candidatePairs": 20000,
+    "losEvaluations": 5000,
+    "stimuli": 4096,
+    "awarenessEpisodes": 4096,
+    "engagements": 4096,
+    "reactionFacts": 4096,
+    "events": 4096,
+    "coveredAreaCellsPerEngagement": 256,
+    "canonicalBytes": 262144
+  }
+}
