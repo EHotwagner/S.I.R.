@@ -36,8 +36,27 @@ if SIR_AWARENESS_STIMULUS_HISTORY_MUTATE_SUBJECT=1 dotnet run --project tests/SI
 fi
 
 SIR_AWARENESS_PERF_RECEIPT="$task_tmp/perf-development-receipt.json" dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --awareness
+candidate_commit=$(git rev-parse HEAD)
+dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --verify-awareness-receipt "$task_tmp/perf-development-receipt.json" --candidate-commit "$candidate_commit"
+jq '.observation.worstMilliseconds = 50 | .observation.p95Milliseconds = 50' "$task_tmp/perf-development-receipt.json" > "$task_tmp/perf-boundary-receipt.json"
+dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --verify-awareness-receipt "$task_tmp/perf-boundary-receipt.json" --candidate-commit "$candidate_commit"
+for mutation in worst-999 missing-worst negative-worst p95-over-worst allocation structural malformed; do
+  case "$mutation" in
+    worst-999) jq '.observation.worstMilliseconds = 999 | .outcome = "pass"' "$task_tmp/perf-development-receipt.json" > "$task_tmp/perf-$mutation-receipt.json" ;;
+    missing-worst) jq 'del(.observation.worstMilliseconds)' "$task_tmp/perf-development-receipt.json" > "$task_tmp/perf-$mutation-receipt.json" ;;
+    negative-worst) jq '.observation.worstMilliseconds = -1' "$task_tmp/perf-development-receipt.json" > "$task_tmp/perf-$mutation-receipt.json" ;;
+    p95-over-worst) jq '.observation.p95Milliseconds = 40 | .observation.worstMilliseconds = 39' "$task_tmp/perf-development-receipt.json" > "$task_tmp/perf-$mutation-receipt.json" ;;
+    allocation) jq '.observation.maximumAllocation = 100000001' "$task_tmp/perf-development-receipt.json" > "$task_tmp/perf-$mutation-receipt.json" ;;
+    structural) jq '.observation.losEvaluations = 999999999' "$task_tmp/perf-development-receipt.json" > "$task_tmp/perf-$mutation-receipt.json" ;;
+    malformed) printf '{not-json\n' > "$task_tmp/perf-$mutation-receipt.json" ;;
+  esac
+  if dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --verify-awareness-receipt "$task_tmp/perf-$mutation-receipt.json" --candidate-commit "$candidate_commit" >"$task_tmp/perf-$mutation.log" 2>&1; then
+    echo "Awareness receipt semantic mutation survived: $mutation" >&2
+    exit 1
+  fi
+done
 git show c6f0bd3be8ca08b5103c55e65ee48b89eb92c371:readiness/182-awareness-reaction-windows/awareness-performance-receipt.json > "$task_tmp/stale-93ba51c-receipt.json"
-if dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --verify-awareness-receipt "$task_tmp/stale-93ba51c-receipt.json" --candidate-commit "$(git rev-parse HEAD)" >"$task_tmp/perf-stale-candidate.log" 2>&1; then
+if dotnet run --project tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj -c Release --no-build --no-restore -- --verify-awareness-receipt "$task_tmp/stale-93ba51c-receipt.json" --candidate-commit "$candidate_commit" >"$task_tmp/perf-stale-candidate.log" 2>&1; then
   echo "Stale 93ba51c awareness receipt survived exact-candidate acceptance." >&2
   exit 1
 fi

@@ -349,6 +349,13 @@ let private verifyAwarenessPerformanceReceipt (receiptPath: string) (expectedCom
     let root = document.RootElement
     let property (name: string) (element: JsonElement) = element.GetProperty name
     let textProperty (name: string) (element: JsonElement) = property name element |> _.GetString() |> Option.ofObj |> Option.defaultValue ""
+    let int64Property (name: string) (element: JsonElement) =
+        let value = property name element
+        required (value.ValueKind = JsonValueKind.Number) $"The awareness receipt {name} observation is not numeric."
+        let mutable parsed = 0L
+        required (value.TryGetInt64(&parsed)) $"The awareness receipt {name} observation is not a finite integer."
+        required (parsed >= 0L) $"The awareness receipt {name} observation is negative."
+        parsed
     required (textProperty "schema" root = "sir.awareness-reaction.performance-receipt/1") "The awareness receipt schema is unsupported."
     required (textProperty "outcome" root = "pass") "The awareness receipt did not pass."
     let candidate = property "candidate" root
@@ -361,6 +368,43 @@ let private verifyAwarenessPerformanceReceipt (receiptPath: string) (expectedCom
     required (textProperty "simulationAssemblySha256" candidate = sha256File typeof<SimulationState>.Assembly.Location) "The awareness receipt simulation assembly is not the verifier assembly."
     let workloadPath = "work/182-awareness-reaction-windows/contracts/awareness-reaction-performance-workload-v1.json"
     required (textProperty "workloadDefinitionSha256" root = sha256File workloadPath) "The awareness receipt workload definition is stale."
+    use workloadDocument = JsonDocument.Parse(File.ReadAllText workloadPath)
+    let workload = workloadDocument.RootElement
+    required (JsonElement.DeepEquals(property "workload" root, workload)) "The awareness receipt embedded workload differs from its bound definition."
+    let representative = property "representative" workload
+    let stress = property "stress" workload
+    let caps = property "structuralCapsPerTick" workload
+    let observation = property "observation" root
+    let p95 = int64Property "p95Milliseconds" observation
+    let worst = int64Property "worstMilliseconds" observation
+    let units = int64Property "units" observation
+    let ticks = int64Property "ticks" observation
+    let candidatePairs = int64Property "candidatePairs" observation
+    let servicedSlots = int64Property "servicedSlots" observation
+    let losEvaluations = int64Property "losEvaluations" observation
+    let moves = int64Property "moves" observation
+    let engagementObservations = int64Property "engagementObservations" observation
+    let reactionCandidates = int64Property "reactionCandidates" observation
+    let evidenceBytes = int64Property "evidenceBytes" observation
+    let maximumAllocation = int64Property "maximumAllocation" observation
+    let measurementTicks = int64Property "measurementTicks" workload
+    let warmupTicks = int64Property "warmupTicks" workload
+    let expectedUnits = int64Property "units" stress
+    let unitsPerSide = int64Property "unitsPerSide" stress
+    let hardWorst = int64Property "maximumWorstTickMilliseconds" stress
+    required (hardWorst = int64Property "maximumWorstTickMilliseconds" representative) "The awareness workload worst-tick thresholds disagree."
+    required (p95 <= worst) "The awareness receipt p95 exceeds its raw worst observation."
+    required (worst <= hardWorst) "The awareness receipt raw worst observation exceeds the hard ceiling."
+    required (units = expectedUnits && candidatePairs = 2L * unitsPerSide * unitsPerSide) "The awareness receipt workload cardinality is inconsistent."
+    let sampledTicks = measurementTicks + warmupTicks + 9L
+    required (ticks = sampledTicks + 2L) "The awareness receipt tick count is inconsistent with its workload."
+    required (servicedSlots > 0L && servicedSlots <= int64Property "awarenessEpisodes" caps * sampledTicks) "The awareness receipt serviced-slot count exceeds its bound."
+    required (losEvaluations > 0L && losEvaluations <= int64Property "losEvaluations" caps * sampledTicks) "The awareness receipt LOS count exceeds its bound."
+    required (moves > 0L && moves <= int64Property "events" caps * sampledTicks) "The awareness receipt movement count exceeds its bound."
+    required (engagementObservations > 0L && engagementObservations <= int64Property "engagements" caps * sampledTicks) "The awareness receipt engagement count exceeds its bound."
+    required (reactionCandidates > 0L && reactionCandidates <= int64Property "reactionFacts" caps * sampledTicks) "The awareness receipt reaction count exceeds its bound."
+    required (evidenceBytes <= int64Property "canonicalBytes" caps) "The awareness receipt evidence bytes exceed the canonical cap."
+    required (maximumAllocation <= int64Property "maximumAllocationBytes" stress) "The awareness receipt allocation exceeds the hard cap."
     let host = property "host" root
     required (textProperty "operatingSystem" host = RuntimeInformation.OSDescription) "The awareness receipt operating system differs from the verifier host."
     required (textProperty "architecture" host = RuntimeInformation.ProcessArchitecture.ToString()) "The awareness receipt architecture differs from the verifier host."
@@ -549,7 +593,7 @@ let private runAwarenessPerformance () =
         && totalEngagements > 0L
         && totalReactions > 0L
         && evidenceBytes <= (property "canonicalBytes" caps |> _.GetInt32())
-        && maximumAllocation <= 100_000_000L
+        && maximumAllocation <= (property "maximumAllocationBytes" stress |> _.GetInt64())
         && stressWorst <= int64 stressWorstLimit
         && samples.Count = measurementTicks
     printfn "route=SIR.Simulation.Simulation.runTick"

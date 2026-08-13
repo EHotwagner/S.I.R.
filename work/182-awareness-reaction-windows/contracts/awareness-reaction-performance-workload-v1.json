@@ -20,7 +20,8 @@
     "exposureSamplesPerTarget": 4,
     "motion": "deterministic contact movement and turning on every tick",
     "engagements": "canonical mixture of known-unit, covered-area, and guarded-edge targets",
-    "maximumWorstTickMilliseconds": 50
+    "maximumWorstTickMilliseconds": 50,
+    "maximumAllocationBytes": 100000000
   },
   "structuralCapsPerTick": {
     "candidatePairs": 20000,
