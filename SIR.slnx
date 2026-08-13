@@ -19,5 +19,7 @@
     <Project Path="tests/SIR.Match.Tests/SIR.Match.Tests.fsproj" />
     <Project Path="tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj" />
     <Project Path="tests/SIR.ModalInput.Tests/SIR.ModalInput.Tests.fsproj" />
+    <Project Path="tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj" />
+    <Project Path="tests/SIR.Server.Tests/SIR.Server.Tests.fsproj" />
   </Folder>
 </Solution>
