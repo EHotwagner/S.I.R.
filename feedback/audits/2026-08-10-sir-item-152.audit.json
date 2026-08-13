@@ -1,0 +1,40 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-10-sir-item-152.md",
+  "reportSha256": "bf3d14d8a8ad201abae72bca76d7c0a94cbabe04968022ed2e36c60f9e493ca5",
+  "criticMode": "separated-critic-pass",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:scripts/fsgg-coord delivery-route show EHotwagner/S.I.R.#152 --json", "result": "verified" },
+        { "locator": "issue:EHotwagner/S.I.R.#152", "result": "verified" }
+      ],
+      "confidenceLimits": ["The null-comment fault was transient and was not reproduced after the live receipt became readable."]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:node scripts/smoke-worker-roundtrip.mjs", "result": "verified" },
+        { "locator": "command:npm run test:worker-roundtrip-race", "result": "verified" },
+        { "locator": "command:SIR_WORKER_ROUNDTRIP_INJECT_RESPONSE_TAG=1 node scripts/smoke-worker-roundtrip.mjs", "result": "verified" }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "issue:EHotwagner/S.I.R.#152", "result": "verified" },
+        { "locator": "command:scripts/fsgg-coord delivery S.I.R.#152 --pr 161 --json", "result": "verified" }
+      ],
+      "confidenceLimits": []
+    }
+  ]
+}
