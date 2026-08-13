@@ -6,6 +6,9 @@ task_tmp=$(mktemp -d)
 trap 'rm -rf "$task_tmp"' EXIT
 cd "$repo_root"
 
+dotnet restore SIR.slnx
+dotnet restore tests/SIR.Server.Tests/SIR.Server.Tests.fsproj
+npm ci
 dotnet build SIR.slnx -c Release --no-restore
 dotnet test tests/SIR.Server.Tests/SIR.Server.Tests.fsproj -c Release --no-restore
 dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-build -- --print-combat > "$task_tmp/dotnet.hex"
@@ -20,9 +23,7 @@ fi
 grep -q 'first divergence: fixture=physical-combat byte=0' "$task_tmp/divergence.log"
 
 scripts/test-physical-combat-subject-mutations.sh
-dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-build -- --print-combat-performance | tee "$task_tmp/performance.log"
-grep -Eq 'representative-ms=([0-9]|1[0-9])/20' "$task_tmp/performance.log"
-grep -Eq 'stress-ms=([0-9]|[1-4][0-9])/50' "$task_tmp/performance.log"
+scripts/verify-physical-combat-performance.sh
 
 scripts/build-client.sh
 if rg -n 'Combat\.resolve|Combat\.parameters|PhysicalCombatServices' src/SIR.Client.Web -g '*.fs'; then

@@ -5,7 +5,7 @@ workspace: S.I.R
 cycle: item-181-physical-combat-slice
 lane: sdd
 toolVersion: 1.0.1
-commit: 7f8690645db26fe65d616ab64d4f3a8de8e2537c
+commit: 5563b34a2651100c9ba8caceffbe1e788bcdc465
 ---
 
 ## §1 Provenance and confidence
@@ -16,7 +16,7 @@ commit: 7f8690645db26fe65d616ab64d4f3a8de8e2537c
 - **zero-event reason:** n/a
 - **checkpoint:** `feedback/checkpoints/item-181-physical-combat-slice.jsonl` (7 events).
 - **package/tool pins:** FS.GG.Game.Core 0.13.0, fsgg-sdd 1.0.1, Fable 5.13.0.
-- **confidence limits:** Local exact .NET/Fable, rules identity, subject mutations, server authority, focused production browser, delivery budgets, and SDD evidence are green at the implementation/rebind commit. The final repository-wide conformance rerun, hosted exact-head CI, fresh review, and protected-boundary landing remain pending while this report is authored.
+- **confidence limits:** Repair-round exact .NET/Fable fixtures, replay v3 roundtrip/seek, rules identity, subject mutations, authoritative tick performance, server authority, four-profile browser/replay journey, and delivery budgets are green at implementation commit 5563b34 and identity commit 33da3df. The final executable evidence run, critic confirmation, hosted exact-head CI, and protected-boundary landing remain pending while this report is authored.
 
 ## §2 What worked
 
@@ -33,9 +33,9 @@ The first browser composition pulled the complete Simulation graph into the init
 - **Kind:** positive-pattern
 - **Impact:** Browser presentation cannot silently become a second combat authority.
 - **Expected:** Match/Server own physical evaluation; Web issues one bounded authenticated request and renders the returned facts.
-- **Observed:** The focused route submits exactly one `POST /api/combat/physical-drill`, receives status 200 and a 1,243-byte projection, and source/bundle scans find no `Combat.resolve`, physical evaluation, or unique evaluator symbols in Web.
+- **Observed:** The focused route submits exactly one `POST /api/combat/physical-drill`, receives status 200, renders all four profiles plus replay evidence, and source/bundle scans find no `Combat.resolve`, physical evaluation, or unique evaluator symbols in Web. The focused response was 5,129 bytes; the published diagnostic response was 8,582 bytes.
 - **Evidence:** command:./scripts/verify-physical-combat.sh
-- **Version:** S.I.R implementation commit 7f8690645db26fe65d616ab64d4f3a8de8e2537c
+- **Version:** S.I.R implementation commit 5563b34a2651100c9ba8caceffbe1e788bcdc465
 - **Owner:** EHotwagner/S.I.R. physical combat boundary
 - **Recurrence:** new
 - **Avoidable cost:** none
@@ -46,9 +46,9 @@ The first browser composition pulled the complete Simulation graph into the init
 - **Kind:** quality-gap
 - **Impact:** Adding authority to a shared F# graph can unintentionally make portable simulation code part of startup delivery.
 - **Expected:** Initial responses remain at or below 1,150,000 bytes and the Rules explorer deferred chunk remains at or below 60,000 bytes.
-- **Observed:** After separating legacy `runTickWithRules` from authoritative `runPhysicalTickWithRules`, the published route measured 1,119,915 initial bytes and 51,702 deferred bytes while retaining the exact-once authority journey.
-- **Evidence:** command:node scripts/test-production-delivery-budget.mjs; command:npx playwright test tests/SIR.Browser.Tests/physical-combat.spec.js --config tests/SIR.Browser.Tests/playwright.config.js
-- **Version:** S.I.R implementation commit 7f8690645db26fe65d616ab64d4f3a8de8e2537c
+- **Observed:** After separating legacy `runTickWithRules` from authoritative `runPhysicalTickWithRules`, the repaired published route measured a 1,122,831-byte initial response set (including the 1,091,206-byte app bundle and initial page/style assets) and a 56,687-byte deferred chunk while retaining the exact-once authority journey.
+- **Evidence:** command:node scripts/test-production-delivery-budget.mjs; command:npx playwright test tests/SIR.Browser.Tests/visible-workflows.spec.js --config tests/SIR.Browser.Tests/playwright.config.js --grep "player-visible Rules explorer"
+- **Version:** S.I.R implementation commit 5563b34a2651100c9ba8caceffbe1e788bcdc465
 - **Owner:** EHotwagner/S.I.R. production delivery
 - **Recurrence:** seen in item-180 and item-194 delivery work
 - **Avoidable cost:** one structural refactor and two measurement iterations
@@ -59,13 +59,13 @@ The first browser composition pulled the complete Simulation graph into the init
 - **Kind:** quality-gap
 - **Impact:** A lifecycle can report all ambiguities resolved and verify/ship ready while refresh cannot produce the canonical work model.
 - **Expected:** Clarify rejects noncanonical decision declarations or work-model diagnostics name each offending source line.
-- **Observed:** Six lines shaped `DEC-001 [AMB:AMB-001] ... complete:` passed clarify but produced six `unknownReference` and six `workModelInconsistent` markers only inside generated diagnostics. Normalizing to `DEC-001: [AMB:AMB-001] ... complete.` made clarify, analyze 120/120, refresh, agents, verify 114/114, and ship current with zero blocking diagnostics.
+- **Observed:** Six lines shaped `DEC-001 [AMB:AMB-001] ... complete:` passed clarify but produced six `unknownReference` and six `workModelInconsistent` markers only inside generated diagnostics. Normalizing to `DEC-001: [AMB:AMB-001] ... complete.` made clarify, analyze 120/120, refresh, agents, verify 114/114, and ship current with zero blocking diagnostics. Closed upstream [FS.GG.SDD#265](https://github.com/FS-GG/FS.GG.SDD/issues/265) owns convergence of these accepted/authored decision forms.
 - **Evidence:** command:dotnet fsgg-sdd clarify --work 181-physical-combat-slice --text; command:dotnet fsgg-sdd refresh --work 181-physical-combat-slice --text
 - **Version:** fsgg-sdd 1.0.1
 - **Owner:** FS.GG SDD clarification/work-model parser
 - **Recurrence:** item-180 §4.4 and earlier S.I.R lifecycle feedback
 - **Avoidable cost:** one diagnosis and downstream lifecycle replay
-- **Disposition:** duplicate recurrence; retain upstream parser-diagnostic work
+- **Disposition:** duplicate recurrence of FS.GG.SDD#265
 
 #### §4.4 Hash-bound cross-feature review evidence makes shared-bundle changes explicit
 
@@ -74,7 +74,7 @@ The first browser composition pulled the complete Simulation graph into the init
 - **Expected:** Deterministic map-editor review boards bind the current production JavaScript digest.
 - **Observed:** Conformance rejected both stale review manifests after physical-combat delivery changed the bundle; `npm run review:map-editor` regenerated seven deterministic SVG/PNG pairs, and `npm run review:persistent-workspace-m9` recaptured the actual 1440×900 Chromium shell. Both focused portability/acceptance qualifications returned green.
 - **Evidence:** command:npm run review:map-editor; command:node scripts/test-map-editor-qualification.mjs; command:npm run review:persistent-workspace-m9; command:node scripts/test-persistent-workspace-m9-acceptance.mjs
-- **Version:** S.I.R implementation commit 7f8690645db26fe65d616ab64d4f3a8de8e2537c
+- **Version:** S.I.R implementation commit 5563b34a2651100c9ba8caceffbe1e788bcdc465
 - **Owner:** EHotwagner/S.I.R. visual review evidence
 - **Recurrence:** expected for shared-bundle changes
 - **Avoidable cost:** two conformance reruns because the receipts are qualified at different points
@@ -87,7 +87,7 @@ The first browser composition pulled the complete Simulation graph into the init
 - **Expected:** The product checkout exposes the canonical feedback-report skill and validator.
 - **Observed:** `.agents/skills` contains no feedback-report skill; existing schema-v2 reports were used as the discoverable repository contract.
 - **Evidence:** command:find .agents/skills -path '*/fs-gg-feedback-report/SKILL.md'
-- **Version:** S.I.R at 7f8690645db26fe65d616ab64d4f3a8de8e2537c
+- **Version:** S.I.R at implementation commit 5563b34a2651100c9ba8caceffbe1e788bcdc465
 - **Owner:** FS-GG scaffold skill materialization
 - **Recurrence:** item-180 §4.5; open FS-GG/.github#2380
 - **Avoidable cost:** one repository-contract discovery
@@ -115,7 +115,7 @@ Work-board-best, pnext-item, intra-repo parallel work, the complete SDD lifecycl
 
 ## §10 Outcome markers
 
-The physical verifier passes exact .NET/Fable fixtures, six protected semantic/identity mutation classes, Release performance (5 ms representative, 16 ms 100-unit/50-attack stress), server auth/bounds tests, source/bundle authority scans, and focused production browser evidence. Normal and forced rules-corpus verification pass with canonical package/source correspondence. SDD analyze reports 120/120 relationships, evidence and tests report 57/57 observed with zero synthetic/self-attested satisfaction, verify reports 114/114, and ship is `shipReady` with all generated views current.
+The repair verifier passes exact .NET/Fable fixtures, replay-v3 combat state roundtrip and checkpoint seek, six protected semantic/identity mutation classes, authoritative one-tick performance (representative p95 16/20 ms and 100-unit/50-attack stress p95 18/50 ms), server auth/bounds tests, source/bundle authority scans, and exact-once four-profile plus replay browser evidence. Normal and forced rules-corpus verification pass with canonical package/source correspondence. SDD evidence, verify, and ship are regenerated only after the executable multi-receipt evidence run.
 
 ## §11 Falsifiable improvements
 

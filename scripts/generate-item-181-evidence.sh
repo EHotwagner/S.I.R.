@@ -2,19 +2,74 @@
 set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-output="$repo_root/readiness/181-physical-combat-slice/physical-combat.junit.xml"
-mkdir -p "$(dirname "$output")"
-cat > "$output" <<'XML'
-<?xml version="1.0" encoding="utf-8"?>
-<testsuite name="item-181-physical-combat" tests="8" failures="0">
-  <testcase classname="CombatFixtures" name="canonical scenarios cover open, cover, armor, collision, friendly area, suppression, incapacity, and cover destruction"/>
-  <testcase classname="CombatFixtures" name="native and Fable Node canonical bytes agree exactly"/>
-  <testcase classname="CombatMutations" name="collision cover armor suppression ordering and rule identity mutations fail closed"/>
-  <testcase classname="PhysicalCombatDiagnostics" name="authenticated bounded Match Server authority returns ordered renderer-neutral projection"/>
-  <testcase classname="PhysicalCombatBrowser" name="visible player route renders trace cover armor HP wound suppression and explanation"/>
-  <testcase classname="PhysicalCombatBrowser" name="route calls physical authority exactly once and presentation bundles contain no evaluator"/>
-  <testcase classname="PhysicalCombatPerformance" name="representative matrix completes within measured 20 millisecond gate"/>
-  <testcase classname="PhysicalCombatPerformance" name="100-unit 50-attack stress completes within measured 50 millisecond gate"/>
-</testsuite>
-XML
-printf '%s\n' "$output"
+evidence_root="$repo_root/readiness/181-physical-combat-slice"
+task_tmp=$(mktemp -d)
+trap 'rm -rf "$task_tmp"' EXIT
+cd "$repo_root"
+
+receipts=(
+  physical-combat-core.junit.xml
+  physical-combat-rules.junit.xml
+  physical-combat-conformance.junit.xml
+  physical-combat-docs.junit.xml
+)
+for receipt in "${receipts[@]}"; do rm -f "$evidence_root/$receipt"; done
+mkdir -p "$evidence_root"
+
+xml_escape() {
+  sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e 's/"/\&quot;/g' -e "s/'/\&apos;/g"
+}
+
+write_receipt() {
+  local output=$1
+  local suite=$2
+  local testcase=$3
+  local command=$4
+  local log=$5
+  local digest
+  digest=$(sha256sum "$log" | awk '{print $1}')
+  {
+    printf '%s\n' '<?xml version="1.0" encoding="utf-8"?>'
+    printf '<testsuite name="%s" tests="1" failures="0">\n' "$suite"
+    printf '  <testcase classname="Item181Evidence" name="%s"/>\n' "$testcase"
+    printf '  <system-out>command=%s; log-sha256=%s</system-out>\n' "$(printf '%s' "$command" | xml_escape)" "$digest"
+    printf '%s\n' '</testsuite>'
+  } > "$output"
+}
+
+# A clean checkout must be independently provisionable. SIR.Server.Tests is a
+# focused boundary project outside SIR.slnx, so restore it explicitly before
+# any verifier is allowed to claim an observed run.
+dotnet restore SIR.slnx
+dotnet restore tests/SIR.Server.Tests/SIR.Server.Tests.fsproj
+npm ci
+
+core_command='./scripts/verify-physical-combat.sh'
+$core_command 2>&1 | tee "$task_tmp/core.log"
+write_receipt "$evidence_root/physical-combat-core.junit.xml" \
+  item-181-physical-combat-core \
+  'authoritative combat fixtures, mutations, server boundary, performance, native/Fable, and browser journey pass' \
+  "$core_command" "$task_tmp/core.log"
+
+rules_command='./scripts/verify-rules-corpus.sh && SIR_RULES_FORCE_GREP=1 ./scripts/verify-rules-corpus.sh'
+bash -c "$rules_command" 2>&1 | tee "$task_tmp/rules.log"
+write_receipt "$evidence_root/physical-combat-rules.junit.xml" \
+  item-181-physical-combat-rules \
+  'normal and forced rules generation, source correspondence, and identity mutations pass' \
+  "$rules_command" "$task_tmp/rules.log"
+
+conformance_command='./scripts/test-conformance.sh'
+$conformance_command 2>&1 | tee "$task_tmp/conformance.log"
+write_receipt "$evidence_root/physical-combat-conformance.junit.xml" \
+  item-181-physical-combat-conformance \
+  'full native/Fable replay, seek, worker, WASM, browser, and delivery conformance passes' \
+  "$conformance_command" "$task_tmp/conformance.log"
+
+docs_command='./scripts/build-docs.sh'
+$docs_command 2>&1 | tee "$task_tmp/docs.log"
+write_receipt "$evidence_root/physical-combat-docs.junit.xml" \
+  item-181-physical-combat-docs \
+  'documentation build, integrity, experience, browser smoke, and accessibility pass' \
+  "$docs_command" "$task_tmp/docs.log"
+
+printf '%s\n' "${receipts[@]/#/$evidence_root/}"
