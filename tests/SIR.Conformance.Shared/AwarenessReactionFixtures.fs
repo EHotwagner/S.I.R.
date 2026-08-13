@@ -35,7 +35,7 @@ module AwarenessReactionFixtures =
         require (reason = AwarenessReason.StimulusAccumulated && stimulus.IsSome) "Visible geometry did not produce a factual stimulus."
         let first = AwarenessReaction.advanceContact profile 1 (cell 4 1) stimulus (AwarenessReaction.emptyContact subject)
         let first = if mutation = Some "los-awareness" then { first with Level = AwarenessLevel.Acquired } else first
-        require (first.Level = AwarenessLevel.Suspected && first.LastKnownCell.IsNone) "One LOS stimulus implied immediate identification."
+        require (first.Level = AwarenessLevel.Suspected && first.LastKnownCell = Some(cell 4 1)) "One LOS stimulus did not remain suspected with its locally known factual cell."
         let acquired = AwarenessReaction.advanceContact profile 2 (cell 4 1) stimulus first
         require (acquired.Level = AwarenessLevel.Acquired && acquired.LastKnownCell = Some(cell 4 1)) "Delayed acquisition did not reach the declared threshold."
         let lost = AwarenessReaction.advanceContact profile 3 (cell 5 1) None acquired
@@ -88,11 +88,56 @@ module AwarenessReactionFixtures =
             "Hostile covered-area entry did not resolve through physical authority."
 
         let guarded = Edges.edgeBetween (cell 1 0) (cell 2 0) |> Option.defaultWith (fun () -> failwith "Integration edge is not canonical.")
-        let edgeReady = prepare (PrepareEdgeReaction(observer, "integration-edge", guarded, East)) integrationBase
+        let guardedSemantic = { EdgeId = "integration-edge-east"; SpatialRevision = 7; Edge = guarded; BlocksMovement = false }
+        let edgeBase = { integrationBase with Board = { integrationBase.Board with Edges = [ guardedSemantic ] } }
+        let edgeReady = prepare (PrepareEdgeReaction(observer, "integration-edge", guarded, East)) edgeBase
         let edgeReaction = Simulation.runTick edgeReady.State [ Move(subject, cell 2 0) ]
+        let edgeResolved = edgeReaction.Events |> List.exists (function ReactionResolved(id, source, "integration-edge") -> id = observer && source = subject | _ -> false)
+        require edgeResolved "Hostile guarded-edge crossing did not resolve through physical authority."
+
+        let invalidatedBoard =
+            match mutation with
+            | Some "edge-removal" -> [ guardedSemantic ]
+            | Some "edge-revision" -> [ guardedSemantic ]
+            | _ -> []
+        let removed = Simulation.runTick { edgeReady.State with Board = { edgeReady.State.Board with Edges = invalidatedBoard } } [ Move(subject, cell 2 0) ]
         require
-            (edgeReaction.Events |> List.exists (function ReactionResolved(id, source, "integration-edge") -> id = observer && source = subject | _ -> false))
-            "Hostile guarded-edge crossing did not resolve through physical authority."
+            (not (removed.Events |> List.exists (function ReactionResolved(_, _, "integration-edge") -> true | _ -> false))
+             && removed.State.Engagements[observer].Reason = ReactionReason.TargetInvalidated)
+            "A removed guarded edge remained triggerable."
+        let revisedBoard =
+            if mutation = Some "edge-revision" then [ guardedSemantic ]
+            else [ { guardedSemantic with SpatialRevision = 8 } ]
+        let revised = Simulation.runTick { edgeReady.State with Board = { edgeReady.State.Board with Edges = revisedBoard } } [ Move(subject, cell 2 0) ]
+        require
+            (not (revised.Events |> List.exists (function ReactionResolved(_, _, "integration-edge") -> true | _ -> false))
+             && revised.State.Engagements[observer].Reason = ReactionReason.TargetInvalidated)
+            "A revised guarded edge remained triggerable."
+
+        let inventedEdge = Edges.edgeBetween (cell 3 0) (cell 4 0) |> Option.defaultWith (fun () -> failwith "Invented edge is not canonical.")
+        let invented = Simulation.runTick integrationBase [ PrepareEdgeReaction(observer, "invented-edge", inventedEdge, East) ]
+        require (not (invented.State.Engagements.ContainsKey observer)) "An absent semantic edge was admitted."
+
+        let manyUnits =
+            [ for index in 1 .. 300 do
+                  let id = unitId (int32 (1000 + index))
+                  yield id, { red with Id = id; Side = (if index % 2 = 0 then Side.Red else Side.Blue); Cell = cell (int32 index) 10 } ]
+            |> Map.ofList
+        let expiryObserver = manyUnits |> Map.toSeq |> Seq.map fst |> Seq.last
+        let expirySubject = manyUnits |> Map.toSeq |> Seq.map fst |> Seq.head
+        let stale =
+            { AwarenessReaction.emptyContact expirySubject with
+                Level = AwarenessLevel.LostContact
+                Acquisition = 2
+                LastKnownCell = Some(cell 299 10)
+                LastStimulusTick = Some 0
+                RetainUntilTick = Some 20
+                Reason = AwarenessReason.ContactRetained }
+        let expiryState =
+            { integrationBase with Tick = (if mutation = Some "unserviced-expiry" then 19 else 21); Units = manyUnits; Awareness = Map.ofList [ (expiryObserver, expirySubject), stale ]; AwarenessCursor = 0 }
+        let expiryResult = Simulation.runTick expiryState []
+        let expired = expiryResult.State.Awareness[(expiryObserver, expirySubject)]
+        require (expired.Level = AwarenessLevel.Unknown && expired.LastKnownCell.IsNone) "An unserviced contact did not expire by authoritative elapsed tick."
 
         let acquiredContact =
             { AwarenessReaction.emptyContact subject with

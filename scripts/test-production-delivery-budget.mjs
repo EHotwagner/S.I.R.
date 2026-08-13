@@ -26,7 +26,10 @@ if (deferredSpatial.length !== 1) throw new Error("Expected exactly one deferred
 if (app.toString("utf8").includes("This support panel loads on demand")) {
   throw new Error("The deferred support panel leaked into the initial application entry.");
 }
-const spatial = await readFile(resolve(root, "content/sir-client/v1", deferredSpatial[0]));
+let spatial = await readFile(resolve(root, "content/sir-client/v1", deferredSpatial[0]));
+if (process.env.SIR_DELIVERY_MUTATE_ARTIFACT === "spatial") {
+  spatial = Buffer.concat([spatial, Buffer.alloc(Math.max(1, 65_537 - spatial.byteLength), 0x20)]);
+}
 requireBudget("RulesExplorer raw", spatial.byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_RAW", 65_536));
 requireBudget("RulesExplorer gzip", gzipSync(spatial).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_GZIP", 20_000));
 requireBudget("RulesExplorer brotli", brotliCompressSync(spatial).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_BROTLI", 16_000));

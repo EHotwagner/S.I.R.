@@ -113,6 +113,9 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   const damageRule = damage.locator("..");
   await expect(explorer.getByText(/baseDamage:damage.*trace:ratio.*retention:ratio/)).toBeVisible();
   const source = explorer.getByRole("link", { name: /Pinned F# source · CombatRules.damage/ });
+  if (process.env.SIR_RULES_EXPLORER_MUTATE_SUBJECT === "source") {
+    await source.evaluate((node) => node.setAttribute("href", "https://example.invalid/mutated-source"));
+  }
   await expect(source).toHaveAttribute(
     "href",
     /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/b9d1d3344b2ccfed81122b652c7ce3b56ffb6a61\/src\/SIR\.Simulation\/CombatRules\.fs/,
@@ -128,6 +131,9 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   const responseBody = await response.text();
   expect(physicalAuthorityRequests).toBe(1);
   await expect(drill.getByText("Cover integrity 50 → 0 · destroyed true", { exact: true })).toBeVisible();
+  if (process.env.SIR_RULES_EXPLORER_MUTATE_SUBJECT === "replay") {
+    await drill.getByText(/Replay v6 verified true/).evaluate((node) => { node.textContent = node.textContent.replace("Replay v6", "Replay v5"); });
+  }
   await expect(drill.getByText(/Replay v6 verified true from 4 seek points · final tick 4 · state [0-9a-f]{64}/)).toBeVisible();
 
   const expectedProfiles = [
@@ -176,11 +182,19 @@ test("the production browser consumes only the observer-local awareness and reac
   await act("Prepare covered sector");
   await act("Complete preparation");
   const response = await act("Move opposing unit through coverage");
-  const body = await response.text();
+  let body = await response.text();
+  if (process.env.SIR_AWARENESS_BROWSER_MUTATE_SUBJECT === "projection") {
+    const mutated = JSON.parse(body);
+    mutated.Contacts = [];
+    body = JSON.stringify(mutated);
+  }
+  const responseSubject = JSON.parse(body);
   expect(authorityRequests).toBe(5);
   expect(body).not.toContain("Units");
   expect(body).not.toContain("Board");
   expect(body).not.toContain("SpatialEvidence");
+  expect(responseSubject.Contacts).toHaveLength(1);
+  expect(responseSubject.Stimuli).toHaveLength(1);
   await expect(projection.getByText(/Observer 10 · tick 5 · contacts 1 · candidate pairs 2 · LOS 2/)).toBeVisible();
   await expect(projection.getByRole("heading", { name: "Contact 20 · Acquired" })).toBeVisible();
   await expect(projection.getByText(/Engagement player-area-east · area:2,0 · attention East · posture Prepared · Resolved · ResolvedByPhysicalAuthority/)).toBeVisible();

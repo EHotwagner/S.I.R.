@@ -230,7 +230,9 @@ module Replay =
                 edge.Edge.Hi.Row,
                 edge.BlocksMovement)
             |> List.collect (fun edge ->
-                [ cellBytes edge.Edge.Lo
+                [ if formatVersion >= CurrentFormatVersion then stringBytes edge.EdgeId
+                  if formatVersion >= CurrentFormatVersion then CanonicalEncoding.int32LittleEndian edge.SpatialRevision
+                  cellBytes edge.Edge.Lo
                   cellBytes edge.Edge.Hi
                   [| if edge.BlocksMovement then 1uy else 0uy |] ])
 
@@ -677,7 +679,7 @@ module Replay =
         | 6uy -> ReactionReason.ReactorIncapacitated | 7uy -> ReactionReason.FireBlocked | 8uy -> ReactionReason.ResolvedByPhysicalAuthority
         | 9uy -> ReactionReason.RecoveryComplete | value -> failDecode (sprintf "Invalid reaction-reason byte %d." value)
 
-    let private readCanonicalEngagement bytes =
+    let private readCanonicalEngagement formatVersion bytes =
         let nested = { Bytes = bytes; Offset = 0 }
         if readByte nested <> byte AwarenessReaction.schemaVersion then failDecode "Unsupported engagement schema."
         let engagementId = readLengthPrefixed "engagement identifier" 96 nested |> System.Text.Encoding.UTF8.GetString
@@ -687,8 +689,10 @@ module Replay =
             | 0uy -> EngagementTarget.KnownUnit(Simulation.unitId (readInt32 nested))
             | 1uy -> EngagementTarget.CoveredArea [ for _ in 1 .. readCount "covered area cells" 256 nested -> readCell nested ]
             | 2uy ->
+                let edgeId = if formatVersion >= CurrentFormatVersion then readLengthPrefixed "guarded edge identity" 96 nested |> System.Text.Encoding.UTF8.GetString else "legacy-guarded-edge"
+                let revision = if formatVersion >= CurrentFormatVersion then readInt32 nested else 0
                 let left, right = readCell nested, readCell nested
-                Edges.edgeBetween left right |> Option.map EngagementTarget.GuardedEdge |> Option.defaultWith (fun () -> failDecode "Replay guarded edge is not canonical.")
+                Edges.edgeBetween left right |> Option.map (fun edge -> EngagementTarget.GuardedEdge(edgeId, revision, edge)) |> Option.defaultWith (fun () -> failDecode "Replay guarded edge is not canonical.")
             | value -> failDecode (sprintf "Invalid engagement-target byte %d." value)
         let engagement =
             { EngagementId = engagementId
@@ -716,6 +720,8 @@ module Replay =
 
         let edges =
             [ for _ in 1 .. edgeCount do
+                  let edgeId = if formatVersion >= CurrentFormatVersion then readLengthPrefixed "semantic edge identity" 96 reader |> System.Text.Encoding.UTF8.GetString else "legacy-semantic-edge"
+                  let revision = if formatVersion >= CurrentFormatVersion then readInt32 reader else 0
                   let left = readCell reader
                   let right = readCell reader
 
@@ -725,7 +731,9 @@ module Replay =
                           failDecode "A semantic edge is not orthogonal.")
 
                   yield
-                      { Edge = edge
+                      { EdgeId = edgeId
+                        SpatialRevision = revision
+                        Edge = edge
                         BlocksMovement = readBool reader } ]
 
         let unitCount = readCount "units" limits.MaxUnits reader
@@ -843,7 +851,7 @@ module Replay =
                 let values =
                     [ for _ in 1 .. count do
                         let ownerId = Simulation.unitId (readInt32 reader)
-                        let engagement = readLengthPrefixed "engagement" 8192 reader |> readCanonicalEngagement
+                        let engagement = readLengthPrefixed "engagement" 8192 reader |> readCanonicalEngagement formatVersion
                         if engagement.OwnerId <> ownerId then failDecode "Engagement owner does not match its map key."
                         yield ownerId, engagement ]
                 if values |> List.map fst |> Set.ofList |> Set.count <> count then failDecode "Snapshot contains duplicate engagements."

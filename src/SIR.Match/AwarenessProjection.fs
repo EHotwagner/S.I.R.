@@ -1,5 +1,6 @@
 namespace SIR.Match
 
+open FS.GG.Game.Core
 open SIR.Domain
 open SIR.Simulation
 
@@ -22,9 +23,18 @@ type LocalEngagementProjection =
       WeaponPosture: WeaponPosture
       Reason: ReactionReason }
 
+type LocalStimulusProjection =
+    { ObserverId: int32
+      SubjectId: int32
+      Tick: int32
+      Sector: ObservationSector
+      SubjectCell: int32 * int32
+      Reason: AwarenessReason }
+
 type LocalAwarenessFrame =
     { Tick: int32
       Contacts: LocalAwarenessProjection list
+      Stimuli: LocalStimulusProjection list
       Engagement: LocalEngagementProjection option }
 
 [<RequireQualifiedAccess>]
@@ -62,8 +72,8 @@ module AwarenessProjection =
                         |> List.map (fun cell -> $"{cell.Col},{cell.Row}")
                         |> String.concat ";"
                         |> fun encoded -> "area:" + encoded
-                    | EngagementTarget.GuardedEdge edge ->
-                        $"edge:{edge.Lo.Col},{edge.Lo.Row}-{edge.Hi.Col},{edge.Hi.Row}"
+                    | EngagementTarget.GuardedEdge(edgeId, revision, edge) ->
+                        $"edge:{edgeId}@{revision}:{edge.Lo.Col},{edge.Lo.Row}-{edge.Hi.Col},{edge.Hi.Row}"
                 { OwnerId = UnitId.value observerId
                   EngagementId = value.EngagementId
                   Phase = value.Phase
@@ -72,4 +82,21 @@ module AwarenessProjection =
                   RequiredAttention = value.RequiredAttention
                   WeaponPosture = observer |> Option.map _.WeaponPosture |> Option.defaultValue WeaponPosture.Mobile
                   Reason = value.Reason })
-        { Tick = state.Tick; Contacts = contacts; Engagement = engagement }
+        let stimuli =
+            contacts
+            |> List.choose (fun contact ->
+                match observer, contact.LastKnownCell,
+                      state.Awareness |> Map.tryFind (observerId, Simulation.unitId contact.SubjectId) |> Option.bind _.LastStimulusTick with
+                | Some owner, Some(col, row), Some stimulusTick ->
+                    let knownCell = { Col = col; Row = row }
+                    Some
+                        { ObserverId = UnitId.value observerId
+                          SubjectId = contact.SubjectId
+                          Tick = stimulusTick
+                          Sector = AwarenessReaction.sector owner.AttentionDirection owner.Cell knownCell
+                          SubjectCell = col, row
+                          Reason = contact.Reason }
+                | _ -> None)
+            |> List.sortBy (fun stimulus -> stimulus.Tick, stimulus.SubjectId)
+            |> List.truncate 256
+        { Tick = state.Tick; Contacts = contacts; Stimuli = stimuli; Engagement = engagement }

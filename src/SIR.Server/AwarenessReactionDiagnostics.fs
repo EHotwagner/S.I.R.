@@ -71,6 +71,17 @@ module AwarenessReactionDiagnostics =
                    RequiredAttention = string value.RequiredAttention
                    WeaponPosture = string value.WeaponPosture
                    Reason = string value.Reason |})
+        let stimuli =
+            projection.Stimuli
+            |> List.map (fun stimulus ->
+                let column, row = stimulus.SubjectCell
+                {| ObserverId = stimulus.ObserverId
+                   SubjectId = stimulus.SubjectId
+                   Tick = stimulus.Tick
+                   Sector = string stimulus.Sector
+                   SubjectColumn = column
+                   SubjectRow = row
+                   Reason = string stimulus.Reason |})
         let events =
             reacted.Events
             |> List.choose (function
@@ -85,6 +96,7 @@ module AwarenessReactionDiagnostics =
                Tick = projection.Tick
                ObserverId = UnitId.value observer
                Contacts = contacts
+               Stimuli = stimuli
                Engagement = engagement
                Events = events
                CandidatePairs = 2

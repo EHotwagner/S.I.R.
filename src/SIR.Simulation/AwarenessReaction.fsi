@@ -42,7 +42,7 @@ type AwarenessContact =
       Reason: AwarenessReason }
 
 [<RequireQualifiedAccess>]
-type EngagementTarget = KnownUnit of UnitId | CoveredArea of Cell list | GuardedEdge of Edge
+type EngagementTarget = KnownUnit of UnitId | CoveredArea of Cell list | GuardedEdge of edgeId: string * spatialRevision: int32 * Edge
 
 [<RequireQualifiedAccess>]
 type EngagementPhase = Preparing | ActiveCoverage | TriggerEligible | Committed | Resolved | Interrupted | Recovering

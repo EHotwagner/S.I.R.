@@ -22,7 +22,7 @@ type AwarenessContact =
     { SubjectId: UnitId; Level: AwarenessLevel; Acquisition: int32; LastStimulusTick: int32 option; LastKnownCell: Cell option; RetainUntilTick: int32 option; Reason: AwarenessReason }
 
 [<RequireQualifiedAccess>]
-type EngagementTarget = KnownUnit of UnitId | CoveredArea of Cell list | GuardedEdge of Edge
+type EngagementTarget = KnownUnit of UnitId | CoveredArea of Cell list | GuardedEdge of edgeId: string * spatialRevision: int32 * Edge
 
 [<RequireQualifiedAccess>]
 type EngagementPhase = Preparing | ActiveCoverage | TriggerEligible | Committed | Resolved | Interrupted | Recovering
@@ -105,7 +105,7 @@ module AwarenessReaction =
                 Acquisition = next
                 Level = if acquired then AwarenessLevel.Acquired else AwarenessLevel.Suspected
                 LastStimulusTick = Some tick
-                LastKnownCell = if acquired then Some subjectCell else contact.LastKnownCell
+                LastKnownCell = Some subjectCell
                 RetainUntilTick = if acquired then Some(tick + profile.LastKnownRetentionTicks) else contact.RetainUntilTick
                 Reason = if acquired then AwarenessReason.IdentificationThresholdReached else AwarenessReason.StimulusAccumulated }
         | None ->
@@ -127,7 +127,7 @@ module AwarenessReaction =
             if List.isEmpty normalized then Error "Covered area requires at least one cell."
             elif normalized.Length > 256 then Error "Covered area exceeds the 256-cell limit."
             else Ok(EngagementTarget.CoveredArea normalized)
-        | EngagementTarget.GuardedEdge edge when edge.Lo = edge.Hi -> Error "Guarded edge endpoints must differ."
+        | EngagementTarget.GuardedEdge(edgeId, revision, edge) when System.String.IsNullOrWhiteSpace edgeId || revision < 0 || edge.Lo = edge.Hi -> Error "Guarded edge requires stable identity, non-negative revision, and distinct endpoints."
         | other -> Ok other
 
     let declareEngagement engagementId ownerId target requiredAttention =
@@ -198,7 +198,7 @@ module AwarenessReaction =
     let private targetBytes = function
         | EngagementTarget.KnownUnit id -> CanonicalEncoding.concatenate [ [| 0uy |]; i32 (UnitId.value id) ]
         | EngagementTarget.CoveredArea cells -> CanonicalEncoding.concatenate ([ [| 1uy |]; i32 cells.Length ] @ (cells |> List.map cell))
-        | EngagementTarget.GuardedEdge edge -> CanonicalEncoding.concatenate [ [| 2uy |]; cell edge.Lo; cell edge.Hi ]
+        | EngagementTarget.GuardedEdge(edgeId, revision, edge) -> CanonicalEncoding.concatenate [ [| 2uy |]; text edgeId; i32 revision; cell edge.Lo; cell edge.Hi ]
     let private phaseCode = function EngagementPhase.Preparing -> 0uy | EngagementPhase.ActiveCoverage -> 1uy | EngagementPhase.TriggerEligible -> 2uy | EngagementPhase.Committed -> 3uy | EngagementPhase.Resolved -> 4uy | EngagementPhase.Interrupted -> 5uy | EngagementPhase.Recovering -> 6uy
     let private reactionReasonCode = function ReactionReason.PreparingNotComplete -> 0uy | ReactionReason.Eligible -> 1uy | ReactionReason.CommittedInCanonicalOrder -> 2uy | ReactionReason.TargetInvalidated -> 3uy | ReactionReason.AttentionChanged -> 4uy | ReactionReason.PostureChanged -> 5uy | ReactionReason.ReactorIncapacitated -> 6uy | ReactionReason.FireBlocked -> 7uy | ReactionReason.ResolvedByPhysicalAuthority -> 8uy | ReactionReason.RecoveryComplete -> 9uy
     let canonicalEngagementBytes (engagement: Engagement) = CanonicalEncoding.concatenate [ [| byte schemaVersion |]; text engagement.EngagementId; i32 (UnitId.value engagement.OwnerId); targetBytes engagement.Target; CanonicalEncoding.direction8 engagement.RequiredAttention; [| phaseCode engagement.Phase |]; i32 engagement.RemainingTicks; [| reactionReasonCode engagement.Reason |] ]

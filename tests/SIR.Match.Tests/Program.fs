@@ -1175,6 +1175,33 @@ let main _ =
         (perspectiveBytes.Length < fullBytes.Length)
         "Perspective package is not a reduced disclosure."
 
+    let observer = Simulation.unitId 10
+    let otherObserver = Simulation.unitId 20
+    let observerUnit = Simulation.initialState.Units[observer]
+    let otherUnit = Simulation.initialState.Units[otherObserver]
+    let suspected =
+        { AwarenessReaction.emptyContact otherObserver with
+            Level = AwarenessLevel.Suspected
+            Acquisition = 4
+            LastStimulusTick = Some 3
+            LastKnownCell = Some otherUnit.Cell
+            Reason = AwarenessReason.StimulusAccumulated }
+    let differentlyInformed =
+        { AwarenessReaction.emptyContact observer with
+            Level = AwarenessLevel.Acquired
+            Acquisition = 8
+            LastStimulusTick = Some 2
+            LastKnownCell = Some observerUnit.Cell
+            Reason = AwarenessReason.IdentificationThresholdReached }
+    let localState =
+        { Simulation.initialState with
+            Tick = 3
+            Awareness = Map.ofList [ (observer, otherObserver), suspected; (otherObserver, observer), differentlyInformed ] }
+    let local = AwarenessProjection.forObserver observer localState
+    require (local.Contacts.Length = 1 && local.Contacts.Head.Level = AwarenessLevel.Suspected) "Observer-local projection mixed differently informed observers."
+    require (local.Stimuli.Length = 1 && local.Stimuli.Head.Tick = 3 && local.Stimuli.Head.Reason = AwarenessReason.StimulusAccumulated) "Current suspected stimulus fact was not projected."
+    require (local.Stimuli.Head.Sector = AwarenessReaction.sector observerUnit.AttentionDirection observerUnit.Cell otherUnit.Cell) "Projected stimulus sector was not the observer-local factual sector."
+
     printfn
         "Full match replay qualified: %d full bytes, %d perspective bytes, 4 exact WASM outputs; %d Control ABI v1 reference-module bytes agree; 200 isolated reusable-host instances in %.3f ms."
         fullBytes.Length

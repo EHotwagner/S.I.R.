@@ -29,9 +29,11 @@ run_receipt() {
   write_receipt "$staged_root/$name.junit.xml" "$suite" "$testcase" "$command" "$task_tmp/$name.log"
 }
 
+core_command='./scripts/verify-awareness-reaction.sh'
+if test "${SIR_ITEM_182_EVIDENCE_MUTATE_SUBJECT:-}" = core; then core_command='false # protected core subject inversion'; fi
 run_receipt awareness-reaction-core item-182-core \
   'awareness, reaction, replay, performance, disclosure, and browser gates pass' \
-  './scripts/verify-awareness-reaction.sh'
+  "$core_command"
 run_receipt awareness-reaction-rules item-182-rules \
   'normal and forced-fallback rules generation, source correspondence, and identity mutations pass' \
   './scripts/verify-rules-corpus.sh && SIR_RULES_FORCE_GREP=1 ./scripts/verify-rules-corpus.sh'

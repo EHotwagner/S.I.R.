@@ -43,7 +43,8 @@ test("Release delivery uses cache-safe compression and defers spatial diagnostic
   await expect(renderedPath).toHaveText(/^\(\d+,\d+\)(?:, \(\d+,\d+\))+$/);
   await expect(diagnostics.getByText("SIR.Simulation.SpatialQuery.evaluate", { exact: true }).first()).toBeVisible();
   expect(responses.some((response) => response.url().includes("RulesExplorer-"))).toBe(true);
-  const deferredBytes = await responseBytes(responses.filter((response) => response.url().includes("RulesExplorer-")));
+  let deferredBytes = await responseBytes(responses.filter((response) => response.url().includes("RulesExplorer-")));
+  if (process.env.SIR_DELIVERY_BROWSER_MUTATE_SUBJECT === "deferred-bytes") deferredBytes += 65_536;
   const diagnosticResponses = responses.filter((response) => response.url().includes("/api/spatial/diagnostics"));
   expect(diagnosticResponses).toHaveLength(1);
   expect(diagnosticResponses[0].status()).toBe(200);

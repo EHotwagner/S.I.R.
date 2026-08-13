@@ -294,6 +294,25 @@ let private sha256File path =
     use stream = File.OpenRead path
     SHA256.HashData stream |> Convert.ToHexString |> fun value -> value.ToLowerInvariant()
 
+let private commandOutput (executable: string) (arguments: string) =
+    let startInfo: ProcessStartInfo = ProcessStartInfo(executable, arguments)
+    startInfo.RedirectStandardOutput <- true
+    startInfo.RedirectStandardError <- true
+    startInfo.UseShellExecute <- false
+    use child = Process.Start startInfo |> Option.ofObj |> Option.defaultWith (fun () -> failwith $"Identity command could not start: {executable}")
+    let output = child.StandardOutput.ReadToEnd().Trim()
+    let error = child.StandardError.ReadToEnd().Trim()
+    child.WaitForExit()
+    required (child.ExitCode = 0) $"Identity command failed: {executable} {arguments}: {error}"
+    output
+
+let private sha256Text (value: string) =
+    value
+    |> Text.Encoding.UTF8.GetBytes
+    |> SHA256.HashData
+    |> Convert.ToHexString
+    |> _.ToLowerInvariant()
+
 let private hex (bytes: byte array) =
     Convert.ToHexString(bytes).ToLowerInvariant()
 
@@ -379,8 +398,14 @@ let private awarenessStressState () =
                   RetainUntilTick = Some AwarenessReaction.infantryProfile.LastKnownRetentionTicks
                   Reason = AwarenessReason.IdentificationThresholdReached } ]
         |> Map.ofList
+    let guardedEdges =
+        [ for index in 0 .. 99 do
+            if index % 3 = 2 then
+                let baseCell = cell (int32 (20 + (index % 10) * 3)) (int32 ((index / 10) * 3))
+                let edge = Edges.edgeBetween baseCell { baseCell with Col = baseCell.Col + 1 } |> Option.defaultWith (fun () -> failwith "invalid stress edge")
+                yield { EdgeId = $"stress-edge-{index + 1}"; SpatialRevision = 1; Edge = edge; BlocksMovement = false } ]
     { Tick = 0
-      Board = { Minimum = cell 0 0; Maximum = cell 79 79; Edges = []; Covers = Map.empty }
+      Board = { Minimum = cell 0 0; Maximum = cell 79 79; Edges = guardedEdges; Covers = Map.empty }
       Units = reds @ blues |> Map.ofList
       Observations = Set.empty
       Awareness = acquired
@@ -389,9 +414,41 @@ let private awarenessStressState () =
 
 let private runAwarenessPerformance () =
     let mutation = Environment.GetEnvironmentVariable("SIR_AWARENESS_PERF_MUTATE_SUBJECT") |> Option.ofObj |> Option.defaultValue ""
-    let workloadPath = "work/182-awareness-reaction-windows/contracts/awareness-reaction-performance-workload-v1.json"
+    let workloadPath = Environment.GetEnvironmentVariable("SIR_AWARENESS_WORKLOAD") |> Option.ofObj |> Option.defaultValue "work/182-awareness-reaction-windows/contracts/awareness-reaction-performance-workload-v1.json"
     use workload = JsonDocument.Parse(File.ReadAllText workloadPath)
-    required (workload.RootElement.GetProperty("workloadId").GetString() = "sir-awareness-reaction-authoritative-tick-v1") "Awareness workload identity is unreadable."
+    let root = workload.RootElement
+    let property (name: string) (element: JsonElement) = element.GetProperty name
+    let jsonText name element =
+        property name element |> _.GetString() |> Option.ofObj |> Option.defaultValue ""
+    required (property "schemaVersion" root |> _.GetInt32() = 1) "Awareness workload schema is unreadable."
+    required (jsonText "workloadId" root = "sir-awareness-reaction-authoritative-tick-v1") "Awareness workload identity is unreadable."
+    required ((jsonText "productionRoute" root).Contains "Simulation.runPhysicalTickWithRules") "Awareness production route is unreadable."
+    let warmupTicks = property "warmupTicks" root |> _.GetInt32()
+    let measurementTicks = property "measurementTicks" root |> _.GetInt32()
+    required (warmupTicks = 10 && measurementTicks = 60) "Awareness warmup/measurement policy changed."
+    let representative = property "representative" root
+    required ((property "scenarios" representative |> _.GetArrayLength()) = 7) "Awareness representative scenarios changed."
+    required ((property "maximumAwarenessP95Milliseconds" representative).ValueKind = JsonValueKind.Null) "Awareness P95 policy changed."
+    let workingTarget = property "workingTargetFullTickP95Milliseconds" representative |> _.GetInt32()
+    let representativeWorst = property "maximumWorstTickMilliseconds" representative |> _.GetInt32()
+    let stress = property "stress" root
+    let stressUnits = property "units" stress |> _.GetInt32()
+    let unitsPerSide = property "unitsPerSide" stress |> _.GetInt32()
+    required (stressUnits = unitsPerSide * 2 && stressUnits = 200) "Awareness stress unit declaration must be the exact balanced 100v100 workload."
+    required (property "mapWidth" stress |> _.GetInt32() = 80 && property "mapHeight" stress |> _.GetInt32() = 80 && property "levels" stress |> _.GetInt32() = 2) "Awareness stress map changed."
+    required (property "sensorRangeCells" stress |> _.GetInt32() = AwarenessReaction.infantryProfile.MaximumRangeCells) "Awareness sensor range is not bound to production."
+    required (property "exposureSamplesPerTarget" stress |> _.GetInt32() = AwarenessReaction.infantryProfile.MaximumExposureSamples) "Awareness exposure samples are not bound to production."
+    required (not (String.IsNullOrWhiteSpace(jsonText "motion" stress)) && not (String.IsNullOrWhiteSpace(jsonText "engagements" stress))) "Awareness motion/engagement declarations are unreadable."
+    let stressWorstLimit = property "maximumWorstTickMilliseconds" stress |> _.GetInt32()
+    let caps = property "structuralCapsPerTick" root
+    let expectedCaps = [ "candidatePairs", 20000; "losEvaluations", 5000; "stimuli", 4096; "awarenessEpisodes", 4096; "engagements", 4096; "reactionFacts", 4096; "events", 4096; "coveredAreaCellsPerEngagement", 256; "canonicalBytes", 262144 ]
+    expectedCaps |> List.iter (fun (name, expected) -> required (property name caps |> _.GetInt32() = expected) ($"Awareness structural cap changed: {name}."))
+    let workloadDigest = sha256File workloadPath
+    let candidateCommit = commandOutput "git" "rev-parse HEAD"
+    let headTree = commandOutput "git" "rev-parse HEAD^{tree}"
+    let workingTreeDiff = commandOutput "git" "diff --binary HEAD --"
+    let workingTreeState = if String.IsNullOrEmpty workingTreeDiff then "clean" else "dirty"
+    let workingTreeDiffDigest = sha256Text workingTreeDiff
     let prepareInputs =
         [ for index in 0 .. 99 do
             let owner = Simulation.unitId (int32 (index + 1))
@@ -440,7 +497,7 @@ let private runAwarenessPerformance () =
         totalEngagements <- totalEngagements + int64 result.AwarenessCounters.Engagements
         totalReactions <- totalReactions + int64 result.AwarenessCounters.ReactionCandidates
         evidenceBytes <- max evidenceBytes result.EventBytes.Length
-        if sample > 19 then samples.Add watch.ElapsedMilliseconds
+        if sample > warmupTicks + 9 then samples.Add watch.ElapsedMilliseconds
     let sorted = samples |> Seq.sort |> Seq.toArray
     let stressP95 = sorted[int (Math.Ceiling(float sorted.Length * 0.95)) - 1]
     let stressWorst = sorted[sorted.Length - 1]
@@ -454,12 +511,31 @@ let private runAwarenessPerformance () =
         && totalMoves > 0
         && totalEngagements > 0L
         && totalReactions > 0L
-        && evidenceBytes <= 262_144
+        && evidenceBytes <= (property "canonicalBytes" caps |> _.GetInt32())
         && maximumAllocation <= 100_000_000L
-        && stressWorst <= 50L
+        && stressWorst <= int64 stressWorstLimit
+        && samples.Count = measurementTicks
     printfn "route=SIR.Simulation.Simulation.runTick"
-    printfn "full-tick-p95-ms=%d target=20 hard-ceiling=50 worst-ms=%d/50" stressP95 stressWorst
+    printfn "full-tick-p95-ms=%d target=%d hard-ceiling=%d worst-ms=%d/%d" stressP95 workingTarget representativeWorst stressWorst stressWorstLimit
     printfn "stress-units=%d ticks=%d cursor=%d covered-observers=%d serviced-slots=%d los=%d moves=%d engagement-observations=%d reaction-candidates=%d evidence-bytes=%d/262144 max-allocation=%d/100000000 mutation=%s" state.Units.Count state.Tick state.AwarenessCursor coveredObservers totalSlots totalLos totalMoves totalEngagements totalReactions evidenceBytes maximumAllocation mutation
+    let receiptPath = Environment.GetEnvironmentVariable("SIR_AWARENESS_PERF_RECEIPT") |> Option.ofObj |> Option.defaultValue "readiness/182-awareness-reaction-windows/awareness-performance-receipt.json"
+    let receipt =
+        {| schema = "sir.awareness-reaction.performance-receipt/1"
+           outcome = if passed then "pass" else "fail"
+           workloadDefinitionSha256 = workloadDigest
+           workload = JsonDocument.Parse(File.ReadAllText workloadPath).RootElement.Clone()
+           candidate =
+               {| commit = candidateCommit
+                  headTree = headTree
+                  workingTreeState = workingTreeState
+                  workingTreeDiffSha256 = workingTreeDiffDigest
+                  performanceAssemblySha256 = sha256File (Assembly.GetExecutingAssembly().Location)
+                  simulationAssemblySha256 = sha256File typeof<SimulationState>.Assembly.Location |}
+           host = {| operatingSystem = RuntimeInformation.OSDescription; architecture = RuntimeInformation.ProcessArchitecture.ToString(); framework = RuntimeInformation.FrameworkDescription; runtimeVersion = Environment.Version.ToString(); processorCount = Environment.ProcessorCount; processorModel = processorModel (); gcServer = System.Runtime.GCSettings.IsServerGC; gcLatencyMode = System.Runtime.GCSettings.LatencyMode.ToString() |}
+           observation = {| p95Milliseconds = stressP95; worstMilliseconds = stressWorst; units = state.Units.Count; ticks = state.Tick; candidatePairs = 20000; servicedSlots = totalSlots; losEvaluations = totalLos; moves = totalMoves; engagementObservations = totalEngagements; reactionCandidates = totalReactions; evidenceBytes = evidenceBytes; maximumAllocation = maximumAllocation |} |}
+    Path.GetDirectoryName(Path.GetFullPath receiptPath) |> Option.ofObj |> Option.iter (Directory.CreateDirectory >> ignore)
+    File.WriteAllText(receiptPath, JsonSerializer.Serialize(receipt, JsonSerializerOptions(WriteIndented = true)) + Environment.NewLine)
+    printfn "receipt=%s workload-sha256=%s" receiptPath workloadDigest
     if passed then 0 else 1
 
 exception AwarenessPerformanceExit of int

@@ -16,6 +16,18 @@ search_quiet() {
 
 "$repo_root/scripts/generate-rules-corpus.sh" --check
 
+for fixture in manifest.json coverage.json representative-application.hex; do
+  fixture_mutant=$(mktemp -d /tmp/sir-rules-fixture-mutant.XXXXXX)
+  cp "$repo_root/tests/fixtures/rules-corpus/v2/"* "$fixture_mutant/"
+  printf '\n ' >> "$fixture_mutant/$fixture"
+  if SIR_RULES_FIXTURE_DIR="$fixture_mutant" "$repo_root/scripts/generate-rules-corpus.sh" --check >/dev/null 2>&1; then
+    echo "rules-corpus fixture mutation unexpectedly passed: $fixture" >&2
+    rm -rf "$fixture_mutant"
+    exit 1
+  fi
+  rm -rf "$fixture_mutant"
+done
+
 coverage_mutant=$(mktemp /tmp/sir-rules-coverage-mutant.XXXXXX)
 jq '.edges[0].to = "missing:node"' "$repo_root/tests/fixtures/rules-corpus/v2/coverage.json" > "$coverage_mutant"
 if "$repo_root/scripts/validate-rules-coverage.sh" "$coverage_mutant" >/dev/null 2>&1; then

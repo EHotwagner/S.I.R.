@@ -121,6 +121,7 @@ type LiveSessionAuthenticationTests() =
             require (response.StatusCode = HttpStatusCode.OK) "authorized local awareness must succeed"
             require (body.Contains("sir-local-awareness-v1") && body.Contains("Acquired") && body.Contains("ResolvedByPhysicalAuthority")) ("local awareness omitted acquisition or reaction resolution: " + body)
             require (body.Contains("\"Sector\":\"Forward\"") && body.Contains("\"Target\":\"area:2,0\"") && body.Contains("\"WeaponPosture\":\"Prepared\"")) "local awareness omitted sector, target, or posture context"
+            require (body.Contains("\"Stimuli\":[{") && body.Contains("\"SubjectColumn\":2") && body.Contains("\"SubjectRow\":0") && body.Contains("\"Reason\":\"IdentificationThresholdReached\"")) "local awareness omitted the bounded observer-local stimulus fact"
             require (body.Contains("committed:10:20:player-area-east") && body.Contains("physical:10") && body.Contains("resolved:10:20:player-area-east")) "local awareness changed canonical authority ordering"
             require (AwarenessReactionDiagnostics.isDisclosureSafe body) "local projection disclosed reconstructable world truth"
             let protectedSubjectMutation = body.Replace("\"Tick\"", "\"Board\":{\"Minimum\":0},\"Tick\"")

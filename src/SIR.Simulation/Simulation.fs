@@ -30,7 +30,9 @@ type UnitState =
 
 /// A canonical boundary with semantics owned by S.I.R.
 type SemanticEdge =
-    { Edge: Edge
+    { EdgeId: string
+      SpatialRevision: int32
+      Edge: Edge
       BlocksMovement: bool }
 
 /// The fixed board and its semantic boundaries.
@@ -170,7 +172,9 @@ module Simulation =
               WeaponPosture = WeaponPosture.Mobile }
 
         let edge =
-            { Edge = requiredEdge (cell 1 0) (cell 2 0)
+            { EdgeId = "minimal-east-boundary"
+              SpatialRevision = 1
+              Edge = requiredEdge (cell 1 0) (cell 2 0)
               BlocksMovement = true }
 
         { Tick = 0
@@ -384,8 +388,12 @@ module Simulation =
                     EngagementChanged(unitId, engagementId, engagement.Phase, engagement.Reason) :: events
                 | _ -> current, events
             | PrepareEdgeReaction(unitId, engagementId, edge, requiredAttention) ->
-                match tryUnit unitId current, AwarenessReaction.declareEngagement engagementId unitId (EngagementTarget.GuardedEdge edge) requiredAttention with
-                | Some _, Ok engagement ->
+                let semantic = current.Board.Edges |> List.tryFind (fun candidate -> candidate.Edge = edge)
+                match tryUnit unitId current, semantic with
+                | Some _, Some declared ->
+                    match AwarenessReaction.declareEngagement engagementId unitId (EngagementTarget.GuardedEdge(declared.EdgeId, declared.SpatialRevision, declared.Edge)) requiredAttention with
+                    | Error _ -> current, events
+                    | Ok engagement ->
                     { current with Engagements = Map.add unitId engagement current.Engagements },
                     EngagementChanged(unitId, engagementId, engagement.Phase, engagement.Reason) :: events
                 | _ -> current, events
@@ -406,6 +414,7 @@ module Simulation =
         let start = if pairCount = 0 then 0 else int state.AwarenessCursor % pairCount
         let mutable subjectIndex = 0
         let mutable selectedObserverIndex = 0
+        let servicedPairs = System.Collections.Generic.HashSet<UnitId * UnitId>()
         if pairCount > 0 then
             let mutable prefix = start
             selectedObserverIndex <- 0
@@ -427,6 +436,7 @@ module Simulation =
                     let observerId, observer = units[selectedObserverIndex]
                     let subjects = if observer.Side = Side.Red then blueUnits else redUnits
                     let subjectId, subject = subjects[subjectIndex]
+                    servicedPairs.Add((observerId, subjectId)) |> ignore
                     let observedSector = AwarenessReaction.sector observer.AttentionDirection observer.Cell subject.Cell
                     // The 256-slot cursor bounds work while guaranteeing a complete
                     // 20,000-pair sweep within 79 ticks on the declared 100v100 workload.
@@ -440,6 +450,24 @@ module Simulation =
                         counters <- { counters with AwarenessEpisodes = counters.AwarenessEpisodes + 1 }
                         if next.Level <> previous.Level || next.Reason <> previous.Reason then events <- AwarenessChanged(observerId, subjectId, next.Level, next.Reason) :: events
                     advancePair ()
+
+        // Expensive spatial queries are cursor-bounded, but authoritative time
+        // is not. Existing knowledge outside this tick's service slice still
+        // decays and expires against the current committed tick.
+        contacts <-
+            contacts
+            |> Map.map (fun (observerId, subjectId) previous ->
+                if servicedPairs.Contains((observerId, subjectId)) then previous
+                else
+                    let subjectCell =
+                        Map.tryFind subjectId state.Units
+                        |> Option.map _.Cell
+                        |> Option.orElse previous.LastKnownCell
+                        |> Option.defaultValue { Col = 0; Row = 0 }
+                    let next = AwarenessReaction.advanceContact AwarenessReaction.infantryProfile state.Tick subjectCell None previous
+                    if next.Level <> previous.Level || next.Reason <> previous.Reason then
+                        events <- AwarenessChanged(observerId, subjectId, next.Level, next.Reason) :: events
+                    next)
 
         let moved =
             movementEvents
@@ -463,14 +491,25 @@ module Simulation =
                         | Some contact, Some subject when contact.Level = AwarenessLevel.Acquired ->
                             Some(target, subject.Cell, ReactionTriggerKind.ValidTargetExposed)
                         | _ -> None
-                    | EngagementTarget.GuardedEdge guarded ->
-                        moved
-                        |> List.tryPick (fun (sourceId, origin, destination) ->
-                            match Edges.edgeBetween origin destination with
-                            | Some crossed when sourceId <> ownerId && state.Units[sourceId].Side <> owner.Side && crossed = guarded ->
-                                Some(sourceId, destination, ReactionTriggerKind.GuardedEdgeCrossed)
-                            | _ -> None)
-                let maintained = AwarenessReaction.advanceEngagement (owner.AttentionDirection = engagement.RequiredAttention) (owner.WeaponPosture = WeaponPosture.Prepared) (not owner.Incapacitated) trigger.IsSome engagement
+                    | EngagementTarget.GuardedEdge(edgeId, revision, guarded) ->
+                        let stillAuthoritative =
+                            state.Board.Edges
+                            |> List.exists (fun edge -> edge.EdgeId = edgeId && edge.SpatialRevision = revision && edge.Edge = guarded)
+                        if not stillAuthoritative then None
+                        else
+                            moved
+                            |> List.tryPick (fun (sourceId, origin, destination) ->
+                                match Edges.edgeBetween origin destination with
+                                | Some crossed when sourceId <> ownerId && state.Units[sourceId].Side <> owner.Side && crossed = guarded ->
+                                    Some(sourceId, destination, ReactionTriggerKind.GuardedEdgeCrossed)
+                                | _ -> None)
+                let targetValid =
+                    match engagement.Target with
+                    | EngagementTarget.GuardedEdge(edgeId, revision, guarded) -> state.Board.Edges |> List.exists (fun edge -> edge.EdgeId = edgeId && edge.SpatialRevision = revision && edge.Edge = guarded)
+                    | _ -> true
+                let maintained =
+                    if not targetValid then { engagement with Phase = EngagementPhase.Interrupted; RemainingTicks = 0; Reason = ReactionReason.TargetInvalidated }
+                    else AwarenessReaction.advanceEngagement (owner.AttentionDirection = engagement.RequiredAttention) (owner.WeaponPosture = WeaponPosture.Prepared) (not owner.Incapacitated) trigger.IsSome engagement
                 let advanced = if maintained.Phase = EngagementPhase.TriggerEligible then AwarenessReaction.advanceEngagement true true true true maintained else maintained
                 engagements <- Map.add ownerId advanced engagements
                 if advanced.Phase <> engagement.Phase then events <- EngagementChanged(ownerId, advanced.EngagementId, advanced.Phase, advanced.Reason) :: events

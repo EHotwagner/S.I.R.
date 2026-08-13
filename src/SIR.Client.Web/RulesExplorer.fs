@@ -65,8 +65,12 @@ type private AwarenessContactProjection =
 type private AwarenessEngagementProjection =
     { OwnerId: int32; EngagementId: string; Phase: string; RemainingTicks: int32
       Target: string; RequiredAttention: string; WeaponPosture: string; Reason: string }
+type private AwarenessStimulusProjection =
+    { ObserverId: int32; SubjectId: int32; Tick: int32; Sector: string
+      SubjectColumn: int32; SubjectRow: int32; Reason: string }
 type private AwarenessProjectionResponse =
     { Schema: string; Tick: int32; ObserverId: int32; Contacts: AwarenessContactProjection list
+      Stimuli: AwarenessStimulusProjection list
       Engagement: AwarenessEngagementProjection option; Events: string list
       CandidatePairs: int32; LosEvaluations: int32 }
 
@@ -184,6 +188,14 @@ let private awarenessResponseDecoder : Decoder<AwarenessProjectionResponse> =
           Tick = get.Required.Field "Tick" Decode.int
           ObserverId = get.Required.Field "ObserverId" Decode.int
           Contacts = get.Required.Field "Contacts" (Decode.list awarenessContactDecoder)
+          Stimuli = get.Required.Field "Stimuli" (Decode.list (Decode.object (fun item ->
+              { ObserverId = item.Required.Field "ObserverId" Decode.int
+                SubjectId = item.Required.Field "SubjectId" Decode.int
+                Tick = item.Required.Field "Tick" Decode.int
+                Sector = item.Required.Field "Sector" Decode.string
+                SubjectColumn = item.Required.Field "SubjectColumn" Decode.int
+                SubjectRow = item.Required.Field "SubjectRow" Decode.int
+                Reason = item.Required.Field "Reason" Decode.string })))
           Engagement = get.Optional.Field "Engagement" awarenessEngagementDecoder
           Events = get.Required.Field "Events" (Decode.list Decode.string)
           CandidatePairs = get.Required.Field "CandidatePairs" Decode.int
@@ -480,6 +492,8 @@ let ExecutableRulesPanel (bootstrap: BootstrapV1.Response option) =
                                     if contact.HasLastKnownCell then Html.p $"Last known ({contact.LastKnownColumn},{contact.LastKnownRow})"
                                 ]
                             ]
+                        for stimulus in result.Stimuli do
+                            Html.p $"Stimulus {stimulus.SubjectId} · tick {stimulus.Tick} · sector {stimulus.Sector} · known ({stimulus.SubjectColumn},{stimulus.SubjectRow}) · {stimulus.Reason}"
                         match result.Engagement with
                         | Some engagement ->
                             Html.p $"Engagement {engagement.EngagementId} · {engagement.Target} · attention {engagement.RequiredAttention} · posture {engagement.WeaponPosture} · {engagement.Phase} · {engagement.Reason}"

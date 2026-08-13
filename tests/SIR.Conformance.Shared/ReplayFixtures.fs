@@ -265,6 +265,24 @@ module ReplayFixtures =
             | Error(MalformedPackage detail) when detail.Contains "awareness contacts" ->
                 failwith "Replay protected bounds mutation detected."
             | result -> failwithf "Replay bounds mutation was accepted: %A" result
+        | "posture" ->
+            let state = awarenessSnapshot ()
+            let owner = Simulation.unitId 10
+            let changed = { state with Units = state.Units |> Map.change owner (Option.map (fun unit -> { unit with WeaponPosture = WeaponPosture.Prepared })) }
+            if Replay.stateHash changed <> Replay.stateHash state then failwith "Replay protected posture mutation detected."
+            else failwith "Replay posture mutation was accepted."
+        | "cursor" ->
+            let state = awarenessSnapshot ()
+            if Replay.stateHash { state with AwarenessCursor = state.AwarenessCursor + 1 } <> Replay.stateHash state then failwith "Replay protected cursor mutation detected."
+            else failwith "Replay cursor mutation was accepted."
+        | "input-vocabulary" ->
+            let original = awarenessSnapshotPackage () |> Replay.encode
+            let changed =
+                awarenessSnapshotPackage ()
+                |> mapFull (fun full -> { full with OrderedInputs = full.OrderedInputs |> List.tail })
+                |> Replay.encode
+            if changed <> original then failwith "Replay protected input-vocabulary mutation detected."
+            else failwith "Replay input-vocabulary mutation was accepted."
         | value -> failwithf "Unknown replay mutation: %s" value
 
     let evaluate () =
