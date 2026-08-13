@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "afb8b0fdb169526ab6ae4695aa0147d2d30ad099a95118ae35c581d610885cbb"
+        "value": "a522c0e5b12227ad06dbd0bd6187bab7537ff474680d1b700069c7caa6018064"
       }
     },
     {
@@ -3508,7 +3508,7 @@
           "path": "work/181-physical-combat-slice/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "afb8b0fdb169526ab6ae4695aa0147d2d30ad099a95118ae35c581d610885cbb"
+            "value": "a522c0e5b12227ad06dbd0bd6187bab7537ff474680d1b700069c7caa6018064"
           },
           "schemaVersion": 1
         },
@@ -3539,7 +3539,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "45ba2b59976d71eea8c778c7f056a2a56fc206aa20be97abcb178f0db39b52e7"
+        "value": "7fd368e2583a83de0840d00328d93905373fbffb5bbd61c517e20ff506e4dac3"
       },
       "currency": "current"
     }

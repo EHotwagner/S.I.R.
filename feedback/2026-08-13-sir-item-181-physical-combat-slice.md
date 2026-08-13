@@ -5,7 +5,7 @@ workspace: S.I.R
 cycle: item-181-physical-combat-slice
 lane: sdd
 toolVersion: 1.0.1
-commit: 5563b34a2651100c9ba8caceffbe1e788bcdc465
+commit: d3468e526155ab87aedf474c51b09ea7816d572d
 ---
 
 ## §1 Provenance and confidence
@@ -16,7 +16,7 @@ commit: 5563b34a2651100c9ba8caceffbe1e788bcdc465
 - **zero-event reason:** n/a
 - **checkpoint:** `feedback/checkpoints/item-181-physical-combat-slice.jsonl` (7 events).
 - **package/tool pins:** FS.GG.Game.Core 0.13.0, fsgg-sdd 1.0.1, Fable 5.13.0.
-- **confidence limits:** Repair-round exact .NET/Fable fixtures, replay v3 roundtrip/seek, rules identity, subject mutations, authoritative tick performance, server authority, four-profile browser/replay journey, and delivery budgets are green at implementation commit 5563b34 and identity commit 33da3df. The final executable evidence run, critic confirmation, hosted exact-head CI, and protected-boundary landing remain pending while this report is authored.
+- **confidence limits:** Repair-round exact .NET/Fable fixtures, replay v3 roundtrip/seek, rules identity, subject mutations, authoritative tick performance, server authority, four-profile browser/replay journey, delivery budgets, full conformance, and documentation are green. The package is pinned to implementation commit 5363f90 with final identity commit d3468e5. Critic confirmation, hosted exact-head CI, and protected-boundary landing remain pending while this report is authored.
 
 ## §2 What worked
 
@@ -33,9 +33,9 @@ The first browser composition pulled the complete Simulation graph into the init
 - **Kind:** positive-pattern
 - **Impact:** Browser presentation cannot silently become a second combat authority.
 - **Expected:** Match/Server own physical evaluation; Web issues one bounded authenticated request and renders the returned facts.
-- **Observed:** The focused route submits exactly one `POST /api/combat/physical-drill`, receives status 200, renders all four profiles plus replay evidence, and source/bundle scans find no `Combat.resolve`, physical evaluation, or unique evaluator symbols in Web. The focused response was 5,129 bytes; the published diagnostic response was 8,582 bytes.
+- **Observed:** The focused route submits exactly one `POST /api/combat/physical-drill`, receives status 200, renders all four profiles plus replay evidence, and source/bundle scans find no `Combat.resolve`, physical evaluation, or unique evaluator symbols in Web. The focused response was 5,169 bytes; the published diagnostic response was 8,582 bytes.
 - **Evidence:** command:./scripts/verify-physical-combat.sh
-- **Version:** S.I.R implementation commit 5563b34a2651100c9ba8caceffbe1e788bcdc465
+- **Version:** S.I.R implementation commit 5363f9072214bf1128d423d450db46222f6564ad
 - **Owner:** EHotwagner/S.I.R. physical combat boundary
 - **Recurrence:** new
 - **Avoidable cost:** none
@@ -46,9 +46,9 @@ The first browser composition pulled the complete Simulation graph into the init
 - **Kind:** quality-gap
 - **Impact:** Adding authority to a shared F# graph can unintentionally make portable simulation code part of startup delivery.
 - **Expected:** Initial responses remain at or below 1,150,000 bytes and the Rules explorer deferred chunk remains at or below 60,000 bytes.
-- **Observed:** After separating legacy `runTickWithRules` from authoritative `runPhysicalTickWithRules`, the repaired published route measured a 1,122,831-byte initial response set (including the 1,091,206-byte app bundle and initial page/style assets) and a 56,687-byte deferred chunk while retaining the exact-once authority journey.
+- **Observed:** After separating legacy `runTickWithRules` from authoritative `runPhysicalTickWithRules`, the repaired published route measured a 1,122,831-byte initial response set (including the 1,091,206-byte app bundle and initial page/style assets) and a 57,117-byte deferred chunk while retaining the exact-once authority journey.
 - **Evidence:** command:node scripts/test-production-delivery-budget.mjs; command:npx playwright test tests/SIR.Browser.Tests/visible-workflows.spec.js --config tests/SIR.Browser.Tests/playwright.config.js --grep "player-visible Rules explorer"
-- **Version:** S.I.R implementation commit 5563b34a2651100c9ba8caceffbe1e788bcdc465
+- **Version:** S.I.R implementation commit 5363f9072214bf1128d423d450db46222f6564ad
 - **Owner:** EHotwagner/S.I.R. production delivery
 - **Recurrence:** seen in item-180 and item-194 delivery work
 - **Avoidable cost:** one structural refactor and two measurement iterations
@@ -74,7 +74,7 @@ The first browser composition pulled the complete Simulation graph into the init
 - **Expected:** Deterministic map-editor review boards bind the current production JavaScript digest.
 - **Observed:** Conformance rejected both stale review manifests after physical-combat delivery changed the bundle; `npm run review:map-editor` regenerated seven deterministic SVG/PNG pairs, and `npm run review:persistent-workspace-m9` recaptured the actual 1440×900 Chromium shell. Both focused portability/acceptance qualifications returned green.
 - **Evidence:** command:npm run review:map-editor; command:node scripts/test-map-editor-qualification.mjs; command:npm run review:persistent-workspace-m9; command:node scripts/test-persistent-workspace-m9-acceptance.mjs
-- **Version:** S.I.R implementation commit 5563b34a2651100c9ba8caceffbe1e788bcdc465
+- **Version:** S.I.R implementation commit 5363f9072214bf1128d423d450db46222f6564ad
 - **Owner:** EHotwagner/S.I.R. visual review evidence
 - **Recurrence:** expected for shared-bundle changes
 - **Avoidable cost:** two conformance reruns because the receipts are qualified at different points
@@ -87,7 +87,7 @@ The first browser composition pulled the complete Simulation graph into the init
 - **Expected:** The product checkout exposes the canonical feedback-report skill and validator.
 - **Observed:** `.agents/skills` contains no feedback-report skill; existing schema-v2 reports were used as the discoverable repository contract.
 - **Evidence:** command:find .agents/skills -path '*/fs-gg-feedback-report/SKILL.md'
-- **Version:** S.I.R at implementation commit 5563b34a2651100c9ba8caceffbe1e788bcdc465
+- **Version:** S.I.R at implementation commit 5363f9072214bf1128d423d450db46222f6564ad
 - **Owner:** FS-GG scaffold skill materialization
 - **Recurrence:** item-180 §4.5; open FS-GG/.github#2380
 - **Avoidable cost:** one repository-contract discovery

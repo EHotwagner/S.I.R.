@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="item-181-physical-combat-docs" tests="1" failures="0">
+  <testcase classname="Item181Evidence" name="documentation build, integrity, experience, browser smoke, and accessibility pass"/>
+  <system-out>command=./scripts/build-docs.sh; log-sha256=73e73a88fb7bf345582b240b3f192d2cd7bc86980ebdc879ed49b97054d0b081</system-out>
+</testsuite>

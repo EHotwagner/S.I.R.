@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite name="item-181-physical-combat-conformance" tests="1" failures="0">
+  <testcase classname="Item181Evidence" name="full native/Fable replay, seek, worker, WASM, browser, and delivery conformance passes"/>
+  <system-out>command=./scripts/test-conformance.sh; log-sha256=19c0af190cffd8ac8c9d3656e8eab24eda7cee4fbda3788d420ec9900ec8ad19</system-out>
+</testsuite>
