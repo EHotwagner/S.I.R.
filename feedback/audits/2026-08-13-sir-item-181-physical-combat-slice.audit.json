@@ -1,0 +1,60 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-13-sir-item-181-physical-combat-slice.md",
+  "reportSha256": "f070262acd8715c166bf39c7e29f659aa5e9019b6552cd2a0a53d3310c840a04",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:./scripts/generate-item-181-evidence.sh", "result": "verified"},
+        {"locator": "artifact:readiness/181-physical-combat-slice/physical-combat-core.junit.xml", "result": "verified"}
+      ],
+      "confidenceLimits": ["The diagnostic route proves a bounded canonical scenario; future multiplayer controls must reuse the Match authority rather than this transport shape."]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:node scripts/test-production-delivery-budget.mjs", "result": "verified"},
+        {"locator": "command:npx playwright test tests/SIR.Browser.Tests/production-delivery.spec.js", "result": "verified"}
+      ],
+      "confidenceLimits": ["The initial and deferred byte measurements are candidate-specific and retain the existing caps."]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "artifact:work/181-physical-combat-slice/clarifications.md", "result": "verified"},
+        {"locator": "issue:FS-GG/FS.GG.SDD#265", "result": "verified"}
+      ],
+      "confidenceLimits": ["The repaired work model is current; the audit relies on the retained report for the rejected pre-repair punctuation transcript."]
+    },
+    {
+      "id": "§4.4",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "artifact:docs/assets/map-editor-review/manifest.json", "result": "verified"},
+        {"locator": "artifact:docs/assets/persistent-workspace-m9-review/manifest.json", "result": "verified"},
+        {"locator": "command:./scripts/test-conformance.sh", "result": "verified"}
+      ],
+      "confidenceLimits": ["The manifests bind the current production bundle; any later shared-bundle change must regenerate them again."]
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {"locator": "command:find .agents/skills -path */fs-gg-feedback-report/SKILL.md", "result": "verified"},
+        {"locator": "issue:FS-GG/.github#2380", "result": "reported-by-author"}
+      ],
+      "confidenceLimits": ["The schema-v2 repository examples supplied the fallback contract because the projected feedback skill remains absent."]
+    }
+  ]
+}
