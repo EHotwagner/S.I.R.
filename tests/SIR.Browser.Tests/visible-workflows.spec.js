@@ -128,7 +128,7 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   const responseBody = await response.text();
   expect(physicalAuthorityRequests).toBe(1);
   await expect(drill.getByText("Cover integrity 50 → 0 · destroyed true", { exact: true })).toBeVisible();
-  await expect(drill.getByText(/Replay v3 verified true from 4 seek points · final tick 4 · state [0-9a-f]{64}/)).toBeVisible();
+  await expect(drill.getByText(/Replay v4 verified true from 4 seek points · final tick 4 · state [0-9a-f]{64}/)).toBeVisible();
 
   const expectedProfiles = [
     ["Rifle", "50 → 38 · destroyed false"],
