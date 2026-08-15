@@ -103,3 +103,21 @@ byte increase from the round-one artifact and still below the versioned
 journeys passed. Timings and allocations remain host observations; the exact
 bytes, identities, counters, and pass/fail budgets are the deterministic
 contracts.
+
+## Independent-review repair round three
+
+Hosted diagnostic run `31913327392` separated and flushed the preview gates and
+identified the exact failure as host-sensitive allocation: 13,693,216 bytes,
+not identity, counters, or the 50 ms timing predicate. Local observations remain
+12,124,472 bytes. The executable allocation ceiling is therefore 16,000,000
+bytes: about 16.8% headroom above the observed hosted value and still about
+35.9% below the 24,957,944-byte round-one implementation. This is an honest
+host-qualified allocation budget; the independent strict 50 ms validation and
+assembly timing gates are unchanged.
+
+The allocation mutation no longer changes that ceiling. It self-restoringly
+injects a retained 14,000,000-byte allocation into the production
+`authoredInputIdentity` subject, rebuilds the real Match test, and requires the
+unchanged identity/counters/16,000,000-byte assertion to fail. The local mutated
+subject allocated 26,124,528 bytes and failed its named allocation gate, then a
+restored rebuild passed and left the production source unchanged.

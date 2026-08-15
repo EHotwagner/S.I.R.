@@ -558,6 +558,16 @@ tasks:
     sourceIds: [AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007]
     requiredSkills: [fsharp, automated-tests, readiness-evidence]
     requiredEvidence: [EV053]
+  - id: T054
+    title: Bind hosted allocation variance and production-subject mutation
+    status: done
+    owner: shrike-f615
+    dependencies: [T053]
+    requirements: [FR-012]
+    decisions: [DEC-005]
+    sourceIds: [AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007]
+    requiredSkills: [fsharp, automated-tests, readiness-evidence]
+    requiredEvidence: [EV054]
 acceptedDeferrals: []
 findings: []
 advisoryNotes:

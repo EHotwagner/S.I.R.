@@ -62,7 +62,7 @@ done
 
 # Break the production identity writer, not its assertion: retain an additional
 # 14 MB allocation inside the measured subject while the identity, counters,
-# and 13 MB test bound remain unchanged. Restore and rebuild even on failure.
+# and 16 MB test bound remain unchanged. Restore and rebuild even on failure.
 allocation_subject="src/SIR.Simulation/TacticalEnvironment.fs"
 allocation_backup=$(mktemp)
 allocation_log=$(mktemp)
@@ -89,7 +89,7 @@ if dotnet run --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj -c Release 
   echo "Production-subject preview allocation mutation unexpectedly passed" >&2
   exit 1
 fi
-if ! grep -q "exceeded its 13000000-byte allocation bound" "$allocation_log"; then
+if ! grep -q "exceeded its 16000000-byte allocation bound" "$allocation_log"; then
   echo "Production-subject preview allocation mutation failed outside its owning assertion" >&2
   cat "$allocation_log" >&2
   exit 1

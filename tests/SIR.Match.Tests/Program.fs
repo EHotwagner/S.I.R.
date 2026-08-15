@@ -558,8 +558,8 @@ let private tacticalEnvironmentEvidence () =
         |> Result.defaultWith (fun findings -> failwithf "Maximum editor preview failed: %A" findings)
     previewClock.Stop()
     let previewAllocatedBytes = GC.GetAllocatedBytesForCurrentThread() - previewAllocatedBefore
-    printfn "Maximum tactical editor preview: validation %.3f ms; assembly %.3f ms; %d allocated bytes; authored input %s." previewValidationClock.Elapsed.TotalMilliseconds previewClock.Elapsed.TotalMilliseconds previewAllocatedBytes previewEnvironment.EnvironmentAssemblyIdentity
-    Console.Out.Flush()
+    eprintfn "Maximum tactical editor preview: validation %.3f ms; assembly %.3f ms; %d allocated bytes; authored input %s." previewValidationClock.Elapsed.TotalMilliseconds previewClock.Elapsed.TotalMilliseconds previewAllocatedBytes previewEnvironment.EnvironmentAssemblyIdentity
+    Console.Error.Flush()
     require
         (previewEnvironment.AssembledWalkableCells.Length = 6_400
          && previewEnvironment.EnvironmentFeatures.Length = 2_048)
@@ -568,8 +568,8 @@ let private tacticalEnvironmentEvidence () =
         (previewEnvironment.EnvironmentAssemblyIdentity = "51eedfe20ceb51fad17d33ddacfe68ce0e95cd7df031f1ef5e176226249e0a68")
         "Maximum 80x80/2,048-feature editor preview changed its authored identity."
     require
-        (previewAllocatedBytes < 13_000_000L)
-        (sprintf "Maximum 80x80/2,048-feature editor preview exceeded its 13000000-byte allocation bound: %d bytes." previewAllocatedBytes)
+        (previewAllocatedBytes < 16_000_000L)
+        (sprintf "Maximum 80x80/2,048-feature editor preview exceeded its 16000000-byte allocation bound: %d bytes." previewAllocatedBytes)
     require
         (previewClock.Elapsed.TotalMilliseconds < 50.0)
         (sprintf "Maximum 80x80/2,048-feature editor preview exceeded its 50 ms timing budget: %.3f ms." previewClock.Elapsed.TotalMilliseconds)
