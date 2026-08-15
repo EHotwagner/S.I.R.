@@ -16,9 +16,9 @@ publicOrToolFacingImpact: true
 Prose status: planned
 
 ## Source Snapshot
-- spec: work/186-authored-tactical-parcels/spec.md sha256:c7025a572298909ec1b032c6ed023e2eeb847d36c7a26d09ba5305d0d86101c4 schemaVersion:1
-- clarifications: work/186-authored-tactical-parcels/clarifications.md sha256:f76be2ea83daa39416ddb15d06604424ab67e867fc003bbf4cbdb10aa0e5e8cb schemaVersion:1
-- checklist: work/186-authored-tactical-parcels/checklist.md sha256:8d8e56bf0267ce2c0c187a012cd4b9bbd194c82f236e2549d1318baf461d643c schemaVersion:1
+- spec: work/186-authored-tactical-parcels/spec.md sha256:913940d4b9d86eef4dfa845028e0a53ffc2001ab20c24dd495c8d9893ba83874 schemaVersion:1
+- clarifications: work/186-authored-tactical-parcels/clarifications.md sha256:32d22a8a41846f92365aa9267f0b6c39d7dcaa262b0556c63861998e40111af3 schemaVersion:1
+- checklist: work/186-authored-tactical-parcels/checklist.md sha256:974fdc8551c75e438487eef93bd25abd8455f84073f824d21b92a41cd1ff593f schemaVersion:1
 
 ## Plan Scope
 - Add public schema-v1 parcel/environment values in `SIR.Domain`, pure assembly/validation/transition/query-adapter services in `SIR.Simulation`, and additive MapEditor/Simulator/Web projection and input seams.
@@ -38,6 +38,7 @@ Prose status: planned
 - PD-010 [AC-006] [FR-010] [DEC-005] complete: Commit canonical exterior and interior/breach fixtures and validate their cover, objectives, required routes, connectors, and breach opportunities.
 - PD-011 [AC-007] [FR-011] [DEC-006] complete: Canonically encode capability observations only after knowledge projection, making indistinguishable hidden states byte-identical.
 - PD-012 [AC-008] [FR-012] [DEC-005] complete: Add Release workload counters and host-qualified observations for 64 slots, 32 variants/role, 512 findings, 256 cache dependencies, 100 units, editor preview, and combat queries; retain red mutations for state/hash/locality/destruction bounds.
+- PD-013 [AC-008] [FR-012] [DEC-007] complete: Bind initial-boot budget v2 at 1,250,000 bytes in the static artifact and throttled production-browser route, preserve deferred RulesExplorer loading, and retain tightened-static plus oversized-browser mutations that fail. Treat later growth as a defer-or-explicit-rebaseline decision, not as silent budget erosion.
 
 ## Contract Impact
 - PC-001 [PD-001] [PD-002] publicSurface: `src/SIR.Domain/TacticalEnvironment.fsi` declares schema-v1 authored content, semantic state, canonical identity, capability, and action-result values before implementation.
@@ -57,6 +58,7 @@ Prose status: planned
 - VO-006 [PD-012] [PC-007] performanceTest: Run exact Release workloads, enforce structural ceilings, record counters/host facts/timing separately, and retain a deliberately naive subject that exceeds locality or action bounds.
 - VO-007 [PD-012] mutationTest: Invert edge-state use, content-hash verification, dependency intersection, and one-target destruction bounds; require intended non-zero gates, then restore.
 - VO-008 [PD-012] lifecycleTest: Run focused/full solution, native/Fable/browser, docs, feedback validation/invalidation, SDD evidence/verify/ship/refresh, exact-head CI, paths, and independent review gates.
+- VO-009 [PD-013] deliveryTest: Measure the unmangled production initial route under the declared throttle, enforce the versioned 1,250,000-byte static/browser ceiling, load the deferred diagnostic path through normal UI, and require static-limit plus oversized-browser mutations to fail.
 
 ## Performance Intent
 No performance intent is declared for this work item.

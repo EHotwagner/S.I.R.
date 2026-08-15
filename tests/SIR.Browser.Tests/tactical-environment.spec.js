@@ -60,7 +60,7 @@ test("canonical tactical editor revision hands off to fixed-step simulation and 
   await environment.getByTestId("tactical-enter-simulate").click();
   let simulation = page.getByRole("region", { name: "Tactical environment simulation", exact: true });
   await expect(simulation).toBeVisible();
-  await expect(simulation.getByTestId("tactical-runtime-status")).toHaveText("Immutable tactical environment handoff ready.");
+  await expect(simulation.getByTestId("tactical-runtime-status")).toHaveText("Authoritative tactical environment transfer ready.");
   await expect(simulation.getByTestId("tactical-runtime-revision")).toHaveText(editorRevision);
   const assemblyIdentity = await identityAt(simulation, "tactical-runtime-assembly-identity");
   await expect.poll(() => identityAt(simulation, "tactical-runtime-initial-identity")).toBe(damagedIdentity);

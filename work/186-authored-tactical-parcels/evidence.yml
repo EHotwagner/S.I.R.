@@ -1357,5 +1357,86 @@ evidence:
       failed: 0
       skipped: 0
     notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV050
+    kind: verification
+    subject:
+      type: task
+      id: T050
+    taskRefs: [T050]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: [DEC-007]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV050]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Unmangled initial-boot budget v2 passes real static and throttled browser routes and both delivery mutations fail.]
+  - id: EV051
+    kind: verification
+    subject:
+      type: task
+      id: T051
+    taskRefs: [T051]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: [DEC-007]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-013]
+    obligationRefs: [EV051]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [The production route remains unmangled and future growth is bound to defer or explicitly rebaseline.]
+  - id: EV052
+    kind: verification
+    subject:
+      type: task
+      id: T052
+    taskRefs: [T052]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: [DEC-007]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-013]
+    obligationRefs: [EV052]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [The fresh aggregate executes static/browser delivery gates, oversized mutations, and the complete browser suite.]
 lifecycleNotes:
   - "Next lifecycle action: verify."

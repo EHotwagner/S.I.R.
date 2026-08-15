@@ -2498,9 +2498,7 @@ let subscriptions model =
             fun (event: Event) ->
                 let keyboardEvent: KeyboardEvent = unbox event
                 let key = registryKeyboardKey keyboardEvent
-                if
-                    TacticalEnvironmentView.acceptsGlobalKeyboardTarget keyboardEvent.target
-                then
+                if TacticalEnvironmentView.acceptsGlobalKeyboardTarget keyboardEvent.target (keyboardEvent.ctrlKey || keyboardEvent.metaKey) then
                     let controlOrMeta =
                         keyboardEvent.ctrlKey || keyboardEvent.metaKey
                     if
@@ -2532,7 +2530,7 @@ let subscriptions model =
             fun (event: Event) ->
                 let keyboardEvent: KeyboardEvent = unbox event
                 if
-                    TacticalEnvironmentView.acceptsGlobalKeyboardTarget keyboardEvent.target
+                    TacticalEnvironmentView.acceptsGlobalKeyboardTarget keyboardEvent.target false
                 then
                     if
                         modalResolution

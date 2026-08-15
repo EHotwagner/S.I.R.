@@ -22,8 +22,8 @@ let downloadDocument (_content: string) : unit = jsNative
 [<Emit("(() => { const t = $0; const tag = t && typeof t.tagName === 'string' ? t.tagName.toLowerCase() : ''; return tag === 'input' || tag === 'button' || tag === 'summary' || (tag === 'a' && t.hasAttribute('href')) || tag === 'textarea' || tag === 'select' || (t && t.isContentEditable); })()")>]
 let private isNativeInteractiveTarget (_target: EventTarget) : bool = jsNative
 
-let acceptsGlobalKeyboardTarget target =
-    not (isNativeInteractiveTarget target)
+let acceptsGlobalKeyboardTarget target allowModifiedShortcut =
+    allowModifiedShortcut || not (isNativeInteractiveTarget target)
 
 let editorDomain = function
     | TerrainTools -> TerrainDomain
@@ -264,7 +264,7 @@ let simulationView (simulator: SimulatorHandoff) (dispatch: Msg -> unit) =
         prop.custom ("data-testid", "tactical-environment-simulation")
         prop.children [
             Html.h3 "Tactical environment simulation"
-            Html.p [ prop.role.status; prop.ariaLive.polite; prop.custom ("data-testid", "tactical-runtime-status"); prop.text (simulator.LastEvents |> List.tryLast |> Option.defaultValue "Immutable tactical environment handoff ready.") ]
+            Html.p [ prop.role.status; prop.ariaLive.polite; prop.custom ("data-testid", "tactical-runtime-status"); prop.text (simulator.LastEvents |> List.tryLast |> Option.defaultValue "Authoritative tactical environment transfer ready.") ]
             Html.p [ prop.custom ("data-testid", "tactical-runtime-revision"); prop.text (string simulator.Revision.Number) ]
             Html.code [ prop.custom ("data-testid", "tactical-runtime-assembly-identity"); prop.text simulator.RuntimeEnvironment.EnvironmentAssemblyIdentity ]
             Html.code [ prop.custom ("data-testid", "tactical-runtime-initial-identity"); prop.text simulator.InitialEnvironment.EnvironmentContentIdentity ]

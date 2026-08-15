@@ -53,7 +53,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "8d8e56bf0267ce2c0c187a012cd4b9bbd194c82f236e2549d1318baf461d643c"
+        "value": "974fdc8551c75e438487eef93bd25abd8455f84073f824d21b92a41cd1ff593f"
       }
     },
     {
@@ -65,7 +65,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "f76be2ea83daa39416ddb15d06604424ab67e867fc003bbf4cbdb10aa0e5e8cb"
+        "value": "32d22a8a41846f92365aa9267f0b6c39d7dcaa262b0556c63861998e40111af3"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "fddaba7dfa29e73f6182021b0f28b7cdf4c271d1b0f05199e23c50f4c0752608"
+        "value": "ac3da389b26e1c96eec4874d6c4be1a662a43007b36a124b8481757f245e5aa3"
       }
     },
     {
@@ -101,7 +101,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "c7025a572298909ec1b032c6ed023e2eeb847d36c7a26d09ba5305d0d86101c4"
+        "value": "913940d4b9d86eef4dfa845028e0a53ffc2001ab20c24dd495c8d9893ba83874"
       }
     },
     {
@@ -369,8 +369,8 @@
     },
     {
       "id": "FR-012",
-      "title": "Release qualification MUST traverse production assembly, validation, editor preview, local invalidation, and representative combat-query routes with declared maximum scales, structural counters, host facts, and latency budgets; each added or modified gate MUST retain a mutation proving it fails when edge state, content hash, bounded destruction cost, or local dependency invalidation is ignored. (Stories: US-004; Acceptance: AC-008)",
-      "text": "Release qualification MUST traverse production assembly, validation, editor preview, local invalidation, and representative combat-query routes with declared maximum scales, structural counters, host facts, and latency budgets; each added or modified gate MUST retain a mutation proving it fails when edge state, content hash, bounded destruction cost, or local dependency invalidation is ignored. (Stories: US-004; Acceptance: AC-008)",
+      "title": "Release qualification MUST traverse production assembly, validation, editor preview, local invalidation, representative combat-query, and production initial-boot routes with declared maximum scales, structural counters, host facts, latency budgets, and a versioned 1,250,000-byte initial-route ceiling; this ceiling is not a global lifetime limit, so later growth MUST defer code or explicitly rebaseline the versioned contract, and each added or modified gate MUST retain a mutation proving it fails when edge state, content hash, bounded destruction cost, local dependency invalidation, or initial-route size is ignored. (Stories: US-004; Acceptance: AC-008)",
+      "text": "Release qualification MUST traverse production assembly, validation, editor preview, local invalidation, representative combat-query, and production initial-boot routes with declared maximum scales, structural counters, host facts, latency budgets, and a versioned 1,250,000-byte initial-route ceiling; this ceiling is not a global lifetime limit, so later growth MUST defer code or explicitly rebaseline the versioned contract, and each added or modified gate MUST retain a mutation proving it fails when edge state, content hash, bounded destruction cost, local dependency invalidation, or initial-route size is ignored. (Stories: US-004; Acceptance: AC-008)",
       "acceptanceCriteria": [
         "AC-008"
       ],
@@ -516,6 +516,24 @@
       "linkedTaskIds": [
         "T018"
       ]
+    },
+    {
+      "id": "DEC-007",
+      "title": "The user-authorized initial-boot budget v2 is 1,250,000 response bytes for the measured default production browser route and the aligned static application entry. It replaces the 1,150,000 browser ceiling without weakening measurement or loading assertions, is not a forever-global product limit, and requires future growth to defer code or explicitly version and rebaseline the contract. Normal browser/static measurements and an oversized initial-route mutation are required evidence.",
+      "decision": "The user-authorized initial-boot budget v2 is 1,250,000 response bytes for the measured default production browser route and the aligned static application entry. It replaces the 1,150,000 browser ceiling without weakening measurement or loading assertions, is not a forever-global product limit, and requires future growth to defer code or explicitly version and rebaseline the contract. Normal browser/static measurements and an oversized initial-route mutation are required evidence.",
+      "requirementRefs": [
+        "FR-012"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [
+        "AC-008"
+      ],
+      "source": "work/186-authored-tactical-parcels/clarifications.md",
+      "sourceLocation": {
+        "line": 38,
+        "column": 1
+      },
+      "linkedTaskIds": []
     }
   ],
   "tasks": [
@@ -3042,7 +3060,7 @@
           "path": "work/186-authored-tactical-parcels/checklist.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "8d8e56bf0267ce2c0c187a012cd4b9bbd194c82f236e2549d1318baf461d643c"
+            "value": "974fdc8551c75e438487eef93bd25abd8455f84073f824d21b92a41cd1ff593f"
           },
           "schemaVersion": 1
         },
@@ -3050,7 +3068,7 @@
           "path": "work/186-authored-tactical-parcels/clarifications.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "f76be2ea83daa39416ddb15d06604424ab67e867fc003bbf4cbdb10aa0e5e8cb"
+            "value": "32d22a8a41846f92365aa9267f0b6c39d7dcaa262b0556c63861998e40111af3"
           },
           "schemaVersion": 1
         },
@@ -3066,7 +3084,7 @@
           "path": "work/186-authored-tactical-parcels/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "fddaba7dfa29e73f6182021b0f28b7cdf4c271d1b0f05199e23c50f4c0752608"
+            "value": "ac3da389b26e1c96eec4874d6c4be1a662a43007b36a124b8481757f245e5aa3"
           },
           "schemaVersion": 1
         },
@@ -3074,7 +3092,7 @@
           "path": "work/186-authored-tactical-parcels/spec.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "c7025a572298909ec1b032c6ed023e2eeb847d36c7a26d09ba5305d0d86101c4"
+            "value": "913940d4b9d86eef4dfa845028e0a53ffc2001ab20c24dd495c8d9893ba83874"
           },
           "schemaVersion": 1
         },
@@ -3089,7 +3107,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "6d335fd655f1cd38e12801153ce3d74b36fe255299dc5f1c1f5128f4c7667443"
+        "value": "7f004ee725fa4fc9d9b302dc92b771742eda32022063970d18aedc3ffbd2aaf3"
       },
       "currency": "current"
     }

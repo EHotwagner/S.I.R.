@@ -15,9 +15,9 @@ dotnet run --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj -c Release --n
 dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-build
 mkdir -p src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0
 npm run build:client
-npm run build:docs
 npm run review:map-editor
 npm run review:persistent-workspace-m9
+npm run build:docs
 git diff --exit-code -- \
   docs/assets/map-editor-review \
   docs/assets/persistent-workspace-m9-review
@@ -34,6 +34,19 @@ NODE
 test "$native_hex" = "$fable_hex"
 
 dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish --no-restore
+
+node scripts/test-production-delivery-budget.mjs
+if SIR_DELIVERY_BUDGET_MAX_APP_RAW=1000000 node scripts/test-production-delivery-budget.mjs >/dev/null 2>&1; then
+  echo "Static initial-entry budget mutation unexpectedly passed" >&2
+  exit 1
+fi
+if SIR_DELIVERY_BROWSER_MUTATE_SUBJECT=initial-bytes \
+  npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js \
+  tests/SIR.Browser.Tests/production-delivery.spec.js >/dev/null 2>&1; then
+  echo "Browser initial-route budget mutation unexpectedly passed" >&2
+  exit 1
+fi
+node scripts/test-production-delivery-evidence.mjs
 
 SIR_JUNIT_OUTPUT=artifacts/test-results/186-tactical-browser.junit.xml \
   npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js \

@@ -35,6 +35,7 @@ publicOrToolFacingImpact: true
 - DEC-004 [CQ-004] [AMB:AMB-004] [FR-008] [FR-009] [AC-005]: The acceptance journey uses the real Web composition and MapEditor reducer with both pointer and keyboard actions; history snapshots canonical editor state, migration is explicit, and replay compares canonical imported/assembled/play state.
 - DEC-005 [CQ-005] [AMB:AMB-005] [FR-010] [FR-012] [AC-006] [AC-008]: Exterior and interior/breach fixtures are the representative content; Release workloads cap slots at 64, variants at 32 per role, findings at 512, actions at one target/no propagation, and dependency inspection at declared entries only; timing observations are host-qualified and never compositor claims.
 - DEC-006 [FR-011] [AC-007]: Capability descriptors expose schema, feature id/type, known state, available actions, costs, and observation revision only after requester-knowledge filtering; hidden values and absent capabilities serialize identically for indistinguishable knowledge.
+- DEC-007 [CQ-005] [FR-012] [AC-008]: The user-authorized initial-boot budget v2 is 1,250,000 response bytes for the measured default production browser route and the aligned static application entry. It replaces the 1,150,000 browser ceiling without weakening measurement or loading assertions, is not a forever-global product limit, and requires future growth to defer code or explicitly version and rebaseline the contract. Normal browser/static measurements and an oversized initial-route mutation are required evidence.
 
 ## Accepted Deferrals
 No accepted deferrals recorded.
@@ -43,5 +44,5 @@ No accepted deferrals recorded.
 - None. AMB-001 through AMB-005 are resolved by DEC-001 through DEC-005.
 
 ## Lifecycle Notes
-- No accepted deferrals; DEC-001 through DEC-006 are implementation obligations.
+- No accepted deferrals; DEC-001 through DEC-007 are implementation obligations.
 - Next lifecycle action: `fsgg-sdd checklist --work 186-authored-tactical-parcels`.

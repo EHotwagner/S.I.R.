@@ -77,9 +77,26 @@ module TacticalEnvironment =
         // Preview assembly hashes the complete environment, including every cell and feature. Building
         // one byte array per scalar and repeatedly concatenating those arrays made the allocation shape
         // proportional to the field count as well as the payload. Keep the schema-v1 byte grammar exact,
-        // but stream it into one growable buffer so a maximum editor preview has bounded copy overhead.
-        let bytes = Collections.Generic.List<byte>(4096)
-        let appendByte value = bytes.Add value
+        // but stream it into one growable byte array so a maximum editor preview has bounded copy
+        // overhead without pulling a generic collection implementation into the Fable client bundle.
+        let mutable bytes = Array.zeroCreate<byte> 4096
+        let mutable byteCount = 0
+        let ensureCapacity additional =
+            let required = byteCount + additional
+            if required > bytes.Length then
+                let mutable capacity = bytes.Length * 2
+                while capacity < required do capacity <- capacity * 2
+                let expanded = Array.zeroCreate<byte> capacity
+                Array.blit bytes 0 expanded 0 byteCount
+                bytes <- expanded
+        let appendByte value =
+            ensureCapacity 1
+            bytes.[byteCount] <- value
+            byteCount <- byteCount + 1
+        let appendBytes (values: byte array) =
+            ensureCapacity values.Length
+            Array.blit values 0 bytes byteCount values.Length
+            byteCount <- byteCount + values.Length
         let appendInt32 (value: int32) =
             appendByte (byte value)
             appendByte (byte (value >>> 8))
@@ -92,7 +109,7 @@ module TacticalEnvironment =
         let appendText (value: string) =
             let encoded = Encoding.UTF8.GetBytes value
             appendInt32 encoded.Length
-            bytes.AddRange encoded
+            appendBytes encoded
         let appendBool value = appendByte (if value then 1uy else 0uy)
         let appendList append values =
             appendInt32 (List.length values)
@@ -160,7 +177,7 @@ module TacticalEnvironment =
         appendInt32 environment.AssemblyCostCounters.Selections
         appendInt32 environment.AssemblyCostCounters.PlacedCells
         appendInt32 environment.AssemblyCostCounters.PlacedFeatures
-        bytes.ToArray()
+        Array.sub bytes 0 byteCount
 
     let contentIdentity (environment: AssembledEnvironment) = { environment with EnvironmentContentIdentity = "" } |> canonicalBytes |> CanonicalHash.sha256 |> hex
     let withContentIdentity (environment: AssembledEnvironment) = { environment with EnvironmentContentIdentity = contentIdentity environment }

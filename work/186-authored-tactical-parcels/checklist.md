@@ -21,8 +21,8 @@ Prose status: checklistReady
 - work/186-authored-tactical-parcels/clarifications.md
 
 ## Source Snapshot
-- spec: work/186-authored-tactical-parcels/spec.md sha256:c7025a572298909ec1b032c6ed023e2eeb847d36c7a26d09ba5305d0d86101c4 schemaVersion:1
-- clarifications: work/186-authored-tactical-parcels/clarifications.md sha256:f76be2ea83daa39416ddb15d06604424ab67e867fc003bbf4cbdb10aa0e5e8cb schemaVersion:1
+- spec: work/186-authored-tactical-parcels/spec.md sha256:913940d4b9d86eef4dfa845028e0a53ffc2001ab20c24dd495c8d9893ba83874 schemaVersion:1
+- clarifications: work/186-authored-tactical-parcels/clarifications.md sha256:32d22a8a41846f92365aa9267f0b6c39d7dcaa262b0556c63861998e40111af3 schemaVersion:1
 
 ## Checklist Items
 - CHK-001 [FR-001] [AC-001] blocking: Requirement FR-001 is testable and linked to acceptance coverage.
