@@ -52,13 +52,53 @@ SIR_JUNIT_OUTPUT=artifacts/test-results/186-tactical-browser.junit.xml \
   npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js \
   tests/SIR.Browser.Tests/tactical-environment.spec.js
 
-for subject in EDGE_STATE CONTENT_IDENTITY DEPENDENCY_LOCALITY DESTRUCTION_BOUND PREVIEW_ALLOCATION; do
+for subject in EDGE_STATE CONTENT_IDENTITY DEPENDENCY_LOCALITY DESTRUCTION_BOUND; do
   variable="SIR_TACTICAL_MUTATE_${subject}"
   if env "$variable=1" dotnet run --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj -c Release --no-build >/dev/null 2>&1; then
     echo "Mutation ${subject} unexpectedly passed" >&2
     exit 1
   fi
 done
+
+# Break the production identity writer, not its assertion: retain an additional
+# 14 MB allocation inside the measured subject while the identity, counters,
+# and 13 MB test bound remain unchanged. Restore and rebuild even on failure.
+allocation_subject="src/SIR.Simulation/TacticalEnvironment.fs"
+allocation_backup=$(mktemp)
+allocation_log=$(mktemp)
+restore_allocation_subject() {
+  cp "$allocation_backup" "$allocation_subject"
+  rm -f "$allocation_backup" "$allocation_log"
+}
+cp "$allocation_subject" "$allocation_backup"
+trap restore_allocation_subject EXIT
+node - "$allocation_subject" <<'NODE'
+import fs from 'node:fs';
+
+const sourcePath = process.argv[2];
+const source = fs.readFileSync(sourcePath, 'utf8');
+const needle = '        let bytes = Array.zeroCreate<byte> exactByteCount\n';
+const replacement = `${needle}        let allocationRegression = Array.zeroCreate<byte> 14_000_000\n        GC.KeepAlive allocationRegression\n`;
+if (!source.includes(needle) || source.includes('let allocationRegression =')) {
+  throw new Error('preview allocation subject mutation anchor is missing or duplicated');
+}
+fs.writeFileSync(sourcePath, source.replace(needle, replacement));
+NODE
+dotnet build tests/SIR.Match.Tests/SIR.Match.Tests.fsproj -c Release --no-restore >/dev/null
+if dotnet run --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj -c Release --no-build >"$allocation_log" 2>&1; then
+  echo "Production-subject preview allocation mutation unexpectedly passed" >&2
+  exit 1
+fi
+if ! grep -q "exceeded its 13000000-byte allocation bound" "$allocation_log"; then
+  echo "Production-subject preview allocation mutation failed outside its owning assertion" >&2
+  cat "$allocation_log" >&2
+  exit 1
+fi
+restore_allocation_subject
+trap - EXIT
+dotnet build tests/SIR.Match.Tests/SIR.Match.Tests.fsproj -c Release --no-restore >/dev/null
+git diff --exit-code -- "$allocation_subject"
+dotnet run --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj -c Release --no-build >/dev/null
 
 cat > readiness/186-authored-tactical-parcels/qualification.junit.xml <<'XML'
 <?xml version="1.0" encoding="UTF-8"?>
