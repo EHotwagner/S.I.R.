@@ -15,9 +15,12 @@ dotnet run --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj -c Release --n
 dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-build
 mkdir -p src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0
 npm run build:client
+npm run build:docs
 npm run review:map-editor
 npm run review:persistent-workspace-m9
-npm run build:docs
+git diff --exit-code -- \
+  docs/assets/map-editor-review \
+  docs/assets/persistent-workspace-m9-review
 
 native_hex=$(dotnet run --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj -c Release --no-build -- --print-tactical-environment)
 fable_hex=$(node --input-type=module - <<'NODE'
