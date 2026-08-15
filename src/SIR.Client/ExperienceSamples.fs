@@ -278,12 +278,38 @@ module ExperienceSamples =
             errors.Add(StaleContentDigest package.Identity.ContentDigest)
         if errors.Count = 0 then Ok package else Error(List.ofSeq errors)
 
-    let encodePackage package = field package.Identity.ContentDigest + canonical package
-    let importPackage serialized =
-        (packages @ [ stressPackage () ])
-        |> List.tryFind (fun package -> encodePackage package = serialized)
-        |> Option.map validate
-        |> Option.defaultValue (Error [ MalformedScenarioPackage "serialized package is not an exact authoritative catalog value" ])
+    let encodePackage package =
+        [ string package.SchemaVersion; package.Identity.Engine; package.Identity.Ruleset; package.Identity.Content
+          package.Identity.MapRevision; package.Map.Id; package.Replay.MapSampleId; package.Identity.ContentDigest
+          canonical package ]
+        |> List.map field
+        |> String.concat ""
+    let importPackage (serialized: string) =
+        let rec readFields (offset: int) (values: string list) : Result<string list, ScenarioValidationError list> =
+            if offset = serialized.Length then Ok(List.rev values)
+            else
+                let separator = serialized.IndexOf(':', offset)
+                match separator < 0, Int32.TryParse(serialized.Substring(offset, max 0 (separator - offset))) with
+                | false, (true, length) when length >= 0 && separator + 1 + length <= serialized.Length ->
+                    readFields (separator + 1 + length) (serialized.Substring(separator + 1, length) :: values)
+                | _ -> Error [ MalformedScenarioPackage "invalid length-prefixed package envelope" ]
+        match readFields 0 [] with
+        | Error errors -> Error errors
+        | Ok [ schema; serializedEngine; serializedRuleset; serializedContent; revision; mapId; replayMapId; serializedDigest; payload ] ->
+            match Int32.TryParse schema, (packages @ [ stressPackage () ] |> List.tryFind (fun package -> package.Map.Id = mapId)) with
+            | (true, schemaVersion), Some package ->
+                let errors = ResizeArray<ScenarioValidationError>()
+                if schemaVersion <> package.SchemaVersion then errors.Add(UnsupportedSchema schemaVersion)
+                if serializedEngine <> package.Identity.Engine then errors.Add(StaleEngine serializedEngine)
+                if serializedRuleset <> package.Identity.Ruleset then errors.Add(StaleRuleset serializedRuleset)
+                if serializedContent <> package.Identity.Content then errors.Add(StaleContent serializedContent)
+                if revision <> package.Identity.MapRevision then errors.Add(StaleMapRevision revision)
+                if replayMapId <> package.Replay.MapSampleId then errors.Add(StaleReplayBinding replayMapId)
+                if serializedDigest <> package.Identity.ContentDigest || payload <> canonical package then errors.Add(StaleContentDigest serializedDigest)
+                if errors.Count = 0 then validate package else Error(List.ofSeq errors)
+            | (true, schemaVersion), None -> Error [ StaleMapRevision(mapId + ":unknown") ]
+            | _ -> Error [ MalformedScenarioPackage "schema is not an integer" ]
+        | Ok _ -> Error [ MalformedScenarioPackage "package envelope field count changed" ]
     let tryPackage id = packages |> List.tryFind (fun package -> package.Map.Id = id || package.Replay.Id = id)
     let catalogFingerprint () = packages |> List.map _.Identity.ContentDigest |> String.concat "|"
     let catalogCost (values: ExperienceScenarioPackage list) =

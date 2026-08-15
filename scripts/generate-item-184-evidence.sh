@@ -22,6 +22,7 @@ start=$SECONDS
 junit_pass "$stage/scenario-catalog-cross-runtime.junit.xml" scenario-catalog-cross-runtime "$((SECONDS-start))" "$(cat "$stage/parity.log")"
 
 npm run build:client
+dotnet restore src/SIR.Server/SIR.Server.fsproj --locked-mode
 dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish --no-restore
 SIR_JUNIT_OUTPUT="$stage/scenario-catalog-browser.junit.xml" npx playwright test \
   --config tests/SIR.Browser.Tests/playwright.config.js \

@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "a8149b5f9f3ac29a95cf6c934b510e7d858f7fbb22a17eea1e5f7983bd954b4c"
+        "value": "b657b1a0d9a0c2cbbebf56d366a001041dcec67096d42dd3e30f5d9bb831040d"
       }
     },
     {
@@ -3248,7 +3248,7 @@
           "path": "work/184-scenario-catalog/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "a8149b5f9f3ac29a95cf6c934b510e7d858f7fbb22a17eea1e5f7983bd954b4c"
+            "value": "b657b1a0d9a0c2cbbebf56d366a001041dcec67096d42dd3e30f5d9bb831040d"
           },
           "schemaVersion": 1
         },
@@ -3279,7 +3279,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "565c5ce2d6a16a2e5ca5ef9752b42d649f530d9ada1646c9ad2a74907d0108fd"
+        "value": "1fd789579eb1c61d91368814c29e391e1e02aa5632971e33dd00873b45465a85"
       },
       "currency": "current"
     }

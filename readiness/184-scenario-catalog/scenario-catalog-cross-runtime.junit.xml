@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="scenario-catalog-cross-runtime" tests="1" failures="0" errors="0" skipped="0" time="18"><testsuite name="scenario-catalog-cross-runtime" tests="1" failures="0" errors="0" skipped="0" time="18"><testcase name="scenario-catalog-cross-runtime" classname="SIR.Item184" time="18"/><system-out><![CDATA[  Determining projects to restore...
+  Restored /tmp/sir-workboard-184-lUdVTM/tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj (in 134 ms).
+  Restored /tmp/sir-workboard-184-lUdVTM/src/SIR.Simulation/SIR.Simulation.fsproj (in 134 ms).
+  Restored /tmp/sir-workboard-184-lUdVTM/src/SIR.Domain/SIR.Domain.fsproj (in 134 ms).
+  Restored /tmp/sir-workboard-184-lUdVTM/src/SIR.Replay.Core/SIR.Replay.Core.fsproj (in 134 ms).
+Scenario catalog cross-runtime gate passed: 1016 exact catalog/event/checkpoint bytes.]]></system-out></testsuite></testsuites>

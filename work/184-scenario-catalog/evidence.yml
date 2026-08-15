@@ -11,7 +11,7 @@ sourceAnalysis: readiness/184-scenario-catalog/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/184-scenario-catalog/analysis.json
-    digest: 69aa5120d7ad996138b4d4b333be7ce6378652fe9a27718a9acc879152cebdb4
+    digest: a1f6438287e17a8ad0f8f322d5274817cb6ab710bc9c19652e37b494d1f6ff26
     schemaVersion: 1
   - label: checklist
     path: work/184-scenario-catalog/checklist.md
@@ -53,13 +53,13 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     performanceBudget:
       artifactPath: readiness/184-scenario-catalog/performance-evidence.json
       intent:
@@ -107,17 +107,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV003
     kind: verification
@@ -136,17 +136,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV004
     kind: verification
@@ -165,17 +165,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV005
     kind: verification
@@ -194,17 +194,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV006
     kind: verification
@@ -223,17 +223,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV007
     kind: verification
@@ -252,17 +252,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV008
     kind: verification
@@ -281,17 +281,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV009
     kind: verification
@@ -310,17 +310,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV010
     kind: verification
@@ -339,17 +339,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV011
     kind: verification
@@ -368,17 +368,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV012
     kind: verification
@@ -397,17 +397,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV013
     kind: verification
@@ -426,17 +426,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV014
     kind: verification
@@ -455,17 +455,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV015
     kind: verification
@@ -484,17 +484,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV016
     kind: verification
@@ -513,17 +513,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV017
     kind: verification
@@ -542,17 +542,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV018
     kind: verification
@@ -571,17 +571,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV019
     kind: verification
@@ -600,17 +600,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV020
     kind: verification
@@ -629,17 +629,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV021
     kind: verification
@@ -658,17 +658,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV022
     kind: verification
@@ -687,17 +687,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV023
     kind: verification
@@ -716,17 +716,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV024
     kind: verification
@@ -745,17 +745,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV025
     kind: verification
@@ -774,17 +774,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV026
     kind: verification
@@ -803,17 +803,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV027
     kind: verification
@@ -832,17 +832,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV028
     kind: verification
@@ -861,17 +861,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV029
     kind: verification
@@ -890,17 +890,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV030
     kind: verification
@@ -919,17 +919,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV031
     kind: verification
@@ -948,17 +948,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV032
     kind: verification
@@ -977,17 +977,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV033
     kind: verification
@@ -1006,17 +1006,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV034
     kind: verification
@@ -1035,17 +1035,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV035
     kind: verification
@@ -1064,17 +1064,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV036
     kind: verification
@@ -1093,17 +1093,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-cross-runtime.junit.xml
+      digest: "sha256:f03d1022c217d33bb8c6a28f48a9ec0e1f94a6ede62beb99934437b93c31dc3f"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV037
     kind: verification
@@ -1122,17 +1122,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV038
     kind: verification
@@ -1151,17 +1151,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV039
     kind: verification
@@ -1180,17 +1180,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-browser.junit.xml
+      digest: "sha256:d3ac75f1bfc332b712ea194893543e5e2a263904dbe15a61ca1fc42a396837a7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV040
     kind: verification
@@ -1209,17 +1209,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-rules.junit.xml
+      digest: "sha256:227eb440c65cdb3e411bca35781bf19e001bd09ee66b4a2d106fad1df0970c31"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV041
     kind: verification
@@ -1238,17 +1238,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV042
     kind: verification
@@ -1267,17 +1267,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV043
     kind: verification
@@ -1296,17 +1296,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV044
     kind: verification
@@ -1325,17 +1325,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV045
     kind: verification
@@ -1354,17 +1354,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV046
     kind: verification
@@ -1383,17 +1383,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV047
     kind: verification
@@ -1412,17 +1412,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
   - id: EV048
     kind: verification
@@ -1441,17 +1441,17 @@ evidence:
       - kind: verification
         path: tests/SIR.Client.Tests/Program.fs
       - kind: verification
-        path: tests/SIR.Browser.Tests/visible-workflows.spec.js
+        path: tests/SIR.Browser.Tests/tactical-samples.spec.js
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/test-results/browser.junit.xml
-      digest: "sha256:73b6376a3d9c468a81760c19f23faaf4f90c64ba701ca43d5ef898f5c26b241e"
+      source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
+      digest: "sha256:26e31153d41e134a265934009e7a9de9867f3e15f50ddc705a38b045230ef610"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 33
+      passed: 1
       failed: 0
-      skipped: 1
+      skipped: 0
     notes: []
 lifecycleNotes:
   - "Next lifecycle action: verify."

@@ -1859,6 +1859,8 @@ let main arguments =
          && match ExperienceSamples.validate staleDigest with Error errors -> errors |> List.exists (function StaleContentDigest _ -> true | _ -> false) | _ -> false
          && match ExperienceSamples.validate staleReplay with Error errors -> errors |> List.exists (function StaleReplayBinding _ -> true | _ -> false) | _ -> false
          && match ExperienceSamples.validate staleMapRevision with Error errors -> errors |> List.exists (function StaleMapRevision _ -> true | _ -> false) | _ -> false
+         && match ExperienceSamples.importPackage (ExperienceSamples.encodePackage staleMapRevision) with Error errors -> errors |> List.exists (function StaleMapRevision _ -> true | _ -> false) | _ -> false
+         && match ExperienceSamples.importPackage "not-a-package" with Error [ MalformedScenarioPackage _ ] -> true | _ -> false
          && match ExperienceSamples.validate missingUnit with Error errors -> errors |> List.exists (function MissingScenarioContent value when value.EndsWith(":force-map-mismatch") -> true | _ -> false) | _ -> false
          && match ExperienceSamples.validate changedGeometry with Error errors -> errors |> List.exists (function StaleContentDigest _ -> true | _ -> false) | _ -> false
          && match ExperienceSamples.validate reversedCheckpoints with Error errors -> errors |> List.exists (function MissingScenarioContent value when value.EndsWith(":checkpoint-order") -> true | _ -> false) | _ -> false)
@@ -1876,12 +1878,23 @@ let main arguments =
     runScenarioPackageWorkload stressScenario
     let stressFrames = ExperienceSamples.replayFrames stressScenario.Replay
     let stressEditor = ExperienceSamples.editorState stressScenario.Map
+    let stressEvents = stressFrames |> Array.sumBy (fun frame -> frame.Events.Length)
+    let stressPathExpansions =
+        stressFrames |> Array.sumBy (fun frame -> frame.Events |> List.filter (fun event -> event.Source = "sample-simulation" && event.Summary.Contains("moves")) |> List.length)
+    let stressCombatResolutions =
+        stressFrames |> Array.sumBy (fun frame -> frame.Events |> List.filter (fun event -> event.Source.StartsWith("combat-", StringComparison.Ordinal)) |> List.length)
+    let stressLosSamples = stressCombatResolutions
     require (stressScenario.Forces.Length = 200 && stressEditor.Map.Width = 80 && stressEditor.Map.Height = 80 && stressFrames.Length = 9 && stressFrames |> Array.sumBy (fun frame -> frame.Units.Length) = 1800)
         ("The 80x80/200-unit production-route stress qualification changed: "
          + string stressEditor.Validation
          + ", frames=" + string stressFrames.Length + ".")
-    printfn "Scenario catalog structural counters: map=80x80 units=%d simulationTicks=%d projectionFrames=%d sceneNodes=%d."
-        stressScenario.Forces.Length stressScenario.Replay.Ticks stressFrames.Length (stressFrames |> Array.sumBy (fun frame -> frame.Units.Length))
+    require (stressPathExpansions <= 4096 && stressLosSamples <= 256 && stressFrames |> Array.sumBy (fun frame -> frame.Units.Length) <= 8000)
+        "The declared path/LOS/scene structural budgets changed."
+    printfn "Scenario catalog structural counters: scenarios=1 maps=1 map=80x80 units=%d edges=%d zones=%d simulationTicks=%d events=%d checkpoints=%d pathExpansions=%d losSamples=%d combatResolutions=%d projectionFrames=%d sceneNodes=%d."
+        stressScenario.Forces.Length (ExperienceSamples.catalogCost [ stressScenario ]).EdgeCount
+        (ExperienceSamples.catalogCost [ stressScenario ]).ZoneCount stressScenario.Replay.Ticks stressEvents
+        stressScenario.ExpectedCheckpoints.Length stressPathExpansions stressLosSamples stressCombatResolutions
+        stressFrames.Length (stressFrames |> Array.sumBy (fun frame -> frame.Units.Length))
     let scenarioDurationSamples =
         [ for _ in 1 .. 20 do
           for package in scenarioPackages do
