@@ -1,0 +1,26 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-15-SIR-186-4.md",
+  "reportSha256": "e23cb82a22f762cf4c9981c1d32a5d6225cd000685b130f297a9c0a451e33b6e",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified", "sha256": "9e343401a9ea8a2b6cd47a4030ff3a25e4f54d91673c5889073b6310b3d54201" },
+        { "locator": "file:docs/assets/map-editor-review/manifest.json", "result": "verified", "sha256": "a262b3d9c5aa8c26ca3e348624d6a77f5a004684ba08abdc59b8c546646e9aef" },
+        { "locator": "file:docs/assets/persistent-workspace-m9-review/manifest.json", "result": "verified", "sha256": "80fccd269553816aba3b8242b6f93ed31f55f83f6158d97a8d758f8826ca19b8" },
+        { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/31901246213", "result": "verified" },
+        { "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The hosted run is historical evidence at f73b0c8, not the repaired source commit.",
+        "Its documentation job verifies the stale-binding failure; the same run also had an unrelated performance failure.",
+        "The post-generation git diff protects tracked review assets, not newly created untracked files."
+      ]
+    }
+  ]
+}
