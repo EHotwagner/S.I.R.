@@ -31,6 +31,18 @@ module Combat =
         | WeaponProfile.AntiArmor -> { Profile = WeaponProfile.AntiArmor; DamageType = DamageType.AntiArmor; BaseDamage = 50; Penetration = 70; Suppression = 12; RangeCells = 12; AreaRadius = 0; Lobbed = false }
         | WeaponProfile.LobbedArea -> { Profile = WeaponProfile.LobbedArea; DamageType = DamageType.Explosive; BaseDamage = 30; Penetration = 25; Suppression = 30; RangeCells = 10; AreaRadius = 2; Lobbed = true }
 
+    let environmentCovers (environment: AssembledEnvironment) =
+        environment.EnvironmentFeatures
+        |> List.choose (fun feature ->
+            feature.DirectionalCover
+            |> Option.map (fun cover ->
+                feature.EnvironmentFeatureId,
+                { CoverId = feature.EnvironmentFeatureId
+                  Cell = { Col = feature.EnvironmentEdge.EdgeCell.EnvironmentColumn; Row = feature.EnvironmentEdge.EdgeCell.EnvironmentRow }
+                  Integrity = cover.CoverIntegrity
+                  ProjectileBlocking = not feature.ModalityPermeability.AllowsProjectile && feature.EnvironmentState <> EnvironmentFeatureState.Destroyed }))
+        |> Map.ofList
+
     let private clamp (maximum: int32) (value: int32) = max 0 value |> min maximum
     let suppressionEffectivenessPercent (suppression: int32) = if suppression >= 75 then 40 elif suppression >= 50 then 60 elif suppression >= 25 then 80 else 100
     let suppressionTimingPercent (suppression: int32) = if suppression >= 75 then 175 elif suppression >= 50 then 150 elif suppression >= 25 then 125 else 100

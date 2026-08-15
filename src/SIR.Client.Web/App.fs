@@ -128,18 +128,6 @@ let private usesMetaShortcutPlatform: bool = jsNative
 
 let private shortcutPlatform =
     if usesMetaShortcutPlatform then MetaPlatform else ControlPlatform
-
-[<Emit("(() => { const eventTarget = $0; const tag = eventTarget && typeof eventTarget.tagName === 'string' ? eventTarget.tagName.toLowerCase() : ''; return tag === 'input' ? 'input' : tag === 'textarea' ? 'textarea' : tag === 'select' ? 'select' : eventTarget && eventTarget.isContentEditable ? 'contenteditable' : 'application'; })()")>]
-let private currentInputTargetName (target: EventTarget) : string = jsNative
-
-let private currentInputTarget target =
-    match currentInputTargetName target with
-    | "input" -> ModalInputTarget.InputElement
-    | "textarea" -> ModalInputTarget.TextAreaElement
-    | "select" -> ModalInputTarget.SelectElement
-    | "contenteditable" -> ModalInputTarget.ContentEditableElement
-    | _ -> ModalInputTarget.ApplicationElement
-
 let private validSimulatorFor editor current =
     match MapEditorSimulator.tryHandoff editor with
     | Error _ -> current
@@ -473,6 +461,8 @@ let init () =
             (MapEditor.selected editor)
             FitEditorBoard
     let simulator = validSimulatorFor editor None
+    let tacticalParcelEditor, tacticalParcelText =
+        TacticalParcelEditor.exteriorInitial 186UL
     let simulatorSelectedUnit =
         editor.SelectedUnit
         |> Option.filter (fun id ->
@@ -520,6 +510,8 @@ let init () =
 
     { Shell = Shell.init ()
       Editor = editor
+      TacticalParcelEditor = tacticalParcelEditor
+      TacticalParcelImportText = tacticalParcelText
       Simulator = simulator
       SimulatorSelectedUnit = simulatorSelectedUnit
       SimulatorControllerSelection = None
@@ -1570,6 +1562,25 @@ let rec update msg model =
             | CancelDestructiveChange ->
                 focusElementAfterRender "persistent-tactical-svg"
             | _ -> ())
+    | TacticalParcelChanged action ->
+        let tactical, text =
+            TacticalParcelEditor.updateWithExport action model.TacticalParcelEditor
+        { model with
+            TacticalParcelEditor = tactical
+            TacticalParcelImportText = text }, Cmd.none
+    | TacticalParcelImportTextChanged text ->
+        { model with TacticalParcelImportText = text }, Cmd.none
+    | ImportTacticalParcelDocument ->
+        match TacticalParcelEditor.tryImportTacticalParcelDocument model.TacticalParcelImportText with
+        | Ok document -> update (TacticalParcelChanged(TacticalParcelEditor.ReplaceTacticalDocument document)) model
+        | Error message ->
+            { model with
+                TacticalParcelEditor =
+                    { model.TacticalParcelEditor with
+                        TacticalAnnouncement = message } },
+            Cmd.none
+    | ExportTacticalParcelDocument ->
+        model, Cmd.ofEffect (fun _ -> TacticalEnvironmentView.downloadDocument model.TacticalParcelImportText)
     | EditorPulse ->
         match model.Simulator with
         | Some simulator when simulator.IsRunning ->
@@ -1753,6 +1764,7 @@ let rec update msg model =
                             | UnitTools -> UnitDomain
                             | EdgeTools -> EdgeDomain
                             | ZoneTools -> RegionDomain
+                            | TacticalEnvironmentTools -> DocumentDomain
                             | DocumentTools -> DocumentDomain
                           PanHeld = editorPanHeld model
                           InputHelpExpanded = model.InputHelpExpanded }
@@ -1808,6 +1820,7 @@ let rec update msg model =
         | "workspace.plan" -> update (WorkspaceChanged PlanningWorkspace) model
         | "workspace.simulate" -> update (WorkspaceChanged SimulatorWorkspace) model
         | "workspace.review" -> update (WorkspaceChanged ReplayWorkspace) model
+        | "environment.editor.open" -> update (EditorToolPanelChanged TacticalEnvironmentTools) model
         | "panel.data" -> update (OpenSupportingPanel "data") model
         | "timeline.play-toggle" -> update TacticalPlaybackToggled model
         | "timeline.step-back" -> update (TacticalTimeStepped -1L) model
@@ -2207,6 +2220,7 @@ let rec update msg model =
                 | UnitTools -> UnitDomain
                 | EdgeTools -> EdgeDomain
                 | ZoneTools -> RegionDomain
+                | TacticalEnvironmentTools -> DocumentDomain
                 | DocumentTools -> DocumentDomain
             let facts =
                 { Editor = model.Editor
@@ -2330,6 +2344,7 @@ let rec update msg model =
                     | UnitTools -> UnitDomain
                     | EdgeTools -> EdgeDomain
                     | ZoneTools -> RegionDomain
+                    | TacticalEnvironmentTools -> DocumentDomain
                     | DocumentTools -> DocumentDomain
                   PanHeld = true
                   InputHelpExpanded = model.InputHelpExpanded }
@@ -2411,6 +2426,7 @@ let subscriptions model =
                         | UnitTools -> UnitDomain
                         | EdgeTools -> EdgeDomain
                         | ZoneTools -> RegionDomain
+                        | TacticalEnvironmentTools -> DocumentDomain
                         | DocumentTools -> DocumentDomain
                       PanHeld = editorPanHeld model
                       InputHelpExpanded = model.InputHelpExpanded }
@@ -2482,9 +2498,7 @@ let subscriptions model =
                 let keyboardEvent: KeyboardEvent = unbox event
                 let key = registryKeyboardKey keyboardEvent
                 if
-                    keyboardEvent.target
-                    |> currentInputTarget
-                    |> ModalInput.acceptsTarget
+                    TacticalEnvironmentView.acceptsGlobalKeyboardTarget keyboardEvent.target
                 then
                     let controlOrMeta =
                         keyboardEvent.ctrlKey || keyboardEvent.metaKey
@@ -2517,17 +2531,20 @@ let subscriptions model =
             fun (event: Event) ->
                 let keyboardEvent: KeyboardEvent = unbox event
                 if
-                    modalResolution
-                        KeyUp
-                        keyboardEvent.key
-                        false
-                        false
-                        false
-                        false
-                    |> isCatalogGesture
+                    TacticalEnvironmentView.acceptsGlobalKeyboardTarget keyboardEvent.target
                 then
-                    keyboardEvent.preventDefault ()
-                dispatch (KeyReleased keyboardEvent.key)
+                    if
+                        modalResolution
+                            KeyUp
+                            keyboardEvent.key
+                            false
+                            false
+                            false
+                            false
+                        |> isCatalogGesture
+                    then
+                        keyboardEvent.preventDefault ()
+                    dispatch (KeyReleased keyboardEvent.key)
         let blurHandler =
             fun (_: Event) -> dispatch ApplicationFocusLost
         window.addEventListener ("keydown", downHandler)
@@ -3795,6 +3812,8 @@ let private editorScreenPoint
 
 let private editorToolbar
     (state: MapEditorState)
+    (tactical: TacticalParcelEditor.TacticalParcelEditorState)
+    (tacticalImportText: string)
     (view: EditorWorkspaceState)
     (activePanel: EditorToolPanel)
     panelVisible
@@ -3878,6 +3897,7 @@ let private editorToolbar
                         choosePanel "Terrain" TerrainTools
                         choosePanel "Units" UnitTools
                         choosePanel "Edges" EdgeTools
+                        choosePanel "Environment" TacticalEnvironmentTools
                         choosePanel "Zones" ZoneTools
                     ]
                 ]
@@ -4108,6 +4128,8 @@ let private editorToolbar
                                     ))
                             ]
                         ]
+                    | TacticalEnvironmentTools ->
+                        TacticalEnvironmentView.view state tactical tacticalImportText dispatch
                     | ZoneTools ->
                         let cursor =
                             { CellColumn =
@@ -5733,6 +5755,7 @@ let private currentModalInputs model =
                 | UnitTools -> UnitDomain
                 | EdgeTools -> EdgeDomain
                 | ZoneTools -> RegionDomain
+                | TacticalEnvironmentTools -> DocumentDomain
                 | DocumentTools -> DocumentDomain
               PanHeld = editorPanHeld model
               InputHelpExpanded = model.InputHelpExpanded }
@@ -7721,6 +7744,8 @@ let private tacticalPanelBody panelId model dispatch =
                 | panel -> panel
             editorToolbar
                 model.Editor
+                model.TacticalParcelEditor
+                model.TacticalParcelImportText
                 model.EditorView
                 activePanel
                 true
@@ -7732,6 +7757,8 @@ let private tacticalPanelBody panelId model dispatch =
         | "document" ->
             editorToolbar
                 model.Editor
+                model.TacticalParcelEditor
+                model.TacticalParcelImportText
                 model.EditorView
                 DocumentTools
                 true
@@ -8032,13 +8059,6 @@ let private modalInputStrip
         ]
     ]
 
-let private editorDomain = function
-    | TerrainTools -> TerrainDomain
-    | UnitTools -> UnitDomain
-    | EdgeTools -> EdgeDomain
-    | ZoneTools -> RegionDomain
-    | DocumentTools -> DocumentDomain
-
 let view model dispatch =
     let shell = model.Shell
     let transientContent =
@@ -8054,7 +8074,7 @@ let view model dispatch =
         | EditorWorkspace ->
             let facts =
                 { Editor = model.Editor
-                  ActiveDomain = editorDomain model.EditorToolPanel
+                  ActiveDomain = TacticalEnvironmentView.editorDomain model.EditorToolPanel
                   PanHeld = editorPanHeld model
                   InputHelpExpanded = model.InputHelpExpanded }
             let catalog = ModalInput.editorCatalog facts

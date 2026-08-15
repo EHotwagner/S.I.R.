@@ -5,6 +5,7 @@ open System.Text
 open SIR.Domain
 [<RequireQualifiedAccess>]
 module MapEditor =
+
     [<Literal>]
     let FormatVersion = 4
 

@@ -30,6 +30,13 @@ type VisibilityOverlayAvailability =
     | VisibilityOverlaysUnavailable of reason: string
     | SharedKernelVisibilityAvailable
 
+type TacticalEnvironmentPreviewSummary =
+    { TacticalPreviewIdentity: string option
+      TacticalPreviewSpatialRevision: int64
+      TacticalPreviewFeatureCount: int32
+      TacticalPreviewWalkableCellCount: int32
+      TacticalPreviewFindingMessages: string list }
+
 type SimulatorCombatDelivery =
     | MeleeDelivery
     | ProjectileDelivery
@@ -109,6 +116,23 @@ module MapEditorSimulator =
     let CellMillimeters = SIR.Simulation.MapScale.CellMillimeters
     let DiagonalCellMillimeters = SIR.Simulation.MapScale.DiagonalCellMillimeters
     let MaximumMovementCreditMillimeters = SIR.Simulation.MapScale.MaximumMovementCreditMillimeters
+
+    /// Projects the editor's current authored document through the same
+    /// authoritative assembly route used by runtime spatial queries.
+    let tacticalEnvironmentPreview (state: TacticalParcelEditor.TacticalParcelEditorState) =
+        match state.TacticalPreview with
+        | Ok environment ->
+            { TacticalPreviewIdentity = Some environment.EnvironmentContentIdentity
+              TacticalPreviewSpatialRevision = environment.EnvironmentSpatialRevision
+              TacticalPreviewFeatureCount = environment.EnvironmentFeatures.Length
+              TacticalPreviewWalkableCellCount = environment.AssembledWalkableCells.Length
+              TacticalPreviewFindingMessages = [] }
+        | Error findings ->
+            { TacticalPreviewIdentity = None
+              TacticalPreviewSpatialRevision = 0L
+              TacticalPreviewFeatureCount = 0
+              TacticalPreviewWalkableCellCount = 0
+              TacticalPreviewFindingMessages = findings |> List.map (fun finding -> string finding.ValidationCode + ": " + finding.ValidationSubject + " — " + finding.ValidationMessage) }
 
     [<Literal>]
     let PerspectiveUnavailableReason =

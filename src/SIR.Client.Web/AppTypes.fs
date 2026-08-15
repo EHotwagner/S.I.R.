@@ -99,6 +99,10 @@ type Msg =
     | EditorWorkspaceChanged of EditorWorkspaceAction
     | RecallEditorView of string
     | EditorChanged of MapEditorAction
+    | TacticalParcelChanged of TacticalParcelEditor.TacticalParcelEditorAction
+    | TacticalParcelImportTextChanged of string
+    | ImportTacticalParcelDocument
+    | ExportTacticalParcelDocument
     | ExportMap
     | ExportDesignBundle
     | ExportExperiment
@@ -123,11 +127,14 @@ and EditorToolPanel =
     | UnitTools
     | EdgeTools
     | ZoneTools
+    | TacticalEnvironmentTools
     | DocumentTools
 
 type Model =
     { Shell: SIR.Client.Model
       Editor: MapEditorState
+      TacticalParcelEditor: TacticalParcelEditor.TacticalParcelEditorState
+      TacticalParcelImportText: string
       Simulator: SimulatorHandoff option
       SimulatorSelectedUnit: int32 option
       SimulatorControllerSelection: MapController option

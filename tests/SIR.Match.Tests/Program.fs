@@ -19,6 +19,202 @@ let private containsSubsequence (needle: byte array) (haystack: byte array) =
         |> List.exists (fun offset ->
             haystack[offset .. offset + needle.Length - 1] = needle)
 
+let private tacticalEnvironmentEvidence () =
+    let plot, variants = SIR.Simulation.TacticalEnvironment.exteriorParcelSet
+    let assemble seed =
+        SIR.Simulation.TacticalEnvironment.assemble seed plot variants
+        |> Result.defaultWith (fun findings -> failwithf "Tactical environment did not assemble: %A" findings)
+
+    let first = assemble 0x186UL
+    let replay = assemble 0x186UL
+    let firstBytes = SIR.Domain.TacticalEnvironment.canonicalBytes first
+    let replayBytes = SIR.Domain.TacticalEnvironment.canonicalBytes replay
+    require
+        (firstBytes = replayBytes)
+        "Equal tactical-environment seeds did not produce byte-identical canonical environments."
+    require
+        (first.EnvironmentContentIdentity = replay.EnvironmentContentIdentity
+         && SIR.Domain.TacticalEnvironment.identityMatches first)
+        "Deterministic tactical-environment content identity was not self-consistent."
+
+    let invalidPlot = { plot with PlotSchemaVersion = 999 }
+    let invalidVariant =
+        { variants.Head with
+            ParcelObjectiveCells = [ { EnvironmentColumn = 7; EnvironmentRow = 7 } ]
+            ParcelWalkableCells = [ { EnvironmentColumn = 0; EnvironmentRow = 0 } ]
+            ParcelFeatures =
+                variants.Head.ParcelFeatures
+                |> List.map (fun feature ->
+                    { feature with
+                        ModalityPermeability =
+                            { feature.ModalityPermeability with AllowsMovement = true } }) }
+    let validationCodes =
+        SIR.Simulation.TacticalEnvironment.validate invalidPlot [ invalidVariant ]
+        |> List.map _.ValidationCode
+        |> Set.ofList
+    require
+        (Set.contains EnvironmentValidationCode.InvalidSchema validationCodes
+         && Set.contains EnvironmentValidationCode.BlockedObjective validationCodes
+         && Set.contains EnvironmentValidationCode.InvalidPermeability validationCodes)
+        "Tactical-environment validation did not report independent schema, objective, and permeability categories."
+
+    let knowledge =
+        { EnvironmentKnowledgeIdentity = "test-observer"
+          EnvironmentKnowledgeRevision = 3L
+          KnownEnvironmentFeatureIds = Set [ "slot-1:yard-door" ]
+          KnownEnvironmentFacts = Set.empty }
+    require
+        ((SIR.Simulation.TacticalEnvironment.observe knowledge first "slot-1:yard-cover").IsNone)
+        "Environment observation disclosed a feature outside requester knowledge."
+    let observed =
+        SIR.Simulation.TacticalEnvironment.observe knowledge first "slot-1:yard-door"
+        |> Option.defaultWith (fun () ->
+            failwithf
+                "Known tactical feature was not observable; assembled ids were %A."
+                (first.EnvironmentFeatures |> List.map _.EnvironmentFeatureId))
+    require
+        (observed.ObservedState = Some EnvironmentFeatureState.Closed
+         && observed.ObservationKnowledgeIdentity = knowledge.EnvironmentKnowledgeIdentity)
+        "Environment observation did not retain disclosed state and knowledge provenance."
+
+    let world = SIR.Simulation.TacticalEnvironment.toSpatialWorld "test-rules@1" knowledge first
+    let door = first.EnvironmentFeatures |> List.find (fun feature -> feature.EnvironmentFeatureId = "slot-1:yard-door")
+    let doorOrigin : FS.GG.Game.Core.Cell = { Col = door.EnvironmentEdge.EdgeCell.EnvironmentColumn; Row = door.EnvironmentEdge.EdgeCell.EnvironmentRow }
+    let doorTarget =
+        match door.EnvironmentEdge.EdgeDirection with
+        | EnvironmentEdgeDirection.East -> { doorOrigin with Col = doorOrigin.Col + 1 }
+        | EnvironmentEdgeDirection.South -> { doorOrigin with Row = doorOrigin.Row + 1 }
+    let request =
+        { QueryId = "door-crossing"
+          QueryKind = SpatialQueryKind.ExactLineOfSight
+          Origin = doorOrigin
+          Target = doorTarget
+          Footprint = [ { Col = 0; Row = 0 } ]
+          Profile =
+            { ProfileId = "ground"
+              Modality = SpatialModality.GroundMovement
+              Stance = "standing"
+              HeightBand = 1
+              Facing = Direction8.East }
+          Bounds = SpatialQuery.defaultBounds }
+    let closedResult, populatedCache, source = SpatialQuery.evaluateCached SpatialQuery.emptyCache world request
+    require
+        (source = SpatialEvaluationSource.Uncached
+         && not closedResult.Visible
+         && populatedCache.DynamicEntries.Length = 1)
+        "Closed door did not produce an uncached, dependency-tracked blocked sight line."
+
+    let coverFeature = first.EnvironmentFeatures |> List.find (fun feature -> feature.EnvironmentFeatureId = "slot-1:yard-cover")
+    let coverOrigin : FS.GG.Game.Core.Cell = { Col = coverFeature.EnvironmentEdge.EdgeCell.EnvironmentColumn; Row = coverFeature.EnvironmentEdge.EdgeCell.EnvironmentRow }
+    let coverTarget =
+        match coverFeature.EnvironmentEdge.EdgeDirection with
+        | EnvironmentEdgeDirection.East -> { coverOrigin with Col = coverOrigin.Col + 1 }
+        | EnvironmentEdgeDirection.South -> { coverOrigin with Row = coverOrigin.Row + 1 }
+    let coverRequest = { request with QueryId = "cover-crossing"; Origin = coverOrigin; Target = coverTarget }
+    let _, localityCache, _ = SpatialQuery.evaluateCached populatedCache world coverRequest
+    require (localityCache.DynamicEntries.Length = 2) "Local invalidation fixture did not retain two independent dependency receipts."
+
+    let opened =
+        SIR.Simulation.TacticalEnvironment.applyAction
+            knowledge
+            first.EnvironmentContentIdentity
+            "slot-1:yard-door"
+            EnvironmentAction.Open
+            first
+        |> Result.defaultWith (fun failure -> failwithf "Known door could not be opened: %A" failure)
+    require
+        (opened.UpdatedEnvironment.EnvironmentSpatialRevision = first.EnvironmentSpatialRevision + 1L
+         && opened.ActionCostCounters.FeaturesInspected = 1
+         && opened.ActionCostCounters.FeaturesChanged = 1
+         && opened.ActionCostCounters.PropagatedChanges = 0
+         && opened.ChangedQueryDependencies = Set [ "feature:yard-door:slot-1:yard-door" ])
+        "Door transition did not emit bounded work and exact spatial dependencies."
+    match
+        SIR.Simulation.TacticalEnvironment.applyAction
+            knowledge
+            first.EnvironmentContentIdentity
+            "slot-1:yard-door"
+            EnvironmentAction.Close
+            opened.UpdatedEnvironment
+    with
+    | Error EnvironmentActionFailure.StaleContentIdentity -> ()
+    | result -> failwithf "Stale tactical content identity was not rejected: %A" result
+
+    let invalidated, inspected, removed =
+        SIR.Simulation.TacticalEnvironment.invalidateCache opened localityCache
+    require
+        (inspected = 2 && removed = 1 && invalidated.DynamicEntries.Length = 1)
+        "Door transition did not selectively invalidate its dependent spatial query."
+    let openedWorld =
+        SIR.Simulation.TacticalEnvironment.toSpatialWorld "test-rules@1" knowledge opened.UpdatedEnvironment
+    let openResult, _, _ = SpatialQuery.evaluateCached invalidated openedWorld request
+    require
+        (openResult.Outcome = SpatialOutcome.Found && openResult.Visible)
+        "Opening the door did not change the authoritative sight-line result."
+
+    let clock = Stopwatch.StartNew()
+    let counters =
+        SIR.Simulation.TacticalEnvironment.workload 0x186UL plot variants populatedCache
+        |> Result.defaultWith (fun findings -> failwithf "Tactical workload failed: %A" findings)
+    clock.Stop()
+    let elapsed = clock.Elapsed.TotalMilliseconds
+    require
+        (counters.WorkloadSlots <= SIR.Simulation.TacticalEnvironment.maximumSlots
+         && counters.WorkloadVariantsInspected <= 4 * SIR.Simulation.TacticalEnvironment.maximumVariantsPerRole
+         && counters.WorkloadFindings <= SIR.Simulation.TacticalEnvironment.maximumFindings
+         && counters.DependencyEntriesInspected <= populatedCache.DynamicEntries.Length
+         && elapsed < 1_000.0)
+        "Tactical environment workload exceeded a declared work or smoke-time bound."
+
+    let maximumPlot =
+        { plot with
+            AuthoredPlotId = "maximum-authored-environment"
+            PlotWidth = 512
+            PlotSlots =
+                [ for index in 0 .. 63 ->
+                    { PlotSlotId = sprintf "slot-%02d" index
+                      PlotSlotRole = "maximum"
+                      PlotSlotOrigin = { EnvironmentColumn = index * 8; EnvironmentRow = 0 }
+                      PlotSlotWidth = 8
+                      PlotSlotHeight = 8
+                      ConnectedPlotSlotIds =
+                        [ if index > 0 then sprintf "slot-%02d" (index - 1)
+                          if index < 63 then sprintf "slot-%02d" (index + 1) ]
+                      PlotSlotRequiresRoute = true } ] }
+    let maximumVariants =
+        [ for index in 0 .. 31 ->
+            { variants.Head with
+                ParcelVariantId = sprintf "maximum-%02d" index
+                ParcelRole = "maximum"
+                ParcelConnections =
+                    [ { ConnectionId = "route"
+                        ConnectionCell = { EnvironmentColumn = 0; EnvironmentRow = 0 }
+                        ConnectionDirection = EnvironmentEdgeDirection.East
+                        ConnectionRole = "maximum" } ] } ]
+    SIR.Simulation.TacticalEnvironment.assemble 0x185UL maximumPlot maximumVariants
+    |> Result.defaultWith (fun findings -> failwithf "Maximum tactical warmup failed: %A" findings)
+    |> ignore
+    let maximumClock = Stopwatch.StartNew()
+    let maximumEnvironment =
+        SIR.Simulation.TacticalEnvironment.assemble 0x186UL maximumPlot maximumVariants
+        |> Result.defaultWith (fun findings -> failwithf "Maximum tactical assembly failed: %A" findings)
+    maximumClock.Stop()
+    require
+        (maximumEnvironment.AssemblyCostCounters.SlotsVisited = 64
+         && maximumEnvironment.AssemblyCostCounters.VariantsInspected = 2_048
+         && maximumEnvironment.AssemblyCostCounters.Selections = 64
+         && maximumClock.Elapsed.TotalMilliseconds < 25.0)
+        "Maximum 64-slot/32-variant assembly exceeded its structural or 25 ms timing budget."
+
+    printfn
+        "Tactical environment evidence: identity %s; closed/open path %A/%A; %d cache entry invalidated; representative %.3f ms; maximum assembly %.3f ms."
+        first.EnvironmentContentIdentity
+        closedResult.Outcome
+        openResult.Outcome
+        removed
+        elapsed
+        maximumClock.Elapsed.TotalMilliseconds
+
 let private controlAbiOutput () =
     V1Codec.encodeOutput
         42
@@ -1053,7 +1249,16 @@ let private runLiveIntegrationQualifications () =
         (Convert.ToHexString(identities.Replay).ToLowerInvariant())
 
 [<EntryPoint>]
-let main _ =
+let main args =
+    if Array.contains "--print-tactical-environment" args then
+        let plot, variants = SIR.Simulation.TacticalEnvironment.exteriorParcelSet
+        let environment =
+            SIR.Simulation.TacticalEnvironment.assemble 0x186UL plot variants
+            |> Result.defaultWith (fun findings -> failwithf "%A" findings)
+        printfn "%s" (Convert.ToHexString(SIR.Domain.TacticalEnvironment.canonicalBytes environment).ToLowerInvariant())
+        0
+    else
+    tacticalEnvironmentEvidence ()
     let controllerTickMs = runControlHostQualifications ()
     runPlanQualifications ()
     runCapabilityQualifications ()

@@ -109,6 +109,7 @@ module Combat =
     val compatibilityProfile: string
     val defaultLimits: CombatLimits
     val parameters: WeaponProfile -> WeaponParameters
+    val environmentCovers: AssembledEnvironment -> Map<string, CoverState>
     val suppressionEffectivenessPercent: suppression: int32 -> int32
     val suppressionTimingPercent: suppression: int32 -> int32
     val resolve: CombatWorld -> CombatRequest -> Result<CombatResult, CombatRejection>

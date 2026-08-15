@@ -10,6 +10,7 @@
     <Compile Include="../SIR.Client/MapEditorValidation.fs" Link="MapEditorValidation.fs" />
     <Compile Include="../SIR.Client/MapEditorRevision.fs" Link="MapEditorRevision.fs" />
     <Compile Include="../SIR.Client/MapEditor.fs" Link="MapEditor.fs" />
+    <Compile Include="../SIR.Client/TacticalParcelEditor.fs" Link="TacticalParcelEditor.fs" />
     <Compile Include="../SIR.Client/MapEditorSimulator.fs" Link="MapEditorSimulator.fs" />
     <Compile Include="../SIR.Client/MapEditorInterchange.fs" Link="MapEditorInterchange.fs" />
     <Compile Include="../SIR.Client/MapEditorWorkspace.fs" Link="MapEditorWorkspace.fs" />

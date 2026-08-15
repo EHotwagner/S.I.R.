@@ -6,8 +6,8 @@ index: 2
 status: implemented
 decision-status: implemented
 document-type: reference
-version: "1.12"
-last-updated: 2026-07-31
+version: "1.13"
+last-updated: 2026-08-15
 description: Map records, terrain, semantic edges, square unit footprints, controller modes, and deterministic execution.
 related:
   - docs/interactive-rules-lab.md
@@ -775,6 +775,48 @@ issue navigation, resize loss, atomic import, recovery choice, metadata
 isolation, thumbnail generation, and clear confirmation.
 
 ## File format
+
+### Authored parcel workflow
+
+The parcel workflow extends the editor's existing immutable-revision model; it
+does not create a second runtime map authority. A designer authors or loads a
+schema-v1 plot, declares bounded slots and their roles/connectivity, and edits
+compatible parcel variants. Variant content includes walkable and objective
+cells, connection points, and semantic edge features. Feature editing exposes
+kind and legal state, the seven independent permeability axes, directional
+cover material/integrity/penetration/directions, capability descriptors, and
+query-dependency keys.
+
+The expected author-to-play path is:
+
+1. create or import a plot and parcel catalog;
+2. edit slots, variants, connections, cover, and interactable features;
+3. run bounded validation and navigate stable, actionable findings;
+4. preview deterministic assembly with an explicit seed;
+5. commit the edit or use ordinary undo/redo without mutating a running map;
+6. export canonical schema-v1 content, then hand one immutable assembled
+   revision to Simulate; and
+7. exercise door, breach, damage, or destruction actions and review the exact
+   canonical result through replay.
+
+Keyboard and pointer commands dispatch through the same editor command path.
+Preview and assembly are projections of authoritative Domain/Simulation
+functions rather than browser-only rules. The preview reports content identity
+and bounded assembly/validation counters so a designer can distinguish a
+stable result from a visually similar but different seed or catalog revision.
+
+Legacy version-4 edge records migrate explicitly: a wall becomes
+`Wall/Intact`, a door becomes `Door/Closed` or `Door/Open`, and a window becomes
+`Window/Closed`. Migration supplies feature/state-specific modality defaults,
+then canonical schema-v1 export records the result. Unsupported versions,
+stale content identities, illegal state/kind pairs, invalid permeability, and
+incompatible connections reject the complete operation without partially
+replacing the authored revision.
+
+Editor preview is intentionally not runtime generation. It assembles and
+validates before handoff, while the match and replay retain the immutable
+assembled bytes and identity. Runtime feature actions can advance spatial
+revision, but they cannot rewrite the source plot or parcel catalog.
 
 The export format is line-oriented UTF-8:
 
