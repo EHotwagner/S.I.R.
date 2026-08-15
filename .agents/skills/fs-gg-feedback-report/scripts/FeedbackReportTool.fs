@@ -376,11 +376,26 @@ type InvalidatedAuditBinding =
       report: string
       findingId: string
       locator: string
-      path: string }
+      path: string
+      sha256: string }
 
 type AuditInvalidationCheck =
     { errors: string list
       invalidated: InvalidatedAuditBinding list }
+
+type AuditBindingException =
+    { audit: string
+      findingId: string
+      locator: string
+      path: string
+      previousSha256: string
+      replacementSha256: string
+      replacementEvidence: string
+      reason: string }
+
+type AuditBindingExceptionLedger =
+    { schema: string
+      exceptions: AuditBindingException list }
 
 let private normalizeWorkspacePath (path: string) =
     path.Trim().Replace('\\', '/').TrimStart('/')
@@ -470,13 +485,94 @@ let findInvalidatedAuditBindings (workspaceRoot: string) (changedPaths: string l
                                                       report = normalizedJsonString audit.report
                                                       findingId = normalizedJsonString finding.id
                                                       locator = locator
-                                                      path = path }
+                                                      path = path
+                                                      sha256 = digest.Value }
             with ex ->
                 errors.Add(sprintf "invalidation: malformed audit %s: %s" relativeAudit ex.Message)
+
+        let exceptionPath = Path.Combine(workspaceRoot, auditBindingExceptionsPath)
+        let excused = ResizeArray<string * string * string>()
+
+        if File.Exists exceptionPath then
+            try
+                let parsed = JsonSerializer.Deserialize<AuditBindingExceptionLedger>(File.ReadAllText exceptionPath)
+
+                if obj.ReferenceEquals(parsed, null) then
+                    errors.Add(sprintf "invalidation: malformed exception ledger %s: expected a JSON object" auditBindingExceptionsPath)
+                elif parsed.schema <> "fsgg-feedback-audit-binding-exceptions/1" then
+                    errors.Add(sprintf "invalidation: malformed exception ledger %s: unsupported schema" auditBindingExceptionsPath)
+                elif isNull (box parsed.exceptions) then
+                    errors.Add(sprintf "invalidation: malformed exception ledger %s: exceptions is required" auditBindingExceptionsPath)
+                else
+                    let usable =
+                        parsed.exceptions
+                        |> List.choose (fun item ->
+                            if obj.ReferenceEquals(box item, null) then
+                                errors.Add(sprintf "invalidation: malformed exception ledger %s: exceptions must not contain null entries" auditBindingExceptionsPath)
+                                None
+                            else
+                                Some item)
+
+                    usable
+                    |> List.map (fun item ->
+                        normalizeWorkspacePath item.audit,
+                        normalizedJsonString item.findingId,
+                        normalizedJsonString item.locator)
+                    |> List.countBy id
+                    |> List.filter (fun (_, count) -> count > 1)
+                    |> List.iter (fun ((audit, findingId, locator), _) ->
+                        errors.Add(sprintf "invalidation: duplicate exception ledger binding %s %s %s" audit findingId locator))
+
+                    for item in usable do
+                        let audit = normalizeWorkspacePath item.audit
+                        let findingId = normalizedJsonString item.findingId
+                        let locator = normalizedJsonString item.locator
+                        let path = normalizeWorkspacePath item.path
+                        let previous = normalizedJsonString item.previousSha256
+                        let replacement = normalizedJsonString item.replacementSha256
+                        let replacementEvidence = normalizedJsonString item.replacementEvidence
+                        let reason = normalizedJsonString item.reason
+                        let matches =
+                            invalidated
+                            |> Seq.filter (fun binding ->
+                                binding.audit = audit
+                                && binding.findingId = findingId
+                                && binding.locator = locator)
+                            |> Seq.toList
+
+                        if List.length matches <> 1 then
+                            errors.Add(sprintf "invalidation: overbroad or mismatched exception %s %s %s" audit findingId locator)
+                        else
+                            let binding = List.head matches
+                            let replacementPath = Path.Combine(workspaceRoot, path)
+
+                            if path <> binding.path || locator <> "file:" + path then
+                                errors.Add(sprintf "invalidation: exception path does not match its cited binding: %s" locator)
+                            elif not (Regex.IsMatch(previous, "^[0-9a-f]{64}$")) || previous <> binding.sha256 then
+                                errors.Add(sprintf "invalidation: exception previous digest is mismatched for %s" locator)
+                            elif not (Regex.IsMatch(replacement, "^[0-9a-f]{64}$")) then
+                                errors.Add(sprintf "invalidation: exception replacement digest is malformed for %s" locator)
+                            elif not (File.Exists replacementPath) then
+                                errors.Add(sprintf "invalidation: exception replacement evidence is missing for %s" locator)
+                            elif sha256Text (File.ReadAllText replacementPath) <> replacement then
+                                errors.Add(sprintf "invalidation: exception replacement evidence is stale for %s" locator)
+                            elif String.IsNullOrWhiteSpace reason then
+                                errors.Add(sprintf "invalidation: exception reason is required for %s" locator)
+                            elif
+                                not (replacementEvidence.StartsWith("command:", StringComparison.Ordinal))
+                                || containsPrivateLocatorMaterial replacementEvidence
+                            then
+                                errors.Add(sprintf "invalidation: exception replacementEvidence must be a safe command locator for %s" locator)
+                            else
+                                excused.Add(audit, findingId, locator)
+            with ex ->
+                errors.Add(sprintf "invalidation: malformed exception ledger %s: %s" auditBindingExceptionsPath ex.Message)
 
         { errors = errors |> Seq.sort |> List.ofSeq
           invalidated =
               invalidated
+              |> Seq.filter (fun item ->
+                  not (excused.Contains((item.audit, item.findingId, item.locator))))
               |> Seq.sortBy (fun item -> item.audit, item.report, item.findingId, item.path, item.locator)
               |> List.ofSeq }
 

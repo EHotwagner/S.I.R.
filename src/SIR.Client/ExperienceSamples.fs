@@ -84,7 +84,7 @@ module ExperienceSamples =
               let column = if blue then local % 20 else 20 + local % 20
               let row = local / 20 * 2
               let side, kind = if blue then "blue", "rifleman" else "red", "goblin"
-              yield $"unit {id} {side} {kind} {column} {row} 1 12 12 general -" ]
+              yield $"unit {id} {side} {kind} {column} {row} 1 12 12 general - N N" ]
 
     let private mapText width height terrain edges zones units =
         [ yield "SIR-MAP 2"
@@ -95,6 +95,10 @@ module ExperienceSamples =
           yield! units ]
         |> String.concat "\n"
         |> fun value -> value + "\n"
+
+    let private currentMapText width height terrain edges zones units =
+        mapText width height terrain edges zones units
+        |> fun value -> value.Replace("SIR-MAP 2", "SIR-MAP 4")
 
     let private map id title summary family lesson highlights notes mapText =
         { Id = id; Title = title; Summary = summary; Family = family; Lesson = lesson
@@ -179,8 +183,8 @@ module ExperienceSamples =
         map "catalog-stress-80x80" "Catalog stress qualification" "Maximum supported catalog workload."
             OpenFieldMovementFire "Qualify the production import, simulation, and projection route."
             [ "80×80 map"; "200-unit roster" ] [ "Qualification-only; excluded from the curated chooser." ]
-            (mapText 40 40 [ for row in 0 .. 39 -> $"terrain 20 {row} rough" ] []
-                [ "zone 1 deployment blue rectangle 0 0 20 40"; "zone 2 deployment red rectangle 20 0 20 40" ] stressUnitLines)
+            (currentMapText 80 80 [ for row in 0 .. 79 -> $"terrain 40 {row} rough" ] []
+                [ "zone 1 deployment blue rectangle 0 0 40 80"; "zone 2 deployment red rectangle 40 0 40 80" ] stressUnitLines)
 
     let private replayCatalog =
         [ replay "quick-contact-run" "Quick contact run" "Reach first contact and inspect its ordered events." teachingMap.Id 8
@@ -385,12 +389,7 @@ module ExperienceSamples =
                     match combat.Target with
                     | UnitCombatTarget unitId -> Some unitId
                     | AreaCombatTarget _ -> None })
-        { Tick = tick
-          BoardMinimumColumn = 0
-          BoardMinimumRow = 0
-          BoardMaximumColumn = map.Width - 1
-          BoardMaximumRow = map.Height - 1
-          Units =
+        let units =
             map.Units
             |> Map.toList
             |> List.map (fun (_, unit) ->
@@ -407,6 +406,24 @@ module ExperienceSamples =
                   MovementDirection = None
                   BodyFacing = int32 (Direction8.toCode North)
                   AttentionDirection = int32 (Direction8.toCode North) })
+        let projectedEvents = List.append narrativeEvents projectedCombatEvents
+        let hash (value: string) = value |> Encoding.UTF8.GetBytes |> CanonicalHash.sha256 |> hex
+        let stateHash =
+            units
+            |> List.map (fun unit -> $"{unit.Id}|{unit.Side}|{unit.Column}|{unit.Row}|{unit.Health}|{unit.HealthMaximum}")
+            |> String.concat ">"
+            |> hash
+        let eventHash =
+            projectedEvents
+            |> List.map (fun event -> $"{event.Id}|{event.Tick}|{event.Source}|{event.Summary}")
+            |> String.concat ">"
+            |> hash
+        { Tick = tick
+          BoardMinimumColumn = 0
+          BoardMinimumRow = 0
+          BoardMaximumColumn = map.Width - 1
+          BoardMaximumRow = map.Height - 1
+          Units = units
           Edges =
             map.Edges
             |> Map.toList
@@ -422,11 +439,11 @@ module ExperienceSamples =
                   EndRow =
                     row
                     + if direction = SouthEdge then 0 else 1 })
-          Events = List.append narrativeEvents projectedCombatEvents
+          Events = projectedEvents
           Checkpoints =
             [ { Tick = tick
-                StateHash = "sample-" + string tick
-                EventHash = "sample-events-" + string tick } ]
+                StateHash = stateHash
+                EventHash = eventHash } ]
           PerspectiveHash = None }
 
     let replayFrames (replay: ExperienceReplaySample) =
@@ -450,6 +467,41 @@ module ExperienceSamples =
                         handoff.LastCombatEvents
                 )
             frames.ToArray()
+
+    let checkpointOutcomeSatisfied
+        (package: ExperienceScenarioPackage)
+        (frames: InspectionProjection array)
+        (checkpoint: ScenarioCheckpoint)
+        =
+        let atCheckpoint = frames |> Array.tryFind (fun frame -> frame.Tick = checkpoint.Tick)
+        match checkpoint.VisibleOutcome, Array.tryHead frames, atCheckpoint with
+        | "deployment", _, Some frame ->
+            checkpoint.Tick = 0
+            && frame.Events.IsEmpty
+            && (frame.Units |> List.map _.Id |> Set.ofList)
+               = (package.Forces |> List.map _.UnitId |> Set.ofList)
+            && frame.BoardMaximumColumn - frame.BoardMinimumColumn + 1
+               = (editorState package.Map).Map.Width
+            && frame.BoardMaximumRow - frame.BoardMinimumRow + 1
+               = (editorState package.Map).Map.Height
+        | "tactical-outcome", Some initial, Some frame ->
+            let initialState =
+                initial.Units
+                |> List.map (fun unit -> unit.Id, unit.Column, unit.Row, unit.Health)
+            let visibleState =
+                frame.Units
+                |> List.map (fun unit -> unit.Id, unit.Column, unit.Row, unit.Health)
+            checkpoint.Tick = package.Replay.Ticks
+            && frame.Events.Length >= int checkpoint.MinimumEvents
+            && (visibleState <> initialState
+                || frame.Events
+                   |> List.exists (fun event -> event.Source.StartsWith("combat-", StringComparison.Ordinal)))
+            && frame.Checkpoints
+               |> List.exists (fun actual ->
+                   actual.Tick = checkpoint.Tick
+                   && actual.StateHash.Length = 64
+                   && actual.EventHash.Length = 64)
+        | _ -> false
 
     let runtimeFingerprint package =
         let frames = replayFrames package.Replay

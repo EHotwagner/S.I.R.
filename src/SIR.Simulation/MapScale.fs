@@ -123,7 +123,12 @@ type MapScaleCheckpoint =
 type MapScaleTickResult =
     { State: MapScaleState
       Events: MapScaleEvent list
-      Checkpoints: MapScaleCheckpoint list }
+      Checkpoints: MapScaleCheckpoint list
+      Counters: MapScaleCounters }
+
+and MapScaleCounters =
+    { LosSamples: int32
+      CombatResolutions: int32 }
 
 type MapScaleDivergence =
     { Tick: int32
@@ -135,7 +140,8 @@ type MapScaleDivergence =
 type RouteResult =
     { Route: Cell list
       DistanceMillimeters: int32
-      MovementCostMillimeters: int32 }
+      MovementCostMillimeters: int32
+      ExpandedNodes: int32 }
 
 /// Authoritative map-scale movement, collision, combat, and controller phases.
 [<RequireQualifiedAccess>]
@@ -316,9 +322,11 @@ module MapScale =
         let mutable costs = Map.ofList [ origin, 0 ]
         let mutable previous = Map.empty<Cell, Cell>
         let mutable result = None
+        let mutable expandedNodes = 0
         while result.IsNone && not (List.isEmpty frontier) do
             let _, cost, _, _, current = List.min frontier
             frontier <- frontier |> List.filter (fun (_, _, _, _, p) -> p <> current)
+            expandedNodes <- expandedNodes + 1
             if current = destination then
                 let mutable cursor = current
                 let mutable route = []
@@ -333,7 +341,12 @@ module MapScale =
                         total + movementCost board probe prior next,
                         next)
                     |> fun (distance, total, _) -> distance, total
-                result <- Some { Route = route; DistanceMillimeters = distance; MovementCostMillimeters = movementCost }
+                result <-
+                    Some
+                        { Route = route
+                          DistanceMillimeters = distance
+                          MovementCostMillimeters = movementCost
+                          ExpandedNodes = expandedNodes }
             else
                 let probe = { unit with Cell = current }
                 for dc, dr in pathNeighbors do
@@ -372,6 +385,7 @@ module MapScale =
         let destination = cell (target.Cell.Col + target.Size / 2) (target.Cell.Row + target.Size / 2)
         let mutable previous = origin
         let mutable clear = true
+        let samples = 1
         for current in directRoute origin destination do
             if clear then
                 let dc, dr = current.Col - previous.Col, current.Row - previous.Row
@@ -384,11 +398,18 @@ module MapScale =
                     not (edges |> List.exists (edgeBlocks board))
                     && Map.tryFind current board.Terrain <> Some MapScaleTerrain.BlockedTerrain
                 previous <- current
-        clear
+        clear, samples
+
+    let private canAttackMeasured attacker target profile board =
+        if footprintDistance attacker target > profile.Range then
+            false, 0
+        elif profile.Delivery <> ProjectileDelivery then
+            true, 0
+        else
+            projectilePathClear attacker target board
 
     let canAttack attacker target profile board =
-        footprintDistance attacker target <= profile.Range
-        && (profile.Delivery <> ProjectileDelivery || projectilePathClear attacker target board)
+        canAttackMeasured attacker target profile board |> fst
 
     type private CollectedIntent =
         | MoveIntent of MapScaleUnit * Cell * string
@@ -418,36 +439,43 @@ module MapScale =
         |> Option.map (fun (_, _, destination) -> destination)
 
     let private collect state =
-        state.Units |> Map.toList |> List.map snd |> List.sortBy _.Id
-        |> List.choose (fun unit ->
-            if unit.Health <= 0 then None else
-            match Map.tryFind unit.Id state.MovementProgress with
-            | Some progress when progress.Origin = unit.Cell ->
-                Some(MoveIntent(unit, progress.Destination, "along its locked approach segment"))
-            | _ ->
-                match unit.Controller with
-                | ManualController ->
-                    match Map.tryFind unit.Id state.PlannedRoutes, Map.tryFind unit.Id state.MovementIntents with
-                    | Some(next :: _), _ -> Some(MoveIntent(unit, next, "along its planned route"))
-                    | _, Some direction ->
-                        let dc, dr = directionDelta direction
-                        Some(MoveIntent(unit, cell (unit.Cell.Col + dc) (unit.Cell.Row + dr), string direction))
-                    | _ -> Some(HoldIntent(unit, "awaits manual input"))
-                | ScriptedController when List.isEmpty unit.Script -> Some(HoldIntent(unit, "has no script"))
-                | ScriptedController ->
-                    let direction = unit.Script[int unit.ScriptIndex % unit.Script.Length]
-                    let dc, dr = directionDelta direction
-                    Some(MoveIntent(unit, cell (unit.Cell.Col + dc) (unit.Cell.Row + dr), "script " + string direction))
-                | GeneralController ->
-                    match nearestHostile unit state.Units with
-                    | None -> Some(HoldIntent(unit, "holds; no hostile is present"))
-                    | Some target ->
-                        let profile = combatProfileFor unit.ClassId
-                        if canAttack unit target profile state.Board then Some(AttackIntent(unit, target, profile))
-                        else
-                            match nextApproachStep state unit target with
-                            | Some next -> Some(MoveIntent(unit, next, "toward its attack position"))
-                            | None -> Some(HoldIntent(unit, "holds; no collision-free approach exists")))
+        let mutable losSamples = 0
+        let intents =
+            state.Units |> Map.toList |> List.map snd |> List.sortBy _.Id
+            |> List.choose (fun unit ->
+                if unit.Health <= 0 then
+                    None
+                else
+                    match Map.tryFind unit.Id state.MovementProgress with
+                    | Some progress when progress.Origin = unit.Cell ->
+                        Some(MoveIntent(unit, progress.Destination, "along its locked approach segment"))
+                    | _ ->
+                        match unit.Controller with
+                        | ManualController ->
+                            match Map.tryFind unit.Id state.PlannedRoutes, Map.tryFind unit.Id state.MovementIntents with
+                            | Some(next :: _), _ -> Some(MoveIntent(unit, next, "along its planned route"))
+                            | _, Some direction ->
+                                let dc, dr = directionDelta direction
+                                Some(MoveIntent(unit, cell (unit.Cell.Col + dc) (unit.Cell.Row + dr), string direction))
+                            | _ -> Some(HoldIntent(unit, "awaits manual input"))
+                        | ScriptedController when List.isEmpty unit.Script -> Some(HoldIntent(unit, "has no script"))
+                        | ScriptedController ->
+                            let direction = unit.Script[int unit.ScriptIndex % unit.Script.Length]
+                            let dc, dr = directionDelta direction
+                            Some(MoveIntent(unit, cell (unit.Cell.Col + dc) (unit.Cell.Row + dr), "script " + string direction))
+                        | GeneralController ->
+                            match nearestHostile unit state.Units with
+                            | None -> Some(HoldIntent(unit, "holds; no hostile is present"))
+                            | Some target ->
+                                let profile = combatProfileFor unit.ClassId
+                                let canResolve, samples = canAttackMeasured unit target profile state.Board
+                                losSamples <- losSamples + samples
+                                if canResolve then Some(AttackIntent(unit, target, profile))
+                                else
+                                    match nextApproachStep state unit target with
+                                    | Some next -> Some(MoveIntent(unit, next, "toward its attack position"))
+                                    | None -> Some(HoldIntent(unit, "holds; no collision-free approach exists")))
+        intents, losSamples
 
     let private checkpoint phase (state: MapScaleState) events : MapScaleCheckpoint =
         { Tick = state.Tick + 1; Phase = phase; State = state; Events = events }
@@ -463,7 +491,7 @@ module MapScale =
                 let current = Map.tryFind id credits |> Option.defaultValue 0
                 Map.add id (min MaximumMovementCreditMillimeters (current + earned)) credits)
                 state.MovementCreditsMillimeters
-        let collected = collect state
+        let collected, losSamples = collect state
         let collectState = { state with MovementCreditsMillimeters = earnedCredits }
         let collectCheckpoint = checkpoint CollectPhase collectState []
 
@@ -632,7 +660,12 @@ module MapScale =
         let commitCheckpoint = { Tick = committed.Tick; Phase = CommitPhase; State = committed; Events = allEvents }
         { State = committed
           Events = allEvents
-          Checkpoints = [ collectCheckpoint; validateCheckpoint; resolveCheckpoint; commitCheckpoint ] }
+          Checkpoints = [ collectCheckpoint; validateCheckpoint; resolveCheckpoint; commitCheckpoint ]
+          Counters =
+            { LosSamples = losSamples
+              CombatResolutions =
+                allEvents
+                |> List.sumBy (function AttackResolved _ -> 1 | _ -> 0) } }
 
     let private phaseCode phase =
         match phase with

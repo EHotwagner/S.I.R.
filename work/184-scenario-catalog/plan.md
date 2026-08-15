@@ -16,7 +16,7 @@ publicOrToolFacingImpact: true
 Prose status: planned
 
 ## Source Snapshot
-- spec: work/184-scenario-catalog/spec.md sha256:3e6044eeadb4facf59cb8c45bff3909383dc46162a5d35334e8493b37fef70f4 schemaVersion:1
+- spec: work/184-scenario-catalog/spec.md sha256:df753bdd69fd96f05df2f5f4104a71ffe3ae1614f18919c6682558dd3d4376b6 schemaVersion:1
 - clarifications: work/184-scenario-catalog/clarifications.md sha256:434360f751282979e153d11783089eb1247b18286ed3f200c1c41445af27bf42 schemaVersion:1
 - checklist: work/184-scenario-catalog/checklist.md sha256:9944f9a18feab1c3bf91568070b93ca0e16217d83bcd46261fc3378b463e44fc schemaVersion:1
 
@@ -75,7 +75,7 @@ Prose status: planned
 - maxP95Ms: 20
 - maxP99Ms: 50
 - maxCatchUpFrames: 0
-- structuralCostBudgets: [crossed-cells<=4096, los-samples<=256, path-expansions<=4096, scene-nodes<=8000]
+- structuralCostBudgets: [combat-resolutions<=256, los-samples<=256, path-expansions<=4096, scene-nodes<=8000]
 - requiredCapability: headless-browser
 - liveCompositorRequired: false
 

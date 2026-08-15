@@ -110,4 +110,6 @@ module ExperienceSamples =
     val editorState: ExperienceMapSample -> MapEditorState
     val simulator: ExperienceMapSample -> SimulatorHandoff option
     val replayFrames: ExperienceReplaySample -> InspectionProjection array
+    val checkpointOutcomeSatisfied:
+        ExperienceScenarioPackage -> InspectionProjection array -> ScenarioCheckpoint -> bool
     val runtimeFingerprint: ExperienceScenarioPackage -> string

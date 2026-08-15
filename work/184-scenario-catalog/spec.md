@@ -19,7 +19,7 @@ performanceIntent:
   maxP99Ms: 50
   maxCatchUpFrames: 0
   structuralCostBudgets:
-    - "crossed-cells<=4096"
+    - "combat-resolutions<=256"
     - "los-samples<=256"
     - "path-expansions<=4096"
     - "scene-nodes<=8000"

@@ -1807,12 +1807,7 @@ let main arguments =
         |> List.forall (fun package ->
             let frames = ExperienceSamples.replayFrames package.Replay
             package.ExpectedCheckpoints
-            |> List.forall (fun checkpoint ->
-                frames
-                |> Array.tryFind (fun frame -> frame.Tick = checkpoint.Tick)
-                |> Option.exists (fun frame ->
-                    frame.Events.Length >= int checkpoint.MinimumEvents
-                    && frame.Checkpoints |> List.exists (fun actual -> actual.Tick = checkpoint.Tick))))
+            |> List.forall (ExperienceSamples.checkpointOutcomeSatisfied package frames))
     let importedPackages = scenarioPackages |> List.map (ExperienceSamples.encodePackage >> ExperienceSamples.importPackage)
     let canonicalRoundTrips =
         scenarioPackages

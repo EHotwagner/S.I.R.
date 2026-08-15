@@ -19,6 +19,7 @@ type SimulatorRoutePreview =
       Distance: int32
       DistanceMillimeters: int32
       MovementCostMillimeters: int32
+      PathExpansions: int32
       Route: EditorCellAddress array
       Collision: SimulatorCollision }
 
@@ -83,6 +84,7 @@ type SimulatorHandoff =
       LastEvents: string list
       LastCombatEvents: SimulatorCombatEvent list
       LastCheckpoints: SIR.Simulation.MapScaleCheckpoint list
+      LastCounters: SIR.Simulation.MapScaleCounters
       AttackRecoveryTicks: Map<int32, int32>
       MovementCreditsMillimeters: Map<int32, int32>
       MovementProgress: Map<int32, SimulatorMovementProgress>
@@ -335,6 +337,7 @@ module MapEditorSimulator =
                   Distance = int32 route.Length
                   DistanceMillimeters = result |> Option.map _.DistanceMillimeters |> Option.defaultValue 0
                   MovementCostMillimeters = result |> Option.map _.MovementCostMillimeters |> Option.defaultValue 0
+                  PathExpansions = result |> Option.map _.ExpandedNodes |> Option.defaultValue 0
                   Route = route |> List.map fromCell |> List.toArray
                   Collision = collision }))
 
@@ -352,6 +355,7 @@ module MapEditorSimulator =
           LastEvents = []
           LastCombatEvents = []
           LastCheckpoints = []
+          LastCounters = { LosSamples = 0; CombatResolutions = 0 }
           AttackRecoveryTicks = Map.empty
           MovementCreditsMillimeters = Map.empty
           MovementProgress = Map.empty
@@ -498,6 +502,7 @@ module MapEditorSimulator =
             LastEvents = result.Events |> List.map eventSummary
             LastCombatEvents = recent
             LastCheckpoints = result.Checkpoints
+            LastCounters = result.Counters
             AttackRecoveryTicks =
                 result.State.Engagements
                 |> Map.map (fun _ engagement -> engagement.RecoveryTicksRemaining)
