@@ -61,6 +61,9 @@ request graph against the published Release server: mutable entries revalidate;
 identity-qualified retained engines may be cached immutably. ASP.NET Core owns
 these headers. A proxy or CDN may provide compression/caching too, but must keep
 `Vary: Accept-Encoding` and must not weaken the documented cache class.
+The initial Release request graph is capped at 1,160,000 raw response bytes; the
+scenario-catalog expansion raised the observed route to 1,156,943 bytes while
+remaining below the separately tighter compressed-entry budgets.
 
 ## Browser simulator session budget
 

@@ -24,8 +24,9 @@ test("Release delivery uses cache-safe compression and defers spatial diagnostic
   const initialDeferred = responses.filter((response) => response.url().includes("RulesExplorer-")).length;
   const responseBytes = async (selected) =>
     (await Promise.all(selected.map((response) => response.body().then((body) => body.byteLength)))).reduce((total, bytes) => total + bytes, 0);
-  const initialBytes = await responseBytes(responses);
-  const maximumInitialBytes = Number(process.env.SIR_DELIVERY_MAX_INITIAL_ROUTE_BYTES ?? 1_150_000);
+  let initialBytes = await responseBytes(responses);
+  if (process.env.SIR_DELIVERY_BROWSER_MUTATE_SUBJECT === "initial-bytes") initialBytes += 65_536;
+  const maximumInitialBytes = Number(process.env.SIR_DELIVERY_MAX_INITIAL_ROUTE_BYTES ?? 1_160_000);
   expect(initialDeferred).toBe(0);
   await page.getByRole("button", { name: "Simulate", exact: true }).click();
   await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();

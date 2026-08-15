@@ -1664,8 +1664,10 @@ const sampleKinds = [
 ].map((item) => item.textContent.trim());
 if (
   !samplesWorkspace ||
-  sampleKinds.filter((kind) => kind === "Map · Simulation").length !== 3 ||
-  sampleKinds.filter((kind) => kind === "Replay").length !== 2
+  sampleKinds.filter((kind) => kind === "Map · Simulation").length !== 7 ||
+  sampleKinds.filter((kind) => kind === "Replay").length !== 7 ||
+  samplesWorkspace.querySelectorAll(".sample-lesson").length !== 7 ||
+  samplesWorkspace.querySelectorAll(".sample-notes").length !== 7
 ) {
   throw new Error("Curated map, simulation, and replay sample coverage is incomplete.");
 }

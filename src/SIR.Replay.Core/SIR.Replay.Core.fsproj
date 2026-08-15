@@ -26,6 +26,7 @@
     <Compile Include="../SIR.Client/TacticalWorkspaceLayout.fs" Link="TacticalWorkspaceLayout.fs" />
     <Compile Include="../SIR.Client/TacticalSceneProjection.fsi" Link="TacticalSceneProjection.fsi" />
     <Compile Include="../SIR.Client/TacticalSceneProjection.fs" Link="TacticalSceneProjection.fs" />
+    <Compile Include="../SIR.Client/ExperienceSamples.fsi" Link="ExperienceSamples.fsi" />
     <Compile Include="../SIR.Client/ExperienceSamples.fs" Link="ExperienceSamples.fs" />
     <Compile Include="../SIR.Client/Comparison.fs" Link="Comparison.fs" />
   </ItemGroup>

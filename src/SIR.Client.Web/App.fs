@@ -4964,6 +4964,8 @@ let private sampleCatalogView (dispatch: Msg -> unit) =
                             for highlight in sample.Highlights do
                                 Html.li highlight
                         ]
+                        Html.p [ prop.className "sample-lesson"; prop.text ("Lesson: " + sample.Lesson) ]
+                        Html.p [ prop.className "sample-notes"; prop.text ("Design notes: " + String.concat " " sample.DesignNotes) ]
                         Html.div [
                             prop.className "control-row"
                             prop.children [
@@ -5031,6 +5033,18 @@ let private sampleCatalogView (dispatch: Msg -> unit) =
                 prop.className "sample-disclosure"
                 prop.text "Walkthroughs are sandbox evidence, not verified match replays."
             ]
+        ]
+    ]
+
+let private simulatorSamplePicker dispatch =
+    Html.div [
+        prop.ariaLabel "Simulator samples"
+        prop.children [
+            for sample in ExperienceSamples.maps do
+                Html.div [ prop.className "simulator-sample-entry"; prop.children [
+                    button sample.Title ("Load simulation sample: " + sample.Summary) false (fun _ -> dispatch (LoadSimulationSample sample.Id))
+                    Html.p ("Lesson: " + sample.Lesson)
+                    Html.p ("Design notes: " + String.concat " " sample.DesignNotes) ] ]
         ]
     ]
 
@@ -7643,14 +7657,7 @@ let private simulatorPanelBody
             ]
         ]
     | "samples" ->
-        Html.div [
-            prop.ariaLabel "Simulator samples"
-            prop.children [
-                for sample in ExperienceSamples.maps do
-                    button sample.Title ("Load simulation sample: " + sample.Summary) false (fun _ ->
-                        dispatch (LoadSimulationSample sample.Id))
-            ]
-        ]
+        simulatorSamplePicker dispatch
     | _ ->
         Html.p [
             prop.className "tactical-layout-panel-placeholder"
@@ -7692,14 +7699,7 @@ let private tacticalPanelBody panelId model dispatch =
             ]
         | None -> Html.p "Planner unavailable for the current map revision."
     elif model.Workspace = SimulatorWorkspace && panelId = "samples" then
-        Html.div [
-            prop.ariaLabel "Simulator samples"
-            prop.children [
-                for sample in ExperienceSamples.maps do
-                    button sample.Title ("Load simulation sample: " + sample.Summary) false (fun _ ->
-                        dispatch (LoadSimulationSample sample.Id))
-            ]
-        ]
+        simulatorSamplePicker dispatch
     elif model.Workspace = SimulatorWorkspace then
         match model.Simulator with
         | Some simulator ->
