@@ -465,6 +465,9 @@ let private tacticalEnvironmentEvidence () =
         SIR.Simulation.TacticalEnvironment.validate maximumPlot maximumVariants
     maximumValidationClock.Stop()
     require maximumValidationFindings.IsEmpty "Maximum tactical fixture did not stay valid after warmup."
+    require
+        (maximumValidationClock.Elapsed.TotalMilliseconds < 50.0)
+        "Maximum 64-slot/32-variant validation exceeded its separate 50 ms gate."
     let maximumClock = Stopwatch.StartNew()
     let maximumEnvironment =
         SIR.Simulation.TacticalEnvironment.assemble 0x186UL maximumPlot maximumVariants
@@ -515,6 +518,9 @@ let private tacticalEnvironmentEvidence () =
     let previewValidationClock = Stopwatch.StartNew()
     SIR.Simulation.TacticalEnvironment.validate previewPlot previewVariants |> ignore
     previewValidationClock.Stop()
+    require
+        (previewValidationClock.Elapsed.TotalMilliseconds < 50.0)
+        "Maximum 80x80/2,048-feature validation exceeded its separate 50 ms gate."
     let previewClock = Stopwatch.StartNew()
     let previewEnvironment =
         SIR.Simulation.TacticalEnvironment.assemble 0x186UL previewPlot previewVariants
@@ -529,18 +535,36 @@ let private tacticalEnvironmentEvidence () =
 
     let interactionFeatures =
         [ for index in 0 .. 49 ->
-            let cell = { EnvironmentColumn = index % 8; EnvironmentRow = index / 8 }
+            let cell = { EnvironmentColumn = index; EnvironmentRow = 1 }
             { variants.Head.ParcelFeatures[1] with
                 EnvironmentFeatureId = sprintf "combat-cover-%02d" index
                 EnvironmentEdge = { EdgeCell = cell; EdgeDirection = EnvironmentEdgeDirection.East }
                 EnvironmentFeatureCells = [ cell ]
                 QueryDependencyKeys = [ sprintf "combat-cover:%02d" index ] } ]
+    let interactionPlot =
+        { plot with
+            AuthoredPlotId = "representative-combat-environment"
+            PlotWidth = 100
+            PlotHeight = 2
+            PlotSlots =
+                [ { plot.PlotSlots.Head with
+                      PlotSlotRole = "representative-combat"
+                      PlotSlotWidth = 100
+                      PlotSlotHeight = 2 } ] }
     let interactionVariants =
         [ { variants.Head with
               ParcelVariantId = "representative-combat-environment"
+              ParcelRole = "representative-combat"
+              ParcelWidth = 100
+              ParcelHeight = 2
+              ParcelWalkableCells =
+                  [ for row in 0 .. 1 do
+                      for column in 0 .. 99 ->
+                          { EnvironmentColumn = column; EnvironmentRow = row } ]
+              ParcelObjectiveCells = [ { EnvironmentColumn = 99; EnvironmentRow = 0 } ]
               ParcelFeatures = interactionFeatures } ]
     let interactionEnvironment =
-        SIR.Simulation.TacticalEnvironment.assemble 0x186UL plot interactionVariants
+        SIR.Simulation.TacticalEnvironment.assemble 0x186UL interactionPlot interactionVariants
         |> Result.defaultWith (fun findings -> failwithf "Representative combat environment failed: %A" findings)
     let interactionKnowledge =
         { EnvironmentKnowledgeIdentity = "representative-combat"
@@ -548,26 +572,74 @@ let private tacticalEnvironmentEvidence () =
           KnownEnvironmentFeatureIds = interactionEnvironment.EnvironmentFeatures |> List.map _.EnvironmentFeatureId |> Set.ofList
           KnownEnvironmentStateFeatureIds = interactionEnvironment.EnvironmentFeatures |> List.map _.EnvironmentFeatureId |> Set.ofList
           KnownEnvironmentFacts = Set.empty }
-    let combatUnits = [ for index in 0 .. 99 -> sprintf "unit-%03d" index ]
+    let combatUnits =
+        [ for index in 0 .. 99 ->
+            let id = sprintf "unit-%03d" index
+            id,
+            { EntityId = id
+              Faction = (if index % 2 = 0 then "blue" else "red")
+              Cell = { Col = index; Row = 0 }
+              Facing = (if index % 2 = 0 then Direction8.East else Direction8.West)
+              Health = 100
+              Armor = { FrontRating = 0; RearRating = 0; Integrity = 100 }
+              Wounds = []
+              Incapacitated = false
+              Suppression = 0 } ]
+        |> Map.ofList
+    let combatWorld =
+        { Spatial =
+            SIR.Simulation.TacticalEnvironment.toSpatialWorld
+                "representative-combat@1"
+                interactionKnowledge
+                interactionEnvironment
+          Combatants = combatUnits
+          Covers = Combat.environmentCovers interactionEnvironment }
     let runInteractionBatch () =
-        ((interactionEnvironment, 0), [ 0 .. 49 ])
-        ||> List.fold (fun (current, propagated) index ->
-            let unitId = combatUnits[index * 2]
+        ((interactionEnvironment, combatWorld, Set.empty, 0, 0, 0), [ 0 .. 49 ])
+        ||> List.fold (fun (current, combat, participants, propagated, queries, crossed) index ->
+            let attackerId = sprintf "unit-%03d" (index * 2)
+            let targetId = sprintf "unit-%03d" (index * 2 + 1)
             let featureId = sprintf "slot-1:combat-cover-%02d" index
-            let result =
+            let environmentResult =
                 SIR.Simulation.TacticalEnvironment.applyAction interactionKnowledge current.EnvironmentContentIdentity featureId EnvironmentAction.Destroy current
-                |> Result.defaultWith (fun failure -> failwithf "Representative interaction %s/%s failed: %A" unitId featureId failure)
-            require (result.ActionCostCounters.FeaturesChanged = 1 && result.ActionCostCounters.PropagatedChanges = 0) "Representative interaction changed more than its target."
-            result.UpdatedEnvironment, propagated + result.ActionCostCounters.PropagatedChanges)
+                |> Result.defaultWith (fun failure -> failwithf "Representative interaction %s/%s failed: %A" attackerId featureId failure)
+            require (environmentResult.ActionCostCounters.FeaturesChanged = 1 && environmentResult.ActionCostCounters.PropagatedChanges = 0) "Representative interaction changed more than its target."
+            let combatResult =
+                Combat.resolve
+                    combat
+                    { AttackId = sprintf "representative-attack-%02d" index
+                      AttackerId = attackerId
+                      AimCell = { Col = index * 2 + 1; Row = 0 }
+                      Weapon = WeaponProfile.Rifle
+                      Limits = Combat.defaultLimits }
+                |> Result.defaultWith (fun rejection -> failwithf "Representative combat query %s -> %s failed: %A" attackerId targetId rejection)
+            let changedTargets =
+                combatResult.Facts
+                |> List.choose (function CombatFact.HealthChanged(id, _, _) -> Some id | _ -> None)
+            require (changedTargets = [ targetId ]) "Representative combat query did not retain exactly one target."
+            let queryCount, crossedCount =
+                combatResult.SpatialEvidence
+                |> Option.map (fun evidence -> 1, evidence.Explanation.CrossedCells.Length)
+                |> Option.defaultValue (0, 0)
+            environmentResult.UpdatedEnvironment,
+            combatResult.World,
+            participants |> Set.add attackerId |> Set.add targetId,
+            propagated + environmentResult.ActionCostCounters.PropagatedChanges,
+            queries + queryCount,
+            crossed + crossedCount)
     runInteractionBatch () |> ignore
     let interactionClock = Stopwatch.StartNew()
-    let _, propagated = runInteractionBatch ()
+    let _, finalCombat, participants, propagated, queryCount, crossedCount = runInteractionBatch ()
     interactionClock.Stop()
     require
-        (combatUnits.Length = 100
+        (combatUnits.Count = 100
+         && finalCombat.Combatants.Count = 100
+         && participants.Count = 100
          && propagated = 0
+         && queryCount = 50
+         && crossedCount > 0
          && interactionClock.Elapsed.TotalMilliseconds < 50.0)
-        "Representative 100-unit/50-environment-interaction batch exceeded its 50 ms budget or propagated changes."
+        "Representative 100-unit/50-interaction production combat/spatial batch exceeded its structural or 50 ms budget."
 
     printfn
         "Tactical environment evidence: identity %s; closed/open path %A/%A; %d cache entry invalidated in %.3f ms; representative %.3f ms; maximum assembly %.3f ms; maximum preview %.3f ms; 100-unit/50-interaction batch %.3f ms."

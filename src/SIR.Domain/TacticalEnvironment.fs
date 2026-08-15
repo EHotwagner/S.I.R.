@@ -52,14 +52,34 @@ module TacticalEnvironment =
     let private transform = function ParcelTransform.Identity -> 0 | ParcelTransform.Rotate90 -> 1 | ParcelTransform.Rotate180 -> 2 | ParcelTransform.Rotate270 -> 3
     let private kind = function EnvironmentFeatureKind.Door -> 0 | EnvironmentFeatureKind.Window -> 1 | EnvironmentFeatureKind.Wall -> 2 | EnvironmentFeatureKind.Cover -> 3
     let private state = function EnvironmentFeatureState.Intact -> 0 | EnvironmentFeatureState.Closed -> 1 | EnvironmentFeatureState.Open -> 2 | EnvironmentFeatureState.Damaged -> 3 | EnvironmentFeatureState.Breached -> 4 | EnvironmentFeatureState.Destroyed -> 5
+    let private orderedBy key values =
+        let rec loop previous remaining =
+            match remaining with
+            | [] -> true
+            | head :: tail when compare previous (key head) <= 0 -> loop (key head) tail
+            | _ -> false
+        match values with
+        | [] | [ _ ] -> true
+        | head :: tail -> loop (key head) tail
+    let private sortedBy key values = if orderedBy key values then values else values |> List.sortBy key
+    let private orderedDistinct values =
+        let rec loop previous remaining =
+            match remaining with
+            | [] -> true
+            | head :: tail when compare previous head < 0 -> loop head tail
+            | _ -> false
+        match values with
+        | [] | [ _ ] -> true
+        | head :: tail -> loop head tail
+    let private sortedDistinct values = if orderedDistinct values then values else values |> List.distinct |> List.sort
     let private cell (value: EnvironmentCell) = CanonicalEncoding.concatenate [ i32 value.EnvironmentColumn; i32 value.EnvironmentRow ]
     let private edge (value: EnvironmentEdge) = CanonicalEncoding.concatenate [ cell value.EdgeCell; i32 (direction value.EdgeDirection) ]
     let private permeability (value: EnvironmentPermeability) = CanonicalEncoding.concatenate [ boolByte value.AllowsMovement; boolByte value.AllowsSight; boolByte value.AllowsProjectile; boolByte value.AllowsAreaEffect; boolByte value.AllowsSound; boolByte value.ProvidesCover; boolByte value.AllowsInteraction ]
     let private cover = function
         | None -> [| 0uy |]
-        | Some value -> CanonicalEncoding.concatenate [ [| 1uy |]; text value.CoverMaterial; i32 value.CoverIntegrity; i32 value.CoverMaximumIntegrity; i32 value.CoverPenetrationResistance; list (Direction8.toCode >> int32 >> i32) (value.CoverProtectedDirections |> List.distinct |> List.sortBy Direction8.toCode) ]
+        | Some value -> CanonicalEncoding.concatenate [ [| 1uy |]; text value.CoverMaterial; i32 value.CoverIntegrity; i32 value.CoverMaximumIntegrity; i32 value.CoverPenetrationResistance; list (Direction8.toCode >> int32 >> i32) (value.CoverProtectedDirections |> sortedBy Direction8.toCode |> List.distinct) ]
     let private capability (value: EnvironmentCapability) = CanonicalEncoding.concatenate [ text value.DescriptorId; text value.DescriptorAction; i32 value.DescriptorCost; match value.RequiredKnowledgeFact with None -> [| 0uy |] | Some fact -> CanonicalEncoding.concatenate [ [| 1uy |]; text fact ] ]
-    let private feature (value: EnvironmentFeature) = CanonicalEncoding.concatenate [ text value.EnvironmentFeatureId; i32 (kind value.EnvironmentKind); i32 (state value.EnvironmentState); edge value.EnvironmentEdge; list cell (value.EnvironmentFeatureCells |> List.distinct |> List.sort); permeability value.ModalityPermeability; cover value.DirectionalCover; list capability (value.CapabilityDescriptors |> List.sortBy _.DescriptorId); list text (value.QueryDependencyKeys |> List.distinct |> List.sort) ]
+    let private feature (value: EnvironmentFeature) = CanonicalEncoding.concatenate [ text value.EnvironmentFeatureId; i32 (kind value.EnvironmentKind); i32 (state value.EnvironmentState); edge value.EnvironmentEdge; list cell (value.EnvironmentFeatureCells |> sortedDistinct); permeability value.ModalityPermeability; cover value.DirectionalCover; list capability (value.CapabilityDescriptors |> sortedBy _.DescriptorId); list text (value.QueryDependencyKeys |> sortedDistinct) ]
     let private placement (value: ParcelPlacement) = CanonicalEncoding.concatenate [ text value.PlacementSlotId; text value.PlacementVariantId; i32 (transform value.PlacementTransform); cell value.PlacementOrigin ]
     let private hex bytes = bytes |> Array.map (fun (value: byte) -> value.ToString("x2")) |> String.concat ""
 
@@ -68,10 +88,10 @@ module TacticalEnvironment =
             [ i32 environment.EnvironmentSchemaVersion
               text environment.AssembledPlotId
               u64 environment.AssemblySeed
-              list placement (environment.ParcelPlacements |> List.sortBy _.PlacementSlotId)
-              list cell (environment.AssembledWalkableCells |> List.distinct |> List.sort)
-              list cell (environment.AssembledObjectiveCells |> List.distinct |> List.sort)
-              list feature (environment.EnvironmentFeatures |> List.sortBy _.EnvironmentFeatureId)
+              list placement (environment.ParcelPlacements |> sortedBy _.PlacementSlotId)
+              list cell (environment.AssembledWalkableCells |> sortedDistinct)
+              list cell (environment.AssembledObjectiveCells |> sortedDistinct)
+              list feature (environment.EnvironmentFeatures |> sortedBy _.EnvironmentFeatureId)
               text environment.EnvironmentAssemblyIdentity
               i64 environment.EnvironmentSpatialRevision
               i32 environment.AssemblyCostCounters.SlotsVisited
@@ -88,5 +108,5 @@ module TacticalEnvironment =
         CanonicalEncoding.concatenate
             [ i32 observation.ObservationSchemaVersion; text observation.ObservationFeatureId; i32 (kind observation.ObservationKind)
               match observation.ObservedState with None -> [| 0uy |] | Some value -> CanonicalEncoding.concatenate [ [| 1uy |]; i32 (state value) ]
-              list capability (observation.AvailableCapabilities |> List.sortBy _.DescriptorId)
+              list capability (observation.AvailableCapabilities |> sortedBy _.DescriptorId)
               i64 observation.ObservationSpatialRevision; text observation.ObservationKnowledgeIdentity; i64 observation.ObservationKnowledgeRevision ]

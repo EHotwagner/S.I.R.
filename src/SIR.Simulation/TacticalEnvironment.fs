@@ -50,6 +50,26 @@ module TacticalEnvironment =
 
     let private finding code subject message = { ValidationCode = code; ValidationSubject = subject; ValidationMessage = message }
     let private duplicates values = values |> List.countBy id |> List.choose (fun (value, count) -> if count > 1 then Some value else None)
+    let private canonicalSortedBy key values =
+        let rec ordered previous remaining =
+            match remaining with
+            | [] -> true
+            | head :: tail when compare previous (key head) <= 0 -> ordered (key head) tail
+            | _ -> false
+        match values with
+        | [] | [ _ ] -> values
+        | head :: tail when ordered (key head) tail -> values
+        | _ -> values |> List.sortBy key
+    let private canonicalSortedDistinct values =
+        let rec ordered previous remaining =
+            match remaining with
+            | [] -> true
+            | head :: tail when compare previous head < 0 -> ordered head tail
+            | _ -> false
+        match values with
+        | [] | [ _ ] -> values
+        | head :: tail when ordered head tail -> values
+        | _ -> values |> List.distinct |> List.sort
     let private within width height (cell: EnvironmentCell) = cell.EnvironmentColumn >= 0 && cell.EnvironmentRow >= 0 && cell.EnvironmentColumn < width && cell.EnvironmentRow < height
     let private transformDimensions transform width height =
         match transform with ParcelTransform.Identity | ParcelTransform.Rotate180 -> width, height | ParcelTransform.Rotate90 | ParcelTransform.Rotate270 -> height, width
@@ -171,7 +191,7 @@ module TacticalEnvironment =
         let left = transformCell transform width height feature.EnvironmentEdge.EdgeCell |> translate origin
         let right = adjacent feature.EnvironmentEdge |> transformCell transform width height |> translate origin
         let placedId = slotId + ":" + feature.EnvironmentFeatureId
-        { feature with EnvironmentFeatureId = placedId; EnvironmentEdge = edgeBetween left right; EnvironmentFeatureCells = feature.EnvironmentFeatureCells |> List.map (transformCell transform width height >> translate origin) |> List.distinct |> List.sort; QueryDependencyKeys = feature.QueryDependencyKeys |> List.map (fun key -> key + ":" + placedId) |> List.distinct |> List.sort }
+        { feature with EnvironmentFeatureId = placedId; EnvironmentEdge = edgeBetween left right; EnvironmentFeatureCells = feature.EnvironmentFeatureCells |> List.map (transformCell transform width height >> translate origin) |> canonicalSortedDistinct; QueryDependencyKeys = feature.QueryDependencyKeys |> List.map (fun key -> key + ":" + placedId) |> canonicalSortedDistinct }
 
     // The published Game.Core Fable profile classifies sequential RNG as
     // DotNetOnly. Parcel selection is therefore product-owned addressed
@@ -194,50 +214,100 @@ module TacticalEnvironment =
         bytes |> CanonicalHash.sha256 |> Array.map (fun value -> value.ToString("x2")) |> String.concat ""
 
     let private authoredInputIdentity (plot: AuthoredPlot) (variants: ParcelVariant list) =
-        let cellText cell = $"{cell.EnvironmentColumn},{cell.EnvironmentRow}"
-        let boolText value = if value then "1" else "0"
-        let edgeDirectionText = function EnvironmentEdgeDirection.East -> "0" | EnvironmentEdgeDirection.South -> "1"
-        let kindText = function EnvironmentFeatureKind.Door -> "0" | EnvironmentFeatureKind.Window -> "1" | EnvironmentFeatureKind.Wall -> "2" | EnvironmentFeatureKind.Cover -> "3"
-        let stateText = function EnvironmentFeatureState.Intact -> "0" | EnvironmentFeatureState.Closed -> "1" | EnvironmentFeatureState.Open -> "2" | EnvironmentFeatureState.Damaged -> "3" | EnvironmentFeatureState.Breached -> "4" | EnvironmentFeatureState.Destroyed -> "5"
-        let edgeText edge = $"{cellText edge.EdgeCell},{edgeDirectionText edge.EdgeDirection}"
-        let permeabilityText value =
-            [ value.AllowsMovement; value.AllowsSight; value.AllowsProjectile; value.AllowsAreaEffect; value.AllowsSound; value.ProvidesCover; value.AllowsInteraction ]
-            |> List.map boolText
-            |> String.concat ""
-        let coverText = function
-            | None -> "-"
+        let bytes = Collections.Generic.List<byte>(4096)
+        let appendByte value = bytes.Add value
+        let appendInt32 (value: int32) =
+            appendByte (byte value)
+            appendByte (byte (value >>> 8))
+            appendByte (byte (value >>> 16))
+            appendByte (byte (value >>> 24))
+        let appendBool value = appendByte (if value then 1uy else 0uy)
+        let appendText (value: string) =
+            let encoded = Encoding.UTF8.GetBytes value
+            appendInt32 encoded.Length
+            bytes.AddRange encoded
+        let appendCell (cell: EnvironmentCell) =
+            appendInt32 cell.EnvironmentColumn
+            appendInt32 cell.EnvironmentRow
+        let directionCode = function EnvironmentEdgeDirection.East -> 0 | EnvironmentEdgeDirection.South -> 1
+        let kindCode = function EnvironmentFeatureKind.Door -> 0 | EnvironmentFeatureKind.Window -> 1 | EnvironmentFeatureKind.Wall -> 2 | EnvironmentFeatureKind.Cover -> 3
+        let stateCode = function EnvironmentFeatureState.Intact -> 0 | EnvironmentFeatureState.Closed -> 1 | EnvironmentFeatureState.Open -> 2 | EnvironmentFeatureState.Damaged -> 3 | EnvironmentFeatureState.Breached -> 4 | EnvironmentFeatureState.Destroyed -> 5
+        let transformCode = function ParcelTransform.Identity -> 0 | ParcelTransform.Rotate90 -> 1 | ParcelTransform.Rotate180 -> 2 | ParcelTransform.Rotate270 -> 3
+        let appendList append (values: 'a list) =
+            appendInt32 values.Length
+            values |> List.iter append
+        let appendPermeability value =
+            appendBool value.AllowsMovement
+            appendBool value.AllowsSight
+            appendBool value.AllowsProjectile
+            appendBool value.AllowsAreaEffect
+            appendBool value.AllowsSound
+            appendBool value.ProvidesCover
+            appendBool value.AllowsInteraction
+        let appendCover = function
+            | None -> appendByte 0uy
             | Some cover ->
-                let directions = cover.CoverProtectedDirections |> List.map (Direction8.toCode >> string) |> List.sort |> String.concat ","
-                $"{cover.CoverMaterial},{cover.CoverIntegrity},{cover.CoverMaximumIntegrity},{cover.CoverPenetrationResistance},{directions}"
-        let capabilityText capability =
-            let requiredFact = Option.defaultValue "" capability.RequiredKnowledgeFact
-            $"{capability.DescriptorId},{capability.DescriptorAction},{capability.DescriptorCost},{requiredFact}"
-        let featureText feature =
-            let volumeCells = feature.EnvironmentFeatureCells |> List.distinct |> List.sort |> List.map cellText |> String.concat ";"
-            let capabilities = feature.CapabilityDescriptors |> List.sortBy _.DescriptorId |> List.map capabilityText |> String.concat ";"
-            let dependencies = feature.QueryDependencyKeys |> List.distinct |> List.sort |> String.concat ";"
-            $"feature|{feature.EnvironmentFeatureId}|{kindText feature.EnvironmentKind}|{stateText feature.EnvironmentState}|{edgeText feature.EnvironmentEdge}|{volumeCells}|{permeabilityText feature.ModalityPermeability}|{coverText feature.DirectionalCover}|{capabilities}|{dependencies}"
-        let slotLines =
-            plot.PlotSlots
-            |> List.sortBy _.PlotSlotId
-            |> List.map (fun slot ->
-                let connected = slot.ConnectedPlotSlotIds |> List.distinct |> List.sort |> String.concat ";"
-                $"slot|{slot.PlotSlotId}|{slot.PlotSlotRole}|{cellText slot.PlotSlotOrigin}|{slot.PlotSlotWidth},{slot.PlotSlotHeight}|{connected}|{boolText slot.PlotSlotRequiresRoute}")
-        let variantLines =
-            variants
-            |> List.sortBy _.ParcelVariantId
-            |> List.collect (fun variant ->
-                let walkable = variant.ParcelWalkableCells |> List.distinct |> List.sort |> List.map cellText |> String.concat ";"
-                let objectives = variant.ParcelObjectiveCells |> List.distinct |> List.sort |> List.map cellText |> String.concat ";"
-                [ yield $"variant|{variant.ParcelVariantId}|{variant.ParcelRole}|{variant.ParcelWidth},{variant.ParcelHeight}|{walkable}|{objectives}"
-                  for connection in variant.ParcelConnections |> List.sortBy _.ConnectionId do
-                      yield $"connection|{variant.ParcelVariantId}|{connection.ConnectionId}|{cellText connection.ConnectionCell}|{edgeDirectionText connection.ConnectionDirection}|{connection.ConnectionRole}"
-                  for feature in variant.ParcelFeatures |> List.sortBy _.EnvironmentFeatureId do
-                      yield $"{variant.ParcelVariantId}|{featureText feature}" ])
-        ($"plot|{plot.PlotSchemaVersion}|{plot.AuthoredPlotId}|{plot.PlotWidth},{plot.PlotHeight}" :: slotLines @ variantLines)
-        |> String.concat "\n"
-        |> fun value -> Encoding.UTF8.GetBytes(value: string)
-        |> sha256Hex
+                appendByte 1uy
+                appendText cover.CoverMaterial
+                appendInt32 cover.CoverIntegrity
+                appendInt32 cover.CoverMaximumIntegrity
+                appendInt32 cover.CoverPenetrationResistance
+                cover.CoverProtectedDirections
+                |> List.map (Direction8.toCode >> int32)
+                |> canonicalSortedDistinct
+                |> appendList appendInt32
+        let appendCapability capability =
+            appendText capability.DescriptorId
+            appendText capability.DescriptorAction
+            appendInt32 capability.DescriptorCost
+            match capability.RequiredKnowledgeFact with
+            | None -> appendByte 0uy
+            | Some fact -> appendByte 1uy; appendText fact
+        let appendFeature feature =
+            appendText feature.EnvironmentFeatureId
+            appendInt32 (kindCode feature.EnvironmentKind)
+            appendInt32 (stateCode feature.EnvironmentState)
+            appendCell feature.EnvironmentEdge.EdgeCell
+            appendInt32 (directionCode feature.EnvironmentEdge.EdgeDirection)
+            feature.EnvironmentFeatureCells |> canonicalSortedDistinct |> appendList appendCell
+            appendPermeability feature.ModalityPermeability
+            appendCover feature.DirectionalCover
+            feature.CapabilityDescriptors |> canonicalSortedBy _.DescriptorId |> appendList appendCapability
+            feature.QueryDependencyKeys |> canonicalSortedDistinct |> appendList appendText
+
+        appendText "SIR-TACTICAL-AUTHORED-CATALOG"
+        appendInt32 plot.PlotSchemaVersion
+        appendText plot.AuthoredPlotId
+        appendInt32 plot.PlotWidth
+        appendInt32 plot.PlotHeight
+        plot.PlotSlots
+        |> canonicalSortedBy _.PlotSlotId
+        |> appendList (fun slot ->
+            appendText slot.PlotSlotId
+            appendText slot.PlotSlotRole
+            appendCell slot.PlotSlotOrigin
+            appendInt32 slot.PlotSlotWidth
+            appendInt32 slot.PlotSlotHeight
+            slot.ConnectedPlotSlotIds |> canonicalSortedDistinct |> appendList appendText
+            appendBool slot.PlotSlotRequiresRoute)
+        variants
+        |> canonicalSortedBy _.ParcelVariantId
+        |> appendList (fun variant ->
+            appendText variant.ParcelVariantId
+            appendText variant.ParcelRole
+            appendInt32 variant.ParcelWidth
+            appendInt32 variant.ParcelHeight
+            variant.ParcelWalkableCells |> canonicalSortedDistinct |> appendList appendCell
+            variant.ParcelObjectiveCells |> canonicalSortedDistinct |> appendList appendCell
+            variant.ParcelConnections
+            |> canonicalSortedBy _.ConnectionId
+            |> appendList (fun connection ->
+                appendText connection.ConnectionId
+                appendCell connection.ConnectionCell
+                appendInt32 (directionCode connection.ConnectionDirection)
+                appendText connection.ConnectionRole)
+            variant.ParcelFeatures |> canonicalSortedBy _.EnvironmentFeatureId |> appendList appendFeature)
+        bytes.ToArray() |> sha256Hex
 
     let assemble seed plot variants =
         match validate plot variants with
@@ -267,11 +337,14 @@ module TacticalEnvironment =
                      let variant, transform = pool[index]
                      selected @ [ slot, variant, transform ]))
             let placements = choices |> List.map (fun (slot, variant, transform) -> { PlacementSlotId = slot.PlotSlotId; PlacementVariantId = variant.ParcelVariantId; PlacementTransform = transform; PlacementOrigin = slot.PlotSlotOrigin })
-            let cells = choices |> List.collect (fun (slot, variant, transform) -> variant.ParcelWalkableCells |> List.map (transformCell transform variant.ParcelWidth variant.ParcelHeight >> translate slot.PlotSlotOrigin)) |> List.distinct |> List.sort
-            let objectives = choices |> List.collect (fun (slot, variant, transform) -> variant.ParcelObjectiveCells |> List.map (transformCell transform variant.ParcelWidth variant.ParcelHeight >> translate slot.PlotSlotOrigin)) |> List.distinct |> List.sort
-            let features = choices |> List.collect (fun (slot, variant, transform) -> variant.ParcelFeatures |> List.map (transformFeature slot.PlotSlotId transform variant.ParcelWidth variant.ParcelHeight slot.PlotSlotOrigin)) |> List.sortBy _.EnvironmentFeatureId
-            { EnvironmentSchemaVersion = SIR.Domain.TacticalEnvironment.schemaVersion; AssembledPlotId = plot.AuthoredPlotId; AssemblySeed = seed; ParcelPlacements = placements; AssembledWalkableCells = cells; AssembledObjectiveCells = objectives; EnvironmentFeatures = features; EnvironmentAssemblyIdentity = authoredInputIdentity plot variants; EnvironmentContentIdentity = ""; EnvironmentSpatialRevision = 0L; AssemblyCostCounters = { SlotsVisited = plot.PlotSlots.Length; VariantsInspected = inspected; Selections = choices.Length; PlacedCells = cells.Length; PlacedFeatures = features.Length } }
-            |> SIR.Domain.TacticalEnvironment.withContentIdentity |> Ok
+            let cells = choices |> List.collect (fun (slot, variant, transform) -> variant.ParcelWalkableCells |> List.map (transformCell transform variant.ParcelWidth variant.ParcelHeight >> translate slot.PlotSlotOrigin)) |> canonicalSortedDistinct
+            let objectives = choices |> List.collect (fun (slot, variant, transform) -> variant.ParcelObjectiveCells |> List.map (transformCell transform variant.ParcelWidth variant.ParcelHeight >> translate slot.PlotSlotOrigin)) |> canonicalSortedDistinct
+            let features = choices |> List.collect (fun (slot, variant, transform) -> variant.ParcelFeatures |> List.map (transformFeature slot.PlotSlotId transform variant.ParcelWidth variant.ParcelHeight slot.PlotSlotOrigin)) |> canonicalSortedBy _.EnvironmentFeatureId
+            let assemblyIdentity = authoredInputIdentity plot variants
+            let environment =
+                { EnvironmentSchemaVersion = SIR.Domain.TacticalEnvironment.schemaVersion; AssembledPlotId = plot.AuthoredPlotId; AssemblySeed = seed; ParcelPlacements = placements; AssembledWalkableCells = cells; AssembledObjectiveCells = objectives; EnvironmentFeatures = features; EnvironmentAssemblyIdentity = assemblyIdentity; EnvironmentContentIdentity = ""; EnvironmentSpatialRevision = 0L; AssemblyCostCounters = { SlotsVisited = plot.PlotSlots.Length; VariantsInspected = inspected; Selections = choices.Length; PlacedCells = cells.Length; PlacedFeatures = features.Length } }
+                |> SIR.Domain.TacticalEnvironment.withContentIdentity
+            Ok environment
 
     let private actionName = function EnvironmentAction.Open -> "open" | EnvironmentAction.Close -> "close" | EnvironmentAction.Damage _ -> "damage" | EnvironmentAction.Breach _ -> "breach" | EnvironmentAction.Destroy -> "destroy"
     let private actionSupported (feature: EnvironmentFeature) action =

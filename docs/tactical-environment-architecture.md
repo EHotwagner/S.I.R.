@@ -117,12 +117,14 @@ features. A placement records the selected variant, slot, origin, and one of
 four quarter-turn transforms.
 
 Assembly validates the plot and catalog before selection. Slots and compatible
-variants are ordered by ordinal identifier, and a seeded `FS.GG.Game.Core.Rng`
-draw is consumed only when a slot has more than one compatible variant. The
-same schema-v1 inputs and seed therefore produce the same placements, cells,
-features, counters, canonical bytes, and lowercase SHA-256 content identity on
-.NET and Fable. The match retains the assembled instance and its identity; it
-does not silently reinterpret old bytes against a changed catalog.
+variants are ordered by ordinal identifier. Selection is product-owned,
+SHA-256-addressed randomness over the seed and stable slot id because the
+published Fable profile classifies sequential `FS.GG.Game.Core.Rng` as
+`DotNetOnly`. The same schema-v1 inputs and seed therefore produce the same
+placements, cells, features, counters, canonical bytes, and lowercase SHA-256
+content identity on .NET and Fable. The match retains the assembled instance
+and its identity; it does not silently reinterpret old bytes against a changed
+catalog.
 
 The canonical envelope uses explicit schema version `1`, stable union tags,
 little-endian integers, UTF-8 length-prefixed strings, count-prefixed
@@ -130,6 +132,13 @@ collections, and sorted authored and assembled collections. Import verifies a
 supplied identity against the recomputed identity. Unsupported versions,
 invalid geometry, impossible states, and stale identities are typed failures,
 not best-effort repairs.
+
+The assembly identity hashes a separately domain-tagged binary encoding of the
+complete authored plot and catalog, including unused variants, feature cell
+volumes, cover semantics, capabilities, and dependency keys. The assembled
+canonical envelope embeds that identity, so either authored-catalog drift or
+runtime state drift changes the final content identity without requiring the
+runtime to retain mutable authoring objects.
 
 ### Semantic features and requester knowledge
 

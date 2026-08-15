@@ -4,9 +4,16 @@ set -euo pipefail
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 cd "$repo_root"
 
+# The aggregate is valid from a fresh detached checkout: restore locked .NET
+# dependencies and replace any ambient JS tree with the lockfile-defined tree
+# before the first command that deliberately disables restore.
+dotnet restore SIR.slnx --locked-mode
+npm ci
+
 dotnet build SIR.slnx -c Release --no-restore
 dotnet run --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj -c Release --no-build
 dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-build
+mkdir -p src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0
 npm run build:client
 npm run review:map-editor
 npm run review:persistent-workspace-m9
