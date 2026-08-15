@@ -41,7 +41,7 @@
       "kind": "analysis",
       "digest": {
         "algorithm": "sha256",
-        "value": "81d9ce2e4ad1ba0b2570063136bf2052e36da6987d1deefed19e6dc7ef457dfd"
+        "value": "0f3e68ce3c571a81bfe97430b62cfeb797680028032f635e173e6d91496663d7"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -51,7 +51,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "5d7f653cd15f934f0668eccc300c73fe062f0f5d40eacf38decc41d5940e096d"
+        "value": "e3378ad107285bbf206c8710ac1c590b13aab718ea6523d65a2b198e0f856d71"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +81,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "f581a43d0ffdf71471c31660df4457408be265baee5e8810a5ca1fed20f2b774"
+        "value": "92965a304bf6a3dbcc22774b5ec73c91a482fdca844519919e599df1e1e691c0"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -2167,6 +2167,22 @@
   "findings": [
     {
       "id": "VF001",
+      "severity": "warning",
+      "category": "warning",
+      "path": "work/184-scenario-catalog/evidence.yml",
+      "relatedIds": [
+        "analysis",
+        "checklist",
+        "clarifications",
+        "plan",
+        "spec",
+        "tasks"
+      ],
+      "message": "One or more evidence source snapshots no longer match current source digests.",
+      "correction": "Rerun the evidence command after reviewing the changed source artifacts."
+    },
+    {
+      "id": "VF002",
       "severity": "advisory",
       "category": "advisory",
       "path": "work/184-scenario-catalog/evidence.yml",
@@ -2203,6 +2219,21 @@
     }
   ],
   "diagnostics": [
+    {
+      "id": "evidence.staleEvidenceSource",
+      "severity": "warning",
+      "artifact": "work/184-scenario-catalog/evidence.yml",
+      "message": "One or more evidence source snapshots no longer match current source digests.",
+      "correction": "Rerun the evidence command after reviewing the changed source artifacts.",
+      "relatedIds": [
+        "analysis",
+        "checklist",
+        "clarifications",
+        "plan",
+        "spec",
+        "tasks"
+      ]
+    },
     {
       "id": "evidence.performanceBudgetPassed",
       "severity": "info",

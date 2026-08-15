@@ -5,6 +5,21 @@ open SIR.Client
 
 let private require condition message = if not condition then failwith message
 
+type private StressObservation =
+    { MapWidth: int
+      MapHeight: int
+      Units: int
+      Edges: int
+      Zones: int
+      SimulationTicks: int
+      Events: int
+      Checkpoints: int
+      PathExpansions: int
+      PeakLosSamples: int
+      PeakCombatResolutions: int
+      ProjectionFrames: int
+      SceneNodes: int }
+
 let run () =
     let runPackage package =
         ExperienceSamples.importPackage (ExperienceSamples.encodePackage package)
@@ -15,62 +30,89 @@ let run () =
         |> Result.defaultWith (fun errors -> failwith (string errors)) |> ignore
         ExperienceSamples.replayFrames { package.Replay with Ticks = 1 } |> Array.tryLast |> ignore
     ExperienceSamples.packages |> List.iter runPackage
+    let runStressRoute () =
+        let stress = ExperienceSamples.stressPackage ()
+        let samples = ResizeArray<float>()
+        let timed action =
+            let timer = Diagnostics.Stopwatch.StartNew()
+            let value = action ()
+            timer.Stop()
+            samples.Add timer.Elapsed.TotalMilliseconds
+            value
+        timed (fun () ->
+            MapEditor.tryImport stress.Map.MapText
+            |> Result.defaultWith (fun error -> failwith ("The serialized 80x80 stress fixture failed production import: " + error))
+            |> ignore)
+        let editor = ExperienceSamples.editorState stress.Map
+        let initial =
+            ExperienceSamples.simulator stress.Map
+            |> Option.defaultWith (fun () -> failwith "The 80x80 stress map did not enter the production simulator.")
+        let selected = Some 1
+        let path =
+            timed (fun () ->
+                MapEditorSimulator.preview selected { CellColumn = 79; CellRow = 79 } initial
+                |> Option.defaultWith (fun () -> failwith "The production route preview returned no 80x80 path result."))
+        let mutable current = initial
+        let handoffs = ResizeArray<SimulatorHandoff>()
+        let scenes = ResizeArray<BattlefieldScene>()
+        handoffs.Add current
+        scenes.Add(timed (fun () -> Battlefield.scene (MapEditorSimulator.frame selected current) Battlefield.initial))
+        for _ in 1 .. stress.Replay.Ticks do
+            let handoff, scene =
+                timed (fun () ->
+                    let next = MapEditorSimulator.update StepSimulator selected current
+                    next, Battlefield.scene (MapEditorSimulator.frame selected next) Battlefield.initial)
+            current <- handoff
+            handoffs.Add handoff
+            scenes.Add scene
+        let frames = handoffs |> Seq.map (MapEditorSimulator.frame selected) |> Seq.toList
+        let cost = ExperienceSamples.catalogCost [ stress ]
+        { MapWidth = editor.Map.Width
+          MapHeight = editor.Map.Height
+          Units = stress.Forces.Length
+          Edges = cost.EdgeCount
+          Zones = cost.ZoneCount
+          SimulationTicks = stress.Replay.Ticks
+          Events = handoffs |> Seq.sumBy (fun handoff -> handoff.LastEvents.Length)
+          Checkpoints = stress.ExpectedCheckpoints.Length
+          PathExpansions = path.PathExpansions
+          PeakLosSamples = handoffs |> Seq.map (fun handoff -> int handoff.LastCounters.LosSamples) |> Seq.max
+          PeakCombatResolutions = handoffs |> Seq.map (fun handoff -> int handoff.LastCounters.CombatResolutions) |> Seq.max
+          ProjectionFrames = frames.Length
+          SceneNodes = scenes |> Seq.map _.InteractiveNodeEstimate |> Seq.max }, List.ofSeq samples
+    // Warm up the exact production stress route before either counters or timings are retained.
     let stress = ExperienceSamples.stressPackage ()
-    runPackage stress
-    MapEditor.tryImport stress.Map.MapText
-    |> Result.defaultWith (fun error -> failwith ("The serialized 80x80 stress fixture failed production import: " + error))
-    |> ignore
-    let editor = ExperienceSamples.editorState stress.Map
-    let initial =
-        ExperienceSamples.simulator stress.Map
-        |> Option.defaultWith (fun () -> failwith "The 80x80 stress map did not enter the production simulator.")
-    let selected = Some 1
-    let path =
-        MapEditorSimulator.preview selected { CellColumn = 79; CellRow = 79 } initial
-        |> Option.defaultWith (fun () -> failwith "The production route preview returned no 80x80 path result.")
-    let handoffs =
-        [ 1 .. stress.Replay.Ticks ]
-        |> List.scan (fun handoff _ -> MapEditorSimulator.update StepSimulator selected handoff) initial
-    let scenes =
-        handoffs
-        |> List.map (fun handoff ->
-            Battlefield.scene (MapEditorSimulator.frame selected handoff) Battlefield.initial)
-    let frames = ExperienceSamples.replayFrames stress.Replay
-    let events = frames |> Array.sumBy (fun frame -> frame.Events.Length)
-    let losSamples = handoffs |> List.map (fun handoff -> int handoff.LastCounters.LosSamples) |> List.max
-    let combatResolutions = handoffs |> List.map (fun handoff -> int handoff.LastCounters.CombatResolutions) |> List.max
-    let sceneNodes = scenes |> List.map _.InteractiveNodeEstimate |> List.max
+    for _ in 1 .. 20 do runStressRoute () |> ignore
+    let observation, _ = runStressRoute ()
     require
         (stress.Map.MapText.Contains("size 80 80")
-         && stress.Forces.Length = 200
-         && editor.Map.Width = 80
-         && editor.Map.Height = 80
-         && frames.Length = 9
-         && path.PathExpansions > 0
-         && losSamples > 0
-         && combatResolutions > 0
-         && sceneNodes > stress.Forces.Length)
+         && observation.Units = 200
+         && observation.MapWidth = 80
+         && observation.MapHeight = 80
+         && observation.ProjectionFrames = 9
+         && observation.PathExpansions > 0
+         && observation.PeakLosSamples > 0
+         && observation.PeakCombatResolutions > 0
+         && observation.SceneNodes > observation.Units)
         ("The 80x80/200-unit production-route stress qualification changed: map="
-         + string editor.Map.Width + "x" + string editor.Map.Height
+         + string observation.MapWidth + "x" + string observation.MapHeight
          + ", serialized80=" + string (stress.Map.MapText.Contains("size 80 80"))
-         + ", forces=" + string stress.Forces.Length
-         + ", frames=" + string frames.Length
-         + ", path=" + string path.PathExpansions
-         + ", los=" + string losSamples
-         + ", combat=" + string combatResolutions
-         + ", scene=" + string sceneNodes
-         + ", validation=" + string editor.Validation + ".")
+         + ", forces=" + string observation.Units
+         + ", frames=" + string observation.ProjectionFrames
+         + ", path=" + string observation.PathExpansions
+         + ", los=" + string observation.PeakLosSamples
+         + ", combat=" + string observation.PeakCombatResolutions
+         + ", scene=" + string observation.SceneNodes + ".")
     require
-        (path.PathExpansions <= 4096
-         && losSamples <= 256
-         && combatResolutions <= 256
-         && sceneNodes <= 8000)
+        (observation.PathExpansions <= 4096
+         && observation.PeakLosSamples <= 256
+         && observation.PeakCombatResolutions <= 256
+         && observation.SceneNodes <= 8000)
         ("The authoritative production path/LOS/combat/scene structural budgets changed: "
-         + string path.PathExpansions + "/" + string losSamples + "/"
-         + string combatResolutions + "/" + string sceneNodes + ".")
-    let cost = ExperienceSamples.catalogCost [ stress ]
+         + string observation.PathExpansions + "/" + string observation.PeakLosSamples + "/"
+         + string observation.PeakCombatResolutions + "/" + string observation.SceneNodes + ".")
     printfn "Scenario catalog structural counters: scenarios=1 maps=1 map=80x80 units=%d edges=%d zones=%d simulationTicks=%d events=%d checkpoints=%d pathExpansions=%d peakLosSamples=%d peakCombatResolutions=%d projectionFrames=%d sceneNodes=%d."
-        stress.Forces.Length cost.EdgeCount cost.ZoneCount stress.Replay.Ticks events stress.ExpectedCheckpoints.Length path.PathExpansions losSamples combatResolutions frames.Length sceneNodes
+        observation.Units observation.Edges observation.Zones observation.SimulationTicks observation.Events observation.Checkpoints observation.PathExpansions observation.PeakLosSamples observation.PeakCombatResolutions observation.ProjectionFrames observation.SceneNodes
     let samples =
         [ for _ in 1 .. 20 do
               for package in ExperienceSamples.packages do
@@ -84,3 +126,19 @@ let run () =
     require (p95 <= 20.0 && p99 <= 50.0) ("Scenario catalog workload exceeded 20/50 ms: " + string p95 + "/" + string p99 + ".")
     printfn "Scenario catalog PERF-SMOKE: p95 %.3f ms, p99 %.3f ms, samples [%s]." p95 p99
         (samples |> List.map (fun value -> value.ToString("0.###", Globalization.CultureInfo.InvariantCulture)) |> String.concat ",")
+    let stressObservations, stressSamples =
+        [ for _ in 1 .. 20 do
+              yield runStressRoute () ]
+        |> List.unzip
+    let stressSamples = List.concat stressSamples
+    require
+        (stressObservations |> List.forall ((=) observation))
+        "The production stress route emitted nondeterministic structural counters."
+    let sortedStress = List.sort stressSamples
+    let stressPercentile value = sortedStress[int (Math.Ceiling(float sortedStress.Length * value)) - 1]
+    let stressP95, stressP99 = stressPercentile 0.95, stressPercentile 0.99
+    printfn "Scenario catalog STRESS-SMOKE: workload=scenario-catalog-80x80-200-v1 p95 %.3f ms, p99 %.3f ms, samples [%s]." stressP95 stressP99
+        (stressSamples |> List.map (fun value -> value.ToString("0.###", Globalization.CultureInfo.InvariantCulture)) |> String.concat ",")
+    require
+        (stressP95 <= 20.0 && stressP99 <= 50.0)
+        ("Scenario catalog stress workload exceeded 20/50 ms: " + string stressP95 + "/" + string stressP99 + ".")

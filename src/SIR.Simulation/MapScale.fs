@@ -307,6 +307,55 @@ module MapScale =
             | Some first, Some _ -> Some first
         else direct
 
+    let private staticCollisionWithOccupied board (occupied: System.Collections.Generic.Dictionary<Cell, int32>) unit destination =
+        let cells = if unit.Size = 1 then [| destination |] else footprint unit.Size destination
+        match cells |> Array.tryFind (fun p -> p.Col < 0 || p.Row < 0 || p.Col >= board.Width || p.Row >= board.Height) with
+        | Some address -> Some(OutsideBoard address)
+        | None ->
+            match cells |> Array.tryFind (fun p -> Map.tryFind p board.Terrain = Some MapScaleTerrain.BlockedTerrain) with
+            | Some address -> Some(BlockedTerrainCollision address)
+            | None ->
+                let blockingEdge =
+                    if unit.Size <> 1 then
+                        crossedEdges unit destination |> Array.tryFind (edgeBlocks board)
+                    else
+                        let dc = destination.Col - unit.Cell.Col
+                        let dr = destination.Row - unit.Cell.Row
+                        [| if dc > 0 then unit.Cell.Col, unit.Cell.Row, EastEdge
+                           elif dc < 0 then destination.Col, unit.Cell.Row, EastEdge
+                           if dr > 0 then unit.Cell.Col, unit.Cell.Row, SouthEdge
+                           elif dr < 0 then unit.Cell.Col, destination.Row, SouthEdge |]
+                        |> Array.tryFind (edgeBlocks board)
+                match blockingEdge with
+                | Some(column, row, direction) ->
+                    let origin, target =
+                        match direction with
+                        | EastEdge -> cell column row, cell (column + 1) row
+                        | SouthEdge -> cell column row, cell column (row + 1)
+                    Some(BlockingEdge(origin, target))
+                | None ->
+                    cells
+                    |> Array.tryPick (fun address ->
+                        match occupied.TryGetValue address with
+                        | true, id when id <> unit.Id -> Some(OccupiedCell(address, id))
+                        | true, _ -> None
+                        | false, _ -> None)
+
+    let private movementCollisionWithOccupied board occupied unit destination =
+        let direct = staticCollisionWithOccupied board occupied unit destination
+        let dc = destination.Col - unit.Cell.Col
+        let dr = destination.Row - unit.Cell.Row
+        if direct.IsNone && dc <> 0 && dr <> 0 then
+            let horizontal = cell destination.Col unit.Cell.Row
+            let vertical = cell unit.Cell.Col destination.Row
+            match staticCollisionWithOccupied board occupied unit horizontal,
+                  staticCollisionWithOccupied board occupied unit vertical with
+            | None, None -> None
+            | Some collision, None
+            | None, Some collision -> Some collision
+            | Some first, Some _ -> Some first
+        else direct
+
     let private pathNeighbors =
         [| 0, -1; 1, 0; 0, 1; -1, 0; 1, -1; 1, 1; -1, 1; -1, -1 |]
 
@@ -318,21 +367,33 @@ module MapScale =
 
     let tryFindPath board units unit destination =
         let origin = unit.Cell
-        let mutable frontier = [ 0, 0, origin.Row, origin.Col, origin ]
-        let mutable costs = Map.ofList [ origin, 0 ]
-        let mutable previous = Map.empty<Cell, Cell>
+        let occupied =
+            let cells = System.Collections.Generic.Dictionary<Cell, int32>()
+            units
+            |> Map.toSeq
+            |> Seq.filter (fun (id, _) -> id <> unit.Id)
+            |> Seq.sortBy fst
+            |> Seq.iter (fun (id, other) ->
+                footprint other.Size other.Cell
+                |> Array.iter (fun address ->
+                    if not (cells.ContainsKey address) then cells.Add(address, id)))
+            cells
+        let mutable frontier = Set.singleton (heuristic origin destination, 0, origin.Row, origin.Col, origin)
+        let costs = System.Collections.Generic.Dictionary<Cell, int32>()
+        costs.Add(origin, 0)
+        let previous = System.Collections.Generic.Dictionary<Cell, Cell>()
         let mutable result = None
         let mutable expandedNodes = 0
-        while result.IsNone && not (List.isEmpty frontier) do
-            let _, cost, _, _, current = List.min frontier
-            frontier <- frontier |> List.filter (fun (_, _, _, _, p) -> p <> current)
+        while result.IsNone && not (Set.isEmpty frontier) do
+            let _, cost, _, _, current = Set.minElement frontier
+            frontier <- Set.remove (cost + heuristic current destination, cost, current.Row, current.Col, current) frontier
             expandedNodes <- expandedNodes + 1
             if current = destination then
                 let mutable cursor = current
                 let mutable route = []
                 while cursor <> origin do
                     route <- cursor :: route
-                    cursor <- Map.find cursor previous
+                    cursor <- previous[cursor]
                 let distance, movementCost =
                     ((0, 0, origin), route)
                     ||> List.fold (fun (distance, total, prior) next ->
@@ -351,13 +412,18 @@ module MapScale =
                 let probe = { unit with Cell = current }
                 for dc, dr in pathNeighbors do
                     let next = cell (current.Col + dc) (current.Row + dr)
-                    if movementCollision board units probe next |> Option.isNone then
+                    if movementCollisionWithOccupied board occupied probe next |> Option.isNone then
                         let nextCost = cost + movementCost board probe current next
-                        let known = Map.tryFind next costs |> Option.defaultValue Int32.MaxValue
+                        let known =
+                            match costs.TryGetValue next with
+                            | true, value -> value
+                            | false, _ -> Int32.MaxValue
                         if nextCost < known then
-                            costs <- Map.add next nextCost costs
-                            previous <- Map.add next current previous
-                            frontier <- (nextCost + heuristic next destination, nextCost, next.Row, next.Col, next) :: frontier
+                            if known <> Int32.MaxValue then
+                                frontier <- Set.remove (known + heuristic next destination, known, next.Row, next.Col, next) frontier
+                            costs[next] <- nextCost
+                            previous[next] <- current
+                            frontier <- Set.add (nextCost + heuristic next destination, nextCost, next.Row, next.Col, next) frontier
         result
 
     let private axisGap firstStart firstSize secondStart secondSize =
@@ -422,16 +488,19 @@ module MapScale =
     let private nearestHostile unit units =
         units |> Map.toSeq |> Seq.map snd
         |> Seq.filter (fun other -> other.Id <> unit.Id && other.Side <> unit.Side && other.Health > 0)
-        |> Seq.sortBy (fun other -> footprintDistance unit other, other.Id)
-        |> Seq.tryHead
+        |> Seq.fold (fun nearest other ->
+            match nearest with
+            | None -> Some other
+            | Some current when (footprintDistance unit current, current.Id) <= (footprintDistance unit other, other.Id) -> nearest
+            | Some _ -> Some other) None
 
-    let private nextApproachStep state unit target =
+    let private nextApproachStep state occupied unit target =
         let profile = combatProfileFor unit.ClassId
         pathNeighbors
         |> Array.choose (fun (dc, dr) ->
             let destination = cell (unit.Cell.Col + dc) (unit.Cell.Row + dr)
             let candidate = { unit with Cell = destination }
-            movementCollision state.Board state.Units unit destination
+            movementCollisionWithOccupied state.Board occupied unit destination
             |> Option.map (fun _ -> None)
             |> Option.defaultValue (Some(footprintDistance candidate target, movementCost state.Board unit unit.Cell destination, destination)))
         |> Array.sort
@@ -440,6 +509,12 @@ module MapScale =
 
     let private collect state =
         let mutable losSamples = 0
+        let occupied = System.Collections.Generic.Dictionary<Cell, int32>()
+        state.Units
+        |> Map.iter (fun id unit ->
+            footprint unit.Size unit.Cell
+            |> Array.iter (fun address ->
+                if not (occupied.ContainsKey address) then occupied.Add(address, id)))
         let intents =
             state.Units |> Map.toList |> List.map snd |> List.sortBy _.Id
             |> List.choose (fun unit ->
@@ -472,7 +547,7 @@ module MapScale =
                                 losSamples <- losSamples + samples
                                 if canResolve then Some(AttackIntent(unit, target, profile))
                                 else
-                                    match nextApproachStep state unit target with
+                                    match nextApproachStep state occupied unit target with
                                     | Some next -> Some(MoveIntent(unit, next, "toward its attack position"))
                                     | None -> Some(HoldIntent(unit, "holds; no collision-free approach exists")))
         intents, losSamples

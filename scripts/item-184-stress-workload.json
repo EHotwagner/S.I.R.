@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "workloadId": "scenario-catalog-80x80-200-v1",
+  "workloadClass": "stress",
+  "definition": {
+    "mapFormat": "SIR-MAP 4",
+    "mapWidth": 80,
+    "mapHeight": 80,
+    "units": 200,
+    "routeDestination": {
+      "column": 79,
+      "row": 79
+    },
+    "simulationTicks": 8,
+    "warmupRoutes": 20,
+    "measuredRoutes": 20,
+    "productionRoutes": [
+      "MapEditor.tryImport",
+      "MapScale.route",
+      "MapScale.tick",
+      "Battlefield.scene"
+    ]
+  },
+  "expectedStructuralCounters": {
+    "pathExpansions": 1602,
+    "peakLosSamples": 80,
+    "peakCombatResolutions": 90,
+    "sceneNodes": 6601
+  },
+  "budgets": {
+    "maxP95Ms": 20,
+    "maxP99Ms": 50,
+    "pathExpansions": 4096,
+    "peakLosSamples": 256,
+    "peakCombatResolutions": 256,
+    "sceneNodes": 8000
+  }
+}
