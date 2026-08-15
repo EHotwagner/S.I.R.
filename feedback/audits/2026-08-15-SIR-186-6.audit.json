@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-15-SIR-186-6.md",
-  "reportSha256": "f07f4fcbd5248a6392d7a466bea8d38001a0121e64ec9455be4196e686f8cd12",
+  "reportSha256": "71682371df17feb1c32ec11759bfae9b29610eac183e294ebf2bda9af0dc4bd8",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -10,10 +10,10 @@
       "status": "positive-pattern",
       "missingFacts": [],
       "checkedEvidence": [
-        { "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md", "result": "verified", "sha256": "88b842aabaeff4cf3779885ca08a06835b3e5d9f0877c30ce3b3600ace36c2b3" },
+        { "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md", "result": "verified", "sha256": "1582d2456f2edbc62c54bfd260250ca80bb1e3e5d1d145825b26a1837029e647" },
         { "locator": "file:scripts/test-production-delivery-budget.mjs", "result": "verified", "sha256": "bd99b2ebb66a3b765fdc8036cb568a9b8a598d3fb4bc53666e5273f1016cde5a" },
         { "locator": "file:tests/SIR.Browser.Tests/production-delivery.spec.js", "result": "verified", "sha256": "0f16fa283d8b0f9ca3d38a520a00f15bfed322bf687e9b29616d5ea573da4f13" },
-        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "7e793645a57b2252210bb35c22b1d71a8bed3f19eac42cfe34f335c11709925e" },
+        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "799acbd94e4a985dd2d68a9242d04d71869f1debfc98596908a5254e3e5e4e2c" },
         { "locator": "command:node scripts/test-production-delivery-budget.mjs", "result": "verified" },
         { "locator": "command:SIR_DELIVERY_BUDGET_MAX_APP_RAW=1190000 node scripts/test-production-delivery-budget.mjs", "result": "verified" },
         { "locator": "command:SIR_DELIVERY_BROWSER_MUTATE_SUBJECT=initial-bytes npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js tests/SIR.Browser.Tests/production-delivery.spec.js", "result": "verified" },
@@ -21,7 +21,7 @@
       ],
       "confidenceLimits": [
         "The 1,196,127-byte application and 1,228,472-byte browser-graph values are retained round-one measurements; the current aggregate measured a 1,198,954-byte application entry, still below budget.",
-        "The two mutation commands are expected-failure proofs.",
+        "The tightened static command failed at 1,198,954 bytes against 1,190,000, and the injected browser command failed at 2,481,338 initial bytes against 1,250,000; these are intentional red proofs.",
         "The abandoned mangling experiments and rebuild count are committed collector evidence, not independently replayable history.",
         "Delivery measurements are headless and host-specific; repair-head hosted CI remains pending."
       ]
@@ -56,9 +56,9 @@
         { "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified" }
       ],
       "confidenceLimits": [
-        "The current aggregate proves repaired bindings and no tracked drift; it does not reproduce the historical red candidates.",
+        "The current aggregate proves repaired bindings and tracked no-drift; it does not reproduce the historical red candidates.",
         "The historical diff verifies both manifest digest updates and the pinned-source assertion update.",
-        "The manifests changed again at the round-two source boundary because production bundle bytes changed; the exact f678250 aggregate verified their current bindings."
+        "The manifests changed again at the round-two source boundary because production bundle bytes changed; the exact 681d5b8 aggregate verified their current bindings."
       ]
     },
     {
@@ -67,17 +67,20 @@
       "missingFacts": [],
       "checkedEvidence": [
         { "locator": "file:src/SIR.Simulation/TacticalEnvironment.fs", "result": "verified", "sha256": "4a98aea38182762bc3fbe5f72a3c13dd0b277ddf5f390d933b0844eacb0d62bb" },
-        { "locator": "file:tests/SIR.Match.Tests/Program.fs", "result": "verified", "sha256": "fcd69ea5def34aad5d1a60f474c02269fcd833bc8e0e00961b6ab188a33f870a" },
-        { "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md", "result": "verified", "sha256": "88b842aabaeff4cf3779885ca08a06835b3e5d9f0877c30ce3b3600ace36c2b3" },
-        { "locator": "file:readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified", "sha256": "615f4d0e55a5ec55e7a8f8939a64a4ec8de2ed40c3fac7f947cf67d4c19a6cb9" },
-        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "7e793645a57b2252210bb35c22b1d71a8bed3f19eac42cfe34f335c11709925e" },
+        { "locator": "file:tests/SIR.Match.Tests/Program.fs", "result": "verified", "sha256": "b130972eec46769d5d503f970b261f2333e285ea365decdd1745c237b1c65ab7" },
+        { "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md", "result": "verified", "sha256": "1582d2456f2edbc62c54bfd260250ca80bb1e3e5d1d145825b26a1837029e647" },
+        { "locator": "file:readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified", "sha256": "b3742ff69eaeade0b0657b41f0dad641bb4590fc34ed91520ab15530fc6284cb" },
+        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "799acbd94e4a985dd2d68a9242d04d71869f1debfc98596908a5254e3e5e4e2c" },
         { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/31910063550", "result": "verified" },
+        { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/31913327392", "result": "verified" },
         { "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified" }
       ],
       "confidenceLimits": [
-        "Hosted run 31910063550 verifies the round-one head and the greater-than-50-ms failure, but does not itself establish the allocation root cause.",
+        "Hosted run 31910063550 job 95073674188 verifies round-one head 74d276020ccae16acdd422461f93f28373d902a6 and the greater-than-50-ms compound preview failure; it does not establish allocation as that run's sole cause.",
+        "Hosted diagnostic run 31913327392 job 95081533316 verifies head 323516531753f89cedd7d67b54c0b5589b9226a5 and an exact 13,693,216-byte observation failing the then-13,000,000-byte allocation bound; it does not itself execute the later user-authorized 16,000,000-byte acceptance bound.",
+        "The final 16,000,000-byte allocation ceiling and independent unchanged 50-ms ceiling are source-verified; the exact 681d5b8 detached aggregate passed both at 12,124,472 bytes and 19.201 ms, then passed again after mutation restoration at 12,124,472 bytes and 19.456 ms.",
+        "The aggregate's self-restoring production-source mutation inserts and retains 14,000,000 bytes, requires the allocation-specific 16,000,000-byte error, restores the source, rebuilds, verifies tracked no-drift, and reruns green. Its exact approximately-26.1-MB red observation (26,124,528 bytes) is retained in the committed performance receipt rather than printed by the aggregate.",
         "The 24,957,944-to-12,124,472 allocation comparison and sixteen-process 21.157–31.548-ms range are committed historical measurements; the aggregate does not launch the sixteen-process contention batch.",
-        "The independent f678250 aggregate reproduced 12,124,472 allocated bytes, 19.405-ms assembly, exact exterior/preview/content identities, native/Fable exterior parity, tracked no-drift, delivery/browser gates, and the allocation mutation.",
         "The Unicode differential is a native exact-grammar fixture; the aggregate's explicit native/Fable byte comparison uses the exterior fixture.",
         "The general sorted fallback remains source-bound, but this finding does not claim a newly executed malformed-input equivalence differential.",
         "Timings and allocation counts remain host observations; exact identities, counters, and pass/fail bounds are the deterministic contracts."
