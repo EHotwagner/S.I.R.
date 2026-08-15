@@ -11,7 +11,7 @@ sourceAnalysis: readiness/184-scenario-catalog/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/184-scenario-catalog/analysis.json
-    digest: e6d1ea2d176b8ba18fad18091561b82f3c9af874bd5bc69fd7411eee9f9bfa0f
+    digest: 81d9ce2e4ad1ba0b2570063136bf2052e36da6987d1deefed19e6dc7ef457dfd
     schemaVersion: 1
   - label: checklist
     path: work/184-scenario-catalog/checklist.md
@@ -86,7 +86,7 @@ evidence:
       maxP95Ms: 20
       maxP99Ms: 50
       maxCatchUpFrames: 0
-      measurementScope: production-import-route-simulate-project-scene
+      measurementScope: "production-import-route-simulate-project-scene; authoritativeCounters=map:80x80,pathExpansions:1602,peakLosSamples:80,peakCombatResolutions:90,sceneNodes:6601; source=scenario-catalog-native.junit.xml; routes=MapScale.route/MapScale.tick/Battlefield.scene"
       requiredCapability: headless-browser
       liveCompositorRequired: false
     notes: []

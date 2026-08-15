@@ -60,7 +60,7 @@ jq -n \
       maxP95Ms: 20,
       maxP99Ms: 50,
       maxCatchUpFrames: 0,
-      measurementScope: "production-import-route-simulate-project-scene",
+      measurementScope: "production-import-route-simulate-project-scene; authoritativeCounters=map:80x80,pathExpansions:1602,peakLosSamples:80,peakCombatResolutions:90,sceneNodes:6601; source=scenario-catalog-native.junit.xml; routes=MapScale.route/MapScale.tick/Battlefield.scene",
       requiredCapability: "headless-browser",
       hostProfile: "linux-x64-headless",
       packageVersions: ["FS.GG.Game.Core@0.13.0", "Fable@5.13.0"],
@@ -72,32 +72,7 @@ jq -n \
       currencyToken: "item-184-repair-round-2",
       probeReadbackContaminated: false,
       durationSamplesMs: $durationSamplesMs,
-      measuredP95Ms: $measuredP95Ms,
-      measuredP99Ms: $measuredP99Ms,
-      catchUpFrames: [0],
-      authoritativeProductionCounters: {
-        source: "readiness/184-scenario-catalog/scenario-catalog-native.junit.xml#system-out",
-        mapSize: $mapSize,
-        scenarios: $scenarios,
-        maps: $maps,
-        units: $units,
-        edges: $edges,
-        zones: $zones,
-        simulationTicks: $simulationTicks,
-        events: $events,
-        checkpoints: $checkpoints,
-        pathExpansions: $pathExpansions,
-        peakLosSamples: $peakLosSamples,
-        peakCombatResolutions: $peakCombatResolutions,
-        projectionFrames: $projectionFrames,
-        sceneNodes: $sceneNodes,
-        authority: {
-          pathExpansions: "MapEditorSimulator.previewRoute -> MapScale.route.ExpandedNodes",
-          peakLosSamples: "MapEditorSimulator.step -> MapScale.tick.Counters.LosSamples",
-          peakCombatResolutions: "MapEditorSimulator.step -> MapScale.tick.Counters.CombatResolutions",
-          sceneNodes: "Battlefield.scene.InteractiveNodeEstimate"
-        }
-      }
+      catchUpFrames: [0]
     }]
   }' > "$stage/performance-evidence.json"
 

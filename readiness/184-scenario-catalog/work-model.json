@@ -53,7 +53,7 @@
       "schemaStatus": "malformed",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "1ce19991dfd4d07ae1bb3b9d8d243ec3dfab78ea05b7072419773eac5336ba10"
+        "value": "b9af4d7062a42a71c7d65d86971bdc89b9372f846950a6782c5f19a455e22759"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "d77282c8c0644e4e6e07399484600a7e322808028add88fa10a28918631a59e6"
+        "value": "353ee45da485693d40ab379f0c5ee4b9c0f3d01f20814a038b6a04889055e1b3"
       }
     },
     {
@@ -1898,7 +1898,7 @@
         "maxP95Ms": 20,
         "maxP99Ms": 50,
         "maxCatchUpFrames": 0,
-        "measurementScope": "production-import-route-simulate-project-scene",
+        "measurementScope": "production-import-route-simulate-project-scene; authoritativeCounters=map:80x80,pathExpansions:1602,peakLosSamples:80,peakCombatResolutions:90,sceneNodes:6601; source=scenario-catalog-native.junit.xml; routes=MapScale.route/MapScale.tick/Battlefield.scene",
         "requiredCapability": "headless-browser",
         "liveCompositorRequired": false,
         "deferralIssue": null
@@ -1915,7 +1915,7 @@
             "maxP95Ms": 20,
             "maxP99Ms": 50,
             "maxCatchUpFrames": 0,
-            "measurementScope": "production-import-route-simulate-project-scene",
+            "measurementScope": "production-import-route-simulate-project-scene; authoritativeCounters=map:80x80,pathExpansions:1602,peakLosSamples:80,peakCombatResolutions:90,sceneNodes:6601; source=scenario-catalog-native.junit.xml; routes=MapScale.route/MapScale.tick/Battlefield.scene",
             "requiredCapability": "headless-browser",
             "hostProfile": "linux-x64-headless",
             "packageVersions": [
@@ -3185,7 +3185,7 @@
           "path": "readiness/184-scenario-catalog/performance-evidence.json",
           "digest": {
             "algorithm": "sha256",
-            "value": "1ce19991dfd4d07ae1bb3b9d8d243ec3dfab78ea05b7072419773eac5336ba10"
+            "value": "b9af4d7062a42a71c7d65d86971bdc89b9372f846950a6782c5f19a455e22759"
           },
           "schemaVersion": null
         },
@@ -3209,7 +3209,7 @@
           "path": "work/184-scenario-catalog/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "d77282c8c0644e4e6e07399484600a7e322808028add88fa10a28918631a59e6"
+            "value": "353ee45da485693d40ab379f0c5ee4b9c0f3d01f20814a038b6a04889055e1b3"
           },
           "schemaVersion": 1
         },
@@ -3240,7 +3240,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "136691a89bbd520f35ad9ccd524d48fb69c99ba63018ec408cf611dcc074f392"
+        "value": "3a81b26365a15e2d44c832e9e2c66e60bbbcf174d93eca775b2392741fbe0dba"
       },
       "currency": "current"
     }

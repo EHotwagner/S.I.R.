@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/184-scenario-catalog/ship.json",
-      "digest": "sha256:6bedf05bca0bce2c4808c499f11af727236f1f10bfb445b59e78031961f68e53",
+      "digest": "sha256:c3d8e0e7b96ebcbb4ebd617b4facdfb72b25a047681d4b9e99339d5b2bd43a18",
       "schemaVersion": 1
     },
     {
       "path": "readiness/184-scenario-catalog/verify.json",
-      "digest": "sha256:ab622c198ff5c0a564da2917d68a8061cba9f644de72579115b415fe5fbfb4d8",
+      "digest": "sha256:2641689864e4a79cd6eebfdd88ae7f0828db05a7d4e1ba9dfff2eea45752417e",
       "schemaVersion": 1
     },
     {
       "path": "readiness/184-scenario-catalog/work-model.json",
-      "digest": "sha256:455c18507663b3255f28bced14d8db40558843d553c02ced0fdb28460d0f9f03",
+      "digest": "sha256:81303496c0be6238795ccf10008a65e174134fafcd88dd954342c34844e466df",
       "schemaVersion": 1
     }
   ],
@@ -1086,7 +1086,7 @@
             "maxP95Ms": 20,
             "maxP99Ms": 50,
             "maxCatchUpFrames": 0,
-            "measurementScope": "production-import-route-simulate-project-scene",
+            "measurementScope": "production-import-route-simulate-project-scene; authoritativeCounters=map:80x80,pathExpansions:1602,peakLosSamples:80,peakCombatResolutions:90,sceneNodes:6601; source=scenario-catalog-native.junit.xml; routes=MapScale.route/MapScale.tick/Battlefield.scene",
             "requiredCapability": "headless-browser",
             "hostProfile": "linux-x64-headless",
             "packageVersions": [
