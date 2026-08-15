@@ -27,15 +27,45 @@ let private tacticalEnvironmentEvidence () =
 
     let first = assemble 0x186UL
     let replay = assemble 0x186UL
+    let unicodeRole = "rôle-漢-😀"
+    let unicodePlot =
+        { plot with
+            AuthoredPlotId = "extérieur-漢-😀"
+            PlotSlots =
+                plot.PlotSlots
+                |> List.map (fun slot ->
+                    { slot with
+                        PlotSlotId = "slot-ä-😀"
+                        PlotSlotRole = unicodeRole }) }
+    let unicodeVariants =
+        variants
+        |> List.map (fun variant ->
+            { variant with
+                ParcelVariantId = "variante-漢-😀"
+                ParcelRole = unicodeRole
+                ParcelFeatures =
+                    variant.ParcelFeatures
+                    |> List.mapi (fun index feature ->
+                        { feature with
+                            EnvironmentFeatureId = sprintf "élément-漢-😀-%d" index
+                            QueryDependencyKeys = [ sprintf "dépendance-漢-😀-%d" index ] }) })
+    let unicodeEnvironment =
+        SIR.Simulation.TacticalEnvironment.assemble 0x186UL unicodePlot unicodeVariants
+        |> Result.defaultWith (fun findings -> failwithf "Unicode tactical identity fixture failed: %A" findings)
+    require
+        (unicodeEnvironment.EnvironmentAssemblyIdentity = "c214e1d82c8a33f30cf6218be3744f1e1834bbef547d387d98a8740618b99ca9")
+        "The byte-array writer diverged from the legacy schema-v1 UTF-8 authored-input grammar."
     let firstBytes = SIR.Domain.TacticalEnvironment.canonicalBytes first
     let replayBytes = SIR.Domain.TacticalEnvironment.canonicalBytes replay
+    printfn "Exterior authored-input identity: %s." first.EnvironmentAssemblyIdentity
     require
         (firstBytes = replayBytes)
         "Equal tactical-environment seeds did not produce byte-identical canonical environments."
     require
-        (first.EnvironmentContentIdentity = replay.EnvironmentContentIdentity
+        (first.EnvironmentAssemblyIdentity = "4e32081ea4a1fa44c4e04ef8ba1bc99d5efba22fc3766f1a9cdb6af95e5a1263"
+         && first.EnvironmentContentIdentity = replay.EnvironmentContentIdentity
          && SIR.Domain.TacticalEnvironment.identityMatches first)
-        "Deterministic tactical-environment content identity was not self-consistent."
+        "Deterministic tactical-environment authored/content identity was not byte-for-byte stable."
 
     let modalityStates =
         [ EnvironmentFeatureKind.Door, EnvironmentFeatureState.Closed,
@@ -521,17 +551,25 @@ let private tacticalEnvironmentEvidence () =
     require
         (previewValidationClock.Elapsed.TotalMilliseconds < 50.0)
         "Maximum 80x80/2,048-feature validation exceeded its separate 50 ms gate."
+    let previewAllocatedBefore = GC.GetAllocatedBytesForCurrentThread()
     let previewClock = Stopwatch.StartNew()
     let previewEnvironment =
         SIR.Simulation.TacticalEnvironment.assemble 0x186UL previewPlot previewVariants
         |> Result.defaultWith (fun findings -> failwithf "Maximum editor preview failed: %A" findings)
     previewClock.Stop()
-    printfn "Maximum tactical editor preview: validation %.3f ms; assembly %.3f ms." previewValidationClock.Elapsed.TotalMilliseconds previewClock.Elapsed.TotalMilliseconds
+    let previewAllocatedBytes = GC.GetAllocatedBytesForCurrentThread() - previewAllocatedBefore
+    let previewAllocationLimit =
+        if String.Equals(Environment.GetEnvironmentVariable "SIR_TACTICAL_MUTATE_PREVIEW_ALLOCATION", "1", StringComparison.Ordinal)
+        then 0L
+        else 13_000_000L
+    printfn "Maximum tactical editor preview: validation %.3f ms; assembly %.3f ms; %d allocated bytes; authored input %s." previewValidationClock.Elapsed.TotalMilliseconds previewClock.Elapsed.TotalMilliseconds previewAllocatedBytes previewEnvironment.EnvironmentAssemblyIdentity
     require
         (previewEnvironment.AssembledWalkableCells.Length = 6_400
          && previewEnvironment.EnvironmentFeatures.Length = 2_048
+         && previewEnvironment.EnvironmentAssemblyIdentity = "51eedfe20ceb51fad17d33ddacfe68ce0e95cd7df031f1ef5e176226249e0a68"
+         && previewAllocatedBytes < previewAllocationLimit
          && previewClock.Elapsed.TotalMilliseconds < 50.0)
-        "Maximum 80x80/2,048-feature editor preview exceeded its 50 ms budget."
+        "Maximum 80x80/2,048-feature editor preview changed its authored identity, exceeded its allocation bound, or exceeded its 50 ms budget."
 
     let interactionFeatures =
         [ for index in 0 .. 49 ->

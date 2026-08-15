@@ -52,7 +52,7 @@ SIR_JUNIT_OUTPUT=artifacts/test-results/186-tactical-browser.junit.xml \
   npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js \
   tests/SIR.Browser.Tests/tactical-environment.spec.js
 
-for subject in EDGE_STATE CONTENT_IDENTITY DEPENDENCY_LOCALITY DESTRUCTION_BOUND; do
+for subject in EDGE_STATE CONTENT_IDENTITY DEPENDENCY_LOCALITY DESTRUCTION_BOUND PREVIEW_ALLOCATION; do
   variable="SIR_TACTICAL_MUTATE_${subject}"
   if env "$variable=1" dotnet run --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj -c Release --no-build >/dev/null 2>&1; then
     echo "Mutation ${subject} unexpectedly passed" >&2

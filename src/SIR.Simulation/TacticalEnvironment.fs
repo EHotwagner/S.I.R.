@@ -69,7 +69,73 @@ module TacticalEnvironment =
         match values with
         | [] | [ _ ] -> values
         | head :: tail when ordered head tail -> values
-        | _ -> values |> List.distinct |> List.sort
+        | _ ->
+            // List.distinct followed by List.sort builds a Set-shaped allocation graph and then a
+            // second list. Dense editor cells commonly arrive row-major while their canonical record
+            // order is column-major, so that fallback dominated hosted preview allocation. Sort one
+            // compact array in place and rebuild the required distinct list once.
+            let sorted = List.toArray values
+            Array.sortInPlace sorted
+            let mutable distinct = []
+            for index in sorted.Length - 1 .. -1 .. 0 do
+                if index = sorted.Length - 1 || compare sorted[index] sorted[index + 1] <> 0 then
+                    distinct <- sorted[index] :: distinct
+            distinct
+    let private compareCells (left: EnvironmentCell) (right: EnvironmentCell) =
+        let column = compare left.EnvironmentColumn right.EnvironmentColumn
+        if column <> 0 then column else compare left.EnvironmentRow right.EnvironmentRow
+    let private canonicalSortedDistinctCells values =
+        let rec ordered previous remaining =
+            match remaining with
+            | [] -> true
+            | head :: tail when compareCells previous head < 0 -> ordered head tail
+            | _ -> false
+        match values with
+        | [] | [ _ ] -> values
+        | head :: tail when ordered head tail -> values
+        | _ ->
+            let mutable minimumColumn = Int32.MaxValue
+            let mutable maximumColumn = Int32.MinValue
+            let mutable minimumRow = Int32.MaxValue
+            let mutable maximumRow = Int32.MinValue
+            for cell in values do
+                minimumColumn <- min minimumColumn cell.EnvironmentColumn
+                maximumColumn <- max maximumColumn cell.EnvironmentColumn
+                minimumRow <- min minimumRow cell.EnvironmentRow
+                maximumRow <- max maximumRow cell.EnvironmentRow
+            let width = int64 maximumColumn - int64 minimumColumn + 1L
+            let height = int64 maximumRow - int64 minimumRow + 1L
+            let area = width * height
+            if area = int64 values.Length && area <= 1_048_576L then
+                // A complete dense rectangle needs no comparison sort. Mark it once to reject a
+                // duplicate-plus-gap impostor, then emit the exact column/row record order directly.
+                let present = Array.zeroCreate<bool> (int area)
+                let mutable dense = true
+                for cell in values do
+                    let offset =
+                        (cell.EnvironmentRow - minimumRow) * int width
+                        + cell.EnvironmentColumn - minimumColumn
+                    if present[offset] then dense <- false else present[offset] <- true
+                if dense then
+                    [ for column in minimumColumn .. maximumColumn do
+                        for row in minimumRow .. maximumRow ->
+                            { EnvironmentColumn = column; EnvironmentRow = row } ]
+                else
+                    let sorted = List.toArray values
+                    Array.sortInPlaceWith compareCells sorted
+                    let mutable distinct = []
+                    for index in sorted.Length - 1 .. -1 .. 0 do
+                        if index = sorted.Length - 1 || compareCells sorted[index] sorted[index + 1] <> 0 then
+                            distinct <- sorted[index] :: distinct
+                    distinct
+            else
+                let sorted = List.toArray values
+                Array.sortInPlaceWith compareCells sorted
+                let mutable distinct = []
+                for index in sorted.Length - 1 .. -1 .. 0 do
+                    if index = sorted.Length - 1 || compareCells sorted[index] sorted[index + 1] <> 0 then
+                        distinct <- sorted[index] :: distinct
+                distinct
     let private within width height (cell: EnvironmentCell) = cell.EnvironmentColumn >= 0 && cell.EnvironmentRow >= 0 && cell.EnvironmentColumn < width && cell.EnvironmentRow < height
     let private transformDimensions transform width height =
         match transform with ParcelTransform.Identity | ParcelTransform.Rotate180 -> width, height | ParcelTransform.Rotate90 | ParcelTransform.Rotate270 -> height, width
@@ -231,7 +297,7 @@ module TacticalEnvironment =
         let left = transformCell transform width height feature.EnvironmentEdge.EdgeCell |> translate origin
         let right = adjacent feature.EnvironmentEdge |> transformCell transform width height |> translate origin
         let placedId = slotId + ":" + feature.EnvironmentFeatureId
-        { feature with EnvironmentFeatureId = placedId; EnvironmentEdge = edgeBetween left right; EnvironmentFeatureCells = feature.EnvironmentFeatureCells |> List.map (transformCell transform width height >> translate origin) |> canonicalSortedDistinct; QueryDependencyKeys = feature.QueryDependencyKeys |> List.map (fun key -> key + ":" + placedId) |> canonicalSortedDistinct }
+        { feature with EnvironmentFeatureId = placedId; EnvironmentEdge = edgeBetween left right; EnvironmentFeatureCells = feature.EnvironmentFeatureCells |> List.map (transformCell transform width height >> translate origin) |> canonicalSortedDistinctCells; QueryDependencyKeys = feature.QueryDependencyKeys |> List.map (fun key -> key + ":" + placedId) |> canonicalSortedDistinct }
 
     // The published Game.Core Fable profile classifies sequential RNG as
     // DotNetOnly. Parcel selection is therefore product-owned addressed
@@ -254,8 +320,94 @@ module TacticalEnvironment =
         bytes |> CanonicalHash.sha256 |> Array.map (fun value -> value.ToString("x2")) |> String.concat ""
 
     let private authoredInputIdentity (plot: AuthoredPlot) (variants: ParcelVariant list) =
-        let bytes = Collections.Generic.List<byte>(4096)
-        let appendByte value = bytes.Add value
+        // This identity is computed on every editor assembly, and the maximum preview writes thousands
+        // of cells, features, and dependency strings. A generic List<byte> made every scalar a method
+        // call and copied the full payload again through ToArray; that allocation/JIT shape was unstable
+        // on hosted runners. Keep the schema-v1 grammar exact while streaming into one Fable-compatible
+        // exactly sized byte array with no generic per-byte collection path or final full-payload copy.
+        // Count UTF-8 bytes from UTF-16 code units without Encoding.GetByteCount, which Fable does not
+        // support. Isolated surrogates match UTF-8's three-byte replacement scalar; valid pairs use four.
+        let utf8ByteCount (value: string) =
+            let mutable count = 0
+            let mutable index = 0
+            while index < value.Length do
+                let code = int value[index]
+                if code <= 0x7F then
+                    count <- count + 1
+                    index <- index + 1
+                elif code <= 0x7FF then
+                    count <- count + 2
+                    index <- index + 1
+                elif code >= 0xD800 && code <= 0xDBFF && index + 1 < value.Length then
+                    let following = int value[index + 1]
+                    if following >= 0xDC00 && following <= 0xDFFF then
+                        count <- count + 4
+                        index <- index + 2
+                    else
+                        count <- count + 3
+                        index <- index + 1
+                else
+                    count <- count + 3
+                    index <- index + 1
+            count
+        let textSize (value: string) = 4 + utf8ByteCount value
+        let listSize size values = 4 + (values |> List.sumBy size)
+        let cellSize (_: EnvironmentCell) = 8
+        let coverSize = function
+            | None -> 1
+            | Some cover -> 1 + textSize cover.CoverMaterial + 12 + listSize (fun _ -> 4) cover.CoverProtectedDirections
+        let capabilitySize capability =
+            textSize capability.DescriptorId
+            + textSize capability.DescriptorAction
+            + 4
+            + 1
+            + (capability.RequiredKnowledgeFact |> Option.map textSize |> Option.defaultValue 0)
+        let featureSize feature =
+            textSize feature.EnvironmentFeatureId
+            + 4
+            + 4
+            + 8
+            + 4
+            + listSize cellSize feature.EnvironmentFeatureCells
+            + 7
+            + coverSize feature.DirectionalCover
+            + listSize capabilitySize feature.CapabilityDescriptors
+            + listSize textSize feature.QueryDependencyKeys
+        let connectionSize connection =
+            textSize connection.ConnectionId + 8 + 4 + textSize connection.ConnectionRole
+        let slotSize slot =
+            textSize slot.PlotSlotId
+            + textSize slot.PlotSlotRole
+            + 8
+            + 4
+            + 4
+            + listSize textSize slot.ConnectedPlotSlotIds
+            + 1
+        let variantSize variant =
+            textSize variant.ParcelVariantId
+            + textSize variant.ParcelRole
+            + 4
+            + 4
+            + listSize cellSize variant.ParcelWalkableCells
+            + listSize cellSize variant.ParcelObjectiveCells
+            + listSize connectionSize variant.ParcelConnections
+            + listSize featureSize variant.ParcelFeatures
+        let exactByteCount =
+            textSize "SIR-TACTICAL-AUTHORED-CATALOG"
+            + 4
+            + textSize plot.AuthoredPlotId
+            + 4
+            + 4
+            + listSize slotSize plot.PlotSlots
+            + listSize variantSize variants
+        let bytes = Array.zeroCreate<byte> exactByteCount
+        let mutable byteCount = 0
+        let appendByte value =
+            bytes[byteCount] <- value
+            byteCount <- byteCount + 1
+        let appendBytes (values: byte array) =
+            Array.blit values 0 bytes byteCount values.Length
+            byteCount <- byteCount + values.Length
         let appendInt32 (value: int32) =
             appendByte (byte value)
             appendByte (byte (value >>> 8))
@@ -265,7 +417,7 @@ module TacticalEnvironment =
         let appendText (value: string) =
             let encoded = Encoding.UTF8.GetBytes value
             appendInt32 encoded.Length
-            bytes.AddRange encoded
+            appendBytes encoded
         let appendCell (cell: EnvironmentCell) =
             appendInt32 cell.EnvironmentColumn
             appendInt32 cell.EnvironmentRow
@@ -309,7 +461,7 @@ module TacticalEnvironment =
             appendInt32 (stateCode feature.EnvironmentState)
             appendCell feature.EnvironmentEdge.EdgeCell
             appendInt32 (directionCode feature.EnvironmentEdge.EdgeDirection)
-            feature.EnvironmentFeatureCells |> canonicalSortedDistinct |> appendList appendCell
+            feature.EnvironmentFeatureCells |> canonicalSortedDistinctCells |> appendList appendCell
             appendPermeability feature.ModalityPermeability
             appendCover feature.DirectionalCover
             feature.CapabilityDescriptors |> canonicalSortedBy _.DescriptorId |> appendList appendCapability
@@ -337,8 +489,8 @@ module TacticalEnvironment =
             appendText variant.ParcelRole
             appendInt32 variant.ParcelWidth
             appendInt32 variant.ParcelHeight
-            variant.ParcelWalkableCells |> canonicalSortedDistinct |> appendList appendCell
-            variant.ParcelObjectiveCells |> canonicalSortedDistinct |> appendList appendCell
+            variant.ParcelWalkableCells |> canonicalSortedDistinctCells |> appendList appendCell
+            variant.ParcelObjectiveCells |> canonicalSortedDistinctCells |> appendList appendCell
             variant.ParcelConnections
             |> canonicalSortedBy _.ConnectionId
             |> appendList (fun connection ->
@@ -347,7 +499,8 @@ module TacticalEnvironment =
                 appendInt32 (directionCode connection.ConnectionDirection)
                 appendText connection.ConnectionRole)
             variant.ParcelFeatures |> canonicalSortedBy _.EnvironmentFeatureId |> appendList appendFeature)
-        bytes.ToArray() |> sha256Hex
+        if byteCount <> exactByteCount then invalidOp "Authored tactical input byte count diverged from its schema-v1 grammar."
+        bytes |> sha256Hex
 
     let assemble seed plot variants =
         match validate plot variants with
@@ -377,8 +530,8 @@ module TacticalEnvironment =
                      let variant, transform = pool[index]
                      selected @ [ slot, variant, transform ]))
             let placements = choices |> List.map (fun (slot, variant, transform) -> { PlacementSlotId = slot.PlotSlotId; PlacementVariantId = variant.ParcelVariantId; PlacementTransform = transform; PlacementOrigin = slot.PlotSlotOrigin })
-            let cells = choices |> List.collect (fun (slot, variant, transform) -> variant.ParcelWalkableCells |> List.map (transformCell transform variant.ParcelWidth variant.ParcelHeight >> translate slot.PlotSlotOrigin)) |> canonicalSortedDistinct
-            let objectives = choices |> List.collect (fun (slot, variant, transform) -> variant.ParcelObjectiveCells |> List.map (transformCell transform variant.ParcelWidth variant.ParcelHeight >> translate slot.PlotSlotOrigin)) |> canonicalSortedDistinct
+            let cells = choices |> List.collect (fun (slot, variant, transform) -> variant.ParcelWalkableCells |> List.map (transformCell transform variant.ParcelWidth variant.ParcelHeight >> translate slot.PlotSlotOrigin)) |> canonicalSortedDistinctCells
+            let objectives = choices |> List.collect (fun (slot, variant, transform) -> variant.ParcelObjectiveCells |> List.map (transformCell transform variant.ParcelWidth variant.ParcelHeight >> translate slot.PlotSlotOrigin)) |> canonicalSortedDistinctCells
             let features = choices |> List.collect (fun (slot, variant, transform) -> variant.ParcelFeatures |> List.map (transformFeature slot.PlotSlotId transform variant.ParcelWidth variant.ParcelHeight slot.PlotSlotOrigin)) |> canonicalSortedBy _.EnvironmentFeatureId
             let assemblyIdentity = authoredInputIdentity plot variants
             let environment =

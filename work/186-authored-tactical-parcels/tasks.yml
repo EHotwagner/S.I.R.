@@ -548,6 +548,16 @@ tasks:
     sourceIds: [PD-013, VO-009]
     requiredSkills: [automated-tests, readiness-evidence]
     requiredEvidence: [EV052]
+  - id: T053
+    title: Harden strict preview identity allocation for hosted runners
+    status: done
+    owner: shrike-f615
+    dependencies: [T029]
+    requirements: [FR-012]
+    decisions: [DEC-005]
+    sourceIds: [AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007]
+    requiredSkills: [fsharp, automated-tests, readiness-evidence]
+    requiredEvidence: [EV053]
 acceptedDeferrals: []
 findings: []
 advisoryNotes:
