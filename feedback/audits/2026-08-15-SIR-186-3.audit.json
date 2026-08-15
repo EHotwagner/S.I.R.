@@ -1,0 +1,115 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-15-SIR-186-3.md",
+  "reportSha256": "96865212252e8d56e34e7c8e31ab55263d4e6d4ed5e8d2ce6e479bf1e724c5b7",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:test -e docs/examples/lifecycle-artifacts/charter.md", "result": "verified" },
+        { "locator": "issue:FS-GG/FS.GG.SDD#539", "result": "verified" }
+      ],
+      "confidenceLimits": ["Issue closure does not make the path resolvable in this source commit."]
+    },
+    {
+      "id": "§4.2",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:src/SIR.Domain/TacticalEnvironment.fsi", "result": "verified", "sha256": "8ad019bfffa1c8b1dfe5a79123764c4cac7ef1d9b77f65c05cfb864b2c442046" },
+        { "locator": "command:dotnet build SIR.slnx -c Release --no-restore", "result": "verified" }
+      ],
+      "confidenceLimits": ["Historical failing compiler output and exact rework cost were not retained."]
+    },
+    {
+      "id": "§4.3",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:readiness/186-authored-tactical-parcels/cross-runtime.md", "result": "verified", "sha256": "24bb95b17bc031e974d5a4aafa965505241843a64ff310aadaaf8b4393241789" },
+        { "locator": "command:npm run build:client", "result": "verified" }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.4",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:tests/SIR.Browser.Tests/tactical-environment.spec.js", "result": "verified", "sha256": "e634addc4b7a2b38d4caa72c14483d2a3dd32f8b83902c433df22bf2426b5fd4" },
+        { "locator": "file:readiness/186-authored-tactical-parcels/qualification.junit.xml", "result": "verified", "sha256": "5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858" },
+        { "locator": "command:npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js tests/SIR.Browser.Tests/tactical-environment.spec.js", "result": "verified" },
+        { "locator": "file:src/SIR.Client.Web/TacticalEnvironmentView.fs", "result": "verified", "sha256": "02f687334c016305ab1c1099bed5f0c6b0322eb3d055b29a0340fed90cadc462" }
+      ],
+      "confidenceLimits": ["No retained historical red run; Enter behavior remains outside the claim."]
+    },
+    {
+      "id": "§4.5",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:src/SIR.Client/TacticalParcelEditor.fs", "result": "verified", "sha256": "515559b1568433cfa7ec52dc043fc56d96b1161ebcc18100210fdb965ed3b629" },
+        { "locator": "file:src/SIR.Client.Web/TacticalEnvironmentView.fs", "result": "verified", "sha256": "02f687334c016305ab1c1099bed5f0c6b0322eb3d055b29a0340fed90cadc462" },
+        { "locator": "command:npm run build:docs", "result": "verified" }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.6",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified", "sha256": "25f1fcb08c4fa1fbb6681a87e620f4ad111956e62ee1641844c1e32d518d1087" },
+        { "locator": "command:npm run review:persistent-workspace-m9 && npm run build:docs", "result": "verified" }
+      ],
+      "confidenceLimits": ["Historical stale-manifest output and exact retry cost were not retained."]
+    },
+    {
+      "id": "§4.7",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified" },
+        { "locator": "file:src/SIR.Client.Web/App.fs", "result": "verified", "sha256": "6d86a1690e2876dab1b6e6ee9d20c8077972e68ad31bdb509650124614a1555d" },
+        { "locator": "file:src/SIR.Client/MapEditorSimulator.fs", "result": "verified", "sha256": "5c5fdb4089bc50bccdaef53edcd2c34e3a3fe99024c3cccaca4dba9fdf0ec148" },
+        { "locator": "file:scripts/smoke-client.mjs", "result": "verified", "sha256": "2d1eace1c3221df21d34e1002413c8235251bf1dd2b364cf1d91e6f8a4d1c5a3" }
+      ],
+      "confidenceLimits": ["Current repair and replay are verified; no durable pre-repair runtime receipt exists."]
+    },
+    {
+      "id": "§4.8",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified" },
+        { "locator": "file:tests/SIR.Match.Tests/Program.fs", "result": "verified", "sha256": "19b9ddca6f3660477c5aaea102630dcbb0afc0c416f3d74d348b0eda891d2dff" },
+        { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/31899443945", "result": "verified" }
+      ],
+      "confidenceLimits": ["The hosted log establishes greater than 50 ms but omits the exact elapsed value; timing remains host-sensitive."]
+    },
+    {
+      "id": "§4.9",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified", "sha256": "25f1fcb08c4fa1fbb6681a87e620f4ad111956e62ee1641844c1e32d518d1087" },
+        { "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified" }
+      ],
+      "confidenceLimits": ["Checkpoint event 10 combines performance and bootstrap cost, so bootstrap cost cannot be apportioned independently."]
+    },
+    {
+      "id": "§4.10",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:readiness/186-authored-tactical-parcels/cross-runtime.md", "result": "verified", "sha256": "24bb95b17bc031e974d5a4aafa965505241843a64ff310aadaaf8b4393241789" },
+        { "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified" }
+      ],
+      "confidenceLimits": []
+    }
+  ]
+}
