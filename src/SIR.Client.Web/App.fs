@@ -133,7 +133,10 @@ let private validSimulatorFor editor current =
     | Error _ -> current
     | Ok initial ->
         current
-        |> Option.map (MapEditorSimulator.reconcile editor)
+        |> Option.map (fun simulator ->
+            if MapEditorSimulator.isBehindDraft editor simulator then
+                MapEditorSimulator.reconcile editor simulator
+            else simulator)
         |> Option.orElse (Some initial)
 
 /// Browser `key` represents shifted digits as printable symbols (for example
@@ -824,7 +827,7 @@ let rec update msg model =
         { model with
             Editor = editor
             Planning = planning
-            Simulator = if workspace = SimulatorWorkspace then MapEditorSimulator.tryHandoff editor |> Result.toOption else model.Simulator
+            Simulator = if workspace = SimulatorWorkspace then validSimulatorFor editor model.Simulator else model.Simulator
             TacticalSelectedUnit = tacticalSelectedUnit
             Workspace = workspace
             Tactical =
