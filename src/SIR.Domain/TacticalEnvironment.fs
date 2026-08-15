@@ -44,9 +44,7 @@ module TacticalEnvironment =
     let schemaVersion = 1
     let private i32 = CanonicalEncoding.int32LittleEndian
     let private i64 (value: int64) = [| for shift in 0 .. 8 .. 56 -> byte (value >>> shift) |]
-    let private u64 (value: uint64) = [| for shift in 0 .. 8 .. 56 -> byte (value >>> shift) |]
     let private text (value: string) = let bytes = Encoding.UTF8.GetBytes value in CanonicalEncoding.concatenate [ i32 bytes.Length; bytes ]
-    let private boolByte value = [| if value then 1uy else 0uy |]
     let private list encode values = CanonicalEncoding.concatenate (i32 (List.length values) :: (values |> List.map encode))
     let private direction = function EnvironmentEdgeDirection.East -> 0 | EnvironmentEdgeDirection.South -> 1
     let private transform = function ParcelTransform.Identity -> 0 | ParcelTransform.Rotate90 -> 1 | ParcelTransform.Rotate180 -> 2 | ParcelTransform.Rotate270 -> 3
@@ -72,33 +70,97 @@ module TacticalEnvironment =
         | [] | [ _ ] -> true
         | head :: tail -> loop head tail
     let private sortedDistinct values = if orderedDistinct values then values else values |> List.distinct |> List.sort
-    let private cell (value: EnvironmentCell) = CanonicalEncoding.concatenate [ i32 value.EnvironmentColumn; i32 value.EnvironmentRow ]
-    let private edge (value: EnvironmentEdge) = CanonicalEncoding.concatenate [ cell value.EdgeCell; i32 (direction value.EdgeDirection) ]
-    let private permeability (value: EnvironmentPermeability) = CanonicalEncoding.concatenate [ boolByte value.AllowsMovement; boolByte value.AllowsSight; boolByte value.AllowsProjectile; boolByte value.AllowsAreaEffect; boolByte value.AllowsSound; boolByte value.ProvidesCover; boolByte value.AllowsInteraction ]
-    let private cover = function
-        | None -> [| 0uy |]
-        | Some value -> CanonicalEncoding.concatenate [ [| 1uy |]; text value.CoverMaterial; i32 value.CoverIntegrity; i32 value.CoverMaximumIntegrity; i32 value.CoverPenetrationResistance; list (Direction8.toCode >> int32 >> i32) (value.CoverProtectedDirections |> sortedBy Direction8.toCode |> List.distinct) ]
     let private capability (value: EnvironmentCapability) = CanonicalEncoding.concatenate [ text value.DescriptorId; text value.DescriptorAction; i32 value.DescriptorCost; match value.RequiredKnowledgeFact with None -> [| 0uy |] | Some fact -> CanonicalEncoding.concatenate [ [| 1uy |]; text fact ] ]
-    let private feature (value: EnvironmentFeature) = CanonicalEncoding.concatenate [ text value.EnvironmentFeatureId; i32 (kind value.EnvironmentKind); i32 (state value.EnvironmentState); edge value.EnvironmentEdge; list cell (value.EnvironmentFeatureCells |> sortedDistinct); permeability value.ModalityPermeability; cover value.DirectionalCover; list capability (value.CapabilityDescriptors |> sortedBy _.DescriptorId); list text (value.QueryDependencyKeys |> sortedDistinct) ]
-    let private placement (value: ParcelPlacement) = CanonicalEncoding.concatenate [ text value.PlacementSlotId; text value.PlacementVariantId; i32 (transform value.PlacementTransform); cell value.PlacementOrigin ]
     let private hex bytes = bytes |> Array.map (fun (value: byte) -> value.ToString("x2")) |> String.concat ""
 
     let canonicalBytes (environment: AssembledEnvironment) =
-        CanonicalEncoding.concatenate
-            [ i32 environment.EnvironmentSchemaVersion
-              text environment.AssembledPlotId
-              u64 environment.AssemblySeed
-              list placement (environment.ParcelPlacements |> sortedBy _.PlacementSlotId)
-              list cell (environment.AssembledWalkableCells |> sortedDistinct)
-              list cell (environment.AssembledObjectiveCells |> sortedDistinct)
-              list feature (environment.EnvironmentFeatures |> sortedBy _.EnvironmentFeatureId)
-              text environment.EnvironmentAssemblyIdentity
-              i64 environment.EnvironmentSpatialRevision
-              i32 environment.AssemblyCostCounters.SlotsVisited
-              i32 environment.AssemblyCostCounters.VariantsInspected
-              i32 environment.AssemblyCostCounters.Selections
-              i32 environment.AssemblyCostCounters.PlacedCells
-              i32 environment.AssemblyCostCounters.PlacedFeatures ]
+        // Preview assembly hashes the complete environment, including every cell and feature. Building
+        // one byte array per scalar and repeatedly concatenating those arrays made the allocation shape
+        // proportional to the field count as well as the payload. Keep the schema-v1 byte grammar exact,
+        // but stream it into one growable buffer so a maximum editor preview has bounded copy overhead.
+        let bytes = Collections.Generic.List<byte>(4096)
+        let appendByte value = bytes.Add value
+        let appendInt32 (value: int32) =
+            appendByte (byte value)
+            appendByte (byte (value >>> 8))
+            appendByte (byte (value >>> 16))
+            appendByte (byte (value >>> 24))
+        let appendInt64 (value: int64) =
+            for shift in 0 .. 8 .. 56 do appendByte (byte (value >>> shift))
+        let appendUInt64 (value: uint64) =
+            for shift in 0 .. 8 .. 56 do appendByte (byte (value >>> shift))
+        let appendText (value: string) =
+            let encoded = Encoding.UTF8.GetBytes value
+            appendInt32 encoded.Length
+            bytes.AddRange encoded
+        let appendBool value = appendByte (if value then 1uy else 0uy)
+        let appendList append values =
+            appendInt32 (List.length values)
+            values |> List.iter append
+        let appendCell (value: EnvironmentCell) =
+            appendInt32 value.EnvironmentColumn
+            appendInt32 value.EnvironmentRow
+        let appendEdge (value: EnvironmentEdge) =
+            appendCell value.EdgeCell
+            appendInt32 (direction value.EdgeDirection)
+        let appendPermeability (value: EnvironmentPermeability) =
+            appendBool value.AllowsMovement
+            appendBool value.AllowsSight
+            appendBool value.AllowsProjectile
+            appendBool value.AllowsAreaEffect
+            appendBool value.AllowsSound
+            appendBool value.ProvidesCover
+            appendBool value.AllowsInteraction
+        let appendCover = function
+            | None -> appendByte 0uy
+            | Some value ->
+                appendByte 1uy
+                appendText value.CoverMaterial
+                appendInt32 value.CoverIntegrity
+                appendInt32 value.CoverMaximumIntegrity
+                appendInt32 value.CoverPenetrationResistance
+                value.CoverProtectedDirections
+                |> sortedBy Direction8.toCode
+                |> List.distinct
+                |> appendList (Direction8.toCode >> int32 >> appendInt32)
+        let appendCapability (value: EnvironmentCapability) =
+            appendText value.DescriptorId
+            appendText value.DescriptorAction
+            appendInt32 value.DescriptorCost
+            match value.RequiredKnowledgeFact with
+            | None -> appendByte 0uy
+            | Some fact -> appendByte 1uy; appendText fact
+        let appendFeature (value: EnvironmentFeature) =
+            appendText value.EnvironmentFeatureId
+            appendInt32 (kind value.EnvironmentKind)
+            appendInt32 (state value.EnvironmentState)
+            appendEdge value.EnvironmentEdge
+            value.EnvironmentFeatureCells |> sortedDistinct |> appendList appendCell
+            appendPermeability value.ModalityPermeability
+            appendCover value.DirectionalCover
+            value.CapabilityDescriptors |> sortedBy _.DescriptorId |> appendList appendCapability
+            value.QueryDependencyKeys |> sortedDistinct |> appendList appendText
+        let appendPlacement (value: ParcelPlacement) =
+            appendText value.PlacementSlotId
+            appendText value.PlacementVariantId
+            appendInt32 (transform value.PlacementTransform)
+            appendCell value.PlacementOrigin
+
+        appendInt32 environment.EnvironmentSchemaVersion
+        appendText environment.AssembledPlotId
+        appendUInt64 environment.AssemblySeed
+        environment.ParcelPlacements |> sortedBy _.PlacementSlotId |> appendList appendPlacement
+        environment.AssembledWalkableCells |> sortedDistinct |> appendList appendCell
+        environment.AssembledObjectiveCells |> sortedDistinct |> appendList appendCell
+        environment.EnvironmentFeatures |> sortedBy _.EnvironmentFeatureId |> appendList appendFeature
+        appendText environment.EnvironmentAssemblyIdentity
+        appendInt64 environment.EnvironmentSpatialRevision
+        appendInt32 environment.AssemblyCostCounters.SlotsVisited
+        appendInt32 environment.AssemblyCostCounters.VariantsInspected
+        appendInt32 environment.AssemblyCostCounters.Selections
+        appendInt32 environment.AssemblyCostCounters.PlacedCells
+        appendInt32 environment.AssemblyCostCounters.PlacedFeatures
+        bytes.ToArray()
 
     let contentIdentity (environment: AssembledEnvironment) = { environment with EnvironmentContentIdentity = "" } |> canonicalBytes |> CanonicalHash.sha256 |> hex
     let withContentIdentity (environment: AssembledEnvironment) = { environment with EnvironmentContentIdentity = contentIdentity environment }

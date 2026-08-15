@@ -103,24 +103,64 @@ module TacticalEnvironment =
         let right = rightVariant.ParcelConnections |> List.map (transformedConnection rightSlot rightTransform rightVariant)
         left |> List.exists (fun (leftRole, leftEdge) -> right |> List.exists (fun (rightRole, rightEdge) -> leftRole = rightRole && leftEdge = rightEdge))
     let private requiredRouteReachable (variant: ParcelVariant) =
-        let walkable = Collections.Generic.HashSet<EnvironmentCell>(variant.ParcelWalkableCells)
-        let starts =
-            variant.ParcelConnections
-            |> List.map _.ConnectionCell
-            |> List.filter walkable.Contains
-            |> function [] -> variant.ParcelWalkableCells |> List.sort |> List.truncate 1 | values -> values
-        let reached = Collections.Generic.HashSet<EnvironmentCell>()
-        let pending = Collections.Generic.Queue<EnvironmentCell>()
-        starts |> List.iter pending.Enqueue
-        while pending.Count > 0 do
-            let cell = pending.Dequeue()
-            if reached.Add cell then
-                [ { cell with EnvironmentColumn = cell.EnvironmentColumn - 1 }
-                  { cell with EnvironmentColumn = cell.EnvironmentColumn + 1 }
-                  { cell with EnvironmentRow = cell.EnvironmentRow - 1 }
-                  { cell with EnvironmentRow = cell.EnvironmentRow + 1 } ]
-                |> List.iter (fun candidate -> if walkable.Contains candidate && not (reached.Contains candidate) then pending.Enqueue candidate)
-        not starts.IsEmpty && variant.ParcelObjectiveCells |> List.forall reached.Contains
+        let inVariant = within variant.ParcelWidth variant.ParcelHeight
+        let canUseDenseGrid =
+            variant.ParcelWidth > 0
+            && variant.ParcelHeight > 0
+            && int64 variant.ParcelWidth * int64 variant.ParcelHeight <= 1_048_576L
+            && variant.ParcelWalkableCells |> List.forall inVariant
+
+        if canUseDenseGrid then
+            // Authored parcels are bounded dense grids. Use their declared footprint directly for the
+            // common valid case instead of hashing records and allocating four neighbour records per
+            // visited cell. Invalid/out-of-bounds input retains the general fallback below so validation
+            // findings and malformed-input semantics remain unchanged.
+            let width = variant.ParcelWidth
+            let index (cell: EnvironmentCell) = cell.EnvironmentRow * width + cell.EnvironmentColumn
+            let walkable = Array.zeroCreate<bool> (width * variant.ParcelHeight)
+            variant.ParcelWalkableCells |> List.iter (index >> fun cellIndex -> walkable[cellIndex] <- true)
+            let isWalkable cell = inVariant cell && walkable[index cell]
+            let starts =
+                variant.ParcelConnections
+                |> List.map _.ConnectionCell
+                |> List.filter isWalkable
+                |> function [] -> variant.ParcelWalkableCells |> List.sort |> List.truncate 1 | values -> values
+            let reached = Array.zeroCreate<bool> walkable.Length
+            let pending = Collections.Generic.Queue<int32>()
+            starts |> List.iter (index >> pending.Enqueue)
+            while pending.Count > 0 do
+                let cellIndex = pending.Dequeue()
+                if not reached[cellIndex] then
+                    reached[cellIndex] <- true
+                    let column = cellIndex % width
+                    let row = cellIndex / width
+                    let enqueue candidate =
+                        if walkable[candidate] && not reached[candidate] then pending.Enqueue candidate
+                    if column > 0 then enqueue (cellIndex - 1)
+                    if column + 1 < width then enqueue (cellIndex + 1)
+                    if row > 0 then enqueue (cellIndex - width)
+                    if row + 1 < variant.ParcelHeight then enqueue (cellIndex + width)
+            not starts.IsEmpty
+            && variant.ParcelObjectiveCells |> List.forall (fun cell -> inVariant cell && reached[index cell])
+        else
+            let walkable = Collections.Generic.HashSet<EnvironmentCell>(variant.ParcelWalkableCells)
+            let starts =
+                variant.ParcelConnections
+                |> List.map _.ConnectionCell
+                |> List.filter walkable.Contains
+                |> function [] -> variant.ParcelWalkableCells |> List.sort |> List.truncate 1 | values -> values
+            let reached = Collections.Generic.HashSet<EnvironmentCell>()
+            let pending = Collections.Generic.Queue<EnvironmentCell>()
+            starts |> List.iter pending.Enqueue
+            while pending.Count > 0 do
+                let cell = pending.Dequeue()
+                if reached.Add cell then
+                    [ { cell with EnvironmentColumn = cell.EnvironmentColumn - 1 }
+                      { cell with EnvironmentColumn = cell.EnvironmentColumn + 1 }
+                      { cell with EnvironmentRow = cell.EnvironmentRow - 1 }
+                      { cell with EnvironmentRow = cell.EnvironmentRow + 1 } ]
+                    |> List.iter (fun candidate -> if walkable.Contains candidate && not (reached.Contains candidate) then pending.Enqueue candidate)
+            not starts.IsEmpty && variant.ParcelObjectiveCells |> List.forall reached.Contains
 
     let validate (plot: AuthoredPlot) (variants: ParcelVariant list) =
         let findings = ResizeArray<EnvironmentValidationFinding>()
