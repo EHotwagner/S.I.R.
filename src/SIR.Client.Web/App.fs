@@ -454,15 +454,10 @@ let init () =
         let autosave = readMapAutosave ()
         if isNull autosave then initial
         else MapEditor.update (OfferCrashRecovery autosave) initial
-    let editorView =
-        MapEditorWorkspace.initial prefersReducedMotion
-        |> MapEditorWorkspace.update
-            editor.Map
-            (MapEditor.selected editor)
-            FitEditorBoard
+    let editorView = MapEditorWorkspace.initial prefersReducedMotion |> MapEditorWorkspace.update editor.Map (MapEditor.selected editor) FitEditorBoard
     let simulator = validSimulatorFor editor None
-    let tacticalParcelEditor, tacticalParcelText =
-        TacticalParcelEditor.exteriorInitial 186UL
+    let tacticalParcelEditor = TacticalParcelEditor.fromCanonicalEditor "Tactical parcel preview ready." editor
+    let tacticalParcelText = TacticalParcelEditor.exportTacticalParcelDocument editor.TacticalDocument
     let simulatorSelectedUnit =
         editor.SelectedUnit
         |> Option.filter (fun id ->
@@ -829,6 +824,7 @@ let rec update msg model =
         { model with
             Editor = editor
             Planning = planning
+            Simulator = if workspace = SimulatorWorkspace then MapEditorSimulator.tryHandoff editor |> Result.toOption else model.Simulator
             TacticalSelectedUnit = tacticalSelectedUnit
             Workspace = workspace
             Tactical =
@@ -1522,10 +1518,7 @@ let rec update msg model =
     | EditorChanged action ->
         let editor = MapEditor.update action model.Editor
         let simulator = validSimulatorFor editor model.Simulator
-        let simulatorSelected =
-            (if model.Workspace = EditorWorkspace then editor.SelectedUnit
-             else model.SimulatorSelectedUnit)
-            |> Option.filter (fun id -> simulator |> Option.exists (fun value -> Map.containsKey id value.RuntimeMap.Units))
+        let simulatorSelected = (if model.Workspace = EditorWorkspace then editor.SelectedUnit else model.SimulatorSelectedUnit) |> Option.filter (fun id -> simulator |> Option.exists (fun value -> Map.containsKey id value.RuntimeMap.Units))
         let editorView =
             match action with
             | ChooseTool _ ->
@@ -1545,6 +1538,8 @@ let rec update msg model =
                 Battlefield.reconcile (MapEditor.frame editor) model.Battlefield
         { model with
             Editor = editor
+            TacticalParcelEditor = TacticalParcelEditor.fromCanonicalEditor model.TacticalParcelEditor.TacticalAnnouncement editor
+            TacticalParcelImportText = TacticalParcelEditor.exportTacticalParcelDocument editor.TacticalDocument
             Simulator = simulator
             SimulatorSelectedUnit = simulatorSelected
             EditorView = editorView
@@ -1563,11 +1558,18 @@ let rec update msg model =
                 focusElementAfterRender "persistent-tactical-svg"
             | _ -> ())
     | TacticalParcelChanged action ->
-        let tactical, text =
-            TacticalParcelEditor.updateWithExport action model.TacticalParcelEditor
-        { model with
-            TacticalParcelEditor = tactical
-            TacticalParcelImportText = text }, Cmd.none
+        match action with
+        | TacticalParcelEditor.UndoTacticalParcelEdit
+        | TacticalParcelEditor.RedoTacticalParcelEdit ->
+            let editorAction = if action = TacticalParcelEditor.UndoTacticalParcelEdit then UndoEditorCommand else RedoEditorCommand
+            let editor = MapEditor.update editorAction model.Editor
+            let announcement = if action = TacticalParcelEditor.UndoTacticalParcelEdit then "Tactical parcel edit undone." else "Tactical parcel edit redone."
+            let tactical = TacticalParcelEditor.fromCanonicalEditor announcement editor
+            { model with Editor = editor; TacticalParcelEditor = tactical; TacticalParcelImportText = TacticalParcelEditor.exportTacticalParcelDocument editor.TacticalDocument }, Cmd.none
+        | _ ->
+            let tactical, text = TacticalParcelEditor.updateWithExport action model.TacticalParcelEditor
+            let editor = MapEditor.update (ReplaceTacticalParcelDocument(tactical.TacticalDocument, tactical.TacticalSeed)) model.Editor
+            { model with Editor = editor; TacticalParcelEditor = TacticalParcelEditor.fromCanonicalEditor tactical.TacticalAnnouncement editor; TacticalParcelImportText = text }, Cmd.none
     | TacticalParcelImportTextChanged text ->
         { model with TacticalParcelImportText = text }, Cmd.none
     | ImportTacticalParcelDocument ->
@@ -7726,12 +7728,10 @@ let private tacticalPanelBody panelId model dispatch =
     elif model.Workspace = SimulatorWorkspace then
         match model.Simulator with
         | Some simulator ->
-            simulatorPanelBody
-                model.Editor
-                simulator
-                model.SimulatorSelectedUnit
-                panelId
-                dispatch
+            Html.div [
+                if panelId = "tools" then TacticalEnvironmentView.simulationView simulator dispatch
+                simulatorPanelBody model.Editor simulator model.SimulatorSelectedUnit panelId dispatch
+            ]
         | None ->
             Html.p "Correct the current map so a valid simulation can be maintained."
     elif model.Workspace = EditorWorkspace then

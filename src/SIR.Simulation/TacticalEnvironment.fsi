@@ -12,6 +12,8 @@ module TacticalEnvironment =
     val maximumFindings: int32
     val maximumTargetedActionCost: int32
     val defaultPermeability: EnvironmentFeatureKind -> EnvironmentFeatureState -> EnvironmentPermeability
+    val allowsModality: EnvironmentModality -> EnvironmentFeature -> bool
+    val coverAt: direction: Direction8 -> EnvironmentFeature -> DirectionalCover option
     val validate: AuthoredPlot -> ParcelVariant list -> EnvironmentValidationFinding list
     val assemble: seed: uint64 -> AuthoredPlot -> ParcelVariant list -> Result<AssembledEnvironment, EnvironmentValidationFinding list>
     val observe: EnvironmentKnowledge -> AssembledEnvironment -> featureId: string -> EnvironmentObservation option

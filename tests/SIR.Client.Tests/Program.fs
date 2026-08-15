@@ -2169,9 +2169,10 @@ let main arguments =
         )
         |> File.ReadAllText
         |> fun value -> value.TrimEnd('\r', '\n')
+    printfn "Initial tactical-bound editor revision digest: %s" initialRevisionDigest
     require
         (historyFixture = expectedHistoryFixture
-         && initialRevisionDigest = MapEditor.revisionDigest editor.Map
+         && initialRevisionDigest = MapEditor.revisionDigest editor.Map editor.TacticalDocument editor.TacticalSeed
          && initialRevisionDigest.Length = 64)
         "The stable map revision digest or deterministic Milestone 2 fixture changed."
 
@@ -2813,7 +2814,7 @@ let main arguments =
         let edgeRevision =
             { editor.Revision with
                 Document = edgeMap
-                Digest = MapEditor.revisionDigest edgeMap }
+                Digest = MapEditor.revisionDigest edgeMap editor.TacticalDocument editor.TacticalSeed }
         let edgeState =
             { editor with
                 Map = edgeMap
@@ -2840,7 +2841,7 @@ let main arguments =
             Revision =
                 { editor.Revision with
                     Document = formationMap
-                    Digest = MapEditor.revisionDigest formationMap }
+                    Digest = MapEditor.revisionDigest formationMap editor.TacticalDocument editor.TacticalSeed }
             SelectedUnit = Some 1
             SelectedUnits = Set.ofList [ 1; 2 ] }
     let blockedFormation =
@@ -2852,7 +2853,7 @@ let main arguments =
         (blockedFormation.Map = formationMap
          && blockedFormation.Revision.Digest = formationState.Revision.Digest)
         "A multiselection crossed a blocking leading edge or partially committed."
-    let movableFormation = { formationState with Map = { formationMap with Edges = Map.empty }; Revision = { formationState.Revision with Document = { formationMap with Edges = Map.empty }; Digest = MapEditor.revisionDigest { formationMap with Edges = Map.empty } } }
+    let movableFormation = { formationState with Map = { formationMap with Edges = Map.empty }; Revision = { formationState.Revision with Document = { formationMap with Edges = Map.empty }; Digest = MapEditor.revisionDigest { formationMap with Edges = Map.empty } editor.TacticalDocument editor.TacticalSeed } }
     let movementPreview =
         movableFormation
         |> MapEditor.update (BeginUnitMove(address 0 0))
@@ -2923,7 +2924,7 @@ let main arguments =
             Revision =
                 { formationState.Revision with
                     Document = emptyUnitMap
-                    Digest = MapEditor.revisionDigest emptyUnitMap }
+                    Digest = MapEditor.revisionDigest emptyUnitMap editor.TacticalDocument editor.TacticalSeed }
             SelectedUnit = None
             SelectedUnits = Set.empty
             UnitPaletteSearch = ""
@@ -2970,7 +2971,7 @@ let main arguments =
             Revision =
                 { emptyUnitState.Revision with
                     Document = bulkMap
-                    Digest = MapEditor.revisionDigest bulkMap }
+                    Digest = MapEditor.revisionDigest bulkMap editor.TacticalDocument editor.TacticalSeed }
             SelectedUnit = Some 1
             SelectedUnits = bulkUnits |> Array.map _.Id |> Set.ofArray }
     let bulkRequested =
@@ -2991,7 +2992,7 @@ let main arguments =
             Revision =
                 { emptyUnitState.Revision with
                     Document = authoredMap
-                    Digest = MapEditor.revisionDigest authoredMap }
+                    Digest = MapEditor.revisionDigest authoredMap editor.TacticalDocument editor.TacticalSeed }
             SelectedUnit = Some 1
             SelectedUnits = Set.singleton 1 }
         |> MapEditor.update DeleteEditorSelection
@@ -3710,7 +3711,7 @@ let main arguments =
               "svg-rejected=" + string svgRejected
               "oversized-dimensions-rejected=" + string oversizedDimensions
               "oversized-bytes-rejected=" + string oversizedBytes
-              "map-digest-unchanged=" + string (MapEditor.revisionDigest editor.Map = editor.Revision.Digest)
+              "map-digest-unchanged=" + string (MapEditor.revisionDigest editor.Map editor.TacticalDocument editor.TacticalSeed = editor.Revision.Digest)
               "universal-size=" + string universalMap.Width + "x" + string universalMap.Height
               "universal-edges=" + string universalMap.Edges.Count
               "universal-ignored=" + String.concat "," universalIgnored
@@ -3794,7 +3795,7 @@ let main arguments =
     let qualificationReloaded =
         MapEditor.tryImport qualificationText |> Result.defaultWith failwith
     let qualificationReloadDigest =
-        MapEditor.revisionDigest qualificationReloaded
+        MapEditor.revisionDigest qualificationReloaded qualificationSaved.TacticalDocument qualificationSaved.TacticalSeed
     let qualificationRecoverySource =
         qualificationSaved
         |> MapEditor.update (ChooseTerrain Objective)
@@ -4028,6 +4029,46 @@ let main arguments =
         MapEditor.export { editor with Map = denseMaximumMap }
     let denseMaximumState =
         MapEditor.update (LoadMapText denseMaximumText) editor
+
+    let hundredUnitMap =
+        { denseMaximumMap with
+            Units = denseUnits |> Map.toList |> List.take 100 |> Map.ofList
+            NextUnitId = 101
+            Regions = Map.empty
+            NextRegionId = 1 }
+    let hundredUnitClock = Diagnostics.Stopwatch.StartNew()
+    let hundredUnitState =
+        MapEditor.update (LoadMapText(MapEditor.export { editor with Map = hundredUnitMap })) editor
+    let hundredUnitFrame = MapEditor.frame hundredUnitState
+    hundredUnitClock.Stop()
+    printfn "Exact 100-unit preview observed %d units in %.3f ms; validation=%A." hundredUnitFrame.Units.Length hundredUnitClock.Elapsed.TotalMilliseconds hundredUnitState.Validation
+    require
+        (hundredUnitFrame.Units.Length = 100
+         && hundredUnitClock.Elapsed.TotalMilliseconds < 250.0)
+        "The exact 100-unit editor preview exceeded its count or 250 ms demand-batch budget."
+
+    let tacticalInitial, _ = TacticalParcelEditor.exteriorInitial 0x186UL
+    let tacticalInteractionClock = Diagnostics.Stopwatch.StartNew()
+    let tacticalAfterInteractions =
+        [ 0 .. 49 ]
+        |> List.fold (fun state index ->
+            let nextState = if index % 2 = 0 then EnvironmentFeatureState.Open else EnvironmentFeatureState.Closed
+            TacticalParcelEditor.updateTacticalParcelEditor
+                (TacticalParcelEditor.SetTacticalFeatureState("yard-door", nextState))
+                state) tacticalInitial
+    let tacticalPreview = MapEditorSimulator.tacticalEnvironmentPreview tacticalAfterInteractions
+    tacticalInteractionClock.Stop()
+    require
+        (tacticalAfterInteractions.TacticalUndo.Length = 50
+         && tacticalPreview.TacticalPreviewIdentity.IsSome
+         && tacticalPreview.TacticalPreviewFeatureCount = 2
+         && tacticalPreview.TacticalPreviewFindingMessages.IsEmpty
+         && tacticalInteractionClock.Elapsed.TotalMilliseconds < 100.0)
+        "The exact 50-interaction tactical preview exceeded history, validation, feature, or 100 ms smoke budgets."
+    printfn
+        "Authored tactical preview evidence: 100 units in %.3f ms; 50 validated interactions in %.3f ms."
+        hundredUnitClock.Elapsed.TotalMilliseconds
+        tacticalInteractionClock.Elapsed.TotalMilliseconds
 
     SIR.Client.TestsClientPerformanceQualification.run
         require

@@ -145,6 +145,9 @@ let view
                     ]
                 ]
             ]
+            Html.p [ prop.custom ("data-testid", "tactical-editor-revision"); prop.text (string state.Revision.Number) ]
+            Html.p [ prop.custom ("data-testid", "tactical-editor-history"); prop.text (string state.UndoHistory.Length + " undo · " + string state.RedoHistory.Length + " redo") ]
+            commandButton [ prop.type'.button; prop.text "Enter simulation"; prop.custom ("data-testid", "tactical-enter-simulate"); prop.onClick (fun _ -> dispatch (WorkspaceChanged SimulatorWorkspace)) ]
             Html.p (string preview.TacticalPreviewFeatureCount + " features · " + string preview.TacticalPreviewWalkableCellCount + " walkable cells · revision " + string preview.TacticalPreviewSpatialRevision)
             for message in preview.TacticalPreviewFindingMessages do
                 Html.p [ prop.role.alert; prop.text message ]
@@ -245,5 +248,55 @@ let view
                     commandButton [ prop.type'.button; prop.text "Export parcel"; prop.custom ("data-testid", "tactical-export"); prop.onClick (fun _ -> dispatch ExportTacticalParcelDocument) ]
                 ]
             ]
+        ]
+    ]
+
+let simulationView (simulator: SimulatorHandoff) (dispatch: Msg -> unit) =
+    let actionValue = function
+        | "open" -> Some EnvironmentAction.Open
+        | "close" -> Some EnvironmentAction.Close
+        | "damage" -> Some(EnvironmentAction.Damage 25)
+        | "breach" -> Some(EnvironmentAction.Breach 1)
+        | "destroy" -> Some EnvironmentAction.Destroy
+        | _ -> None
+    Html.section [
+        prop.ariaLabel "Tactical environment simulation"
+        prop.custom ("data-testid", "tactical-environment-simulation")
+        prop.children [
+            Html.h3 "Tactical environment simulation"
+            Html.p [ prop.role.status; prop.ariaLive.polite; prop.custom ("data-testid", "tactical-runtime-status"); prop.text (simulator.LastEvents |> List.tryLast |> Option.defaultValue "Immutable tactical environment handoff ready.") ]
+            Html.p [ prop.custom ("data-testid", "tactical-runtime-revision"); prop.text (string simulator.Revision.Number) ]
+            Html.code [ prop.custom ("data-testid", "tactical-runtime-assembly-identity"); prop.text simulator.RuntimeEnvironment.EnvironmentAssemblyIdentity ]
+            Html.code [ prop.custom ("data-testid", "tactical-runtime-initial-identity"); prop.text simulator.InitialEnvironment.EnvironmentContentIdentity ]
+            Html.code [ prop.custom ("data-testid", "tactical-runtime-identity"); prop.text simulator.RuntimeEnvironment.EnvironmentContentIdentity ]
+            Html.div [
+                prop.role.toolbar
+                prop.ariaLabel "Tactical simulation playback"
+                prop.children [
+                    commandButton [ prop.type'.button; prop.text "Step"; prop.custom ("data-testid", "tactical-runtime-step"); prop.onClick (fun _ -> dispatch (SimulatorChanged StepSimulator)) ]
+                    commandButton [ prop.type'.button; prop.text "Reset"; prop.custom ("data-testid", "tactical-runtime-reset"); prop.onClick (fun _ -> dispatch ResetSimulator) ]
+                    commandButton [ prop.type'.button; prop.text "Replay actions"; prop.custom ("data-testid", "tactical-runtime-replay"); prop.onClick (fun _ -> dispatch (SimulatorChanged ReplaySimulatorEnvironment)) ]
+                ]
+            ]
+            for feature in simulator.RuntimeEnvironment.EnvironmentFeatures do
+                let authoredId = feature.EnvironmentFeatureId.Split(':') |> Array.last
+                Html.fieldSet [
+                    prop.custom ("data-runtime-feature-id", feature.EnvironmentFeatureId)
+                    prop.custom ("data-feature-id", authoredId)
+                    prop.children [
+                        Html.legend (authoredId + " · " + string feature.EnvironmentState)
+                        Html.span [ prop.custom ("data-testid", "tactical-runtime-state-" + authoredId); prop.text ((string feature.EnvironmentState).ToLowerInvariant()) ]
+                        for capability in feature.CapabilityDescriptors do
+                            match actionValue capability.DescriptorAction with
+                            | Some action ->
+                                commandButton [
+                                    prop.type'.button
+                                    prop.text capability.DescriptorAction
+                                    prop.custom ("data-testid", "tactical-runtime-action-" + authoredId + "-" + capability.DescriptorAction)
+                                    prop.onClick (fun _ -> dispatch (SimulatorChanged(ApplySimulatorEnvironmentAction(authoredId, action))))
+                                ]
+                            | None -> ()
+                    ]
+                ]
         ]
     ]

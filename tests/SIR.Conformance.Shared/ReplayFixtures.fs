@@ -142,7 +142,10 @@ module ReplayFixtures =
             { CoverId = "stone-wall"
               Cell = { Col = 1; Row = 0 }
               Integrity = 63
-              ProjectileBlocking = true }
+              ProjectileBlocking = true
+              Material = "legacy"
+              PenetrationResistance = 0
+              ProtectedDirections = [] }
         { Simulation.initialState with
             Units = Simulation.initialState.Units |> Map.add redId wounded
             Board =

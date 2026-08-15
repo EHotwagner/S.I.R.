@@ -67,7 +67,7 @@ module CombatFixtures =
             |> Result.defaultWith failwith
         require (zeroRuleResult.Damage = 0 && zeroRuleResult.RemainingHealth = 100 && zeroRuleResult.SuppressionDelta = 0) "A rule-zero direct attack committed consequences."
 
-        let partial = { CoverId = "partial"; Cell = cell 2 0; Integrity = 100; ProjectileBlocking = false }
+        let partial = { CoverId = "partial"; Cell = cell 2 0; Integrity = 100; ProjectileBlocking = false; Material = "fixture"; PenetrationResistance = 0; ProtectedDirections = [] }
         let partialResult = resolved (world 2L [ attacker; openTarget ] [ partial ] (cell 12 12)) (request "partial-cover" WeaponProfile.Rifle openTarget.Cell)
         require (health "open" partialResult = 87) "Partial cover did not halve retained rifle damage."
         require (partialResult.Facts |> List.exists (function CombatFact.CoverResolved("open", Some "partial", 50) -> true | _ -> false)) "Partial cover decision was not emitted."
@@ -123,7 +123,7 @@ module CombatFixtures =
         let secondLob = resolved lobResult.World (request "lobbed-incapacity-2" WeaponProfile.LobbedArea lobTarget.Cell)
         require (secondLob.World.Combatants["lob-target"].Incapacitated && health "lob-target" secondLob = 0) "Zero HP did not produce incapacity."
 
-        let fragile = { CoverId = "fragile"; Cell = cell 2 0; Integrity = 10; ProjectileBlocking = true }
+        let fragile = { CoverId = "fragile"; Cell = cell 2 0; Integrity = 10; ProjectileBlocking = true; Material = "fixture"; PenetrationResistance = 100; ProtectedDirections = [] }
         let destruction = resolved (world 10L [ attacker; openTarget ] [ fragile ] (cell 12 12)) (request "cover-destruction" WeaponProfile.Rifle openTarget.Cell)
         require (not (Map.containsKey "fragile" destruction.World.Covers)) "Destroyed cover remained in combat state."
         require (not (Map.containsKey fragile.Cell destruction.World.Spatial.Terrain)) "Destroyed cover remained projectile-impermeable in the projected spatial world."

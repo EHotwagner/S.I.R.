@@ -19,14 +19,14 @@ type EnvironmentModality = Movement | Sight | Projectile | AreaEffect | Sound | 
 type EnvironmentPermeability = { AllowsMovement: bool; AllowsSight: bool; AllowsProjectile: bool; AllowsAreaEffect: bool; AllowsSound: bool; ProvidesCover: bool; AllowsInteraction: bool }
 type DirectionalCover = { CoverMaterial: string; CoverIntegrity: int32; CoverMaximumIntegrity: int32; CoverPenetrationResistance: int32; CoverProtectedDirections: Direction8 list }
 type EnvironmentCapability = { DescriptorId: string; DescriptorAction: string; DescriptorCost: int32; RequiredKnowledgeFact: string option }
-type EnvironmentFeature = { EnvironmentFeatureId: string; EnvironmentKind: EnvironmentFeatureKind; EnvironmentState: EnvironmentFeatureState; EnvironmentEdge: EnvironmentEdge; ModalityPermeability: EnvironmentPermeability; DirectionalCover: DirectionalCover option; CapabilityDescriptors: EnvironmentCapability list; QueryDependencyKeys: string list }
+type EnvironmentFeature = { EnvironmentFeatureId: string; EnvironmentKind: EnvironmentFeatureKind; EnvironmentState: EnvironmentFeatureState; EnvironmentEdge: EnvironmentEdge; EnvironmentFeatureCells: EnvironmentCell list; ModalityPermeability: EnvironmentPermeability; DirectionalCover: DirectionalCover option; CapabilityDescriptors: EnvironmentCapability list; QueryDependencyKeys: string list }
 type ParcelConnection = { ConnectionId: string; ConnectionCell: EnvironmentCell; ConnectionDirection: EnvironmentEdgeDirection; ConnectionRole: string }
 type ParcelVariant = { ParcelVariantId: string; ParcelRole: string; ParcelWidth: int32; ParcelHeight: int32; ParcelWalkableCells: EnvironmentCell list; ParcelObjectiveCells: EnvironmentCell list; ParcelConnections: ParcelConnection list; ParcelFeatures: EnvironmentFeature list }
 type PlotSlot = { PlotSlotId: string; PlotSlotRole: string; PlotSlotOrigin: EnvironmentCell; PlotSlotWidth: int32; PlotSlotHeight: int32; ConnectedPlotSlotIds: string list; PlotSlotRequiresRoute: bool }
 type AuthoredPlot = { PlotSchemaVersion: int32; AuthoredPlotId: string; PlotWidth: int32; PlotHeight: int32; PlotSlots: PlotSlot list }
 type ParcelPlacement = { PlacementSlotId: string; PlacementVariantId: string; PlacementTransform: ParcelTransform; PlacementOrigin: EnvironmentCell }
 type AssemblyCounters = { SlotsVisited: int32; VariantsInspected: int32; Selections: int32; PlacedCells: int32; PlacedFeatures: int32 }
-type AssembledEnvironment = { EnvironmentSchemaVersion: int32; AssembledPlotId: string; AssemblySeed: uint64; ParcelPlacements: ParcelPlacement list; AssembledWalkableCells: EnvironmentCell list; AssembledObjectiveCells: EnvironmentCell list; EnvironmentFeatures: EnvironmentFeature list; EnvironmentContentIdentity: string; EnvironmentSpatialRevision: int64; AssemblyCostCounters: AssemblyCounters }
+type AssembledEnvironment = { EnvironmentSchemaVersion: int32; AssembledPlotId: string; AssemblySeed: uint64; ParcelPlacements: ParcelPlacement list; AssembledWalkableCells: EnvironmentCell list; AssembledObjectiveCells: EnvironmentCell list; EnvironmentFeatures: EnvironmentFeature list; EnvironmentAssemblyIdentity: string; EnvironmentContentIdentity: string; EnvironmentSpatialRevision: int64; AssemblyCostCounters: AssemblyCounters }
 [<RequireQualifiedAccess>]
 type EnvironmentValidationCode = InvalidSchema | InvalidBounds | DuplicateId | DisconnectedSlot | ImpossibleFootprint | ConnectorMismatch | BlockedObjective | InvalidPermeability | CoverGap | UnreachableRoute | InvalidDependency
 type EnvironmentValidationFinding = { ValidationCode: EnvironmentValidationCode; ValidationSubject: string; ValidationMessage: string }
@@ -36,7 +36,7 @@ type EnvironmentAction = Open | Close | Damage of amount: int32 | Breach of cost
 type EnvironmentActionFailure = MissingFeature | HiddenFeature | UnsupportedAction | InvalidCost | StaleContentIdentity
 type EnvironmentActionCounters = { FeaturesInspected: int32; FeaturesChanged: int32; DependenciesEmitted: int32; PropagatedChanges: int32 }
 type EnvironmentActionResult = { UpdatedEnvironment: AssembledEnvironment; ChangedQueryDependencies: Set<string>; ActionCostCounters: EnvironmentActionCounters }
-type EnvironmentKnowledge = { EnvironmentKnowledgeIdentity: string; EnvironmentKnowledgeRevision: int64; KnownEnvironmentFeatureIds: Set<string>; KnownEnvironmentFacts: Set<string> }
+type EnvironmentKnowledge = { EnvironmentKnowledgeIdentity: string; EnvironmentKnowledgeRevision: int64; KnownEnvironmentFeatureIds: Set<string>; KnownEnvironmentStateFeatureIds: Set<string>; KnownEnvironmentFacts: Set<string> }
 type EnvironmentObservation = { ObservationSchemaVersion: int32; ObservationFeatureId: string; ObservationKind: EnvironmentFeatureKind; ObservedState: EnvironmentFeatureState option; AvailableCapabilities: EnvironmentCapability list; ObservationSpatialRevision: int64; ObservationKnowledgeIdentity: string; ObservationKnowledgeRevision: int64 }
 
 [<RequireQualifiedAccess>]
@@ -59,7 +59,7 @@ module TacticalEnvironment =
         | None -> [| 0uy |]
         | Some value -> CanonicalEncoding.concatenate [ [| 1uy |]; text value.CoverMaterial; i32 value.CoverIntegrity; i32 value.CoverMaximumIntegrity; i32 value.CoverPenetrationResistance; list (Direction8.toCode >> int32 >> i32) (value.CoverProtectedDirections |> List.distinct |> List.sortBy Direction8.toCode) ]
     let private capability (value: EnvironmentCapability) = CanonicalEncoding.concatenate [ text value.DescriptorId; text value.DescriptorAction; i32 value.DescriptorCost; match value.RequiredKnowledgeFact with None -> [| 0uy |] | Some fact -> CanonicalEncoding.concatenate [ [| 1uy |]; text fact ] ]
-    let private feature (value: EnvironmentFeature) = CanonicalEncoding.concatenate [ text value.EnvironmentFeatureId; i32 (kind value.EnvironmentKind); i32 (state value.EnvironmentState); edge value.EnvironmentEdge; permeability value.ModalityPermeability; cover value.DirectionalCover; list capability (value.CapabilityDescriptors |> List.sortBy _.DescriptorId); list text (value.QueryDependencyKeys |> List.distinct |> List.sort) ]
+    let private feature (value: EnvironmentFeature) = CanonicalEncoding.concatenate [ text value.EnvironmentFeatureId; i32 (kind value.EnvironmentKind); i32 (state value.EnvironmentState); edge value.EnvironmentEdge; list cell (value.EnvironmentFeatureCells |> List.distinct |> List.sort); permeability value.ModalityPermeability; cover value.DirectionalCover; list capability (value.CapabilityDescriptors |> List.sortBy _.DescriptorId); list text (value.QueryDependencyKeys |> List.distinct |> List.sort) ]
     let private placement (value: ParcelPlacement) = CanonicalEncoding.concatenate [ text value.PlacementSlotId; text value.PlacementVariantId; i32 (transform value.PlacementTransform); cell value.PlacementOrigin ]
     let private hex bytes = bytes |> Array.map (fun (value: byte) -> value.ToString("x2")) |> String.concat ""
 
@@ -72,6 +72,7 @@ module TacticalEnvironment =
               list cell (environment.AssembledWalkableCells |> List.distinct |> List.sort)
               list cell (environment.AssembledObjectiveCells |> List.distinct |> List.sort)
               list feature (environment.EnvironmentFeatures |> List.sortBy _.EnvironmentFeatureId)
+              text environment.EnvironmentAssemblyIdentity
               i64 environment.EnvironmentSpatialRevision
               i32 environment.AssemblyCostCounters.SlotsVisited
               i32 environment.AssemblyCostCounters.VariantsInspected

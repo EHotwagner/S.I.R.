@@ -50,7 +50,10 @@ type CoverState =
     { CoverId: string
       Cell: Cell
       Integrity: int32
-      ProjectileBlocking: bool }
+      ProjectileBlocking: bool
+      Material: string
+      PenetrationResistance: int32
+      ProtectedDirections: Direction8 list }
 
 type CombatWorld =
     { Spatial: ProjectedSpatialWorld

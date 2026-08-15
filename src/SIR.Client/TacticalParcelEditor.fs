@@ -5,10 +5,6 @@ open SIR.Domain
 
 [<RequireQualifiedAccess>]
 module TacticalParcelEditor =
-    type TacticalParcelDocument =
-        { TacticalPlot: AuthoredPlot
-          TacticalVariants: ParcelVariant list }
-
     type TacticalParcelEditorState =
         { TacticalDocument: TacticalParcelDocument
           TacticalSeed: uint64
@@ -82,6 +78,9 @@ module TacticalParcelEditor =
                         (cover.CoverProtectedDirections |> List.map tacticalDirectionName |> String.concat ",")
                 let permeability = feature.ModalityPermeability
                 lines.Add(String.concat "|" [ "feature"; tacticalToken variant.ParcelVariantId; tacticalToken feature.EnvironmentFeatureId; tacticalKindName feature.EnvironmentKind; tacticalStateName feature.EnvironmentState; string feature.EnvironmentEdge.EdgeCell.EnvironmentColumn; string feature.EnvironmentEdge.EdgeCell.EnvironmentRow; tacticalEdgeName feature.EnvironmentEdge.EdgeDirection; tacticalBool permeability.AllowsMovement; tacticalBool permeability.AllowsSight; tacticalBool permeability.AllowsProjectile; tacticalBool permeability.AllowsAreaEffect; tacticalBool permeability.AllowsSound; tacticalBool permeability.ProvidesCover; tacticalBool permeability.AllowsInteraction; coverMaterial; integrity; maximum; penetration; directions; feature.QueryDependencyKeys |> List.sort |> List.map tacticalToken |> String.concat "," ])
+                lines.Add(String.concat "|" [ "feature-cells"; tacticalToken variant.ParcelVariantId; tacticalToken feature.EnvironmentFeatureId ])
+                for cell in feature.EnvironmentFeatureCells |> List.distinct |> List.sort do
+                    lines.Add(String.concat "|" [ "feature-cell"; tacticalToken variant.ParcelVariantId; tacticalToken feature.EnvironmentFeatureId; string cell.EnvironmentColumn; string cell.EnvironmentRow ])
                 for capability in feature.CapabilityDescriptors |> List.sortBy _.DescriptorId do
                     lines.Add(String.concat "|" [ "capability"; tacticalToken variant.ParcelVariantId; tacticalToken feature.EnvironmentFeatureId; tacticalToken capability.DescriptorId; tacticalToken capability.DescriptorAction; string capability.DescriptorCost; capability.RequiredKnowledgeFact |> Option.map tacticalToken |> Option.defaultValue "" ])
         String.concat "\n" lines + "\n"
@@ -139,7 +138,13 @@ module TacticalParcelEditor =
                                             [ for capability in rows do
                                                 if capability.Length = 7 && capability[0] = "capability" && tacticalUntoken capability[1] = variantId && tacticalUntoken capability[2] = featureId then
                                                     yield { DescriptorId = tacticalUntoken capability[3]; DescriptorAction = tacticalUntoken capability[4]; DescriptorCost = Int32.Parse capability[5]; RequiredKnowledgeFact = if capability[6] = "" then None else Some(tacticalUntoken capability[6]) } ]
-                                        yield { EnvironmentFeatureId = featureId; EnvironmentKind = kind; EnvironmentState = state; EnvironmentEdge = { EdgeCell = { EnvironmentColumn = Int32.Parse fields[5]; EnvironmentRow = Int32.Parse fields[6] }; EdgeDirection = direction }; ModalityPermeability = { AllowsMovement = fields[8] = "1"; AllowsSight = fields[9] = "1"; AllowsProjectile = fields[10] = "1"; AllowsAreaEffect = fields[11] = "1"; AllowsSound = fields[12] = "1"; ProvidesCover = fields[13] = "1"; AllowsInteraction = fields[14] = "1" }; DirectionalCover = cover; CapabilityDescriptors = capabilities; QueryDependencyKeys = splitTacticalList fields[20] } ]
+                                        let edgeCell = { EnvironmentColumn = Int32.Parse fields[5]; EnvironmentRow = Int32.Parse fields[6] }
+                                        let featureCells =
+                                            [ for cell in rows do
+                                                if cell.Length = 5 && cell[0] = "feature-cell" && tacticalUntoken cell[1] = variantId && tacticalUntoken cell[2] = featureId then
+                                                    yield { EnvironmentColumn = Int32.Parse cell[3]; EnvironmentRow = Int32.Parse cell[4] } ]
+                                        let hasFeatureCells = rows |> Array.exists (fun cell -> cell.Length = 3 && cell[0] = "feature-cells" && tacticalUntoken cell[1] = variantId && tacticalUntoken cell[2] = featureId)
+                                        yield { EnvironmentFeatureId = featureId; EnvironmentKind = kind; EnvironmentState = state; EnvironmentEdge = { EdgeCell = edgeCell; EdgeDirection = direction }; EnvironmentFeatureCells = (if hasFeatureCells then featureCells else [ edgeCell ]); ModalityPermeability = { AllowsMovement = fields[8] = "1"; AllowsSight = fields[9] = "1"; AllowsProjectile = fields[10] = "1"; AllowsAreaEffect = fields[11] = "1"; AllowsSound = fields[12] = "1"; ProvidesCover = fields[13] = "1"; AllowsInteraction = fields[14] = "1" }; DirectionalCover = cover; CapabilityDescriptors = capabilities; QueryDependencyKeys = splitTacticalList fields[20] } ]
                             yield { ParcelVariantId = variantId; ParcelRole = tacticalUntoken variantFields[2]; ParcelWidth = Int32.Parse variantFields[3]; ParcelHeight = Int32.Parse variantFields[4]; ParcelWalkableCells = cells "walk"; ParcelObjectiveCells = cells "objective"; ParcelConnections = connections; ParcelFeatures = features } ]
                     let plot = { PlotSchemaVersion = Int32.Parse row[1]; AuthoredPlotId = tacticalUntoken row[2]; PlotWidth = Int32.Parse row[3]; PlotHeight = Int32.Parse row[4]; PlotSlots = slots }
                     Ok { TacticalPlot = plot; TacticalVariants = variants }
@@ -163,7 +168,8 @@ module TacticalParcelEditor =
                     match environmentKind with
                     | EnvironmentFeatureKind.Wall -> Some { CoverMaterial = "legacy-masonry"; CoverIntegrity = 100; CoverMaximumIntegrity = 100; CoverPenetrationResistance = 40; CoverProtectedDirections = protectedDirections }
                     | _ -> None
-                yield { EnvironmentFeatureId = featureId; EnvironmentKind = environmentKind; EnvironmentState = state; EnvironmentEdge = { EdgeCell = { EnvironmentColumn = column; EnvironmentRow = row }; EdgeDirection = edgeDirection }; ModalityPermeability = SIR.Simulation.TacticalEnvironment.defaultPermeability environmentKind state; DirectionalCover = cover; CapabilityDescriptors = capabilities; QueryDependencyKeys = [ "feature:" + featureId ] } ]
+                let edgeCell = { EnvironmentColumn = column; EnvironmentRow = row }
+                yield { EnvironmentFeatureId = featureId; EnvironmentKind = environmentKind; EnvironmentState = state; EnvironmentEdge = { EdgeCell = edgeCell; EdgeDirection = edgeDirection }; EnvironmentFeatureCells = [ edgeCell ]; ModalityPermeability = SIR.Simulation.TacticalEnvironment.defaultPermeability environmentKind state; DirectionalCover = cover; CapabilityDescriptors = capabilities; QueryDependencyKeys = [ "feature:" + featureId ] } ]
         let walkable : EnvironmentCell list = [ for row in 0 .. map.Height - 1 do for column in 0 .. map.Width - 1 do if Map.tryFind (column, row) map.Terrain <> Some Blocked then yield { EnvironmentColumn = column; EnvironmentRow = row } ]
         let objectives : EnvironmentCell list = map.Terrain |> Map.toList |> List.choose (fun ((column, row), terrain) -> if terrain = Objective then Some { EnvironmentColumn = column; EnvironmentRow = row } else None)
         { TacticalPlot = { PlotSchemaVersion = SIR.Domain.TacticalEnvironment.schemaVersion; AuthoredPlotId = "migrated-map-v4"; PlotWidth = map.Width; PlotHeight = map.Height; PlotSlots = [ { PlotSlotId = "map"; PlotSlotRole = "legacy-map"; PlotSlotOrigin = { EnvironmentColumn = 0; EnvironmentRow = 0 }; PlotSlotWidth = map.Width; PlotSlotHeight = map.Height; ConnectedPlotSlotIds = []; PlotSlotRequiresRoute = true } ] }
@@ -183,6 +189,12 @@ module TacticalParcelEditor =
 
     let createTacticalParcelEditor seed document =
         { TacticalDocument = document; TacticalSeed = seed; TacticalPreview = previewTacticalParcelDocument seed document; TacticalUndo = []; TacticalRedo = []; TacticalAnnouncement = "Tactical parcel preview ready." }
+
+    let fromCanonicalEditor announcement (editor: MapEditorState) =
+        { createTacticalParcelEditor editor.TacticalSeed editor.TacticalDocument with
+            TacticalUndo = if editor.UndoHistory.IsEmpty then [] else [ editor.TacticalDocument ]
+            TacticalRedo = if editor.RedoHistory.IsEmpty then [] else [ editor.TacticalDocument ]
+            TacticalAnnouncement = announcement }
 
     let exteriorInitial seed =
         let plot, variants = SIR.Simulation.TacticalEnvironment.exteriorParcelSet
@@ -229,6 +241,7 @@ module TacticalParcelEditor =
                     { EnvironmentKnowledgeIdentity = "map-editor-preview"
                       EnvironmentKnowledgeRevision = 0L
                       KnownEnvironmentFeatureIds = environment.EnvironmentFeatures |> List.map _.EnvironmentFeatureId |> Set.ofList
+                      KnownEnvironmentStateFeatureIds = environment.EnvironmentFeatures |> List.map _.EnvironmentFeatureId |> Set.ofList
                       KnownEnvironmentFacts = Set.empty }
                 match SIR.Simulation.TacticalEnvironment.applyAction knowledge environment.EnvironmentContentIdentity runtimeFeatureId environmentAction environment with
                 | Ok result -> { state with TacticalPreview = Ok result.UpdatedEnvironment; TacticalAnnouncement = "Feature " + featureId + " action applied in the simulator preview." }

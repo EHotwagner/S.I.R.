@@ -23,6 +23,8 @@ NODE
 )
 test "$native_hex" = "$fable_hex"
 
+dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish --no-restore
+
 SIR_JUNIT_OUTPUT=artifacts/test-results/186-tactical-browser.junit.xml \
   npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js \
   tests/SIR.Browser.Tests/tactical-environment.spec.js
