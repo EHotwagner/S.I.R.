@@ -161,7 +161,7 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   }
   await expect(source).toHaveAttribute(
     "href",
-    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/74656511e5564a41b515cbcab5ec13d669b1421b\/src\/SIR\.Simulation\/CombatRules\.fs/,
+    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/861dfc52b348eb0316ce85fbcdee3836a25eca6d\/src\/SIR\.Simulation\/CombatRules\.fs/,
   );
   await expect(damageRule.getByText(/examples: tests\/SIR\.Conformance\.Shared\/RulesCorpusFixtures\.fs · properties:/)).toBeVisible();
   await expect(damageRule.getByRole("link", { name: "Coverage graph" })).toHaveAttribute("href", /rules-corpus\/v2\/coverage\.json/);
