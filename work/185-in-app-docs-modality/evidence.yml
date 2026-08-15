@@ -53,11 +53,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -80,11 +80,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -107,11 +107,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -134,11 +134,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -161,11 +161,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -188,11 +188,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -215,11 +215,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -242,11 +242,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -269,11 +269,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -296,11 +296,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -323,11 +323,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -350,11 +350,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -377,11 +377,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -404,11 +404,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -431,11 +431,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -458,11 +458,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -485,11 +485,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -512,11 +512,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -539,11 +539,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -566,11 +566,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -593,11 +593,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -620,11 +620,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -647,11 +647,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -674,11 +674,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -701,11 +701,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -728,11 +728,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -755,11 +755,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -782,11 +782,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -809,11 +809,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -836,11 +836,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -863,11 +863,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -890,11 +890,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -917,11 +917,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -944,11 +944,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -971,11 +971,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -998,11 +998,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -1025,11 +1025,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -1052,11 +1052,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -1079,11 +1079,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -1106,11 +1106,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -1133,11 +1133,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -1160,11 +1160,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -1187,11 +1187,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -1214,11 +1214,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -1241,11 +1241,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -1268,11 +1268,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -1295,11 +1295,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -1322,11 +1322,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
@@ -1349,11 +1349,11 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
-      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 20
+      passed: 1
       failed: 0
       skipped: 0
     notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
