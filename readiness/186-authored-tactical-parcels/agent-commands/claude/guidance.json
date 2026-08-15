@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "e350b2035b8eef784dc2062be25138a8dcd430711e0e7fe6974cdc0897785d10"
+        "value": "dc40a014de07926346e8f3610eab94442d73b0969121de901012349d0d05f8c6"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -19,7 +19,7 @@
   ],
   "behaviorModelDigest": {
     "algorithm": "sha256",
-    "value": "9edd268abe28b1d9dc7af90cda996ea6220d5304e195ac7797d3cdd235fc733c"
+    "value": "5d6f6c225e1e6c804cda38e4eb9bc07f8f0df22628e7845a8c80e930f5306304"
   },
   "commands": [
     {
@@ -546,13 +546,44 @@
         "GV-002",
         "PD-012"
       ]
+    },
+    {
+      "id": "T050",
+      "title": "Implement clarification decision DEC-007",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T050 (done) covering DEC-007.",
+      "relatedIds": [
+        "DEC-007"
+      ]
+    },
+    {
+      "id": "T051",
+      "title": "Implement plan decision PD-013",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T051 (done) covering AC-008, DEC-007, FR-012, PD-013.",
+      "relatedIds": [
+        "AC-008",
+        "DEC-007",
+        "FR-012",
+        "PD-013"
+      ]
+    },
+    {
+      "id": "T052",
+      "title": "Record verification evidence VO-009",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T052 (done) covering PD-013, VO-009.",
+      "relatedIds": [
+        "PD-013",
+        "VO-009"
+      ]
     }
   ],
   "skills": [
     {
       "id": "automated-tests",
       "title": "automated-tests",
-      "capability": "Required by tasks: T037, T038, T039, T040, T041, T042, T043, T044.",
+      "capability": "Required by tasks: T037, T038, T039, T040, T041, T042, T043, T044, T052.",
       "relatedIds": [
         "T037",
         "T038",
@@ -561,7 +592,8 @@
         "T041",
         "T042",
         "T043",
-        "T044"
+        "T044",
+        "T052"
       ]
     },
     {
@@ -576,7 +608,7 @@
     {
       "id": "fsharp",
       "title": "fsharp",
-      "capability": "Required by tasks: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T032, T033, T034, T035, T036.",
+      "capability": "Required by tasks: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T032, T033, T034, T035, T036, T050, T051.",
       "relatedIds": [
         "T001",
         "T002",
@@ -613,13 +645,15 @@
         "T033",
         "T034",
         "T035",
-        "T036"
+        "T036",
+        "T050",
+        "T051"
       ]
     },
     {
       "id": "implementation",
       "title": "implementation",
-      "capability": "Required by tasks: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029.",
+      "capability": "Required by tasks: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T050, T051.",
       "relatedIds": [
         "T001",
         "T002",
@@ -649,13 +683,15 @@
         "T026",
         "T027",
         "T028",
-        "T029"
+        "T029",
+        "T050",
+        "T051"
       ]
     },
     {
       "id": "readiness-evidence",
       "title": "readiness-evidence",
-      "capability": "Required by tasks: T037, T038, T039, T040, T041, T042, T043, T044.",
+      "capability": "Required by tasks: T037, T038, T039, T040, T041, T042, T043, T044, T052.",
       "relatedIds": [
         "T037",
         "T038",
@@ -664,7 +700,8 @@
         "T041",
         "T042",
         "T043",
-        "T044"
+        "T044",
+        "T052"
       ]
     },
     {
@@ -688,5 +725,16 @@
       "kind": "skills"
     }
   ],
-  "diagnostics": []
+  "diagnostics": [
+    {
+      "id": "agents.staleGeneratedGuidance",
+      "severity": "warning",
+      "artifact": "readiness/186-authored-tactical-parcels/agent-commands/claude/guidance.json",
+      "message": "Generated agent guidance for target \u0027claude\u0027 no longer matches the current normalized work model.",
+      "correction": "Regenerate agent guidance so the generated view matches the current work model.",
+      "relatedIds": [
+        "claude"
+      ]
+    }
+  ]
 }

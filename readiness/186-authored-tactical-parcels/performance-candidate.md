@@ -49,3 +49,24 @@ serialization 0.120 ms, transfer 0.028 ms, and rendering projection 0.079 ms.
 These are headless host observations and make no compositor or portable
 wall-clock claim. Structural counters and canonical bytes are deterministic;
 elapsed values are deliberately excluded from content identity and replay.
+
+## Independent-review repair round one
+
+The exact `861dfc52b348eb0316ce85fbcdee3836a25eca6d` detached aggregate
+retained identity
+`18750a88acda3674081cd7de290600005fbc36cfcf8da44a34b7bf95c4bc87fd`.
+Its 80x80 production editor preview visited 6,400 cells and 2,048 features,
+validated in 7.430 ms, and completed assembly in 21.799 ms. A subsequent
+16-process Release contention run passed in every process with identical
+identity and structural counters; preview assembly ranged from 25.856 ms to
+41.469 ms, keeping every observation below the unchanged 50 ms gate.
+
+The same aggregate measured the unmangled production application entry at
+1,196,127 raw bytes and the normal initial browser request graph at 1,228,472
+bytes. Both satisfy the user-authorized initial-boot budget v2 ceiling of
+1,250,000 bytes. The 62,976-byte Rules Explorer remains deferred and loads
+through its normal UI route. This is a versioned default-route budget, not a
+global or permanent product limit: subsequent growth must defer code or
+explicitly version and rebaseline the contract. The aligned static ceiling and
+the browser initial-response mutation both fail when the measured size is made
+oversized.

@@ -11,27 +11,27 @@ sourceAnalysis: readiness/186-authored-tactical-parcels/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/186-authored-tactical-parcels/analysis.json
-    digest: 884a176ddd96877dc3d3d0662776688187bb3df82b913a041401b62d943be5e3
+    digest: bfca259d05783aaa98f07aa843b6113488d4e99f15ee5a63a81bbe01cf18cbfc
     schemaVersion: 1
   - label: checklist
     path: work/186-authored-tactical-parcels/checklist.md
-    digest: 8d8e56bf0267ce2c0c187a012cd4b9bbd194c82f236e2549d1318baf461d643c
+    digest: 974fdc8551c75e438487eef93bd25abd8455f84073f824d21b92a41cd1ff593f
     schemaVersion: 1
   - label: clarifications
     path: work/186-authored-tactical-parcels/clarifications.md
-    digest: f76be2ea83daa39416ddb15d06604424ab67e867fc003bbf4cbdb10aa0e5e8cb
+    digest: 32d22a8a41846f92365aa9267f0b6c39d7dcaa262b0556c63861998e40111af3
     schemaVersion: 1
   - label: plan
     path: work/186-authored-tactical-parcels/plan.md
-    digest: fddaba7dfa29e73f6182021b0f28b7cdf4c271d1b0f05199e23c50f4c0752608
+    digest: ac3da389b26e1c96eec4874d6c4be1a662a43007b36a124b8481757f245e5aa3
     schemaVersion: 1
   - label: spec
     path: work/186-authored-tactical-parcels/spec.md
-    digest: c7025a572298909ec1b032c6ed023e2eeb847d36c7a26d09ba5305d0d86101c4
+    digest: 913940d4b9d86eef4dfa845028e0a53ffc2001ab20c24dd495c8d9893ba83874
     schemaVersion: 1
   - label: tasks
     path: work/186-authored-tactical-parcels/tasks.yml
-    digest: 21be14c52eed54d48fb6edd1c2bcba71e8057a6dbe98a2b20a9516d4b8f0c7de
+    digest: fbd232b770e14b4f2cb41505198d83d49d2066656d37cf20880493e30c20e02e
     schemaVersion: 1
 evidence:
   - id: EV001
@@ -1437,6 +1437,6 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [The fresh aggregate executes static/browser delivery gates, oversized mutations, and the complete browser suite.]
+    notes: [The fresh aggregate executes static/browser delivery gates, and the complete browser suite., oversized mutations]
 lifecycleNotes:
   - "Next lifecycle action: verify."

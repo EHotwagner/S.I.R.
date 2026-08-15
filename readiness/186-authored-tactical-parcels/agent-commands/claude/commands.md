@@ -247,3 +247,18 @@ normalized work model, not an authored source of truth. See `guidance.json`.
 - Stage: specify
 - Purpose: Carry out lifecycle task T049 (done) covering GV-002, PD-012.
 - Related: GV-002, PD-012
+
+## T050 — Implement clarification decision DEC-007
+- Stage: specify
+- Purpose: Carry out lifecycle task T050 (done) covering DEC-007.
+- Related: DEC-007
+
+## T051 — Implement plan decision PD-013
+- Stage: specify
+- Purpose: Carry out lifecycle task T051 (done) covering AC-008, DEC-007, FR-012, PD-013.
+- Related: AC-008, DEC-007, FR-012, PD-013
+
+## T052 — Record verification evidence VO-009
+- Stage: specify
+- Purpose: Carry out lifecycle task T052 (done) covering PD-013, VO-009.
+- Related: PD-013, VO-009

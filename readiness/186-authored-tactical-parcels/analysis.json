@@ -3,7 +3,7 @@
   "viewVersion": "1.0",
   "workId": "186-authored-tactical-parcels",
   "stage": "analyze",
-  "status": "needsGeneratedViewRefresh",
+  "status": "implementationReady",
   "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sources": [
     {
@@ -41,7 +41,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "4ee92d7b9ead3d6d26e4408f9ed00dfc2ed5271c8acbb2aa2e367c33b5e8f07f"
+        "value": "88a6f890446021b79cae9cc7c2c33391ce66f2251c2cb109e13c5ac6ea75e44f"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -91,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "e31aac67ed1869f948e88fccc9065174ecef3305effb48217f58306720d3d0f0"
+        "value": "fbd232b770e14b4f2cb41505198d83d49d2066656d37cf20880493e30c20e02e"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -1210,58 +1210,24 @@
     }
   ],
   "readiness": {
-    "status": "needsGeneratedViewRefresh",
-    "readyCount": 0,
+    "status": "implementationReady",
+    "readyCount": 111,
     "advisoryCount": 0,
     "warningCount": 0,
     "blockingCount": 0,
-    "staleSourceCount": 1,
+    "staleSourceCount": 0,
     "missingDispositionCount": 0,
     "malformedSourceCount": 0,
-    "generatedViewFindingCount": 1,
+    "generatedViewFindingCount": 0,
     "acceptedDeferralCount": 0
   },
-  "findings": [
-    {
-      "id": "AF001",
-      "category": "generatedView",
-      "severity": "generatedView",
-      "state": "open",
-      "path": "readiness/186-authored-tactical-parcels/work-model.json",
-      "relatedIds": [
-        "readiness/186-authored-tactical-parcels/work-model.json",
-        "unknownReference",
-        "unknownReference",
-        "unknownReference",
-        "workModelInconsistent",
-        "workModelInconsistent",
-        "workModelInconsistent"
-      ],
-      "message": "Generated view \u0027readiness/186-authored-tactical-parcels/work-model.json\u0027 cannot be refreshed from the current lifecycle sources.",
-      "correction": "Fix the named lifecycle diagnostics before treating the generated view as current."
-    },
-    {
-      "id": "AF002",
-      "category": "staleSource",
-      "severity": "staleSource",
-      "state": "open",
-      "path": "readiness/186-authored-tactical-parcels/work-model.json",
-      "relatedIds": [
-        "readiness/186-authored-tactical-parcels/work-model.json"
-      ],
-      "message": "Generated view \u0027readiness/186-authored-tactical-parcels/work-model.json\u0027 is stale.",
-      "correction": "Regenerate readiness/\u003Cid\u003E/work-model.json from current lifecycle sources."
-    }
-  ],
+  "findings": [],
   "generatedViews": [
     {
       "path": "readiness/186-authored-tactical-parcels/work-model.json",
       "kind": "workModel",
-      "currency": "stale",
-      "diagnosticIds": [
-        "blockedGeneratedViewRefresh",
-        "staleGeneratedView"
-      ]
+      "currency": "current",
+      "diagnosticIds": []
     }
   ],
   "optionalBoundaryFacts": [
@@ -1287,37 +1253,10 @@
       "diagnosticIds": []
     }
   ],
-  "diagnostics": [
-    {
-      "id": "blockedGeneratedViewRefresh",
-      "severity": "warning",
-      "artifact": "readiness/186-authored-tactical-parcels/work-model.json",
-      "message": "Generated view \u0027readiness/186-authored-tactical-parcels/work-model.json\u0027 cannot be refreshed from the current lifecycle sources.",
-      "correction": "Fix the named lifecycle diagnostics before treating the generated view as current.",
-      "relatedIds": [
-        "readiness/186-authored-tactical-parcels/work-model.json",
-        "unknownReference",
-        "unknownReference",
-        "unknownReference",
-        "workModelInconsistent",
-        "workModelInconsistent",
-        "workModelInconsistent"
-      ]
-    },
-    {
-      "id": "staleGeneratedView",
-      "severity": "warning",
-      "artifact": "readiness/186-authored-tactical-parcels/work-model.json",
-      "message": "Generated view \u0027readiness/186-authored-tactical-parcels/work-model.json\u0027 is stale.",
-      "correction": "Regenerate readiness/\u003Cid\u003E/work-model.json from current lifecycle sources.",
-      "relatedIds": [
-        "readiness/186-authored-tactical-parcels/work-model.json"
-      ]
-    }
-  ],
+  "diagnostics": [],
   "nextAction": {
-    "actionId": "correctBlockingDiagnostics",
+    "actionId": "analysis.next.implement",
     "command": null,
-    "reason": "Analysis found lifecycle diagnostics that must be corrected before implementation."
+    "reason": "Lifecycle sources are current and ready for implementation."
   }
 }

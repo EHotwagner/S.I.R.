@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "6bdc0cf38a6068fdd9250e85d499da42380f1258d3c9d37d265c4fb080997995"
+        "value": "f307d126d8b5608b881110e88bf32653418acc5c3a207b9a65cdbfcf2ebf3c72"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "21be14c52eed54d48fb6edd1c2bcba71e8057a6dbe98a2b20a9516d4b8f0c7de"
+        "value": "fbd232b770e14b4f2cb41505198d83d49d2066656d37cf20880493e30c20e02e"
       }
     }
   ],
@@ -386,7 +386,10 @@
       ],
       "linkedEvidenceIds": [
         "EV012",
-        "EV029"
+        "EV029",
+        "EV050",
+        "EV051",
+        "EV052"
       ]
     }
   ],
@@ -533,7 +536,9 @@
         "line": 38,
         "column": 1
       },
-      "linkedTaskIds": []
+      "linkedTaskIds": [
+        "T050"
+      ]
     }
   ],
   "tasks": [
@@ -1894,6 +1899,90 @@
         "line": 49,
         "column": 1
       }
+    },
+    {
+      "id": "T050",
+      "title": "Implement clarification decision DEC-007",
+      "status": "done",
+      "owner": "shrike-f615",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-007"
+      ],
+      "sourceIds": [
+        "DEC-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV050"
+      ],
+      "source": "work/186-authored-tactical-parcels/tasks.yml",
+      "sourceLocation": {
+        "line": 50,
+        "column": 1
+      }
+    },
+    {
+      "id": "T051",
+      "title": "Implement plan decision PD-013",
+      "status": "done",
+      "owner": "shrike-f615",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-008",
+        "DEC-007",
+        "FR-012",
+        "PD-013"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV051"
+      ],
+      "source": "work/186-authored-tactical-parcels/tasks.yml",
+      "sourceLocation": {
+        "line": 51,
+        "column": 1
+      }
+    },
+    {
+      "id": "T052",
+      "title": "Record verification evidence VO-009",
+      "status": "done",
+      "owner": "shrike-f615",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PD-013",
+        "VO-009"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV052"
+      ],
+      "source": "work/186-authored-tactical-parcels/tasks.yml",
+      "sourceLocation": {
+        "line": 52,
+        "column": 1
+      }
     }
   ],
   "evidence": [
@@ -3020,6 +3109,78 @@
         "line": 49,
         "column": 1
       }
+    },
+    {
+      "id": "EV050",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T050",
+      "taskRefs": [
+        "T050"
+      ],
+      "requirementRefs": [
+        "FR-012"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/186-authored-tactical-parcels/evidence.yml",
+      "sourceLocation": {
+        "line": 50,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV051",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T051",
+      "taskRefs": [
+        "T051"
+      ],
+      "requirementRefs": [
+        "FR-012"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/186-authored-tactical-parcels/evidence.yml",
+      "sourceLocation": {
+        "line": 51,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV052",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T052",
+      "taskRefs": [
+        "T052"
+      ],
+      "requirementRefs": [
+        "FR-012"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/186-authored-tactical-parcels/evidence.yml",
+      "sourceLocation": {
+        "line": 52,
+        "column": 1
+      }
     }
   ],
   "generatedViews": [
@@ -3076,7 +3237,7 @@
           "path": "work/186-authored-tactical-parcels/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "6bdc0cf38a6068fdd9250e85d499da42380f1258d3c9d37d265c4fb080997995"
+            "value": "f307d126d8b5608b881110e88bf32653418acc5c3a207b9a65cdbfcf2ebf3c72"
           },
           "schemaVersion": 1
         },
@@ -3100,14 +3261,14 @@
           "path": "work/186-authored-tactical-parcels/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "21be14c52eed54d48fb6edd1c2bcba71e8057a6dbe98a2b20a9516d4b8f0c7de"
+            "value": "fbd232b770e14b4f2cb41505198d83d49d2066656d37cf20880493e30c20e02e"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "7f004ee725fa4fc9d9b302dc92b771742eda32022063970d18aedc3ffbd2aaf3"
+        "value": "169e195714af7f14f15888187e13691a0aa3533e1e478f77b95a42f4e17bb6ab"
       },
       "currency": "current"
     }
