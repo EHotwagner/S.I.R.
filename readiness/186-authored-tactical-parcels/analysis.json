@@ -4,7 +4,7 @@
   "workId": "186-authored-tactical-parcels",
   "stage": "analyze",
   "status": "implementationReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sources": [
     {
       "path": ".fsgg/agents.yml",
@@ -32,6 +32,16 @@
       "digest": {
         "algorithm": "sha256",
         "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
+      "path": "readiness/186-authored-tactical-parcels/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "e350b2035b8eef784dc2062be25138a8dcd430711e0e7fe6974cdc0897785d10"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "8b0a4f641f88a858d8ea8f0c7a54aa92959e320605deb4e4314db26c7969c87d"
+        "value": "21be14c52eed54d48fb6edd1c2bcba71e8057a6dbe98a2b20a9516d4b8f0c7de"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -1156,7 +1166,7 @@
     {
       "path": "readiness/186-authored-tactical-parcels/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
+      "currency": "current",
       "diagnosticIds": []
     }
   ],

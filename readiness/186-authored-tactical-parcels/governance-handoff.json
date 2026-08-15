@@ -6,12 +6,12 @@
   "sources": [
     {
       "path": "readiness/186-authored-tactical-parcels/ship.json",
-      "digest": "sha256:0b1a2ec95147e8f3963b219a3b5ea3ca2a6fcdaf40e9245da79956553ef29845",
+      "digest": "sha256:ea8be0e46521ae4daa398ae1af858ce600bc9a5484aeee222fed7bc1d9ee7053",
       "schemaVersion": 1
     },
     {
       "path": "readiness/186-authored-tactical-parcels/verify.json",
-      "digest": "sha256:7469336218440c5be8fed1591bb8a141236586b4a0664ae635e4714ae80eceef",
+      "digest": "sha256:346b939a551c02d9c1411cb0a5c694eed6948ab09e0288cad4aa793a3980306b",
       "schemaVersion": 1
     },
     {

@@ -11,7 +11,7 @@ sourceAnalysis: readiness/186-authored-tactical-parcels/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/186-authored-tactical-parcels/analysis.json
-    digest: 32463223ff12c029a508f9930cf8d8e0951504f135bb0bc8dd6fb0419341b63b
+    digest: 884a176ddd96877dc3d3d0662776688187bb3df82b913a041401b62d943be5e3
     schemaVersion: 1
   - label: checklist
     path: work/186-authored-tactical-parcels/checklist.md

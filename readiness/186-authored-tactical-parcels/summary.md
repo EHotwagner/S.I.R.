@@ -3,9 +3,9 @@
      sources:
        - readiness/186-authored-tactical-parcels/agent-commands/claude/guidance.json  digest:6819e274d5b3a67e74cfa64798163a5afe111ad91420fc0805a00157700f46be  schema:1(current)
        - readiness/186-authored-tactical-parcels/agent-commands/codex/guidance.json  digest:0b632897fdef1fb9b493148aa79869958acbe9c8970df0207bd5594f3514a91f  schema:1(current)
-       - readiness/186-authored-tactical-parcels/analysis.json  digest:32463223ff12c029a508f9930cf8d8e0951504f135bb0bc8dd6fb0419341b63b  schema:1(current)
-       - readiness/186-authored-tactical-parcels/ship.json  digest:0b1a2ec95147e8f3963b219a3b5ea3ca2a6fcdaf40e9245da79956553ef29845  schema:1(current)
-       - readiness/186-authored-tactical-parcels/verify.json  digest:7469336218440c5be8fed1591bb8a141236586b4a0664ae635e4714ae80eceef  schema:1(current)
+       - readiness/186-authored-tactical-parcels/analysis.json  digest:884a176ddd96877dc3d3d0662776688187bb3df82b913a041401b62d943be5e3  schema:1(current)
+       - readiness/186-authored-tactical-parcels/ship.json  digest:ea8be0e46521ae4daa398ae1af858ce600bc9a5484aeee222fed7bc1d9ee7053  schema:1(current)
+       - readiness/186-authored-tactical-parcels/verify.json  digest:346b939a551c02d9c1411cb0a5c694eed6948ab09e0288cad4aa793a3980306b  schema:1(current)
        - readiness/186-authored-tactical-parcels/work-model.json  digest:e350b2035b8eef784dc2062be25138a8dcd430711e0e7fe6974cdc0897785d10  schema:1(current)
      outputDigest: 728a2dc4168868294b3951ac303bca86c2050b21a4cc7b79413b13be6e9458bc -->
 
