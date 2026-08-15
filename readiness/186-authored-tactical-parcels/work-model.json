@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "f307d126d8b5608b881110e88bf32653418acc5c3a207b9a65cdbfcf2ebf3c72"
+        "value": "742018b2ac9f9f65b919da6180a18c1713ecdbf2040c1a045f429240c7f3255b"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "fbd232b770e14b4f2cb41505198d83d49d2066656d37cf20880493e30c20e02e"
+        "value": "80b6920146b57fe78ea6a6a15a39a750c34c0a3a59103dcbbd1283aee64e060b"
       }
     }
   ],
@@ -382,14 +382,16 @@
         "column": 1
       },
       "linkedTaskIds": [
-        "T012"
+        "T012",
+        "T053"
       ],
       "linkedEvidenceIds": [
         "EV012",
         "EV029",
         "EV050",
         "EV051",
-        "EV052"
+        "EV052",
+        "EV053"
       ]
     }
   ],
@@ -497,7 +499,8 @@
         "column": 1
       },
       "linkedTaskIds": [
-        "T017"
+        "T017",
+        "T053"
       ]
     },
     {
@@ -1983,6 +1986,42 @@
         "line": 52,
         "column": 1
       }
+    },
+    {
+      "id": "T053",
+      "title": "Harden strict preview identity allocation for hosted runners",
+      "status": "done",
+      "owner": "shrike-f615",
+      "dependencies": [
+        "T029"
+      ],
+      "requirements": [
+        "FR-012"
+      ],
+      "decisions": [
+        "DEC-005"
+      ],
+      "sourceIds": [
+        "AC-008",
+        "DEC-005",
+        "FR-012",
+        "PD-012",
+        "VO-006",
+        "VO-007"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "fsharp",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV053"
+      ],
+      "source": "work/186-authored-tactical-parcels/tasks.yml",
+      "sourceLocation": {
+        "line": 53,
+        "column": 1
+      }
     }
   ],
   "evidence": [
@@ -3181,6 +3220,30 @@
         "line": 52,
         "column": 1
       }
+    },
+    {
+      "id": "EV053",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T053",
+      "taskRefs": [
+        "T053"
+      ],
+      "requirementRefs": [
+        "FR-012"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/186-authored-tactical-parcels/evidence.yml",
+      "sourceLocation": {
+        "line": 53,
+        "column": 1
+      }
     }
   ],
   "generatedViews": [
@@ -3237,7 +3300,7 @@
           "path": "work/186-authored-tactical-parcels/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "f307d126d8b5608b881110e88bf32653418acc5c3a207b9a65cdbfcf2ebf3c72"
+            "value": "742018b2ac9f9f65b919da6180a18c1713ecdbf2040c1a045f429240c7f3255b"
           },
           "schemaVersion": 1
         },
@@ -3261,14 +3324,14 @@
           "path": "work/186-authored-tactical-parcels/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "fbd232b770e14b4f2cb41505198d83d49d2066656d37cf20880493e30c20e02e"
+            "value": "80b6920146b57fe78ea6a6a15a39a750c34c0a3a59103dcbbd1283aee64e060b"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "169e195714af7f14f15888187e13691a0aa3533e1e478f77b95a42f4e17bb6ab"
+        "value": "3410c86dd528a5a63c64f5d05a8abf495a1695714955aba48916c96ba7a123f8"
       },
       "currency": "current"
     }

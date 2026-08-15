@@ -262,3 +262,9 @@ normalized work model, not an authored source of truth. See `guidance.json`.
 - Stage: specify
 - Purpose: Carry out lifecycle task T052 (done) covering PD-013, VO-009.
 - Related: PD-013, VO-009
+
+## T053 — Harden strict preview identity allocation for hosted runners
+- Stage: specify
+- Purpose: Carry out lifecycle task T053 (done) covering AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007.
+- Related: AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007
+

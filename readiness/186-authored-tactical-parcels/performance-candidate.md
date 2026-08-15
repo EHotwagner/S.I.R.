@@ -70,3 +70,36 @@ global or permanent product limit: subsequent growth must defer code or
 explicitly version and rebaseline the contract. The aligned static ceiling and
 the browser initial-response mutation both fail when the measured size is made
 oversized.
+
+## Independent-review repair round two
+
+Hosted run `31910063550`, job `95073674188`, showed that repair-round-one head
+`74d276020ccae16acdd422461f93f28373d902a6` could still exceed the unchanged
+50 ms preview budget on a constrained runner. The round-two candidate
+`a4f38f1fdaa4b2227f8a389f5ece8688b6bdb0de` therefore replaces the remaining
+per-byte `Generic.List<byte>` identity writer with one exactly sized byte array
+and uses a dense canonical-cell route where its preconditions hold. The same
+80x80/2,048-feature production preview allocation observation fell from
+24,957,944 bytes on the round-one implementation to 12,124,472 bytes. Its
+detached aggregate validated in 9.921 ms and completed assembly in 19.003 ms.
+
+Sixteen simultaneous cold Release processes all retained the strict gate,
+exact identities, and structural counters. Preview validation ranged from
+11.092 ms through 15.164 ms and assembly from 21.157 ms through 31.548 ms. The
+tests bind the exterior identity
+`4e32081ea4a1fa44c4e04ef8ba1bc99d5efba22fc3766f1a9cdb6af95e5a1263`,
+the preview authored-input identity
+`51eedfe20ceb51fad17d33ddacfe68ce0e95cd7df031f1ef5e176226249e0a68`,
+the assembled content identity
+`18750a88acda3674081cd7de290600005fbc36cfcf8da44a34b7bf95c4bc87fd`,
+and a Unicode differential identity
+`c214e1d82c8a33f30cf6218be3744f1e1834bbef547d387d98a8740618b99ca9`.
+The allocation mutation makes the bound zero and fails as intended.
+
+Native and Fable qualification passed with the same canonical grammar. The
+unmangled production application entry measured 1,198,954 raw bytes, a 2,827
+byte increase from the round-one artifact and still below the versioned
+1,250,000-byte initial-boot ceiling. The full production delivery and browser
+journeys passed. Timings and allocations remain host observations; the exact
+bytes, identities, counters, and pass/fail budgets are the deterministic
+contracts.

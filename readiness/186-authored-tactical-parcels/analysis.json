@@ -41,7 +41,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "88a6f890446021b79cae9cc7c2c33391ce66f2251c2cb109e13c5ac6ea75e44f"
+        "value": "880478ccd025d6c6d94cfe1997b8f1ce5be9e2c2e949f1b5f467f50f88a11991"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -91,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "fbd232b770e14b4f2cb41505198d83d49d2066656d37cf20880493e30c20e02e"
+        "value": "80b6920146b57fe78ea6a6a15a39a750c34c0a3a59103dcbbd1283aee64e060b"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -1207,11 +1207,21 @@
       "relationship": "taskDependency",
       "state": "current",
       "diagnosticIds": []
+    },
+    {
+      "id": "AR112",
+      "sourcePath": "work/186-authored-tactical-parcels/tasks.yml",
+      "targetPath": "work/186-authored-tactical-parcels/tasks.yml",
+      "sourceId": "T053",
+      "targetId": "T029",
+      "relationship": "taskDependency",
+      "state": "current",
+      "diagnosticIds": []
     }
   ],
   "readiness": {
     "status": "implementationReady",
-    "readyCount": 111,
+    "readyCount": 112,
     "advisoryCount": 0,
     "warningCount": 0,
     "blockingCount": 0,
