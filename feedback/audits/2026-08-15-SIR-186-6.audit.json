@@ -1,0 +1,135 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-15-SIR-186-6.md",
+  "reportSha256": "5c7fcb29b34c0921bf2c4ae6746b6ccebfb89c6762936f5737b2130d257dc29a",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md",
+          "result": "verified",
+          "sha256": "df76e3b98cfd2578f75171eab6cadfbd90017cbb3803788a2847ad98fe38c507"
+        },
+        {
+          "locator": "file:scripts/test-production-delivery-budget.mjs",
+          "result": "verified",
+          "sha256": "bd99b2ebb66a3b765fdc8036cb568a9b8a598d3fb4bc53666e5273f1016cde5a"
+        },
+        {
+          "locator": "file:tests/SIR.Browser.Tests/production-delivery.spec.js",
+          "result": "verified",
+          "sha256": "0f16fa283d8b0f9ca3d38a520a00f15bfed322bf687e9b29616d5ea573da4f13"
+        },
+        {
+          "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl",
+          "result": "verified",
+          "sha256": "d8229695a345e108faf7bd58c915b652aab0551bcf0212a9227e5b165a3e0368"
+        },
+        {
+          "locator": "command:node scripts/test-production-delivery-budget.mjs",
+          "result": "verified"
+        },
+        {
+          "locator": "command:SIR_DELIVERY_BUDGET_MAX_APP_RAW=1190000 node scripts/test-production-delivery-budget.mjs",
+          "result": "verified"
+        },
+        {
+          "locator": "command:SIR_DELIVERY_BROWSER_MUTATE_SUBJECT=initial-bytes npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js tests/SIR.Browser.Tests/production-delivery.spec.js",
+          "result": "verified"
+        },
+        {
+          "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The two mutation commands are expected-failure proofs: both exited nonzero for their intended budget assertions.",
+        "The abandoned mangling experiments and rebuild count are collector evidence retained by the committed checkpoint, not independently replayable history.",
+        "Byte and throttled-browser measurements remain headless and host-specific; repair-head hosted CI remains pending."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:src/SIR.Client.Web/TacticalEnvironmentView.fs",
+          "result": "verified",
+          "sha256": "4aa118f461f92bb77e6779c75eca3ee3a610288f5451053ad6cc73f1974c72ab"
+        },
+        {
+          "locator": "file:src/SIR.Client.Web/App.fs",
+          "result": "verified",
+          "sha256": "f18830d84a37723a9a42a833bd4ad4b7c3f96b0bb43aedd1922ba02a04b43e81"
+        },
+        {
+          "locator": "file:tests/SIR.Browser.Tests/live-session.spec.js",
+          "result": "verified",
+          "sha256": "19b0789634d13710e50e5e0094459f0e3802b444413cddefe160e44599bbcaad"
+        },
+        {
+          "locator": "file:tests/SIR.Browser.Tests/tactical-environment.spec.js",
+          "result": "verified",
+          "sha256": "7fc6f5bcca9eb3d897fa04966e86f6ee116251bf80cb07fd26cdea62b44716c3"
+        },
+        {
+          "locator": "command:npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js tests/SIR.Browser.Tests/live-session.spec.js -g 'tactical command controls expose registry-derived shortcut metadata'",
+          "result": "verified"
+        },
+        {
+          "locator": "command:npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js tests/SIR.Browser.Tests/tactical-environment.spec.js",
+          "result": "verified"
+        },
+        {
+          "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The historical failing browser output was not retained; the former all-interactive-target rejection is reconstructable from source history.",
+        "The tactical journey verifies focused native Space behavior, resulting state, identity, and replay. It does not expose a raw dispatch counter; exclusive ownership is additionally established by the verified target-filter source."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:docs/assets/map-editor-review/manifest.json",
+          "result": "verified",
+          "sha256": "3152294e8f649efc1235f60266ff9f68a485d459bdf3a1a99ebc6956f63c661f"
+        },
+        {
+          "locator": "file:docs/assets/persistent-workspace-m9-review/manifest.json",
+          "result": "verified",
+          "sha256": "360dc8cbe0dda3f1e126b1ddb05ceba4bd01eeb009a4d51fcee7bcb3f892bbcc"
+        },
+        {
+          "locator": "file:tests/SIR.Browser.Tests/visible-workflows.spec.js",
+          "result": "verified",
+          "sha256": "6f77e9a3538c212dcba8ddca1f672c733b79b082e084c4c3910a58c3a074a291"
+        },
+        {
+          "locator": "command:git diff 64ac6e0212bb5fe009bc43f595c0ed38ac836ed9 f68380fea7352fc554155b54d184b2fbb861edf0 -- docs/assets/map-editor-review/manifest.json docs/assets/persistent-workspace-m9-review/manifest.json tests/SIR.Browser.Tests/visible-workflows.spec.js",
+          "result": "verified"
+        },
+        {
+          "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The final aggregate proves the repaired bindings and no-drift state; it does not reproduce the historical red candidates.",
+        "The exact historical diff verifies both manifest digest updates and the pinned-source assertion update.",
+        "Nonfatal Happy DOM removal exceptions remain visible during documentation checks but do not prevent the aggregate from completing all gates."
+      ]
+    }
+  ]
+}
