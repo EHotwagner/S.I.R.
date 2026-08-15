@@ -432,10 +432,19 @@ module MapEditorSimulator =
             before.Width = after.Width && before.Height = after.Height
         let unchangedTerrain = before.Terrain = after.Terrain
         let unchangedTopology = before.Edges = after.Edges
+        let unchangedTacticalEnvironment =
+            handoff.Revision.TacticalDocument = next.TacticalDocument
+            && handoff.Revision.TacticalSeed = next.TacticalSeed
         let retained =
             before.Units
             |> Map.forall (fun id unit -> Map.tryFind id after.Units = Some unit)
-        if unchangedGeometry && unchangedTerrain && unchangedTopology && retained then
+        if
+            unchangedGeometry
+            && unchangedTerrain
+            && unchangedTopology
+            && unchangedTacticalEnvironment
+            && retained
+        then
             let introduced =
                 after.Units
                 |> Map.filter (fun id _ -> not (Map.containsKey id before.Units))
@@ -460,6 +469,8 @@ module MapEditorSimulator =
                     "terrain changed"
                 elif not unchangedTopology then
                     "edge topology changed"
+                elif not unchangedTacticalEnvironment then
+                    "tactical environment changed"
                 else
                     before.Units
                     |> Map.toSeq
