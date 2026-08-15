@@ -48,12 +48,12 @@
       "path": "readiness/184-scenario-catalog/performance-evidence.json",
       "kind": "performanceEvidence",
       "owner": "sdd",
-      "schemaVersion": 0,
-      "rawSchemaVersion": null,
-      "schemaStatus": "malformed",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "b9af4d7062a42a71c7d65d86971bdc89b9372f846950a6782c5f19a455e22759"
+        "value": "f8c5999be6f79c3c9f3adefd5b6b40768aca056cc201f97d4f17a7c406877287"
       }
     },
     {
@@ -3185,9 +3185,9 @@
           "path": "readiness/184-scenario-catalog/performance-evidence.json",
           "digest": {
             "algorithm": "sha256",
-            "value": "b9af4d7062a42a71c7d65d86971bdc89b9372f846950a6782c5f19a455e22759"
+            "value": "f8c5999be6f79c3c9f3adefd5b6b40768aca056cc201f97d4f17a7c406877287"
           },
-          "schemaVersion": null
+          "schemaVersion": 1
         },
         {
           "path": "work/184-scenario-catalog/checklist.md",
@@ -3240,7 +3240,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "3a81b26365a15e2d44c832e9e2c66e60bbbcf174d93eca775b2392741fbe0dba"
+        "value": "38bd5f4c4401fc2d9bcecf9e3210ebf574375c29522d517349fb9a9a7f77b985"
       },
       "currency": "current"
     }
