@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/186-authored-tactical-parcels/ship.json",
-      "digest": "sha256:47ede9d2a4e9d470fbc840174105f52469003f6b983430a4cf8df1ce8d700698",
+      "digest": "sha256:660745fa9f339ceb572011615a2fc3c7600686c82db11161fabb2ab85583836f",
       "schemaVersion": 1
     },
     {
       "path": "readiness/186-authored-tactical-parcels/verify.json",
-      "digest": "sha256:323d1132f7134cdd4565bba09bf7dd286b3155aaaf3a00bae4a3550d2ea586a0",
+      "digest": "sha256:794705edab19291593269adf0cff0311074739e25875701d3af3be05935a5315",
       "schemaVersion": 1
     },
     {
       "path": "readiness/186-authored-tactical-parcels/work-model.json",
-      "digest": "sha256:df8d65ff7002351bf2c7d3d8f3298cd391c301cd24725f01bfe9492d4dc84ede",
+      "digest": "sha256:9020f3b1ca253862dbdc4324e8a73a1bd8e0e3d1b18b54a613bce3b42ee1018b",
       "schemaVersion": 1
     }
   ],
@@ -288,6 +288,11 @@
         "rationale": null
       },
       {
+        "id": "evidence:EV054",
+        "state": "real",
+        "rationale": null
+      },
+      {
         "id": "task:T001",
         "state": "real",
         "rationale": null
@@ -551,6 +556,11 @@
         "id": "task:T053",
         "state": "real",
         "rationale": null
+      },
+      {
+        "id": "task:T054",
+        "state": "real",
+        "rationale": null
       }
     ],
     "dependencies": [
@@ -765,6 +775,10 @@
       {
         "dependent": "evidence:EV053",
         "dependency": "task:T053"
+      },
+      {
+        "dependent": "evidence:EV054",
+        "dependency": "task:T054"
       },
       {
         "dependent": "task:T001",
@@ -1141,6 +1155,14 @@
       {
         "dependent": "task:T053",
         "dependency": "task:T029"
+      },
+      {
+        "dependent": "task:T054",
+        "dependency": "evidence:EV054"
+      },
+      {
+        "dependent": "task:T054",
+        "dependency": "task:T053"
       }
     ]
   },

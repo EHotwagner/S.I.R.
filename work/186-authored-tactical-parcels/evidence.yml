@@ -11,7 +11,7 @@ sourceAnalysis: readiness/186-authored-tactical-parcels/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/186-authored-tactical-parcels/analysis.json
-    digest: 0765328574419afaacb392cfe5ae2407dadef1dfc7de592ef8acfbfc0fdf2cb8
+    digest: 31225af77aea95ab6cf40440214602acc4acab4c2d7f6ffd174884a392609d7d
     schemaVersion: 1
   - label: checklist
     path: work/186-authored-tactical-parcels/checklist.md
@@ -31,7 +31,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: tasks
     path: work/186-authored-tactical-parcels/tasks.yml
-    digest: 80b6920146b57fe78ea6a6a15a39a750c34c0a3a59103dcbbd1283aee64e060b
+    digest: 3bfaacf8137b1b27b518cf07f06496baddc7f984d12269f1ddd889e31d72f7b7
     schemaVersion: 1
 evidence:
   - id: EV001
@@ -1465,5 +1465,32 @@ evidence:
       failed: 0
       skipped: 0
     notes: [Exact-sized canonical identity writing halves preview allocation while retaining native/Fable identities, and the strict 50 ms gate under sixteen-process contention., counters]
+  - id: EV054
+    kind: verification
+    subject:
+      type: task
+      id: T054
+    taskRefs: [T054]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: [DEC-005]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV054]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Hosted allocation variance has measured headroom while the unchanged production-subject allocation mutation fails and restores cleanly.]
 lifecycleNotes:
   - "Next lifecycle action: verify."

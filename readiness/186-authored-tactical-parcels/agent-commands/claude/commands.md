@@ -268,3 +268,8 @@ normalized work model, not an authored source of truth. See `guidance.json`.
 - Purpose: Carry out lifecycle task T053 (done) covering AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007.
 - Related: AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007
 
+## T054 — Bind hosted allocation variance and production-subject mutation
+- Stage: specify
+- Purpose: Carry out lifecycle task T054 (done) covering AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007.
+- Related: AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007
+

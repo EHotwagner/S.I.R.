@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "df8d65ff7002351bf2c7d3d8f3298cd391c301cd24725f01bfe9492d4dc84ede"
+        "value": "9020f3b1ca253862dbdc4324e8a73a1bd8e0e3d1b18b54a613bce3b42ee1018b"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -19,7 +19,7 @@
   ],
   "behaviorModelDigest": {
     "algorithm": "sha256",
-    "value": "24b869405de912d53cf45f296c89d3139d8f5d5e310637a489a148c7a38dec55"
+    "value": "33a6b6f24f7e4f1a60e654812ad4dd2e0a8c1e47705eaa80de9e91ce4ecf4474"
   },
   "commands": [
     {
@@ -591,13 +591,27 @@
         "VO-006",
         "VO-007"
       ]
+    },
+    {
+      "id": "T054",
+      "title": "Bind hosted allocation variance and production-subject mutation",
+      "stage": "specify",
+      "purpose": "Carry out lifecycle task T054 (done) covering AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007.",
+      "relatedIds": [
+        "AC-008",
+        "DEC-005",
+        "FR-012",
+        "PD-012",
+        "VO-006",
+        "VO-007"
+      ]
     }
   ],
   "skills": [
     {
       "id": "automated-tests",
       "title": "automated-tests",
-      "capability": "Required by tasks: T037, T038, T039, T040, T041, T042, T043, T044, T052, T053.",
+      "capability": "Required by tasks: T037, T038, T039, T040, T041, T042, T043, T044, T052, T053, T054.",
       "relatedIds": [
         "T037",
         "T038",
@@ -608,7 +622,8 @@
         "T043",
         "T044",
         "T052",
-        "T053"
+        "T053",
+        "T054"
       ]
     },
     {
@@ -623,7 +638,7 @@
     {
       "id": "fsharp",
       "title": "fsharp",
-      "capability": "Required by tasks: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T032, T033, T034, T035, T036, T050, T051, T053.",
+      "capability": "Required by tasks: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024, T025, T026, T027, T028, T029, T030, T031, T032, T033, T034, T035, T036, T050, T051, T053, T054.",
       "relatedIds": [
         "T001",
         "T002",
@@ -663,7 +678,8 @@
         "T036",
         "T050",
         "T051",
-        "T053"
+        "T053",
+        "T054"
       ]
     },
     {
@@ -707,7 +723,7 @@
     {
       "id": "readiness-evidence",
       "title": "readiness-evidence",
-      "capability": "Required by tasks: T037, T038, T039, T040, T041, T042, T043, T044, T052, T053.",
+      "capability": "Required by tasks: T037, T038, T039, T040, T041, T042, T043, T044, T052, T053, T054.",
       "relatedIds": [
         "T037",
         "T038",
@@ -718,7 +734,8 @@
         "T043",
         "T044",
         "T052",
-        "T053"
+        "T053",
+        "T054"
       ]
     },
     {
