@@ -126,17 +126,13 @@ let private prefersReducedMotion: bool = jsNative
 [<Emit("/(Mac|iPhone|iPad|iPod)/.test(navigator.platform)")>]
 let private usesMetaShortcutPlatform: bool = jsNative
 
-let private shortcutPlatform =
-    if usesMetaShortcutPlatform then MetaPlatform else ControlPlatform
+let private shortcutPlatform = if usesMetaShortcutPlatform then MetaPlatform else ControlPlatform
 let private validSimulatorFor editor current =
     match MapEditorSimulator.tryHandoff editor with
     | Error _ -> current
     | Ok initial ->
         current
-        |> Option.map (fun simulator ->
-            if MapEditorSimulator.isBehindDraft editor simulator then
-                MapEditorSimulator.reconcile editor simulator
-            else simulator)
+        |> Option.map (fun simulator -> if MapEditorSimulator.isBehindDraft editor simulator then MapEditorSimulator.reconcile editor simulator else simulator)
         |> Option.orElse (Some initial)
 
 /// Browser `key` represents shifted digits as printable symbols (for example
