@@ -672,15 +672,37 @@ let private tacticalEnvironmentEvidence () =
     let interactionClock = Stopwatch.StartNew()
     let _, finalCombat, participants, propagated, queryCount, crossedCount = runInteractionBatch ()
     interactionClock.Stop()
+    eprintfn
+        "Representative combat/spatial batch: source units %d; final units %d; participants %d; propagated changes %d; spatial queries %d; crossed cells %d; elapsed %.3f ms."
+        combatUnits.Count
+        finalCombat.Combatants.Count
+        participants.Count
+        propagated
+        queryCount
+        crossedCount
+        interactionClock.Elapsed.TotalMilliseconds
+    Console.Error.Flush()
     require
-        (combatUnits.Count = 100
-         && finalCombat.Combatants.Count = 100
-         && participants.Count = 100
-         && propagated = 0
-         && queryCount = 50
-         && crossedCount > 0
-         && interactionClock.Elapsed.TotalMilliseconds < 50.0)
-        "Representative 100-unit/50-interaction production combat/spatial batch exceeded its structural or 50 ms budget."
+        (combatUnits.Count = 100)
+        "Representative combat/spatial batch changed its 100-unit source workload."
+    require
+        (finalCombat.Combatants.Count = 100)
+        "Representative combat/spatial batch changed its 100-unit final workload."
+    require
+        (participants.Count = 100)
+        "Representative combat/spatial batch did not retain exactly 100 participants."
+    require
+        (propagated = 0)
+        "Representative combat/spatial batch propagated changes beyond each targeted feature."
+    require
+        (queryCount = 50)
+        "Representative combat/spatial batch did not execute exactly 50 spatial queries."
+    require
+        (crossedCount > 0)
+        "Representative combat/spatial batch did not traverse any spatial cells."
+    require
+        (interactionClock.Elapsed.TotalMilliseconds < 50.0)
+        (sprintf "Representative 100-unit/50-interaction production combat/spatial batch exceeded its 50 ms timing budget: %.3f ms." interactionClock.Elapsed.TotalMilliseconds)
 
     printfn
         "Tactical environment evidence: identity %s; closed/open path %A/%A; %d cache entry invalidated in %.3f ms; representative %.3f ms; maximum assembly %.3f ms; maximum preview %.3f ms; 100-unit/50-interaction batch %.3f ms."
