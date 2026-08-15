@@ -354,10 +354,18 @@ let run () =
           Category = category
           Status = ImplementedDocumentation
           SourcePath = "docs/" + slug + ".md"
+          ApiPath = None
           ContentDigest = slug
           Headings = [ title, slug ]
           Related = []
-          Blocks = [ { Kind = "paragraph"; Level = None; Anchor = None; Text = text } ] }
+          Blocks =
+            [ { Kind = "paragraph"
+                Level = None
+                Anchor = None
+                Text = text
+                ContentSegments = [ { SegmentKind = "text"; SegmentText = text; TargetSlug = None; Anchor = None; ExternalUrl = None } ]
+                Rows = []
+                ImageSource = None } ] }
     let lineOfSightPage = documentationPage "line-of-sight" "Line of sight" "Combat" "LOS cover and armor interactions"
     let armorPage = documentationPage "armor" "Armor" "Combat" "Armor mitigation"
     let documentationManifest =
@@ -372,7 +380,9 @@ let run () =
                 PageSlug = "line-of-sight"
                 Concept = "combat"
                 Symbol = Some "resolve"
-                Line = Some 42 } ]
+                Line = Some 42
+                ContentDigest = "content"
+                LineDigest = "line" } ]
             |> Map.ofList
           SearchTokenCount = 9 }
     let losResults =

@@ -1,0 +1,76 @@
+.in-app-docs {
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-inline-size: 0;
+  block-size: 100%;
+  overflow: auto;
+  padding: clamp(0.5rem, 2vw, 1.5rem);
+  background: var(--tactical-surface, #111820);
+  color: var(--tactical-text, #edf4f7);
+}
+
+.in-app-docs *,
+.in-app-docs *::before,
+.in-app-docs *::after {
+  box-sizing: border-box;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.in-app-docs-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 2;
+  display: grid;
+  min-inline-size: 0;
+  gap: 0.5rem;
+  background: inherit;
+  padding-block-end: 0.75rem;
+}
+
+.in-app-docs-header [role="toolbar"] {
+  display: flex;
+  min-inline-size: 0;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.in-app-docs input,
+.in-app-docs button { min-inline-size: 0; white-space: normal; overflow-wrap: anywhere; }
+
+.in-app-docs-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-inline-size: 0;
+  gap: 1rem;
+}
+
+.in-app-docs-tree,
+.in-app-docs-page { min-inline-size: 0; overflow-wrap: anywhere; }
+.in-app-docs-tree { max-block-size: 18rem; overflow: auto; }
+
+.in-app-docs-tree ul,
+.in-app-docs-page ul { padding-inline-start: 0.5rem; list-style-position: inside; }
+
+.in-app-docs-page pre {
+  inline-size: 100%;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.docs-table { inline-size: 100%; table-layout: fixed; border-collapse: collapse; }
+.docs-table th, .docs-table td { border: 1px solid currentColor; padding: 0.25rem; overflow-wrap: anywhere; }
+.docs-image { block-size: auto; object-fit: contain; }
+
+.docs-status[data-doc-status="Research"],
+.docs-status[data-doc-status="Provisional"] {
+  border-inline-start: 0.35rem dashed currentColor;
+  padding-inline-start: 0.5rem;
+}
+
+@media (max-width: 40rem), (min-resolution: 3dppx) {
+  .in-app-docs-layout { grid-template-columns: minmax(0, 1fr); }
+  .in-app-docs-tree { max-block-size: 14rem; overflow: auto; }
+}

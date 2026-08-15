@@ -10,8 +10,8 @@ open Thoth.Json
 [<Global>]
 let private fetch (url: string, options: obj) : JS.Promise<obj> = jsNative
 
-[<Emit("navigator.onLine")>]
-let private browserOnline : bool = jsNative
+[<Emit("(async()=>{try{await fetch($0,{method:'HEAD',mode:'no-cors',cache:'no-store'});const w=window.open($0,'_blank');if(!w)return 'blocked';w.opener=null;return 'opened'}catch(_){return 'unavailable'}})()")>]
+let private openExternalAtHost (url: string) : JS.Promise<string> = jsNative
 
 let private statusDecoder =
     Decode.string
@@ -22,12 +22,23 @@ let private statusDecoder =
         | "research" -> Decode.succeed ResearchDocumentation
         | value -> Decode.fail ("Unknown documentation status " + value))
 
+let private segmentDecoder : Decoder<DocumentationSegment> =
+    Decode.object (fun get ->
+        { SegmentKind = get.Required.Field "kind" Decode.string
+          SegmentText = get.Required.Field "text" Decode.string
+          TargetSlug = get.Optional.Field "targetSlug" Decode.string
+          Anchor = get.Optional.Field "anchor" Decode.string
+          ExternalUrl = get.Optional.Field "externalUrl" Decode.string })
+
 let private blockDecoder : Decoder<DocumentationBlock> =
     Decode.object (fun get ->
         { Kind = get.Required.Field "kind" Decode.string
           Level = get.Optional.Field "level" Decode.int
           Anchor = get.Optional.Field "anchor" Decode.string
-          Text = get.Required.Field "text" Decode.string })
+          Text = get.Required.Field "text" Decode.string
+          ContentSegments = get.Optional.Field "segments" (Decode.list segmentDecoder) |> Option.defaultValue []
+          Rows = get.Optional.Field "rows" (Decode.list (Decode.list Decode.string)) |> Option.defaultValue []
+          ImageSource = get.Optional.Field "imageSource" Decode.string })
 
 let private headingDecoder =
     Decode.object (fun get ->
@@ -41,6 +52,7 @@ let private pageDecoder : Decoder<DocumentationPage> =
           Category = get.Required.Field "category" Decode.string
           Status = get.Required.Field "status" statusDecoder
           SourcePath = get.Required.Field "sourcePath" Decode.string
+          ApiPath = get.Optional.Field "apiPath" Decode.string
           ContentDigest = get.Required.Field "contentDigest" Decode.string
           Headings = get.Required.Field "headings" (Decode.list headingDecoder)
           Related = get.Required.Field "related" (Decode.list Decode.string)
@@ -54,7 +66,9 @@ let private sourceDecoder : Decoder<DocumentationSource> =
           PageSlug = get.Required.Field "pageSlug" Decode.string
           Concept = get.Required.Field "concept" Decode.string
           Symbol = get.Optional.Field "symbol" Decode.string
-          Line = get.Optional.Field "line" Decode.int })
+          Line = get.Optional.Field "line" Decode.int
+          ContentDigest = get.Required.Field "contentDigest" Decode.string
+          LineDigest = get.Required.Field "lineDigest" Decode.string })
 
 let private sourcesDecoder =
     Decode.keyValuePairs sourceDecoder |> Decode.map Map.ofList
@@ -117,6 +131,18 @@ let contextLinks hasSelected openConcept =
             ]
         ]
     ]
+
+let private renderSegments openPage segments =
+    [ for segment in segments do
+        match segment.SegmentKind, segment.TargetSlug, segment.ExternalUrl with
+        | "link", Some slug, _ ->
+            Html.a [
+                prop.href ("#" + slug + (segment.Anchor |> Option.map (fun anchor -> "#" + anchor) |> Option.defaultValue ""))
+                prop.text segment.SegmentText
+                prop.onClick (fun event -> event.preventDefault (); openPage slug segment.Anchor)
+            ]
+        | "link", _, Some url -> Html.a [ prop.href url; prop.text segment.SegmentText ]
+        | _ -> Html.span segment.SegmentText ]
 
 let view
     (navigation: DocumentationNavigation)
@@ -215,9 +241,21 @@ let view
                                         | "heading", Some 3 -> Html.h3 [ prop.id (block.Anchor |> Option.defaultValue ""); prop.text block.Text ]
                                         | "heading", _ -> Html.h4 [ prop.id (block.Anchor |> Option.defaultValue ""); prop.text block.Text ]
                                         | "code", _ -> Html.pre [ Html.code block.Text ]
-                                        | "table", _ -> Html.pre [ prop.className "docs-table-source"; prop.ariaLabel "Documentation table"; prop.text block.Text ]
-                                        | "image", _ -> Html.p [ prop.className "docs-image-description"; prop.text block.Text ]
-                                        | _ -> Html.p block.Text
+                                        | "table", _ ->
+                                            Html.table [
+                                                prop.className "docs-table"
+                                                prop.ariaLabel "Documentation table"
+                                                prop.children [
+                                                    if not block.Rows.IsEmpty then
+                                                        Html.thead [ Html.tr [ for cell in block.Rows.Head do Html.th cell ] ]
+                                                        Html.tbody [ for row in block.Rows.Tail do Html.tr [ for cell in row do Html.td cell ] ]
+                                                ]
+                                            ]
+                                        | "image", _ ->
+                                            match block.ImageSource with
+                                            | Some source -> Html.img [ prop.className "docs-image"; prop.src source; prop.alt block.Text ]
+                                            | None -> Html.none
+                                        | _ -> Html.p [ prop.children (renderSegments openPage block.ContentSegments) ]
                                     if not page.Related.IsEmpty then
                                         Html.nav [
                                             prop.ariaLabel "Related documentation"
@@ -235,11 +273,14 @@ let view
                                             prop.rel.noopener
                                             prop.text "Open matching GitHub source"
                                             prop.onClick (fun event ->
-                                                if not browserOnline then
-                                                    event.preventDefault ()
-                                                    announceExternal "GitHub source is unavailable while offline. Local documentation remains available."
-                                                else
-                                                    announceExternal "Opening GitHub source in a new tab. Local documentation remains available.")
+                                                event.preventDefault ()
+                                                async {
+                                                    let! result = openExternalAtHost (sourceUrl source) |> Async.AwaitPromise
+                                                    match result with
+                                                    | "opened" -> announceExternal "GitHub source opened in a new tab. Local documentation remains available."
+                                                    | "blocked" -> announceExternal "The browser blocked the GitHub source window. Local documentation remains available."
+                                                    | _ -> announceExternal "GitHub source is unavailable from this host. Local documentation remains available."
+                                                } |> Async.StartImmediate)
                                         ]
                                     | None -> Html.none
                             ]

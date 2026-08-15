@@ -3,17 +3,25 @@ import { test, expect } from "@playwright/test";
 test("documentation is a reversible, searchable production modality", async ({ page }) => {
   const responses = [];
   page.on("response", (response) => responses.push(response));
-  await page.goto("/");
+  const shellResponse = await page.goto("/");
+  expect(shellResponse.headers()["content-security-policy"]).toContain("default-src 'self'");
 
   const scene = page.locator("#retained-tactical-workscreen svg");
   await expect(scene).toBeVisible();
   await page.locator("#persistent-layer-units [data-unit-id]").first().click();
   const inspectorDocs = page.locator('[data-context-origin="inspector"]');
   await expect(inspectorDocs).toBeVisible();
-  const sceneIdentity = await scene.evaluate((element) => {
+  const retainedFingerprint = async () => scene.evaluate((element) => {
     window.__sirRetainedScene = element;
-    return [element.dataset.sceneOwner, element.dataset.sceneRevision, element.dataset.sceneTick, element.dataset.semanticSelectionUnit];
+    const panelInventory = [...document.querySelectorAll("[data-panel-id]")].map((panel) => [panel.dataset.panelId, panel.dataset.panelSide, panel.dataset.panelOrder, panel.hidden, panel.getAttribute("aria-hidden"), panel.className]);
+    return {
+      scene: [element.dataset.sceneOwner, element.dataset.sceneRevision, element.dataset.sceneTick, element.dataset.semanticSelectionUnit, element.dataset.cameraPanX, element.dataset.cameraPanY, element.dataset.cameraZoom],
+      modality: document.querySelector(".tactical-workscreen-region")?.dataset.activeModality,
+      panelInventory,
+      timeline: [...document.querySelectorAll("[data-timeline-tick],[aria-label*='timeline' i]")].map((node) => [node.getAttribute("data-timeline-tick"), node.getAttribute("aria-valuenow"), node.getAttribute("aria-pressed")]),
+    };
   });
+  const sceneIdentity = await retainedFingerprint();
 
   await inspectorDocs.click();
   const docs = page.getByRole("region", { name: "S.I.R. documentation" });
@@ -28,6 +36,8 @@ test("documentation is a reversible, searchable production modality", async ({ p
   await expect(page.locator("#retained-tactical-workscreen")).toBeHidden();
   await expect(docs.getByRole("heading", { name: "Documentation", level: 1 })).toBeVisible();
   await expect(docs.getByRole("navigation", { name: "Documentation hierarchy" })).toBeVisible();
+  await page.keyboard.press("Control+K");
+  await expect(docs.getByRole("searchbox", { name: "Search documentation" })).toBeFocused();
 
   const manifestResponse = responses.find((response) => response.url().endsWith("/content/sir-client/v1/in-app-docs.json"));
   expect(manifestResponse?.status()).toBe(200);
@@ -43,12 +53,12 @@ test("documentation is a reversible, searchable production modality", async ({ p
   await expect(docs.getByRole("navigation", { name: "Breadcrumbs" })).toBeVisible();
   await expect(docs.getByRole("navigation", { name: "On this page" })).toBeVisible();
   const source = docs.getByRole("link", { name: "Open matching GitHub source" });
-  await expect(source).toHaveAttribute("href", /^https:\/\/github\.com\/EHotwagner\/S\.I\.R\.\/blob\/main\//);
-  await page.context().setOffline(true);
+  await expect(source).toHaveAttribute("href", /^https:\/\/github\.com\/EHotwagner\/S\.I\.R\.\/blob\/[0-9a-f]{40}\//);
+  await page.route("https://github.com/**", (route) => route.abort("internetdisconnected"));
   await source.click();
-  await expect(docs.getByText("GitHub source is unavailable while offline. Local documentation remains available.")).toBeVisible();
+  await expect(docs.getByText("GitHub source is unavailable from this host. Local documentation remains available.")).toBeVisible();
   await expect(docs.getByRole("heading", { name: /Combat resolution/i }).first()).toBeVisible();
-  await page.context().setOffline(false);
+  await page.unroute("https://github.com/**");
 
   await search.fill("");
   const pageButtons = docs.getByRole("navigation", { name: "Documentation hierarchy" }).getByRole("button");
@@ -62,12 +72,38 @@ test("documentation is a reversible, searchable production modality", async ({ p
   await page.evaluate(() => { document.documentElement.style.zoom = "400%"; });
   await expect(docs).toBeVisible();
   await expect(docs.getByRole("heading", { name: "Documentation", level: 1 })).toBeVisible();
+  const zoomGeometry = await docs.evaluate((region) => ({
+    clientWidth: region.clientWidth,
+    scrollWidth: region.scrollWidth,
+    controlsOutsideRegion: [...region.querySelectorAll("button,input,a")].filter((element) => {
+      const bounds = element.getBoundingClientRect();
+      const regionBounds = region.getBoundingClientRect();
+      return bounds.left < regionBounds.left - 1 || bounds.right > regionBounds.right + 1;
+    }).map((element) => element.outerHTML.slice(0, 80)),
+    h1Count: region.querySelectorAll("h1").length,
+    firstHeading: region.querySelector("h1,h2,h3,h4")?.tagName,
+  }));
+  expect(zoomGeometry.controlsOutsideRegion).toEqual([]);
+  expect(zoomGeometry.scrollWidth).toBeLessThanOrEqual(zoomGeometry.clientWidth + 1);
+  expect(zoomGeometry).toMatchObject({ h1Count: 1, firstHeading: "H1" });
   await page.evaluate(() => { document.documentElement.style.zoom = "100%"; });
 
   await docs.getByRole("button", { name: "Return to tactical workspace" }).click();
   await expect(scene).toBeVisible();
   expect(await scene.evaluate((element) => window.__sirRetainedScene === element)).toBe(true);
-  expect(await scene.evaluate((element) => [element.dataset.sceneOwner, element.dataset.sceneRevision, element.dataset.sceneTick, element.dataset.semanticSelectionUnit])).toEqual(sceneIdentity);
+  expect(await retainedFingerprint()).toEqual(sceneIdentity);
+
+  for (const mode of ["Editor", "Plan", "Simulate", "Review"]) {
+    await page.getByRole("button", { name: mode, exact: true }).click();
+    await expect(scene).toBeVisible();
+    const beforeDocs = await retainedFingerprint();
+    await page.keyboard.press("Control+Shift+5");
+    await expect(docs).toBeVisible();
+    await docs.getByRole("button", { name: "Return to tactical workspace" }).click();
+    await expect(scene).toBeVisible();
+    expect(await scene.evaluate((element) => window.__sirRetainedScene === element)).toBe(true);
+    expect(await retainedFingerprint()).toEqual(beforeDocs);
+  }
 
   for (const menuName of ["File", "Edit", "View"]) {
     await page.getByRole("button", { name: menuName, exact: true }).click();

@@ -104,13 +104,25 @@ type DocumentationSource =
       PageSlug: string
       Concept: string
       Symbol: string option
-      Line: int option }
+      Line: int option
+      ContentDigest: string
+      LineDigest: string }
+
+type DocumentationSegment =
+    { SegmentKind: string
+      SegmentText: string
+      TargetSlug: string option
+      Anchor: string option
+      ExternalUrl: string option }
 
 type DocumentationBlock =
     { Kind: string
       Level: int option
       Anchor: string option
-      Text: string }
+      Text: string
+      ContentSegments: DocumentationSegment list
+      Rows: string list list
+      ImageSource: string option }
 
 type DocumentationPage =
     { Slug: string
@@ -118,6 +130,7 @@ type DocumentationPage =
       Category: string
       Status: DocumentationStatus
       SourcePath: string
+      ApiPath: string option
       ContentDigest: string
       Headings: (string * string) list
       Related: string list
