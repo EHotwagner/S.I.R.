@@ -50,6 +50,7 @@ jq -n \
   --argjson projectionFrames "$(counter_value projectionFrames)" \
   --argjson sceneNodes "$(counter_value sceneNodes)" \
   '{
+    schemaVersion: 1,
     contractVersion: "performance-evidence-v1",
     claimedBudgetPassed: ($measuredP95Ms <= 20 and $measuredP99Ms <= 50 and $pathExpansions <= 4096 and $peakLosSamples <= 256 and $peakCombatResolutions <= 256 and $sceneNodes <= 8000),
     sampleSets: [{
