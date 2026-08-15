@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/184-scenario-catalog/ship.json",
-      "digest": "sha256:8f38817b68eb24674528dcef123275eea4bf3984eec9845b262de275e40f2608",
+      "digest": "sha256:7f2ddb2a62ae113f087405453814026664f7d84be55455f04e654610c7525bc5",
       "schemaVersion": 1
     },
     {
       "path": "readiness/184-scenario-catalog/verify.json",
-      "digest": "sha256:e680a123966d411bb5ca683cc2e933403e2b776fdd5f0505c6e4e5a58b7607c6",
+      "digest": "sha256:f8d5daeb25aa535e2e5703076fa5e255ba3230d6a33b09a908dd8b64e66610f0",
       "schemaVersion": 1
     },
     {
       "path": "readiness/184-scenario-catalog/work-model.json",
-      "digest": "sha256:199806376a89b700ac9393cc456929d5429e509bd0566140b764acd328e0be31",
+      "digest": "sha256:065aa03979e2af80f5b72fa1a5a9e4e7d437563d4e0722ee44958ee8964964d6",
       "schemaVersion": 1
     }
   ],

@@ -13,6 +13,7 @@ junit_pass() {
 }
 
 start=$SECONDS
+dotnet restore tests/SIR.Client.Tests/SIR.Client.Tests.fsproj --locked-mode
 dotnet build tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore
 dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-build --no-restore | tee "$stage/native.log"
 junit_pass "$stage/scenario-catalog-native.junit.xml" scenario-catalog-native "$((SECONDS-start))" "$(grep -E 'Scenario catalog (qualification|structural counters|PERF-SMOKE)' "$stage/native.log")"

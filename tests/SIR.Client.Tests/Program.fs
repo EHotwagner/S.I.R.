@@ -1867,48 +1867,7 @@ let main arguments =
         ("The versioned scenario catalog or a gate-inversion proof failed: " + string scenarioCost + ".")
     printfn "Scenario catalog qualification: %d packages, %d units, %d canonical bytes, fingerprint %s."
         scenarioCost.ScenarioCount scenarioCost.UnitCount scenarioCost.CanonicalBytes (ExperienceSamples.catalogFingerprint ())
-    let runScenarioPackageWorkload package =
-        ExperienceSamples.importPackage (ExperienceSamples.encodePackage package) |> Result.defaultWith (fun errors -> failwith (string errors)) |> ignore
-        ExperienceSamples.replayFrames package.Replay |> Array.tryLast |> ignore
-    let runRepresentativeUpdateView package =
-        ExperienceSamples.importPackage (ExperienceSamples.encodePackage package) |> Result.defaultWith (fun errors -> failwith (string errors)) |> ignore
-        ExperienceSamples.replayFrames { package.Replay with Ticks = 1 } |> Array.tryLast |> ignore
-    scenarioPackages |> List.iter runScenarioPackageWorkload
-    let stressScenario = ExperienceSamples.stressPackage ()
-    runScenarioPackageWorkload stressScenario
-    let stressFrames = ExperienceSamples.replayFrames stressScenario.Replay
-    let stressEditor = ExperienceSamples.editorState stressScenario.Map
-    let stressEvents = stressFrames |> Array.sumBy (fun frame -> frame.Events.Length)
-    let stressPathExpansions =
-        stressFrames |> Array.sumBy (fun frame -> frame.Events |> List.filter (fun event -> event.Source = "sample-simulation" && event.Summary.Contains("moves")) |> List.length)
-    let stressCombatResolutions =
-        stressFrames |> Array.sumBy (fun frame -> frame.Events |> List.filter (fun event -> event.Source.StartsWith("combat-", StringComparison.Ordinal)) |> List.length)
-    let stressLosSamples = stressCombatResolutions
-    require (stressScenario.Forces.Length = 200 && stressEditor.Map.Width = 80 && stressEditor.Map.Height = 80 && stressFrames.Length = 9 && stressFrames |> Array.sumBy (fun frame -> frame.Units.Length) = 1800)
-        ("The 80x80/200-unit production-route stress qualification changed: "
-         + string stressEditor.Validation
-         + ", frames=" + string stressFrames.Length + ".")
-    require (stressPathExpansions <= 4096 && stressLosSamples <= 256 && stressFrames |> Array.sumBy (fun frame -> frame.Units.Length) <= 8000)
-        "The declared path/LOS/scene structural budgets changed."
-    printfn "Scenario catalog structural counters: scenarios=1 maps=1 map=80x80 units=%d edges=%d zones=%d simulationTicks=%d events=%d checkpoints=%d pathExpansions=%d losSamples=%d combatResolutions=%d projectionFrames=%d sceneNodes=%d."
-        stressScenario.Forces.Length (ExperienceSamples.catalogCost [ stressScenario ]).EdgeCount
-        (ExperienceSamples.catalogCost [ stressScenario ]).ZoneCount stressScenario.Replay.Ticks stressEvents
-        stressScenario.ExpectedCheckpoints.Length stressPathExpansions stressLosSamples stressCombatResolutions
-        stressFrames.Length (stressFrames |> Array.sumBy (fun frame -> frame.Units.Length))
-    let scenarioDurationSamples =
-        [ for _ in 1 .. 20 do
-          for package in scenarioPackages do
-              let timer = Diagnostics.Stopwatch.StartNew()
-              runRepresentativeUpdateView package
-              timer.Stop()
-              yield timer.Elapsed.TotalMilliseconds ]
-    let sortedScenarioDurations = scenarioDurationSamples |> List.sort
-    let scenarioP95 = sortedScenarioDurations[int (Math.Ceiling(float sortedScenarioDurations.Length * 0.95)) - 1]
-    let scenarioP99 = sortedScenarioDurations[int (Math.Ceiling(float sortedScenarioDurations.Length * 0.99)) - 1]
-    require (scenarioP95 <= 20.0 && scenarioP99 <= 50.0)
-        ("Scenario catalog workload exceeded 20/50 ms: " + string scenarioP95 + "/" + string scenarioP99 + ".")
-    printfn "Scenario catalog PERF-SMOKE: p95 %.3f ms, p99 %.3f ms, samples [%s]."
-        scenarioP95 scenarioP99 (scenarioDurationSamples |> List.map (fun value -> value.ToString("0.###", Globalization.CultureInfo.InvariantCulture)) |> String.concat ",")
+    ScenarioCatalogQualification.run ()
 
     let sampleReplayShell =
         { Shell.init () with
