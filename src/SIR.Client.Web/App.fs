@@ -7226,7 +7226,16 @@ let private tacticalLayoutToolbar model dispatch =
                             event.preventDefault ()
                             event.stopPropagation ()
                             closeDesktopMenuAndRestoreTrigger event.target)
-                    prop.children [ for command in commands do commandEntry command ]
+                    prop.children [
+                        for command in commands do yield commandEntry command
+                        if label = "File" then
+                            yield commandButton [
+                                prop.type'.button
+                                prop.custom ("role", "menuitem")
+                                prop.text "Samples"
+                                prop.onClick (fun _ -> dispatch (OpenSupportingPanel "samples"))
+                            ]
+                    ]
                 ]
             ]
         ]

@@ -79,6 +79,7 @@ type ScenarioValidationError =
     | StaleContentDigest of string
     | StaleReplayBinding of string
     | MissingScenarioContent of string
+    | MalformedScenarioPackage of string
 
 type ScenarioCatalogCost =
     { ScenarioCount: int32
@@ -97,8 +98,10 @@ module ExperienceSamples =
     val packages: ExperienceScenarioPackage list
     val canonical: ExperienceScenarioPackage -> string
     val digest: ExperienceScenarioPackage -> string
+    val encodePackage: ExperienceScenarioPackage -> string
     val validate: ExperienceScenarioPackage -> Result<ExperienceScenarioPackage, ScenarioValidationError list>
-    val importPackage: ExperienceScenarioPackage -> Result<ExperienceScenarioPackage, ScenarioValidationError list>
+    val importPackage: string -> Result<ExperienceScenarioPackage, ScenarioValidationError list>
+    val stressPackage: unit -> ExperienceScenarioPackage
     val catalogFingerprint: unit -> string
     val catalogCost: ExperienceScenarioPackage list -> ScenarioCatalogCost
     val tryPackage: string -> ExperienceScenarioPackage option
@@ -107,3 +110,4 @@ module ExperienceSamples =
     val editorState: ExperienceMapSample -> MapEditorState
     val simulator: ExperienceMapSample -> SimulatorHandoff option
     val replayFrames: ExperienceReplaySample -> InspectionProjection array
+    val runtimeFingerprint: ExperienceScenarioPackage -> string

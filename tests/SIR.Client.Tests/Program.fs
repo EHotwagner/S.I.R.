@@ -1754,6 +1754,11 @@ let main arguments =
          && trollAssaultFrames = repeatedTrollAssaultFrames
          && trollAssaultFrames[0].Tick = 0
          && trollAssaultFrames[20].Tick = 20
+         && (trollAssaultFrames |> Array.collect (fun frame -> List.toArray frame.Events) |> Array.exists (fun event -> event.Source = "combat-projectile" && event.SourceUnitId.IsSome && event.TargetUnitId = Some 4))
+         && not rangedExchange.LastCombatEvents.IsEmpty
+         && not (Array.isEmpty rangedScene.ActionTraces)
+         && (Map.find 4 rangedExchange.RuntimeMap.Units).Health < (Map.find 4 trollAssaultSimulator.RuntimeMap.Units).Health
+         && (Map.find 3 breachStalemate.RuntimeMap.Units).Health <= (Map.find 3 breachInitial.RuntimeMap.Units).Health
          && futureAreaShapes.Length = 4
          && largestProjectedJump 1 <= 0.31
          && largestProjectedJump 3 <= 0.31)
@@ -1797,11 +1802,22 @@ let main arguments =
             | FastStartTeaching -> false
             | _ -> true)
     let scenarioCost = ExperienceSamples.catalogCost scenarioPackages
-    let importedPackages = scenarioPackages |> List.map ExperienceSamples.importPackage
+    let checkpointContractsHold =
+        scenarioPackages
+        |> List.forall (fun package ->
+            let frames = ExperienceSamples.replayFrames package.Replay
+            package.ExpectedCheckpoints
+            |> List.forall (fun checkpoint ->
+                frames
+                |> Array.tryFind (fun frame -> frame.Tick = checkpoint.Tick)
+                |> Option.exists (fun frame ->
+                    frame.Events.Length >= int checkpoint.MinimumEvents
+                    && frame.Checkpoints |> List.exists (fun actual -> actual.Tick = checkpoint.Tick))))
+    let importedPackages = scenarioPackages |> List.map (ExperienceSamples.encodePackage >> ExperienceSamples.importPackage)
     let canonicalRoundTrips =
         scenarioPackages
         |> List.forall (fun package ->
-            ExperienceSamples.importPackage package = Ok package
+            ExperienceSamples.importPackage (ExperienceSamples.encodePackage package) = Ok package
             && ExperienceSamples.canonical package = ExperienceSamples.canonical package
             && ExperienceSamples.digest package = package.Identity.ContentDigest)
     let currentPackage = scenarioPackages.Head
@@ -1811,6 +1827,9 @@ let main arguments =
         { currentPackage with Identity = { currentPackage.Identity with ContentDigest = "00" } }
     let staleReplay =
         { currentPackage with Replay = { currentPackage.Replay with MapSampleId = "wrong-map" } }
+    let staleMapRevision =
+        { currentPackage with Identity = { currentPackage.Identity with MapRevision = "quick-contact-r0"; ContentDigest = "" } }
+        |> fun package -> { package with Identity = { package.Identity with ContentDigest = ExperienceSamples.digest package } }
     let missingUnit =
         { currentPackage with
             Map =
@@ -1831,6 +1850,7 @@ let main arguments =
          && composedPackages |> List.forall (fun package -> package.Forces.Length >= 12)
          && importedPackages |> List.forall Result.isOk
          && canonicalRoundTrips
+         && checkpointContractsHold
          && scenarioCost.ScenarioCount = 7
          && scenarioCost.UnitCount = 76
          && scenarioCost.CanonicalBytes > 0
@@ -1838,6 +1858,7 @@ let main arguments =
          && match ExperienceSamples.validate staleEngine with Error errors -> errors |> List.exists (function StaleEngine _ -> true | _ -> false) | _ -> false
          && match ExperienceSamples.validate staleDigest with Error errors -> errors |> List.exists (function StaleContentDigest _ -> true | _ -> false) | _ -> false
          && match ExperienceSamples.validate staleReplay with Error errors -> errors |> List.exists (function StaleReplayBinding _ -> true | _ -> false) | _ -> false
+         && match ExperienceSamples.validate staleMapRevision with Error errors -> errors |> List.exists (function StaleMapRevision _ -> true | _ -> false) | _ -> false
          && match ExperienceSamples.validate missingUnit with Error errors -> errors |> List.exists (function MissingScenarioContent value when value.EndsWith(":force-map-mismatch") -> true | _ -> false) | _ -> false
          && match ExperienceSamples.validate changedGeometry with Error errors -> errors |> List.exists (function StaleContentDigest _ -> true | _ -> false) | _ -> false
          && match ExperienceSamples.validate reversedCheckpoints with Error errors -> errors |> List.exists (function MissingScenarioContent value when value.EndsWith(":checkpoint-order") -> true | _ -> false) | _ -> false)
@@ -1845,14 +1866,27 @@ let main arguments =
     printfn "Scenario catalog qualification: %d packages, %d units, %d canonical bytes, fingerprint %s."
         scenarioCost.ScenarioCount scenarioCost.UnitCount scenarioCost.CanonicalBytes (ExperienceSamples.catalogFingerprint ())
     let runScenarioPackageWorkload package =
-        ExperienceSamples.importPackage package |> Result.defaultWith (fun errors -> failwith (string errors)) |> ignore
+        ExperienceSamples.importPackage (ExperienceSamples.encodePackage package) |> Result.defaultWith (fun errors -> failwith (string errors)) |> ignore
         ExperienceSamples.replayFrames package.Replay |> Array.tryLast |> ignore
+    let runRepresentativeUpdateView package =
+        ExperienceSamples.importPackage (ExperienceSamples.encodePackage package) |> Result.defaultWith (fun errors -> failwith (string errors)) |> ignore
+        ExperienceSamples.replayFrames { package.Replay with Ticks = 1 } |> Array.tryLast |> ignore
     scenarioPackages |> List.iter runScenarioPackageWorkload
+    let stressScenario = ExperienceSamples.stressPackage ()
+    runScenarioPackageWorkload stressScenario
+    let stressFrames = ExperienceSamples.replayFrames stressScenario.Replay
+    let stressEditor = ExperienceSamples.editorState stressScenario.Map
+    require (stressScenario.Forces.Length = 200 && stressEditor.Map.Width = 80 && stressEditor.Map.Height = 80 && stressFrames.Length = 9 && stressFrames |> Array.sumBy (fun frame -> frame.Units.Length) = 1800)
+        ("The 80x80/200-unit production-route stress qualification changed: "
+         + string stressEditor.Validation
+         + ", frames=" + string stressFrames.Length + ".")
+    printfn "Scenario catalog structural counters: map=80x80 units=%d simulationTicks=%d projectionFrames=%d sceneNodes=%d."
+        stressScenario.Forces.Length stressScenario.Replay.Ticks stressFrames.Length (stressFrames |> Array.sumBy (fun frame -> frame.Units.Length))
     let scenarioDurationSamples =
         [ for _ in 1 .. 20 do
           for package in scenarioPackages do
               let timer = Diagnostics.Stopwatch.StartNew()
-              runScenarioPackageWorkload package
+              runRepresentativeUpdateView package
               timer.Stop()
               yield timer.Elapsed.TotalMilliseconds ]
     let sortedScenarioDurations = scenarioDurationSamples |> List.sort

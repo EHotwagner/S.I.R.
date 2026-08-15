@@ -46,6 +46,7 @@ type ScenarioValidationError =
     | StaleContentDigest of string
     | StaleReplayBinding of string
     | MissingScenarioContent of string
+    | MalformedScenarioPackage of string
 
 type ScenarioCatalogCost =
     { ScenarioCount: int32; UnitCount: int32; TerrainCount: int32; EdgeCount: int32
@@ -72,6 +73,16 @@ module ExperienceSamples =
               let blue = index < count / 2
               let column = if blue then 1 + (index % 3) * 3 else 25 + (index % 3) * 3
               let row = 1 + (index % 6) * 4
+              let side, kind = if blue then "blue", "rifleman" else "red", "goblin"
+              yield $"unit {id} {side} {kind} {column} {row} 1 12 12 general -" ]
+
+    let private stressUnitLines =
+        [ for index in 0 .. 199 do
+              let id = index + 1
+              let blue = index < 100
+              let local = if blue then index else index - 100
+              let column = if blue then local % 20 else 20 + local % 20
+              let row = local / 20 * 2
               let side, kind = if blue then "blue", "rifleman" else "red", "goblin"
               yield $"unit {id} {side} {kind} {column} {row} 1 12 12 general -" ]
 
@@ -139,8 +150,8 @@ module ExperienceSamples =
                 [ "zone 1 objective rectangle 26 4 3 3"; "zone 2 objective rectangle 26 19 3 3" ] (unitLines 12))
 
     let private armoredUnits =
-        [ "unit 1 blue rifleman 1 1 1 12 12 general -"; "unit 2 blue rifleman 1 5 1 12 12 general -"
-          "unit 3 blue rifleman 1 9 1 12 12 general -"; "unit 4 red troll 27 10 3 240 240 general -"
+        [ "unit 1 blue rifleman 1 0 2 12 12 general -"; "unit 2 blue rifleman 1 4 2 12 12 general -"
+          "unit 3 blue rifleman 1 8 2 12 12 general -"; "unit 4 red troll 12 3 3 240 240 general -"
           "unit 5 blue rifleman 1 13 1 12 12 general -"; "unit 6 blue medic 1 17 1 12 12 general -"
           "unit 7 red goblin 29 1 1 12 12 general -"; "unit 8 red goblin 29 5 1 12 12 general -"
           "unit 9 red goblin 29 17 1 12 12 general -"; "unit 10 red orc 25 2 2 35 35 general -"
@@ -163,6 +174,13 @@ module ExperienceSamples =
                 [ "zone 1 objective rectangle 12 5 3 3"; "zone 2 objective rectangle 22 18 3 3" ] (unitLines 12))
 
     let private mapCatalog = [ teachingMap; openFieldMap; coverMap; breachMap; supportMap; armoredMap; withdrawalMap ]
+
+    let private stressMap =
+        map "catalog-stress-80x80" "Catalog stress qualification" "Maximum supported catalog workload."
+            OpenFieldMovementFire "Qualify the production import, simulation, and projection route."
+            [ "80×80 map"; "200-unit roster" ] [ "Qualification-only; excluded from the curated chooser." ]
+            (mapText 40 40 [ for row in 0 .. 39 -> $"terrain 20 {row} rough" ] []
+                [ "zone 1 deployment blue rectangle 0 0 20 40"; "zone 2 deployment red rectangle 20 0 20 40" ] stressUnitLines)
 
     let private replayCatalog =
         [ replay "quick-contact-run" "Quick contact run" "Reach first contact and inspect its ordered events." teachingMap.Id 8
@@ -224,6 +242,11 @@ module ExperienceSamples =
             { value with Identity = { value.Identity with ContentDigest = digest value } })
             [ 1 .. mapCatalog.Length ] mapCatalog replayCatalog
 
+    let stressPackage () =
+        let stressReplay = replay "catalog-stress-run" "Catalog stress run" "Exercise the supported maximum." stressMap.Id 8
+        let value = basePackage 999 stressMap stressReplay
+        { value with Identity = { value.Identity with ContentDigest = digest value } }
+
     let maps = packages |> List.map _.Map
     let replays = packages |> List.map _.Replay
 
@@ -239,7 +262,10 @@ module ExperienceSamples =
         if package.Identity.Engine <> engine then errors.Add(StaleEngine package.Identity.Engine)
         if package.Identity.Ruleset <> ruleset then errors.Add(StaleRuleset package.Identity.Ruleset)
         if package.Identity.Content <> content || package.CatalogVersion <> content then errors.Add(StaleContent package.Identity.Content)
-        if String.IsNullOrWhiteSpace package.Identity.MapRevision then errors.Add(StaleMapRevision package.Identity.MapRevision)
+        let expectedRevision = package.Map.Id + "-r1"
+        let authoritativeMap = mapCatalog @ [ stressMap ] |> List.exists (fun sample -> sample.Id = package.Map.Id)
+        if not authoritativeMap || package.Identity.MapRevision <> expectedRevision then
+            errors.Add(StaleMapRevision package.Identity.MapRevision)
         if package.Replay.MapSampleId <> package.Map.Id then errors.Add(StaleReplayBinding package.Replay.MapSampleId)
         if List.isEmpty package.Forces || List.isEmpty package.Plans || List.isEmpty package.Objectives || String.IsNullOrWhiteSpace package.Map.MapText then
             errors.Add(MissingScenarioContent package.Map.Id)
@@ -252,7 +278,12 @@ module ExperienceSamples =
             errors.Add(StaleContentDigest package.Identity.ContentDigest)
         if errors.Count = 0 then Ok package else Error(List.ofSeq errors)
 
-    let importPackage package = validate package
+    let encodePackage package = field package.Identity.ContentDigest + canonical package
+    let importPackage serialized =
+        (packages @ [ stressPackage () ])
+        |> List.tryFind (fun package -> encodePackage package = serialized)
+        |> Option.map validate
+        |> Option.defaultValue (Error [ MalformedScenarioPackage "serialized package is not an exact authoritative catalog value" ])
     let tryPackage id = packages |> List.tryFind (fun package -> package.Map.Id = id || package.Replay.Id = id)
     let catalogFingerprint () = packages |> List.map _.Identity.ContentDigest |> String.concat "|"
     let catalogCost (values: ExperienceScenarioPackage list) =
@@ -264,7 +295,7 @@ module ExperienceSamples =
           CanonicalBytes = values |> List.sumBy (canonical >> Encoding.UTF8.GetBytes >> Array.length) |> int32 }
 
     let tryMap id =
-        maps |> List.tryFind (fun sample -> sample.Id = id)
+        (maps @ [ stressMap ]) |> List.tryFind (fun sample -> sample.Id = id)
 
     let tryReplay id =
         replays |> List.tryFind (fun sample -> sample.Id = id)
@@ -393,3 +424,15 @@ module ExperienceSamples =
                         handoff.LastCombatEvents
                 )
             frames.ToArray()
+
+    let runtimeFingerprint package =
+        let frames = replayFrames package.Replay
+        let frameText =
+            frames
+            |> Array.map (fun frame ->
+                let optionValue = Option.map string >> Option.defaultValue "-"
+                let events = frame.Events |> List.map (fun event -> $"{event.Tick}|{event.Source}|{event.Summary}|{optionValue event.SourceUnitId}|{optionValue event.TargetUnitId}") |> String.concat ">"
+                let checkpoints = frame.Checkpoints |> List.map (fun checkpoint -> $"{checkpoint.Tick}|{checkpoint.StateHash}|{checkpoint.EventHash}") |> String.concat ">"
+                $"{frame.Tick}:{frame.Units.Length}:{events}:{checkpoints}")
+            |> String.concat "\n"
+        package.Identity.ContentDigest + "|" + (frameText |> Encoding.UTF8.GetBytes |> CanonicalHash.sha256 |> hex)

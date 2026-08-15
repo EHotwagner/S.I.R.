@@ -368,7 +368,7 @@ module MapEditorInterchange =
         let originY = numberAt [ "resolution"; "map_origin"; "y" ] root |> Option.defaultValue 0.0
         let dimensions =
             match width, height, scale with
-            | Some w, Some h, Some pixels when w >= 4 && h >= 4 && w <= 40 && h <= 40 && pixels > 0.0 ->
+            | Some w, Some h, Some pixels when w >= 4 && h >= 4 && w <= 80 && h <= 80 && pixels > 0.0 ->
                 Some(w, h)
             | _ -> None
         let errors =
@@ -447,7 +447,7 @@ module MapEditorInterchange =
             match pixelWidth, pixelHeight, gridSize with
             | Some pw, Some ph, Some size when gridType = 1.0 && size > 0.0 ->
                 match integer (pw / size), integer (ph / size) with
-                | Some w, Some h when w >= 4 && h >= 4 && w <= 40 && h <= 40 -> Some(w, h)
+                | Some w, Some h when w >= 4 && h >= 4 && w <= 80 && h <= 80 -> Some(w, h)
                 | _ -> None
             | _ -> None
         let errors =

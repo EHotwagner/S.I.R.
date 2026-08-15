@@ -69,6 +69,8 @@ dotnet run \
   --no-build \
   --no-restore
 
+./scripts/verify-scenario-catalog-cross-runtime.sh
+
 modal_dotnet_output=$(dotnet run \
   --project tests/SIR.ModalInput.Tests/SIR.ModalInput.Tests.fsproj \
   --no-build \
