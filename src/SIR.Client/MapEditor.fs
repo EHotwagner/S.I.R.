@@ -4468,7 +4468,6 @@ module MapEditor =
                 Some(terrain, addresses, isValid)
             | _ -> None
         | _ -> None
-
     let unitPreview state =
         let command =
             match state.Gesture with
@@ -4492,7 +4491,6 @@ module MapEditor =
                      )
                  | _ -> true
              | Error _ -> false))
-
     let controllerLabel controller =
         match controller with
         | Manual -> "Manual"
