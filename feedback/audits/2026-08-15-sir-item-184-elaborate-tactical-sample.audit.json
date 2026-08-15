@@ -1,0 +1,101 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-15-sir-item-184-elaborate-tactical-sample.md",
+  "reportSha256": "3dc6bf8ce0b8106ac7b21c054c89ef2e06fd612535ad83ef0e3381113a07a17d",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show 51631bd7eedd6cf5481e5184e7a0bd8cc7924617:readiness/184-scenario-catalog/performance-evidence.json",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsgg-sdd analyze --work 184-scenario-catalog --text",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node scripts/test-production-delivery-budget.mjs",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Timing percentiles are host-variable; the report claims repeated budget passes, not identical rerun values."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show 51631bd7eedd6cf5481e5184e7a0bd8cc7924617:work/184-scenario-catalog/clarifications.md",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#184",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "No intermediate snapshot proves pre-decision source state, and precise edit cost is unreconstructable; neither is claimed."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show 51631bd7eedd6cf5481e5184e7a0bd8cc7924617:feedback/checkpoints/item-184-elaborate-tactical-sample.jsonl",
+          "result": "verified"
+        },
+        {
+          "locator": "command:npm ci --ignore-scripts && ./fake.sh build -t Test",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Failed intermediate manifests and logs were not retained; the final repaired route and recurrence chain are verified."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git ls-files .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- validate-checkpoint-state --cycle item-184-elaborate-tactical-sample",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:FS-GG/.github#2380",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:FS-GG/.github#2548",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The finding is limited to tracked local availability and checkpoint validation, not every feedback-tool command."
+      ]
+    }
+  ]
+}
