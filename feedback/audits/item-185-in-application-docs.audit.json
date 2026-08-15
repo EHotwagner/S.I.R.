@@ -1,0 +1,52 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/item-185-in-application-docs.md",
+  "reportSha256": "c7b64d7e368f87f375fc35cf298c8292af9151125d1765c71ea070264270ae05",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:test -e docs/examples/lifecycle-artifacts/spec.md", "result": "verified" },
+        { "locator": "file:work/183-tactical-overlays/spec.md", "result": "verified", "sha256": "bba9f80efc9a44733cea71067c06a03c6c7aabc771af8c364ce92e4ae3c949e1" },
+        { "locator": "file:readiness/185-in-app-docs-modality/analysis.json", "result": "verified", "sha256": "a23a035ef0f95f6a5f25716881d65f5c2cef909aa10950b33d621fb05ba1b2e0" }
+      ],
+      "confidenceLimits": [
+        "The absent example and implementationReady fallback are verified.",
+        "This duplicates item-182 §4.6 and closed FS-GG/FS.GG.SDD#539."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:npm run build:docs", "result": "verified" },
+        { "locator": "file:scripts/test-in-app-docs.mjs", "result": "verified", "sha256": "75381acee36822acfabdadf01caabb61c1b8590e5a98e9e7ca56ca1ff9f22f94" },
+        { "locator": "file:src/SIR.Client.Web/WorkspaceTransitions.fs", "result": "verified", "sha256": "5f8eb0170e53a83d3309855aae7c30a52ac7a3c5e8913ef67932f32675b0e1ad" },
+        { "locator": "file:tests/fixtures/persistent-workspace-m0-inventory.json", "result": "verified", "sha256": "7b5c3c1c594d412083a10775ea91ce30b473f50fbf42a98d1705a7d15af6f271" }
+      ],
+      "confidenceLimits": [
+        "The full command passed and reported all five rejected mutations plus green M0/M4-M9 gates.",
+        "Precise retry counts rely on the checkpoint because historical failed logs were not retained."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml", "result": "verified", "sha256": "fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7" },
+        { "locator": "file:readiness/185-in-app-docs-modality/verify.json", "result": "verified", "sha256": "1cf4bc32da3c2ec41c3b6a18088e3d2f740defb84d419881ec23a91c72c9d24c" },
+        { "locator": "command:dotnet fsgg-sdd evidence --work 185-in-app-docs-modality --from-test-report readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The exact command exited zero/noChange under SDD 1.0.1.",
+        "JUnit support is longstanding; the actionable gap is stale generated-skill wording."
+      ]
+    }
+  ]
+}
