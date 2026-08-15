@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/185-in-app-docs-modality/ship.json",
-      "digest": "sha256:25f4517ca04f412cfb1462404f0298de46a876690244623c79ae442a38db412b",
+      "digest": "sha256:ecfd0d66acabc10b4c4d285cb7db55d0e04b1a77456d8d430c5ebf6d85ecce26",
       "schemaVersion": 1
     },
     {
       "path": "readiness/185-in-app-docs-modality/verify.json",
-      "digest": "sha256:1cf4bc32da3c2ec41c3b6a18088e3d2f740defb84d419881ec23a91c72c9d24c",
+      "digest": "sha256:32b7afbd2fe51d487836f535af99bf179ea541b3fdc38a3bee93a86436d22c8e",
       "schemaVersion": 1
     },
     {
       "path": "readiness/185-in-app-docs-modality/work-model.json",
-      "digest": "sha256:9774efa855f515ab727cfc0c733d0a1025d85a6c6b016f356e747a8543301ab8",
+      "digest": "sha256:81ffe6a69b34f0edc133bddb505d68657848a87cdbcfda6f29100afe01ea3b74",
       "schemaVersion": 1
     }
   ],

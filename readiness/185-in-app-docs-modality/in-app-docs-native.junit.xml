@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="in-app-docs-native" tests="1" failures="0" errors="0" skipped="0" time="4.4"><testsuite name="dotnet run SIR.Client.Tests Release no-build" tests="1" failures="0" errors="0" skipped="0" time="4.4"><testcase name="documentation-navigation-and-context-source-boundaries" classname="SIR.Item185.Native"/><system-out><![CDATA[Client qualification passed, including deterministic documentation search/navigation and missing/undisclosed contextual-source inversions.]]></system-out></testsuite></testsuites>

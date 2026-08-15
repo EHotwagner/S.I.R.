@@ -37,6 +37,16 @@
       "schemaStatus": "current"
     },
     {
+      "path": "readiness/185-in-app-docs-modality/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "81ffe6a69b34f0edc133bddb505d68657848a87cdbcfda6f29100afe01ea3b74"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
       "path": "work/185-in-app-docs-modality/checklist.md",
       "kind": "checklist",
       "digest": {
@@ -81,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "94ddedb4b1febdf796988f7d7d38bd6f3aef7de59915d030ddc58fbc34ce3a81"
+        "value": "bef21e9a436b6cdbc9a2243a2d5679a76c6c5816696ae38a7f2aea866ead3779"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -1156,7 +1166,7 @@
     {
       "path": "readiness/185-in-app-docs-modality/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
+      "currency": "current",
       "diagnosticIds": []
     }
   ],

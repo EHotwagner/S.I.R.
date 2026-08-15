@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "57c37051af3c3e37e66460f5213f3156fcd716de5c5de0b1df122a55bad37d43"
+        "value": "56d89f36596d548db7cec416514f1d6f2a376a92a49cc68c16e9bec0a74d8ac6"
       }
     },
     {
@@ -3005,7 +3005,7 @@
           "path": "work/185-in-app-docs-modality/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "57c37051af3c3e37e66460f5213f3156fcd716de5c5de0b1df122a55bad37d43"
+            "value": "56d89f36596d548db7cec416514f1d6f2a376a92a49cc68c16e9bec0a74d8ac6"
           },
           "schemaVersion": 1
         },
@@ -3036,7 +3036,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "83d53ddd22ce449ccff199a7013cfd4a7fd87bd888322a377c19084978dfd427"
+        "value": "eb7019056fcac2be8ad765287dd0a9994b2098cd76d1043937bb63d942b95561"
       },
       "currency": "current"
     }

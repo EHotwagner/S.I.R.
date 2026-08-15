@@ -60,7 +60,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV002
     kind: verification
     subject:
@@ -87,7 +87,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV003
     kind: verification
     subject:
@@ -103,18 +103,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+        path: scripts/test-in-app-docs.mjs
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
+      digest: "sha256:d6f96b0c5df698c05a03f4a1a1b40d4eb247c4246d31f53bf8d13a4fb904cadb"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 8
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Manifest qualifier owns metadata, FsDocs API, content/source identity, link, anchor, and mutation outcomes.]
   - id: EV004
     kind: verification
     subject:
@@ -130,18 +130,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+        path: scripts/test-in-app-docs.mjs
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
+      digest: "sha256:d6f96b0c5df698c05a03f4a1a1b40d4eb247c4246d31f53bf8d13a4fb904cadb"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 8
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Manifest qualifier owns metadata, FsDocs API, content/source identity, link, anchor, and mutation outcomes.]
   - id: EV005
     kind: verification
     subject:
@@ -157,18 +157,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+        path: scripts/test-in-app-docs.mjs
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
+      digest: "sha256:d6f96b0c5df698c05a03f4a1a1b40d4eb247c4246d31f53bf8d13a4fb904cadb"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 8
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Manifest qualifier owns metadata, FsDocs API, content/source identity, link, anchor, and mutation outcomes.]
   - id: EV006
     kind: verification
     subject:
@@ -195,7 +195,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV007
     kind: verification
     subject:
@@ -222,7 +222,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV008
     kind: verification
     subject:
@@ -238,18 +238,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+        path: tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      source: readiness/185-in-app-docs-modality/in-app-docs-native.junit.xml
+      digest: "sha256:3282eb70ad5da80c016a96bfd62c5fdf5619209477e249c360709eab86393ce1"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Native client qualification owns deterministic navigation and contextual-source negative boundaries.]
   - id: EV009
     kind: verification
     subject:
@@ -265,18 +265,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+        path: scripts/measure-in-app-docs.mjs
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      source: readiness/185-in-app-docs-modality/in-app-docs-performance.junit.xml
+      digest: "sha256:985f79a88a2d58728037b987bc71e54972e1a0f77af4660bd054219161baca88"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 5
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production measurement owns actual DOM, construction/search timing, budget, and real-subject inversions.]
   - id: EV010
     kind: verification
     subject:
@@ -292,18 +292,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+        path: scripts/build-client.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      source: readiness/185-in-app-docs-modality/in-app-docs-fable-production.junit.xml
+      digest: "sha256:b89a5f6e72287f9b8a01b093a954ead7b88f2f438fd7e5dce9586990a2db2e2b"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Release Fable/Vite production build owns the emitted client and embedded qualified manifest.]
   - id: EV011
     kind: verification
     subject:
@@ -330,7 +330,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV012
     kind: verification
     subject:
@@ -357,7 +357,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV013
     kind: verification
     subject:
@@ -384,7 +384,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV014
     kind: verification
     subject:
@@ -411,7 +411,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV015
     kind: verification
     subject:
@@ -438,7 +438,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV016
     kind: verification
     subject:
@@ -465,7 +465,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV017
     kind: verification
     subject:
@@ -492,7 +492,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV018
     kind: verification
     subject:
@@ -519,7 +519,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV019
     kind: verification
     subject:
@@ -546,7 +546,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV020
     kind: verification
     subject:
@@ -562,18 +562,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+        path: scripts/test-in-app-docs.mjs
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
+      digest: "sha256:d6f96b0c5df698c05a03f4a1a1b40d4eb247c4246d31f53bf8d13a4fb904cadb"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 8
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Manifest qualifier owns metadata, FsDocs API, content/source identity, link, anchor, and mutation outcomes.]
   - id: EV021
     kind: verification
     subject:
@@ -589,18 +589,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+        path: scripts/test-in-app-docs.mjs
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
+      digest: "sha256:d6f96b0c5df698c05a03f4a1a1b40d4eb247c4246d31f53bf8d13a4fb904cadb"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 8
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Manifest qualifier owns metadata, FsDocs API, content/source identity, link, anchor, and mutation outcomes.]
   - id: EV022
     kind: verification
     subject:
@@ -616,18 +616,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+        path: scripts/test-in-app-docs.mjs
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
+      digest: "sha256:d6f96b0c5df698c05a03f4a1a1b40d4eb247c4246d31f53bf8d13a4fb904cadb"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 8
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Manifest qualifier owns metadata, FsDocs API, content/source identity, link, anchor, and mutation outcomes.]
   - id: EV023
     kind: verification
     subject:
@@ -654,7 +654,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV024
     kind: verification
     subject:
@@ -670,18 +670,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+        path: scripts/verify-rules-corpus.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      source: readiness/185-in-app-docs-modality/in-app-docs-rules-corpus.junit.xml
+      digest: "sha256:81e5cd0d5e6a5cee059c5516eef857efacd2c1fca438292f69d873dd779c058a"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Rules-corpus qualification owns exact source/package binding and its protected-subject mutations.]
   - id: EV025
     kind: verification
     subject:
@@ -697,18 +697,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+        path: tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      source: readiness/185-in-app-docs-modality/in-app-docs-native.junit.xml
+      digest: "sha256:3282eb70ad5da80c016a96bfd62c5fdf5619209477e249c360709eab86393ce1"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Native client qualification owns deterministic navigation and contextual-source negative boundaries.]
   - id: EV026
     kind: verification
     subject:
@@ -724,18 +724,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+        path: scripts/measure-in-app-docs.mjs
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      source: readiness/185-in-app-docs-modality/in-app-docs-performance.junit.xml
+      digest: "sha256:985f79a88a2d58728037b987bc71e54972e1a0f77af4660bd054219161baca88"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 5
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production measurement owns actual DOM, construction/search timing, budget, and real-subject inversions.]
   - id: EV027
     kind: verification
     subject:
@@ -751,18 +751,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+        path: scripts/build-client.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      source: readiness/185-in-app-docs-modality/in-app-docs-fable-production.junit.xml
+      digest: "sha256:b89a5f6e72287f9b8a01b093a954ead7b88f2f438fd7e5dce9586990a2db2e2b"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Release Fable/Vite production build owns the emitted client and embedded qualified manifest.]
   - id: EV028
     kind: verification
     subject:
@@ -789,7 +789,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV029
     kind: verification
     subject:
@@ -816,7 +816,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV030
     kind: verification
     subject:
@@ -843,7 +843,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV031
     kind: verification
     subject:
@@ -859,18 +859,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+        path: scripts/verify-rules-corpus.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      source: readiness/185-in-app-docs-modality/in-app-docs-rules-corpus.junit.xml
+      digest: "sha256:81e5cd0d5e6a5cee059c5516eef857efacd2c1fca438292f69d873dd779c058a"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Rules-corpus qualification owns exact source/package binding and its protected-subject mutations.]
   - id: EV032
     kind: verification
     subject:
@@ -897,7 +897,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV033
     kind: verification
     subject:
@@ -924,7 +924,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV034
     kind: verification
     subject:
@@ -951,7 +951,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV035
     kind: verification
     subject:
@@ -978,7 +978,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV036
     kind: verification
     subject:
@@ -1005,7 +1005,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV037
     kind: verification
     subject:
@@ -1032,7 +1032,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV038
     kind: verification
     subject:
@@ -1048,18 +1048,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+        path: scripts/verify-rules-corpus.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      source: readiness/185-in-app-docs-modality/in-app-docs-rules-corpus.junit.xml
+      digest: "sha256:81e5cd0d5e6a5cee059c5516eef857efacd2c1fca438292f69d873dd779c058a"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Rules-corpus qualification owns exact source/package binding and its protected-subject mutations.]
   - id: EV039
     kind: verification
     subject:
@@ -1086,7 +1086,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV040
     kind: verification
     subject:
@@ -1113,7 +1113,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV041
     kind: verification
     subject:
@@ -1140,7 +1140,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV042
     kind: verification
     subject:
@@ -1167,7 +1167,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV043
     kind: verification
     subject:
@@ -1194,7 +1194,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV044
     kind: verification
     subject:
@@ -1221,7 +1221,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV045
     kind: verification
     subject:
@@ -1248,7 +1248,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV046
     kind: verification
     subject:
@@ -1275,7 +1275,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV047
     kind: verification
     subject:
@@ -1302,7 +1302,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV048
     kind: verification
     subject:
@@ -1329,7 +1329,7 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
   - id: EV049
     kind: verification
     subject:
@@ -1356,6 +1356,6 @@ evidence:
       passed: 1
       failed: 0
       skipped: 0
-    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
 lifecycleNotes:
   - "Next lifecycle action: verify."
