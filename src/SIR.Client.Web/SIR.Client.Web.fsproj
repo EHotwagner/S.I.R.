@@ -13,8 +13,10 @@
     <Compile Include="Worker.fs" />
     <Compile Include="Runner.fs" />
     <Compile Include="BrowserInfrastructure.fs" />
+    <Compile Include="DocsView.fs" />
     <Compile Include="AppTypes.fs" />
     <Compile Include="AppShell.fs" />
+    <Compile Include="WorkspaceTransitions.fs" />
     <Compile Include="CommandRegistry.fs" />
     <Compile Include="ModeAdapters.fs" />
     <Compile Include="SceneAdapters.fs" />

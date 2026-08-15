@@ -347,3 +347,56 @@ let run () =
             """{"schemaVersion":1,"bindings":[{"id":"editor.terrain.gesture.west","gesture":"F11"}]}"""
          |> Result.isOk)
         "A valid inactive modal command ID did not survive stable-registry import."
+
+    let documentationPage slug title category text =
+        { Slug = slug
+          Title = title
+          Category = category
+          Status = ImplementedDocumentation
+          SourcePath = "docs/" + slug + ".md"
+          ContentDigest = slug
+          Headings = [ title, slug ]
+          Related = []
+          Blocks = [ { Kind = "paragraph"; Level = None; Anchor = None; Text = text } ] }
+    let lineOfSightPage = documentationPage "line-of-sight" "Line of sight" "Combat" "LOS cover and armor interactions"
+    let armorPage = documentationPage "armor" "Armor" "Combat" "Armor mitigation"
+    let documentationManifest =
+        { Schema = "sir-in-app-docs-v1"
+          DefinitionDigest = "qualification"
+          Pages = [ armorPage; lineOfSightPage ]
+          Sources =
+            [ "combat",
+              { Repository = "EHotwagner/S.I.R."
+                Revision = "0123456789abcdef"
+                Path = "src/SIR.Simulation/Combat.fs"
+                PageSlug = "line-of-sight"
+                Concept = "combat"
+                Symbol = Some "resolve"
+                Line = Some 42 } ]
+            |> Map.ofList
+          SearchTokenCount = 9 }
+    let losResults =
+        UnifiedTacticalWorkspace.documentationSearch "LOS cover armor" documentationManifest
+    let navigated =
+        [ 1 .. UnifiedTacticalWorkspace.DocumentationHistoryLimit + 8 ]
+        |> List.fold (fun state index ->
+            UnifiedTacticalWorkspace.openDocumentationPage ("page-" + string index) None state)
+            UnifiedTacticalWorkspace.initialDocumentationNavigation
+    let rewound = UnifiedTacticalWorkspace.documentationBack navigated
+    let replayed = UnifiedTacticalWorkspace.documentationForward rewound
+    require
+        ((losResults |> List.map _.Slug) = [ "line-of-sight" ])
+        "Documentation search did not require every normalized LOS/cover/armor term."
+    require
+        (navigated.Back.Length = UnifiedTacticalWorkspace.DocumentationHistoryLimit
+         && rewound.Page = Some("page-" + string (UnifiedTacticalWorkspace.DocumentationHistoryLimit + 7))
+         && replayed.Page = navigated.Page)
+        "Documentation history was not bounded or did not replay deterministically."
+    require
+        (UnifiedTacticalWorkspace.tryContextualDocumentation (Some " COMBAT ") documentationManifest
+         |> Option.exists (fun source -> source.Line = Some 42))
+        "A disclosed public concept did not resolve its typed source mapping."
+    require
+        (UnifiedTacticalWorkspace.tryContextualDocumentation None documentationManifest = None
+         && UnifiedTacticalWorkspace.tryContextualDocumentation (Some "undisclosed") documentationManifest = None)
+        "Missing or undisclosed contextual input did not fail closed."

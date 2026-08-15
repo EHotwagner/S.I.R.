@@ -1219,3 +1219,56 @@
   }
   #sir-replay-app .planning-roster-list { max-height: 18rem; }
 }
+.in-app-docs {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  overflow: auto;
+  padding: clamp(0.75rem, 2vw, 1.5rem);
+  background: var(--tactical-surface, #111820);
+  color: var(--tactical-text, #edf4f7);
+}
+
+.in-app-docs-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  gap: 0.5rem;
+  background: inherit;
+  padding-block-end: 0.75rem;
+}
+
+.in-app-docs-layout {
+  display: grid;
+  grid-template-columns: minmax(13rem, 22rem) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.in-app-docs-tree,
+.in-app-docs-page {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.in-app-docs-tree ul,
+.in-app-docs-page ul {
+  padding-inline-start: 1.25rem;
+}
+
+.in-app-docs-page pre {
+  max-width: 100%;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.docs-status[data-doc-status="Research"],
+.docs-status[data-doc-status="Provisional"] {
+  border-inline-start: 0.35rem dashed currentColor;
+  padding-inline-start: 0.5rem;
+}
+
+@media (max-width: 40rem) {
+  .in-app-docs-layout { grid-template-columns: 1fr; }
+  .in-app-docs-tree { max-height: 14rem; overflow: auto; }
+}

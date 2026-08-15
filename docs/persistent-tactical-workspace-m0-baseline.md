@@ -70,7 +70,8 @@ capability.
 The common registry currently owns these exact stable commands:
 
 - modality: `workspace.editor`, `workspace.plan`, `workspace.simulate`,
-  `workspace.review`;
+  `workspace.review`, `workspace.docs`;
+- documentation: `docs.back`, `docs.forward`, `docs.home`, `docs.search`;
 - timeline: `timeline.play-toggle`, `timeline.step-back`,
   `timeline.step-forward`, `timeline.home`, `timeline.end`,
   `timeline.move-command`, `timeline.remove-command`;

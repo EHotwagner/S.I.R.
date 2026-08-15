@@ -1,0 +1,26 @@
+{
+  "schema": "sir-in-app-docs-performance-v1",
+  "definitionDigest": "2e182f9e94ce7b7133d531f02cbbf7e4092ff2166abfe27b08b43d474edde5a5",
+  "candidate": "working-tree",
+  "runtime": "v26.7.0",
+  "host": "linux-x64",
+  "capability": {
+    "headlessBrowser": true,
+    "liveCompositorMeasured": false
+  },
+  "manifestPresent": true,
+  "counters": {
+    "pages": 88,
+    "blocks": 6598,
+    "searchTokens": 195249,
+    "maximumResults": 86,
+    "historyLimit": 128,
+    "generatedSearchRows": 1896,
+    "domNodes": 6000
+  },
+  "timing": {
+    "representativeP95Ms": 0.887,
+    "fullCorpusCeilingMs": 50
+  },
+  "failures": []
+}

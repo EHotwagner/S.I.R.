@@ -47,11 +47,11 @@
     },
     "svg": {
       "x": 229.781,
-      "y": 118.484,
+      "y": 158.078,
       "width": 964.438,
-      "height": 562,
+      "height": 642.953,
       "right": 1194.219,
-      "bottom": 680.484
+      "bottom": 801.031
     },
     "left": {
       "x": 14.391,
@@ -271,117 +271,139 @@
       "rect": {
         "x": 432.156,
         "y": 16.984,
-        "width": 111.453,
+        "width": 95.547,
         "height": 44,
-        "right": 543.609,
+        "right": 527.703,
         "bottom": 60.984
       }
     },
     {
       "label": "Switch to Plan",
       "rect": {
-        "x": 545.516,
+        "x": 529.609,
         "y": 16.984,
-        "width": 111.453,
+        "width": 95.563,
         "height": 44,
-        "right": 656.969,
+        "right": 625.172,
         "bottom": 60.984
       }
     },
     {
       "label": "Switch to Simulate",
       "rect": {
-        "x": 658.875,
+        "x": 627.078,
         "y": 16.984,
-        "width": 111.453,
+        "width": 95.563,
         "height": 44,
-        "right": 770.328,
+        "right": 722.641,
         "bottom": 60.984
       }
     },
     {
       "label": "Switch to Review",
       "rect": {
-        "x": 772.234,
+        "x": 724.547,
         "y": 16.984,
-        "width": 111.469,
+        "width": 95.563,
         "height": 44,
-        "right": 883.703,
+        "right": 820.109,
         "bottom": 60.984
+      }
+    },
+    {
+      "label": "Open documentation",
+      "rect": {
+        "x": 432.156,
+        "y": 62.891,
+        "width": 95.547,
+        "height": 44,
+        "right": 527.703,
+        "bottom": 106.891
       }
     },
     {
       "label": "Play or pause",
       "rect": {
-        "x": 432.156,
+        "x": 529.609,
         "y": 62.891,
-        "width": 111.453,
+        "width": 95.563,
         "height": 44,
-        "right": 543.609,
+        "right": 625.172,
         "bottom": 106.891
       }
     },
     {
       "label": "Show contextual actions",
       "rect": {
-        "x": 545.516,
+        "x": 627.078,
         "y": 62.891,
-        "width": 111.453,
+        "width": 95.563,
         "height": 44,
-        "right": 656.969,
+        "right": 722.641,
         "bottom": 106.891
       }
     },
     {
       "label": "Customize toolbar",
       "rect": {
-        "x": 658.875,
+        "x": 724.547,
         "y": 62.891,
-        "width": 111.453,
+        "width": 95.563,
         "height": 44,
-        "right": 770.328,
+        "right": 820.109,
         "bottom": 106.891
       }
     },
     {
       "label": "Editor",
       "rect": {
-        "x": 886.094,
+        "x": 822.5,
         "y": 39.938,
         "width": 77.203,
         "height": 44,
-        "right": 963.297,
+        "right": 899.703,
         "bottom": 83.938
       }
     },
     {
       "label": "Plan",
       "rect": {
-        "x": 968.891,
+        "x": 905.297,
         "y": 39.938,
         "width": 58,
         "height": 44,
-        "right": 1026.891,
+        "right": 963.297,
         "bottom": 83.938
       }
     },
     {
       "label": "Simulate",
       "rect": {
-        "x": 1032.484,
+        "x": 968.891,
         "y": 39.938,
         "width": 96.406,
         "height": 44,
-        "right": 1128.891,
+        "right": 1065.297,
         "bottom": 83.938
       }
     },
     {
       "label": "Review",
       "rect": {
-        "x": 1134.484,
+        "x": 1070.891,
         "y": 39.938,
         "width": 77.203,
+        "height": 44,
+        "right": 1148.094,
+        "bottom": 83.938
+      }
+    },
+    {
+      "label": "Docs",
+      "rect": {
+        "x": 1153.688,
+        "y": 39.938,
+        "width": 58,
         "height": 44,
         "right": 1211.688,
         "bottom": 83.938

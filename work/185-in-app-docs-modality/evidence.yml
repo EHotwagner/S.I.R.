@@ -1,0 +1,1361 @@
+schemaVersion: 1
+workId: 185-in-app-docs-modality
+stage: evidence
+status: evidenceReady
+sourceSpec: work/185-in-app-docs-modality/spec.md
+sourceClarifications: work/185-in-app-docs-modality/clarifications.md
+sourceChecklist: work/185-in-app-docs-modality/checklist.md
+sourcePlan: work/185-in-app-docs-modality/plan.md
+sourceTasks: work/185-in-app-docs-modality/tasks.yml
+sourceAnalysis: readiness/185-in-app-docs-modality/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/185-in-app-docs-modality/analysis.json
+    digest: a23a035ef0f95f6a5f25716881d65f5c2cef909aa10950b33d621fb05ba1b2e0
+    schemaVersion: 1
+  - label: checklist
+    path: work/185-in-app-docs-modality/checklist.md
+    digest: 4d063a707700edc76eb103559a54330d853ab96a7c6d7a6d54036402fb041339
+    schemaVersion: 1
+  - label: clarifications
+    path: work/185-in-app-docs-modality/clarifications.md
+    digest: 726b782722840a14260feff0626fcb7b70ea0d6765c5104ab6d876a55dc0a94d
+    schemaVersion: 1
+  - label: plan
+    path: work/185-in-app-docs-modality/plan.md
+    digest: b595e4c6435ee02cf712d48e406290d343bb9bdcd5931fb7674c880ae70b15bc
+    schemaVersion: 1
+  - label: spec
+    path: work/185-in-app-docs-modality/spec.md
+    digest: 0540a98f00e9133723a0bd5abb28ae3bb1a463ca3c5a0997fae202a68bf8cdcc
+    schemaVersion: 1
+  - label: tasks
+    path: work/185-in-app-docs-modality/tasks.yml
+    digest: bef21e9a436b6cdbc9a2243a2d5679a76c6c5816696ae38a7f2aea866ead3779
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV003]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV006]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV007]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV012]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV013]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV014]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV015]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV016]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV017]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV018]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV019]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV020
+    kind: verification
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV020]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV021
+    kind: verification
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV021]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV022
+    kind: verification
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV022]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV023
+    kind: verification
+    subject:
+      type: task
+      id: T023
+    taskRefs: [T023]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV023]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV024
+    kind: verification
+    subject:
+      type: task
+      id: T024
+    taskRefs: [T024]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV024]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV025
+    kind: verification
+    subject:
+      type: task
+      id: T025
+    taskRefs: [T025]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV025]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV026
+    kind: verification
+    subject:
+      type: task
+      id: T026
+    taskRefs: [T026]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV026]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV027
+    kind: verification
+    subject:
+      type: task
+      id: T027
+    taskRefs: [T027]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV027]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV028
+    kind: verification
+    subject:
+      type: task
+      id: T028
+    taskRefs: [T028]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: [EV028]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV029
+    kind: verification
+    subject:
+      type: task
+      id: T029
+    taskRefs: [T029]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-005]
+    obligationRefs: [EV029]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV030
+    kind: verification
+    subject:
+      type: task
+      id: T030
+    taskRefs: [T030]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV030]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV031
+    kind: verification
+    subject:
+      type: task
+      id: T031
+    taskRefs: [T031]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV031]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV032
+    kind: verification
+    subject:
+      type: task
+      id: T032
+    taskRefs: [T032]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV032]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV033
+    kind: verification
+    subject:
+      type: task
+      id: T033
+    taskRefs: [T033]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV033]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV034
+    kind: verification
+    subject:
+      type: task
+      id: T034
+    taskRefs: [T034]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: [EV034]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV035
+    kind: verification
+    subject:
+      type: task
+      id: T035
+    taskRefs: [T035]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-005]
+    obligationRefs: [EV035]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV036
+    kind: verification
+    subject:
+      type: task
+      id: T036
+    taskRefs: [T036]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV036]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV037
+    kind: verification
+    subject:
+      type: task
+      id: T037
+    taskRefs: [T037]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV037]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV038
+    kind: verification
+    subject:
+      type: task
+      id: T038
+    taskRefs: [T038]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV038]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV039
+    kind: verification
+    subject:
+      type: task
+      id: T039
+    taskRefs: [T039]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV039]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV040
+    kind: verification
+    subject:
+      type: task
+      id: T040
+    taskRefs: [T040]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV040]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV041
+    kind: verification
+    subject:
+      type: task
+      id: T041
+    taskRefs: [T041]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV041]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV042
+    kind: verification
+    subject:
+      type: task
+      id: T042
+    taskRefs: [T042]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV042]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV043
+    kind: verification
+    subject:
+      type: task
+      id: T043
+    taskRefs: [T043]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV043]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV044
+    kind: verification
+    subject:
+      type: task
+      id: T044
+    taskRefs: [T044]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV044]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV045
+    kind: verification
+    subject:
+      type: task
+      id: T045
+    taskRefs: [T045]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV045]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV046
+    kind: verification
+    subject:
+      type: task
+      id: T046
+    taskRefs: [T046]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV046]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV047
+    kind: verification
+    subject:
+      type: task
+      id: T047
+    taskRefs: [T047]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV047]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV048
+    kind: verification
+    subject:
+      type: task
+      id: T048
+    taskRefs: [T048]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV048]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+  - id: EV049
+    kind: verification
+    subject:
+      type: task
+      id: T049
+    taskRefs: [T049]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV049]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/test-results/in-app-docs.trx
+      digest: "sha256:bac02073bf846d2825b26562bd4a9c5f88aba8bf6be2832ea6d837e2499aa56c"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 20
+      failed: 0
+      skipped: 0
+    notes: [Qualified by the focused client, and performance gates., full documentation, manifest mutation, production browser]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

@@ -1,8 +1,8 @@
 {
   "schema": "sir-persistent-workspace-m9-live-review-v2",
   "captureKind": "actual-production-shell-chromium-screenshot",
-  "productionBundleSha256": "d7bac2fd52d0e9af05d4d6623cdc5e0968c5e041bf9a9b718c38862d2b3ba9c7",
-  "productionStylesSha256": "35487427a953e672e2f69f46971320882dc4c768e5314105f816d19faa721b7e",
+  "productionBundleSha256": "59f866f57885a4a363587ef7519edc30a4da37aa31ef7cef187f00a2637f5e7b",
+  "productionStylesSha256": "67e450d4ef5b1023407e61692219f0245fddab0aa601bbca63067bacc0a406bd",
   "acceptedMockupSha256": "b2b0d444202aa9c76235fa7277ba2c6a4e89d3d7dc0dd009abb8e73c72c82270",
   "chromiumExecutable": "/usr/sbin/chromium",
   "chromiumUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
@@ -54,11 +54,11 @@
       },
       "svg": {
         "x": 229.781,
-        "y": 118.484,
+        "y": 158.078,
         "width": 964.438,
-        "height": 562,
+        "height": 642.953,
         "right": 1194.219,
-        "bottom": 680.484
+        "bottom": 801.031
       },
       "left": {
         "x": 14.391,
@@ -278,117 +278,139 @@
         "rect": {
           "x": 432.156,
           "y": 16.984,
-          "width": 111.453,
+          "width": 95.547,
           "height": 44,
-          "right": 543.609,
+          "right": 527.703,
           "bottom": 60.984
         }
       },
       {
         "label": "Switch to Plan",
         "rect": {
-          "x": 545.516,
+          "x": 529.609,
           "y": 16.984,
-          "width": 111.453,
+          "width": 95.563,
           "height": 44,
-          "right": 656.969,
+          "right": 625.172,
           "bottom": 60.984
         }
       },
       {
         "label": "Switch to Simulate",
         "rect": {
-          "x": 658.875,
+          "x": 627.078,
           "y": 16.984,
-          "width": 111.453,
+          "width": 95.563,
           "height": 44,
-          "right": 770.328,
+          "right": 722.641,
           "bottom": 60.984
         }
       },
       {
         "label": "Switch to Review",
         "rect": {
-          "x": 772.234,
+          "x": 724.547,
           "y": 16.984,
-          "width": 111.469,
+          "width": 95.563,
           "height": 44,
-          "right": 883.703,
+          "right": 820.109,
           "bottom": 60.984
+        }
+      },
+      {
+        "label": "Open documentation",
+        "rect": {
+          "x": 432.156,
+          "y": 62.891,
+          "width": 95.547,
+          "height": 44,
+          "right": 527.703,
+          "bottom": 106.891
         }
       },
       {
         "label": "Play or pause",
         "rect": {
-          "x": 432.156,
+          "x": 529.609,
           "y": 62.891,
-          "width": 111.453,
+          "width": 95.563,
           "height": 44,
-          "right": 543.609,
+          "right": 625.172,
           "bottom": 106.891
         }
       },
       {
         "label": "Show contextual actions",
         "rect": {
-          "x": 545.516,
+          "x": 627.078,
           "y": 62.891,
-          "width": 111.453,
+          "width": 95.563,
           "height": 44,
-          "right": 656.969,
+          "right": 722.641,
           "bottom": 106.891
         }
       },
       {
         "label": "Customize toolbar",
         "rect": {
-          "x": 658.875,
+          "x": 724.547,
           "y": 62.891,
-          "width": 111.453,
+          "width": 95.563,
           "height": 44,
-          "right": 770.328,
+          "right": 820.109,
           "bottom": 106.891
         }
       },
       {
         "label": "Editor",
         "rect": {
-          "x": 886.094,
+          "x": 822.5,
           "y": 39.938,
           "width": 77.203,
           "height": 44,
-          "right": 963.297,
+          "right": 899.703,
           "bottom": 83.938
         }
       },
       {
         "label": "Plan",
         "rect": {
-          "x": 968.891,
+          "x": 905.297,
           "y": 39.938,
           "width": 58,
           "height": 44,
-          "right": 1026.891,
+          "right": 963.297,
           "bottom": 83.938
         }
       },
       {
         "label": "Simulate",
         "rect": {
-          "x": 1032.484,
+          "x": 968.891,
           "y": 39.938,
           "width": 96.406,
           "height": 44,
-          "right": 1128.891,
+          "right": 1065.297,
           "bottom": 83.938
         }
       },
       {
         "label": "Review",
         "rect": {
-          "x": 1134.484,
+          "x": 1070.891,
           "y": 39.938,
           "width": 77.203,
+          "height": 44,
+          "right": 1148.094,
+          "bottom": 83.938
+        }
+      },
+      {
+        "label": "Docs",
+        "rect": {
+          "x": 1153.688,
+          "y": 39.938,
+          "width": 58,
           "height": 44,
           "right": 1211.688,
           "bottom": 83.938
@@ -525,29 +547,29 @@
       "x": 12,
       "right": 308,
       "y": 12,
-      "bottom": 541.609375,
+      "bottom": 588.484375,
       "width": 296,
-      "height": 529.609375
+      "height": 576.484375
     },
     "toolbarScroll": {
       "clientWidth": 294,
       "scrollWidth": 294,
-      "clientHeight": 528,
-      "scrollHeight": 528
+      "clientHeight": 574,
+      "scrollHeight": 574
     },
     "workscreenRect": {
       "x": 12,
       "right": 308,
-      "y": 549.609375,
-      "bottom": 901.609375,
+      "y": 596.484375,
+      "bottom": 948.484375,
       "width": 296,
       "height": 352
     },
     "timelineRect": {
       "x": 12,
       "right": 308,
-      "y": 908,
-      "bottom": 1060,
+      "y": 954.875,
+      "bottom": 1106.875,
       "width": 296,
       "height": 152
     },
@@ -559,8 +581,8 @@
         "rect": {
           "x": 18.59375,
           "right": 95.796875,
-          "y": 395.03125,
-          "bottom": 439.03125,
+          "y": 441.90625,
+          "bottom": 485.90625,
           "width": 77.203125,
           "height": 44
         }
@@ -572,8 +594,8 @@
         "rect": {
           "x": 18.59375,
           "right": 76.59375,
-          "y": 614.421875,
-          "bottom": 658.421875,
+          "y": 661.296875,
+          "bottom": 705.296875,
           "width": 58,
           "height": 44
         }
@@ -585,8 +607,8 @@
         "rect": {
           "x": 79.78125,
           "right": 147.390625,
-          "y": 614.421875,
-          "bottom": 658.421875,
+          "y": 661.296875,
+          "bottom": 705.296875,
           "width": 67.609375,
           "height": 44
         }
@@ -598,8 +620,8 @@
         "rect": {
           "x": 18.59375,
           "right": 115,
-          "y": 661.609375,
-          "bottom": 705.609375,
+          "y": 708.484375,
+          "bottom": 752.484375,
           "width": 96.40625,
           "height": 44
         }
@@ -611,8 +633,8 @@
         "rect": {
           "x": 18.59375,
           "right": 86.203125,
-          "y": 799.984375,
-          "bottom": 843.984375,
+          "y": 846.859375,
+          "bottom": 890.859375,
           "width": 67.609375,
           "height": 44
         }
@@ -624,8 +646,8 @@
         "rect": {
           "x": 89.390625,
           "right": 147.390625,
-          "y": 799.984375,
-          "bottom": 843.984375,
+          "y": 846.859375,
+          "bottom": 890.859375,
           "width": 58,
           "height": 44
         }
@@ -637,8 +659,8 @@
         "rect": {
           "x": 18.59375,
           "right": 105.390625,
-          "y": 847.171875,
-          "bottom": 891.171875,
+          "y": 894.046875,
+          "bottom": 938.046875,
           "width": 86.796875,
           "height": 44
         }
@@ -650,8 +672,8 @@
         "rect": {
           "x": 18.59375,
           "right": 225.9375,
-          "y": 891.171875,
-          "bottom": 935.171875,
+          "y": 938.046875,
+          "bottom": 982.046875,
           "width": 207.34375,
           "height": 44
         }
@@ -660,6 +682,6 @@
   },
   "png": "field-focus.png",
   "geometrySvg": "field-focus-geometry.svg",
-  "pngSha256": "16f70de0e86faf9c43f6144387ee829070b12081a2834fdcf9be0671d4708eb5",
-  "geometrySvgSha256": "627bcd2aaeea7d83ea6543621cc605872d352a76b26f6d6188c07b6f8727d463"
+  "pngSha256": "dccec9c51bf871e3f25a99077d4c668a2151cd36d71b34b820f1c8972b755ba3",
+  "geometrySvgSha256": "975732cd745e07392a4966e1f8d66a4e8fc2fa705dce2e2614c624e2df0844d1"
 }

@@ -26,6 +26,7 @@
     "setup:browser": "playwright install chromium",
     "test:browser": "playwright test --config tests/SIR.Browser.Tests/playwright.config.js",
     "test:browser-diagnostics-gate": "node scripts/test-browser-diagnostics-gate.mjs",
+    "test:in-app-docs": "node scripts/test-in-app-docs.mjs artifacts/site",
     "test:production-delivery-budget": "node scripts/test-production-delivery-budget.mjs",
     "test:production-delivery-evidence": "node scripts/test-production-delivery-evidence.mjs",
     "verify:scaffold": "node scripts/verify-scaffold-provenance.mjs",

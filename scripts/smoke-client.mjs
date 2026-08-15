@@ -397,7 +397,7 @@ if (
   !timeline ||
   [...layers.values()].some((layer) => !layer) ||
   JSON.stringify([...modalityButtons.keys()]) !==
-    JSON.stringify(["Editor", "Plan", "Simulate", "Review"])
+    JSON.stringify(["Editor", "Plan", "Simulate", "Review", "Docs"])
 ) {
   throw new Error(
     `The persistent tactical shell, SVG layers, modality controls, or timeline did not mount: ${JSON.stringify({ application: Boolean(application), shell: Boolean(shell), workscreenRegion: Boolean(workscreenRegion), worksurface: Boolean(worksurface), timeline: Boolean(timeline), layers: [...layers.entries()].filter(([, layer]) => !layer).map(([name]) => name), modalities: [...modalityButtons.keys()] })}.`,

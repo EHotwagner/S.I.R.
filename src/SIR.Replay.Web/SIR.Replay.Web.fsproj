@@ -11,8 +11,10 @@
     <Compile Include="../SIR.Client.Web/Worker.fs" Link="Worker.fs" />
     <Compile Include="../SIR.Client.Web/Runner.fs" Link="Runner.fs" />
     <Compile Include="../SIR.Client.Web/BrowserInfrastructure.fs" Link="BrowserInfrastructure.fs" />
+    <Compile Include="../SIR.Client.Web/DocsView.fs" Link="DocsView.fs" />
     <Compile Include="../SIR.Client.Web/AppTypes.fs" Link="AppTypes.fs" />
     <Compile Include="../SIR.Client.Web/AppShell.fs" Link="AppShell.fs" />
+    <Compile Include="../SIR.Client.Web/WorkspaceTransitions.fs" Link="WorkspaceTransitions.fs" />
     <Compile Include="../SIR.Client.Web/CommandRegistry.fs" Link="CommandRegistry.fs" />
     <Compile Include="../SIR.Client.Web/ModeAdapters.fs" Link="ModeAdapters.fs" />
     <Compile Include="../SIR.Client.Web/SceneAdapters.fs" Link="SceneAdapters.fs" />

@@ -8,6 +8,7 @@ let sharedSceneUnitCommand model unitId =
     | PlanningWorkspace -> Some("planning.roster.select." + string unitId)
     | SimulatorWorkspace -> Some("simulator.scene.select.unit." + string unitId)
     | ReplayWorkspace -> Some("review.scene.select.unit." + string unitId)
+    | DocsWorkspace -> None
 
 let sharedSceneCellCommand model column row =
     match model.Workspace with

@@ -21,6 +21,7 @@ open SIR.Client.Web.ModeAdapters
 open SIR.Client.Web.TacticalOverlayView
 open SIR.Client.Web.SceneAdapters
 open SIR.Client.Web.PanelViews
+open SIR.Client.Web.DocsView
 
 let private tacticalCommandAvailable model (command: TacticalCommandDefinition) =
     let availability =
@@ -449,7 +450,7 @@ let private setSampleReplayTick tick frames shell =
 
 let init () =
     let defaultDesktopToolbarCommands =
-        [ "workspace.editor"; "workspace.plan"; "workspace.simulate"; "workspace.review"; "timeline.play-toggle"; "input.help" ]
+        [ "workspace.editor"; "workspace.plan"; "workspace.simulate"; "workspace.review"; "workspace.docs"; "timeline.play-toggle"; "input.help" ]
     let desktopToolbarCommands =
         let stored = readDesktopToolbar ()
         if isNull stored then defaultDesktopToolbarCommands
@@ -539,6 +540,11 @@ let init () =
       BottomPanelResizeActive = false
       TacticalSelectedUnit = simulatorSelectedUnit
       Workspace = EditorWorkspace
+      LastTacticalWorkspace = EditorWorkspace
+      Documentation = None
+      DocumentationNavigation = UnifiedTacticalWorkspace.initialDocumentationNavigation
+      DocumentationError = None
+      DocumentationExternalAnnouncement = ""
       EditorToolPanel = TerrainTools
       EditorToolPanelVisible = false
       SampleReplayFrames = None
@@ -789,66 +795,37 @@ let rec update msg model =
                     PresentationAlpha = 1.0 },
                 Cmd.none
     | WorkspaceChanged workspace ->
-        let editor =
-            if workspace = ReplayWorkspace then
-                MapEditor.update CancelEditorGesture model.Editor
-            else
-                model.Editor
-        let editorView =
-            if workspace = EditorWorkspace then
-                model.EditorView
-            else
-                MapEditorWorkspace.update
-                    model.Editor.Map
-                    (MapEditor.selected model.Editor)
-                    CancelEditorPointers
-                    model.EditorView
-        let planning, initializePlanning =
-            if workspace = PlanningWorkspace then
-                match model.Planning with
-                | Some current when current.MapRevision = model.Editor.Revision.Digest ->
-                    Some current, false
-                | _ ->
-                    (model.Editor.Map.Units
-                     |> Map.toSeq
-                     |> Seq.map snd
-                     |> PlanningWorkspace.initial model.Editor.Revision.Digest
-                     |> PlanningWorkspace.update (
-                         SetPlanningAuthoringTick(int model.Tactical.Cursor)
-                     )
-                     |> Some),
-                    true
-            else model.Planning, false
-
-        let tacticalModality =
-            match workspace with
-            | EditorWorkspace -> Editor
-            | PlanningWorkspace -> Plan
-            | SimulatorWorkspace -> Simulate
-            | ReplayWorkspace -> Review
-
-        let transitionModel =
-            { model with
-                Editor = editor
-                Planning = planning }
-        let tacticalSelectedUnit =
-            reconcileTacticalSelectedUnit workspace transitionModel
-
-        { model with
-            Editor = editor
-            Planning = planning
-            TacticalSelectedUnit = tacticalSelectedUnit
-            Workspace = workspace
-            Tactical =
-                model.Tactical
-                |> UnifiedTacticalWorkspace.switchModality tacticalModality
-            EditorView = editorView
-            InputHelpExpanded = false
-            SimulatorControllerSelection = None
-            HeldInputs = HeldInputSession.recover model.HeldInputs },
-        if initializePlanning then
-            Cmd.ofEffect (fun dispatch -> dispatch InitializePlanningWorker)
-        else Cmd.none
+        WorkspaceTransitions.change workspace model
+    | DocumentationLoaded result ->
+        match result with
+        | Ok manifest ->
+            let navigation =
+                if model.DocumentationNavigation.Page.IsSome then model.DocumentationNavigation
+                else
+                    let contextualPage =
+                        UnifiedTacticalWorkspace.tryContextualDocumentation
+                            (Some model.DocumentationNavigation.Query)
+                            manifest
+                        |> Option.map _.PageSlug
+                    contextualPage
+                    |> Option.orElseWith (fun () -> manifest.Pages |> List.tryHead |> Option.map _.Slug)
+                    |> Option.map (fun slug ->
+                        UnifiedTacticalWorkspace.openDocumentationPage slug None model.DocumentationNavigation)
+                    |> Option.defaultValue model.DocumentationNavigation
+            { model with Documentation = Some manifest; DocumentationNavigation = navigation; DocumentationError = None }, Cmd.none
+        | Error error -> { model with DocumentationError = Some error }, Cmd.none
+    | DocumentationQueryChanged query -> { model with DocumentationNavigation = UnifiedTacticalWorkspace.setDocumentationQuery query model.DocumentationNavigation }, Cmd.none
+    | DocumentationPageOpened(slug, anchor) -> { model with DocumentationNavigation = UnifiedTacticalWorkspace.openDocumentationPage slug anchor model.DocumentationNavigation }, Cmd.none
+    | ContextualDocumentationOpened concept ->
+        let navigation =
+            match model.Documentation |> Option.bind (UnifiedTacticalWorkspace.tryContextualDocumentation (Some concept)) with
+            | Some source -> UnifiedTacticalWorkspace.openDocumentationPage source.PageSlug None model.DocumentationNavigation
+            | None -> UnifiedTacticalWorkspace.setDocumentationQuery concept model.DocumentationNavigation
+        update (WorkspaceChanged DocsWorkspace) { model with DocumentationNavigation = navigation }
+    | DocumentationBack -> { model with DocumentationNavigation = UnifiedTacticalWorkspace.documentationBack model.DocumentationNavigation }, Cmd.none
+    | DocumentationForward -> { model with DocumentationNavigation = UnifiedTacticalWorkspace.documentationForward model.DocumentationNavigation }, Cmd.none
+    | DocumentationExternalResult announcement ->
+        { model with DocumentationExternalAnnouncement = announcement }, Cmd.none
     | ToggleInputHelp focusPanel ->
         let expanded = not model.InputHelpExpanded
         { model with InputHelpExpanded = expanded },
@@ -1234,7 +1211,7 @@ let rec update msg model =
         writeDesktopToolbar ("v1:" + String.concat "|" commands)
         { model with DesktopToolbarCommands = commands }, Cmd.none
     | ResetDesktopToolbar ->
-        let commands = [ "workspace.editor"; "workspace.plan"; "workspace.simulate"; "workspace.review"; "timeline.play-toggle"; "input.help" ]
+        let commands = [ "workspace.editor"; "workspace.plan"; "workspace.simulate"; "workspace.review"; "workspace.docs"; "timeline.play-toggle"; "input.help" ]
         writeDesktopToolbar ("v1:" + String.concat "|" commands)
         { model with DesktopToolbarCommands = commands; DesktopToolbarCustomizationOpen = false }, Cmd.none
     | ApplicationFocusLost ->
@@ -1808,6 +1785,14 @@ let rec update msg model =
         | "workspace.plan" -> update (WorkspaceChanged PlanningWorkspace) model
         | "workspace.simulate" -> update (WorkspaceChanged SimulatorWorkspace) model
         | "workspace.review" -> update (WorkspaceChanged ReplayWorkspace) model
+        | "workspace.docs" -> update (WorkspaceChanged DocsWorkspace) model
+        | "docs.back" -> update DocumentationBack model
+        | "docs.forward" -> update DocumentationForward model
+        | "docs.home" ->
+            match model.Documentation |> Option.bind (fun manifest -> manifest.Pages |> List.tryHead) with
+            | Some page -> update (DocumentationPageOpened(page.Slug, None)) model
+            | None -> model, Cmd.none
+        | "docs.search" -> model, Cmd.ofEffect (fun _ -> focusElementAfterRender "docs-search")
         | "panel.data" -> update (OpenSupportingPanel "data") model
         | "timeline.play-toggle" -> update TacticalPlaybackToggled model
         | "timeline.step-back" -> update (TacticalTimeStepped -1L) model
@@ -2318,7 +2303,8 @@ let rec update msg model =
             | EditorWorkspace -> resolveEditor () |> applyResolution
             | SimulatorWorkspace -> resolveSimulator () |> applyResolution
             | PlanningWorkspace
-            | ReplayWorkspace ->
+            | ReplayWorkspace
+            | DocsWorkspace ->
                 model, Cmd.none
     | KeyReleased key ->
         if model.Workspace = EditorWorkspace && editorPanHeld model then
@@ -5364,6 +5350,7 @@ let private tacticalModalityControls model dispatch =
             item "Plan" "workspace.plan" PlanningWorkspace
             item "Simulate" "workspace.simulate" SimulatorWorkspace
             item "Review" "workspace.review" ReplayWorkspace
+            item "Docs" "workspace.docs" DocsWorkspace
         ]
     ]
 
@@ -6017,6 +6004,11 @@ let private activeSceneProjection (model: Model) =
             |> editorProjection
             |> Some)
     | ReplayWorkspace, _ ->
+        reconcileTacticalSelectedUnit EditorWorkspace model
+        |> editorProjection
+        |> withRuntimeTruth
+        |> Some
+    | DocsWorkspace, _ ->
         reconcileTacticalSelectedUnit EditorWorkspace model
         |> editorProjection
         |> withRuntimeTruth
@@ -7126,7 +7118,30 @@ let private tacticalWorkscreenRegion model dispatch =
         prop.className "tactical-workscreen-region"
         prop.ariaLabel "Tactical workscreen region"
         prop.custom ("data-active-modality", string model.Tactical.Modality)
-        prop.children [ persistentSceneSvg model projection presentationAlpha dispatch ]
+        prop.children [
+            Html.div [
+                prop.id "retained-tactical-workscreen"
+                prop.hidden (model.Workspace = DocsWorkspace)
+                prop.ariaHidden (model.Workspace = DocsWorkspace)
+                prop.custom ("data-retained-while-docs", "true")
+                prop.children [
+                    DocsView.contextLinks model.TacticalSelectedUnit.IsSome (ContextualDocumentationOpened >> dispatch)
+                    persistentSceneSvg model projection presentationAlpha dispatch
+                ]
+            ]
+            if model.Workspace = DocsWorkspace then
+                DocsView.view
+                    model.DocumentationNavigation
+                    model.Documentation
+                    model.DocumentationError
+                    model.DocumentationExternalAnnouncement
+                    (DocumentationQueryChanged >> dispatch)
+                    (fun slug anchor -> dispatch (DocumentationPageOpened(slug, anchor)))
+                    (fun () -> dispatch DocumentationBack)
+                    (fun () -> dispatch DocumentationForward)
+                    (fun () -> dispatch (WorkspaceChanged model.LastTacticalWorkspace))
+                    (DocumentationExternalResult >> dispatch)
+        ]
     ]
 
 let private tacticalLayoutToolbar model dispatch =
@@ -7171,7 +7186,11 @@ let private tacticalLayoutToolbar model dispatch =
             prop.children [ Html.span command.Label; Html.kbd (UnifiedTacticalWorkspace.displayGestureFor shortcutPlatform effective) ]
         ]
     let menu (label: string) categories =
-        let commands = registry |> List.filter (fun command -> List.contains command.Category categories)
+        let commands =
+            registry
+            |> List.filter (fun command ->
+                List.contains command.Category categories
+                || (command.Id = "workspace.docs" && (label = "File" || label = "Edit")))
         Html.details [
             prop.className "desktop-menu tactical-desktop-menu"
             prop.children [
@@ -7245,7 +7264,7 @@ let private tacticalLayoutToolbar model dispatch =
                 prop.children [
                     menu "File" [ "Document" ]
                     menu "Edit" [ "Plan" ]
-                    menu "View" [ "Modality"; "Shared camera"; "View"; "Analysis overlays" ]
+                    menu "View" [ "Modality"; "Documentation"; "Shared camera"; "View"; "Analysis overlays" ]
                     menu "Tools" [ "Plan"; "Editor" ]
                     menu "Simulation" [ "Timeline"; "Simulator controllers"; "Simulator movement" ]
                     menu "Help" [ "Help" ]
@@ -8133,7 +8152,8 @@ let view model dispatch =
             ]
         | PlanningWorkspace
         | SimulatorWorkspace
-        | ReplayWorkspace -> Html.none
+        | ReplayWorkspace
+        | DocsWorkspace -> Html.none
 
     Html.main [
         prop.className "app-shell"

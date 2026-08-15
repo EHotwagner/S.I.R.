@@ -19,6 +19,7 @@ let tacticalUnitIds workspace (model: Model) =
         model.Shell.Inspection
         |> Option.map (fun inspection -> inspection.Units |> Seq.map _.Id |> Set.ofSeq)
         |> Option.defaultValue Set.empty
+    | DocsWorkspace -> Set.empty
 
 let reconcileTacticalSelectedUnit workspace (model: Model) =
     let visible = tacticalUnitIds workspace model
@@ -29,5 +30,6 @@ let reconcileTacticalSelectedUnit workspace (model: Model) =
         | EditorWorkspace -> keep model.Editor.SelectedUnit
         | PlanningWorkspace -> model.Planning |> Option.bind _.SelectedUnit |> keep
         | SimulatorWorkspace -> keep model.SimulatorSelectedUnit
-        | ReplayWorkspace -> keep model.Shell.Selection.Unit)
+        | ReplayWorkspace -> keep model.Shell.Selection.Unit
+        | DocsWorkspace -> None)
     |> Option.orElseWith (fun () -> visible |> Set.toSeq |> Seq.tryHead)
