@@ -20,5 +20,7 @@
     <Compile Include="RuleTypes.fs" />
     <Compile Include="Rules.fsi" />
     <Compile Include="Rules.fs" />
+    <Compile Include="RuleCoherence.fsi" />
+    <Compile Include="RuleCoherence.fs" />
   </ItemGroup>
 </Project>

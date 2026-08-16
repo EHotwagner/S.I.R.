@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+run_flags=()
+if [[ "${SIR_RULES_NO_BUILD:-0}" == "1" ]]; then
+  run_flags+=(--no-build --no-restore)
+fi
+exec dotnet run --project "$repo_root/src/SIR.Tools/SIR.Tools.fsproj" -c Release "${run_flags[@]}" -- sir-rules "$@"

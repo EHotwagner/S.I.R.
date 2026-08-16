@@ -1,0 +1,4 @@
+interface:
+  display_name: "Check S.I.R. Rule Coherence"
+  short_description: "Find bounded corpus conflicts and witnesses"
+  default_prompt: "Use $sir-check-rule-coherence to check this S.I.R. rule change and show any bounded witnesses."
