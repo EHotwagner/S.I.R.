@@ -5,8 +5,12 @@
     <UnitTestResult executionId="19200000-0000-0000-0000-000000000012" testId="19200000-0000-0000-0000-000000000022" testName="production tactical visual system preserves causal feedback under reduced motion" outcome="Passed" />
     <UnitTestResult executionId="19200000-0000-0000-0000-000000000013" testId="19200000-0000-0000-0000-000000000023" testName="exact bundle tactical visual review passes" outcome="Passed" />
     <UnitTestResult executionId="19200000-0000-0000-0000-000000000014" testId="19200000-0000-0000-0000-000000000024" testName="persistent client smoke accepts exact tactical layer contract" outcome="Passed" />
+    <UnitTestResult executionId="19200000-0000-0000-0000-000000000015" testId="19200000-0000-0000-0000-000000000025" testName="tactical visual protected stylesheet and workload mutations fail closed" outcome="Passed" />
+    <UnitTestResult executionId="19200000-0000-0000-0000-000000000016" testId="19200000-0000-0000-0000-000000000026" testName="rules corpus complete implementation identity rebind passes" outcome="Passed" />
+    <UnitTestResult executionId="19200000-0000-0000-0000-000000000017" testId="19200000-0000-0000-0000-000000000027" testName="map editor bundle-bound visual review passes" outcome="Passed" />
+    <UnitTestResult executionId="19200000-0000-0000-0000-000000000018" testId="19200000-0000-0000-0000-000000000028" testName="persistent workspace bundle-bound acceptance passes" outcome="Passed" />
   </Results>
   <ResultSummary outcome="Completed">
-    <Counters total="4" executed="4" passed="4" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" notExecuted="0" />
+    <Counters total="8" executed="8" passed="8" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" notExecuted="0" />
   </ResultSummary>
 </TestRun>

@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "3dbce1f75b34eb1f9836a113a239bc962b6ff2dab1936ae2b60f1f2a2716e7d8"
+        "value": "03a596fc8d698fc11fdbc876f1935e698b50199db38f08ace31b3f46d549fd47"
       }
     },
     {
@@ -2670,7 +2670,7 @@
           "path": "work/192-tactical-visual-system/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "3dbce1f75b34eb1f9836a113a239bc962b6ff2dab1936ae2b60f1f2a2716e7d8"
+            "value": "03a596fc8d698fc11fdbc876f1935e698b50199db38f08ace31b3f46d549fd47"
           },
           "schemaVersion": 1
         },
@@ -2701,7 +2701,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "eca49d5d4c924f185c9296a200f015b5e8d304c09d58bf4bded799df02d0489a"
+        "value": "76e8d05b72eaed28691887c8b24daa8727e26e22cc61c226341eecbbc6b237d7"
       },
       "currency": "current"
     }
