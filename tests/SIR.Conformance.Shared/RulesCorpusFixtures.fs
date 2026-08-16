@@ -190,6 +190,7 @@ module RulesCorpusFixtures =
                   Rules.canonicalApplicationBytes result.Explanation
                   System.Text.Encoding.UTF8.GetBytes(CombatRules.retainedPackage.ManifestJson)
                   System.Text.Encoding.UTF8.GetBytes(CombatRules.retainedPackage.CoverageJson)
+                  RuleCoherenceFixtures.evaluate ()
                   baseline.ImplementationDigest
                   baseline.SemanticDigest
                   baseline.ManifestDigest ]

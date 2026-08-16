@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "viewVersion": "1.0",
+  "workId": "193-rule-authoring-coherence",
+  "stage": "ship",
+  "status": "shipReady",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
+  "sourcesDigest": {
+    "algorithm": "sha256",
+    "value": "d3eba60db9616185951417536bbd49e62bfabb368f5ab3f4a01efc5c0a0415e5"
+  },
+  "verificationReadiness": {
+    "status": "verificationReady",
+    "evidenceSupportedCount": 38,
+    "evidenceSelfAttestedCount": 0,
+    "evidenceObservedCount": 38
+  },
+  "disposition": {
+    "state": "shipReady",
+    "blockingFindingIds": []
+  },
+  "readiness": "shipReady"
+}

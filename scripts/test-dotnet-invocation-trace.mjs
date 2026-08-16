@@ -61,6 +61,11 @@ try {
   if (isolated[0] !== "run-build" || isolated[1] !== "tests/Mutation.fsproj" || isolated[2] !== "exception:spatial-fixture:artifacts-path:isolated") throw new Error(`isolated exception identity was not traced: ${JSON.stringify(isolated)}`);
 
   await writeFile(log, "");
+  run(shim, ["build", join(root, "src/SIR.Simulation/SIR.Simulation.fsproj"), "--artifacts-path", join(fixture, "isolated")], { ...env, SIR_DOTNET_TRACE_ROOT: root, SIR_BUILD_EXCEPTION: "spatial-dependency-receipt" });
+  const isolatedBuild = (await readFile(log, "utf8")).trim().split("\t");
+  if (isolatedBuild[0] !== "build" || isolatedBuild[1] !== "src/SIR.Simulation/SIR.Simulation.fsproj" || isolatedBuild[2] !== "exception:spatial-dependency-receipt:artifacts-path:isolated") throw new Error(`isolated named build identity was not traced: ${JSON.stringify(isolatedBuild)}`);
+
+  await writeFile(log, "");
   run(shim, ["fable", expected[3]], { ...env, SIR_BUILD_EXCEPTION: "cancellation-fixture" });
   const attributedFable = (await readFile(log, "utf8")).trim().split("\t");
   if (attributedFable[0] !== "fable" || attributedFable[1] !== expected[3] || attributedFable[2] !== "exception:cancellation-fixture") throw new Error(`Fable exception identity was not traced: ${JSON.stringify(attributedFable)}`);

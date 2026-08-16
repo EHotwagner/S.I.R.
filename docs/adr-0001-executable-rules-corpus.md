@@ -8,7 +8,7 @@ status: accepted
 decision-status: canonical
 document-type: architecture-decision
 version: "1.0"
-last-updated: 2026-08-12
+last-updated: 2026-08-16
 related:
   - docs/executable-rules-corpus-architecture.md
   - docs/fable-client-and-documentation.md
@@ -30,6 +30,10 @@ The first implementation receipt is issue #194 and source-bearing commit
 `87931073b13b3c74b2ce9dc4cd4321e9b237760e`. It establishes manifest schema v1
 for one combat slice without claiming that unrelated mechanics have migrated
 or stabilizing the provisional authoring builders.
+
+The authoring/coherence implementation receipt is issue #193. It adds the
+repository-local authoring and checking workflows plus a deterministic,
+bounded analyzer; it does not claim opaque algorithms are proved coherent.
 
 ## Context
 
@@ -175,6 +179,24 @@ Canonical mechanics, formulas, transitions, and algorithms require a concise
 rationale or a reference to a shared rationale. Repetitive content rows may
 inherit the rationale of their governing rule. Superseding changes record why
 the old rule was replaced.
+
+### Authoring and coherence checking are separate workflows
+
+Rule authoring is a guided edit workflow; coherence checking is a read-only
+analysis workflow. Both consume the typed corpus, but the checker never rewrites
+rules and the authoring guide never substitutes prose for executable semantics.
+
+Coherence reports are scoped claims, not a single global proof bit. Changed,
+dependency-cone, and corpus modes identify what was analyzed. Each finding
+states its evidence strength and a reproducible witness. Work exhaustion,
+finding truncation, unresolved references, or policy-blocking unknowns fail
+closed.
+
+The checker uses declared dependency and transition-footprint indexes to avoid
+an all-pairs default. Complete results may be cached by analyzer policy,
+selected semantic content, and implementation identity; incomplete results are
+not reusable as authorization. Registered algorithms without trusted
+assume/guarantee footprints remain visibly unknown.
 
 ## Consequences
 

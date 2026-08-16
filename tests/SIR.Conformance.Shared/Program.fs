@@ -96,6 +96,9 @@ let main arguments =
         let offset = Array.zip expected actual |> Array.findIndex (fun (left, right) -> left <> right)
         eprintfn "first divergence: fixture=rules-corpus byte=%d expected=%02x actual=%02x" offset expected[offset] actual[offset]
         failwith "Rules corpus canonical conformance failed."
+    | [ "--inject-rule-coherence-mutation"; mutation ] ->
+        RuleCoherenceFixtures.evaluateProtectedMutation mutation
+        0
     | [ "--inject-spatial-query-divergence" ] ->
         let expected = SpatialQueryFixtures.evaluate false
         let actual = SpatialQueryFixtures.evaluate true
@@ -160,6 +163,9 @@ let main arguments =
     | [ "--print-rules-application" ] ->
         printfn "%s" (RulesCorpusFixtures.representativeApplicationBytes () |> NumericFixtures.hex)
         0
+    | [ "--print-rule-coherence" ] ->
+        printfn "%s" (RuleCoherenceFixtures.evaluate () |> NumericFixtures.hex)
+        0
 #if !FABLE_COMPILER
     | [ "--print-spatial-performance" ] ->
         let los, losMs, route, routeMs, invalidationMs, demand100, demand100Ms, demand200, demand200Ms = SpatialQueryFixtures.performanceWorkload ()
@@ -198,6 +204,6 @@ let main arguments =
 #endif
     | _ ->
         eprintfn
-            "Usage: conformance [--inject-divergence FIXTURE | --inject-simulation-divergence PHASE | --inject-rules-corpus-divergence | --inject-spatial-query-divergence | --inject-combat-divergence | --inject-awareness-mutation NAME | --inject-replay-mutation NAME | --print-spatial-query | --print-combat | --print-awareness-reaction | --print-combat-performance | --print-simulation-oracle | --print-replay-evidence | --print-rules-manifest | --print-rules-coverage | --print-rules-application]"
+            "Usage: conformance [--inject-divergence FIXTURE | --inject-simulation-divergence PHASE | --inject-rules-corpus-divergence | --inject-rule-coherence-mutation NAME | --inject-spatial-query-divergence | --inject-combat-divergence | --inject-awareness-mutation NAME | --inject-replay-mutation NAME | --print-spatial-query | --print-combat | --print-awareness-reaction | --print-combat-performance | --print-simulation-oracle | --print-replay-evidence | --print-rules-manifest | --print-rules-coverage | --print-rules-application | --print-rule-coherence]"
 
         2

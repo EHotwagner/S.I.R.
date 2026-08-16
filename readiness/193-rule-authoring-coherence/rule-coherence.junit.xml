@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="rule-coherence" tests="1" failures="0" errors="0" skipped="0"><testsuite name="rule-coherence" tests="1" failures="0" errors="0" skipped="0"><testcase name="focused-owner-verifier" classname="SIR.Item193"/></testsuite></testsuites>

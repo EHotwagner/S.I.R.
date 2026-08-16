@@ -28,6 +28,9 @@ if [[ "$verb" == "fable" ]]; then
 elif [[ "$verb" == "build" || "$verb" == "publish" ]]; then
   project=${2:-missing-project}
   kind=$verb
+  for argument in "$@"; do
+    if [[ "$argument" == "--artifacts-path" ]]; then isolated=true; fi
+  done
 elif [[ "$verb" == "run" ]]; then
   no_build=false
   previous=""

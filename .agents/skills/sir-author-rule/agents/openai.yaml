@@ -1,0 +1,4 @@
+interface:
+  display_name: "Author a S.I.R. Rule"
+  short_description: "Iterate typed F# rules with executable evidence"
+  default_prompt: "Use $sir-author-rule to turn this gameplay idea into a typed, tested, coherence-checked S.I.R. rule."

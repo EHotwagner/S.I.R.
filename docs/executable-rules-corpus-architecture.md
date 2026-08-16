@@ -9,7 +9,7 @@ decision-status: canonical
 implementation-status: partial
 document-type: living-architecture
 version: "1.0"
-last-updated: 2026-08-12
+last-updated: 2026-08-16
 related:
   - docs/adr-0001-executable-rules-corpus.md
   - docs/codebase-architecture.md
@@ -52,6 +52,37 @@ that explicit records are verbose but reviewable, `RuleSource` avoids dangerous
 global F# record-label inference collisions, and AST union cases should avoid
 generic names already used by client models. Broader migration should first
 introduce internal builders without changing the published erased contracts.
+
+## Implemented authoring and coherence slice
+
+Rule changes now have two repository-local workflows. `sir-author-rule` guides
+an author from a scoped intent through the typed rule shape, metadata, focused
+tests, and a coherence check. `sir-check-rule-coherence` runs the deterministic
+analyzer directly and explains how to interpret its scoped claims and
+witnesses. The skills are guidance over the same executable contracts; neither
+is a second rules source.
+
+`SIR.Domain.RuleCoherence` checks registry identity, references, dependency and
+status structure, formula types and units, transition reachability, source
+history, and indexed transition interactions. The `sir-rules check` tool and
+`scripts/sir-rules` wrapper expose three explicit scopes: an exact changed-rule
+slice, its dependency/dependant cone, or the complete corpus. Interaction
+candidates come from phase plus read/write/event indexes, so disjoint pairs are
+counted as pruned without consuming expensive-analysis work.
+
+Reports state claim strength per finding, include stable fingerprints and
+bounded witnesses, and distinguish complete analysis from deterministic
+partial results. Exhausted work or truncated findings can never authorize
+canonicalization. Opaque algorithms remain an explicit `unknown` boundary
+unless a later trusted footprint contract narrows it; policy may make those
+unknowns blocking.
+
+Cache reuse is keyed by analyzer policy, selected rule semantics, and relevant
+implementation identity. Documentation-only edits therefore reuse completed
+semantic work, while typed semantics or registered algorithm fingerprints
+invalidate it. Reports are canonical bytes shared by .NET and Fable, making
+the analyzer suitable for focused local checks and CI without a second runtime
+implementation.
 
 ## Goals
 

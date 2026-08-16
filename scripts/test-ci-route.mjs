@@ -63,6 +63,20 @@ const missingBuildDuration = joinRoute(domain, passing.map((result) => result.ga
   timingMilliseconds: { ...result.timingMilliseconds, build: 0 },
 } : result), { completedAtMilliseconds: 1 });
 assert.ok(missingBuildDuration.failures.some(({ code, subject }) => code === "missing-build-duration" && subject === "prepare-native"));
+const spatialBuilds = expectedBuildInvocations.spatial;
+const withSpatialBuilds = (buildInvocations) => passing.map((result) => result.gate === "spatial" ? { ...result, buildInvocations } : result);
+const anonymousSpatial = "build:src/SIR.Simulation/SIR.Simulation.fsproj";
+const anonymousSpatialTrace = joinRoute(domain, withSpatialBuilds(Array(spatialBuilds.length).fill(anonymousSpatial)), { completedAtMilliseconds: 1 });
+assert.ok(anonymousSpatialTrace.failures.some(({ code, invocation }) => code === "unknown-build-invocation" && invocation === anonymousSpatial));
+assert.ok(anonymousSpatialTrace.failures.some(({ code, invocation, expected, actual }) => code === "duplicate-build-invocation" && invocation === anonymousSpatial && expected === 0 && actual === spatialBuilds.length));
+assert.equal(anonymousSpatialTrace.failures.filter(({ code, subject }) => code === "missing-build-invocation" && subject === "spatial").length, spatialBuilds.length);
+const missingSpatialTrace = joinRoute(domain, withSpatialBuilds(spatialBuilds.slice(0, -1)), { completedAtMilliseconds: 1 });
+assert.ok(missingSpatialTrace.failures.some(({ code, invocation }) => code === "missing-build-invocation" && invocation === spatialBuilds.at(-1)));
+const duplicatedSpatialBuilds = [...spatialBuilds];
+duplicatedSpatialBuilds[duplicatedSpatialBuilds.length - 1] = duplicatedSpatialBuilds[0];
+const duplicatedSpatialTrace = joinRoute(domain, withSpatialBuilds(duplicatedSpatialBuilds), { completedAtMilliseconds: 1 });
+assert.ok(duplicatedSpatialTrace.failures.some(({ code, invocation, expected, actual }) => code === "duplicate-build-invocation" && invocation === spatialBuilds[0] && expected === 1 && actual === 2));
+assert.ok(duplicatedSpatialTrace.failures.some(({ code, invocation }) => code === "missing-build-invocation" && invocation === spatialBuilds.at(-1)));
 assert.throws(() => gateResult("unknown", "pass"), /unknown gate result/u);
 
 const workflow = readFileSync(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8");
@@ -75,6 +89,10 @@ assert.deepEqual(expectedBuildInvocations.cancellation, [
   "fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj:exception:cancellation-mutant",
   "fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj:exception:cancellation-mutant",
 ]);
+assert.deepEqual(spatialBuilds, [
+  "dependency-receipt", "footprint-envelope", "semantic-edge", "knowledge-cache-key", "spatial-revision-key",
+  "deterministic-ordering", "package-adapter", "profile-cache-key", "trace-work-bound",
+].map((name) => `build:src/SIR.Simulation/SIR.Simulation.fsproj:exception:spatial-${name}:artifacts-path:isolated`));
 assert.deepEqual(expectedBuildInvocations["prepare-native"], [
   "build:SIR.slnx",
   "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj",
