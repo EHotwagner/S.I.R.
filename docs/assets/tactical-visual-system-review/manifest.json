@@ -1,0 +1,68 @@
+{
+  "schema": "sir-tactical-visual-review-v1",
+  "productionBundleSha256": "d3e319fa1f1e579a0250d6e88980cf9db32583723c8908cafccd32d9a512d270",
+  "productionStylesSha256": "677d14a878d2b78025fc4567c3ca764a568619f62bc447f664dfef415330b9da",
+  "before": {
+    "path": "../persistent-workspace-m9-review/field-focus.png",
+    "sha256": "9e7388276d1c7753dcf2e87446875eb494fd75adaa5928102409de0a60d88c27"
+  },
+  "after": {
+    "path": "after-production.png",
+    "sha256": "bc53033dc715c20ee3f50ac1105a739a00ec5f7b91e543ae877bec1390839dfa",
+    "captureKind": "actual-production-shell-chromium-screenshot"
+  },
+  "densityPrototypes": {
+    "svg": "density-prototypes.svg",
+    "svgSha256": "3820135e8cb488f6280a6f078ee9c44b762ee2568009abb2db4c2f560afb5a1f",
+    "png": "density-prototypes.png",
+    "pngSha256": "27d18abd1b8cd40dbca2c19f2051a085aec6369cfcdd6dfeaefa29cdcb957c47",
+    "scenes": [
+      {
+        "name": "Ordinary",
+        "units": 20
+      },
+      {
+        "name": "Dense",
+        "units": 100
+      },
+      {
+        "name": "Stress",
+        "units": 200
+      }
+    ]
+  },
+  "visualSystem": {
+    "identity": "tactical-visual-system-v1",
+    "density": "ordinary",
+    "motion": "full",
+    "layerOrder": "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
+    "effectCount": 0,
+    "effectLimit": 256,
+    "unitCount": 4,
+    "nodeEstimate": 479,
+    "tokens": {
+      "--sir-canvas": "#10161d",
+      "--sir-text": "#f7f9fa",
+      "--sir-grid": "#71808b",
+      "--sir-focus": "#ffffff",
+      "--sir-intent": "#53b7ff",
+      "--sir-impact": "#ff6b6b",
+      "--sir-suppression": "#d792ff",
+      "--sir-recovery": "#8ce99a",
+      "--sir-rejected": "#ff6b6b"
+    }
+  },
+  "budgets": {
+    "representative100": {
+      "maximumEstimatedSvgNodes": 5000,
+      "maximumEffects": 128,
+      "releaseP95Milliseconds": 4
+    },
+    "stress200": {
+      "maximumEstimatedSvgNodes": 9000,
+      "maximumEffects": 256,
+      "releaseP95Milliseconds": 8
+    },
+    "browserAnimationFrameMilliseconds": 16.67
+  }
+}

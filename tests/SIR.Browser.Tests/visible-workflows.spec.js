@@ -89,6 +89,47 @@ test("visible mode controls preserve a usable tactical workspace across authorin
   }
 });
 
+test("the production tactical visual system preserves causal feedback under reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await loadMaintainedSimulation(page);
+  const battlefield = page.locator("#persistent-tactical-svg");
+  await expect(battlefield).toHaveAttribute("data-visual-system", "tactical-visual-system-v1");
+  await expect(battlefield).toHaveAttribute("data-motion", "reduced");
+  await expect(battlefield).toHaveAttribute(
+    "data-layer-order",
+    "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
+  );
+  await expect(battlefield.locator("#persistent-layer-effects")).toHaveAttribute("data-effect-motion", "emphasis");
+
+  await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();
+  const effectCount = Number(await battlefield.getAttribute("data-effect-count"));
+  const effectLimit = Number(await battlefield.getAttribute("data-effect-limit"));
+  const unitCount = Number(await battlefield.getAttribute("data-visual-unit-count"));
+  const nodeEstimate = Number(await battlefield.getAttribute("data-visual-node-estimate"));
+  expect(effectCount).toBeGreaterThan(0);
+  expect(effectCount).toBeLessThanOrEqual(effectLimit);
+  expect(unitCount).toBeGreaterThan(0);
+  expect(nodeEstimate).toBeLessThanOrEqual(unitCount <= 100 ? 5000 : 9000);
+  const firstEffect = battlefield.locator("#persistent-layer-effects [data-effect-event]").first();
+  await expect(firstEffect).toHaveAttribute("data-effect-kind", /movement|attack|impact|suppression|recovery|signal|objective|accepted|rejected|event/);
+  await expect(battlefield.locator("#persistent-layer-effects")).toHaveAttribute("pointer-events", "none");
+  await expect(battlefield.locator("#persistent-layer-units [data-unit-id]").first()).toBeVisible();
+
+  const samples = await battlefield.evaluate(async (root) => {
+    const values = [];
+    for (let index = 0; index < 24; index += 1) {
+      await new Promise((resolve) => requestAnimationFrame(() => {
+        const started = performance.now();
+        root.querySelectorAll("[data-unit-id], [data-effect-event], [data-overlay-id]").length;
+        values.push(performance.now() - started);
+        resolve();
+      }));
+    }
+    return values.sort((left, right) => left - right);
+  });
+  expect(samples[Math.floor(samples.length * 0.95)]).toBeLessThan(16.67);
+});
+
 test("View analysis overlays share pointer and keyboard commands and restore independently", async ({ page }) => {
   await page.goto("/");
   const battlefield = page.locator("#persistent-tactical-svg");

@@ -6002,6 +6002,17 @@ let private activeSceneProjection (model: Model) =
                          |> Array.exists (fun authored ->
                              authored.Visual.Id = live.Visual.Id)
                          |> not))
+            let routes = Array.append contextual.Routes runtime.Routes
+            let annotations = Array.append contextual.Annotations runtime.Annotations
+            let effects =
+                Array.append contextual.Effects runtime.Effects
+                |> Array.distinctBy (fun effect -> effect.PrimitiveId)
+                |> Array.sortBy (fun effect -> effect.Tick, effect.Order, ScenePrimitiveId.value effect.PrimitiveId)
+                |> Array.truncate ((TacticalSceneProjection.visualSystem "accessible-default" false units.Length).MaximumActiveEffects)
+            let addedUnits = max 0 (units.Length - contextual.Units.Length)
+            let addedRoutes = max 0 (routes.Length - contextual.Routes.Length)
+            let addedAnnotations = max 0 (annotations.Length - contextual.Annotations.Length)
+            let addedEffects = max 0 (effects.Length - contextual.Effects.Length)
             { contextual with
                 RevisionIdentity = runtime.RevisionIdentity
                 Tick = runtime.Tick
@@ -6009,8 +6020,18 @@ let private activeSceneProjection (model: Model) =
                 Terrain = runtime.Terrain
                 Edges = runtime.Edges
                 Units = units
-                Routes = Array.append contextual.Routes runtime.Routes
-                Annotations = Array.append contextual.Annotations runtime.Annotations })
+                Routes = routes
+                Annotations = annotations
+                Effects = effects
+                VisualCost =
+                    { UnitCount = units.Length
+                      EffectInstances = effects.Length
+                      EstimatedSvgNodes =
+                        contextual.VisualCost.EstimatedSvgNodes
+                        + (addedUnits * 12)
+                        + addedRoutes
+                        + addedAnnotations
+                        + (addedEffects * 3) } })
         |> Option.defaultValue contextual
     match model.Workspace, TacticalSceneProjection.acceptReview model.Shell with
     | ReplayWorkspace, Some accepted ->
@@ -6112,6 +6133,41 @@ let private persistentSceneSvg
     // projection is temporarily unavailable (for example before Simulate or
     // Review has accepted input).
     let camera = model.EditorView.Camera
+    let unitCount = projection |> Option.map _.Units.Length |> Option.defaultValue 0
+    let visualSystem =
+        TacticalSceneProjection.visualSystem
+            model.Battlefield.PaletteId
+            model.Battlefield.ReducedMotion
+            unitCount
+    let densityToken =
+        match visualSystem.Density with
+        | OrdinaryDensity -> "ordinary"
+        | DenseDensity -> "dense"
+        | StressDensity -> "stress"
+    let effectKindToken = function
+        | MovementEffect -> "movement"
+        | AttackEffect -> "attack"
+        | ImpactEffect -> "impact"
+        | SuppressionEffect -> "suppression"
+        | RecoveryEffect -> "recovery"
+        | SignalEffect -> "signal"
+        | ObjectiveEffect -> "objective"
+        | AcceptedEffect -> "accepted"
+        | RejectedEffect -> "rejected"
+        | HistoricalEffect -> "historical"
+        | GenericEffect -> "event"
+    let effectColor = function
+        | ImpactEffect -> visualSystem.Impact
+        | SuppressionEffect -> visualSystem.Suppression
+        | RecoveryEffect
+        | AcceptedEffect -> visualSystem.Recovery
+        | RejectedEffect -> visualSystem.Rejected
+        | AttackEffect
+        | MovementEffect
+        | SignalEffect -> visualSystem.Intent
+        | ObjectiveEffect -> visualSystem.Palette.NeutralFaction
+        | HistoricalEffect
+        | GenericEffect -> visualSystem.Palette.Text
     let tacticalOverlays =
         projection
         |> Option.map (TacticalSceneProjection.projectOverlays model.TacticalOverlays model.HeldTacticalOverlays)
@@ -6191,6 +6247,27 @@ let private persistentSceneSvg
         svg.id "persistent-tactical-svg"
         svg.custom ("data-work-surface-root", "persistent-svg")
         svg.custom ("data-render-contract", "shared-scene-projection-v1")
+        svg.custom ("data-visual-system", visualSystem.Identity)
+        svg.custom ("data-visual-density", densityToken)
+        svg.custom ("data-motion", if visualSystem.ReducedMotion then "reduced" else "full")
+        svg.custom ("data-effect-count", projection |> Option.map _.Effects.Length |> Option.defaultValue 0 |> string)
+        svg.custom ("data-effect-limit", string visualSystem.MaximumActiveEffects)
+        svg.custom ("data-visual-unit-count", projection |> Option.map _.VisualCost.UnitCount |> Option.defaultValue 0 |> string)
+        svg.custom ("data-visual-node-estimate", projection |> Option.map _.VisualCost.EstimatedSvgNodes |> Option.defaultValue 0 |> string)
+        svg.custom ("data-layer-order", String.concat ">" visualSystem.LayerOrder)
+        unbox<ISvgAttribute> (prop.style [
+            style.custom ("--sir-canvas", visualSystem.Palette.Canvas)
+            style.custom ("--sir-text", visualSystem.Palette.Text)
+            style.custom ("--sir-grid", visualSystem.Palette.Grid)
+            style.custom ("--sir-focus", visualSystem.Palette.Focus)
+            style.custom ("--sir-intent", visualSystem.Intent)
+            style.custom ("--sir-impact", visualSystem.Impact)
+            style.custom ("--sir-suppression", visualSystem.Suppression)
+            style.custom ("--sir-recovery", visualSystem.Recovery)
+            style.custom ("--sir-rejected", visualSystem.Rejected)
+            style.custom ("--sir-motion-ms", string visualSystem.TransitionMilliseconds + "ms")
+            style.custom ("--sir-effect-ms", string visualSystem.EffectMilliseconds + "ms")
+        ])
         svg.custom ("data-scene-owner", owner)
         svg.custom (
             "data-scene-disclosure",
@@ -6539,12 +6616,12 @@ let private persistentSceneSvg
                                         svg.height cellSize
                                         svg.fill (
                                             match terrain.Kind with
-                                            | "rough" -> "#35443a"
-                                            | "blocked" -> "#202925"
-                                            | "objective" -> "#4b4630"
-                                            | _ -> "#2b3832"
+                                            | "rough" -> visualSystem.TerrainRough
+                                            | "blocked" -> visualSystem.TerrainBlocked
+                                            | "objective" -> visualSystem.TerrainObjective
+                                            | _ -> visualSystem.TerrainOpen
                                         )
-                                        svg.stroke "#52675d"
+                                        svg.stroke visualSystem.Palette.Grid
                                         svg.strokeWidth 1
                                         match command with
                                         | Some commandId when available ->
@@ -6564,7 +6641,7 @@ let private persistentSceneSvg
                                             svg.y1 (float (terrain.Row + 1) * cellSize - 8.0)
                                             svg.x2 (float (terrain.Column + 1) * cellSize - 8.0)
                                             svg.y2 (float terrain.Row * cellSize + 8.0)
-                                            svg.stroke "#9bb0a5"
+                                            svg.stroke visualSystem.Palette.Text
                                             svg.strokeWidth 3
                                             svg.custom ("pointer-events", "none")
                                         ]
@@ -6579,7 +6656,7 @@ let private persistentSceneSvg
                                                 svg.y1 (float terrain.Row * cellSize + 9.0)
                                                 svg.x2 (float terrain.Column * cellSize + last)
                                                 svg.y2 (float (terrain.Row + 1) * cellSize - 9.0)
-                                                svg.stroke "#ff6b6b"
+                                                svg.stroke visualSystem.Rejected
                                                 svg.strokeWidth 3
                                                 svg.custom ("pointer-events", "none")
                                             ]
@@ -6592,7 +6669,7 @@ let private persistentSceneSvg
                                             svg.width (cellSize - 14.0)
                                             svg.height (cellSize - 14.0)
                                             svg.fill "none"
-                                            svg.stroke "#ffd166"
+                                            svg.stroke visualSystem.Palette.NeutralFaction
                                             svg.strokeWidth 3
                                             svg.custom ("pointer-events", "none")
                                         ]
@@ -6622,9 +6699,9 @@ let private persistentSceneSvg
                                         svg.y2 (float edge.EndRow * cellSize)
                                         svg.stroke (
                                             match edge.Kind with
-                                            | "door" -> "#ffd166"
-                                            | "window" -> "#67b7ff"
-                                            | _ -> "#eef7f2"
+                                            | "door" -> visualSystem.EdgeDoor
+                                            | "window" -> visualSystem.EdgeWindow
+                                            | _ -> visualSystem.EdgeWall
                                         )
                                         svg.strokeWidth (if edge.Kind = "wall" then 6 else 5)
                                         svg.custom (
@@ -6741,25 +6818,25 @@ let private persistentSceneSvg
                                                 svg.y (presentationY + 5.0)
                                                 svg.width (width - 10.0)
                                                 svg.height (depth - 10.0)
-                                                svg.rx 6
-                                                svg.fill "#101916"
+                                                svg.rx visualSystem.UnitCornerRadius
+                                                svg.fill visualSystem.UnitBody
                                                 svg.stroke (
-                                                    if selected unit.PrimitiveId then "#ffd166"
+                                                    if selected unit.PrimitiveId then visualSystem.Palette.Focus
                                                     else
                                                         match visual.Faction with
-                                                        | Human -> "#67b7ff"
-                                                        | Arcane -> "#e384ff"
-                                                        | Neutral -> "#c9d7d0"
-                                                        | OtherFaction _ -> "#f2a65a"
+                                                        | Human -> visualSystem.Palette.HumanFaction
+                                                        | Arcane -> visualSystem.Palette.ArcaneFaction
+                                                        | Neutral -> visualSystem.Palette.NeutralFaction
+                                                        | OtherFaction _ -> visualSystem.Palette.NeutralFaction
                                                 )
-                                                svg.strokeWidth (if selected unit.PrimitiveId then 5 else 3)
+                                                svg.strokeWidth (if selected unit.PrimitiveId then visualSystem.SelectedStrokeWidth else visualSystem.UnitStrokeWidth)
                                             ]
                                             Svg.g [
                                                 svg.custom ("data-unit-glyph", UnitClassId.value visual.ClassId)
                                                 svg.custom ("pointer-events", "none")
                                                 svg.children [
                                                     glyphView
-                                                        ReplayPalettes.accessibleDefault
+                                                        visualSystem.Palette
                                                         (presentationX + width / 2.0)
                                                         (presentationY + depth / 2.0)
                                                         (max 1.0 ((min width depth - 16.0) / 24.0))
@@ -6777,7 +6854,7 @@ let private persistentSceneSvg
                                                     svg.y1 centerY
                                                     svg.x2 (centerX + Math.Cos(radians) * 22.0)
                                                     svg.y2 (centerY + Math.Sin(radians) * 22.0)
-                                                    svg.stroke "#eef7f2"
+                                                    svg.stroke visualSystem.Palette.Text
                                                     svg.strokeWidth 4
                                                     svg.custom ("pointer-events", "none")
                                                 ]
@@ -6793,7 +6870,7 @@ let private persistentSceneSvg
                                                     svg.y1 centerY
                                                     svg.x2 (centerX + Math.Cos(radians) * 28.0)
                                                     svg.y2 (centerY + Math.Sin(radians) * 28.0)
-                                                    svg.stroke "#e5b8ff"
+                                                    svg.stroke visualSystem.Intent
                                                     svg.strokeWidth 3
                                                     svg.custom ("stroke-dasharray", "3 2")
                                                     svg.custom ("pointer-events", "none")
@@ -6805,7 +6882,7 @@ let private persistentSceneSvg
                                                     svg.custom ("data-unit-stance-label", stance)
                                                     svg.x (presentationX + 9.0)
                                                     svg.y (presentationY + depth - 9.0)
-                                                    svg.fill "#8ce99a"
+                                                    svg.fill visualSystem.Recovery
                                                     svg.fontSize 10
                                                     svg.text stance
                                                 ]
@@ -6814,10 +6891,69 @@ let private persistentSceneSvg
                                                 svg.x (presentationX + width - 9.0)
                                                 svg.y (presentationY + depth - 9.0)
                                                 svg.custom ("text-anchor", "end")
-                                                svg.fill "#eef7f2"
+                                                svg.fill visualSystem.Palette.Text
                                                 svg.fontSize 13
                                                 svg.text (string visual.Id)
                                             ]
+                                        ]
+                                    ]
+                            | None -> ()
+                        ]
+                    ]
+                    Svg.g [
+                        svg.id "persistent-layer-effects"
+                        svg.custom ("data-scene-layer", "effects")
+                        svg.custom ("data-effect-motion", if visualSystem.ReducedMotion then "emphasis" else "causal")
+                        svg.custom ("pointer-events", "none")
+                        svg.custom ("aria-hidden", "true")
+                        svg.children [
+                            match projection with
+                            | Some scene ->
+                                for effect in scene.Effects do
+                                    let token = effectKindToken effect.Kind
+                                    let color = effectColor effect.Kind
+                                    Svg.g [
+                                        svg.key (ScenePrimitiveId.value effect.PrimitiveId)
+                                        svg.className ("tactical-effect tactical-effect-" + token)
+                                        svg.custom ("data-primitive-id", ScenePrimitiveId.value effect.PrimitiveId)
+                                        svg.custom ("data-effect-kind", token)
+                                        svg.custom ("data-effect-event", string effect.EventId)
+                                        svg.custom ("data-effect-tick", string effect.Tick)
+                                        svg.custom ("data-effect-order", string effect.Order)
+                                        svg.children [
+                                            match effect.SourcePoint, effect.TargetPoint with
+                                            | Some(sourceX, sourceY), Some(targetX, targetY) ->
+                                                Svg.line [
+                                                    svg.className "tactical-effect-trace"
+                                                    svg.x1 (sourceX * cellSize)
+                                                    svg.y1 (sourceY * cellSize)
+                                                    svg.x2 (targetX * cellSize)
+                                                    svg.y2 (targetY * cellSize)
+                                                    svg.stroke color
+                                                    svg.strokeWidth (if visualSystem.ReducedMotion then 6 else 4)
+                                                    svg.custom ("stroke-dasharray", if effect.Kind = AttackEffect then "12 7" else "4 5")
+                                                ]
+                                                Svg.circle [
+                                                    svg.className "tactical-effect-impact"
+                                                    svg.cx (targetX * cellSize)
+                                                    svg.cy (targetY * cellSize)
+                                                    svg.r (if visualSystem.ReducedMotion then 11 else 8)
+                                                    svg.fill "none"
+                                                    svg.stroke color
+                                                    svg.strokeWidth 4
+                                                ]
+                                            | _, Some(targetX, targetY)
+                                            | Some(targetX, targetY), _ ->
+                                                Svg.circle [
+                                                    svg.className "tactical-effect-impact"
+                                                    svg.cx (targetX * cellSize)
+                                                    svg.cy (targetY * cellSize)
+                                                    svg.r (if visualSystem.ReducedMotion then 11 else 8)
+                                                    svg.fill "none"
+                                                    svg.stroke color
+                                                    svg.strokeWidth 4
+                                                ]
+                                            | None, None -> ()
                                         ]
                                     ]
                             | None -> ()

@@ -226,6 +226,7 @@ const collectGeometry = () => {
     rect: rect(body),
     children: [...body.children].map((child) => ({ className: child.className, position: getComputedStyle(child).position, rect: rect(child) })),
   }));
+  const svgStyles = getComputedStyle(svg);
   return {
     viewport: { width: innerWidth, height: innerHeight, devicePixelRatio },
     document: {
@@ -246,6 +247,20 @@ const collectGeometry = () => {
     counts: {
       worksurfaceRoots: shell.querySelectorAll("[data-work-surface-root]").length,
       applicationLandmarks: shell.querySelectorAll("svg[role='application']").length,
+    },
+    visualSystem: {
+      identity: svg.getAttribute("data-visual-system"),
+      density: svg.getAttribute("data-visual-density"),
+      motion: svg.getAttribute("data-motion"),
+      layerOrder: svg.getAttribute("data-layer-order"),
+      effectCount: Number(svg.getAttribute("data-effect-count")),
+      effectLimit: Number(svg.getAttribute("data-effect-limit")),
+      unitCount: Number(svg.getAttribute("data-visual-unit-count")),
+      nodeEstimate: Number(svg.getAttribute("data-visual-node-estimate")),
+      tokens: Object.fromEntries([
+        "--sir-canvas", "--sir-text", "--sir-grid", "--sir-focus",
+        "--sir-intent", "--sir-impact", "--sir-suppression", "--sir-recovery", "--sir-rejected",
+      ].map((name) => [name, svgStyles.getPropertyValue(name).trim()])),
     },
     channels,
     toolbarChildren,

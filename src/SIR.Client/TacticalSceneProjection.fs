@@ -106,6 +106,67 @@ type TacticalOverlayProjection =
       Labels: TacticalOverlayPayload array
       Cost: TacticalOverlayCost }
 
+type TacticalEffectKind =
+    | MovementEffect
+    | AttackEffect
+    | ImpactEffect
+    | SuppressionEffect
+    | RecoveryEffect
+    | SignalEffect
+    | ObjectiveEffect
+    | AcceptedEffect
+    | RejectedEffect
+    | HistoricalEffect
+    | GenericEffect
+
+type TacticalEffectProjection =
+    { PrimitiveId: ScenePrimitiveId
+      EventId: int32
+      Tick: int32
+      Kind: TacticalEffectKind
+      SourceUnitId: int32 option
+      TargetUnitId: int32 option
+      SourcePoint: (float * float) option
+      TargetPoint: (float * float) option
+      Label: string
+      Order: int }
+
+type TacticalVisualDensity =
+    | OrdinaryDensity
+    | DenseDensity
+    | StressDensity
+
+type TacticalVisualSystem =
+    { Identity: string
+      Palette: PaletteTokens
+      Density: TacticalVisualDensity
+      ReducedMotion: bool
+      TerrainOpen: string
+      TerrainRough: string
+      TerrainBlocked: string
+      TerrainObjective: string
+      UnitBody: string
+      EdgeWall: string
+      EdgeDoor: string
+      EdgeWindow: string
+      Intent: string
+      Impact: string
+      Suppression: string
+      Recovery: string
+      Rejected: string
+      UnitCornerRadius: float
+      UnitStrokeWidth: float
+      SelectedStrokeWidth: float
+      TransitionMilliseconds: int
+      EffectMilliseconds: int
+      MaximumActiveEffects: int
+      LayerOrder: string array }
+
+type TacticalVisualCost =
+    { UnitCount: int
+      EffectInstances: int
+      EstimatedSvgNodes: int }
+
 type SceneTerrainProjection =
     { PrimitiveId: ScenePrimitiveId
       Column: int32
@@ -173,6 +234,8 @@ type SharedSceneProjection =
       Units: SceneUnitProjection array
       Routes: SceneRouteProjection array
       Annotations: SceneAnnotationProjection array
+      Effects: TacticalEffectProjection array
+      VisualCost: TacticalVisualCost
       Disclosure: SceneDisclosureProjection
       Camera: SceneCameraProjection
       Selection: SceneSelectionProjection
@@ -219,6 +282,43 @@ module TacticalSceneProjection =
 
     [<Literal>]
     let private MaximumOverlayLabels = 256
+
+    [<Literal>]
+    let private MaximumEffectInstances = 256
+
+    let visualSystem paletteId reducedMotion unitCount =
+        let palette =
+            ReplayPalettes.all
+            |> Array.tryFind (fun candidate -> candidate.Id = paletteId)
+            |> Option.defaultValue ReplayPalettes.accessibleDefault
+        let density =
+            if unitCount > 100 then StressDensity
+            elif unitCount > 40 then DenseDensity
+            else OrdinaryDensity
+        { Identity = "tactical-visual-system-v1"
+          Palette = palette
+          Density = density
+          ReducedMotion = reducedMotion
+          TerrainOpen = if palette.Id = "monochrome-pattern" then "#f2f0e8" else "#26332e"
+          TerrainRough = if palette.Id = "monochrome-pattern" then "#dedbd0" else "#35443a"
+          TerrainBlocked = if palette.Id = "monochrome-pattern" then "#c7c3b8" else "#1b2421"
+          TerrainObjective = if palette.Id = "monochrome-pattern" then "#e8e0bd" else "#4b4630"
+          UnitBody = palette.Canvas
+          EdgeWall = palette.Text
+          EdgeDoor = palette.NeutralFaction
+          EdgeWindow = palette.HumanFaction
+          Intent = palette.HumanFaction
+          Impact = palette.HealthActive
+          Suppression = palette.ArcaneFaction
+          Recovery = if palette.Id = "high-contrast" then "#00ff00" else "#8ce99a"
+          Rejected = if palette.Id = "high-contrast" then "#ff0000" else "#ff6b6b"
+          UnitCornerRadius = 6.0
+          UnitStrokeWidth = 3.0
+          SelectedStrokeWidth = 5.0
+          TransitionMilliseconds = if reducedMotion then 1 else 160
+          EffectMilliseconds = if reducedMotion then 120 else 420
+          MaximumActiveEffects = MaximumEffectInstances
+          LayerOrder = [| "terrain"; "edges"; "routes"; "units"; "effects"; "selection"; "tactical-overlays"; "annotations" |] }
 
     let private overlayId value = TacticalOverlayId value
 
@@ -401,6 +501,97 @@ module TacticalSceneProjection =
               PresentationColumn = float unit.AnchorColumn
               PresentationRow = float unit.AnchorRow })
 
+    let private effectKind historical (kind: string) =
+        let normalized = kind.ToLowerInvariant()
+        if historical then HistoricalEffect
+        elif normalized.Contains("move") then MovementEffect
+        elif normalized.Contains("attack") || normalized.Contains("trace") then AttackEffect
+        elif normalized.Contains("impact") || normalized.Contains("damage") || normalized.Contains("wound") then ImpactEffect
+        elif normalized.Contains("suppress") then SuppressionEffect
+        elif normalized.Contains("heal") || normalized.Contains("recover") then RecoveryEffect
+        elif normalized.Contains("communication") || normalized.Contains("acknowledg") || normalized.Contains("sensor") then SignalEffect
+        elif normalized.Contains("objective") then ObjectiveEffect
+        elif normalized.Contains("accept") || normalized.Contains("commit") then AcceptedEffect
+        elif normalized.Contains("reject") then RejectedEffect
+        else GenericEffect
+
+    let private effectOrder = function
+        | MovementEffect -> 10
+        | SignalEffect -> 20
+        | ObjectiveEffect -> 30
+        | AttackEffect -> 40
+        | ImpactEffect -> 50
+        | SuppressionEffect -> 60
+        | RecoveryEffect -> 70
+        | AcceptedEffect -> 80
+        | RejectedEffect -> 90
+        | HistoricalEffect -> 100
+        | GenericEffect -> 110
+
+    let private effectsOfFrame historical (units: SceneUnitProjection array) (frame: RenderFrame) =
+        let centers =
+            units
+            |> Array.map (fun unit ->
+                let width = float (CellExtent.value unit.Visual.FootprintWidth)
+                let depth = float (CellExtent.value unit.Visual.FootprintDepth)
+                unit.Visual.Id, (unit.PresentationColumn + width / 2.0, unit.PresentationRow + depth / 2.0))
+            |> Map.ofArray
+        frame.Events
+        |> Array.choose (fun event ->
+            match event.Summary with
+            | Disclosed label ->
+                let sourceId = match event.SourceUnitId with Disclosed id when Map.containsKey id centers -> Some id | _ -> None
+                let targetId = match event.TargetUnitId with Disclosed id when Map.containsKey id centers -> Some id | _ -> None
+                let kind = effectKind historical event.Kind
+                Some
+                    { PrimitiveId = primitive "effect" (invariant event.Tick + ":" + invariant event.Id)
+                      EventId = event.Id
+                      Tick = event.Tick
+                      Kind = kind
+                      SourceUnitId = sourceId
+                      TargetUnitId = targetId
+                      SourcePoint = sourceId |> Option.map (fun id -> centers[id])
+                      TargetPoint = targetId |> Option.map (fun id -> centers[id])
+                      Label = label
+                      Order = effectOrder kind }
+            | _ -> None)
+        |> Array.sortBy (fun effect -> effect.Tick, effect.Order, effect.EventId)
+        |> Array.truncate MaximumEffectInstances
+
+    let private visualCost
+        (terrain: SceneTerrainProjection array)
+        (edges: EdgeVisual array)
+        (units: SceneUnitProjection array)
+        (routes: SceneRouteProjection array)
+        (annotations: SceneAnnotationProjection array)
+        (effects: TacticalEffectProjection array)
+        =
+        let terrainNodes =
+            terrain
+            |> Array.sumBy (fun cell ->
+                match cell.Kind with
+                | "blocked" -> 3
+                | "rough"
+                | "objective" -> 2
+                | _ -> 1)
+        let unitNodes =
+            units
+            |> Array.sumBy (fun unit ->
+                4
+                + UnitGlyphCatalog.resolve(unit.Visual.ClassId).Primitives.Length
+                + (match unit.Visual.BodyHeading with Disclosed _ -> 1 | _ -> 0)
+                + (match unit.Visual.SecondaryHeading with Disclosed _ -> 1 | _ -> 0)
+                + (match unit.Visual.StanceId with Disclosed _ -> 1 | _ -> 0))
+        let effectNodes =
+            effects
+            |> Array.sumBy (fun effect ->
+                1
+                + (if effect.SourcePoint.IsSome && effect.TargetPoint.IsSome then 1 else 0)
+                + (if effect.SourcePoint.IsSome || effect.TargetPoint.IsSome then 1 else 0))
+        { UnitCount = units.Length
+          EffectInstances = effects.Length
+          EstimatedSvgNodes = 32 + terrainNodes + edges.Length + unitNodes + routes.Length + annotations.Length + effectNodes }
+
     let private camera (value: BattlefieldCamera) =
         { PanX = value.PanX
           PanY = value.PanY
@@ -523,6 +714,13 @@ module TacticalSceneProjection =
     let editor (input: EditorProjectionInput) =
         let frame = MapEditor.frame input.EditorState
         let units = unitsOfFrame frame
+        let terrain = terrainOfMap input.EditorState.Map
+        let edges = frame.Edges |> Array.map copyEdge
+        let annotations =
+            Array.append
+                (regionAnnotations input.EditorState.Map.Regions)
+                (eventAnnotations "editor-event" frame.Events)
+        let effects = effectsOfFrame false units frame
         let selected, focused =
             selectedUnits
                 (seq {
@@ -545,14 +743,13 @@ module TacticalSceneProjection =
           RevisionIdentity = input.EditorState.Revision.Digest
           Tick = input.EditorState.Tick
           Board = frame.Board
-          Terrain = terrainOfMap input.EditorState.Map
-          Edges = frame.Edges |> Array.map copyEdge
+          Terrain = terrain
+          Edges = edges
           Units = units
           Routes = [||]
-          Annotations =
-            Array.append
-                (regionAnnotations input.EditorState.Map.Regions)
-                (eventAnnotations "editor-event" frame.Events)
+          Annotations = annotations
+          Effects = effects
+          VisualCost = visualCost terrain edges units [||] annotations effects
           Disclosure = disclosure SandboxDisclosure
           Camera = camera input.EditorWorkspace.Camera
           Selection =
@@ -767,18 +964,9 @@ module TacticalSceneProjection =
                 | Some(command, primitiveId) ->
                     Some command, [| primitiveId |]
                 | None -> None, [||]
-        { Owner = PlanningScene
-          RevisionIdentity =
-            input.PlanningState.MapRevision
-            + ":"
-            + input.PlanningState.Digest
-          Tick = input.PlanningState.AuthoringTick
-          Board = boardOfMap input.PlanningMap
-          Terrain = terrainOfMap input.PlanningMap
-          Edges = edgesOfMap input.PlanningMap
-          Units = units
-          Routes = routes
-          Annotations =
+        let terrain = terrainOfMap input.PlanningMap
+        let edges = edgesOfMap input.PlanningMap
+        let annotations =
             Array.concat
                 [ input.PlanningState.Commands
                   |> List.filter (fun command ->
@@ -802,6 +990,20 @@ module TacticalSceneProjection =
                             Geometry = None
                             Text = Disclosed disclosure }))
                   |> Option.defaultValue [||] ]
+        { Owner = PlanningScene
+          RevisionIdentity =
+            input.PlanningState.MapRevision
+            + ":"
+            + input.PlanningState.Digest
+          Tick = input.PlanningState.AuthoringTick
+          Board = boardOfMap input.PlanningMap
+          Terrain = terrain
+          Edges = edges
+          Units = units
+          Routes = routes
+          Annotations = annotations
+          Effects = [||]
+          VisualCost = visualCost terrain edges units routes annotations [||]
           Disclosure = disclosure SandboxDisclosure
           Camera = camera input.PlanningCamera
           Selection =
@@ -902,15 +1104,10 @@ module TacticalSceneProjection =
                 (input.SimulatorSelectedUnit |> Option.toList)
                 input.SimulatorFocusedUnit
                 units
-        { Owner = SimulatorScene
-          RevisionIdentity = input.SimulatorHandoff.Revision.Digest
-          Tick = input.SimulatorHandoff.Tick
-          Board = frame.Board
-          Terrain = terrainOfMap input.SimulatorHandoff.RuntimeMap
-          Edges = frame.Edges |> Array.map copyEdge
-          Units = units
-          Routes = frame.Overlays |> Array.map simulatorOverlayRoute
-          Annotations =
+        let terrain = terrainOfMap input.SimulatorHandoff.RuntimeMap
+        let edges = frame.Edges |> Array.map copyEdge
+        let routes = frame.Overlays |> Array.map simulatorOverlayRoute
+        let annotations =
             Array.append
                 (units
                  |> Array.map (fun unit ->
@@ -921,14 +1118,21 @@ module TacticalSceneProjection =
                        SubjectUnitId = Some visual.Id
                        Column = Some visual.AnchorColumn
                        Row = Some visual.AnchorRow
-                       Geometry =
-                           Some(StatusGeometry(unit.PresentationColumn + 0.5, unit.PresentationRow + 0.5, None, None, Array.copy visual.StatusIds))
-                       Text =
-                           Disclosed(
-                               "Unit " + invariant visual.Id + " · "
-                               + String.concat " · " visual.StatusIds
-                           ) }))
+                       Geometry = Some(StatusGeometry(unit.PresentationColumn + 0.5, unit.PresentationRow + 0.5, None, None, Array.copy visual.StatusIds))
+                       Text = Disclosed("Unit " + invariant visual.Id + " · " + String.concat " · " visual.StatusIds) }))
                 (eventAnnotations "simulator-event" frame.Events)
+        let effects = effectsOfFrame false units frame
+        { Owner = SimulatorScene
+          RevisionIdentity = input.SimulatorHandoff.Revision.Digest
+          Tick = input.SimulatorHandoff.Tick
+          Board = frame.Board
+          Terrain = terrain
+          Edges = edges
+          Units = units
+          Routes = routes
+          Annotations = annotations
+          Effects = effects
+          VisualCost = visualCost terrain edges units routes annotations effects
           Disclosure = disclosure SandboxDisclosure
           Camera = camera input.SimulatorCamera
           Selection =
@@ -1035,19 +1239,22 @@ module TacticalSceneProjection =
         let selectedEvent =
             input.AcceptedReview.AcceptedSelectedEvent
             |> Option.filter (fun id -> Set.contains id visibleEvents)
+        let projectedRoutes = routes |> Array.map overlayRoute
+        let projectedAnnotations =
+            Array.concat [| overlayAnnotations; eventAnnotations; [| verificationAnnotation |] |]
+        let edges = frame.Edges |> Array.map copyEdge
+        let effects = effectsOfFrame true units frame
         { Owner = ReviewScene
           RevisionIdentity = input.AcceptedReview.AcceptedRevisionIdentity
           Tick = frame.Tick
           Board = frame.Board
           Terrain = [||]
-          Edges = frame.Edges |> Array.map copyEdge
+          Edges = edges
           Units = units
-          Routes = routes |> Array.map overlayRoute
-          Annotations =
-            Array.concat
-                [| overlayAnnotations
-                   eventAnnotations
-                   [| verificationAnnotation |] |]
+          Routes = projectedRoutes
+          Annotations = projectedAnnotations
+          Effects = effects
+          VisualCost = visualCost [||] edges units projectedRoutes projectedAnnotations effects
           Disclosure = disclosure frame.Disclosure
           Camera = camera input.ReviewCamera
           Selection =
@@ -1280,5 +1487,6 @@ module TacticalSceneProjection =
                |> Array.map (fun edge -> primitive "edge" edge.Id)
            yield! projection.Units |> Array.map _.PrimitiveId
            yield! projection.Routes |> Array.map _.PrimitiveId
+           yield! projection.Effects |> Array.map _.PrimitiveId
            yield! projection.Annotations |> Array.map _.PrimitiveId
            yield! projection.Layers |> Array.map _.PrimitiveId |]

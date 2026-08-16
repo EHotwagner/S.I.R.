@@ -627,6 +627,12 @@ let run () =
           ReviewCamera = camera
           ReviewFocusedUnit = Some 999 }
     let reviewProjection = TacticalSceneProjection.review reviewInput
+    let ordinaryVisual =
+        TacticalSceneProjection.visualSystem "accessible-default" false 24
+    let denseVisual =
+        TacticalSceneProjection.visualSystem "high-contrast" false 100
+    let stressVisual =
+        TacticalSceneProjection.visualSystem "monochrome-pattern" true 200
     require
         (reviewProjection.Owner = ReviewScene
          && not reviewProjection.Disclosure.PerspectiveFiltered
@@ -646,7 +652,26 @@ let run () =
              |> Array.map ScenePrimitiveId.value)
             = [| "unit:" + string firstUnit
                  ; "review-event:" + string projectedEvent.Id |]
-         && reviewProjection.Selection.FocusedUnit.IsNone)
+         && reviewProjection.Selection.FocusedUnit.IsNone
+         && ordinaryVisual.Identity = "tactical-visual-system-v1"
+         && ordinaryVisual.Density = OrdinaryDensity
+         && denseVisual.Density = DenseDensity
+         && stressVisual.Density = StressDensity
+         && stressVisual.ReducedMotion
+         && stressVisual.TransitionMilliseconds = 1
+         && stressVisual.EffectMilliseconds = 120
+         && stressVisual.MaximumActiveEffects = 256
+         && stressVisual.LayerOrder
+            = [| "terrain"; "edges"; "routes"; "units"; "effects"; "selection"; "tactical-overlays"; "annotations" |]
+         && reviewProjection.Effects.Length = 1
+         && reviewProjection.Effects[0].Kind = HistoricalEffect
+         && reviewProjection.Effects[0].EventId = projectedEvent.Id
+         && reviewProjection.Effects[0].SourceUnitId = Some firstUnit
+         && reviewProjection.Effects[0].TargetUnitId.IsNone
+         && reviewProjection.Effects[0].SourcePoint.IsSome
+         && reviewProjection.Effects[0].TargetPoint.IsNone
+         && ScenePrimitiveId.value reviewProjection.Effects[0].PrimitiveId
+            = "effect:7:" + string projectedEvent.Id)
         "Review projection expanded absent fields or retained stale selection."
     let previousReviewFrame =
         { fullModel with
@@ -672,6 +697,7 @@ let run () =
          && interpolatedReview.RevisionIdentity = reviewProjection.RevisionIdentity
          && interpolatedReview.Disclosure = reviewProjection.Disclosure
          && interpolatedReview.Annotations = reviewProjection.Annotations
+         && interpolatedReview.Effects = reviewProjection.Effects
          && interpolatedReview.Selection = reviewProjection.Selection
          && interpolatedReview.Units[0].PresentationColumn = 1.0
          && interpolatedReview.Units[0].PresentationRow = 2.0
@@ -965,11 +991,27 @@ let run () =
         { AcceptedReview = denseReviewAccepted
           ReviewCamera = camera
           ReviewFocusedUnit = Some 1 }
+    let representativeReviewAccepted =
+        reviewModel
+            FullReplay
+            "representative-review"
+            VerifiedReplay
+            BrowserKernelVerified
+            (inspection 100 (denseUnits |> List.truncate 100) (denseEvents |> List.truncate 100) None)
+            (Some 1)
+            (Some 1)
+        |> TacticalSceneProjection.acceptReview
+        |> Option.defaultWith (fun () -> failwith "Representative review owner was rejected.")
+    let representativeReviewInput =
+        { AcceptedReview = representativeReviewAccepted
+          ReviewCamera = camera
+          ReviewFocusedUnit = Some 1 }
 
     TacticalSceneProjection.editor denseEditorInput |> ignore
     TacticalSceneProjection.planning densePlanningInput |> ignore
     TacticalSceneProjection.simulator denseSimulatorInput |> ignore
     TacticalSceneProjection.review denseReviewInput |> ignore
+    TacticalSceneProjection.review representativeReviewInput |> ignore
     let editorTimings =
         Array.init 80 (fun _ ->
             milliseconds (fun () ->
@@ -986,6 +1028,10 @@ let run () =
         Array.init 80 (fun _ ->
             milliseconds (fun () ->
                 TacticalSceneProjection.review denseReviewInput))
+    let representativeReviewTimings =
+        Array.init 120 (fun _ ->
+            milliseconds (fun () ->
+                TacticalSceneProjection.review representativeReviewInput))
     let allocation operation =
         let before = GC.GetAllocatedBytesForCurrentThread()
         operation () |> ignore
@@ -1227,6 +1273,9 @@ let run () =
     let planningP95 = p95 planningTimings
     let simulatorP95 = p95 simulatorTimings
     let reviewP95 = p95 reviewTimings
+    let representativeReview = TacticalSceneProjection.review representativeReviewInput
+    let stressReview = TacticalSceneProjection.review denseReviewInput
+    let representativeReviewP95 = p95 representativeReviewTimings
     require
         (editorP95 < 50.0
          && planningP95 < 50.0
@@ -1235,9 +1284,23 @@ let run () =
          && editorAllocation < 3_000_000L
          && planningAllocation < 3_000_000L
          && simulatorAllocation < 3_000_000L
-         && reviewAllocation < 3_000_000L)
+         && reviewAllocation < 3_000_000L
+         && representativeReview.VisualCost.UnitCount = 100
+         && representativeReview.VisualCost.EffectInstances = 100
+         && representativeReview.VisualCost.EstimatedSvgNodes <= 5_000
+         && representativeReviewP95 < 4.0
+         && stressReview.VisualCost.UnitCount = 200
+         && stressReview.VisualCost.EffectInstances = 200
+         && stressReview.VisualCost.EstimatedSvgNodes <= 9_000
+         && reviewP95 < 8.0)
         (sprintf
-            "Shared scene projection exceeded budget: editor %.3f ms/%d; planning %.3f ms/%d; simulator %.3f ms/%d; review %.3f ms/%d."
+            "Shared scene projection exceeded budget: representative %d nodes/%d effects/%.3f ms; stress %d nodes/%d effects/%.3f ms; editor %.3f ms/%d; planning %.3f ms/%d; simulator %.3f ms/%d; review %.3f ms/%d."
+            representativeReview.VisualCost.EstimatedSvgNodes
+            representativeReview.VisualCost.EffectInstances
+            representativeReviewP95
+            stressReview.VisualCost.EstimatedSvgNodes
+            stressReview.VisualCost.EffectInstances
+            reviewP95
             editorP95
             editorAllocation
             planningP95
