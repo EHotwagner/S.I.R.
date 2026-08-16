@@ -11,7 +11,7 @@ sourceAnalysis: readiness/186-authored-tactical-parcels/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/186-authored-tactical-parcels/analysis.json
-    digest: 31225af77aea95ab6cf40440214602acc4acab4c2d7f6ffd174884a392609d7d
+    digest: 81f8f6817d45065e0eea0c4a323e47609ea45c8f06c3a348277b6c2c032498a3
     schemaVersion: 1
   - label: checklist
     path: work/186-authored-tactical-parcels/checklist.md
@@ -31,7 +31,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: tasks
     path: work/186-authored-tactical-parcels/tasks.yml
-    digest: 3bfaacf8137b1b27b518cf07f06496baddc7f984d12269f1ddd889e31d72f7b7
+    digest: c4b423000ac679fed06b2831854bf179f1b507e407b4c69c62f8d1b6e24a5fb1
     schemaVersion: 1
 evidence:
   - id: EV001
@@ -1492,5 +1492,36 @@ evidence:
       failed: 0
       skipped: 0
     notes: [Hosted allocation variance has measured headroom while the unchanged production-subject allocation mutation fails and restores cleanly.]
+  - id: EV055
+    kind: verification
+    subject:
+      type: task
+      id: T055
+    taskRefs: [T055]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: [DEC-005]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV055]
+    artifacts: []
+    sourceRefs:
+      - kind: test
+        path: tests/SIR.Match.Tests/Program.fs
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/performance-candidate.md
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Hosted qualification printed and flushed exact 100/100/100/0/50/100 structure before separate named assertions and passed the unchanged 50 ms representative timing gate at 40.130 ms.]
 lifecycleNotes:
   - "Next lifecycle action: verify."

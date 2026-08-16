@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "d3a6d3011dd28c71a1e3258893f7f41cea00c6eec7526e7a34b0aae2a6f3d8a5"
+        "value": "41718b3056ce8972f566a436493aa08d2713855a499210905e9fea33a3d986e0"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "3bfaacf8137b1b27b518cf07f06496baddc7f984d12269f1ddd889e31d72f7b7"
+        "value": "c4b423000ac679fed06b2831854bf179f1b507e407b4c69c62f8d1b6e24a5fb1"
       }
     }
   ],
@@ -384,7 +384,8 @@
       "linkedTaskIds": [
         "T012",
         "T053",
-        "T054"
+        "T054",
+        "T055"
       ],
       "linkedEvidenceIds": [
         "EV012",
@@ -393,7 +394,8 @@
         "EV051",
         "EV052",
         "EV053",
-        "EV054"
+        "EV054",
+        "EV055"
       ]
     }
   ],
@@ -503,7 +505,8 @@
       "linkedTaskIds": [
         "T017",
         "T053",
-        "T054"
+        "T054",
+        "T055"
       ]
     },
     {
@@ -2061,6 +2064,42 @@
         "line": 54,
         "column": 1
       }
+    },
+    {
+      "id": "T055",
+      "title": "Separate representative combat-spatial structure and timing diagnostics",
+      "status": "done",
+      "owner": "shrike-f615",
+      "dependencies": [
+        "T054"
+      ],
+      "requirements": [
+        "FR-012"
+      ],
+      "decisions": [
+        "DEC-005"
+      ],
+      "sourceIds": [
+        "AC-008",
+        "DEC-005",
+        "FR-012",
+        "PD-012",
+        "VO-006",
+        "VO-007"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "fsharp",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV055"
+      ],
+      "source": "work/186-authored-tactical-parcels/tasks.yml",
+      "sourceLocation": {
+        "line": 55,
+        "column": 1
+      }
     }
   ],
   "evidence": [
@@ -3307,6 +3346,30 @@
         "line": 54,
         "column": 1
       }
+    },
+    {
+      "id": "EV055",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T055",
+      "taskRefs": [
+        "T055"
+      ],
+      "requirementRefs": [
+        "FR-012"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/186-authored-tactical-parcels/evidence.yml",
+      "sourceLocation": {
+        "line": 55,
+        "column": 1
+      }
     }
   ],
   "generatedViews": [
@@ -3363,7 +3426,7 @@
           "path": "work/186-authored-tactical-parcels/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "d3a6d3011dd28c71a1e3258893f7f41cea00c6eec7526e7a34b0aae2a6f3d8a5"
+            "value": "41718b3056ce8972f566a436493aa08d2713855a499210905e9fea33a3d986e0"
           },
           "schemaVersion": 1
         },
@@ -3387,14 +3450,14 @@
           "path": "work/186-authored-tactical-parcels/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "3bfaacf8137b1b27b518cf07f06496baddc7f984d12269f1ddd889e31d72f7b7"
+            "value": "c4b423000ac679fed06b2831854bf179f1b507e407b4c69c62f8d1b6e24a5fb1"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "991d1a6d985c99e2878f5cab30e502968b49b60700349f04cf1915503a95d29d"
+        "value": "acf3d35067aeca252f5111c90bdd38506b2727b531ef0644c710fd2b6eb29723"
       },
       "currency": "current"
     }

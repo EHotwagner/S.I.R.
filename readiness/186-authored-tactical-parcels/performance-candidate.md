@@ -121,3 +121,22 @@ injects a retained 14,000,000-byte allocation into the production
 unchanged identity/counters/16,000,000-byte assertion to fail. The local mutated
 subject allocated 26,124,528 bytes and failed its named allocation gate, then a
 restored rebuild passed and left the production source unchanged.
+
+## Independent-review repair round four
+
+Hosted run `31914865432` proved that the repaired maximum preview itself passed:
+13.075 ms validation, 43.815 ms assembly, 13,693,216 allocated bytes, and exact
+authored identity. The run then failed a compound representative-combat gate
+whose structure and 50 ms timing predicates shared one error and whose detailed
+measurement was printed only after the assertion. That ordering hid the exact
+failing subpredicate.
+
+The round-four repair prints and flushes the representative batch observation
+before independently named structure and timing assertions. It does not change
+the workload or budget. Hosted run `31915418313` passed with exactly 100 source
+units, 100 final units, 100 participants, zero propagated changes, 50 spatial
+queries, 100 crossed cells, and 40.130 ms elapsed under the unchanged 50 ms
+ceiling. The same run retained the maximum preview at 12.949 ms validation,
+37.110 ms assembly, 13,693,216 allocated bytes, and exact authored identity.
+Both hosted jobs, documentation, the complete browser suite, and downstream
+mutation gates completed successfully.

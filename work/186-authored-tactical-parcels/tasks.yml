@@ -568,6 +568,16 @@ tasks:
     sourceIds: [AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007]
     requiredSkills: [fsharp, automated-tests, readiness-evidence]
     requiredEvidence: [EV054]
+  - id: T055
+    title: Separate representative combat-spatial structure and timing diagnostics
+    status: done
+    owner: shrike-f615
+    dependencies: [T054]
+    requirements: [FR-012]
+    decisions: [DEC-005]
+    sourceIds: [AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007]
+    requiredSkills: [fsharp, automated-tests, readiness-evidence]
+    requiredEvidence: [EV055]
 acceptedDeferrals: []
 findings: []
 advisoryNotes:
