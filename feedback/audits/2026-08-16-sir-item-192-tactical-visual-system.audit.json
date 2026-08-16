@@ -1,0 +1,69 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-16-sir-item-192-tactical-visual-system.md",
+  "reportSha256": "77f8d1aaba7e3e4f15efde9423dce3bf8d84c6d3954674bca5d8d0158e0b1a9e",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:work/192-tactical-visual-system/test-results/tactical-visual.trx",
+          "result": "verified",
+          "sha256": "38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+        },
+        {
+          "locator": "file:tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs",
+          "result": "verified",
+          "sha256": "c2d6359df6f73b5de5518eea43a1de620a4fcd35f11635f27727d9707b838de9"
+        },
+        {
+          "locator": "file:tests/SIR.Browser.Tests/visible-workflows.spec.js",
+          "result": "verified",
+          "sha256": "5b4afea4b0289e1c514eec1ebc4f42a1b00d1686eb1fc8c853fe217172fd54ea"
+        },
+        {
+          "locator": "file:scripts/test-tactical-visual-review.mjs",
+          "result": "verified",
+          "sha256": "8baebc53fe67a2399f17602402934c153ddfd070212c4768e183bf92057c44a2"
+        },
+        {
+          "locator": "file:docs/assets/tactical-visual-system-review/manifest.json",
+          "result": "verified",
+          "sha256": "b5c24f54784de8b78df7552736e3d3ab54908980fbb1a689c3e51a6ebb539319"
+        }
+      ],
+      "confidenceLimits": [
+        "The focused receipt records four passed qualification routes; deliberate mutation reds were observed during authoring but are not claimed by this finding."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:feedback/checkpoints/192-tactical-visual-system.jsonl",
+          "result": "claim-only",
+          "sha256": "898e5579abe5cd65fbe32b7b75ff47724dc4babfbf53c11734ae27111aa0ba22"
+        },
+        {
+          "locator": "file:work/192-tactical-visual-system/evidence.yml",
+          "result": "verified",
+          "sha256": "c4d1dcdd00eab1336fd7228d2b58e1f4fa3e25acb14eac6cc48a984bc849cd86"
+        },
+        {
+          "locator": "issue:FS-GG/FS.GG.SDD#825",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The cycle-specific PNG diagnostic was not preserved and is not reproducible at report HEAD because the committed evidence declarations cite SVG.",
+        "Issue FS-GG/FS.GG.SDD#825 and merged PR #830 document the identical PNG decode seam and that the warning remains."
+      ]
+    }
+  ]
+}
