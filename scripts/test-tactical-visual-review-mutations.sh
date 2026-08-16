@@ -85,6 +85,19 @@ if ! grep -q "review capture regular font bytes drifted" <<<"$font_diagnostic"; 
 fi
 cp "$task_tmp/SIRReviewMono-Regular.woff2" "$review_font"
 
+sed -i 's/telemetryScenes.push({ units, inputToPaintMilliseconds,/telemetryScenes.push({ units, inputToPaintMilliseconds: inputToPaintMilliseconds + 1000,/' "$review_generator"
+if timing_diagnostic=$(node "$repo_root/scripts/test-tactical-visual-review.mjs" --client-root "$repo_root/artifacts/client" --review-root "$task_tmp/review" 2>&1); then
+  echo "Reproduced timing mutation survived the unchanged performance owner." >&2
+  exit 1
+fi
+for expected in '"reproduction":"A"' '"reproduction":"B"' '"units":100' '"units":200' 'reproduced input-to-paint budget exceeded: reproduction=A units=100' 'Preserved tactical reproduction roots after failure:'; do
+  if ! grep -q "$expected" <<<"$timing_diagnostic"; then
+    echo "Reproduced timing mutation omitted required telemetry/diagnostic $expected: $timing_diagnostic" >&2
+    exit 1
+  fi
+done
+cp "$task_tmp/generate-tactical-visual-review.mjs" "$review_generator"
+
 sed -i '/await writeFile(resolve(reviewOutput, "manifest.json")/i manifest.visualSystem.identity = "mutated-tactical-visual-system";' "$review_generator"
 if reproduction_diagnostic=$(node "$repo_root/scripts/test-tactical-visual-review.mjs" --client-root "$repo_root/artifacts/client" --review-root "$task_tmp/review" 2>&1); then
   echo "Environment-sensitive manifest mutation survived exact reproduction." >&2
@@ -96,4 +109,4 @@ if ! grep -q 'delta=manifest.after.semantic.identity: retained="tactical-visual-
 fi
 cp "$task_tmp/generate-tactical-visual-review.mjs" "$review_generator"
 
-echo "Tactical visual review mutations passed: stylesheet, lifecycle projection, production workload, sample-faction, simultaneous attack/route, production one-route, capture-font, and exact manifest-reproduction subjects fail closed."
+echo "Tactical visual review mutations passed: stylesheet, lifecycle projection, production workload, sample-faction, simultaneous attack/route, production one-route, capture-font, reproduced timing, and exact manifest-reproduction subjects fail closed."

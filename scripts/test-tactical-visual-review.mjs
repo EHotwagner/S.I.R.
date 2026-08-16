@@ -111,6 +111,7 @@ const reproductionRoots = await Promise.all([
   mkdtemp(resolve(tmpdir(), "sir-tactical-review-reproduction-a-")),
   mkdtemp(resolve(tmpdir(), "sir-tactical-review-reproduction-b-")),
 ]);
+let reproductionAccepted = false;
 try {
   for (const reproductionRoot of reproductionRoots) {
     execFileSync(process.execPath, [resolve("scripts/generate-tactical-visual-review.mjs"), "--client-root", resolve(clientRoot), "--review-root", reproductionRoot], { cwd: process.cwd(), stdio: "pipe" });
@@ -124,15 +125,42 @@ try {
     requireTruth(expected.equals(reproducedA), exactMismatch(relativePath, expected, reproducedA, "production review did not reproduce byte-for-byte"));
     requireTruth(reproducedA.equals(reproducedB), exactMismatch(relativePath, reproducedA, reproducedB, "independent frozen production captures diverged"));
   }
-  for (const reproductionRoot of reproductionRoots) {
+  const reproducedMeasurements = [];
+  for (const [reproductionIndex, reproductionRoot] of reproductionRoots.entries()) {
     const reproducedTelemetry = JSON.parse(await readFile(resolve(reproductionRoot, "telemetry.json"), "utf8"));
     for (const scene of reproducedTelemetry.densityScenes) {
       const budget = scene.units === 100 ? manifest.budgets.representative100 : manifest.budgets.stress200;
-      requireTruth(scene.inputToPaintMilliseconds < budget.maximumInputToPaintMilliseconds, `${scene.units}-unit reproduced input-to-paint budget exceeded`);
-      requireTruth(scene.animationFrameIntervalMilliseconds <= budget.targetAnimationFrameMilliseconds + budget.measurementToleranceMilliseconds, `${scene.units}-unit reproduced frame interval budget exceeded`);
+      reproducedMeasurements.push({
+        reproduction: reproductionIndex === 0 ? "A" : "B",
+        root: reproductionRoot,
+        units: scene.units,
+        inputToPaintMilliseconds: scene.inputToPaintMilliseconds,
+        maximumInputToPaintMilliseconds: budget.maximumInputToPaintMilliseconds,
+        animationFrameIntervalMilliseconds: scene.animationFrameIntervalMilliseconds,
+        maximumAnimationFrameMilliseconds: budget.targetAnimationFrameMilliseconds + budget.measurementToleranceMilliseconds,
+      });
     }
   }
+  await new Promise((resolveWrite, rejectWrite) => process.stdout.write(
+    `Tactical reproduced telemetry before assertions: ${JSON.stringify(reproducedMeasurements)}\n`,
+    (error) => error ? rejectWrite(error) : resolveWrite(),
+  ));
+  for (const measurement of reproducedMeasurements) {
+    requireTruth(
+      measurement.inputToPaintMilliseconds < measurement.maximumInputToPaintMilliseconds,
+      `reproduced input-to-paint budget exceeded: reproduction=${measurement.reproduction} units=${measurement.units} measured=${measurement.inputToPaintMilliseconds} maximum=${measurement.maximumInputToPaintMilliseconds}; telemetry=${measurement.root}/telemetry.json`,
+    );
+    requireTruth(
+      measurement.animationFrameIntervalMilliseconds <= measurement.maximumAnimationFrameMilliseconds,
+      `reproduced frame interval budget exceeded: reproduction=${measurement.reproduction} units=${measurement.units} measured=${measurement.animationFrameIntervalMilliseconds} maximum=${measurement.maximumAnimationFrameMilliseconds}; telemetry=${measurement.root}/telemetry.json`,
+    );
+  }
+  reproductionAccepted = true;
 } finally {
-  await Promise.all(reproductionRoots.map((path) => rm(path, { recursive: true, force: true })));
+  if (reproductionAccepted) {
+    await Promise.all(reproductionRoots.map((path) => rm(path, { recursive: true, force: true })));
+  } else {
+    process.stderr.write(`Preserved tactical reproduction roots after failure: ${reproductionRoots.join(", ")}\n`);
+  }
 }
 console.log("Tactical visual review is bundle/style-bound to effectful production 100/200-unit semantic and visual subjects.");

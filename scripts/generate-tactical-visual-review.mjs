@@ -76,6 +76,7 @@ const workloadExpression = (units) => `(async () => {
   run.click();
   const svg = document.querySelector("#persistent-tactical-svg");
   await waitFor("production tactical density ${units} simulator scene", () => svg.getAttribute("data-scene-owner") === "SimulatorScene" && svg.querySelectorAll("[data-unit-id]").length === ${units});
+  await settleCapture();
   const beforeTick = svg.getAttribute("data-scene-tick");
   globalThis.__sirTacticalStage = "step"; const started = performance.now(); clickButton("Advance the map simulation one tick");
   while (svg.getAttribute("data-scene-tick") === beforeTick && performance.now() - started < 2000) await wait(5);
