@@ -1,6 +1,6 @@
 {
   "schema": "sir-tactical-visual-review-v2",
-  "productionBundleSha256": "f83aa3e24bc1e5ef169aa5cb993675691dfdc06dacf49e37a3d90182c6b4f800",
+  "productionBundleSha256": "4ecf085f113c3753a921a2a7124f15704c5a968db26d53e52ee43a243f5d828b",
   "productionStylesSha256": "d25df5340a553fa9dcf3c5a4d272942ecadc8d73d395e91bdaa9f29a7144c7d8",
   "before": {
     "path": "../persistent-workspace-m9-review/field-focus.png",
@@ -49,15 +49,19 @@
     {
       "units": 100,
       "path": "production-density-100.png",
-      "sha256": "e3d5a444f5437ba28f51ecee784e487a6e0e978ae92e960e1c1c7d22fb09638a",
+      "sha256": "a66d7371d31adc94a774cf985dc0c5186b3c5a62f1c816db23c3802a59596d58",
       "workload": {
         "requestedUnits": 100,
         "renderedUnits": 100,
         "terrainCells": 1680,
-        "routes": 1,
+        "routes": 2,
+        "routeGeometries": [
+          "32,544 32,480 32,416",
+          "160,544 160,480 160,416"
+        ],
         "plannedRouteUnits": 2,
-        "overlays": 106,
-        "effects": 62,
+        "overlays": 107,
+        "effects": 63,
         "currentAttackEffects": 60,
         "effectKinds": [
           "attack",
@@ -69,21 +73,25 @@
           "committed",
           "predicted"
         ],
-        "domNodes": 3252
+        "domNodes": 3258
       }
     },
     {
       "units": 200,
       "path": "production-density-200.png",
-      "sha256": "33d764ae80ac34857b17eaf6c852d825a155d6de6ddbf07ef28d60208c028337",
+      "sha256": "97abc6c7ace361c2d53e70bda8f9d1f4c17317e89b911ee62271ae6d9d2ed38c",
       "workload": {
         "requestedUnits": 200,
         "renderedUnits": 200,
         "terrainCells": 1680,
-        "routes": 1,
+        "routes": 2,
+        "routeGeometries": [
+          "32,544 32,480 32,416",
+          "160,544 160,480 160,416"
+        ],
         "plannedRouteUnits": 2,
-        "overlays": 206,
-        "effects": 129,
+        "overlays": 207,
+        "effects": 130,
         "currentAttackEffects": 127,
         "effectKinds": [
           "attack",
@@ -95,7 +103,7 @@
           "committed",
           "predicted"
         ],
-        "domNodes": 4800
+        "domNodes": 4806
       }
     }
   ],

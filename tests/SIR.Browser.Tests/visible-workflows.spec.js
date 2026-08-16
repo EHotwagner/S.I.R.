@@ -14,7 +14,11 @@ async function loadMaintainedSimulation(page) {
   await page.getByRole("button", { name: "Simulate", exact: true }).click();
   await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
   await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
-  await page.getByRole("button", { name: /^Load simulation sample:/ }).first().click();
+  const samplesOwner = page.getByLabel("Curated samples feature", { exact: true });
+  await expect(samplesOwner).toBeVisible();
+  await expect(samplesOwner.getByRole("region", { name: "Curated maps simulations and replays", exact: true })).toBeVisible();
+  await samplesOwner.getByText("Troll assault", { exact: true }).click();
+  await samplesOwner.getByRole("button", { name: "Run Troll assault in Simulator", exact: true }).click();
 }
 
 async function expandPanel(page, panelId) {
@@ -208,7 +212,7 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   }
   await expect(source).toHaveAttribute(
     "href",
-    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/e6da2b33f35fbbc15c1c7d8f596364ef697ce3a5\/src\/SIR\.Simulation\/CombatRules\.fs/,
+    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/e055929f1f958ad9f98f5aac9934ea28cd7a0fbe\/src\/SIR\.Simulation\/CombatRules\.fs/,
   );
   await expect(damageRule.getByText(/examples: tests\/SIR\.Conformance\.Shared\/RulesCorpusFixtures\.fs · properties:/)).toBeVisible();
   await expect(damageRule.getByRole("link", { name: "Coverage graph" })).toHaveAttribute("href", /rules-corpus\/v2\/coverage\.json/);
@@ -451,7 +455,9 @@ test("the normal UI remains operable at 400 percent browser zoom", async ({ page
   await page.getByRole("button", { name: "Simulate", exact: true }).click();
   await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
   await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
-  await expect(page.getByLabel("Simulator samples", { exact: true })).toBeVisible();
+  const samplesOwner = page.getByLabel("Curated samples feature", { exact: true });
+  await expect(samplesOwner).toBeVisible();
+  await expect(samplesOwner.getByRole("region", { name: "Curated maps simulations and replays", exact: true })).toBeVisible();
 });
 
 test("a valid map selected through the visible import control reports success", async ({ page }) => {
@@ -504,11 +510,7 @@ test("the visible background picker rejects an oversized file then reports attac
 });
 
 test("a curated sample exposes maintained playback and can reset", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "Simulate", exact: true }).click();
-  await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
-  await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
-  await page.getByRole("button", { name: /^Load simulation sample:/ }).first().click();
+  await loadMaintainedSimulation(page);
 
   const play = page.getByRole("button", { name: "Play tactical timeline", exact: true });
   await expect(play).toBeEnabled();
@@ -526,11 +528,7 @@ test("a curated sample exposes maintained playback and can reset", async ({ page
 });
 
 test("production simulator status exposes continuous runtime time without handoff chrome", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "Simulate", exact: true }).click();
-  await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
-  await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
-  await page.getByRole("button", { name: /^Load simulation sample:/ }).first().click();
+  await loadMaintainedSimulation(page);
   await expect(page.getByText(/^Authoritative runtime tick 0/)).toBeVisible();
   await expect(page.getByText(/manual.*handoff/i)).toHaveCount(0);
   await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();

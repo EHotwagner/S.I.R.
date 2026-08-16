@@ -456,6 +456,7 @@ export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/
   let browserStderr = "";
   const browser = spawn(chromiumExecutable, [
     "--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars",
+    "--deterministic-mode",
     "--disable-dev-shm-usage", "--no-first-run", "--no-default-browser-check",
     "--disable-background-networking", "--disable-default-apps", "--disable-extensions",
     "--force-device-scale-factor=1", "--remote-debugging-address=127.0.0.1",

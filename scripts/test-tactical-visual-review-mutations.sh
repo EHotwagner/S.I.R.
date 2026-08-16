@@ -6,13 +6,16 @@ task_tmp=$(mktemp -d)
 projection_source="$repo_root/src/SIR.Client/TacticalSceneProjection.fs"
 samples_source="$repo_root/src/SIR.Client/ExperienceSamples.fs"
 simulator_source="$repo_root/src/SIR.Client/MapEditorSimulator.fs"
+review_generator="$repo_root/scripts/generate-tactical-visual-review.mjs"
 cp "$projection_source" "$task_tmp/TacticalSceneProjection.fs"
 cp "$samples_source" "$task_tmp/ExperienceSamples.fs"
 cp "$simulator_source" "$task_tmp/MapEditorSimulator.fs"
+cp "$review_generator" "$task_tmp/generate-tactical-visual-review.mjs"
 restore_sources() {
   cp "$task_tmp/TacticalSceneProjection.fs" "$projection_source"
   cp "$task_tmp/ExperienceSamples.fs" "$samples_source"
   cp "$task_tmp/MapEditorSimulator.fs" "$simulator_source"
+  cp "$task_tmp/generate-tactical-visual-review.mjs" "$review_generator"
 }
 trap 'restore_sources; rm -rf "$task_tmp"' EXIT
 
@@ -54,4 +57,17 @@ if dotnet run --project "$repo_root/tests/SIR.Client.Tests/SIR.Client.Tests.fspr
 fi
 cp "$task_tmp/MapEditorSimulator.fs" "$simulator_source"
 
-echo "Tactical visual review mutations passed: stylesheet, lifecycle projection, production workload, sample-faction, and simultaneous attack/route subjects fail closed."
+sed -i 's/slice(0, 2)/slice(0, 1)/' "$review_generator"
+one_route_review="$task_tmp/one-route-review"
+node "$review_generator" --client-root "$repo_root/artifacts/client" --review-root "$one_route_review" >/dev/null
+if one_route_diagnostic=$(node "$repo_root/scripts/test-tactical-visual-review.mjs" --client-root "$repo_root/artifacts/client" --review-root "$one_route_review" 2>&1); then
+  echo "Production one-route mutation survived the final simultaneous-content owner." >&2
+  exit 1
+fi
+if ! grep -q "final simultaneous workload lost distinct route" <<<"$one_route_diagnostic"; then
+  echo "Production one-route mutation missed the simultaneous-route diagnostic: $one_route_diagnostic" >&2
+  exit 1
+fi
+cp "$task_tmp/generate-tactical-visual-review.mjs" "$review_generator"
+
+echo "Tactical visual review mutations passed: stylesheet, lifecycle projection, production workload, sample-faction, simultaneous attack/route, and production one-route subjects fail closed."

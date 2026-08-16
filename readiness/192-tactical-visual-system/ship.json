@@ -4,7 +4,7 @@
   "workId": "192-tactical-visual-system",
   "stage": "ship",
   "status": "shipReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.1",
+  "generator": "FS.GG.SDD.Artifacts/1.0.0",
   "sources": [
     {
       "path": ".fsgg/agents.yml",
@@ -51,7 +51,7 @@
       "kind": "source",
       "digest": {
         "algorithm": "sha256",
-        "value": "3899a8e2b362089e73c8aef503be636a1c49d667f6c9d9ecb2051daae6edc5ff"
+        "value": "08221b3d4fd48b1bf2b748c1fc11bf6441f558f843471065cddcc602df1fcd94"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -61,7 +61,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "8b0f5246a6401abb5c84cd852a7cf1918c54f276cddd87a80b66240d1ef12cdd"
+        "value": "07770c80494925b45b77a3ca1a68361d24b15e4ecd57d3667c0b47867986399c"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -91,7 +91,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "3db214d0d723f62881b0d63a35b7b89ecf86c40f31ddc6d1755478c34af59b01"
+        "value": "b1715332bba4bbbd53af99541147abf48d5287d3d03757ab783463a7d7d808a2"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"

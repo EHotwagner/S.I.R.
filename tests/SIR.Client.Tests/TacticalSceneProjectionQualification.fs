@@ -508,7 +508,12 @@ let run () =
          && simulatorProjection.Owner = SimulatorScene
          && simulatorProjection.RevisionIdentity = editor.Revision.Digest
          && simulatorProjection.Units.Length = editor.Map.Units.Count
-         && simulatorProjection.Routes.Length = 1
+         && simulatorProjection.Routes.Length = 2
+         && (simulatorProjection.Routes
+             |> Array.choose _.OwnerUnitId
+             |> Set.ofArray
+             |> Set.count
+             |> (=) 2)
          && simulatorProjection.Effects
             |> Array.exists (fun effect -> effect.Kind = MovementEffect && effect.Lifecycle = PredictedEffect)
          && simulatorProjection.Effects
@@ -851,7 +856,9 @@ let run () =
             changedSimulator.RevisionIdentity)
         "Simulator IDs or accepted revision changed with camera or focus."
     let firstRouteId =
-        repeatedSimulatorProjection.Routes[0].PrimitiveId
+        repeatedSimulatorProjection.Routes
+        |> Array.find (fun route -> route.OwnerUnitId = Some firstUnit)
+        |> _.PrimitiveId
         |> ScenePrimitiveId.value
     let secondRouteProjection =
         TacticalSceneProjection.simulator
@@ -859,7 +866,9 @@ let run () =
                 SimulatorSelectedUnit = Some secondUnit
                 SimulatorFocusedUnit = Some secondUnit }
     let secondRouteId =
-        secondRouteProjection.Routes[0].PrimitiveId
+        secondRouteProjection.Routes
+        |> Array.find (fun route -> route.OwnerUnitId = Some secondUnit)
+        |> _.PrimitiveId
         |> ScenePrimitiveId.value
     require
         (firstRouteId = "route:simulator:" + string firstUnit + ":planned"

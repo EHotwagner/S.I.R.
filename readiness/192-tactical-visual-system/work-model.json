@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "55a8531088ff329fb79ae30c1ee8f93fc32542687bc188523fa3f7ae11f791ff"
+        "value": "b1715332bba4bbbd53af99541147abf48d5287d3d03757ab783463a7d7d808a2"
       }
     },
     {
@@ -2623,7 +2623,7 @@
       "schemaVersion": 1,
       "generator": {
         "id": "FS.GG.SDD.Artifacts",
-        "version": "1.0.1"
+        "version": "1.0.0"
       },
       "sources": [
         {
@@ -2670,7 +2670,7 @@
           "path": "work/192-tactical-visual-system/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "55a8531088ff329fb79ae30c1ee8f93fc32542687bc188523fa3f7ae11f791ff"
+            "value": "b1715332bba4bbbd53af99541147abf48d5287d3d03757ab783463a7d7d808a2"
           },
           "schemaVersion": 1
         },
@@ -2701,7 +2701,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "b0b17f9e4775363d2d5841565feebec431630bed4a5fb8c7b9d8dbcc9ee6d9eb"
+        "value": "577e61a386edec50bc865568e251ee76d5d4e564dea32f4c8963fb2ef3d3f603"
       },
       "currency": "current"
     }

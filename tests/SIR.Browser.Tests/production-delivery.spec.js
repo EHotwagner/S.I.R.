@@ -34,8 +34,11 @@ test("Release delivery uses cache-safe compression and defers spatial diagnostic
   await page.getByRole("button", { name: "Simulate", exact: true }).click();
   await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
   await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
-  await page.getByText("Troll assault", { exact: true }).click();
-  await page.getByRole("button", { name: "Run Troll assault in Simulator", exact: true }).click();
+  const samplesOwner = page.getByLabel("Curated samples feature", { exact: true });
+  await expect(samplesOwner).toBeVisible();
+  await expect(samplesOwner.getByRole("region", { name: "Curated maps simulations and replays", exact: true })).toBeVisible();
+  await samplesOwner.getByText("Troll assault", { exact: true }).click();
+  await samplesOwner.getByRole("button", { name: "Run Troll assault in Simulator", exact: true }).click();
   await page.locator("#persistent-layer-units [data-unit-id]").first().click();
   await page.getByRole("button", { name: "View", exact: true }).click();
   await page.getByRole("menuitem", { name: /Spatial diagnostics/ }).click();

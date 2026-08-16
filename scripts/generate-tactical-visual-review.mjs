@@ -75,6 +75,7 @@ const workloadExpression = (units) => `(async () => {
     requestedUnits: ${units}, renderedUnits: svg.querySelectorAll("[data-unit-id]").length,
     terrainCells: svg.querySelectorAll("#persistent-layer-terrain > *").length,
     routes: svg.querySelectorAll("#persistent-layer-routes > *").length,
+    routeGeometries: [...svg.querySelectorAll("#persistent-layer-routes > polyline")].map((route) => route.getAttribute("points")),
     plannedRouteUnits: [...svg.querySelectorAll("[data-unit-status]")].filter((unit) => unit.getAttribute("data-unit-status").includes("route-planned")).length,
     overlays: svg.querySelectorAll("[data-overlay-id]").length,
     effects: svg.querySelectorAll("[data-effect-event]").length,

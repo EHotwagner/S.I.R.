@@ -41,7 +41,17 @@ for (const scene of manifest.densityScenes) {
   const budget = scene.units === 100 ? manifest.budgets.representative100 : manifest.budgets.stress200;
   const measured = telemetry.densityScenes.find(({ units }) => units === scene.units);
   requireTruth(scene.workload.renderedUnits === scene.units, `${scene.units}-unit production render drifted`);
-  requireTruth(scene.workload.effects > 0 && scene.workload.currentAttackEffects > 0 && scene.workload.routes > 0 && scene.workload.plannedRouteUnits >= 1 && scene.workload.overlays > 0 && scene.workload.terrainCells > 0, `${scene.units}-unit final simultaneous workload lost tactical content`);
+  requireTruth(
+    scene.workload.effects > 0 &&
+      scene.workload.currentAttackEffects > 0 &&
+      scene.workload.routes >= 2 &&
+      scene.workload.plannedRouteUnits >= 2 &&
+      scene.workload.routeGeometries.length >= 2 &&
+      new Set(scene.workload.routeGeometries).size >= 2 &&
+      scene.workload.overlays > 0 &&
+      scene.workload.terrainCells > 0,
+    `${scene.units}-unit final simultaneous workload lost distinct route, attack, movement, lifecycle, overlay, or terrain content`,
+  );
   requireTruth(["attack", "movement"].every((kind) => scene.workload.effectKinds.includes(kind)), `${scene.units}-unit production effect kinds drifted`);
   requireTruth(["accepted", "committed", "predicted"].every((lifecycle) => scene.workload.effectLifecycles.includes(lifecycle)), `${scene.units}-unit final simultaneous lifecycle state drifted`);
   requireTruth(scene.workload.domNodes <= budget.maximumDomNodes && scene.workload.effects <= budget.maximumEffects, `${scene.units}-unit structural budget exceeded`);
