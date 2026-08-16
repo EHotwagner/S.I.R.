@@ -192,6 +192,23 @@ and cites its reproducible output without committing the generated JSON:
 }
 ```
 
+When the evidence subject is an already-completed production qualification, cite its committed immutable
+build receipt and re-verify that focused receipt at the audit head instead of re-running the aggregate:
+
+```sh
+dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- \
+  validate-focused-receipt \
+  --receipt docs/evidence/production-build-receipt-v1/<sha256>.json \
+  --owner-command scripts/qualify-production.sh \
+  --allow-metadata-only true
+```
+
+The verifier binds the original source revision/tree, build inputs and dependency locks, tool versions,
+owning command, and output identities. `--allow-metadata-only true` accepts only descendant commits whose
+changes stay under feedback, lifecycle readiness/work, or the immutable receipt directory; any product,
+configuration, lock, tool, command, or output drift fails closed. This command is cheap enough to run at
+the final audit head, removing the aggregate/audit circularity without weakening exact-head validation.
+
 For non-file evidence, use a specific locator such as `command:dotnet test ...` or
 `issue:<owner>/<repo>#<number>`, record the checked result, and omit `sha256`. Evidence result vocabulary
 is `verified`, `missing`, `stale`, `non-reproducing`, `contradictory`, or `claim-only`.
