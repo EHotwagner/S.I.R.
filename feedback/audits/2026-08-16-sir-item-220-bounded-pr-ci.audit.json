@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-16-sir-item-220-bounded-pr-ci.md",
-  "reportSha256": "dc90d2df57cefb4b1265012d16e884c93955ca1b48666b069742e6a2203f6cb8",
+  "reportSha256": "dff19a438ecddeb6114f427ca0dc49df17aabd932b11b0d0a4af2e8ca0485366",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -13,17 +13,17 @@
         {
           "locator": "file:scripts/ci-route.mjs",
           "result": "verified",
-          "sha256": "b4c11deb25b5a793e4fd35ef058937a40b81bcc7b09a889265fdc7ac6afc003f"
+          "sha256": "10da76f4b2631e57c36991f263d19a15c183716e2d68ce208a31c160ed1118af"
         },
         {
           "locator": "file:scripts/test-ci-route.mjs",
           "result": "verified",
-          "sha256": "9030deb3e5872529bb2167cee56c6473ab72343803bfab4ec98118b158f18f2c"
+          "sha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f"
         },
         {
           "locator": "file:.github/workflows/ci.yml",
           "result": "verified",
-          "sha256": "dae195a8ee1abbd1ca36e12c6ca592b1fb2654b35e21ae73227a700c6f651dbd"
+          "sha256": "592b8dc4667559aabca5b89d173224a48d9deaca53569c1bd0aeccdf4ff42127"
         },
         {
           "locator": "command:npm run test:ci-route",
