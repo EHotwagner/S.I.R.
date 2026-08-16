@@ -38,9 +38,12 @@ future features.
 
 Version 2 preserves the version-1 per-feature ownership model while replacing
 the placeholder Docs module with the real deferred `DocsView`. Its source-frozen
-bundle observation also rebaselines only the Rules Explorer Brotli ceiling from
-16,000 to 16,384 bytes; the other route ceilings are unchanged. Version 1 remains
-tracked as the immutable prior contract instead of being rewritten in place.
+bundle observation rebaselines Rules Explorer Brotli from 16,000 to 16,384 bytes.
+The same registry owns browser-observed route ceilings: the initial route is
+1,310,720 response bytes and Rules Explorer activation is 65,536 response bytes.
+This removes the former second hard-coded delivery budget from the browser gate;
+future growth must defer or publish an explicit registry revision/rebaseline.
+Version 1 remains tracked as immutable prior history.
 
 ## Build evidence
 

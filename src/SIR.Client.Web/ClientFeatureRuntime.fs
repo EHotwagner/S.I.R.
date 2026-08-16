@@ -100,11 +100,15 @@ let documentationContextLinks hasSelected openConcept =
             if hasSelected then
                 Html.button [
                     prop.custom ("data-context-origin", "inspector")
+                    prop.custom ("data-binding-state", "unassigned")
+                    prop.custom ("aria-description", "Keyboard binding unassigned.")
                     prop.text "Open documentation for selected unit"
                     prop.onClick (fun _ -> openConcept "units")
                 ]
             Html.button [
                 prop.custom ("data-context-origin", "overlay")
+                prop.custom ("data-binding-state", "unassigned")
+                prop.custom ("aria-description", "Keyboard binding unassigned.")
                 prop.text "Open documentation for tactical overlays"
                 prop.onClick (fun _ -> openConcept "maps-spatial")
             ]

@@ -1,6 +1,18 @@
 {
   "schema": "sir.client.feature-registry/v2",
   "version": 2,
+  "routeBudgets": [
+    {
+      "id": "initial",
+      "control": "application-entry",
+      "budget": { "responseBytes": 1310720 }
+    },
+    {
+      "id": "rules-explorer-activation",
+      "control": "supporting-data",
+      "budget": { "responseBytes": 65536 }
+    }
+  ],
   "features": [
     {
       "id": "delivery-support",

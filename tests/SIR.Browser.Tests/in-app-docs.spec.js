@@ -72,6 +72,14 @@ test("documentation is a reversible, searchable production modality", async ({ p
   await page.evaluate(() => { document.documentElement.style.zoom = "400%"; });
   await expect(docs).toBeVisible();
   await expect(docs.getByRole("heading", { name: "Documentation", level: 1 })).toBeVisible();
+  if (process.env.SIR_DOCS_BROWSER_MUTATE_SUBJECT === "overflow") {
+    await docs.evaluate((region) => {
+      const mutant = document.createElement("div");
+      mutant.style.cssText = "display:block;min-width:1000px;width:1000px;max-width:none;height:1px;flex:none";
+      mutant.setAttribute("data-overflow-mutant", "true");
+      region.appendChild(mutant);
+    });
+  }
   const zoomGeometry = await docs.evaluate((region) => ({
     clientWidth: region.clientWidth,
     scrollWidth: region.scrollWidth,
@@ -84,7 +92,10 @@ test("documentation is a reversible, searchable production modality", async ({ p
     firstHeading: region.querySelector("h1,h2,h3,h4")?.tagName,
   }));
   expect(zoomGeometry.controlsOutsideRegion).toEqual([]);
-  expect(zoomGeometry.scrollWidth).toBeLessThanOrEqual(zoomGeometry.clientWidth + 1);
+  // Chromium rounds 400%-zoom layout edges by up to two CSS pixels across
+  // managed and system executables. Controls must still remain inside the
+  // region, while any material overflow is rejected by the separate bound.
+  expect(zoomGeometry.scrollWidth - zoomGeometry.clientWidth).toBeLessThanOrEqual(2);
   expect(zoomGeometry).toMatchObject({ h1Count: 1, firstHeading: "H1" });
   await page.evaluate(() => { document.documentElement.style.zoom = "100%"; });
 

@@ -36,7 +36,7 @@ Prose status: planned
 - PD-008 [AC-005] [FR-008] [DEC-005] complete: Project contextual actions solely from disclosed public concept identities supplied by existing inspector/overlay routes; unknown, malformed, unreadable and undisclosed input returns one generic no-link/counter shape tested across perspectives.
 - PD-009 [AC-006] [FR-009] [DEC-006] complete: First implement an executable production manifest/search/navigation/update/view workload and baseline it before feature behavior; enforce 512/8,192/262,144/200/128/6,000 structural caps plus 20/50-ms Release posture, definition digest, allocation/host/browser capability facts and compositor-not-measured label.
 - PD-010 [AC-007] [FR-010] [DEC-007] complete: Add focused/full .NET and Fable tests, docs/FsDocs manifest qualification, exact runtime-route comparison, real-entry bot-driven Playwright journey through player-visible controls, 320/400% accessibility, one subject and unreadable-input mutation per gate, schema-v2 feedback, SDD and exact-head review evidence.
-- PD-011 [AC-001] [AC-006] [AC-007] [FR-001] [FR-009] [FR-010] [DEC-008] complete: Route the real Docs renderer through the canonical deferred Fable feature edge, split typed bootstrap manifest ownership from deferred presentation, preserve registry v1, and publish registry v2 with a source-frozen Rules Explorer Brotli rebaseline from 16,000 to 16,384 bytes plus exact version-projection and budget mutations.
+- PD-011 [AC-001] [AC-006] [AC-007] [FR-001] [FR-009] [FR-010] [DEC-008] complete: Route the real Docs renderer through the canonical deferred Fable feature edge, split typed bootstrap manifest ownership from deferred presentation, preserve registry v1, and publish registry v2 with source-frozen Rules Explorer Brotli and browser-observed initial-route rebaselines plus exact version, feature-budget, and route-budget mutations.
 
 ## Contract Impact
 - PC-001 [PD-001] [PD-002] navigationSurface: `TacticalModality`, shared command definitions, retained-tactical/docs navigation model and pure transitions are additive public Client surfaces authored in `UnifiedTacticalWorkspace.fs`.
@@ -45,7 +45,7 @@ Prose status: planned
 - PC-004 [PD-007] sourceMapping: Concept mappings are typed repository/revision/path/concept/symbol/line data validated against the checkout and lowered to GitHub URLs only at the Web edge.
 - PC-005 [PD-008] disclosureBoundary: Contextual documentation receives public disclosed concept identity only and returns a constant generic absence for hidden/malformed/unreadable inputs.
 - PC-006 [PD-009] performanceContract: `docs/performance-budget.md` owns the Docs workload identity, definition digest, structural caps, Release timing posture, host/capability disclosure and no-compositor limitation.
-- PC-007 [PD-011] featureLoaderContract: `feature-registry.v2.json` owns the deferred Docs identity and scoped route ceilings; registry v1 remains immutable, all non-Rules ceilings remain byte-identical, and loader projections must carry version 2.
+- PC-007 [PD-011] featureLoaderContract: `feature-registry.v2.json` owns the deferred Docs identity, per-feature chunk ceilings, and browser-observed initial/activation route ceilings; registry v1 remains immutable and loader projections must carry version 2.
 
 ## Verification Obligations
 - VO-001 [PD-001] [PD-002] [PC-001] stateRouteTest: Native/Fable tests and built browser controls assert one registry identity, effective rebinding, modality history and exact tactical object/state fingerprint preservation through all return routes.
@@ -57,7 +57,7 @@ Prose status: planned
 - VO-007 [PD-009] [PC-006] performanceTest: Release production generator/update/search/view and built-browser structural workload enforce caps/timing, stable definition digest and exact candidate/host/runtime/capability receipt without compositor overclaim.
 - VO-008 [PD-010] gateMutationTest: Invert duplicate slug, internal link/anchor, sanitizer, source mapping, FsDocs parity, state retention, disclosure, runtime equality, accessibility, performance and unreadable receipts one at a time; each owning gate must red and recover green.
 - VO-009 [PD-010] lifecycleTest: Run Dev/Test/Verify, focused TRX, Fable/Node, production browser journey/accessibility, docs, schema-v2 feedback/audit/checkpoints, SDD evidence/verify/ship/refresh/agents, exact-head CI/path/claim and independent review gates.
-- VO-010 [PD-011] [PC-007] featureLoaderTest: Run the build-free registry/source projection gate and source-frozen post-build graph/budget gate, confirm Docs is one deferred dynamic entry, and invert registry-version plus budget subjects to named red diagnostics.
+- VO-010 [PD-011] [PC-007] featureLoaderTest: Run the build-free registry/source projection gate and source-frozen post-build graph/budget gate, confirm Docs is one deferred dynamic entry, derive production route budgets from the registry, and invert registry-version, feature-budget, initial-route, deferred-route, and zoom-overflow subjects to named red diagnostics.
 
 ## Performance Intent
 No performance intent is declared for this work item.

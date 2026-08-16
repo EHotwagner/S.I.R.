@@ -37,6 +37,13 @@ for (const feature of registry.features) {
   for (const kind of ["raw", "gzip", "brotli"]) if (!Number.isSafeInteger(feature.budget?.[kind]) || feature.budget[kind] <= 0) fail("budget", `${feature.id} invalid ${kind}`);
 }
 if (new Set(registry.features.map((feature) => feature.logicalChunk)).size !== 7) fail("registry", "v1 logical chunk projection changed");
+if (!Array.isArray(registry.routeBudgets) || registry.routeBudgets.length !== 2) fail("registry", "expected initial and Rules Explorer activation route budgets");
+const routeBudgetIds = registry.routeBudgets.map((route) => route.id);
+if (routeBudgetIds.join("|") !== "initial|rules-explorer-activation") fail("registry", "route budgets are not in stable id order");
+for (const route of registry.routeBudgets) {
+  if (!registry.features.some((feature) => feature.control === route.control)) fail("registry", `route budget ${route.id} has no registered control owner`);
+  if (!Number.isSafeInteger(route.budget?.responseBytes) || route.budget.responseBytes <= 0) fail("registry", `route budget ${route.id} is not a positive byte ceiling`);
+}
 
 const deliverySupportEntryPath = resolve(root, "src/SIR.Client.Web/delivery-support-entry.js");
 if (mutation === "eager-import") {
@@ -230,6 +237,7 @@ const receipt = {
   registryVersion: registry.version,
   registryDigest: sha256(registryBytes),
   buildInputDigest,
+  routeBudgets: registry.routeBudgets,
   entry: manifestEntry.file,
   dynamicEntries: dynamicFiles,
   features,

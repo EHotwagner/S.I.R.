@@ -11,7 +11,11 @@ let private validSimulatorFor editor current =
     | Error _ -> current
     | Ok initial ->
         current
-        |> Option.map (MapEditorSimulator.reconcile editor)
+        |> Option.map (fun simulator ->
+            if MapEditorSimulator.isBehindDraft editor simulator then
+                MapEditorSimulator.reconcile editor simulator
+            else
+                simulator)
         |> Option.orElse (Some initial)
 
 let change workspace model =
