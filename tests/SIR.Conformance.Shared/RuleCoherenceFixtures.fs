@@ -43,6 +43,13 @@ module RuleCoherenceFixtures =
             { template with
                 Metadata = { template.Metadata with Id = requiredId (sprintf "SCALE-%04d" index); Dependencies = []; Supersedes = [] } } ]
 
+    let private scaleTransitionRules count =
+        let template = CombatRules.registry |> List.find (fun rule -> match rule.Semantics with TransitionSemantics _ -> true | _ -> false)
+        [ for index in 1 .. count ->
+            { template with
+                Metadata = { template.Metadata with Id = requiredId (sprintf "SCALE-TRANSITION-%04d" index); Dependencies = []; Supersedes = [] }
+                Semantics = TransitionSemantics { Phase = "ScalePhase"; Preconditions = []; Reads = [ sprintf "read-%04d" index ]; Effects = [ sprintf "effect-%04d" index ]; Events = [ sprintf "event-%04d" index ] } } ]
+
     let evaluateProtectedMutation mutation =
         let baselineRequest = request CoherenceMode.Corpus [] 100_000 false
         let first = CombatRules.registry.Head
@@ -139,12 +146,22 @@ module RuleCoherenceFixtures =
                 | _ -> failwith "Expected algorithm rule.")
         let unchangedSlice = analyze unrelatedAlgorithmChange (Some changedCache) (request CoherenceMode.Changed [ "CONTENT-WEAPON-RIFLE-001" ] 100 false)
         require (unchangedSlice.Cost.CacheHits = 1 && unchangedSlice.Cost.WorkUnits = 0) "Unrelated semantic change invalidated an exact changed-rule slice."
+        let unrelatedRule =
+            let template = CombatRules.registry |> List.find (fun rule -> match rule.Semantics with FactSemantics _ -> true | _ -> false)
+            { template with Metadata = { template.Metadata with Id = requiredId "TEST-UNRELATED-ADDED"; Dependencies = []; Supersedes = [] } }
+        let unrelatedAddition = analyze (unrelatedRule :: CombatRules.registry) (Some changedCache) (request CoherenceMode.Changed [ "CONTENT-WEAPON-RIFLE-001" ] 100 false)
+        require (unrelatedAddition.Cost.CacheHits = 1 && unrelatedAddition.Cost.WorkUnits = 0) "Unrelated rule addition invalidated an exact changed-rule slice."
         let observedDependencyBaseline = analyze CombatRules.registry None (request CoherenceMode.Changed [ "COMBAT-DAMAGE-001" ] 100 false)
         let observedDependencyCache = observedDependencyBaseline.CacheEntry |> Option.defaultWith (fun () -> failwith "Observed-dependency analysis emitted no cache entry.")
         let observedDependencyChanged =
             withRule "COMBAT-TRACE-002" (fun rule -> { rule with Metadata = { rule.Metadata with Status = Prototype } })
             |> fun rules -> analyze rules (Some observedDependencyCache) (request CoherenceMode.Changed [ "COMBAT-DAMAGE-001" ] 100 false)
         require (observedDependencyChanged.Cost.CacheHits = 0 && has "dependency-status" ClaimStrength.Failed observedDependencyChanged) "Changed-mode cache reused after an observed dependency status mutation outside the exact slice."
+        let observedDependencyRemoved =
+            CombatRules.registry
+            |> List.filter (fun rule -> RuleId.value rule.Metadata.Id <> "COMBAT-TRACE-002")
+            |> fun rules -> analyze rules (Some observedDependencyCache) (request CoherenceMode.Changed [ "COMBAT-DAMAGE-001" ] 100 false)
+        require (observedDependencyRemoved.Cost.CacheHits = 0 && has "references" ClaimStrength.Failed observedDependencyRemoved) "Changed-mode cache reused after an observed dependency was removed."
         let missingChanged = analyze CombatRules.registry None (request CoherenceMode.Changed [ "MISSING-RULE-001" ] 100 false)
         require (has "references" ClaimStrength.Failed missingChanged && not missingChanged.CanonicalizationReady) "Unknown changed-rule seed was accepted."
         let cone = analyze CombatRules.registry None (request CoherenceMode.Cone [ "COMBAT-DAMAGE-001" ] 1_000 false)
@@ -224,6 +241,8 @@ module RuleCoherenceFixtures =
 
         let scale = analyze (scaleRules 256) None (request CoherenceMode.Corpus [] 1_000 false)
         require (scale.Termination = AnalysisTermination.Complete && scale.Cost.RulesInSlice = 256 && scale.Cost.CandidatePairs = 0 && scale.Cost.WorkUnits = 256) "Disjoint synthetic corpus did not scale with the affected slice."
+        let transitionScale = analyze (scaleTransitionRules 256) None (request CoherenceMode.Cone [ "SCALE-TRANSITION-0001" ] 32 false)
+        require (transitionScale.Termination = AnalysisTermination.Complete && transitionScale.Cost.RulesInSlice = 1 && transitionScale.Cost.CandidatePairs = 0 && transitionScale.Cost.WorkUnits < 16) "Transition-heavy cone selection did not scale with indexed relevant edges."
         require ((RuleCoherence.canonicalReportBytes scale).Length < 131_072) "Model-facing summary grew with passing corpus detail."
 
         RuleCoherence.canonicalReportBytes baseline

@@ -95,6 +95,17 @@ if env HOME="$task_tmp/incompatible-home" CODEX_HOME="$task_tmp/incompatible-cod
   exit 1
 fi
 
+mkdir -p "$task_tmp/unterminated-quote-skill" "$task_tmp/invalid-escape-skill" "$task_tmp/unterminated-map-skill"
+printf '%s\n' '---' 'name: malformed-quote' 'description: "unterminated' '---' > "$task_tmp/unterminated-quote-skill/SKILL.md"
+printf '%s\n' '---' 'name: malformed-escape' 'description: "bad\qescape"' '---' > "$task_tmp/invalid-escape-skill/SKILL.md"
+printf '%s\n' '---' 'name: malformed-map' 'description: malformed inline mapping' 'metadata: {unterminated' '---' > "$task_tmp/unterminated-map-skill/SKILL.md"
+for malformed_skill in unterminated-quote-skill invalid-escape-skill unterminated-map-skill; do
+  if env HOME="$task_tmp/incompatible-home" CODEX_HOME="$task_tmp/incompatible-codex" python3 scripts/validate-skill-package.py "$task_tmp/$malformed_skill" >/dev/null 2>&1; then
+    echo "malformed YAML unexpectedly passed skill validation: $malformed_skill" >&2
+    exit 1
+  fi
+done
+
 result_path=${SIR_RULE_COHERENCE_JUNIT:-readiness/193-rule-authoring-coherence/rule-coherence.junit.xml}
 mkdir -p "$(dirname "$result_path")"
 printf '%s\n' '<?xml version="1.0" encoding="UTF-8"?>' \

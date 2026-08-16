@@ -154,8 +154,8 @@ module RuleCoherence =
 
     let private selectSlice mode changed (byId: Map<string, RuleDefinition>) =
         match mode with
-        | CoherenceMode.Corpus -> byId |> Map.toList |> List.map fst |> Set.ofList
-        | CoherenceMode.Changed -> changed |> List.map RuleId.value |> Set.ofList
+        | CoherenceMode.Corpus -> byId |> Map.toList |> List.map fst |> Set.ofList, 0
+        | CoherenceMode.Changed -> changed |> List.map RuleId.value |> Set.ofList, 0
         | CoherenceMode.Cone ->
             let seed = changed |> List.map RuleId.value
             let dependencyCone ids =
@@ -168,27 +168,42 @@ module RuleCoherence =
                     match rule.Semantics with
                     | TransitionSemantics contract -> Some(ruleId, contract)
                     | _ -> None)
-            let interacts left right =
-                left.Phase = right.Phase
-                && (intersects left.Effects right.Effects
-                    || intersects left.Effects right.Reads
-                    || intersects right.Effects left.Reads
-                    || intersects left.Events right.Events)
-            let interactionClosure selected =
+            let transitionById = transitions |> Map.ofList
+            let add index key ruleId =
+                let values = Map.tryFind key index |> Option.defaultValue Set.empty
+                Map.add key (Set.add ruleId values) index
+            let index selector =
                 transitions
-                |> List.collect (fun (leftId, left) ->
-                    transitions
-                    |> List.choose (fun (rightId, right) ->
-                        if leftId <> rightId && (Set.contains leftId selected || Set.contains rightId selected) && interacts left right then
-                            Some [ leftId; rightId ]
-                        else None)
-                    |> List.collect (fun values -> values))
-                |> Set.ofList
-                |> Set.union selected
-            let rec expand selected =
-                let expanded = selected |> dependencyCone |> interactionClosure |> dependencyCone
-                if expanded = selected then selected else expand expanded
-            expand (Set.ofList seed)
+                |> List.fold (fun result (ruleId, contract) -> selector contract |> List.distinct |> List.fold (fun current value -> add current (contract.Phase, value) ruleId) result) Map.empty
+            let effects = index (fun contract -> contract.Effects)
+            let reads = index (fun contract -> contract.Reads)
+            let events = index (fun contract -> contract.Events)
+            let mutable indexedWork = 0
+            let lookup index phase values =
+                values
+                |> List.distinct
+                |> List.fold (fun result value ->
+                    let matches = Map.tryFind (phase, value) index |> Option.defaultValue Set.empty
+                    indexedWork <- indexedWork + matches.Count
+                    Set.union result matches) Set.empty
+            let neighbours ruleId contract =
+                [ lookup effects contract.Phase contract.Effects
+                  lookup reads contract.Phase contract.Effects
+                  lookup effects contract.Phase contract.Reads
+                  lookup events contract.Phase contract.Events ]
+                |> Set.unionMany
+                |> Set.remove ruleId
+            let initial = dependencyCone (Set.ofList seed)
+            let rec expand selected frontier =
+                let adjacent =
+                    frontier
+                    |> Set.toList
+                    |> List.choose (fun ruleId -> Map.tryFind ruleId transitionById |> Option.map (fun contract -> ruleId, contract))
+                    |> List.fold (fun result (ruleId, contract) -> Set.union result (neighbours ruleId contract)) Set.empty
+                let added = Set.difference (dependencyCone adjacent) selected
+                if Set.isEmpty added then selected, indexedWork
+                else expand (Set.union selected added) added
+            expand initial initial
 
     let private formulaFacts ruleId expectedShape expression =
         let rec infer = function
@@ -245,19 +260,19 @@ module RuleCoherence =
                 Some(sharedWrites, sharedEvents, ordered, conflict)
         | _ -> None
 
-    let private requestKey (identity: RulePackageIdentity) (request: CoherenceRequest) selected semanticRules metadataRules corpusIds =
+    let private requestKey (identity: RulePackageIdentity) (request: CoherenceRequest) selected semanticRules metadataRules =
         let analyzedSemanticDigest = (Rules.packageIdentity "coherence" "coherence" "1" identity.SourceCommit [] semanticRules).SemanticDigest |> hex
         let blockUnknowns = if request.BlockUnknowns then "1" else "0"
         let requested = request.ChangedRuleIds |> List.map RuleId.value |> List.sort |> String.concat ","
         let packageSourceIdentity = String.concat ":" [ string identity.SchemaVersion; identity.EngineIdentity; identity.CompatibilityProfile; identity.PackageVersion; identity.SourceCommit ]
         let metadataDigest = coherenceMetadataDigest metadataRules
-        let requestText = String.concat "|" [ analyzerVersion; modeName request.Mode; string request.Bounds.MaxWorkUnits; string request.Bounds.MaxFindings; string request.Bounds.MaxWitnessRules; blockUnknowns; packageSourceIdentity; analyzedSemanticDigest; metadataDigest; corpusIds |> List.sort |> framedList; requested; selected |> Set.toList |> List.sort |> String.concat "," ]
+        let requestText = String.concat "|" [ analyzerVersion; modeName request.Mode; string request.Bounds.MaxWorkUnits; string request.Bounds.MaxFindings; string request.Bounds.MaxWitnessRules; blockUnknowns; packageSourceIdentity; analyzedSemanticDigest; metadataDigest; requested; selected |> Set.toList |> List.sort |> String.concat "," ]
         digest requestText
 
     let analyze (packageIdentity: RulePackageIdentity) (rules: RuleDefinition list) (priorCache: CoherenceCacheEntry option) (request: CoherenceRequest) =
         let sorted = rules |> List.sortBy id
         let byId = sorted |> List.map (fun rule -> id rule, rule) |> Map.ofList
-        let selectedIds = selectSlice request.Mode request.ChangedRuleIds byId
+        let selectedIds, selectionWork = selectSlice request.Mode request.ChangedRuleIds byId
         let slice = sorted |> List.filter (id >> selectedIds.Contains)
         let preconditionIds =
             slice
@@ -267,15 +282,15 @@ module RuleCoherence =
                 | _ -> [])
         let observedIds = Set.union selectedIds (dependencyClosure byId (Set.toList selectedIds @ preconditionIds) false)
         let observedRules = sorted |> List.filter (id >> observedIds.Contains)
-        let cacheKey = requestKey packageIdentity request selectedIds observedRules observedRules (sorted |> List.map id)
+        let cacheKey = requestKey packageIdentity request selectedIds observedRules observedRules
         match priorCache with
         | Some cached when cached.Key = cacheKey ->
             let hasFailure = cached.Findings |> List.exists (fun item -> item.Strength = ClaimStrength.Failed)
             let hasBlockingUnknown = request.BlockUnknowns && (cached.Findings |> List.exists (fun item -> item.Strength = ClaimStrength.Unknown))
             { ReportSchemaVersion = 1; AnalyzerVersion = analyzerVersion; Mode = request.Mode; PackageManifestDigest = packageIdentity.ManifestDigest; AnalyzedRuleIds = slice |> List.map (fun rule -> rule.Metadata.Id); Findings = cached.Findings; PendingShards = []; Termination = AnalysisTermination.Complete; CanonicalizationReady = not hasFailure && not hasBlockingUnknown; Cost = { RulesInCorpus = int32 sorted.Length; RulesInSlice = int32 slice.Length; CandidatePairs = cached.CandidatePairs; PrunedPairs = cached.PrunedPairs; WorkUnits = 0; ExpensiveAnalyses = 0; CacheHits = 1 }; CacheEntry = Some cached }
         | _ ->
-            let mutable work = 0
-            let mutable exhausted = false
+            let mutable work = min selectionWork (int request.Bounds.MaxWorkUnits)
+            let mutable exhausted = selectionWork > int request.Bounds.MaxWorkUnits
             let spend amount = if exhausted || work + amount > int request.Bounds.MaxWorkUnits then exhausted <- true; false else work <- work + amount; true
             let mutable findings = []
             let add values = findings <- values @ findings
@@ -287,7 +302,7 @@ module RuleCoherence =
                 | Error _ -> ()
             if request.Mode = CoherenceMode.Corpus && not requestedIds.IsEmpty then
                 add [ finding "scope" ClaimStrength.Failed request.ChangedRuleIds "Corpus mode does not accept changed-rule seeds." "analysis request" "changedRuleIds" "empty for corpus mode" (String.concat "," requestedIds) ]
-            let duplicates = sorted |> List.countBy id |> List.filter (fun (_, count) -> count > 1)
+            let duplicates = sorted |> List.countBy id |> List.filter (fun (ruleId, count) -> count > 1 && Set.contains ruleId observedIds)
             for duplicateId, count in duplicates do
                 match RuleId.create duplicateId with
                 | Ok duplicate -> add [ finding "identity" ClaimStrength.Failed [ duplicate ] "Rule identity is registered more than once." "registry identity index" "count" "1" (string count) ]

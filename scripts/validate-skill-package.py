@@ -5,6 +5,10 @@ import re
 import sys
 from pathlib import Path
 
+sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parent / "vendor"))
+import yaml  # noqa: E402 - repository-owned PyYAML is selected before ambient packages
+
 ALLOWED_PROPERTIES = {"name", "description", "license", "allowed-tools", "metadata"}
 
 
@@ -18,50 +22,12 @@ def validate(skill_path: Path) -> tuple[bool, str]:
     if not match:
         return False, "Invalid or missing YAML frontmatter"
 
-    frontmatter: dict[str, object] = {}
-    lines = match.group(1).splitlines()
-    index = 0
-    while index < len(lines):
-        line = lines[index]
-        if not line.strip() or line.lstrip().startswith("#"):
-            index += 1
-            continue
-        field = re.fullmatch(r"([A-Za-z0-9_-]+):(?:[ ]+(.*))?", line)
-        if not field:
-            return False, f"Unsupported or malformed frontmatter line: {line}"
-        key, raw_value = field.group(1), field.group(2)
-        if key in frontmatter:
-            return False, f"Duplicate frontmatter key: {key}"
-        if raw_value is None and key not in {"name", "description"}:
-            index += 1
-            while index < len(lines) and (not lines[index].strip() or lines[index][0].isspace()):
-                index += 1
-            frontmatter[key] = {}
-            continue
-        if raw_value is None:
-            value: object = None
-        else:
-            scalar = raw_value.strip()
-            if scalar in {"|", ">"}:
-                block: list[str] = []
-                index += 1
-                while index < len(lines) and (not lines[index].strip() or lines[index][0].isspace()):
-                    block.append(lines[index].lstrip())
-                    index += 1
-                frontmatter[key] = "\n".join(block)
-                continue
-            if len(scalar) >= 2 and scalar[0] == scalar[-1] and scalar[0] in {"'", '"'}:
-                value = scalar[1:-1]
-            elif scalar.lower() in {"null", "~", "true", "false", "yes", "no", "on", "off"}:
-                value = None if scalar.lower() in {"null", "~"} else scalar.lower() in {"true", "yes", "on"}
-            elif re.fullmatch(r"[-+]?(?:0|[1-9][0-9_]*)(?:\.[0-9_]+)?(?:[eE][-+]?[0-9]+)?", scalar):
-                value = 0
-            elif scalar.startswith("[") or scalar.startswith("{"):
-                value = []
-            else:
-                value = scalar
-        frontmatter[key] = value
-        index += 1
+    try:
+        frontmatter = yaml.safe_load(match.group(1))
+    except yaml.YAMLError as error:
+        return False, f"Invalid YAML in frontmatter: {error}"
+    if not isinstance(frontmatter, dict):
+        return False, "Frontmatter must be a YAML dictionary"
 
     unexpected = set(frontmatter) - ALLOWED_PROPERTIES
     if unexpected:
