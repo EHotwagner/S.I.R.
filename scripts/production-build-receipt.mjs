@@ -99,9 +99,10 @@ function toolIdentities(root) {
 }
 
 function cleanTrackedState(root) {
-  const state = git(root, "status", "--porcelain=v1", "--untracked-files=no");
-  if (state) throw new Error(`production-build-receipt: dirty-tracked-state:${state.split("\n")[0]}`);
-  return { trackedChanges: 0 };
+  const changed = git(root, "diff", "--name-only", "HEAD").split("\n").filter(Boolean).map(slash);
+  const disallowed = changed.filter((path) => !metadataOnlyPrefixes.some((prefix) => path.startsWith(prefix)));
+  if (disallowed.length) throw new Error(`production-build-receipt: dirty-tracked-state:${disallowed[0]}`);
+  return { buildInputChanges: 0, excludedGeneratedChanges: changed.sort() };
 }
 
 async function derive(root, ownerCommand, inputs, outputs) {

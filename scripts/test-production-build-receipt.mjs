@@ -38,7 +38,7 @@ try {
   await writeFile(join(fixture, "output", "bundle.js"), "bundle-v1\n");
 
   await writeFile(join(fixture, "input.txt"), "input-v2\n");
-  expectRed("dirty-tracked-state");
+  expectRed("dirty-tracked-state:input.txt");
   run("git", ["restore", "input.txt"]);
 
   const originalReceipt = await readFile(join(fixture, receipt), "utf8");
