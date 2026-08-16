@@ -68,6 +68,33 @@ if env HOME="$task_tmp/incompatible-home" CODEX_HOME="$task_tmp/incompatible-cod
 fi
 grep -q "Missing or invalid 'name'" "$task_tmp/invalid-skill.log"
 
+for typed_scalar in null true 42; do
+  mkdir -p "$task_tmp/typed-$typed_scalar"
+  printf '%s\n' '---' "name: $typed_scalar" 'description: invalid typed scalar fixture' '---' > "$task_tmp/typed-$typed_scalar/SKILL.md"
+  if env HOME="$task_tmp/incompatible-home" CODEX_HOME="$task_tmp/incompatible-codex" python3 scripts/validate-skill-package.py "$task_tmp/typed-$typed_scalar" >/dev/null 2>&1; then
+    echo "typed YAML scalar unexpectedly passed skill validation: $typed_scalar" >&2
+    exit 1
+  fi
+done
+
+mkdir -p "$task_tmp/nested-name-skill"
+printf '%s\n' '---' 'name:' '  nested: invalid' 'description: invalid nested name fixture' '---' > "$task_tmp/nested-name-skill/SKILL.md"
+if env HOME="$task_tmp/incompatible-home" CODEX_HOME="$task_tmp/incompatible-codex" python3 scripts/validate-skill-package.py "$task_tmp/nested-name-skill" >/dev/null 2>&1; then
+  echo "nested YAML name unexpectedly passed skill validation" >&2
+  exit 1
+fi
+
+mkdir -p "$task_tmp/nested-metadata-skill"
+printf '%s\n' '---' 'name: nested-metadata-skill' 'description: valid nested metadata fixture' 'metadata:' '  owner: S.I.R.' '---' > "$task_tmp/nested-metadata-skill/SKILL.md"
+env HOME="$task_tmp/incompatible-home" CODEX_HOME="$task_tmp/incompatible-codex" python3 scripts/validate-skill-package.py "$task_tmp/nested-metadata-skill" >/dev/null
+
+mkdir -p "$task_tmp/unreadable-skill"
+printf '\377\376' > "$task_tmp/unreadable-skill/SKILL.md"
+if env HOME="$task_tmp/incompatible-home" CODEX_HOME="$task_tmp/incompatible-codex" python3 scripts/validate-skill-package.py "$task_tmp/unreadable-skill" >/dev/null 2>&1; then
+  echo "unreadable skill unexpectedly passed repository-owned validation" >&2
+  exit 1
+fi
+
 result_path=${SIR_RULE_COHERENCE_JUNIT:-readiness/193-rule-authoring-coherence/rule-coherence.junit.xml}
 mkdir -p "$(dirname "$result_path")"
 printf '%s\n' '<?xml version="1.0" encoding="UTF-8"?>' \

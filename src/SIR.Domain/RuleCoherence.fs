@@ -158,9 +158,39 @@ module RuleCoherence =
         | CoherenceMode.Changed -> changed |> List.map RuleId.value |> Set.ofList
         | CoherenceMode.Cone ->
             let seed = changed |> List.map RuleId.value
-            Set.union (dependencyClosure byId seed false) (dependencyClosure byId seed true)
+            let dependencyCone ids =
+                let seeds = ids |> Set.toList
+                Set.union (dependencyClosure byId seeds false) (dependencyClosure byId seeds true)
+            let transitions =
+                byId
+                |> Map.toList
+                |> List.choose (fun (ruleId, rule) ->
+                    match rule.Semantics with
+                    | TransitionSemantics contract -> Some(ruleId, contract)
+                    | _ -> None)
+            let interacts left right =
+                left.Phase = right.Phase
+                && (intersects left.Effects right.Effects
+                    || intersects left.Effects right.Reads
+                    || intersects right.Effects left.Reads
+                    || intersects left.Events right.Events)
+            let interactionClosure selected =
+                transitions
+                |> List.collect (fun (leftId, left) ->
+                    transitions
+                    |> List.choose (fun (rightId, right) ->
+                        if leftId <> rightId && (Set.contains leftId selected || Set.contains rightId selected) && interacts left right then
+                            Some [ leftId; rightId ]
+                        else None)
+                    |> List.collect (fun values -> values))
+                |> Set.ofList
+                |> Set.union selected
+            let rec expand selected =
+                let expanded = selected |> dependencyCone |> interactionClosure |> dependencyCone
+                if expanded = selected then selected else expand expanded
+            expand (Set.ofList seed)
 
-    let private formulaFacts ruleId expression =
+    let private formulaFacts ruleId expectedShape expression =
         let rec infer = function
             | Constant value -> Ok(value.DataKind, value.Unit)
             | Input(_, kind, unitName) -> Ok(kind, unitName)
@@ -194,7 +224,9 @@ module RuleCoherence =
                 | Ok(RuleValueKind.Boolean, _), Ok leftType, Ok rightType when leftType = rightType -> Ok leftType
                 | conditionType, leftType, rightType -> Error(sprintf "conditional operands disagree: %A %A %A" conditionType leftType rightType)
         match infer expression with
-        | Ok _ -> []
+        | Ok actualShape when actualShape = expectedShape -> []
+        | Ok actualShape ->
+            [ finding "types-units" ClaimStrength.Failed [ ruleId ] (sprintf "Formula result shape %A does not match declared shape %A." actualShape expectedShape) "formula inference" "result shape" (sprintf "%A" expectedShape) (sprintf "%A" actualShape) ]
         | Error detail -> [ finding "types-units" ClaimStrength.Failed [ ruleId ] ("Formula is not type/unit coherent: " + detail) "formula inference" "formula" "compatible typed units" detail ]
 
     let private transition rule = match rule.Semantics with TransitionSemantics contract -> Some contract | _ -> None
@@ -213,13 +245,13 @@ module RuleCoherence =
                 Some(sharedWrites, sharedEvents, ordered, conflict)
         | _ -> None
 
-    let private requestKey (identity: RulePackageIdentity) (request: CoherenceRequest) selected rules =
-        let analyzedSemanticDigest = (Rules.packageIdentity "coherence" "coherence" "1" identity.SourceCommit [] rules).SemanticDigest |> hex
+    let private requestKey (identity: RulePackageIdentity) (request: CoherenceRequest) selected semanticRules metadataRules corpusIds =
+        let analyzedSemanticDigest = (Rules.packageIdentity "coherence" "coherence" "1" identity.SourceCommit [] semanticRules).SemanticDigest |> hex
         let blockUnknowns = if request.BlockUnknowns then "1" else "0"
         let requested = request.ChangedRuleIds |> List.map RuleId.value |> List.sort |> String.concat ","
         let packageSourceIdentity = String.concat ":" [ string identity.SchemaVersion; identity.EngineIdentity; identity.CompatibilityProfile; identity.PackageVersion; identity.SourceCommit ]
-        let metadataDigest = coherenceMetadataDigest rules
-        let requestText = String.concat "|" [ analyzerVersion; modeName request.Mode; string request.Bounds.MaxWorkUnits; string request.Bounds.MaxFindings; string request.Bounds.MaxWitnessRules; blockUnknowns; packageSourceIdentity; analyzedSemanticDigest; metadataDigest; requested; selected |> Set.toList |> List.sort |> String.concat "," ]
+        let metadataDigest = coherenceMetadataDigest metadataRules
+        let requestText = String.concat "|" [ analyzerVersion; modeName request.Mode; string request.Bounds.MaxWorkUnits; string request.Bounds.MaxFindings; string request.Bounds.MaxWitnessRules; blockUnknowns; packageSourceIdentity; analyzedSemanticDigest; metadataDigest; corpusIds |> List.sort |> framedList; requested; selected |> Set.toList |> List.sort |> String.concat "," ]
         digest requestText
 
     let analyze (packageIdentity: RulePackageIdentity) (rules: RuleDefinition list) (priorCache: CoherenceCacheEntry option) (request: CoherenceRequest) =
@@ -227,7 +259,15 @@ module RuleCoherence =
         let byId = sorted |> List.map (fun rule -> id rule, rule) |> Map.ofList
         let selectedIds = selectSlice request.Mode request.ChangedRuleIds byId
         let slice = sorted |> List.filter (id >> selectedIds.Contains)
-        let cacheKey = requestKey packageIdentity request selectedIds slice
+        let preconditionIds =
+            slice
+            |> List.collect (fun rule ->
+                match rule.Semantics with
+                | TransitionSemantics contract -> contract.Preconditions |> List.map RuleId.value
+                | _ -> [])
+        let observedIds = Set.union selectedIds (dependencyClosure byId (Set.toList selectedIds @ preconditionIds) false)
+        let observedRules = sorted |> List.filter (id >> observedIds.Contains)
+        let cacheKey = requestKey packageIdentity request selectedIds observedRules observedRules (sorted |> List.map id)
         match priorCache with
         | Some cached when cached.Key = cacheKey ->
             let hasFailure = cached.Findings |> List.exists (fun item -> item.Strength = ClaimStrength.Failed)
@@ -272,7 +312,8 @@ module RuleCoherence =
                             | Some target when target.Metadata.Status = Proposed || target.Metadata.Status = Prototype -> add [ finding "dependency-status" ClaimStrength.Failed [ ruleId; dependency ] "Canonical rule depends on non-canonical authority." "declared dependency" "status" "canonical/deprecated/superseded dependency" (sprintf "%A" target.Metadata.Status) ]
                             | _ -> ()
                     match rule.Semantics with
-                    | FormulaSemantics(_, _, expression) | PredicateSemantics expression -> add (formulaFacts ruleId expression)
+                    | FormulaSemantics(kind, unitName, expression) -> add (formulaFacts ruleId (kind, unitName) expression)
+                    | PredicateSemantics expression -> add (formulaFacts ruleId (RuleValueKind.Boolean, "boolean") expression)
                     | AlgorithmSemantics contract when String.IsNullOrWhiteSpace contract.Fingerprint -> add [ finding "history" ClaimStrength.Failed [ ruleId ] "Registered algorithm has no implementation fingerprint." "algorithm contract" "fingerprint" "stable non-empty identity" "missing" ]
                     | AlgorithmSemantics _ -> add [ finding "interaction" ClaimStrength.Unknown [ ruleId ] "Opaque algorithm has no trusted read/write/event footprint for cross-rule pruning." "opaque implementation boundary" "footprint" "verified assume/guarantee summary" "unknown" ]
                     | TransitionSemantics contract when String.IsNullOrWhiteSpace contract.Phase || (List.isEmpty contract.Reads && List.isEmpty contract.Effects && List.isEmpty contract.Events) -> add [ finding "temporal" ClaimStrength.Unknown [ ruleId ] "Transition has an incomplete interaction footprint." "transition contract" "footprint" "phase plus reads/effects/events" "incomplete" ]

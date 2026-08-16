@@ -139,6 +139,12 @@ module RuleCoherenceFixtures =
                 | _ -> failwith "Expected algorithm rule.")
         let unchangedSlice = analyze unrelatedAlgorithmChange (Some changedCache) (request CoherenceMode.Changed [ "CONTENT-WEAPON-RIFLE-001" ] 100 false)
         require (unchangedSlice.Cost.CacheHits = 1 && unchangedSlice.Cost.WorkUnits = 0) "Unrelated semantic change invalidated an exact changed-rule slice."
+        let observedDependencyBaseline = analyze CombatRules.registry None (request CoherenceMode.Changed [ "COMBAT-DAMAGE-001" ] 100 false)
+        let observedDependencyCache = observedDependencyBaseline.CacheEntry |> Option.defaultWith (fun () -> failwith "Observed-dependency analysis emitted no cache entry.")
+        let observedDependencyChanged =
+            withRule "COMBAT-TRACE-002" (fun rule -> { rule with Metadata = { rule.Metadata with Status = Prototype } })
+            |> fun rules -> analyze rules (Some observedDependencyCache) (request CoherenceMode.Changed [ "COMBAT-DAMAGE-001" ] 100 false)
+        require (observedDependencyChanged.Cost.CacheHits = 0 && has "dependency-status" ClaimStrength.Failed observedDependencyChanged) "Changed-mode cache reused after an observed dependency status mutation outside the exact slice."
         let missingChanged = analyze CombatRules.registry None (request CoherenceMode.Changed [ "MISSING-RULE-001" ] 100 false)
         require (has "references" ClaimStrength.Failed missingChanged && not missingChanged.CanonicalizationReady) "Unknown changed-rule seed was accepted."
         let cone = analyze CombatRules.registry None (request CoherenceMode.Cone [ "COMBAT-DAMAGE-001" ] 1_000 false)
@@ -151,6 +157,8 @@ module RuleCoherenceFixtures =
 
         let conflict = analyze (conflictRules ()) None baselineRequest
         require (has "logical-compatibility" ClaimStrength.Failed conflict && not conflict.CanonicalizationReady) "Unordered shared-write/event contradiction was accepted."
+        let conflictCone = analyze (conflictRules ()) None (request CoherenceMode.Cone [ "TEST-CONFLICT-A" ] 100 false)
+        require (conflictCone.AnalyzedRuleIds |> List.map RuleId.value = [ "TEST-CONFLICT-A"; "TEST-CONFLICT-B" ] && has "logical-compatibility" ClaimStrength.Failed conflictCone) "Cone mode omitted an indexed same-phase interaction conflict."
 
         let dangling =
             { first with Metadata = { first.Metadata with Dependencies = [ requiredId "MISSING-RULE-001" ] } } :: CombatRules.registry.Tail
@@ -184,6 +192,19 @@ module RuleCoherenceFixtures =
         match Rules.evaluate (Map.ofList [ "left", fixedValue "damage" 200; "right", fixedValue "ratio" 100 ]) unlikeDivision with
         | Error(UnitMismatch _) -> ()
         | verdict -> failwithf "Executable damage/ratio division did not reject the unit mismatch: %A" verdict
+
+        let wronglyDeclaredDivisionRules =
+            withRule "COMBAT-DAMAGE-001" (fun rule -> { rule with Semantics = FormulaSemantics(RuleValueKind.FixedPoint, "damage", likeDivision) })
+        let wronglyDeclaredDivisionReport = analyze wronglyDeclaredDivisionRules None baselineRequest
+        require (has "types-units" ClaimStrength.Failed wronglyDeclaredDivisionReport) "Ratio division was accepted under a declared damage result."
+
+        let nonBooleanPredicateRules =
+            withRule "COMBAT-DAMAGE-001" (fun rule ->
+                { rule with
+                    Metadata = { rule.Metadata with SemanticKind = RuleKind.Predicate }
+                    Semantics = PredicateSemantics(Constant(fixedValue "damage" 1)) })
+        let nonBooleanPredicateReport = analyze nonBooleanPredicateRules None baselineRequest
+        require (has "types-units" ClaimStrength.Failed nonBooleanPredicateReport) "A non-Boolean predicate result was accepted."
 
         let duplicate = analyze (first :: CombatRules.registry) None baselineRequest
         require (has "identity" ClaimStrength.Failed duplicate) "Duplicate rule identity was accepted."
