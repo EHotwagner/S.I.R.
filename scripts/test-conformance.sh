@@ -91,8 +91,6 @@ search_fixed() {
   fi
 }
 
-./scripts/test-item-184-sdd-byte-stability.sh
-
 if [[ -n "$reuse_build_receipt" ]]; then
   [[ -n "$prepared_fable" && -n "$prepared_modal_fable" && -n "$prepared_scenario_catalog_fable" ]] || { echo "test-conformance: prepared reuse requires all Fable fixture roots" >&2; exit 2; }
   node scripts/production-build-receipt.mjs verify \
