@@ -28,8 +28,8 @@
       "path": "src/SIR.Client/MapEditorSimulator.fs",
       "previousSha256": "5c5fdb4089bc50bccdaef53edcd2c34e3a3fe99024c3cccaca4dba9fdf0ec148",
       "replacementSha256": "f3ae01071f252a9945da86a6b08fd48d2f03e1c77b4afc7f37bc056ed0538bfc",
-      "replacementEvidence": "command:./scripts/run-ci-gate.sh native artifacts/ci/results/native.json",
-      "reason": "Item 184 changes the cited simulator owner; the exact-head hosted native gate verifies the replacement through focused client qualification."
+      "replacementEvidence": "command:./scripts/qualify-pr.sh prepare-part native",
+      "reason": "Item 184 changes the cited simulator owner; the exact-head hosted prepare-native owner verifies the replacement through focused client qualification."
     },
     {
       "audit": "feedback/audits/2026-08-15-SIR-186-3.audit.json",
@@ -58,8 +58,8 @@
       "path": "src/SIR.Client/MapEditorSimulator.fs",
       "previousSha256": "5c5fdb4089bc50bccdaef53edcd2c34e3a3fe99024c3cccaca4dba9fdf0ec148",
       "replacementSha256": "f3ae01071f252a9945da86a6b08fd48d2f03e1c77b4afc7f37bc056ed0538bfc",
-      "replacementEvidence": "command:./scripts/run-ci-gate.sh native artifacts/ci/results/native.json",
-      "reason": "Item 184 changes the cited simulator owner; the exact-head hosted native gate verifies the replacement through focused client qualification."
+      "replacementEvidence": "command:./scripts/qualify-pr.sh prepare-part native",
+      "reason": "Item 184 changes the cited simulator owner; the exact-head hosted prepare-native owner verifies the replacement through focused client qualification."
     },
     {
       "audit": "feedback/audits/2026-08-15-SIR-186-6.audit.json",
@@ -78,8 +78,8 @@
       "path": "docs/performance-budget.md",
       "previousSha256": "5fb42b445999b25fe2fe4dbd80ee350099a1c145e4d44006c01ab6213d72798b",
       "replacementSha256": "8014423d9a0a2f56d1a967524fddf73347655e1e34a91e88cbf0121aa3382f28",
-      "replacementEvidence": "command:./scripts/run-ci-gate.sh native artifacts/ci/results/native.json",
-      "reason": "Item 184 changes the cited performance contract; the exact-head hosted native gate measures the documented unchanged stress thresholds."
+      "replacementEvidence": "command:./scripts/qualify-pr.sh prepare-part native",
+      "reason": "Item 184 changes the cited performance contract; the exact-head hosted prepare-native owner measures the documented unchanged stress thresholds."
     },
     {
       "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",

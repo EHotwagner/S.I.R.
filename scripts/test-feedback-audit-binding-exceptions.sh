@@ -69,6 +69,17 @@ run_mutant mismatched "previous digest is mismatched" '.exceptions[0].previousSh
 run_mutant duplicate "duplicate exception ledger binding" '.exceptions += [.exceptions[0]]'
 run_mutant overbroad "overbroad or mismatched exception" '.exceptions += [(.exceptions[0] | .findingId = "§9.9")]'
 
+printf '%s\n' '{"source":{"commit":"subject","tree":"subject"},"digest":"subject"}' > "$test_root/route.json"
+if SIR_CI_ROUTE="$test_root/route.json" ./scripts/run-ci-gate.sh native "$test_root/native.json" > "$test_root/nonexistent-owner.log" 2>&1; then
+  echo "feedback audit-binding nonexistent-owner mutant unexpectedly passed" >&2
+  exit 1
+fi
+grep -F "qualify-pr: unknown gate: native" "$test_root/nonexistent-owner.log" >/dev/null || {
+  echo "feedback audit-binding nonexistent-owner mutant failed without the owner diagnostic" >&2
+  cat "$test_root/nonexistent-owner.log" >&2
+  exit 1
+}
+
 cp "$pristine" "$ledger"
 run_check >/dev/null
-echo "feedback audit-binding exception gate passed with malformed, stale, mismatched, duplicate, and overbroad mutants rejected"
+echo "feedback audit-binding exception gate passed with malformed, stale, mismatched, duplicate, overbroad, and nonexistent-owner mutants rejected"
