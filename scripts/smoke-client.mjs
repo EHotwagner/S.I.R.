@@ -1717,7 +1717,9 @@ if (
   reopenedShell !== shell ||
   reopenedSvg !== worksurface ||
   reopenedSvg.getAttribute("data-scene-owner") !== "EditorScene" ||
-  reopenedSvg.querySelectorAll("[data-scene-layer]").length !== 8 ||
+  reopenedSvg.querySelectorAll("[data-scene-layer]").length !== 9 ||
+  reopenedSvg.getAttribute("data-layer-order") !==
+    "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations" ||
   !reopenedShell.querySelector('[data-panel-id="tools"]') ||
   !reopenedShell.querySelector('[data-panel-id="document"]')
 ) {
