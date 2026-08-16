@@ -1,6 +1,6 @@
 {
   "schema": "sir-tactical-visual-review-v2",
-  "productionBundleSha256": "f686b71a563d36c57449666cf9dcc20379ae486f3548c08ac3514686c34c13e9",
+  "productionBundleSha256": "95114a2c0d53072e90c4ae4c0eab485483a972f37a3a776ba312078c06f76565",
   "productionStylesSha256": "d25df5340a553fa9dcf3c5a4d272942ecadc8d73d395e91bdaa9f29a7144c7d8",
   "before": {
     "path": "../persistent-workspace-m9-review/field-focus.png",
@@ -8,7 +8,7 @@
   },
   "after": {
     "path": "after-production.png",
-    "sha256": "d8833beebee1d79826151caa3643cb13348c4c5b89d7750f84a44f9aa3b79ae6",
+    "sha256": "13107a8382b12c9b23da00b16e29b667f3629dde0d8a078bf580291dcf52d135",
     "captureKind": "actual-production-shell-chromium-screenshot",
     "semantic": {
       "identity": "tactical-visual-system-v1",
@@ -32,7 +32,6 @@
         "accepted",
         "accepted"
       ],
-      "workload": null,
       "tokens": {
         "--sir-canvas": "#10161d",
         "--sir-text": "#f7f9fa",
@@ -50,7 +49,7 @@
     {
       "units": 100,
       "path": "production-density-100.png",
-      "sha256": "91a8e2b2a6bf5de3efce14490cc5a55dc68e9644adeb7e353f17e3b8417aa62e",
+      "sha256": "f2ec55d0b9ed4afc3ca7e4f50fc4945910083e5bd3e83ec0dae9016356f921a9",
       "workload": {
         "requestedUnits": 100,
         "renderedUnits": 100,
@@ -58,17 +57,27 @@
         "routes": 1,
         "plannedRouteUnits": 2,
         "overlays": 106,
-        "effects": 100,
-        "domNodes": 3327,
-        "inputToPaintMilliseconds": 35.19999980926514,
-        "animationFrameIntervalMilliseconds": 16.600000000000136,
-        "usedJsHeapBytes": 10985132
+        "effects": 2,
+        "observedAttackEffects": 60,
+        "effectKinds": [
+          "attack",
+          "event",
+          "movement"
+        ],
+        "effectLifecycles": [
+          "accepted",
+          "committed",
+          "predicted",
+          "preview",
+          "rejected"
+        ],
+        "domNodes": 3012
       }
     },
     {
       "units": 200,
       "path": "production-density-200.png",
-      "sha256": "4c71cde51e90166ad155cfe2a4b37eb80796ab62ddbe530605d50a3ae6eb68fe",
+      "sha256": "f1a980d69d26be782779f6590ff1fd6ebd1a71a383df9c2e6de2619ed442a3a2",
       "workload": {
         "requestedUnits": 200,
         "renderedUnits": 200,
@@ -76,11 +85,21 @@
         "routes": 1,
         "plannedRouteUnits": 2,
         "overlays": 206,
-        "effects": 200,
-        "domNodes": 4941,
-        "inputToPaintMilliseconds": 74.5,
-        "animationFrameIntervalMilliseconds": 16.699999999999818,
-        "usedJsHeapBytes": 12320693
+        "effects": 2,
+        "observedAttackEffects": 127,
+        "effectKinds": [
+          "attack",
+          "event",
+          "movement"
+        ],
+        "effectLifecycles": [
+          "accepted",
+          "committed",
+          "predicted",
+          "preview",
+          "rejected"
+        ],
+        "domNodes": 4292
       }
     }
   ],
@@ -106,7 +125,6 @@
       "accepted",
       "accepted"
     ],
-    "workload": null,
     "tokens": {
       "--sir-canvas": "#10161d",
       "--sir-text": "#f7f9fa",

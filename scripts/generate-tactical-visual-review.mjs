@@ -41,10 +41,10 @@ if (system.layerOrder !== system.paintedLayerOrder) {
 
 const workloadExpression = (units) => `(async () => {
   ${delaySource} ${clickButtonSource} ${settleCaptureSource}
-  const observedKinds = new Set(); const observedLifecycles = new Set(); let observedAttackEffects = 0;
-  const recordEffects = () => { const effects = [...document.querySelectorAll("[data-effect-kind]")]; for (const effect of effects) { const kind = effect.getAttribute("data-effect-kind"); const lifecycle = effect.getAttribute("data-effect-lifecycle"); if (kind) observedKinds.add(kind); if (lifecycle) observedLifecycles.add(lifecycle); if (kind === "attack") observedAttackEffects += 1; } };
+  const observedKinds = new Set(); const observedLifecycles = new Set(); const observedAttackEffects = new Set();
+  const recordEffects = () => { const effects = [...document.querySelectorAll("[data-effect-kind]")]; for (const effect of effects) { const kind = effect.getAttribute("data-effect-kind"); const lifecycle = effect.getAttribute("data-effect-lifecycle"); if (kind) observedKinds.add(kind); if (lifecycle) observedLifecycles.add(lifecycle); if (kind === "attack") observedAttackEffects.add([effect.getAttribute("data-effect-event"), effect.getAttribute("data-effect-tick"), lifecycle].join(":")); } };
   globalThis.__sirTacticalStage = "samples";
-  document.querySelector("details.tactical-legacy-controls > summary")?.click(); clickButton("Samples"); await wait(80);
+  const workspaceControls = document.querySelector("details.tactical-legacy-controls"); workspaceControls?.querySelector("summary")?.click(); clickButton("Samples"); if (workspaceControls) workspaceControls.open = false; await wait(80);
   const card = [...document.querySelectorAll("details.sample-card")].find((candidate) => candidate.textContent.includes("Tactical density ${units}"));
   if (!card) throw new Error("Missing production tactical density ${units} sample");
   card.querySelector("summary").click(); await wait(40);
@@ -77,7 +77,7 @@ const workloadExpression = (units) => `(async () => {
     plannedRouteUnits: [...svg.querySelectorAll("[data-unit-status]")].filter((unit) => unit.getAttribute("data-unit-status").includes("route-planned")).length,
     overlays: svg.querySelectorAll("[data-overlay-id]").length,
     effects: svg.querySelectorAll("[data-effect-event]").length,
-    attackEffects: observedAttackEffects,
+    observedAttackEffects: observedAttackEffects.size,
     effectKinds: [...observedKinds].sort(), effectLifecycles: [...observedLifecycles].sort(),
     domNodes: svg.querySelectorAll("*").length,
     inputToPaintMilliseconds, animationFrameIntervalMilliseconds: frameEnded - frameStarted,
@@ -91,7 +91,7 @@ for (const units of [100, 200]) {
   const path = resolve(reviewOutput, `production-density-${units}.png`);
   const result = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: path, prepareExpression: workloadExpression(units) });
   const workload = result.wide.visualSystem.workload;
-  if (workload.renderedUnits !== units || workload.effects < 1 || workload.overlays < 1 || workload.attackEffects < 1) throw new Error(`Production density workload ${units} is incomplete: ${JSON.stringify(workload)}`);
+  if (workload.renderedUnits !== units || workload.effects < 1 || workload.overlays < 1 || workload.observedAttackEffects < 1) throw new Error(`Production density workload ${units} is incomplete: ${JSON.stringify(workload)}`);
   const { inputToPaintMilliseconds, animationFrameIntervalMilliseconds, usedJsHeapBytes, ...structure } = workload;
   densityAudits.push({ units, path: `production-density-${units}.png`, sha256: hash(await readFile(path)), workload: structure });
   telemetryScenes.push({ units, inputToPaintMilliseconds, animationFrameIntervalMilliseconds, usedJsHeapBytes });
