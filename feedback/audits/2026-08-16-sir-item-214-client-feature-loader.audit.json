@@ -1,0 +1,46 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-16-sir-item-214-client-feature-loader.md",
+  "reportSha256": "f41a71370ce9828456415fb7f13452a30a1edc9ab5031260b52cf421895adcb1",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:feedback/checkpoints/item-214-client-feature-loader.jsonl",
+          "sha256": "ef8d7dece68986fc759e87b9105b82425d2f1db163e77c5a716eeeae27fe640d",
+          "result": "verified"
+        },
+        {
+          "locator": "command:scripts/fsgg-coord --version",
+          "result": "verified"
+        },
+        {
+          "locator": "command:scripts/fsgg-coord delivery-route show EHotwagner/S.I.R.#214 --json",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#214 comment 5305180061",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet run --project ../.github/src/FS.GG.Coord.Cli/FS.GG.Coord.Cli.fsproj -- delivery-route show EHotwagner/S.I.R.#214 --json",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:FS-GG/.github#2469 comment 5301560921",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The original failed outputs and exact retry/install cost were not retained, so the report makes no exact cost claim.",
+        "FS-GG/.github#2469 measured the same failure class on FS.GG.Rendering rather than S.I.R; it is closed while S.I.R's pinned reader still fails.",
+        "The source-current command was verified against the adjacent canonical FS-GG/.github checkout, not a content-pinned executable committed in S.I.R."
+      ]
+    }
+  ]
+}
