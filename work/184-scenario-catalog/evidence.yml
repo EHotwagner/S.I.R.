@@ -11,7 +11,7 @@ sourceAnalysis: readiness/184-scenario-catalog/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/184-scenario-catalog/analysis.json
-    digest: c2924cbb9d914086df9246544119b9667c75eeefa4474ccee7dd89bec0a6c8a9
+    digest: 0f3e68ce3c571a81bfe97430b62cfeb797680028032f635e173e6d91496663d7
     schemaVersion: 1
   - label: checklist
     path: work/184-scenario-catalog/checklist.md
@@ -54,7 +54,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -82,7 +82,7 @@ evidence:
       stressWorkloadIds: [scenario-catalog-80x80-200-v1]
       workloadDefinitionDigests: ["scenario-catalog-80x80-200-v1=sha256:7c06caa23761a6cc43953bc50d07c343f5a6eaef57d0568b24374d740e42d251", "scenario-catalog-representative-v1=sha256:9fdc78516912b2e440a6d80d3d6795032edc55876f010fcb96c9f6b03e1d67ac"]
       currencyToken: item-184-repair-round-3
-      capturedAfterUtc: "2026-08-15T11:54:50Z"
+      capturedAfterUtc: "2026-08-16T18:43:04Z"
       maxP95Ms: 20
       maxP99Ms: 50
       maxCatchUpFrames: 0
@@ -112,7 +112,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -141,7 +141,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -170,7 +170,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -199,7 +199,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -228,7 +228,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -257,7 +257,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -286,7 +286,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -315,7 +315,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -344,7 +344,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -373,7 +373,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -402,7 +402,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -431,7 +431,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -460,7 +460,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -489,7 +489,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -518,7 +518,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -547,7 +547,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -576,7 +576,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -605,7 +605,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -634,7 +634,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -663,7 +663,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -692,7 +692,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -721,7 +721,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -750,7 +750,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -779,7 +779,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -808,7 +808,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -837,7 +837,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -866,7 +866,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -895,7 +895,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -924,7 +924,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -953,7 +953,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -982,7 +982,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1011,7 +1011,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1040,7 +1040,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1069,7 +1069,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1098,7 +1098,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-cross-runtime.junit.xml
-      digest: "sha256:a4f2ede66ef11cf2d8d22c73258efa3e9792fa0b36bf6020a6e3a59691ac9bc8"
+      digest: "sha256:07d8c15111420399ba2c747ad0ef880be31d494875c3ad7219cdeb75dd742aa1"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1127,7 +1127,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1156,7 +1156,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1243,7 +1243,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1272,7 +1272,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1301,7 +1301,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1330,7 +1330,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1359,7 +1359,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1388,7 +1388,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1417,7 +1417,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1446,7 +1446,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/184-scenario-catalog/scenario-catalog-native.junit.xml
-      digest: "sha256:70d6b01c04a26f0520c096508678f318c9e6d02ecd8778232425fa24380a3ef4"
+      digest: "sha256:2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
