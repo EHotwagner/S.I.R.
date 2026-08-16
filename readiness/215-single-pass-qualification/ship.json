@@ -4,7 +4,7 @@
   "workId": "215-single-pass-qualification",
   "stage": "ship",
   "status": "shipReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sources": [
     {
       "path": ".fsgg/agents.yml",
@@ -51,7 +51,7 @@
       "kind": "source",
       "digest": {
         "algorithm": "sha256",
-        "value": "4441d49aee8949783ce3b79d2d3f1381dd203dbea6225d99d933a6056141ecf4"
+        "value": "fd0eb73bfdcb16102edc775eebc0bfa3f6ffcd7e7fab543160a6a8a235236f40"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -61,7 +61,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "619e738482f6fa9396e8c3fb20055db16068513bb0fcf534cc6700a1cb8a489d"
+        "value": "ed55c3d9637ffddd9d08dd4cecbe5ebd3c346332b46c87587241c5c322c285b1"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"

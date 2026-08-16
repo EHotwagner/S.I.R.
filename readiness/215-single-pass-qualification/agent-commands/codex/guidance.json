@@ -3,7 +3,7 @@
   "viewVersion": "1.0",
   "workId": "215-single-pass-qualification",
   "targetId": "codex",
-  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "generated": true,
   "sources": [
     {
@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "619e738482f6fa9396e8c3fb20055db16068513bb0fcf534cc6700a1cb8a489d"
+        "value": "ed55c3d9637ffddd9d08dd4cecbe5ebd3c346332b46c87587241c5c322c285b1"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -560,5 +560,16 @@
       "kind": "skills"
     }
   ],
-  "diagnostics": []
+  "diagnostics": [
+    {
+      "id": "agents.staleGeneratedGuidance",
+      "severity": "warning",
+      "artifact": "readiness/215-single-pass-qualification/agent-commands/codex/guidance.json",
+      "message": "Generated agent guidance for target \u0027codex\u0027 no longer matches the current normalized work model.",
+      "correction": "Regenerate agent guidance so the generated view matches the current work model.",
+      "relatedIds": [
+        "codex"
+      ]
+    }
+  ]
 }

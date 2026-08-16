@@ -1,19 +1,67 @@
 {
-  "schema": "sir.production-qualification-timing/v1",
+  "schema": "sir.production-qualification-timing/v2",
   "result": "pass",
+  "host": {
+    "schema": "sir.qualification-host/v1",
+    "digest": "162c45a7b35a5f35d4657542dc374cb8851dd86d41626f5e2e8ea0ddcd5b0981",
+    "facts": {
+      "platform": "linux",
+      "release": "7.1.4-arch1-1",
+      "architecture": "x64",
+      "cpuModel": "AMD Ryzen 9 7900 12-Core Processor",
+      "logicalCpuCount": 24,
+      "totalMemoryBytes": 66510303232,
+      "git": "git version 2.55.0",
+      "dotnetSdk": "10.0.302",
+      "node": "v26.7.0",
+      "npm": "12.0.2"
+    }
+  },
   "baseline": {
+    "schema": "sir.production-qualification-baseline/v1",
+    "result": "pass",
     "command": "./scripts/test-conformance.sh && ./scripts/build-docs.sh",
-    "wallMilliseconds": 373848,
-    "fableTargetBuilds": 4
+    "wallMilliseconds": 376975,
+    "fableTargetBuilds": 4,
+    "source": {
+      "commit": "dab492e9df468329716d77215152896bbc72d174",
+      "tree": "724970b631fe5a46fd8bcc72e0a917db0f548250",
+      "clean": true,
+      "changes": []
+    },
+    "host": {
+      "schema": "sir.qualification-host/v1",
+      "digest": "162c45a7b35a5f35d4657542dc374cb8851dd86d41626f5e2e8ea0ddcd5b0981",
+      "facts": {
+        "platform": "linux",
+        "release": "7.1.4-arch1-1",
+        "architecture": "x64",
+        "cpuModel": "AMD Ryzen 9 7900 12-Core Processor",
+        "logicalCpuCount": 24,
+        "totalMemoryBytes": 66510303232,
+        "git": "git version 2.55.0",
+        "dotnetSdk": "10.0.302",
+        "node": "v26.7.0",
+        "npm": "12.0.2"
+      }
+    }
   },
   "candidate": {
     "command": "./scripts/qualify-production.sh",
-    "wallMilliseconds": 263125,
+    "wallMilliseconds": 284842,
     "fableTargetBuilds": 2,
-    "buildReceipt": "docs/evidence/production-build-receipt-v1/87cf06f6c4cf32abd997cd6796a62f22ff37022e7bca954cb28c5714a64dfeaf.json",
-    "conformanceReceipt": "docs/evidence/production-build-receipt-v1/1363d1f1e0b1698823038c6a6a3b1f815321b2502bbb89cd857b1c00bff6f99d.json"
+    "source": {
+      "schema": "sir.qualification-source/v1",
+      "commit": "032fbea9cb38100658b3d755d0fb988c5e0590a2",
+      "tree": "a688c18b8391128ecb64b624623d69d2f1fdff6c",
+      "clean": true,
+      "changes": []
+    },
+    "buildReceipt": "docs/evidence/production-build-receipt-v1/9c6cf215207977a351019d16ed9a8fd1c0469cfd18f7a43e3a05a28478dcdd02.json",
+    "conformanceReceipt": "docs/evidence/production-build-receipt-v1/9942e1a78afd22143bd51325604f3047300c9557cbdbf33df6e6808c424d8671.json",
+    "siteReceipt": "docs/evidence/production-build-receipt-v1/55f473f678cb02d829b93c069413155f9ad73aef4c5d7ce8d9b1e0540cdeb55d.json"
   },
-  "reductionBasisPoints": 2961,
+  "reductionBasisPoints": 2444,
   "minimumReductionBasisPoints": 2000,
   "retainedSubjects": [
     "conformance",
@@ -24,6 +72,7 @@
     "production-browser",
     "documentation",
     "accessibility",
-    "stale-reuse-mutation"
+    "stale-reuse-mutation",
+    "missing-site-mutation"
   ]
 }
