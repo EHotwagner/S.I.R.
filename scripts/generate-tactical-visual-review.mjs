@@ -1,4 +1,3 @@
-import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -19,67 +18,77 @@ const [bundleBytes, stylesBytes, baselineBytes] = await Promise.all([
 ]);
 
 await mkdir(reviewOutput, { recursive: true });
+const delaySource = `const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));`;
+const clickButtonSource = `const clickButton = (label) => { const button = [...document.querySelectorAll("button")].find((candidate) => candidate.textContent.trim() === label || candidate.getAttribute("aria-label") === label); if (!button) throw new Error("Missing production control: " + label); button.click(); };`;
+const maintainedSimulation = `(async () => { ${delaySource} ${clickButtonSource} clickButton("Simulate"); await wait(50); clickButton("Show contextual actions"); await wait(50); clickButton("Open simulator samples"); await wait(50); const sample = document.querySelector('[aria-label^="Load simulation sample:"]'); if (!sample) throw new Error("Missing maintained simulation sample"); sample.click(); await wait(100); clickButton("Advance the map simulation one tick"); await wait(100); })()`;
 const afterPath = resolve(reviewOutput, "after-production.png");
-const audit = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: afterPath });
+const audit = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: afterPath, prepareExpression: maintainedSimulation });
 const system = audit.wide.visualSystem;
-if (system.identity !== "tactical-visual-system-v1" || system.effectLimit !== 256) {
-  throw new Error(`Production visual registry did not render: ${JSON.stringify(system)}`);
+if (system.identity !== "tactical-visual-system-v1" || system.effectLimit !== 256 || system.effectCount < 1) {
+  throw new Error(`Production visual registry/effects did not render: ${JSON.stringify(system)}`);
 }
-if (system.layerOrder !== "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations") {
-  throw new Error(`Production layer order drifted: ${system.layerOrder}`);
+if (system.layerOrder !== system.paintedLayerOrder) {
+  throw new Error(`Production layer order drifted: declared=${system.layerOrder}; painted=${system.paintedLayerOrder}`);
 }
 
-const scenes = [
-  { name: "Ordinary", units: 20, columns: 5 },
-  { name: "Dense", units: 100, columns: 10 },
-  { name: "Stress", units: 200, columns: 20 },
-];
-const piece = (scene, index, panel) => {
-  const spacing = scene.units > 100 ? 11 : scene.units > 20 ? 20 : 34;
-  const size = scene.units > 100 ? 7 : scene.units > 20 ? 13 : 24;
-  const row = Math.floor(index / scene.columns);
-  const column = index % scene.columns;
-  const x = panel + 28 + column * spacing;
-  const y = 70 + row * spacing;
-  const faction = index % 3 === 0 ? system.tokens["--sir-impact"] : system.tokens["--sir-focus"];
-  return `<g data-prototype-unit="${index}"><rect x="${x}" y="${y}" width="${size}" height="${size}" rx="${Math.max(1, size / 5)}" fill="${system.tokens["--sir-canvas"]}" stroke="${faction}" stroke-width="2"/><path d="M${x + size / 2} ${y + size - 2}v${Math.max(3, size / 4)}" stroke="${faction}" stroke-width="2"/></g>`;
-};
-const prototypeSvg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="360" viewBox="0 0 1080 360" role="img" aria-labelledby="title description">
-<title id="title">Tactical visual density prototypes</title><desc id="description">Ordinary, dense, and stress box-piece scenes using the production visual token registry.</desc>
-<rect width="1080" height="360" fill="${system.tokens["--sir-canvas"]}"/>
-${scenes.map((scene, sceneIndex) => {
-  const panel = sceneIndex * 360;
-  const pieces = Array.from({ length: scene.units }, (_, index) => piece(scene, index, panel)).join("");
-  return `<g data-density-prototype="${scene.name.toLowerCase()}"><rect x="${panel + 10}" y="10" width="340" height="340" rx="12" fill="none" stroke="${system.tokens["--sir-grid"]}"/><text x="${panel + 28}" y="42" fill="${system.tokens["--sir-text"]}" font-family="sans-serif" font-size="18" font-weight="700">${scene.name} · ${scene.units} units</text><path d="M${panel + 30} 320L${panel + 330} 85" stroke="${system.tokens["--sir-intent"]}" stroke-width="3" stroke-dasharray="8 6" fill="none"/><circle cx="${panel + 280}" cy="150" r="16" fill="none" stroke="${system.tokens["--sir-suppression"]}" stroke-width="4"/>${pieces}</g>`;
-}).join("")}
-</svg>
-`;
-const prototypeSvgPath = resolve(reviewOutput, "density-prototypes.svg");
-const prototypePngPath = resolve(reviewOutput, "density-prototypes.png");
-await writeFile(prototypeSvgPath, prototypeSvg, "utf8");
-execFileSync("/usr/sbin/rsvg-convert", ["--width", "1080", "--height", "360", "--output", prototypePngPath, prototypeSvgPath]);
+const workloadExpression = (units) => `(async () => {
+  ${delaySource} ${clickButtonSource}
+  globalThis.__sirTacticalStage = "samples";
+  clickButton("Samples"); await wait(80);
+  const card = [...document.querySelectorAll("details.sample-card")].find((candidate) => candidate.textContent.includes("Tactical density ${units}"));
+  if (!card) throw new Error("Missing production tactical density ${units} sample");
+  card.querySelector("summary").click(); await wait(40);
+  globalThis.__sirTacticalStage = "simulate";
+  const run = card.querySelector('[aria-label="Run Tactical density ${units} in Simulator"]');
+  if (!run) throw new Error("Missing density sample simulator route");
+  run.click(); await wait(180);
+  globalThis.__sirTacticalStage = "routes";
+  const routeUnits = [...document.querySelectorAll("#persistent-layer-units [data-unit-id]")].slice(0, 2);
+  for (const unit of routeUnits) {
+    unit.dispatchEvent(new MouseEvent("click", { bubbles: true })); await wait(25);
+    clickButton("Move route preview up"); clickButton("Move route preview up"); await wait(25);
+    clickButton("Commit clear route preview"); await wait(25);
+  }
+  const svg = document.querySelector("#persistent-tactical-svg"); const beforeTick = svg.getAttribute("data-scene-tick");
+  globalThis.__sirTacticalStage = "step"; const started = performance.now(); clickButton("Advance the map simulation one tick");
+  while (svg.getAttribute("data-scene-tick") === beforeTick && performance.now() - started < 2000) await wait(5);
+  const inputToPaintMilliseconds = performance.now() - started;
+  const frameStarted = await new Promise((resolve) => requestAnimationFrame(resolve));
+  const frameEnded = await new Promise((resolve) => requestAnimationFrame(resolve));
+  globalThis.__sirTacticalStage = "measure"; globalThis.__sirTacticalWorkload = {
+    requestedUnits: ${units}, renderedUnits: svg.querySelectorAll("[data-unit-id]").length,
+    terrainCells: svg.querySelectorAll("#persistent-layer-terrain > *").length,
+    routes: svg.querySelectorAll("#persistent-layer-routes > *").length,
+    plannedRouteUnits: [...svg.querySelectorAll("[data-unit-status]")].filter((unit) => unit.getAttribute("data-unit-status").includes("route-planned")).length,
+    overlays: svg.querySelectorAll("[data-overlay-id]").length,
+    effects: svg.querySelectorAll("[data-effect-event]").length,
+    domNodes: svg.querySelectorAll("*").length,
+    inputToPaintMilliseconds, animationFrameIntervalMilliseconds: frameEnded - frameStarted,
+    usedJsHeapBytes: performance.memory?.usedJSHeapSize ?? null,
+  };
+})()`;
 
-const [afterBytes, prototypeSvgBytes, prototypePngBytes] = await Promise.all([
-  readFile(afterPath), readFile(prototypeSvgPath), readFile(prototypePngPath),
-]);
+const densityAudits = [];
+for (const units of [100, 200]) {
+  const path = resolve(reviewOutput, `production-density-${units}.png`);
+  const result = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: path, prepareExpression: workloadExpression(units) });
+  const workload = result.wide.visualSystem.workload;
+  if (workload.renderedUnits !== units || workload.effects < 1 || workload.overlays < 1) throw new Error(`Production density workload ${units} is incomplete: ${JSON.stringify(workload)}`);
+  densityAudits.push({ units, path: `production-density-${units}.png`, sha256: hash(await readFile(path)), workload });
+}
+
+const afterBytes = await readFile(afterPath);
 const manifest = {
-  schema: "sir-tactical-visual-review-v1",
-  productionBundleSha256: hash(bundleBytes),
-  productionStylesSha256: hash(stylesBytes),
+  schema: "sir-tactical-visual-review-v2",
+  productionBundleSha256: hash(bundleBytes), productionStylesSha256: hash(stylesBytes),
   before: { path: "../persistent-workspace-m9-review/field-focus.png", sha256: hash(baselineBytes) },
-  after: { path: "after-production.png", sha256: hash(afterBytes), captureKind: "actual-production-shell-chromium-screenshot" },
-  densityPrototypes: {
-    svg: "density-prototypes.svg", svgSha256: hash(prototypeSvgBytes),
-    png: "density-prototypes.png", pngSha256: hash(prototypePngBytes),
-    scenes: scenes.map(({ name, units }) => ({ name, units })),
-  },
+  after: { path: "after-production.png", sha256: hash(afterBytes), captureKind: "actual-production-shell-chromium-screenshot", semantic: system },
+  densityScenes: densityAudits,
   visualSystem: system,
   budgets: {
-    representative100: { maximumEstimatedSvgNodes: 5000, maximumEffects: 128, releaseP95Milliseconds: 4 },
-    stress200: { maximumEstimatedSvgNodes: 9000, maximumEffects: 256, releaseP95Milliseconds: 8 },
-    browserAnimationFrameMilliseconds: 16.67,
+    representative100: { maximumDomNodes: 5000, maximumEffects: 128, maximumInputToPaintMilliseconds: 100, targetAnimationFrameMilliseconds: 16.67, measurementToleranceMilliseconds: 1 },
+    stress200: { maximumDomNodes: 9000, maximumEffects: 256, maximumInputToPaintMilliseconds: 150, targetAnimationFrameMilliseconds: 16.67, measurementToleranceMilliseconds: 1 },
   },
 };
 await writeFile(resolve(reviewOutput, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
-console.log(`Captured tactical visual review for ${system.identity} and ${scenes.length} density prototypes.`);
+console.log("Captured exact production tactical visual review with effectful after-state and 100/200-unit workloads.");

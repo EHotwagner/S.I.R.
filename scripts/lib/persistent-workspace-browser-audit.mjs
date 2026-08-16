@@ -257,6 +257,11 @@ const collectGeometry = () => {
       effectLimit: Number(svg.getAttribute("data-effect-limit")),
       unitCount: Number(svg.getAttribute("data-visual-unit-count")),
       nodeEstimate: Number(svg.getAttribute("data-visual-node-estimate")),
+      paintedLayerOrder: [...svg.querySelector("#persistent-scene-camera").children]
+        .map((node) => node.getAttribute("data-scene-layer")).filter(Boolean).join(">"),
+      effectKinds: [...svg.querySelectorAll("[data-effect-kind]")].map((node) => node.getAttribute("data-effect-kind")),
+      effectLifecycles: [...svg.querySelectorAll("[data-effect-lifecycle]")].map((node) => node.getAttribute("data-effect-lifecycle")),
+      workload: globalThis.__sirTacticalWorkload ?? null,
       tokens: Object.fromEntries([
         "--sir-canvas", "--sir-text", "--sir-grid", "--sir-focus",
         "--sir-intent", "--sir-impact", "--sir-suppression", "--sir-recovery", "--sir-rejected",
@@ -440,7 +445,7 @@ export const assertPortableReviewMetrics = ({ storedWide, storedNarrow, liveWide
   }
 };
 
-export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/client", screenshotPath } = {}) => {
+export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/client", screenshotPath, prepareExpression } = {}) => {
   const chromiumExecutable = await discoverChromium();
   const { server, port } = await serve(clientRoot);
   const profile = await mkdtemp(join(tmpdir(), "sir-m9-chromium-"));
@@ -515,6 +520,18 @@ export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/
     await cdp.send("Page.navigate", { url: `http://127.0.0.1:${port}/` });
     await waitForShell(cdp);
     await delay(250);
+    if (prepareExpression) {
+      try {
+        await Promise.race([
+          evaluate(cdp, prepareExpression),
+          delay(20_000).then(() => { throw new Error("production review preparation exceeded 20 seconds"); }),
+        ]);
+      } catch (error) {
+        const stage = await evaluate(cdp, "globalThis.__sirTacticalStage ?? 'unspecified'");
+        throw new Error(`${error.message}; stage=${stage}`, { cause: error });
+      }
+      await delay(250);
+    }
     const wide = await evaluate(cdp, `(${collectGeometry.toString()})()`);
     assertWide(wide);
     if (screenshotPath) {

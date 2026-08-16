@@ -1664,7 +1664,7 @@ const sampleKinds = [
 ].map((item) => item.textContent.trim());
 if (
   !samplesWorkspace ||
-  sampleKinds.filter((kind) => kind === "Map · Simulation").length !== 3 ||
+  sampleKinds.filter((kind) => kind === "Map · Simulation").length !== 5 ||
   sampleKinds.filter((kind) => kind === "Replay").length !== 2
 ) {
   throw new Error("Curated map, simulation, and replay sample coverage is incomplete.");
@@ -1713,6 +1713,10 @@ const reopenedShell = window.document.querySelector(
 const reopenedSvg = window.document.querySelector(
   'svg#persistent-tactical-svg[data-work-surface-root="persistent-svg"]',
 );
+const reopenedPaintOrder = [...reopenedSvg.querySelector("#persistent-scene-camera").children]
+  .map((node) => node.getAttribute("data-scene-layer"))
+  .filter(Boolean)
+  .join(">");
 if (
   reopenedShell !== shell ||
   reopenedSvg !== worksurface ||
@@ -1720,6 +1724,7 @@ if (
   reopenedSvg.querySelectorAll("[data-scene-layer]").length !== 9 ||
   reopenedSvg.getAttribute("data-layer-order") !==
     "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations" ||
+  reopenedPaintOrder !== reopenedSvg.getAttribute("data-layer-order") ||
   !reopenedShell.querySelector('[data-panel-id="tools"]') ||
   !reopenedShell.querySelector('[data-panel-id="document"]')
 ) {

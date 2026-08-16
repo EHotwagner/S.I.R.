@@ -111,16 +111,22 @@ type TacticalEffectKind =
     | RecoveryEffect
     | SignalEffect
     | ObjectiveEffect
+    | GenericEffect
+
+type TacticalEffectLifecycle =
+    | PreviewEffect
+    | PredictedEffect
     | AcceptedEffect
+    | CommittedEffect
     | RejectedEffect
     | HistoricalEffect
-    | GenericEffect
 
 type TacticalEffectProjection =
     { PrimitiveId: ScenePrimitiveId
       EventId: int32
       Tick: int32
       Kind: TacticalEffectKind
+      Lifecycle: TacticalEffectLifecycle
       SourceUnitId: int32 option
       TargetUnitId: int32 option
       SourcePoint: (float * float) option

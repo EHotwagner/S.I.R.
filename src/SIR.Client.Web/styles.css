@@ -1090,6 +1090,10 @@
     transition-duration: .01ms !important;
     animation-duration: .01ms !important;
   }
+  /* Causal feedback remains perceivable without spatial motion. */
+  #sir-replay-app #persistent-tactical-svg[data-motion="reduced"] .tactical-effect {
+    animation-duration: var(--sir-effect-ms, 120ms) !important;
+  }
 }
 
 @media (forced-colors: active) {

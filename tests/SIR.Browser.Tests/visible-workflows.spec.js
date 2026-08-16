@@ -99,7 +99,11 @@ test("the production tactical visual system preserves causal feedback under redu
     "data-layer-order",
     "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
   );
-  await expect(battlefield.locator("#persistent-layer-effects")).toHaveAttribute("data-effect-motion", "emphasis");
+  const paintedOrder = await battlefield.locator("#persistent-scene-camera").evaluate((camera) =>
+    [...camera.children].map((node) => node.getAttribute("data-scene-layer")).filter(Boolean).join(">"),
+  );
+  expect(paintedOrder).toBe(await battlefield.getAttribute("data-layer-order"));
+  await expect(battlefield.locator("#persistent-layer-effects")).toHaveAttribute("data-effect-motion", "emphasis-120ms");
 
   await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();
   const effectCount = Number(await battlefield.getAttribute("data-effect-count"));
@@ -111,7 +115,9 @@ test("the production tactical visual system preserves causal feedback under redu
   expect(unitCount).toBeGreaterThan(0);
   expect(nodeEstimate).toBeLessThanOrEqual(unitCount <= 100 ? 5000 : 9000);
   const firstEffect = battlefield.locator("#persistent-layer-effects [data-effect-event]").first();
-  await expect(firstEffect).toHaveAttribute("data-effect-kind", /movement|attack|impact|suppression|recovery|signal|objective|accepted|rejected|event/);
+  await expect(firstEffect).toHaveAttribute("data-effect-kind", /movement|attack|impact|suppression|recovery|signal|objective|event/);
+  await expect(firstEffect).toHaveAttribute("data-effect-lifecycle", /preview|predicted|accepted|committed|rejected|historical/);
+  expect(await firstEffect.evaluate((node) => getComputedStyle(node).animationDuration)).toBe("0.12s");
   await expect(battlefield.locator("#persistent-layer-effects")).toHaveAttribute("pointer-events", "none");
   await expect(battlefield.locator("#persistent-layer-units [data-unit-id]").first()).toBeVisible();
 

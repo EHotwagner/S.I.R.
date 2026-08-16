@@ -24,6 +24,7 @@
     "test:persistent-workspace-browser-audit-portability": "node scripts/test-persistent-workspace-browser-audit-portability.mjs",
     "test:persistent-workspace-m9-acceptance": "node scripts/test-persistent-workspace-m9-acceptance.mjs",
     "test:tactical-visual-review": "node scripts/test-tactical-visual-review.mjs",
+    "test:tactical-visual-review-mutations": "bash scripts/test-tactical-visual-review-mutations.sh",
     "test:map-design-transfer": "node scripts/test-map-editor-design-transfer.mjs",
     "test:persistent-workspace-m0": "node scripts/test-persistent-workspace-m0-baseline.mjs",
     "test": "./scripts/test-conformance.sh",

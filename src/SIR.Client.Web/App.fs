@@ -5981,57 +5981,7 @@ let private activeSceneProjection (model: Model) =
                   SimulatorFocusedUnit = focusedUnit })
     let withRuntimeTruth (contextual: SharedSceneProjection) =
         simulatorProjection ()
-        |> Option.map (fun runtime ->
-            let runtimeUnits =
-                runtime.Units
-                |> Array.map (fun unit -> unit.Visual.Id, unit)
-                |> Map.ofArray
-            let units =
-                Array.append
-                    (contextual.Units
-                     |> Array.choose (fun authored ->
-                         Map.tryFind authored.Visual.Id runtimeUnits
-                         |> Option.map (fun live ->
-                             { authored with
-                                 PresentationColumn = live.PresentationColumn
-                                 PresentationRow = live.PresentationRow
-                                 Visual = live.Visual })))
-                    (runtime.Units
-                     |> Array.filter (fun live ->
-                         contextual.Units
-                         |> Array.exists (fun authored ->
-                             authored.Visual.Id = live.Visual.Id)
-                         |> not))
-            let routes = Array.append contextual.Routes runtime.Routes
-            let annotations = Array.append contextual.Annotations runtime.Annotations
-            let effects =
-                Array.append contextual.Effects runtime.Effects
-                |> Array.distinctBy (fun effect -> effect.PrimitiveId)
-                |> Array.sortBy (fun effect -> effect.Tick, effect.Order, ScenePrimitiveId.value effect.PrimitiveId)
-                |> Array.truncate ((TacticalSceneProjection.visualSystem "accessible-default" false units.Length).MaximumActiveEffects)
-            let addedUnits = max 0 (units.Length - contextual.Units.Length)
-            let addedRoutes = max 0 (routes.Length - contextual.Routes.Length)
-            let addedAnnotations = max 0 (annotations.Length - contextual.Annotations.Length)
-            let addedEffects = max 0 (effects.Length - contextual.Effects.Length)
-            { contextual with
-                RevisionIdentity = runtime.RevisionIdentity
-                Tick = runtime.Tick
-                Board = runtime.Board
-                Terrain = runtime.Terrain
-                Edges = runtime.Edges
-                Units = units
-                Routes = routes
-                Annotations = annotations
-                Effects = effects
-                VisualCost =
-                    { UnitCount = units.Length
-                      EffectInstances = effects.Length
-                      EstimatedSvgNodes =
-                        contextual.VisualCost.EstimatedSvgNodes
-                        + (addedUnits * 12)
-                        + addedRoutes
-                        + addedAnnotations
-                        + (addedEffects * 3) } })
+        |> Option.map (mergeRuntimeTruth contextual)
         |> Option.defaultValue contextual
     match model.Workspace, TacticalSceneProjection.acceptReview model.Shell with
     | ReplayWorkspace, Some accepted ->
@@ -6139,35 +6089,7 @@ let private persistentSceneSvg
             model.Battlefield.PaletteId
             model.Battlefield.ReducedMotion
             unitCount
-    let densityToken =
-        match visualSystem.Density with
-        | OrdinaryDensity -> "ordinary"
-        | DenseDensity -> "dense"
-        | StressDensity -> "stress"
-    let effectKindToken = function
-        | MovementEffect -> "movement"
-        | AttackEffect -> "attack"
-        | ImpactEffect -> "impact"
-        | SuppressionEffect -> "suppression"
-        | RecoveryEffect -> "recovery"
-        | SignalEffect -> "signal"
-        | ObjectiveEffect -> "objective"
-        | AcceptedEffect -> "accepted"
-        | RejectedEffect -> "rejected"
-        | HistoricalEffect -> "historical"
-        | GenericEffect -> "event"
-    let effectColor = function
-        | ImpactEffect -> visualSystem.Impact
-        | SuppressionEffect -> visualSystem.Suppression
-        | RecoveryEffect
-        | AcceptedEffect -> visualSystem.Recovery
-        | RejectedEffect -> visualSystem.Rejected
-        | AttackEffect
-        | MovementEffect
-        | SignalEffect -> visualSystem.Intent
-        | ObjectiveEffect -> visualSystem.Palette.NeutralFaction
-        | HistoricalEffect
-        | GenericEffect -> visualSystem.Palette.Text
+    let densityToken = tacticalDensityToken visualSystem.Density
     let tacticalOverlays =
         projection
         |> Option.map (TacticalSceneProjection.projectOverlays model.TacticalOverlays model.HeldTacticalOverlays)
@@ -6475,29 +6397,6 @@ let private persistentSceneSvg
                     + ")"
                 )
                 svg.children [
-                    Svg.g [
-                        svg.id "persistent-tactical-overlay-layer"
-                        svg.custom ("data-scene-layer", "tactical-overlays"); svg.custom ("data-overlay-order", "registry")
-                        svg.custom ("data-overlay-contrast", model.Battlefield.PaletteId); svg.custom ("data-overlay-patterns", "non-color-only"); svg.custom ("pointer-events", "none")
-                        svg.children [
-                            for payload in tacticalOverlays.Payloads do
-                                Svg.g [
-                                    svg.key (TacticalOverlayId.value payload.OverlayId + ":" + ScenePrimitiveId.value payload.PrimitiveId)
-                                    svg.custom ("data-overlay-id", TacticalOverlayId.value payload.OverlayId); svg.custom ("data-overlay-kind", payload.Kind)
-                                    svg.custom ("data-overlay-payload-kind", string payload.PayloadKind); svg.custom ("data-overlay-order", string payload.Order)
-                                    svg.custom ("data-overlay-priority", string payload.Priority); svg.custom ("data-overlay-pattern", "directional-hatch")
-                                    svg.children (payloadChildren cellSize payload)
-                                ]
-                            for label in tacticalOverlays.Labels do
-                                if label.Points.Length >= 2 then
-                                    Svg.text [
-                                        svg.key ("overlay-label:" + TacticalOverlayId.value label.OverlayId + ":" + label.SubjectId)
-                                        svg.custom ("data-overlay-label", TacticalOverlayId.value label.OverlayId)
-                                        svg.x (label.Points[0] * cellSize + 8.0); svg.y (label.Points[1] * cellSize - 8.0); svg.fill "currentColor"
-                                        svg.text (sceneDisclosureText label.Label)
-                                    ]
-                        ]
-                    ]
                     Svg.g [
                         svg.id "persistent-live-authority-layer"
                         svg.custom ("data-live-layer", "live-authority")
@@ -6900,65 +6799,7 @@ let private persistentSceneSvg
                             | None -> ()
                         ]
                     ]
-                    Svg.g [
-                        svg.id "persistent-layer-effects"
-                        svg.custom ("data-scene-layer", "effects")
-                        svg.custom ("data-effect-motion", if visualSystem.ReducedMotion then "emphasis" else "causal")
-                        svg.custom ("pointer-events", "none")
-                        svg.custom ("aria-hidden", "true")
-                        svg.children [
-                            match projection with
-                            | Some scene ->
-                                for effect in scene.Effects do
-                                    let token = effectKindToken effect.Kind
-                                    let color = effectColor effect.Kind
-                                    Svg.g [
-                                        svg.key (ScenePrimitiveId.value effect.PrimitiveId)
-                                        svg.className ("tactical-effect tactical-effect-" + token)
-                                        svg.custom ("data-primitive-id", ScenePrimitiveId.value effect.PrimitiveId)
-                                        svg.custom ("data-effect-kind", token)
-                                        svg.custom ("data-effect-event", string effect.EventId)
-                                        svg.custom ("data-effect-tick", string effect.Tick)
-                                        svg.custom ("data-effect-order", string effect.Order)
-                                        svg.children [
-                                            match effect.SourcePoint, effect.TargetPoint with
-                                            | Some(sourceX, sourceY), Some(targetX, targetY) ->
-                                                Svg.line [
-                                                    svg.className "tactical-effect-trace"
-                                                    svg.x1 (sourceX * cellSize)
-                                                    svg.y1 (sourceY * cellSize)
-                                                    svg.x2 (targetX * cellSize)
-                                                    svg.y2 (targetY * cellSize)
-                                                    svg.stroke color
-                                                    svg.strokeWidth (if visualSystem.ReducedMotion then 6 else 4)
-                                                    svg.custom ("stroke-dasharray", if effect.Kind = AttackEffect then "12 7" else "4 5")
-                                                ]
-                                                Svg.circle [
-                                                    svg.className "tactical-effect-impact"
-                                                    svg.cx (targetX * cellSize)
-                                                    svg.cy (targetY * cellSize)
-                                                    svg.r (if visualSystem.ReducedMotion then 11 else 8)
-                                                    svg.fill "none"
-                                                    svg.stroke color
-                                                    svg.strokeWidth 4
-                                                ]
-                                            | _, Some(targetX, targetY)
-                                            | Some(targetX, targetY), _ ->
-                                                Svg.circle [
-                                                    svg.className "tactical-effect-impact"
-                                                    svg.cx (targetX * cellSize)
-                                                    svg.cy (targetY * cellSize)
-                                                    svg.r (if visualSystem.ReducedMotion then 11 else 8)
-                                                    svg.fill "none"
-                                                    svg.stroke color
-                                                    svg.strokeWidth 4
-                                                ]
-                                            | None, None -> ()
-                                        ]
-                                    ]
-                            | None -> ()
-                        ]
-                    ]
+                    tacticalEffectLayer cellSize visualSystem projection
                     Svg.g [
                         svg.id "persistent-layer-selection"
                         svg.custom ("data-scene-layer", "selection")
@@ -6984,6 +6825,29 @@ let private persistentSceneSvg
                                             svg.custom ("stroke-dasharray", "6 3")
                                         ]
                             | None -> ()
+                        ]
+                    ]
+                    Svg.g [
+                        svg.id "persistent-tactical-overlay-layer"
+                        svg.custom ("data-scene-layer", "tactical-overlays"); svg.custom ("data-overlay-order", "registry")
+                        svg.custom ("data-overlay-contrast", model.Battlefield.PaletteId); svg.custom ("data-overlay-patterns", "non-color-only"); svg.custom ("pointer-events", "none")
+                        svg.children [
+                            for payload in tacticalOverlays.Payloads do
+                                Svg.g [
+                                    svg.key (TacticalOverlayId.value payload.OverlayId + ":" + ScenePrimitiveId.value payload.PrimitiveId)
+                                    svg.custom ("data-overlay-id", TacticalOverlayId.value payload.OverlayId); svg.custom ("data-overlay-kind", payload.Kind)
+                                    svg.custom ("data-overlay-payload-kind", string payload.PayloadKind); svg.custom ("data-overlay-order", string payload.Order)
+                                    svg.custom ("data-overlay-priority", string payload.Priority); svg.custom ("data-overlay-pattern", "directional-hatch")
+                                    svg.children (payloadChildren cellSize payload)
+                                ]
+                            for label in tacticalOverlays.Labels do
+                                if label.Points.Length >= 2 then
+                                    Svg.text [
+                                        svg.key ("overlay-label:" + TacticalOverlayId.value label.OverlayId + ":" + label.SubjectId)
+                                        svg.custom ("data-overlay-label", TacticalOverlayId.value label.OverlayId)
+                                        svg.x (label.Points[0] * cellSize + 8.0); svg.y (label.Points[1] * cellSize - 8.0); svg.fill "currentColor"
+                                        svg.text (sceneDisclosureText label.Label)
+                                    ]
                         ]
                     ]
                     Svg.g [

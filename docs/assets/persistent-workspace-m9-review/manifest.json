@@ -1,8 +1,8 @@
 {
   "schema": "sir-persistent-workspace-m9-live-review-v2",
   "captureKind": "actual-production-shell-chromium-screenshot",
-  "productionBundleSha256": "3f8d91b6ba3fd98ea39eca24a4296083179e92069facccb287ad4364678ef4af",
-  "productionStylesSha256": "35487427a953e672e2f69f46971320882dc4c768e5314105f816d19faa721b7e",
+  "productionBundleSha256": "f686b71a563d36c57449666cf9dcc20379ae486f3548c08ac3514686c34c13e9",
+  "productionStylesSha256": "d25df5340a553fa9dcf3c5a4d272942ecadc8d73d395e91bdaa9f29a7144c7d8",
   "acceptedMockupSha256": "b2b0d444202aa9c76235fa7277ba2c6a4e89d3d7dc0dd009abb8e73c72c82270",
   "chromiumExecutable": "/usr/sbin/chromium",
   "chromiumUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
@@ -143,6 +143,31 @@
     "counts": {
       "worksurfaceRoots": 1,
       "applicationLandmarks": 1
+    },
+    "visualSystem": {
+      "identity": "tactical-visual-system-v1",
+      "density": "ordinary",
+      "motion": "full",
+      "layerOrder": "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
+      "effectCount": 0,
+      "effectLimit": 256,
+      "unitCount": 4,
+      "nodeEstimate": 479,
+      "paintedLayerOrder": "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
+      "effectKinds": [],
+      "effectLifecycles": [],
+      "workload": null,
+      "tokens": {
+        "--sir-canvas": "#10161d",
+        "--sir-text": "#f7f9fa",
+        "--sir-grid": "#71808b",
+        "--sir-focus": "#ffffff",
+        "--sir-intent": "#53b7ff",
+        "--sir-impact": "#ff6b6b",
+        "--sir-suppression": "#d792ff",
+        "--sir-recovery": "#8ce99a",
+        "--sir-rejected": "#ff6b6b"
+      }
     },
     "channels": [
       {
@@ -671,6 +696,6 @@
   },
   "png": "field-focus.png",
   "geometrySvg": "field-focus-geometry.svg",
-  "pngSha256": "9e7388276d1c7753dcf2e87446875eb494fd75adaa5928102409de0a60d88c27",
-  "geometrySvgSha256": "1a72e3ec0a4b44a9d8531b0954f67fbe983600f5dcaa22170a124b02facd8051"
+  "pngSha256": "0cf0d85c06135089a249fd05aadf71008ed42782fc072d54654ff37b8e5d747d",
+  "geometrySvgSha256": "bde3b3ccbceac873f9cd6680adff99ad8de4b9d60b8480e4a338e5aaaf7968d7"
 }

@@ -114,16 +114,22 @@ type TacticalEffectKind =
     | RecoveryEffect
     | SignalEffect
     | ObjectiveEffect
+    | GenericEffect
+
+type TacticalEffectLifecycle =
+    | PreviewEffect
+    | PredictedEffect
     | AcceptedEffect
+    | CommittedEffect
     | RejectedEffect
     | HistoricalEffect
-    | GenericEffect
 
 type TacticalEffectProjection =
     { PrimitiveId: ScenePrimitiveId
       EventId: int32
       Tick: int32
       Kind: TacticalEffectKind
+      Lifecycle: TacticalEffectLifecycle
       SourceUnitId: int32 option
       TargetUnitId: int32 option
       SourcePoint: (float * float) option
@@ -501,19 +507,25 @@ module TacticalSceneProjection =
               PresentationColumn = float unit.AnchorColumn
               PresentationRow = float unit.AnchorRow })
 
-    let private effectKind historical (kind: string) =
+    let private effectKind (kind: string) =
         let normalized = kind.ToLowerInvariant()
-        if historical then HistoricalEffect
-        elif normalized.Contains("move") then MovementEffect
+        if normalized.Contains("move") then MovementEffect
         elif normalized.Contains("attack") || normalized.Contains("trace") then AttackEffect
         elif normalized.Contains("impact") || normalized.Contains("damage") || normalized.Contains("wound") then ImpactEffect
         elif normalized.Contains("suppress") then SuppressionEffect
         elif normalized.Contains("heal") || normalized.Contains("recover") then RecoveryEffect
         elif normalized.Contains("communication") || normalized.Contains("acknowledg") || normalized.Contains("sensor") then SignalEffect
         elif normalized.Contains("objective") then ObjectiveEffect
-        elif normalized.Contains("accept") || normalized.Contains("commit") then AcceptedEffect
-        elif normalized.Contains("reject") then RejectedEffect
         else GenericEffect
+
+    let private effectLifecycle historical (kind: string) =
+        let normalized = kind.ToLowerInvariant()
+        if historical then HistoricalEffect
+        elif normalized.Contains("preview") then PreviewEffect
+        elif normalized.Contains("predict") || normalized.Contains("plan") then PredictedEffect
+        elif normalized.Contains("reject") || normalized.Contains("cancel") then RejectedEffect
+        elif normalized.Contains("commit") || normalized.Contains("resolve") then CommittedEffect
+        else AcceptedEffect
 
     let private effectOrder = function
         | MovementEffect -> 10
@@ -523,10 +535,7 @@ module TacticalSceneProjection =
         | ImpactEffect -> 50
         | SuppressionEffect -> 60
         | RecoveryEffect -> 70
-        | AcceptedEffect -> 80
-        | RejectedEffect -> 90
-        | HistoricalEffect -> 100
-        | GenericEffect -> 110
+        | GenericEffect -> 80
 
     let private effectsOfFrame historical (units: SceneUnitProjection array) (frame: RenderFrame) =
         let centers =
@@ -542,12 +551,13 @@ module TacticalSceneProjection =
             | Disclosed label ->
                 let sourceId = match event.SourceUnitId with Disclosed id when Map.containsKey id centers -> Some id | _ -> None
                 let targetId = match event.TargetUnitId with Disclosed id when Map.containsKey id centers -> Some id | _ -> None
-                let kind = effectKind historical event.Kind
+                let kind = effectKind event.Kind
                 Some
                     { PrimitiveId = primitive "effect" (invariant event.Tick + ":" + invariant event.Id)
                       EventId = event.Id
                       Tick = event.Tick
                       Kind = kind
+                      Lifecycle = effectLifecycle historical event.Kind
                       SourceUnitId = sourceId
                       TargetUnitId = targetId
                       SourcePoint = sourceId |> Option.map (fun id -> centers[id])
@@ -555,8 +565,10 @@ module TacticalSceneProjection =
                       Label = label
                       Order = effectOrder kind }
             | _ -> None)
-        |> Array.sortBy (fun effect -> effect.Tick, effect.Order, effect.EventId)
+        // Bound the current causal window, then restore deterministic paint order.
+        |> Array.sortByDescending (fun effect -> effect.Tick, effect.EventId)
         |> Array.truncate MaximumEffectInstances
+        |> Array.sortBy (fun effect -> effect.Tick, effect.Order, effect.EventId)
 
     let private visualCost
         (terrain: SceneTerrainProjection array)

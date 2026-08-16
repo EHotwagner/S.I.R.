@@ -128,6 +128,18 @@ let private ids projection =
     |> Array.map ScenePrimitiveId.value
 
 let run () =
+    for expected in [ 100; 200 ] do
+        let sample =
+            ExperienceSamples.tryMap ("tactical-density-" + string expected)
+            |> Option.defaultWith (fun () -> failwith "Production density sample is missing.")
+        let editorSample = ExperienceSamples.editorState sample
+        let loadedSample = MapEditor.initial |> MapEditor.update (LoadMapText sample.MapText)
+        let simulator =
+            ExperienceSamples.simulator sample
+            |> Option.defaultWith (fun () -> failwith ("Production density sample failed validation: " + string expected))
+        require
+            (simulator.RuntimeMap.Units.Count = expected)
+            ("Production density sample unit count drifted: expected " + string expected + ", actual " + string simulator.RuntimeMap.Units.Count + ", dimensions " + string editorSample.Map.Width + "x" + string editorSample.Map.Height + ", load " + string loadedSample.Validation + ", validation " + string editorSample.Validation + ", source " + sample.MapText.Substring(0, min 160 sample.MapText.Length).Replace("\n", "|"))
     let initialEditor = MapEditor.initial
     let initialSimulator = MapEditorSimulator.tryHandoff initialEditor |> Result.defaultWith failwith
     let advancedSimulator = MapEditorSimulator.update StepSimulator initialEditor.SelectedUnit initialSimulator
@@ -664,7 +676,8 @@ let run () =
          && stressVisual.LayerOrder
             = [| "terrain"; "edges"; "routes"; "units"; "effects"; "selection"; "tactical-overlays"; "annotations" |]
          && reviewProjection.Effects.Length = 1
-         && reviewProjection.Effects[0].Kind = HistoricalEffect
+         && reviewProjection.Effects[0].Kind = GenericEffect
+         && reviewProjection.Effects[0].Lifecycle = HistoricalEffect
          && reviewProjection.Effects[0].EventId = projectedEvent.Id
          && reviewProjection.Effects[0].SourceUnitId = Some firstUnit
          && reviewProjection.Effects[0].TargetUnitId.IsNone
@@ -966,7 +979,7 @@ let run () =
                AttentionDirection = 2 }
              : UnitProjection))
     let denseEvents =
-        [ 1 .. 200 ]
+        [ 1 .. 300 ]
         |> List.map (fun id ->
             ({ Id = int32 id
                Tick = int32 id
@@ -1290,7 +1303,9 @@ let run () =
          && representativeReview.VisualCost.EstimatedSvgNodes <= 5_000
          && representativeReviewP95 < 4.0
          && stressReview.VisualCost.UnitCount = 200
-         && stressReview.VisualCost.EffectInstances = 200
+         && stressReview.VisualCost.EffectInstances = 256
+         && stressReview.Effects[0].Tick = 45
+         && stressReview.Effects[stressReview.Effects.Length - 1].Tick = 300
          && stressReview.VisualCost.EstimatedSvgNodes <= 9_000
          && reviewP95 < 8.0)
         (sprintf
