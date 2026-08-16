@@ -19,8 +19,10 @@ const expected = [
   "src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj",
 ];
 
-if (JSON.stringify(observed) !== JSON.stringify(expected)) {
-  throw new Error(`verify-fable-invocations: expected ${expected.join(",")}; observed ${observed.join(",")}`);
+const canonicalObserved = [...observed].sort();
+const canonicalExpected = [...expected].sort();
+if (JSON.stringify(canonicalObserved) !== JSON.stringify(canonicalExpected)) {
+  throw new Error(`verify-fable-invocations: expected exact-once set ${canonicalExpected.join(",")}; observed ${canonicalObserved.join(",")}`);
 }
 
-console.log(JSON.stringify({ schema: "sir.fable-process-inventory/v1", result: "pass", observed }));
+console.log(JSON.stringify({ schema: "sir.fable-process-inventory/v1", result: "pass", observed: canonicalObserved }));

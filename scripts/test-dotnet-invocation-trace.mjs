@@ -22,7 +22,7 @@ try {
     "src/SIR.Replay.Web/SIR.Replay.Web.fsproj",
     "src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj",
   ];
-  for (const project of expected) {
+  for (const project of [expected[1], expected[0], expected[3], expected[2]]) {
     const result = run(shim, ["fable", project, "--noCache"], env);
     if (result.status !== 0) throw new Error(`trace fixture failed: ${result.stderr}`);
   }

@@ -6,7 +6,7 @@ Production qualification is single-pass within one workspace:
 npm run qualify:production
 ```
 
-The driver runs the existing conformance, delivery, and browser subjects, builds the main Fable client and Rules Explorer exactly once, creates and verifies an immutable build receipt, then runs the complete documentation build with verified reuse. A PATH-boundary `dotnet` shim observes every Fable process and refuses any project inventory other than the exact main and Rules pair. The documentation command remains independently usable: `npm run build:docs` performs its historical full restore/build/Fable/Vite path when no receipt is supplied.
+The driver runs the existing conformance, delivery, and browser subjects, builds the main Fable client and Rules Explorer exactly once, creates and verifies an immutable build receipt, then runs the complete documentation build with verified reuse. The two independent production Fable targets run concurrently into isolated output and log paths; their failures are joined in deterministic Replay/Rules order, and Vite starts only after both succeed. A PATH-boundary `dotnet` shim observes every Fable process and refuses any inventory other than the exact four-project qualification set (the two conformance projects plus the two production projects), each exactly once, independent of parallel scheduling order. The documentation command remains independently usable: `npm run build:docs` performs its historical full restore/build/Fable/Vite path when no receipt is supplied.
 
 ## Build receipt v1
 
