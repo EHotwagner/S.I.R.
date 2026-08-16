@@ -31,6 +31,9 @@ try {
   const created = JSON.parse(run(process.execPath, receiptArgs("create", ["--receipt-directory", "receipts"])));
   receipt = created.receipt;
   JSON.parse(run(process.execPath, receiptArgs("verify", ["--receipt", receipt])));
+  JSON.parse(run(process.execPath, receiptArgs("mutate-stale-reuse", ["--receipt", receipt, "--mutation-output-id", "fixture"])));
+  JSON.parse(run(process.execPath, receiptArgs("mutate-missing-reuse", ["--receipt", receipt, "--mutation-output-id", "fixture"])));
+  if (await readFile(join(fixture, "output", "bundle.js"), "utf8") !== "bundle-v1\n") throw new Error("mutation subject was not restored");
   run("dotnet", ["fsi", feedbackTool, "--", "validate-focused-receipt", "--root", fixture, "--receipt", receipt, "--owner-command", "fixture-owner"]);
 
   await writeFile(join(fixture, "output", "bundle.js"), "bundle-v2\n");
@@ -60,7 +63,7 @@ try {
   run("git", ["commit", "-qm", "production drift"]);
   expectRed("metadata-only-drift:scripts/change.sh", ["--allow-metadata-only", "true"]);
 
-  console.log("production build receipt focused qualification passed: canonical create/verify, output/input/content-address/revision drift, and metadata-only reuse remain fail closed");
+  console.log("production build receipt focused qualification passed: canonical create/verify, stale/missing restoration, output/input/content-address/revision drift, and metadata-only reuse remain fail closed");
 } finally {
   await rm(fixture, { recursive: true, force: true });
 }

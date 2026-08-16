@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { lstat, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { lstat, mkdir, readFile, readdir, unlink, writeFile } from "node:fs/promises";
 import { basename, dirname, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -186,11 +186,15 @@ async function main(argv) {
     return;
   }
 
-  if (mode === "mutate-stale-reuse") {
-    const subject = resolve(root, receipt.outputs[0].files[0].path);
+  if (mode === "mutate-stale-reuse" || mode === "mutate-missing-reuse") {
+    const mutationOutputId = one("mutation-output-id", receipt.outputs[0].id);
+    const mutationOutput = receipt.outputs.find((output) => output.id === mutationOutputId);
+    if (!mutationOutput) throw new Error(`production-build-receipt: unknown-mutation-output:${mutationOutputId}`);
+    const subject = resolve(root, mutationOutput.files[0].path);
     const original = await readFile(subject);
     try {
-      await writeFile(subject, Buffer.concat([original, Buffer.from("\nreceipt-stale-mutation\n")]));
+      if (mode === "mutate-missing-reuse") await unlink(subject);
+      else await writeFile(subject, Buffer.concat([original, Buffer.from("\nreceipt-stale-mutation\n")]));
       let rejected = false;
       try {
         const current = await derive(root, ownerCommand, inputs, outputs);
@@ -203,11 +207,11 @@ async function main(argv) {
       await writeFile(subject, original);
     }
     if (sha256(await readFile(subject)) !== sha256(original)) throw new Error("production-build-receipt: mutation-restoration-failed");
-    console.log(JSON.stringify({ schema, result: "pass", mutation: "output-identity-drift", restored: true }));
+    console.log(JSON.stringify({ schema, result: "pass", mutation: mode === "mutate-missing-reuse" ? "missing-output-identity-drift" : "stale-output-identity-drift", output: mutationOutputId, restored: true }));
     return;
   }
 
-  throw new Error("production-build-receipt: usage create|verify|mutate-stale-reuse [options]");
+  throw new Error("production-build-receipt: usage create|verify|mutate-stale-reuse|mutate-missing-reuse [options]");
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {

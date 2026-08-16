@@ -7,18 +7,11 @@ rules_fable_output="$repo_root/src/SIR.Client.Web/.fable-rules"
 
 cd "$repo_root"
 
-if [[ -n "${SIR_FABLE_INVOCATION_LOG:-}" ]]; then
-  mkdir -p "$(dirname "$SIR_FABLE_INVOCATION_LOG")"
-  printf '%s\n' main-fable >> "$SIR_FABLE_INVOCATION_LOG"
-fi
 dotnet fable src/SIR.Replay.Web/SIR.Replay.Web.fsproj \
   --outDir "$fable_output" \
   --define SIR_WEB_CLIENT \
   --noCache
 
-if [[ -n "${SIR_FABLE_INVOCATION_LOG:-}" ]]; then
-  printf '%s\n' rules-fable >> "$SIR_FABLE_INVOCATION_LOG"
-fi
 dotnet fable src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj \
   --outDir "$rules_fable_output" \
   --noCache
