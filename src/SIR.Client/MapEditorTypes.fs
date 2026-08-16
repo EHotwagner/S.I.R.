@@ -87,6 +87,10 @@ type MapDefinition =
       Regions: Map<int32, MapRegion>
       NextRegionId: int32 }
 
+type TacticalParcelDocument =
+    { TacticalPlot: AuthoredPlot
+      TacticalVariants: ParcelVariant list }
+
 type MapEditorTool =
     | Select
     | Paint of MapTerrain
@@ -229,6 +233,8 @@ type MapRevision =
     { Number: int64
       ParentDigest: string option
       Document: MapDefinition
+      TacticalDocument: TacticalParcelDocument
+      TacticalSeed: uint64
       Digest: string }
 
 type RevisionState =
@@ -261,6 +267,8 @@ type MapUnitFootprintPreset =
 
 type MapEditorState =
     { Map: MapDefinition
+      TacticalDocument: TacticalParcelDocument
+      TacticalSeed: uint64
       Tool: MapEditorTool
       TerrainSelection: MapTerrain
       BrushSize: int32
@@ -303,6 +311,7 @@ type MapEditorState =
 
 type MapEditorAction =
     | ChooseTool of MapEditorTool
+    | ReplaceTacticalParcelDocument of TacticalParcelDocument * seed: uint64
     | ChooseTerrain of MapTerrain
     | SetTerrainBrushSize of int32
     | MoveTerrainCursor of columnDelta: int32 * rowDelta: int32 * extendPreview: bool
@@ -412,4 +421,3 @@ type MapEditorAction =
     | StepEditor
     | ClearMap
     | LoadMapText of string
-

@@ -5,6 +5,7 @@ open System.Text
 open SIR.Domain
 [<RequireQualifiedAccess>]
 module MapEditor =
+
     [<Literal>]
     let FormatVersion = 4
 
@@ -401,15 +402,22 @@ module MapEditor =
         |> Array.map (fun value -> value.ToString("x2"))
         |> String.concat ""
 
-    let revisionDigest map =
-        map
-        |> canonicalMapText
+    let revisionDigest map tacticalDocument tacticalSeed =
+        canonicalMapText map
+        + "tactical-seed " + string tacticalSeed + "\n"
+        + TacticalParcelEditor.exportTacticalParcelDocument tacticalDocument
         |> Encoding.UTF8.GetBytes
         |> CanonicalHash.sha256
         |> hex
 
-    let private revision number parent map =
-        MapEditorRevision.create number parent map (revisionDigest map)
+    let private revision number parent map tacticalDocument tacticalSeed =
+        MapEditorRevision.create
+            number
+            parent
+            map
+            tacticalDocument
+            tacticalSeed
+            (revisionDigest map tacticalDocument tacticalSeed)
 
     let private serializedBytes map =
         map |> canonicalMapText |> Encoding.UTF8.GetBytes |> Array.length
@@ -498,9 +506,16 @@ module MapEditor =
                 Units = units
                 NextUnitId = 5 }
 
-        let initialRevision = revision 0L None map
+        let tacticalPlot, tacticalVariants = SIR.Simulation.TacticalEnvironment.exteriorParcelSet
+        let tacticalDocument =
+            { TacticalPlot = tacticalPlot
+              TacticalVariants = tacticalVariants }
+        let tacticalSeed = 186UL
+        let initialRevision = revision 0L None map tacticalDocument tacticalSeed
 
         { Map = map
+          TacticalDocument = tacticalDocument
+          TacticalSeed = tacticalSeed
           Tool = Select
           TerrainSelection = Rough
           BrushSize = 1
@@ -2125,6 +2140,8 @@ module MapEditor =
                         (before.Number + 1L)
                         (Some before.Digest)
                         map
+                        state.TacticalDocument
+                        state.TacticalSeed
                 let entry =
                     { Command = command
                       Before = before
@@ -2157,6 +2174,40 @@ module MapEditor =
                         { state.Authoring with
                             RevisionIdentity = after.Digest
                             ThumbnailSvg = None } }
+
+    let private commitTactical document seed state =
+        if document = state.TacticalDocument && seed = state.TacticalSeed then state
+        else
+            let before = state.Revision
+            let after =
+                revision
+                    (before.Number + 1L)
+                    (Some before.Digest)
+                    state.Map
+                    document
+                    seed
+            let entry =
+                { Command = ReplaceDocument("Tactical environment edit", state.Map)
+                  Before = before
+                  After = after
+                  SerializedBytes =
+                    TacticalParcelEditor.exportTacticalParcelDocument before.TacticalDocument
+                    |> Encoding.UTF8.GetBytes |> Array.length
+                    |> (+) (TacticalParcelEditor.exportTacticalParcelDocument document |> Encoding.UTF8.GetBytes |> Array.length) }
+            let undo = historyWithinBounds (entry :: state.UndoHistory)
+            { state with
+                TacticalDocument = document
+                TacticalSeed = seed
+                Revision = after
+                RevisionState = DirtyRevision
+                UndoHistory = undo
+                RedoHistory = []
+                HistoryBytes = historySize undo
+                Validation = None
+                Authoring =
+                    { state.Authoring with
+                        RevisionIdentity = after.Digest
+                        ThumbnailSvg = None } }
 
     let private validEdgeKey map (column, row, _) =
         column >= 0 && row >= 0 && column < map.Width && row < map.Height
@@ -2667,6 +2718,7 @@ module MapEditor =
 
     and private unlockedUpdate action state =
         match action with
+        | ReplaceTacticalParcelDocument(document, seed) -> commitTactical document seed state
         | SetEditorLayerState(domain, value) ->
           { state with
               Layers = Map.add domain value state.Layers
@@ -2769,7 +2821,7 @@ module MapEditor =
         | OfferCrashRecovery text ->
           match tryImport text with
           | Ok map ->
-              let digest = revisionDigest map
+              let digest = revisionDigest map state.TacticalDocument state.TacticalSeed
               if digest = state.Revision.Digest then state
               else
                   { state with
@@ -4085,6 +4137,8 @@ module MapEditor =
                 let selected = selectedAfterMap entry.Before.Document state.SelectedUnits
                 { state with
                     Map = entry.Before.Document
+                    TacticalDocument = entry.Before.TacticalDocument
+                    TacticalSeed = entry.Before.TacticalSeed
                     Revision = entry.Before
                     RevisionState =
                         if state.SavedDigest = Some entry.Before.Digest then SavedRevision
@@ -4114,6 +4168,8 @@ module MapEditor =
                 let undo = entry :: state.UndoHistory |> historyWithinBounds
                 { state with
                     Map = entry.After.Document
+                    TacticalDocument = entry.After.TacticalDocument
+                    TacticalSeed = entry.After.TacticalSeed
                     Revision = entry.After
                     RevisionState =
                         if state.SavedDigest = Some entry.After.Digest then SavedRevision
@@ -4154,6 +4210,8 @@ module MapEditor =
         | RestoreEditorDraft ->
             { state with
                 Map = state.Revision.Document
+                TacticalDocument = state.Revision.TacticalDocument
+                TacticalSeed = state.Revision.TacticalSeed
                 RevisionState =
                     if state.SavedDigest = Some state.Revision.Digest then SavedRevision
                     else DirtyRevision
@@ -4410,7 +4468,6 @@ module MapEditor =
                 Some(terrain, addresses, isValid)
             | _ -> None
         | _ -> None
-
     let unitPreview state =
         let command =
             match state.Gesture with
@@ -4434,7 +4491,6 @@ module MapEditor =
                      )
                  | _ -> true
              | Error _ -> false))
-
     let controllerLabel controller =
         match controller with
         | Manual -> "Manual"

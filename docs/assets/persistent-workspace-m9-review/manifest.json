@@ -1,7 +1,7 @@
 {
   "schema": "sir-persistent-workspace-m9-live-review-v2",
   "captureKind": "actual-production-shell-chromium-screenshot",
-  "productionBundleSha256": "d7bac2fd52d0e9af05d4d6623cdc5e0968c5e041bf9a9b718c38862d2b3ba9c7",
+  "productionBundleSha256": "2ac8c83e5e2b4231151606384b09531caac8fa35f60426bff852a796c03e582a",
   "productionStylesSha256": "35487427a953e672e2f69f46971320882dc4c768e5314105f816d19faa721b7e",
   "acceptedMockupSha256": "b2b0d444202aa9c76235fa7277ba2c6a4e89d3d7dc0dd009abb8e73c72c82270",
   "chromiumExecutable": "/usr/sbin/chromium",
@@ -411,17 +411,17 @@
         "x": 15.391,
         "y": 548.484,
         "width": 206,
-        "height": 764,
+        "height": 799.188,
         "right": 221.391,
-        "bottom": 1312.484
+        "bottom": 1347.672
       },
       "hostRect": {
         "x": 15.391,
         "y": 548.484,
         "width": 206,
-        "height": 764,
+        "height": 799.188,
         "right": 221.391,
-        "bottom": 1312.484
+        "bottom": 1347.672
       }
     },
     "panelBodies": [
@@ -456,9 +456,9 @@
           "x": 15.391,
           "y": 548.484,
           "width": 206,
-          "height": 764,
+          "height": 799.188,
           "right": 221.391,
-          "bottom": 1312.484
+          "bottom": 1347.672
         },
         "children": [
           {
@@ -468,9 +468,9 @@
               "x": 15.391,
               "y": 548.484,
               "width": 206,
-              "height": 764,
+              "height": 799.188,
               "right": 221.391,
-              "bottom": 1312.484
+              "bottom": 1347.672
             }
           }
         ]
@@ -661,5 +661,5 @@
   "png": "field-focus.png",
   "geometrySvg": "field-focus-geometry.svg",
   "pngSha256": "16f70de0e86faf9c43f6144387ee829070b12081a2834fdcf9be0671d4708eb5",
-  "geometrySvgSha256": "627bcd2aaeea7d83ea6543621cc605872d352a76b26f6d6188c07b6f8727d463"
+  "geometrySvgSha256": "37e509b6aa111decb9ea8a98c6e11703e1656205ee6170ddf0e2c6ad1bafb3ae"
 }

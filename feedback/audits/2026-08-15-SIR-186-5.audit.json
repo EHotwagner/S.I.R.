@@ -1,0 +1,42 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-15-SIR-186-5.md",
+  "reportSha256": "e177ec100f0d79eba49c14af8c900c539e99910c99500cd077eba57e36da2de7",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:src/SIR.Domain/TacticalEnvironment.fs",
+          "result": "verified",
+          "sha256": "1bbe3c43af30e53e706eea9554d9e59e9bbfd148c2435390e2bf94668496633e"
+        },
+        {
+          "locator": "file:src/SIR.Simulation/TacticalEnvironment.fs",
+          "result": "verified",
+          "sha256": "ac490ca7cd8bee7e9ce1ae71bb53ee25f45a7c500e6772395da6d2f3cfd5d90a"
+        },
+        {
+          "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md",
+          "result": "verified",
+          "sha256": "46bfee1eeb1d90ef30b49403edb2636cb4d775fddce54de4db074cf0968311b1"
+        },
+        {
+          "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The committed performance receipt was measured at bf4091af8dce2b13ca7f3a2b648592f874b13e2a, an ancestor of the report commit.",
+        "The sixteen-process contention result is a committed historical receipt; the aggregate does not itself launch sixteen processes.",
+        "Timing evidence is headless and host-specific; repair-head hosted CI remains pending.",
+        "The dense/fallback branch is source-verified, but the cited qualification does not exercise malformed or oversized fallback inputs.",
+        "The aggregate exited zero and completed parity, browser, and mutation gates although documentation emitted nonfatal Happy DOM exceptions."
+      ]
+    }
+  ]
+}

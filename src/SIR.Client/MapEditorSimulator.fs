@@ -30,6 +30,13 @@ type VisibilityOverlayAvailability =
     | VisibilityOverlaysUnavailable of reason: string
     | SharedKernelVisibilityAvailable
 
+type TacticalEnvironmentPreviewSummary =
+    { TacticalPreviewIdentity: string option
+      TacticalPreviewSpatialRevision: int64
+      TacticalPreviewFeatureCount: int32
+      TacticalPreviewWalkableCellCount: int32
+      TacticalPreviewFindingMessages: string list }
+
 type SimulatorCombatDelivery =
     | MeleeDelivery
     | ProjectileDelivery
@@ -74,6 +81,9 @@ type SimulatorMovementProgress =
 type SimulatorHandoff =
     { Revision: MapRevision
       InitialRevision: MapRevision
+      InitialEnvironment: AssembledEnvironment
+      RuntimeEnvironment: AssembledEnvironment
+      EnvironmentActionLog: (int32 * string * EnvironmentAction) list
       ActivationTicks: Map<int32, int32>
       ReconciliationMessage: string option
       RuntimeMap: MapDefinition
@@ -102,6 +112,8 @@ type SimulatorAction =
     | ResetSimulatorPreviewToOrigin
     | ResetSimulatorPreview
     | CommitSimulatorPreview
+    | ApplySimulatorEnvironmentAction of featureId: string * EnvironmentAction
+    | ReplaySimulatorEnvironment
 
 [<RequireQualifiedAccess>]
 module MapEditorSimulator =
@@ -109,6 +121,23 @@ module MapEditorSimulator =
     let CellMillimeters = SIR.Simulation.MapScale.CellMillimeters
     let DiagonalCellMillimeters = SIR.Simulation.MapScale.DiagonalCellMillimeters
     let MaximumMovementCreditMillimeters = SIR.Simulation.MapScale.MaximumMovementCreditMillimeters
+
+    /// Projects the editor's current authored document through the same
+    /// authoritative assembly route used by runtime spatial queries.
+    let tacticalEnvironmentPreview (state: TacticalParcelEditor.TacticalParcelEditorState) =
+        match state.TacticalPreview with
+        | Ok environment ->
+            { TacticalPreviewIdentity = Some environment.EnvironmentContentIdentity
+              TacticalPreviewSpatialRevision = environment.EnvironmentSpatialRevision
+              TacticalPreviewFeatureCount = environment.EnvironmentFeatures.Length
+              TacticalPreviewWalkableCellCount = environment.AssembledWalkableCells.Length
+              TacticalPreviewFindingMessages = [] }
+        | Error findings ->
+            { TacticalPreviewIdentity = None
+              TacticalPreviewSpatialRevision = 0L
+              TacticalPreviewFeatureCount = 0
+              TacticalPreviewWalkableCellCount = 0
+              TacticalPreviewFindingMessages = findings |> List.map (fun finding -> string finding.ValidationCode + ": " + finding.ValidationSubject + " — " + finding.ValidationMessage) }
 
     [<Literal>]
     let PerspectiveUnavailableReason =
@@ -338,11 +367,14 @@ module MapEditorSimulator =
                   Route = route |> List.map fromCell |> List.toArray
                   Collision = collision }))
 
-    let private fromRevision (revision: MapRevision) =
+    let private fromRevision (revision: MapRevision) environment =
         let map = revision.Document
         let kernel = initialKernel map
         { Revision = revision
           InitialRevision = revision
+          InitialEnvironment = environment
+          RuntimeEnvironment = environment
+          EnvironmentActionLog = []
           ActivationTicks = Map.empty
           ReconciliationMessage = None
           RuntimeMap = map
@@ -370,13 +402,22 @@ module MapEditorSimulator =
             issues |> Array.map (fun issue -> issue.Code + ": " + issue.Message)
             |> String.concat " " |> Error
         else
-            Ok(fromRevision state.Revision)
+            match
+                TacticalParcelEditor.previewTacticalParcelDocument
+                    state.Revision.TacticalSeed
+                    state.Revision.TacticalDocument
+            with
+            | Error findings ->
+                findings |> List.map string |> String.concat " " |> Error
+            | Ok environment -> Ok(fromRevision state.Revision environment)
 
     /// Restores the disposable runtime from the revision pinned by its
     /// existing handoff. The mutable editor draft is deliberately absent from
     /// this boundary.
     let reset (handoff: SimulatorHandoff) =
-        fromRevision handoff.Revision
+        { fromRevision handoff.Revision handoff.InitialEnvironment with
+            InitialRevision = handoff.InitialRevision
+            EnvironmentActionLog = handoff.EnvironmentActionLog }
 
     let isBehindDraft (state: MapEditorState) handoff =
         handoff.Revision.Digest <> state.Revision.Digest
@@ -391,10 +432,19 @@ module MapEditorSimulator =
             before.Width = after.Width && before.Height = after.Height
         let unchangedTerrain = before.Terrain = after.Terrain
         let unchangedTopology = before.Edges = after.Edges
+        let unchangedTacticalEnvironment =
+            handoff.Revision.TacticalDocument = next.TacticalDocument
+            && handoff.Revision.TacticalSeed = next.TacticalSeed
         let retained =
             before.Units
             |> Map.forall (fun id unit -> Map.tryFind id after.Units = Some unit)
-        if unchangedGeometry && unchangedTerrain && unchangedTopology && retained then
+        if
+            unchangedGeometry
+            && unchangedTerrain
+            && unchangedTopology
+            && unchangedTacticalEnvironment
+            && retained
+        then
             let introduced =
                 after.Units
                 |> Map.filter (fun id _ -> not (Map.containsKey id before.Units))
@@ -419,6 +469,8 @@ module MapEditorSimulator =
                     "terrain changed"
                 elif not unchangedTopology then
                     "edge topology changed"
+                elif not unchangedTacticalEnvironment then
+                    "tactical environment changed"
                 else
                     before.Units
                     |> Map.toSeq
@@ -429,7 +481,12 @@ module MapEditorSimulator =
                             Some("existing unit " + string id + " changed")
                         | _ -> None)
                     |> Option.defaultValue "an incompatible authored value changed"
-            { fromRevision next with
+            let environment =
+                TacticalParcelEditor.previewTacticalParcelDocument
+                    next.TacticalSeed
+                    next.TacticalDocument
+                |> Result.defaultValue handoff.InitialEnvironment
+            { fromRevision next environment with
                 InitialRevision = next
                 ReconciliationMessage = Some("Simulation restarted at tick 0 because " + reason + ".") }
 
@@ -510,10 +567,56 @@ module MapEditorSimulator =
                 |> Map.map (fun _ route -> route |> List.map fromCell)
             PreviewDestination = None }
 
+    let private applyEnvironmentAction featureId action handoff =
+        let environment = handoff.RuntimeEnvironment
+        let runtimeFeatureId =
+            environment.EnvironmentFeatures
+            |> List.tryFind (fun feature ->
+                feature.EnvironmentFeatureId = featureId
+                || feature.EnvironmentFeatureId.EndsWith("::" + featureId, StringComparison.Ordinal)
+                || feature.EnvironmentFeatureId.EndsWith(":" + featureId, StringComparison.Ordinal))
+            |> Option.map _.EnvironmentFeatureId
+            |> Option.defaultValue featureId
+        let knowledge =
+            { EnvironmentKnowledgeIdentity = "simulator-handoff"
+              EnvironmentKnowledgeRevision = int64 handoff.Tick
+              KnownEnvironmentFeatureIds = environment.EnvironmentFeatures |> List.map _.EnvironmentFeatureId |> Set.ofList
+              KnownEnvironmentStateFeatureIds = environment.EnvironmentFeatures |> List.map _.EnvironmentFeatureId |> Set.ofList
+              KnownEnvironmentFacts = Set.empty }
+        match
+            SIR.Simulation.TacticalEnvironment.applyAction
+                knowledge
+                environment.EnvironmentContentIdentity
+                runtimeFeatureId
+                action
+                environment
+        with
+        | Ok result ->
+            { handoff with
+                RuntimeEnvironment = result.UpdatedEnvironment
+                EnvironmentActionLog = handoff.EnvironmentActionLog @ [ handoff.Tick, runtimeFeatureId, action ]
+                LastEvents = [ "Tactical feature " + featureId + " action applied at tick " + string handoff.Tick + "." ] }
+        | Error failure ->
+            { handoff with LastEvents = [ "Tactical feature action rejected: " + string failure + "." ] }
+
+    let private replayEnvironment target handoff =
+        handoff.EnvironmentActionLog
+        |> List.filter (fun (tick, _, _) -> tick <= target)
+        |> List.fold (fun environment (_, featureId, action) ->
+            let knowledge =
+                { EnvironmentKnowledgeIdentity = "simulator-handoff"
+                  EnvironmentKnowledgeRevision = int64 target
+                  KnownEnvironmentFeatureIds = environment.EnvironmentFeatures |> List.map _.EnvironmentFeatureId |> Set.ofList
+                  KnownEnvironmentStateFeatureIds = environment.EnvironmentFeatures |> List.map _.EnvironmentFeatureId |> Set.ofList
+                  KnownEnvironmentFacts = Set.empty }
+            SIR.Simulation.TacticalEnvironment.applyAction knowledge environment.EnvironmentContentIdentity featureId action environment
+            |> Result.map _.UpdatedEnvironment
+            |> Result.defaultValue environment) handoff.InitialEnvironment
+
     /// Reconstructs actual simulation state at a timeline tick from its pinned initial revision.
     let seek tick (handoff: SimulatorHandoff) =
         let target = max 0 tick
-        let baseline = fromRevision handoff.InitialRevision
+        let baseline = fromRevision handoff.InitialRevision handoff.InitialEnvironment
         let activate atTick current =
             handoff.ActivationTicks
             |> Map.fold (fun state id activation ->
@@ -535,6 +638,9 @@ module MapEditorSimulator =
                 InitialRevision = handoff.InitialRevision
                 ActivationTicks = handoff.ActivationTicks
                 ReconciliationMessage = handoff.ReconciliationMessage
+                InitialEnvironment = handoff.InitialEnvironment
+                RuntimeEnvironment = replayEnvironment target handoff
+                EnvironmentActionLog = handoff.EnvironmentActionLog
                 IsRunning = handoff.IsRunning }
 
     let update action selectedUnitId handoff =
@@ -551,6 +657,12 @@ module MapEditorSimulator =
                     PreviewDestination = None })
             |> Option.defaultValue handoff
         match action with
+        | ApplySimulatorEnvironmentAction(featureId, environmentAction) ->
+            applyEnvironmentAction featureId environmentAction handoff
+        | ReplaySimulatorEnvironment ->
+            { handoff with
+                RuntimeEnvironment = replayEnvironment Int32.MaxValue handoff
+                LastEvents = [ "Tactical environment action replay completed." ] }
         | ToggleSimulatorRun ->
             { handoff with
                 IsRunning = not handoff.IsRunning

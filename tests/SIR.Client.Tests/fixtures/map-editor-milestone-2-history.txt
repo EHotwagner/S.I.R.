@@ -1,4 +1,4 @@
-initial-digest=73210384f0b2bd2ef3b721e5a96b45a4168e3c40cf82a336613b6c64b382d3e5
+initial-digest=0564183aa0011ae10a21d034af9c8e8892c6f13b83ffeaa8ebd21f1793ca3a8b
 history-command-limit=100
 history-byte-limit=2000000
 selection-order=1,2,3,4

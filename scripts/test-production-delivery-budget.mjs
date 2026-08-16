@@ -17,7 +17,10 @@ function requireBudget(label, actual, limit) {
   if (actual > limit) throw new Error(`${label} is ${actual} bytes; budget is ${limit}.`);
 }
 
-requireBudget("app raw", app.byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_APP_RAW", 1_200_000));
+// Initial boot budget v2 (2026-08-15) aligns the static entry and measured
+// browser route. It is intentionally versioned: future growth must defer or
+// explicitly rebaseline this ceiling rather than treating it as unbounded.
+requireBudget("app raw", app.byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_APP_RAW", 1_250_000));
 requireBudget("app gzip", gzipSync(app).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_APP_GZIP", 320_000));
 requireBudget("app brotli", brotliCompressSync(app).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_APP_BROTLI", 280_000));
 

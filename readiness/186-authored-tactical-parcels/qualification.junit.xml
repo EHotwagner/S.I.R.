@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="0" errors="0" skipped="0">
+  <testsuite name="SIR.186.AuthoredTacticalParcels" tests="1" failures="0" errors="0" skipped="0">
+    <testcase classname="SIR.186.Qualification" name="native fable browser docs performance and mutations pass" />
+  </testsuite>
+</testsuites>

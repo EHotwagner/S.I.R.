@@ -5,8 +5,8 @@ categoryindex: 5
 index: 5
 status: proposed
 document-type: living-design
-version: "0.7"
-last-updated: 2026-08-13
+version: "0.8"
+last-updated: 2026-08-15
 related:
   - docs/simulation-core-architecture.md
   - docs/skirmish-development-plan.md
@@ -50,6 +50,60 @@ then validates every returned step against S.I.R.'s stricter complete-footprint
 transition envelopes. The measured Release candidate recorded 0 ms LOS, 0 ms
 route, 0 ms invalidation, and 27/43 ms for 100/200-unit demand, with 41 route
 cells, 41 expansions, and 2,156 explanation bytes.
+
+## Authored tactical environment v1 budget
+
+The tactical-environment route is qualified as bounded assembly, validation,
+editor preview, local dependency invalidation, and representative environment
+interaction. Every workload traverses the production Domain/Simulation
+functions consumed by the editor, Simulator, and spatial/combat adapters.
+Elapsed time is measured in Release with a monotonic clock and host/runtime
+facts beside the result; deterministic fingerprints exclude elapsed time.
+
+| Workload | Maximum expected scale | Structural budget | Initial timing gate |
+|---|---:|---:|---:|
+| Exterior assembly | 64 slots, up to 32 compatible variants per role | 64 selections, 2,048 compatibility inspections, 4,096 placed cells/features | 25 ms representative assembly |
+| Catalog validation | 64 slots and 512 authored features | 512 ordered findings, 16,384 route expansions | 50 ms maximum validation/preview |
+| Editor preview | One assembled 80×80 map | One assembly, one validation, 6,400 projected cells, 2,048 projected features | included in the 50 ms gate |
+| Local invalidation | 256 cached dependency receipts | inspect at most 256 receipts; invalidate only intersecting entries; change one target | 10 ms |
+| Combat queries | 100 units and 50 environment interactions | at most one target transition per action; zero propagated changes | 50 ms batch |
+
+Cost stays observable through deterministic counters: slots visited, compatible
+variants inspected, selections, placed cells/features, ordered findings,
+dependency receipts inspected/invalidated, and query/action counts. The shape
+of the work is the primary regression guard; noisy wall-clock assertions do not
+replace it. In particular, a local feature transition returns exact dependency
+keys and may invalidate only intersecting cache entries, while schema-v1
+destruction cannot fan out into neighbour collapse.
+
+The pre-implementation smoke on base `3dc50b5` establishes inherited-route
+headroom, not acceptance evidence for the new parcel workload. On Linux x64
+with .NET SDK 10.0.302, the Release Match suite passed in 10.145 s and its live
+integration observed 40 ticks in 27.944 ms, preview in 0.213 ms, serialization
+in 0.161 ms, worker transfer in 0.028 ms, and projection in 0.086 ms. The exact
+replay digest was
+`84c086053d423768c51f2dc7be23d495904a70fef4de6957f2c8b36ab31d4137`.
+
+The Release Client suite passed in 14.649 s. Its dense 40×40 editor document
+(1,600 terrain records, 3,120 edges, 200 units, and 200 regions) observed p95
+preview 2.628 ms, command 2.471 ms, document validation 3.239 ms, undo/redo
+10.969 ms, import 9.369 ms, export 1.348 ms, and 7,136 estimated interactive
+nodes. The isolated worktree first required an ordinary restore because no
+`obj/project.assets.json` existed; that setup event is not a performance result.
+
+The dense maximum-map pointer-preview budget is versioned at 12 ms p95. This
+retains roughly 29% headroom above the 9.271 ms hosted observation from repair
+run 31917304397 while preserving the same 40×40 workload, structural gates,
+and all other editor budgets. Further workload or implementation growth must
+remain below this bound or explicitly rebaseline it with hosted evidence.
+
+These observations are headless and make no compositor or swapchain claim.
+Release acceptance must measure the exact candidate's new environment
+workloads, record the workload-definition digest and host facts, and remain
+blocked when a timing or structural budget is exceeded. Protected mutations
+must also turn the owning gate red when selection ignores seed/state, stale
+content identity is accepted, invalidation becomes global, or one action
+changes more than its declared target/budget.
 
 ## Production delivery budget
 

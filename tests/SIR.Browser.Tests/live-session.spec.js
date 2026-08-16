@@ -121,9 +121,14 @@ test("tactical command controls expose registry-derived shortcut metadata", asyn
   await expect(command.locator("kbd")).toHaveText("Ctrl+Shift+2");
 
   // Exercise the production window keyboard subscription for the same
-  // registry that rendered the contextual command list.
+  // registry that rendered the contextual command list. Focus deliberately
+  // remains on the native menu button so this covers the modified-shortcut
+  // exception in the global keyboard target filter.
   await page.keyboard.press("Escape");
   await expect(command).toHaveCount(0);
+  const contextualActions = page.getByRole("button", { name: "Show contextual actions", exact: true });
+  await contextualActions.focus();
+  await expect(contextualActions).toBeFocused();
 
   await page.keyboard.press("Control+Shift+2");
   await expect(page.getByRole("button", { name: "Plan", exact: true })).toHaveAttribute("aria-pressed", "true");

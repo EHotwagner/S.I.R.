@@ -126,26 +126,13 @@ let private prefersReducedMotion: bool = jsNative
 [<Emit("/(Mac|iPhone|iPad|iPod)/.test(navigator.platform)")>]
 let private usesMetaShortcutPlatform: bool = jsNative
 
-let private shortcutPlatform =
-    if usesMetaShortcutPlatform then MetaPlatform else ControlPlatform
-
-[<Emit("(() => { const eventTarget = $0; const tag = eventTarget && typeof eventTarget.tagName === 'string' ? eventTarget.tagName.toLowerCase() : ''; return tag === 'input' ? 'input' : tag === 'textarea' ? 'textarea' : tag === 'select' ? 'select' : eventTarget && eventTarget.isContentEditable ? 'contenteditable' : 'application'; })()")>]
-let private currentInputTargetName (target: EventTarget) : string = jsNative
-
-let private currentInputTarget target =
-    match currentInputTargetName target with
-    | "input" -> ModalInputTarget.InputElement
-    | "textarea" -> ModalInputTarget.TextAreaElement
-    | "select" -> ModalInputTarget.SelectElement
-    | "contenteditable" -> ModalInputTarget.ContentEditableElement
-    | _ -> ModalInputTarget.ApplicationElement
-
+let private shortcutPlatform = if usesMetaShortcutPlatform then MetaPlatform else ControlPlatform
 let private validSimulatorFor editor current =
     match MapEditorSimulator.tryHandoff editor with
     | Error _ -> current
     | Ok initial ->
         current
-        |> Option.map (MapEditorSimulator.reconcile editor)
+        |> Option.map (fun simulator -> if MapEditorSimulator.isBehindDraft editor simulator then MapEditorSimulator.reconcile editor simulator else simulator)
         |> Option.orElse (Some initial)
 
 /// Browser `key` represents shifted digits as printable symbols (for example
@@ -466,13 +453,10 @@ let init () =
         let autosave = readMapAutosave ()
         if isNull autosave then initial
         else MapEditor.update (OfferCrashRecovery autosave) initial
-    let editorView =
-        MapEditorWorkspace.initial prefersReducedMotion
-        |> MapEditorWorkspace.update
-            editor.Map
-            (MapEditor.selected editor)
-            FitEditorBoard
+    let editorView = MapEditorWorkspace.initial prefersReducedMotion |> MapEditorWorkspace.update editor.Map (MapEditor.selected editor) FitEditorBoard
     let simulator = validSimulatorFor editor None
+    let tacticalParcelEditor = TacticalParcelEditor.fromCanonicalEditor "Tactical parcel preview ready." editor
+    let tacticalParcelText = TacticalParcelEditor.exportTacticalParcelDocument editor.TacticalDocument
     let simulatorSelectedUnit =
         editor.SelectedUnit
         |> Option.filter (fun id ->
@@ -520,6 +504,8 @@ let init () =
 
     { Shell = Shell.init ()
       Editor = editor
+      TacticalParcelEditor = tacticalParcelEditor
+      TacticalParcelImportText = tacticalParcelText
       Simulator = simulator
       SimulatorSelectedUnit = simulatorSelectedUnit
       SimulatorControllerSelection = None
@@ -837,6 +823,7 @@ let rec update msg model =
         { model with
             Editor = editor
             Planning = planning
+            Simulator = if workspace = SimulatorWorkspace then validSimulatorFor editor model.Simulator else model.Simulator
             TacticalSelectedUnit = tacticalSelectedUnit
             Workspace = workspace
             Tactical =
@@ -1530,10 +1517,7 @@ let rec update msg model =
     | EditorChanged action ->
         let editor = MapEditor.update action model.Editor
         let simulator = validSimulatorFor editor model.Simulator
-        let simulatorSelected =
-            (if model.Workspace = EditorWorkspace then editor.SelectedUnit
-             else model.SimulatorSelectedUnit)
-            |> Option.filter (fun id -> simulator |> Option.exists (fun value -> Map.containsKey id value.RuntimeMap.Units))
+        let simulatorSelected = (if model.Workspace = EditorWorkspace then editor.SelectedUnit else model.SimulatorSelectedUnit) |> Option.filter (fun id -> simulator |> Option.exists (fun value -> Map.containsKey id value.RuntimeMap.Units))
         let editorView =
             match action with
             | ChooseTool _ ->
@@ -1553,6 +1537,8 @@ let rec update msg model =
                 Battlefield.reconcile (MapEditor.frame editor) model.Battlefield
         { model with
             Editor = editor
+            TacticalParcelEditor = TacticalParcelEditor.fromCanonicalEditor model.TacticalParcelEditor.TacticalAnnouncement editor
+            TacticalParcelImportText = TacticalParcelEditor.exportTacticalParcelDocument editor.TacticalDocument
             Simulator = simulator
             SimulatorSelectedUnit = simulatorSelected
             EditorView = editorView
@@ -1570,6 +1556,32 @@ let rec update msg model =
             | CancelDestructiveChange ->
                 focusElementAfterRender "persistent-tactical-svg"
             | _ -> ())
+    | TacticalParcelChanged action ->
+        match action with
+        | TacticalParcelEditor.UndoTacticalParcelEdit
+        | TacticalParcelEditor.RedoTacticalParcelEdit ->
+            let editorAction = if action = TacticalParcelEditor.UndoTacticalParcelEdit then UndoEditorCommand else RedoEditorCommand
+            let editor = MapEditor.update editorAction model.Editor
+            let announcement = if action = TacticalParcelEditor.UndoTacticalParcelEdit then "Tactical parcel edit undone." else "Tactical parcel edit redone."
+            let tactical = TacticalParcelEditor.fromCanonicalEditor announcement editor
+            { model with Editor = editor; TacticalParcelEditor = tactical; TacticalParcelImportText = TacticalParcelEditor.exportTacticalParcelDocument editor.TacticalDocument }, Cmd.none
+        | _ ->
+            let tactical, text = TacticalParcelEditor.updateWithExport action model.TacticalParcelEditor
+            let editor = MapEditor.update (ReplaceTacticalParcelDocument(tactical.TacticalDocument, tactical.TacticalSeed)) model.Editor
+            { model with Editor = editor; TacticalParcelEditor = TacticalParcelEditor.fromCanonicalEditor tactical.TacticalAnnouncement editor; TacticalParcelImportText = text }, Cmd.none
+    | TacticalParcelImportTextChanged text ->
+        { model with TacticalParcelImportText = text }, Cmd.none
+    | ImportTacticalParcelDocument ->
+        match TacticalParcelEditor.tryImportTacticalParcelDocument model.TacticalParcelImportText with
+        | Ok document -> update (TacticalParcelChanged(TacticalParcelEditor.ReplaceTacticalDocument document)) model
+        | Error message ->
+            { model with
+                TacticalParcelEditor =
+                    { model.TacticalParcelEditor with
+                        TacticalAnnouncement = message } },
+            Cmd.none
+    | ExportTacticalParcelDocument ->
+        model, Cmd.ofEffect (fun _ -> TacticalEnvironmentView.downloadDocument model.TacticalParcelImportText)
     | EditorPulse ->
         match model.Simulator with
         | Some simulator when simulator.IsRunning ->
@@ -1753,6 +1765,7 @@ let rec update msg model =
                             | UnitTools -> UnitDomain
                             | EdgeTools -> EdgeDomain
                             | ZoneTools -> RegionDomain
+                            | TacticalEnvironmentTools -> DocumentDomain
                             | DocumentTools -> DocumentDomain
                           PanHeld = editorPanHeld model
                           InputHelpExpanded = model.InputHelpExpanded }
@@ -1808,6 +1821,7 @@ let rec update msg model =
         | "workspace.plan" -> update (WorkspaceChanged PlanningWorkspace) model
         | "workspace.simulate" -> update (WorkspaceChanged SimulatorWorkspace) model
         | "workspace.review" -> update (WorkspaceChanged ReplayWorkspace) model
+        | "environment.editor.open" -> update (EditorToolPanelChanged TacticalEnvironmentTools) model
         | "panel.data" -> update (OpenSupportingPanel "data") model
         | "timeline.play-toggle" -> update TacticalPlaybackToggled model
         | "timeline.step-back" -> update (TacticalTimeStepped -1L) model
@@ -2207,6 +2221,7 @@ let rec update msg model =
                 | UnitTools -> UnitDomain
                 | EdgeTools -> EdgeDomain
                 | ZoneTools -> RegionDomain
+                | TacticalEnvironmentTools -> DocumentDomain
                 | DocumentTools -> DocumentDomain
             let facts =
                 { Editor = model.Editor
@@ -2330,6 +2345,7 @@ let rec update msg model =
                     | UnitTools -> UnitDomain
                     | EdgeTools -> EdgeDomain
                     | ZoneTools -> RegionDomain
+                    | TacticalEnvironmentTools -> DocumentDomain
                     | DocumentTools -> DocumentDomain
                   PanHeld = true
                   InputHelpExpanded = model.InputHelpExpanded }
@@ -2411,6 +2427,7 @@ let subscriptions model =
                         | UnitTools -> UnitDomain
                         | EdgeTools -> EdgeDomain
                         | ZoneTools -> RegionDomain
+                        | TacticalEnvironmentTools -> DocumentDomain
                         | DocumentTools -> DocumentDomain
                       PanHeld = editorPanHeld model
                       InputHelpExpanded = model.InputHelpExpanded }
@@ -2481,11 +2498,7 @@ let subscriptions model =
             fun (event: Event) ->
                 let keyboardEvent: KeyboardEvent = unbox event
                 let key = registryKeyboardKey keyboardEvent
-                if
-                    keyboardEvent.target
-                    |> currentInputTarget
-                    |> ModalInput.acceptsTarget
-                then
+                if TacticalEnvironmentView.acceptsGlobalKeyboardTarget keyboardEvent.target (keyboardEvent.ctrlKey || keyboardEvent.metaKey) then
                     let controlOrMeta =
                         keyboardEvent.ctrlKey || keyboardEvent.metaKey
                     if
@@ -2517,17 +2530,20 @@ let subscriptions model =
             fun (event: Event) ->
                 let keyboardEvent: KeyboardEvent = unbox event
                 if
-                    modalResolution
-                        KeyUp
-                        keyboardEvent.key
-                        false
-                        false
-                        false
-                        false
-                    |> isCatalogGesture
+                    TacticalEnvironmentView.acceptsGlobalKeyboardTarget keyboardEvent.target false
                 then
-                    keyboardEvent.preventDefault ()
-                dispatch (KeyReleased keyboardEvent.key)
+                    if
+                        modalResolution
+                            KeyUp
+                            keyboardEvent.key
+                            false
+                            false
+                            false
+                            false
+                        |> isCatalogGesture
+                    then
+                        keyboardEvent.preventDefault ()
+                    dispatch (KeyReleased keyboardEvent.key)
         let blurHandler =
             fun (_: Event) -> dispatch ApplicationFocusLost
         window.addEventListener ("keydown", downHandler)
@@ -3795,6 +3811,8 @@ let private editorScreenPoint
 
 let private editorToolbar
     (state: MapEditorState)
+    (tactical: TacticalParcelEditor.TacticalParcelEditorState)
+    (tacticalImportText: string)
     (view: EditorWorkspaceState)
     (activePanel: EditorToolPanel)
     panelVisible
@@ -3878,6 +3896,7 @@ let private editorToolbar
                         choosePanel "Terrain" TerrainTools
                         choosePanel "Units" UnitTools
                         choosePanel "Edges" EdgeTools
+                        choosePanel "Environment" TacticalEnvironmentTools
                         choosePanel "Zones" ZoneTools
                     ]
                 ]
@@ -4108,6 +4127,8 @@ let private editorToolbar
                                     ))
                             ]
                         ]
+                    | TacticalEnvironmentTools ->
+                        TacticalEnvironmentView.view state tactical tacticalImportText dispatch
                     | ZoneTools ->
                         let cursor =
                             { CellColumn =
@@ -5733,6 +5754,7 @@ let private currentModalInputs model =
                 | UnitTools -> UnitDomain
                 | EdgeTools -> EdgeDomain
                 | ZoneTools -> RegionDomain
+                | TacticalEnvironmentTools -> DocumentDomain
                 | DocumentTools -> DocumentDomain
               PanHeld = editorPanHeld model
               InputHelpExpanded = model.InputHelpExpanded }
@@ -7703,12 +7725,10 @@ let private tacticalPanelBody panelId model dispatch =
     elif model.Workspace = SimulatorWorkspace then
         match model.Simulator with
         | Some simulator ->
-            simulatorPanelBody
-                model.Editor
-                simulator
-                model.SimulatorSelectedUnit
-                panelId
-                dispatch
+            Html.div [
+                if panelId = "tools" then TacticalEnvironmentView.simulationView simulator dispatch
+                simulatorPanelBody model.Editor simulator model.SimulatorSelectedUnit panelId dispatch
+            ]
         | None ->
             Html.p "Correct the current map so a valid simulation can be maintained."
     elif model.Workspace = EditorWorkspace then
@@ -7721,6 +7741,8 @@ let private tacticalPanelBody panelId model dispatch =
                 | panel -> panel
             editorToolbar
                 model.Editor
+                model.TacticalParcelEditor
+                model.TacticalParcelImportText
                 model.EditorView
                 activePanel
                 true
@@ -7732,6 +7754,8 @@ let private tacticalPanelBody panelId model dispatch =
         | "document" ->
             editorToolbar
                 model.Editor
+                model.TacticalParcelEditor
+                model.TacticalParcelImportText
                 model.EditorView
                 DocumentTools
                 true
@@ -8032,13 +8056,6 @@ let private modalInputStrip
         ]
     ]
 
-let private editorDomain = function
-    | TerrainTools -> TerrainDomain
-    | UnitTools -> UnitDomain
-    | EdgeTools -> EdgeDomain
-    | ZoneTools -> RegionDomain
-    | DocumentTools -> DocumentDomain
-
 let view model dispatch =
     let shell = model.Shell
     let transientContent =
@@ -8054,7 +8071,7 @@ let view model dispatch =
         | EditorWorkspace ->
             let facts =
                 { Editor = model.Editor
-                  ActiveDomain = editorDomain model.EditorToolPanel
+                  ActiveDomain = TacticalEnvironmentView.editorDomain model.EditorToolPanel
                   PanHeld = editorPanHeld model
                   InputHelpExpanded = model.InputHelpExpanded }
             let catalog = ModalInput.editorCatalog facts

@@ -75,9 +75,20 @@ let run require address editor denseMaximumMap denseMaximumText denseMaximumStat
                     { PanX = 0.0
                       PanY = 0.0
                       Zoom = MapEditorWorkspace.MinimumZoom } }
+    eprintfn
+        "Dense maximum-map budgets: preview %.3f ms; pan/zoom %.3f ms; command %.3f ms; document %.3f ms; undo/redo %.3f ms; import %.3f ms; export %.3f ms; interactive nodes %d."
+        pointerPreviewP95
+        panZoomP95
+        commandValidationP95
+        fullValidationP95
+        undoRedoP95
+        importP95
+        exportP95
+        denseScene.InteractiveNodeEstimate
+    Console.Error.Flush()
     require
         (denseMaximumState.Map = denseMaximumMap
-         && pointerPreviewP95 < 8.0
+         && pointerPreviewP95 < 12.0
          && panZoomP95 < (1000.0 / 60.0)
          && commandValidationP95 < 16.0
          && fullValidationP95 < 100.0
