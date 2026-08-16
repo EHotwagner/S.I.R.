@@ -1,5 +1,30 @@
 {
   "schema": "sir-tactical-visual-review-v2",
+  "captureInputs": {
+    "schema": "sir-tactical-capture-inputs-v1",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 1
+    },
+    "locale": "en-US",
+    "timezone": "UTC",
+    "colorScheme": "dark",
+    "reducedMotion": true,
+    "colorProfile": "srgb",
+    "gpu": "disabled",
+    "rasterThreads": 1,
+    "rasterMode": "complete-in-process",
+    "fontHinting": "none",
+    "lcdText": false,
+    "fonts": {
+      "family": "SIR Review Mono",
+      "regularSha256": "c55a6beb7399590b6818b18a235bf586c10b5ab22a496b229325d731b42c69ad",
+      "boldSha256": "a3b0ebb17a446e2c7d2b621e94c7b29e02d5b2ec0e8cfb0fc88545578c1bb92f"
+    },
+    "browserUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+    "browserVersion": "Chrome/151.0.7922.34"
+  },
   "productionBundleSha256": "4ecf085f113c3753a921a2a7124f15704c5a968db26d53e52ee43a243f5d828b",
   "productionStylesSha256": "d25df5340a553fa9dcf3c5a4d272942ecadc8d73d395e91bdaa9f29a7144c7d8",
   "before": {
@@ -8,7 +33,7 @@
   },
   "after": {
     "path": "after-production.png",
-    "sha256": "1a6dc3119a1e2fc00c7612e1fa61f1b0e3b40a39fc436f495e92e1f60592d860",
+    "sha256": "7303e5ebbf46c1d6a6b76f3b9a1d202e9642e91334bedad4356a4716846fbf01",
     "captureKind": "actual-production-shell-chromium-screenshot",
     "semantic": {
       "identity": "tactical-visual-system-v1",
@@ -49,7 +74,7 @@
     {
       "units": 100,
       "path": "production-density-100.png",
-      "sha256": "dd86376b888b69ff2097b5fe1248e661cee256d1488546be8de35d7fc7dc9c7c",
+      "sha256": "213d994a1cd38e9eac2fefac5ab65a9e62fb5ed7bafba00b2dccaf79b121ef69",
       "workload": {
         "requestedUnits": 100,
         "renderedUnits": 100,
@@ -79,7 +104,7 @@
     {
       "units": 200,
       "path": "production-density-200.png",
-      "sha256": "8a20d12406fdc35aff2da8fef61ad6376bfcc5d95a25a4380ce4f228998745c5",
+      "sha256": "b08828d50bec9b2c92a831762deb603980ebc1cf148505cab3985f201d2ab6a8",
       "workload": {
         "requestedUnits": 200,
         "renderedUnits": 200,

@@ -452,7 +452,7 @@ export const assertPortableReviewMetrics = ({ storedWide, storedNarrow, liveWide
   }
 };
 
-export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/client", screenshotPath, prepareExpression, reducedMotion = false } = {}) => {
+export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/client", screenshotPath, prepareExpression, captureStyleText, reducedMotion = false } = {}) => {
   const chromiumExecutable = await discoverChromium();
   const { server, port } = await serve(clientRoot);
   const profile = await mkdtemp(join(tmpdir(), "sir-m9-chromium-"));
@@ -462,10 +462,11 @@ export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/
   const sanitizedDbusVariables = Object.keys(process.env).filter((name) => inheritedChromiumDbusAddresses.has(name));
   let browserStderr = "";
   const browser = spawn(chromiumExecutable, [
-    "--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars",
+    "--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars", "--lang=en-US",
     "--deterministic-mode",
     "--force-color-profile=srgb", "--num-raster-threads=1",
     "--disable-partial-raster", "--disable-oop-rasterization",
+    "--disable-font-subpixel-positioning", "--disable-lcd-text", "--font-render-hinting=none",
     "--disable-dev-shm-usage", "--no-first-run", "--no-default-browser-check",
     "--disable-background-networking", "--disable-default-apps", "--disable-extensions",
     "--force-device-scale-factor=1", "--remote-debugging-address=127.0.0.1",
@@ -526,14 +527,23 @@ export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/
     cdp = new Cdp(page.webSocketDebuggerUrl);
     await cdp.send("Runtime.enable");
     await cdp.send("Page.enable");
+    await cdp.send("Emulation.setLocaleOverride", { locale: "en-US" });
+    await cdp.send("Emulation.setTimezoneOverride", { timezoneId: "UTC" });
     await cdp.send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
-    if (reducedMotion) {
-      await cdp.send("Emulation.setEmulatedMedia", {
-        features: [{ name: "prefers-reduced-motion", value: "reduce" }],
-      });
-    }
+    await cdp.send("Emulation.setEmulatedMedia", {
+      media: "screen",
+      features: [
+        { name: "prefers-reduced-motion", value: reducedMotion ? "reduce" : "no-preference" },
+        { name: "prefers-color-scheme", value: "dark" },
+        { name: "prefers-contrast", value: "no-preference" },
+        { name: "forced-colors", value: "none" },
+      ],
+    });
     await cdp.send("Page.navigate", { url: `http://127.0.0.1:${port}/` });
     await waitForShell(cdp);
+    if (captureStyleText) {
+      await evaluate(cdp, `(() => { const style = document.createElement("style"); style.id = "sir-capture-input-style"; style.textContent = ${JSON.stringify(captureStyleText)}; document.head.appendChild(style); return document.fonts.ready; })()`);
+    }
     await delay(250);
     if (prepareExpression) {
       try {
@@ -560,6 +570,7 @@ export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/
     return {
       chromiumExecutable,
       chromium: await evaluate(cdp, "navigator.userAgent"),
+      chromiumVersion: version.Browser,
       wide,
       narrow,
     };

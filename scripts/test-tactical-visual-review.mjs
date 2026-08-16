@@ -42,14 +42,38 @@ const telemetry = JSON.parse(await readFile(resolve(root, "telemetry.json"), "ut
 const html = await readFile(resolve(clientRoot, "index.html"), "utf8");
 const scriptMatch = html.match(/<script[^>]+src="([^"]+\.js)"/);
 if (!scriptMatch) throw new Error("Production client entry is missing.");
-const [bundle, styles] = await Promise.all([
+const [bundle, styles, reviewFontRegular, reviewFontBold] = await Promise.all([
   readFile(resolve(clientRoot, scriptMatch[1].replace(/^\.\//, ""))),
   readFile(resolve(clientRoot, "content/sir-client/v1/styles.css")),
+  readFile(resolve("scripts/assets/tactical-visual-review-font/SIRReviewMono-Regular.woff2")),
+  readFile(resolve("scripts/assets/tactical-visual-review-font/SIRReviewMono-Bold.woff2")),
 ]);
 const stylesText = styles.toString("utf8");
 requireTruth(manifest.schema === "sir-tactical-visual-review-v2", "review schema drifted");
 requireTruth(manifest.productionBundleSha256 === hash(bundle), "review is not bound to the production bundle");
 requireTruth(manifest.productionStylesSha256 === hash(styles), "review is not bound to the production stylesheet");
+requireTruth(
+  manifest.captureInputs?.schema === "sir-tactical-capture-inputs-v1" &&
+    manifest.captureInputs.viewport?.width === 1440 &&
+    manifest.captureInputs.viewport?.height === 900 &&
+    manifest.captureInputs.viewport?.deviceScaleFactor === 1 &&
+    manifest.captureInputs.locale === "en-US" &&
+    manifest.captureInputs.timezone === "UTC" &&
+    manifest.captureInputs.colorScheme === "dark" &&
+    manifest.captureInputs.reducedMotion === true &&
+    manifest.captureInputs.colorProfile === "srgb" &&
+    manifest.captureInputs.gpu === "disabled" &&
+    manifest.captureInputs.rasterThreads === 1 &&
+    manifest.captureInputs.rasterMode === "complete-in-process" &&
+    manifest.captureInputs.fontHinting === "none" &&
+    manifest.captureInputs.lcdText === false &&
+    manifest.captureInputs.browserUserAgent.includes("HeadlessChrome/151.0.0.0") &&
+    manifest.captureInputs.browserVersion === "Chrome/151.0.7922.34",
+  "review capture inputs are not fully frozen",
+);
+requireTruth(manifest.captureInputs.fonts?.family === "SIR Review Mono", "review capture font family drifted");
+requireTruth(manifest.captureInputs.fonts.regularSha256 === hash(reviewFontRegular), "review capture regular font bytes drifted");
+requireTruth(manifest.captureInputs.fonts.boldSha256 === hash(reviewFontBold), "review capture bold font bytes drifted");
 for (const declaration of ["--sir-canvas:#10161d", "animation-duration:var(--sir-effect-ms,.12s)!important"]) {
   requireTruth(stylesText.includes(declaration), `critical visual declaration drifted: ${declaration}`);
 }

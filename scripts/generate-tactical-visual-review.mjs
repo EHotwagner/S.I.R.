@@ -20,9 +20,29 @@ if (!scriptMatch) throw new Error("Build the production client before tactical v
 const bundlePath = resolve(clientOutput, scriptMatch[1].replace(/^\.\//, ""));
 const stylesPath = resolve(clientOutput, "content/sir-client/v1/styles.css");
 const baselinePath = resolve("docs/assets/persistent-workspace-m9-review/field-focus.png");
-const [bundleBytes, stylesBytes, baselineBytes] = await Promise.all([
+const reviewFontRegularPath = resolve("scripts/assets/tactical-visual-review-font/SIRReviewMono-Regular.woff2");
+const reviewFontBoldPath = resolve("scripts/assets/tactical-visual-review-font/SIRReviewMono-Bold.woff2");
+const [bundleBytes, stylesBytes, baselineBytes, reviewFontRegularBytes, reviewFontBoldBytes] = await Promise.all([
   readFile(bundlePath), readFile(stylesPath), readFile(baselinePath),
+  readFile(reviewFontRegularPath), readFile(reviewFontBoldPath),
 ]);
+
+const reviewFontCss = `
+@font-face { font-family: "SIR Review Mono"; src: url("data:font/woff2;base64,${reviewFontRegularBytes.toString("base64")}") format("woff2"); font-style: normal; font-weight: 100 600; font-display: block; }
+@font-face { font-family: "SIR Review Mono"; src: url("data:font/woff2;base64,${reviewFontBoldBytes.toString("base64")}") format("woff2"); font-style: normal; font-weight: 601 900; font-display: block; }
+#sir-replay-app, #sir-replay-app * { font-family: "SIR Review Mono" !important; }
+`;
+const captureInputs = {
+  schema: "sir-tactical-capture-inputs-v1",
+  viewport: { width: 1440, height: 900, deviceScaleFactor: 1 },
+  locale: "en-US", timezone: "UTC", colorScheme: "dark", reducedMotion: true,
+  colorProfile: "srgb", gpu: "disabled", rasterThreads: 1,
+  rasterMode: "complete-in-process", fontHinting: "none", lcdText: false,
+  fonts: {
+    family: "SIR Review Mono",
+    regularSha256: hash(reviewFontRegularBytes), boldSha256: hash(reviewFontBoldBytes),
+  },
+};
 
 await mkdir(reviewOutput, { recursive: true });
 const delaySource = `const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));`;
@@ -31,7 +51,9 @@ const clickButtonSource = `const clickButton = (label) => { const button = [...d
 const settleCaptureSource = `const settleCapture = async () => { let style = document.querySelector("#sir-deterministic-review-style"); if (!style) { style = document.createElement("style"); style.id = "sir-deterministic-review-style"; style.textContent = "html{scroll-behavior:auto!important}*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}"; document.head.appendChild(style); } document.documentElement.dataset.reviewCaptureState = "frozen-reduced-motion"; document.activeElement?.blur(); for (const animation of document.getAnimations()) animation.cancel(); for (const element of document.querySelectorAll("*")) { element.scrollTop = 0; element.scrollLeft = 0; } window.scrollTo(0, 0); await document.fonts.ready; await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); };`;
 const maintainedSimulation = `(async () => { ${delaySource} ${readinessSource} ${clickButtonSource} ${settleCaptureSource} clickButton("Simulate"); await wait(50); clickButton("Show contextual actions"); await wait(50); clickButton("Open simulator samples"); await waitFor("deferred Curated samples feature", () => document.querySelector('[aria-label="Curated samples feature"]')); const card = await waitFor("maintained Troll assault sample", () => [...document.querySelectorAll("details.sample-card")].find((candidate) => candidate.textContent.includes("Troll assault"))); card.querySelector("summary").click(); await wait(20); clickButton("Run Troll assault in Simulator"); await waitFor("maintained simulator scene", () => document.querySelector('#persistent-tactical-svg[data-scene-owner="SimulatorScene"] [data-unit-id]')); clickButton("Advance the map simulation one tick"); await wait(100); await settleCapture(); })()`;
 const afterPath = resolve(reviewOutput, "after-production.png");
-const audit = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: afterPath, prepareExpression: maintainedSimulation, reducedMotion: true });
+const audit = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: afterPath, prepareExpression: maintainedSimulation, captureStyleText: reviewFontCss, reducedMotion: true });
+captureInputs.browserUserAgent = audit.chromium;
+captureInputs.browserVersion = audit.chromiumVersion;
 const { workload: ignoredAfterWorkload, ...system } = audit.wide.visualSystem;
 if (system.identity !== "tactical-visual-system-v1" || system.effectLimit !== 256 || system.effectCount < 1) {
   throw new Error(`Production visual registry/effects did not render: ${JSON.stringify(system)}`);
@@ -95,7 +117,7 @@ const densityAudits = [];
 const telemetryScenes = [];
 for (const units of [100, 200]) {
   const path = resolve(reviewOutput, `production-density-${units}.png`);
-  const result = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: path, prepareExpression: workloadExpression(units), reducedMotion: true });
+  const result = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: path, prepareExpression: workloadExpression(units), captureStyleText: reviewFontCss, reducedMotion: true });
   const workload = result.wide.visualSystem.workload;
   if (workload.renderedUnits !== units || workload.effects < 1 || workload.overlays < 1 || workload.currentAttackEffects < 1) throw new Error(`Production density workload ${units} is incomplete: ${JSON.stringify(workload)}`);
   const { inputToPaintMilliseconds, animationFrameIntervalMilliseconds, usedJsHeapBytes, ...structure } = workload;
@@ -106,6 +128,7 @@ for (const units of [100, 200]) {
 const afterBytes = await readFile(afterPath);
 const manifest = {
   schema: "sir-tactical-visual-review-v2",
+  captureInputs,
   productionBundleSha256: hash(bundleBytes), productionStylesSha256: hash(stylesBytes),
   before: { path: "../persistent-workspace-m9-review/field-focus.png", sha256: hash(baselineBytes) },
   after: { path: "after-production.png", sha256: hash(afterBytes), captureKind: "actual-production-shell-chromium-screenshot", semantic: system },

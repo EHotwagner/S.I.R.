@@ -7,15 +7,19 @@ projection_source="$repo_root/src/SIR.Client/TacticalSceneProjection.fs"
 samples_source="$repo_root/src/SIR.Client/ExperienceSamples.fs"
 simulator_source="$repo_root/src/SIR.Client/MapEditorSimulator.fs"
 review_generator="$repo_root/scripts/generate-tactical-visual-review.mjs"
+review_font="$repo_root/scripts/assets/tactical-visual-review-font/SIRReviewMono-Regular.woff2"
+review_font_bold="$repo_root/scripts/assets/tactical-visual-review-font/SIRReviewMono-Bold.woff2"
 cp "$projection_source" "$task_tmp/TacticalSceneProjection.fs"
 cp "$samples_source" "$task_tmp/ExperienceSamples.fs"
 cp "$simulator_source" "$task_tmp/MapEditorSimulator.fs"
 cp "$review_generator" "$task_tmp/generate-tactical-visual-review.mjs"
+cp "$review_font" "$task_tmp/SIRReviewMono-Regular.woff2"
 restore_sources() {
   cp "$task_tmp/TacticalSceneProjection.fs" "$projection_source"
   cp "$task_tmp/ExperienceSamples.fs" "$samples_source"
   cp "$task_tmp/MapEditorSimulator.fs" "$simulator_source"
   cp "$task_tmp/generate-tactical-visual-review.mjs" "$review_generator"
+  cp "$task_tmp/SIRReviewMono-Regular.woff2" "$review_font"
 }
 trap 'restore_sources; rm -rf "$task_tmp"' EXIT
 
@@ -70,6 +74,17 @@ if ! grep -q "final simultaneous workload lost distinct route" <<<"$one_route_di
 fi
 cp "$task_tmp/generate-tactical-visual-review.mjs" "$review_generator"
 
+cp "$review_font_bold" "$review_font"
+if font_diagnostic=$(node "$repo_root/scripts/test-tactical-visual-review.mjs" --client-root "$repo_root/artifacts/client" --review-root "$task_tmp/review" 2>&1); then
+  echo "Capture-font byte mutation survived its exact owner." >&2
+  exit 1
+fi
+if ! grep -q "review capture regular font bytes drifted" <<<"$font_diagnostic"; then
+  echo "Capture-font mutation missed the exact font owner: $font_diagnostic" >&2
+  exit 1
+fi
+cp "$task_tmp/SIRReviewMono-Regular.woff2" "$review_font"
+
 sed -i '/await writeFile(resolve(reviewOutput, "manifest.json")/i manifest.visualSystem.identity = "mutated-tactical-visual-system";' "$review_generator"
 if reproduction_diagnostic=$(node "$repo_root/scripts/test-tactical-visual-review.mjs" --client-root "$repo_root/artifacts/client" --review-root "$task_tmp/review" 2>&1); then
   echo "Environment-sensitive manifest mutation survived exact reproduction." >&2
@@ -81,4 +96,4 @@ if ! grep -q 'delta=manifest.after.semantic.identity: retained="tactical-visual-
 fi
 cp "$task_tmp/generate-tactical-visual-review.mjs" "$review_generator"
 
-echo "Tactical visual review mutations passed: stylesheet, lifecycle projection, production workload, sample-faction, simultaneous attack/route, production one-route, and exact manifest-reproduction subjects fail closed."
+echo "Tactical visual review mutations passed: stylesheet, lifecycle projection, production workload, sample-faction, simultaneous attack/route, production one-route, capture-font, and exact manifest-reproduction subjects fail closed."
