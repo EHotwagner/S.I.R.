@@ -4,6 +4,7 @@ set -euo pipefail
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 subject="$repo_root/src/SIR.Simulation/SpatialQuery.fs"
 project="$repo_root/tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj"
+simulation_project="$repo_root/src/SIR.Simulation/SIR.Simulation.fsproj"
 temporary_dir=$(mktemp -d /tmp/sir-spatial-subject-mutations.XXXXXX)
 prepared_pr=false
 if [[ "${1:-}" == "--prepared-pr" ]]; then
@@ -29,9 +30,18 @@ expect_mutation_failure() {
   local name=$1
   local expected=$2
   local log="$temporary_dir/$name.log"
-  isolated_args=()
-  if [[ "$prepared_pr" == true ]]; then isolated_args=(--artifacts-path "$temporary_dir/artifacts"); fi
-  if SIR_BUILD_EXCEPTION="spatial-$name" dotnet run --project "$project" -c Release "${isolated_args[@]}" -- --print-spatial-query >"$log" 2>&1; then
+  if [[ "$prepared_pr" == true ]]; then
+    if ! dotnet build "$simulation_project" -c Release --no-restore --artifacts-path "$temporary_dir/artifacts" >"$log" 2>&1; then
+      echo "spatial subject mutation could not build: $name" >&2
+      cat "$log" >&2
+      exit 1
+    fi
+    cp "$temporary_dir/artifacts/bin/SIR.Simulation/release/SIR.Simulation.dll" "$temporary_dir/runtime/SIR.Simulation.dll"
+    if SIR_BUILD_EXCEPTION="spatial-$name" dotnet "$temporary_dir/runtime/SIR.Domain.Tests.dll" --print-spatial-query >>"$log" 2>&1; then
+      echo "spatial subject mutation unexpectedly passed: $name" >&2
+      exit 1
+    fi
+  elif SIR_BUILD_EXCEPTION="spatial-$name" dotnet run --project "$project" -c Release -- --print-spatial-query >"$log" 2>&1; then
     echo "spatial subject mutation unexpectedly passed: $name" >&2
     exit 1
   fi
@@ -41,6 +51,12 @@ expect_mutation_failure() {
     exit 1
   }
 }
+
+if [[ "$prepared_pr" == true ]]; then
+  mkdir -p "$temporary_dir/runtime"
+  cp -a "$repo_root/tests/SIR.Domain.Tests/bin/Release/net10.0/." "$temporary_dir/runtime/"
+  dotnet restore "$simulation_project" --locked-mode --artifacts-path "$temporary_dir/artifacts" >/dev/null
+fi
 
 sed -i '/observeToken $"occupancy:{position.Col}:{position.Row}"/d' "$subject"
 expect_mutation_failure dependency-receipt "An inspected empty cell was not retained as an occupancy-addition dependency."

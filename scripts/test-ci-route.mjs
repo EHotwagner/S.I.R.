@@ -150,6 +150,7 @@ assert.ok(fullQualification.indexOf("dotnet-invocation-trace.sh") < fullQualific
 assert.match(fullQualification, /verify-spatial-query\.sh --static-only/u);
 assert.match(fullQualification, /fable_target_builds=.*\.total/u);
 const focusedQualification = readFileSync(new URL("./qualify-pr.sh", import.meta.url), "utf8");
+const spatialMutations = readFileSync(new URL("./test-spatial-subject-mutations.sh", import.meta.url), "utf8");
 const conformanceQualification = readFileSync(new URL("./test-conformance.sh", import.meta.url), "utf8");
 const matchQualification = readFileSync(new URL("../tests/SIR.Match.Tests/Program.fs", import.meta.url), "utf8");
 assert.ok(focusedQualification.indexOf('wait "$release_pid"') < focusedQualification.indexOf("part_paths=("));
@@ -162,6 +163,9 @@ assert.match(focusedQualification, /browser\)[\s\S]*compose-browser[\s\S]*npm ru
 assert.match(focusedQualification, /verify-browser-composition/u);
 assert.match(focusedQualification, /rules\) SIR_RULES_PREPARED_PR=1/u);
 assert.match(focusedQualification, /spatial\).*--prepared-pr/u);
+assert.match(spatialMutations, /cp -a .*SIR\.Domain\.Tests\/bin\/Release\/net10\.0\/\." "\$temporary_dir\/runtime\/"/u);
+assert.match(spatialMutations, /dotnet build "\$simulation_project" -c Release --no-restore --artifacts-path "\$temporary_dir\/artifacts"/u);
+assert.match(spatialMutations, /dotnet "\$temporary_dir\/runtime\/SIR\.Domain\.Tests\.dll" --print-spatial-query/u);
 assert.match(focusedQualification, /cancellation\).*--prepared-pr/u);
 assert.match(focusedQualification, /cross-runtime\)[\s\S]*--domain-only[\s\S]*--ordinary-pr-functional/u);
 assert.doesNotMatch(fullQualification, /--ordinary-pr-functional/u);
