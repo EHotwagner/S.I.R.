@@ -5,22 +5,22 @@ workspace: S.I.R
 cycle: 220-bounded-pr-ci
 lane: sdd
 toolVersion: 1.0.1
-commit: 3beff2764f96f3999838170477994f1275c579ec
+commit: 7d07d3b6b0c771931dcbd1d1fa3193e83f01ba2d
 ---
 
 ## §1 Provenance and confidence
 
-This report describes source commit `3beff2764f96f3999838170477994f1275c579ec`, based on `origin/main` commit `ee6a2df`. The cycle used .NET SDK 10.0.302, Fable 5.13.0, Node v26.7.0, npm 12.0.2, and SDD CLI 1.0.1. Three checkpoint events are recorded. One source-frozen local aggregate reached the old paired wall-time assertion and failed there; it exited before writing a durable timing receipt, so this report does not treat its exact duration or complete preceding subject inventory as audited evidence. No aggregate retry was run. Exact-head hosted CI, independent PR review, merge, and post-merge obligations remain pending.
+This report describes the repaired source boundary at commit `7d07d3b6b0c771931dcbd1d1fa3193e83f01ba2d`, based on `origin/main` commit `ee6a2df`. The cycle used .NET SDK 10.0.302, Fable 5.13.0, Node v26.7.0, npm 12.0.2, and SDD CLI 1.0.1. Four checkpoint events are recorded. One source-frozen local aggregate reached the old paired wall-time assertion and failed there; it exited before writing a durable timing receipt, so this report does not treat its exact duration or complete preceding subject inventory as audited evidence. No aggregate retry was run. The first hosted run exposed six transport, binding, aggregation, timing, and protected-route defects; the canonical independent review required their repair. Focused mutation proofs cover the repair, while replacement exact-head hosted CI, review confirmation, merge, and post-merge obligations remain pending.
 
-The fresh-context critic verified §4.1 and classified §4.2 incomplete under the stated confidence limit.
+The fresh-context feedback critic verified §4.1 under the stated confidence limit. The PR critic independently classified the initial hosted head changes-required; this repair preserves that review provenance rather than treating the original run as acceptance.
 
 ## §2 What worked
 
-The versioned route, typed gate receipts, deterministic join, immutable prepared-candidate manifest, and explicit workflow DAG made the PR acceptance surface inspectable and independently attributable. Lifecycle metadata is neutral when mixed with a product change, so adding SDD or feedback records does not promote a focused product route to cross-cutting; metadata-only changes retain an evidence-only route. Focused route, join, workflow, scheduled-full mutation, and receipt tests found defects quickly without an aggregate loop.
+The versioned route, candidate/route/artifact-bound gate receipts, all-failure deterministic join, mode-preserving immutable prepared-candidate transport, and explicit workflow DAG make the PR acceptance surface inspectable and independently attributable. Lifecycle metadata is neutral when mixed with a product change, so adding SDD or feedback records does not promote a focused product route to cross-cutting; metadata-only changes retain an evidence-only route. Focused route, join, workflow, scheduled-full mutation, archive, mode, and receipt tests found defects quickly without an aggregate loop.
 
 ## §3 What did not
 
-The one aggregate reached item #215's frozen-baseline assertion after the qualification surface had changed. The collector observed a negative comparison, but the failed run did not preserve a tracked timing receipt or complete baseline-versus-candidate inventory comparison. The correction kept the threshold unchanged on an explicit paired experiment and made normal local/protected commands emit clean-room timing without comparing an expanding surface to a permanent baseline.
+The one aggregate reached item #215's frozen-baseline assertion after the qualification surface had changed. The collector observed a negative comparison, but the failed run did not preserve a tracked timing receipt or complete baseline-versus-candidate inventory comparison. The correction kept the threshold unchanged on an explicit paired experiment and made normal local/protected commands emit clean-room timing without comparing an expanding surface to a permanent baseline. The first hosted run then showed that raw artifact upload discarded executable modes, the evidence lane assumed a warm package cache, gate results were under-bound, the join lost later failures, timing began too late, and the protected route consumed no-restore outputs before a cold restore while tracing an incomplete Fable inventory. Round one repaired exactly those findings and added focused fail-closed mutations; replacement hosted evidence remains pending.
 
 ## §4 Findings
 
@@ -39,7 +39,7 @@ The one aggregate reached item #215's frozen-baseline assertion after the qualif
 
 ## §5 Did not exercise
 
-No scaffold creation, gameplay behavior change, package publishing, dependency upgrade, or interactive runtime playtest was exercised. The final hosted PR DAG, queue timing, merge, and post-merge done stamp remain pending.
+No scaffold creation, gameplay behavior change, package publishing, dependency upgrade, or interactive runtime playtest was exercised. The replacement hosted PR DAG, externally unobservable queue timing, merge, and post-merge done stamp remain pending.
 
 ## §6 Doc-versus-behavior contradictions
 
@@ -59,7 +59,7 @@ The next-item and intra-repository coordination skills established isolated owne
 
 ## §10 Outcome markers
 
-Route, join, workflow, mutation, receipt, shell-syntax, and workflow-parse focused checks passed. The sole aggregate reached the historical timing assertion and failed there; its complete preceding pass inventory is not claimed as durable evidence, and no retry occurred. SDD has 49/49 observed evidence declarations, verification readiness, and ship readiness. Hosted exact-head CI and independent review remain pending.
+Route, join, workflow, scheduled/protected-edge mutation, archive/mode receipt, Fable inventory, shell-syntax, and diff focused checks passed at the repair boundary. The sole local aggregate reached the historical timing assertion and failed there; its complete preceding pass inventory is not claimed as durable evidence, and no retry occurred. SDD has 49/49 observed evidence declarations, verification readiness, and ship readiness. Replacement exact-head hosted CI and confirmation by the same independent reviewer remain pending.
 
 ## §11 Falsifiable improvements
 
