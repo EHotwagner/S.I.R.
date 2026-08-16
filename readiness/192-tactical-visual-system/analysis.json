@@ -37,6 +37,16 @@
       "schemaStatus": "current"
     },
     {
+      "path": "readiness/192-tactical-visual-system/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "6450ac6173c67ef378f054b39dadad186edbd4de98be5ab1123cb99c3918b28f"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
       "path": "work/192-tactical-visual-system/checklist.md",
       "kind": "checklist",
       "digest": {
@@ -81,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "36c5e8dd4f5596f8711d8e93be1b408dccf658948e4c8631661fa8a1c30d5cba"
+        "value": "629bc1c8ad2ec105c3ddd98a6c434d75d5e18976f60d63022c669a36807d3922"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -966,7 +976,7 @@
     {
       "path": "readiness/192-tactical-visual-system/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
+      "currency": "current",
       "diagnosticIds": []
     }
   ],

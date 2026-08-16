@@ -1,0 +1,1091 @@
+schemaVersion: 1
+workId: 192-tactical-visual-system
+stage: evidence
+status: evidenceReady
+sourceSpec: work/192-tactical-visual-system/spec.md
+sourceClarifications: work/192-tactical-visual-system/clarifications.md
+sourceChecklist: work/192-tactical-visual-system/checklist.md
+sourcePlan: work/192-tactical-visual-system/plan.md
+sourceTasks: work/192-tactical-visual-system/tasks.yml
+sourceAnalysis: readiness/192-tactical-visual-system/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/192-tactical-visual-system/analysis.json
+    digest: 2ca0eb3905e23fddb254bef6755ff07df215af6c9dda2e48d0b8e562de0d4e28
+    schemaVersion: 1
+  - label: checklist
+    path: work/192-tactical-visual-system/checklist.md
+    digest: 42b014fe31bcaf01b6bb95cbd054cabc9c8586e69c0f853ad981f6279ddede23
+    schemaVersion: 1
+  - label: clarifications
+    path: work/192-tactical-visual-system/clarifications.md
+    digest: 5bb02dfe1cbe869ec499a5051b245f89931b2697cb8031796b7f086bb8482db7
+    schemaVersion: 1
+  - label: plan
+    path: work/192-tactical-visual-system/plan.md
+    digest: 718da1d551dc7457ed18ddee726691aca2f33663a13a65e2b818dbf4a5b4e398
+    schemaVersion: 1
+  - label: spec
+    path: work/192-tactical-visual-system/spec.md
+    digest: 10a108eb2cd03cd2f66b808e86b45d36d8b4ef463c7dfa93931c03d9dd335b87
+    schemaVersion: 1
+  - label: tasks
+    path: work/192-tactical-visual-system/tasks.yml
+    digest: 629bc1c8ad2ec105c3ddd98a6c434d75d5e18976f60d63022c669a36807d3922
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV003]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV006]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV007]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV012]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV013]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV014]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV015]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV016]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV017]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV018]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV019]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV020
+    kind: verification
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV020]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV021
+    kind: verification
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV021]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV022
+    kind: verification
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV022]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV023
+    kind: verification
+    subject:
+      type: task
+      id: T023
+    taskRefs: [T023]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV023]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV024
+    kind: verification
+    subject:
+      type: task
+      id: T024
+    taskRefs: [T024]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV024]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV025
+    kind: verification
+    subject:
+      type: task
+      id: T025
+    taskRefs: [T025]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-005]
+    obligationRefs: [EV025]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV026
+    kind: verification
+    subject:
+      type: task
+      id: T026
+    taskRefs: [T026]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002, PD-003]
+    obligationRefs: [EV026]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV027
+    kind: verification
+    subject:
+      type: task
+      id: T027
+    taskRefs: [T027]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV027]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV028
+    kind: verification
+    subject:
+      type: task
+      id: T028
+    taskRefs: [T028]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV028]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV029
+    kind: verification
+    subject:
+      type: task
+      id: T029
+    taskRefs: [T029]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: [EV029]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV030
+    kind: verification
+    subject:
+      type: task
+      id: T030
+    taskRefs: [T030]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-005, PD-009]
+    obligationRefs: [EV030]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV031
+    kind: verification
+    subject:
+      type: task
+      id: T031
+    taskRefs: [T031]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004, PD-006]
+    obligationRefs: [EV031]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV032
+    kind: verification
+    subject:
+      type: task
+      id: T032
+    taskRefs: [T032]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV032]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV033
+    kind: verification
+    subject:
+      type: task
+      id: T033
+    taskRefs: [T033]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV033]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV034
+    kind: verification
+    subject:
+      type: task
+      id: T034
+    taskRefs: [T034]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV034]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV035
+    kind: verification
+    subject:
+      type: task
+      id: T035
+    taskRefs: [T035]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV035]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV036
+    kind: verification
+    subject:
+      type: task
+      id: T036
+    taskRefs: [T036]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV036]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV037
+    kind: verification
+    subject:
+      type: task
+      id: T037
+    taskRefs: [T037]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV037]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV038
+    kind: verification
+    subject:
+      type: task
+      id: T038
+    taskRefs: [T038]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV038]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+  - id: EV039
+    kind: verification
+    subject:
+      type: task
+      id: T039
+    taskRefs: [T039]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV039]
+    artifacts: [docs/assets/tactical-visual-system-review/density-prototypes.svg, scripts/test-tactical-visual-review.mjs, tests/SIR.Browser.Tests/visible-workflows.spec.js, tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/192-tactical-visual-system/test-results/tactical-visual.trx
+      digest: "sha256:38c83e27c88644924a046f8429712af5e3003675280c7e054f3c912bb4c14510"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 4
+      failed: 0
+      skipped: 0
+    notes: [Focused Release qualification, and rendered production frame passed., exact-bundle review, production browser journey]
+lifecycleNotes:
+  - "Next lifecycle action: verify."
