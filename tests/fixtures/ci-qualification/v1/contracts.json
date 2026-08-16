@@ -13,7 +13,11 @@
   ],
   "subjectOrder": [
     "integrity",
-    "prepare",
+    "prepare-native",
+    "prepare-fable",
+    "prepare-web",
+    "prepare-server",
+    "prepare-docs",
     "rules",
     "spatial",
     "cancellation",

@@ -75,40 +75,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with: { name: gate-integrity, path: artifacts/ci/results/integrity.json, retention-days: 1 }
 
-  prepare:
-    if: always() && needs.route.outputs.prepare == 'true'
-    needs: [route, prepare-native, prepare-fable, prepare-web, prepare-server]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Capture runner start
-        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
-      - uses: actions/setup-dotnet@v4
-        with: { global-json-file: global.json }
-      - uses: actions/setup-node@v4
-        with: { node-version: 26.5.0 }
-      - uses: actions/download-artifact@v4
-        with: { name: ci-route, path: artifacts/ci }
-      - uses: actions/download-artifact@v4
-        continue-on-error: true
-        with: { pattern: prepared-part-*, path: artifacts/ci/parts, merge-multiple: true }
-      - run: ./scripts/run-ci-gate.sh prepare artifacts/ci/results/prepare.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: prepared-candidate
-          include-hidden-files: true
-          compression-level: 0
-          retention-days: 1
-          path: |
-            artifacts/ci
-            !artifacts/ci/parts/**
-            artifacts/prepared-candidate.tar
-            docs/evidence/production-build-receipt-v1
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with: { name: gate-prepare, path: artifacts/ci/results/prepare.json, retention-days: 1 }
-
   prepare-native:
     if: needs.route.outputs.classification == 'domain' || needs.route.outputs.classification == 'cross-cutting'
     needs: route
@@ -133,7 +99,14 @@ jobs:
           retention-days: 1
           path: |
             artifacts/ci/parts/native.tar
+            artifacts/ci/parts/native.receipt.path
+            artifacts/ci/parts/native.manifest.path
             artifacts/ci/parts/native.timing.json
+            artifacts/ci/parts/receipts
+            artifacts/ci/parts/manifests
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: gate-prepare-native, path: artifacts/ci/results/prepare-native.json, retention-days: 1 }
 
   prepare-fable:
     if: needs.route.outputs.classification == 'domain' || needs.route.outputs.classification == 'cross-cutting'
@@ -159,7 +132,14 @@ jobs:
           retention-days: 1
           path: |
             artifacts/ci/parts/fable.tar
+            artifacts/ci/parts/fable.receipt.path
+            artifacts/ci/parts/fable.manifest.path
             artifacts/ci/parts/fable.timing.json
+            artifacts/ci/parts/receipts
+            artifacts/ci/parts/manifests
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: gate-prepare-fable, path: artifacts/ci/results/prepare-fable.json, retention-days: 1 }
 
   prepare-web:
     if: needs.route.outputs.classification == 'documentation' || needs.route.outputs.classification == 'browser' || needs.route.outputs.classification == 'cross-cutting'
@@ -186,7 +166,14 @@ jobs:
           retention-days: 1
           path: |
             artifacts/ci/parts/web.tar
+            artifacts/ci/parts/web.receipt.path
+            artifacts/ci/parts/web.manifest.path
             artifacts/ci/parts/web.timing.json
+            artifacts/ci/parts/receipts
+            artifacts/ci/parts/manifests
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: gate-prepare-web, path: artifacts/ci/results/prepare-web.json, retention-days: 1 }
 
   prepare-server:
     if: needs.route.outputs.classification == 'browser' || needs.route.outputs.classification == 'cross-cutting'
@@ -212,11 +199,51 @@ jobs:
           retention-days: 1
           path: |
             artifacts/ci/parts/server.tar
+            artifacts/ci/parts/server.receipt.path
+            artifacts/ci/parts/server.manifest.path
             artifacts/ci/parts/server.timing.json
+            artifacts/ci/parts/receipts
+            artifacts/ci/parts/manifests
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: gate-prepare-server, path: artifacts/ci/results/prepare-server.json, retention-days: 1 }
+
+  prepare-docs:
+    if: needs.route.outputs.classification == 'documentation' || needs.route.outputs.classification == 'cross-cutting'
+    needs: route
+    runs-on: ubuntu-latest
+    steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+      - uses: actions/setup-dotnet@v4
+        with: { global-json-file: global.json }
+      - uses: actions/setup-node@v4
+        with: { node-version: 26.5.0 }
+      - uses: actions/download-artifact@v4
+        with: { name: ci-route, path: artifacts/ci }
+      - run: ./scripts/qualify-pr.sh prepare-part docs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prepared-part-docs
+          compression-level: 0
+          retention-days: 1
+          path: |
+            artifacts/ci/parts/docs.tar
+            artifacts/ci/parts/docs.receipt.path
+            artifacts/ci/parts/docs.manifest.path
+            artifacts/ci/parts/docs.timing.json
+            artifacts/ci/parts/receipts
+            artifacts/ci/parts/manifests
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: gate-prepare-docs, path: artifacts/ci/results/prepare-docs.json, retention-days: 1 }
 
   rules:
     if: needs.route.outputs.rules == 'true'
-    needs: [route, integrity, prepare]
+    needs: [route, integrity, prepare-native]
     runs-on: ubuntu-latest
     steps:
       - name: Capture runner start
@@ -233,8 +260,9 @@ jobs:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json', 'Directory.Packages.props', '.config/dotnet-tools.json') }}
       - uses: actions/download-artifact@v4
-        with: { name: prepared-candidate, path: . }
-      - run: ./scripts/qualify-pr.sh extract-prepared
+        with: { name: ci-route, path: artifacts/ci }
+      - uses: actions/download-artifact@v4
+        with: { name: prepared-part-native, path: artifacts/ci/parts }
       - run: ./scripts/run-ci-gate.sh rules artifacts/ci/results/rules.json
         env: { SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}" }
       - if: always()
@@ -243,7 +271,7 @@ jobs:
 
   spatial:
     if: needs.route.outputs.spatial == 'true'
-    needs: [route, integrity, prepare]
+    needs: [route, integrity, prepare-native, prepare-fable]
     runs-on: ubuntu-latest
     steps:
       - name: Capture runner start
@@ -260,8 +288,11 @@ jobs:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json', 'Directory.Packages.props', '.config/dotnet-tools.json') }}
       - uses: actions/download-artifact@v4
-        with: { name: prepared-candidate, path: . }
-      - run: ./scripts/qualify-pr.sh extract-prepared
+        with: { name: ci-route, path: artifacts/ci }
+      - uses: actions/download-artifact@v4
+        with: { name: prepared-part-native, path: artifacts/ci/parts }
+      - uses: actions/download-artifact@v4
+        with: { name: prepared-part-fable, path: artifacts/ci/parts }
       - run: ./scripts/run-ci-gate.sh spatial artifacts/ci/results/spatial.json
         env: { SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}" }
       - if: always()
@@ -270,7 +301,7 @@ jobs:
 
   cancellation:
     if: needs.route.outputs.cancellation == 'true'
-    needs: [route, integrity, prepare]
+    needs: [route, integrity]
     runs-on: ubuntu-latest
     steps:
       - name: Capture runner start
@@ -289,8 +320,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: dotnet tool restore
       - uses: actions/download-artifact@v4
-        with: { name: prepared-candidate, path: . }
-      - run: ./scripts/qualify-pr.sh extract-prepared
+        with: { name: ci-route, path: artifacts/ci }
       - run: ./scripts/run-ci-gate.sh cancellation artifacts/ci/results/cancellation.json
         env: { SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}" }
       - if: always()
@@ -299,7 +329,7 @@ jobs:
 
   cross-runtime:
     if: needs.route.outputs.cross_runtime == 'true'
-    needs: [route, integrity, prepare]
+    needs: [route, integrity, prepare-native, prepare-fable]
     runs-on: ubuntu-latest
     steps:
       - name: Capture runner start
@@ -317,8 +347,11 @@ jobs:
           key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json', 'Directory.Packages.props', '.config/dotnet-tools.json') }}
       - run: npm ci --ignore-scripts
       - uses: actions/download-artifact@v4
-        with: { name: prepared-candidate, path: . }
-      - run: ./scripts/qualify-pr.sh extract-prepared
+        with: { name: ci-route, path: artifacts/ci }
+      - uses: actions/download-artifact@v4
+        with: { name: prepared-part-native, path: artifacts/ci/parts }
+      - uses: actions/download-artifact@v4
+        with: { name: prepared-part-fable, path: artifacts/ci/parts }
       - run: ./scripts/run-ci-gate.sh cross-runtime artifacts/ci/results/cross-runtime.json
         env:
           PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium
@@ -329,7 +362,7 @@ jobs:
 
   browser:
     if: needs.route.outputs.browser == 'true'
-    needs: [route, integrity, prepare]
+    needs: [route, integrity, prepare-web, prepare-server]
     runs-on: ubuntu-latest
     steps:
       - name: Capture runner start
@@ -338,10 +371,15 @@ jobs:
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-node@v4
         with: { node-version: 26.5.0, cache: npm }
+      - uses: actions/setup-dotnet@v4
+        with: { global-json-file: global.json }
       - run: npm ci --ignore-scripts
       - uses: actions/download-artifact@v4
-        with: { name: prepared-candidate, path: . }
-      - run: ./scripts/qualify-pr.sh extract-prepared
+        with: { name: ci-route, path: artifacts/ci }
+      - uses: actions/download-artifact@v4
+        with: { name: prepared-part-web, path: artifacts/ci/parts }
+      - uses: actions/download-artifact@v4
+        with: { name: prepared-part-server, path: artifacts/ci/parts }
       - run: ./scripts/run-ci-gate.sh browser artifacts/ci/results/browser.json
         env: { PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium }
       - if: always()
@@ -350,7 +388,7 @@ jobs:
 
   documentation:
     if: needs.route.outputs.documentation == 'true'
-    needs: [route, integrity, prepare]
+    needs: [route, integrity, prepare-web, prepare-docs]
     runs-on: ubuntu-latest
     steps:
       - name: Capture runner start
@@ -369,8 +407,11 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: dotnet tool restore
       - uses: actions/download-artifact@v4
-        with: { name: prepared-candidate, path: . }
-      - run: ./scripts/qualify-pr.sh extract-prepared
+        with: { name: ci-route, path: artifacts/ci }
+      - uses: actions/download-artifact@v4
+        with: { name: prepared-part-web, path: artifacts/ci/parts }
+      - uses: actions/download-artifact@v4
+        with: { name: prepared-part-docs, path: artifacts/ci/parts }
       - run: ./scripts/run-ci-gate.sh documentation artifacts/ci/results/documentation.json
         env: { SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}" }
       - if: always()
@@ -407,7 +448,7 @@ jobs:
 
   pr-verdict:
     if: always() && github.event_name == 'pull_request'
-    needs: [route, integrity, prepare, rules, spatial, cancellation, cross-runtime, browser, documentation, evidence]
+    needs: [route, integrity, prepare-native, prepare-fable, prepare-web, prepare-server, prepare-docs, rules, spatial, cancellation, cross-runtime, browser, documentation, evidence]
     runs-on: ubuntu-latest
     steps:
       - name: Capture runner start
@@ -421,24 +462,16 @@ jobs:
       - uses: actions/download-artifact@v4
         continue-on-error: true
         with: { pattern: gate-*, path: artifacts/ci/results, merge-multiple: true }
-      - uses: actions/download-artifact@v4
-        continue-on-error: true
-        with: { name: prepared-candidate, path: prepared }
       - name: Join required gate receipts
         shell: bash
         run: |
           args=()
-          for gate in integrity prepare rules spatial cancellation cross-runtime browser documentation evidence; do
+          for gate in integrity prepare-native prepare-fable prepare-web prepare-server prepare-docs rules spatial cancellation cross-runtime browser documentation evidence; do
             if [[ -f "artifacts/ci/results/$gate.json" ]]; then args+=(--result "$gate=artifacts/ci/results/$gate.json"); fi
           done
-          manifest_args=()
-          if [[ -f prepared/artifacts/ci/artifact-manifest.path ]]; then
-            manifest_args+=(--artifact-manifest "prepared/$(<prepared/artifacts/ci/artifact-manifest.path)")
-          fi
           node scripts/ci-route.mjs join \
             --route artifacts/ci/route.json \
             "${args[@]}" \
-            "${manifest_args[@]}" \
             --started-ms "$(<artifacts/ci/started-ms)" \
             --completed-ms "$(date +%s%3N)" \
             --output artifacts/ci/pr-verdict.json

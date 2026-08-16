@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
-import { basename, dirname, resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 export const routeSchema = "sir.ci-route/v1";
@@ -10,7 +10,17 @@ export const timingSchema = "sir.ci-timing/v1";
 export const policyVersion = "1";
 export const feedbackBudgetMilliseconds = 300_000;
 export const gateOrder = ["rules", "spatial", "cancellation", "cross-runtime", "browser", "documentation", "evidence"];
-export const subjectOrder = ["integrity", "prepare", ...gateOrder];
+export const producerOrder = ["prepare-native", "prepare-fable", "prepare-web", "prepare-server", "prepare-docs"];
+export const subjectOrder = ["integrity", ...producerOrder, ...gateOrder];
+export const gateParts = {
+  rules: ["native"],
+  spatial: ["native", "fable"],
+  cancellation: [],
+  "cross-runtime": ["native", "fable"],
+  browser: ["web", "server"],
+  documentation: ["web", "docs"],
+  evidence: [],
+};
 
 const classifications = {
   documentation: ["documentation", "evidence"],
@@ -88,8 +98,8 @@ export function gateResult(gate, status, timing = {}, details = {}) {
     source: { commit: "unknown", tree: "unknown" },
     routeDigest: "unknown",
     artifactDigest: null,
-    ownerCommand: "scripts/run-ci-gate.sh",
-    gateCommand: gate === "prepare" ? "scripts/qualify-pr.sh prepare" : gate === "integrity" ? "scripts/qualify-pr.sh integrity" : `scripts/qualify-pr.sh gate ${gate}`,
+    ownerCommand: producerOrder.includes(gate) ? "scripts/qualify-pr.sh" : "scripts/run-ci-gate.sh",
+    gateCommand: producerOrder.includes(gate) ? `scripts/qualify-pr.sh prepare-part ${gate.slice("prepare-".length)}` : gate === "integrity" ? "scripts/qualify-pr.sh integrity" : `scripts/qualify-pr.sh gate ${gate}`,
     timingMilliseconds: phases,
     cacheHit: false,
     receiptReused: false,
@@ -100,14 +110,15 @@ export function gateResult(gate, status, timing = {}, details = {}) {
   };
 }
 
-export function joinRoute(route, results, { startedAtMilliseconds = 0, completedAtMilliseconds = 0, enforceBudget = true, expectedArtifactDigest = null, artifactManifestFailure = null } = {}) {
+export function joinRoute(route, results, { startedAtMilliseconds = 0, completedAtMilliseconds = 0, enforceBudget = true } = {}) {
   const failures = [];
   if (route?.schema !== routeSchema || route.policyVersion !== policyVersion) failures.push({ code: "stale-or-malformed-route-receipt", subject: "route" });
   const computedRouteDigest = routeDigest(route);
   if (route?.digest !== computedRouteDigest) failures.push({ code: "route-digest-mismatch", subject: "route", expected: computedRouteDigest, actual: route?.digest ?? null });
   const selectedGates = Array.isArray(route?.selectedGates) ? route.selectedGates : [];
-  const needsPrepared = selectedGates.some((gate) => gate !== "evidence");
-  const expectedSubjects = ["integrity", ...(needsPrepared ? ["prepare"] : []), ...selectedGates];
+  const requiredParts = [...new Set(selectedGates.flatMap((gate) => gateParts[gate] ?? []))];
+  const expectedProducers = requiredParts.map((part) => `prepare-${part}`);
+  const expectedSubjects = ["integrity", ...expectedProducers, ...selectedGates];
   const byGate = new Map();
   for (const result of results) {
     const subject = typeof result?.gate === "string" ? result.gate : "unknown";
@@ -129,22 +140,29 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
     if (result.status !== "pass") failures.push({ code: `required-gate-${result.status ?? "malformed"}`, subject });
     if (result.source?.commit !== route?.source?.commit || result.source?.tree !== route?.source?.tree) failures.push({ code: "candidate-binding-mismatch", subject });
     if (result.routeDigest !== route?.digest) failures.push({ code: "route-binding-mismatch", subject });
-    if (result.ownerCommand !== "scripts/run-ci-gate.sh") failures.push({ code: "owner-command-mismatch", subject });
-    if (typeof result.gateCommand !== "string" || !result.gateCommand.endsWith(subject)) failures.push({ code: "gate-command-mismatch", subject });
+    const expectedOwner = producerOrder.includes(subject) ? "scripts/qualify-pr.sh" : "scripts/run-ci-gate.sh";
+    if (result.ownerCommand !== expectedOwner) failures.push({ code: "owner-command-mismatch", subject });
+    const expectedCommand = producerOrder.includes(subject)
+      ? `scripts/qualify-pr.sh prepare-part ${subject.slice("prepare-".length)}`
+      : subject === "integrity" ? "scripts/qualify-pr.sh integrity" : `scripts/qualify-pr.sh gate ${subject}`;
+    if (result.gateCommand !== expectedCommand) failures.push({ code: "gate-command-mismatch", subject });
   }
   for (const gate of byGate.keys()) if (!expected.has(gate)) failures.push({ code: "unexpected-gate-result", subject: gate });
 
-  const preparedDigest = byGate.get("prepare")?.artifactDigest ?? null;
-  if (artifactManifestFailure) failures.push({ code: artifactManifestFailure, subject: "prepared-artifact" });
-  if (needsPrepared && expectedArtifactDigest === null) failures.push({ code: "missing-artifact-manifest", subject: "prepared-artifact" });
-  if (needsPrepared && expectedArtifactDigest !== null && preparedDigest !== expectedArtifactDigest) failures.push({ code: "artifact-manifest-binding-mismatch", subject: "prepare" });
-  if (needsPrepared && (typeof preparedDigest !== "string" || preparedDigest.length !== 64)) failures.push({ code: "missing-prepared-artifact-binding", subject: "prepare" });
+  const producerDigests = Object.fromEntries(expectedProducers.map((subject) => [subject.slice("prepare-".length), byGate.get(subject)?.artifactDigest ?? null]));
+  for (const subject of expectedProducers) {
+    const producerDigest = byGate.get(subject)?.artifactDigest;
+    if (typeof producerDigest !== "string" || !/^[0-9a-f]{64}$/u.test(producerDigest)) failures.push({ code: "missing-prepared-artifact-binding", subject });
+  }
   for (const subject of expectedSubjects) {
     const result = byGate.get(subject);
     if (!result) continue;
-    const needsArtifact = subject === "prepare" || (gateOrder.includes(subject) && subject !== "evidence");
-    if (needsArtifact && result.artifactDigest !== preparedDigest) failures.push({ code: "artifact-binding-mismatch", subject });
-    if (!needsArtifact && result.artifactDigest !== null) failures.push({ code: "unexpected-artifact-binding", subject });
+    const parts = gateParts[subject] ?? [];
+    if (parts.length > 0) {
+      const expectedBindings = Object.fromEntries(parts.map((part) => [part, producerDigests[part]]));
+      if (canonical(result.artifactBindings ?? {}) !== canonical(expectedBindings)) failures.push({ code: "artifact-binding-mismatch", subject });
+      if (result.artifactDigest !== digest(expectedBindings)) failures.push({ code: "artifact-set-digest-mismatch", subject });
+    } else if (!producerOrder.includes(subject) && (result.artifactDigest !== null || Object.keys(result.artifactBindings ?? {}).length > 0)) failures.push({ code: "unexpected-artifact-binding", subject });
   }
   const elapsed = completedAtMilliseconds - startedAtMilliseconds;
   if (!Number.isSafeInteger(elapsed) || elapsed < 0) failures.push({ code: "invalid-feedback-duration", subject: "timing" });
@@ -219,7 +237,14 @@ async function main(argv) {
     }, {
       source: { commit: one("commit", "unknown"), tree: one("tree", "unknown") },
       routeDigest: one("route-digest", "unknown"),
-      artifactDigest: one("artifact-digest", "none") === "none" ? null : one("artifact-digest", ""),
+      artifactBindings: Object.fromEntries(many("artifact-binding").map((declaration) => {
+        const separator = declaration.indexOf("=");
+        if (separator <= 0) throw new Error(`ci-route: malformed artifact binding:${declaration}`);
+        return [declaration.slice(0, separator), declaration.slice(separator + 1)];
+      }).sort(([left], [right]) => left.localeCompare(right))),
+      artifactDigest: one("artifact-digest", "none") === "auto"
+        ? digest(Object.fromEntries(many("artifact-binding").map((declaration) => declaration.split(/=(.*)/su).slice(0, 2)).sort(([left], [right]) => left.localeCompare(right))))
+        : one("artifact-digest", "none") === "none" ? null : one("artifact-digest", ""),
       cacheHit: one("cache-hit", "false") === "true",
       receiptReused: one("receipt-reused", "false") === "true",
       buildInvocations: many("build"),
@@ -241,21 +266,7 @@ async function main(argv) {
       if (result.gate !== declaration.slice(0, separator)) throw new Error(`ci-route: gate-result-name-drift:${declaration.slice(0, separator)}`);
       results.push(result);
     }
-    let expectedArtifactDigest = null;
-    let artifactManifestFailure = null;
-    const artifactManifestPath = one("artifact-manifest", undefined);
-    if (artifactManifestPath) {
-      try {
-        const bytes = await readFile(artifactManifestPath);
-        expectedArtifactDigest = createHash("sha256").update(bytes).digest("hex");
-        const manifest = JSON.parse(bytes);
-        if (basename(artifactManifestPath) !== `${expectedArtifactDigest}.json` || manifest.schema !== "sir.ci-artifact-manifest/v1" || manifest.result !== "pass") artifactManifestFailure = "malformed-artifact-manifest";
-        else if (manifest.candidate?.commit !== route.source?.commit || manifest.candidate?.tree !== route.source?.tree || manifest.route?.digest !== route.digest) artifactManifestFailure = "artifact-manifest-binding-mismatch";
-      } catch {
-        artifactManifestFailure = "unreadable-artifact-manifest";
-      }
-    }
-    const joined = joinRoute(route, results, { startedAtMilliseconds: Number(one("started-ms", "0")), completedAtMilliseconds: Number(one("completed-ms", "0")), enforceBudget: one("enforce-budget", "true") === "true", expectedArtifactDigest, artifactManifestFailure });
+    const joined = joinRoute(route, results, { startedAtMilliseconds: Number(one("started-ms", "0")), completedAtMilliseconds: Number(one("completed-ms", "0")), enforceBudget: one("enforce-budget", "true") === "true" });
     const output = one("output", undefined);
     if (output) await writeJson(output, joined);
     process.stdout.write(canonical(joined));

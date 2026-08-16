@@ -9,11 +9,6 @@ phase_path="$repo_root/artifacts/ci/phase-timing.json"
 runner_started=${SIR_CI_RUNNER_START_MS:-$(date +%s%3N)}
 command_started=$(date +%s%3N)
 rm -f -- "$phase_path"
-pre_transport_ms=0
-if [[ -f "$repo_root/artifacts/ci/extract-timing.json" ]]; then
-  pre_transport_ms=$(node -e 'process.stdout.write(String(JSON.parse(require("node:fs").readFileSync(process.argv[1], "utf8")).transport ?? 0))' "$repo_root/artifacts/ci/extract-timing.json")
-fi
-
 readarray -t route_binding < <(node - "$route_path" <<'NODE'
 const { readFileSync } = require("node:fs");
 const route = JSON.parse(readFileSync(process.argv[2], "utf8"));
@@ -24,13 +19,41 @@ NODE
 )
 
 status=pass
-set +e
+preflight_status=0
+preflight_parts=()
 case "$subject" in
-  integrity) "$repo_root/scripts/qualify-pr.sh" integrity ;;
-  prepare) "$repo_root/scripts/qualify-pr.sh" prepare ;;
-  *) "$repo_root/scripts/qualify-pr.sh" gate "$subject" ;;
+  rules) preflight_parts=(native) ;;
+  spatial|cross-runtime) preflight_parts=(native fable) ;;
+  browser) preflight_parts=(web server) ;;
+  documentation) preflight_parts=(web docs) ;;
 esac
-exit_code=$?
+if [[ ${#preflight_parts[@]} -gt 0 ]]; then
+  set +e
+  "$repo_root/scripts/qualify-pr.sh" extract-parts "${preflight_parts[@]}"
+  preflight_status=$?
+  set -e
+fi
+pre_transport_ms=0
+if [[ -f "$repo_root/artifacts/ci/extract-timing.json" ]]; then
+  pre_transport_ms=$(node -e 'process.stdout.write(String(JSON.parse(require("node:fs").readFileSync(process.argv[1], "utf8")).transport ?? 0))' "$repo_root/artifacts/ci/extract-timing.json")
+elif [[ $preflight_status -ne 0 ]]; then
+  pre_transport_ms=$(( $(date +%s%3N) - command_started ))
+  node - "$phase_path" "$pre_transport_ms" <<'NODE'
+const { writeFileSync } = require("node:fs");
+writeFileSync(process.argv[2], `${JSON.stringify({ restore: 0, build: 0, transport: 0, failureStage: "transport" })}\n`);
+NODE
+fi
+
+set +e
+if [[ $preflight_status -ne 0 ]]; then
+  exit_code=$preflight_status
+else
+  case "$subject" in
+    integrity) "$repo_root/scripts/qualify-pr.sh" integrity ;;
+    *) "$repo_root/scripts/qualify-pr.sh" gate "$subject" ;;
+  esac
+  exit_code=$?
+fi
 set -e
 if [[ $exit_code -ne 0 ]]; then status=fail; fi
 completed=$(date +%s%3N)
@@ -61,8 +84,6 @@ NODE
   failure_stage=${phases[5]}
 fi
 setup_ms=$((command_started - runner_started))
-setup_ms=$((setup_ms - pre_transport_ms))
-if (( setup_ms < 0 )); then setup_ms=0; fi
 if (( phase_setup_ms > setup_ms )); then setup_ms=$phase_setup_ms; fi
 effective_started=$runner_started
 if (( phase_started > 0 && phase_started < effective_started )); then effective_started=$phase_started; fi
@@ -71,23 +92,17 @@ test_ms=$((total_ms - setup_ms - restore_ms - build_ms - transport_ms))
 if (( test_ms < 0 )); then test_ms=0; fi
 
 artifact_digest=none
+artifact_args=()
 receipt_reused=false
 build_args=()
-if [[ "$subject" == prepare && -f "$repo_root/artifacts/ci/artifact-manifest.path" ]]; then
-  manifest=$(<"$repo_root/artifacts/ci/artifact-manifest.path")
-  artifact_digest=$(sha256sum "$repo_root/$manifest" | cut -d' ' -f1)
-  if [[ -f "$repo_root/artifacts/ci/build-receipt.path" ]]; then
-    receipt=$(<"$repo_root/artifacts/ci/build-receipt.path")
-    while IFS= read -r output_id; do build_args+=(--build "$output_id"); done < <(node - "$repo_root/$receipt" <<'NODE'
-const { readFileSync } = require("node:fs");
-const receipt = JSON.parse(readFileSync(process.argv[2], "utf8"));
-for (const output of receipt.outputs ?? []) console.log(output.id);
-NODE
-    )
-  fi
-elif [[ "$subject" != integrity && "$subject" != evidence && -f "$repo_root/artifacts/ci/artifact-manifest.path" ]]; then
-  manifest=$(<"$repo_root/artifacts/ci/artifact-manifest.path")
-  artifact_digest=$(sha256sum "$repo_root/$manifest" | cut -d' ' -f1)
+if [[ "$subject" != integrity && "$subject" != evidence ]]; then
+  for pointer in "$repo_root"/artifacts/ci/parts/*.manifest.path; do
+    [[ -f "$pointer" ]] || continue
+    part=$(basename "$pointer" .manifest.path)
+    manifest=$(<"$pointer")
+    artifact_args+=(--artifact-binding "$part=$(sha256sum "$repo_root/$manifest" | cut -d' ' -f1)")
+  done
+  if [[ ${#artifact_args[@]} -gt 0 ]]; then artifact_digest=auto; fi
   receipt_reused=true
 fi
 
@@ -99,6 +114,7 @@ node "$repo_root/scripts/ci-route.mjs" gate \
   --tree "${route_binding[1]}" \
   --route-digest "${route_binding[2]}" \
   --artifact-digest "$artifact_digest" \
+  "${artifact_args[@]}" \
   --queue-ms unknown \
   --setup-ms "$setup_ms" \
   --restore-ms "$restore_ms" \

@@ -22,7 +22,7 @@ Prose status: planned
 
 ## Plan Scope
 - Add a small Node route/receipt/join module with committed policy and timing schemas; keep routing pure and independently testable.
-- Add a focused PR qualification driver and split workflow topology into route, integrity, prepare, named parallel gates, and an unconditional deterministic join.
+- Add a focused PR qualification driver and split workflow topology into route, integrity, narrow producer jobs, named parallel gates, and an unconditional deterministic join.
 - Reuse the existing production build receipt for prepared outputs and keep `qualify-production.sh` as the complete clean-room protected/scheduled route.
 - Add path, receipt, inventory, cache, join, and scheduled-hidden-defect mutations, plus route-matrix and workflow-contract tests.
 - Document PR, protected ship, scheduled, and local routes and record comparable hosted timing without changing gameplay performance assertions.
@@ -39,8 +39,8 @@ GitHub Actions `ubuntu-latest`, Node 26 ESM, strict Bash, .NET 10/Fable 5.13, np
 ## Design
 - `scripts/ci-route.mjs` normalizes changed paths, evaluates a versioned ordered policy, emits JSON outputs for stable gate ids, writes canonical route/timing/join receipts, and exposes self-restoring mutation fixtures. A mixed or unmatched path set is cross-cutting.
 - `scripts/qualify-pr.sh` is the local focused-lane owner. It captures changed paths, starts one timing receipt, runs the integrity floor, prepares only the selected prerequisites, runs selected gates in stable concurrent groups, then invokes the same deterministic join as hosted CI.
-- `.github/workflows/ci.yml` separates PR and full routes. PR jobs are `route`, `integrity`, `prepare`, named rules/spatial/cancellation/cross-runtime/browser/documentation/evidence gates, and `pr-verdict`; independent gates use route outputs and explicit dependencies. Main pushes and schedules run `qualify-production.sh` as a clean-room job.
-- The prepare node uses lock-keyed caches only as transport acceleration, builds each selected prerequisite once, creates/verifies a production build receipt and route artifact manifest, and uploads the immutable outputs. Consumers download and verify before use; missing or drifted artifacts never trigger an implicit rebuild.
+- `.github/workflows/ci.yml` separates PR and full routes. PR jobs are `route`, `integrity`, independent native/Fable/web/server/docs producers, named rules/spatial/cancellation/cross-runtime/browser/documentation/evidence gates, and `pr-verdict`; each gate depends only on its relevant producers. Main pushes and schedules run `qualify-production.sh` as a clean-room job.
+- Each producer uses lock-keyed caches only as transport acceleration, builds its selected prerequisite once, creates/verifies a content-addressed production receipt and route artifact manifest, and uploads only its immutable declared outputs. Consumers download and verify only their required producer artifacts; mutable `obj` intermediates and unrelated `bin` trees are never sealed, and missing or drifted artifacts never trigger an implicit rebuild.
 - Every job emits a small gate-result JSON with queue/setup/restore/build/test/total durations, cache/reuse and invocation counts, route fact, retry/failure stage, candidate commit/tree, command, and output identities. The join orders results by policy, validates all required/skip states, calculates critical path and runner-minutes, and enforces 300,000 ms for representative PR routes.
 - Protected and scheduled full qualification keep the current clean-cache receipt/mutation/browser/docs/performance/SDD/Governance/historical subjects. A scheduled mutation proves a cross-surface defect omitted from an otherwise correct focused route is caught at the full boundary.
 
@@ -49,7 +49,7 @@ GitHub Actions `ubuntu-latest`, Node 26 ESM, strict Bash, .NET 10/Fable 5.13, np
 - PD-002 [AC-001] [FR-002] [DEC-001] complete: Emit selected gates and `skipped` entries with exact matching rule ids; mixed or unknown paths carry a conservative rule id and select every required cross-cutting gate.
 - PD-003 [AC-002] [FR-003] [DEC-005] complete: Timestamp route-runner start and join completion with monotonic milliseconds, enforce 300,000 ms only on PR feedback, and test the threshold without wall-clock sleeps.
 - PD-004 [AC-002] [FR-004] [DEC-002] complete: Place integrity before prepare/expensive nodes and express every independently attributable gate as a named DAG node rather than serial workflow steps.
-- PD-005 [AC-003] [FR-005] [DEC-003] complete: Build selected prerequisites in one prepare node, publish a content-addressed manifest and outputs, and make downstream nodes consume them without fallback rebuilds.
+- PD-005 [AC-003] [FR-005] [DEC-003] complete: Build selected prerequisites in independent producer nodes, publish narrow content-addressed manifests and immutable outputs, and make each downstream node consume only its required producers without fallback rebuilds or a global join dependency.
 - PD-006 [AC-003] [FR-006] [DEC-003] complete: Reuse the production receipt verifier and exact-once Fable inventory; add route artifact verification for candidate/config/locks/tools/command/paths/outputs and cache-key identity.
 - PD-007 [AC-004] [FR-007] [DEC-004] complete: Emit stable per-gate result files and let an `always()` join accept only declared skips and passing required gates in policy order; mutation-test missing, cancelled, failed, duplicate, and unknown results.
 - PD-008 [AC-005] [FR-008] [DEC-006] complete: Preserve `qualify-production.sh` as the complete clean-room protected-main route and inventory every existing subject in its retained-subject receipt.

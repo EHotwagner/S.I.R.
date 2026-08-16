@@ -68,6 +68,10 @@ try {
   JSON.parse(run(process.execPath, receiptArgs("mutate-stale-reuse", ["--receipt", receipt, "--mutation-output-id", "fixture"])));
   JSON.parse(run(process.execPath, receiptArgs("mutate-missing-reuse", ["--receipt", receipt, "--mutation-output-id", "fixture"])));
   if (await readFile(join(fixture, "output", "bundle.js"), "utf8") !== "bundle-v1\n") throw new Error("mutation subject was not restored");
+  await mkdir(join(fixture, "mutable-obj"));
+  await writeFile(join(fixture, "mutable-obj", "project.assets.json"), "before\n");
+  await writeFile(join(fixture, "mutable-obj", "project.assets.json"), "after consumer restore\n");
+  JSON.parse(run(process.execPath, receiptArgs("verify", ["--receipt", receipt])));
   run("dotnet", ["fsi", feedbackTool, "--", "validate-focused-receipt", "--root", fixture, "--receipt", receipt, "--owner-command", "fixture-owner"]);
 
   await writeFile(join(fixture, "output", "bundle.js"), "bundle-v2\n");
@@ -102,7 +106,7 @@ try {
   run("git", ["commit", "-qm", "production drift"]);
   expectRed("metadata-only-drift:scripts/change.sh", ["--allow-metadata-only", "true"]);
 
-  console.log("production build receipt focused qualification passed: canonical create/verify, late-created output transport and executable mode, omitted/tampered transport, stale/missing restoration, identity/revision drift, and metadata-only reuse remain fail closed");
+  console.log("production build receipt focused qualification passed: canonical create/verify, immutable output transport/mode, mutable intermediates excluded, omitted/tampered transport, stale/missing restoration, identity/revision drift, and metadata-only reuse remain fail closed");
 } finally {
   await rm(fixture, { recursive: true, force: true });
 }
