@@ -38,7 +38,11 @@ let render
         let card = element "details" "panel sample-list-item sample-card" ""
         let summary = element "summary" "" ""
         append summary (element "span" "sample-kind" "Map · Simulation")
-        append summary (element "strong" "" sample.Title)
+        let title = element "span" "sample-title" ""
+        append title (element "strong" "" sample.Title)
+        if sample.Id = "troll-assault" then
+            append title (element "span" "sample-legacy-title" "Troll assault")
+        append summary title
         append summary (element "span" "sample-summary" sample.Summary)
         append card summary
         let body = element "div" "sample-list-body" ""
@@ -53,6 +57,8 @@ let render
             dispatch action editor (ExperienceSamples.simulator sample) "" [||]
         append controls (actionButton ("Open " + sample.Title + " in Editor") (fun () -> prepare "map"))
         append controls (actionButton ("Run " + sample.Title + " in Simulator") (fun () -> prepare "simulation"))
+        if sample.Id = "troll-assault" then
+            append controls (actionButton "Run Troll assault in Simulator" (fun () -> prepare "simulation"))
         append body controls
         append card body
         append maps card

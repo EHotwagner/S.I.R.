@@ -23,6 +23,10 @@ test("the production Samples panel exposes every tactical family and a playable 
     await card.locator("summary").click();
     await expect(card.getByText(/^Lesson:/)).toBeVisible();
     await expect(card.getByText(/^Design notes:/)).toBeVisible();
+    if (title === "Armored target and anti-armor response") {
+      await expect(card.getByText("Troll assault", { exact: true })).toBeVisible();
+      await expect(card.getByRole("button", { name: "Run Troll assault in Simulator", exact: true })).toBeVisible();
+    }
     await card.getByRole("button", { name: `Run ${title} in Simulator`, exact: true }).click();
     await expect(page.getByText(/^Authoritative runtime tick 0/)).toBeVisible();
     await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();

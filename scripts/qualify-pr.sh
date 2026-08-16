@@ -49,6 +49,7 @@ case "$mode" in
     ./scripts/verify-fable-game-governance.sh
     dotnet fsgg-sdd dependency-surface --check --param packageId=FS.GG.Game.Core --param version=0.13.0 --root . --text
     ./scripts/test-item-184-sdd-byte-stability.sh
+    ./scripts/test-feedback-audit-binding-exceptions.sh
     ;;
   prepare-part)
     part=${1:?qualify-pr prepare-part requires native|fable|web|server|docs}
