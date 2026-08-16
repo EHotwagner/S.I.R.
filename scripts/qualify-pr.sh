@@ -11,6 +11,25 @@ phase_path="$ci_root/phase-timing.json"
 mkdir -p "$ci_root/results" "$ci_root/prepared"
 cd "$repo_root"
 
+start_dotnet_trace() {
+  trace_dir=$(mktemp -d /tmp/sir-pr-dotnet-trace.XXXXXX)
+  trace_log="$trace_dir/invocations.log"
+  real_dotnet=$(command -v dotnet)
+  ln -s "$repo_root/scripts/dotnet-invocation-trace.sh" "$trace_dir/dotnet"
+  export SIR_REAL_DOTNET="$real_dotnet"
+  export SIR_DOTNET_INVOCATION_LOG="$trace_log"
+  export PATH="$trace_dir:$PATH"
+}
+
+append_traced_builds() {
+  local -n target=$1
+  [[ -f "${trace_log:-}" ]] || return 0
+  while IFS=$'\t' read -r kind project; do
+    [[ -n "$kind" && -n "$project" ]] || continue
+    target+=(--build "$kind:$project")
+  done < <(sort "$trace_log")
+}
+
 case "$mode" in
   route)
     paths_file=${1:?qualify-pr route requires a changed-path file}
@@ -72,6 +91,8 @@ NODE
         part_manifest=$(<"$part_root/$part.manifest.path")
         artifact_digest=$(sha256sum "$part_manifest" | cut -d' ' -f1)
       fi
+      build_args=(--build "producer:$part")
+      append_traced_builds build_args
       node scripts/ci-route.mjs gate --gate "prepare-$part" --status "$status" \
         --commit "${route_binding[0]}" --tree "${route_binding[1]}" --route-digest "${route_binding[2]}" \
         --artifact-digest "$artifact_digest" --queue-ms unknown \
@@ -80,11 +101,13 @@ NODE
         --build-ms "$((build_completed - build_started))" \
         --transport-ms "$((completed - build_completed))" --test-ms 0 \
         --total-ms "$((completed - runner_started))" --failure-stage "$failure_stage" \
-        --build "$part" \
+        "${build_args[@]}" \
         --output "$ci_root/results/prepare-$part.json" >/dev/null
+      if [[ -n "${trace_dir:-}" ]]; then rm -rf -- "$trace_dir"; fi
       exit "$part_status"
     }
     trap write_part_timing EXIT
+    start_dotnet_trace
     dotnet tool restore
     dotnet restore SIR.slnx --locked-mode
     restore_completed=$(date +%s%3N)
@@ -172,9 +195,18 @@ NODE
       [[ -f "$ci_root/parts/$part.tar" && -f "$ci_root/parts/$part.manifest.path" && -f "$ci_root/parts/$part.receipt.path" ]] || { echo "qualify-pr: missing prepared part:$part" >&2; exit 1; }
       manifest=$(<"$ci_root/parts/$part.manifest.path")
       node scripts/ci-artifact-manifest.mjs verify-transport --route "$route_path" --archive "$ci_root/parts/$part.tar" --manifest "$manifest"
-      tar -xf "$ci_root/parts/$part.tar"
       receipt=$(<"$ci_root/parts/$part.receipt.path")
-      node scripts/production-build-receipt.mjs verify --owner-command scripts/qualify-pr.sh --receipt "$receipt" >/dev/null
+      stage="$ci_root/staging/$part"
+      rm -rf -- "$stage"
+      mkdir -p "$stage"
+      tar -xf "$ci_root/parts/$part.tar" -C "$stage"
+      node scripts/ci-artifact-manifest.mjs verify-staged --root "$repo_root" --build-receipt "$receipt" --manifest "$manifest" --stage "$stage" >/dev/null
+      while IFS= read -r output_path; do
+        target="$repo_root/$output_path"
+        rm -rf -- "$target"
+        mkdir -p "$(dirname "$target")"
+        cp -a "$stage/$output_path" "$target"
+      done < <(jq -r '.outputs[].path' "$receipt")
     done
     extract_completed=$(date +%s%3N)
     node - "$ci_root/extract-timing.json" "$extract_started" "$extract_completed" <<'NODE'
@@ -186,7 +218,8 @@ NODE
     for part in "$@"; do
       receipt=$(<"$ci_root/parts/$part.receipt.path")
       manifest=$(<"$ci_root/parts/$part.manifest.path")
-      node scripts/ci-artifact-manifest.mjs verify --route "$route_path" --build-receipt "$receipt" --archive "$ci_root/parts/$part.tar" --manifest "$manifest"
+      node scripts/ci-artifact-manifest.mjs verify-transport --route "$route_path" --archive "$ci_root/parts/$part.tar" --manifest "$manifest" >/dev/null
+      node scripts/ci-artifact-manifest.mjs verify-staged --root "$repo_root" --build-receipt "$receipt" --manifest "$manifest" --stage "$ci_root/staging/$part"
     done
     ;;
   gate)
@@ -195,6 +228,7 @@ NODE
     case "$gate" in
       rules) gate_parts=(native) ;;
       spatial|cross-runtime) gate_parts=(native fable) ;;
+      cancellation) gate_parts=(native) ;;
       browser) gate_parts=(web server) ;;
       documentation) gate_parts=(web docs) ;;
     esac
@@ -205,8 +239,8 @@ NODE
       "$0" verify-parts "${gate_parts[@]}" >/dev/null
     fi
     case "$gate" in
-      rules) ./scripts/verify-rules-corpus.sh ;;
-      spatial) ./scripts/verify-spatial-query.sh --reuse-pr-build-receipt "$receipt" --prepared-fable "$ci_root/prepared/domain-fable" ;;
+      rules) SIR_RULES_PREPARED_PR=1 ./scripts/verify-rules-corpus.sh ;;
+      spatial) ./scripts/verify-spatial-query.sh --reuse-pr-build-receipt "$receipt" --prepared-fable "$ci_root/prepared/domain-fable" --prepared-pr ;;
       cancellation) ./scripts/test-worker-cancellation-subject-mutation.sh ;;
       cross-runtime)
         ./scripts/test-conformance.sh \

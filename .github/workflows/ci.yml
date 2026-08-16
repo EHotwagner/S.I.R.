@@ -177,7 +177,7 @@ jobs:
 
   prepare-server:
     if: needs.route.outputs.classification == 'browser' || needs.route.outputs.classification == 'cross-cutting'
-    needs: route
+    needs: [route, prepare-web]
     runs-on: ubuntu-latest
     steps:
       - name: Capture runner start
@@ -190,6 +190,9 @@ jobs:
         with: { node-version: 26.5.0 }
       - uses: actions/download-artifact@v4
         with: { name: ci-route, path: artifacts/ci }
+      - uses: actions/download-artifact@v4
+        with: { name: prepared-part-web, path: artifacts/ci/parts }
+      - run: ./scripts/qualify-pr.sh extract-parts web
       - run: ./scripts/qualify-pr.sh prepare-part server
       - if: always()
         uses: actions/upload-artifact@v4
@@ -301,7 +304,7 @@ jobs:
 
   cancellation:
     if: needs.route.outputs.cancellation == 'true'
-    needs: [route, integrity]
+    needs: [route, integrity, prepare-native]
     runs-on: ubuntu-latest
     steps:
       - name: Capture runner start
@@ -321,6 +324,8 @@ jobs:
       - run: dotnet tool restore
       - uses: actions/download-artifact@v4
         with: { name: ci-route, path: artifacts/ci }
+      - uses: actions/download-artifact@v4
+        with: { name: prepared-part-native, path: artifacts/ci/parts }
       - run: ./scripts/run-ci-gate.sh cancellation artifacts/ci/results/cancellation.json
         env: { SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}" }
       - if: always()

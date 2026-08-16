@@ -5,6 +5,12 @@ repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 subject="$repo_root/src/SIR.Simulation/SpatialQuery.fs"
 project="$repo_root/tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj"
 temporary_dir=$(mktemp -d /tmp/sir-spatial-subject-mutations.XXXXXX)
+prepared_pr=false
+if [[ "${1:-}" == "--prepared-pr" ]]; then
+  prepared_pr=true
+  shift
+fi
+[[ $# -eq 0 ]] || { echo "test-spatial-subject-mutations: usage [--prepared-pr]" >&2; exit 2; }
 original="$temporary_dir/SpatialQuery.fs"
 cp -p "$subject" "$original"
 
@@ -23,7 +29,9 @@ expect_mutation_failure() {
   local name=$1
   local expected=$2
   local log="$temporary_dir/$name.log"
-  if dotnet run --project "$project" -c Release -- --print-spatial-query >"$log" 2>&1; then
+  isolated_args=()
+  if [[ "$prepared_pr" == true ]]; then isolated_args=(--artifacts-path "$temporary_dir/artifacts/$name"); fi
+  if dotnet run --project "$project" -c Release "${isolated_args[@]}" -- --print-spatial-query >"$log" 2>&1; then
     echo "spatial subject mutation unexpectedly passed: $name" >&2
     exit 1
   fi
@@ -70,5 +78,5 @@ sed -i 's/if (pairs |> List.sumBy (fun (origin, target) -> lineStepCount origin 
 expect_mutation_failure trace-work-bound "Trace work was materialized beyond MaximumCrossedItems."
 
 restore_subject
-dotnet build "$project" -c Release --no-restore >/dev/null
+if [[ "$prepared_pr" == false ]]; then dotnet build "$project" -c Release --no-restore >/dev/null; fi
 echo "Spatial subject mutations failed closed: dependency receipt, footprint, edge, knowledge, revision, ordering, package adapter, profile key, and trace bound."

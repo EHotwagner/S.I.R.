@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { chmod, mkdtemp, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { chmod, cp, mkdtemp, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 
@@ -42,7 +42,17 @@ try {
   JSON.parse(run(process.execPath, [artifactManifest, "verify-transport", "--root", fixture, "--route", "route.json", "--archive", "prepared.tar", "--manifest", manifestCreated.manifest]));
   await mkdir(join(fixture, "extracted"));
   run("tar", ["-xf", "../prepared.tar"], { cwd: join(fixture, "extracted") });
+  JSON.parse(run(process.execPath, [artifactManifest, "verify-staged", "--root", fixture, "--build-receipt", receipt, "--manifest", manifestCreated.manifest, "--stage", "extracted"]));
   if (((await stat(join(fixture, "extracted", "output", "bundle.js"))).mode & 0o777) !== 0o755) throw new Error("prepared transport did not preserve executable mode");
+  await writeFile(join(fixture, "extracted", "output", "bundle.js"), "mutated consumer copy\n");
+  const stagedMutation = spawnSync(process.execPath, [artifactManifest, "verify-staged", "--root", fixture, "--build-receipt", receipt, "--manifest", manifestCreated.manifest, "--stage", "extracted"], { cwd: fixture, encoding: "utf8" });
+  if (stagedMutation.status === 0 || !stagedMutation.stderr.includes("staged-output-identity-drift")) throw new Error("mutated staged receipt subject was accepted");
+  await rm(join(fixture, "extracted"), { recursive: true, force: true });
+  await mkdir(join(fixture, "extracted"));
+  run("tar", ["-xf", "../prepared.tar"], { cwd: join(fixture, "extracted") });
+  await cp(join(fixture, "extracted", "output"), join(fixture, "consumer-output"), { recursive: true });
+  await writeFile(join(fixture, "consumer-output", "bundle.js"), "consumer mutation\n");
+  JSON.parse(run(process.execPath, [artifactManifest, "verify-staged", "--root", fixture, "--build-receipt", receipt, "--manifest", manifestCreated.manifest, "--stage", "extracted"]));
   await writeFile(join(fixture, "prepared.tar"), "tampered", { flag: "a" });
   const tamperedTransport = spawnSync(process.execPath, [artifactManifest, "verify-transport", "--root", fixture, "--route", "route.json", "--archive", "prepared.tar", "--manifest", manifestCreated.manifest], { cwd: fixture, encoding: "utf8" });
   if (tamperedTransport.status === 0 || !tamperedTransport.stderr.includes("transport-identity-drift")) throw new Error("tampered prepared transport was accepted");

@@ -7,6 +7,7 @@ trap 'rm -rf -- "$task_tmp"' EXIT
 reuse_build_receipt=""
 prepared_fable=""
 static_only=false
+prepared_pr=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --reuse-pr-build-receipt)
@@ -23,13 +24,21 @@ while [[ $# -gt 0 ]]; do
       static_only=true
       shift
       ;;
+    --prepared-pr)
+      prepared_pr=true
+      shift
+      ;;
     *) echo "verify-spatial-query: unknown argument: $1" >&2; exit 2 ;;
   esac
 done
 
 cd "$repo_root"
 
-"$repo_root/scripts/test-spatial-subject-mutations.sh"
+if [[ "$prepared_pr" == true ]]; then
+  "$repo_root/scripts/test-spatial-subject-mutations.sh" --prepared-pr
+else
+  "$repo_root/scripts/test-spatial-subject-mutations.sh"
+fi
 
 search_fixed_quiet() {
   local pattern=$1

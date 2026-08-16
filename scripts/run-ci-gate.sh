@@ -24,6 +24,7 @@ preflight_parts=()
 case "$subject" in
   rules) preflight_parts=(native) ;;
   spatial|cross-runtime) preflight_parts=(native fable) ;;
+  cancellation) preflight_parts=(native) ;;
   browser) preflight_parts=(web server) ;;
   documentation) preflight_parts=(web docs) ;;
 esac
@@ -42,6 +43,17 @@ elif [[ $preflight_status -ne 0 ]]; then
 const { writeFileSync } = require("node:fs");
 writeFileSync(process.argv[2], `${JSON.stringify({ restore: 0, build: 0, transport: 0, failureStage: "transport" })}\n`);
 NODE
+fi
+
+trace_dir=""
+if [[ "$subject" != integrity && "$subject" != evidence ]]; then
+  trace_dir=$(mktemp -d /tmp/sir-ci-gate-dotnet-trace.XXXXXX)
+  trace_log="$trace_dir/invocations.log"
+  real_dotnet=$(command -v dotnet)
+  ln -s "$repo_root/scripts/dotnet-invocation-trace.sh" "$trace_dir/dotnet"
+  export SIR_REAL_DOTNET="$real_dotnet"
+  export SIR_DOTNET_INVOCATION_LOG="$trace_log"
+  export PATH="$trace_dir:$PATH"
 fi
 
 set +e
@@ -95,6 +107,12 @@ artifact_digest=none
 artifact_args=()
 receipt_reused=false
 build_args=()
+if [[ -f "${trace_log:-}" ]]; then
+  while IFS=$'\t' read -r kind project; do
+    [[ -n "$kind" && -n "$project" ]] || continue
+    build_args+=(--build "$kind:$project")
+  done < <(sort "$trace_log")
+fi
 if [[ "$subject" != integrity && "$subject" != evidence ]]; then
   for pointer in "$repo_root"/artifacts/ci/parts/*.manifest.path; do
     [[ -f "$pointer" ]] || continue
@@ -127,4 +145,5 @@ node "$repo_root/scripts/ci-route.mjs" gate \
   --failure-stage "$failure_stage" \
   "${build_args[@]}" \
   --output "$output"
+if [[ -n "$trace_dir" ]]; then rm -rf -- "$trace_dir"; fi
 exit "$exit_code"

@@ -15,7 +15,7 @@ export const subjectOrder = ["integrity", ...producerOrder, ...gateOrder];
 export const gateParts = {
   rules: ["native"],
   spatial: ["native", "fable"],
-  cancellation: [],
+  cancellation: ["native"],
   "cross-runtime": ["native", "fable"],
   browser: ["web", "server"],
   documentation: ["web", "docs"],
@@ -42,6 +42,9 @@ const isCrossCutting = (path) => [".github", ".config", ".fsgg"].some((prefix) =
 
 const canonical = (value) => `${JSON.stringify(value, null, 2)}\n`;
 const digest = (value) => createHash("sha256").update(canonical(value)).digest("hex");
+export const canonicalArtifactBindings = (bindings = {}) => Object.fromEntries(
+  Object.entries(bindings).sort(([left], [right]) => left.localeCompare(right)),
+);
 const routeBody = (route) => Object.fromEntries(Object.entries(route ?? {}).filter(([key]) => key !== "digest"));
 export const routeDigest = (route) => digest(routeBody(route));
 
@@ -91,6 +94,8 @@ export function gateResult(gate, status, timing = {}, details = {}) {
     if (name === "queue" && value === null) continue;
     if (!Number.isSafeInteger(value) || value < 0) throw new Error(`ci-route: invalid ${gate} ${name} duration`);
   }
+  const artifactBindings = canonicalArtifactBindings(details.artifactBindings);
+  const buildInvocations = [...(details.buildInvocations ?? [])].sort();
   return {
     schema: gateSchema,
     gate,
@@ -103,10 +108,12 @@ export function gateResult(gate, status, timing = {}, details = {}) {
     timingMilliseconds: phases,
     cacheHit: false,
     receiptReused: false,
-    buildInvocations: [],
+    buildInvocations,
     retryCount: 0,
     failureStage: status === "pass" ? null : "test",
     ...details,
+    artifactBindings,
+    buildInvocations,
   };
 }
 
@@ -159,8 +166,8 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
     if (!result) continue;
     const parts = gateParts[subject] ?? [];
     if (parts.length > 0) {
-      const expectedBindings = Object.fromEntries(parts.map((part) => [part, producerDigests[part]]));
-      if (canonical(result.artifactBindings ?? {}) !== canonical(expectedBindings)) failures.push({ code: "artifact-binding-mismatch", subject });
+      const expectedBindings = canonicalArtifactBindings(Object.fromEntries(parts.map((part) => [part, producerDigests[part]])));
+      if (canonical(canonicalArtifactBindings(result.artifactBindings)) !== canonical(expectedBindings)) failures.push({ code: "artifact-binding-mismatch", subject });
       if (result.artifactDigest !== digest(expectedBindings)) failures.push({ code: "artifact-set-digest-mismatch", subject });
     } else if (!producerOrder.includes(subject) && (result.artifactDigest !== null || Object.keys(result.artifactBindings ?? {}).length > 0)) failures.push({ code: "unexpected-artifact-binding", subject });
   }

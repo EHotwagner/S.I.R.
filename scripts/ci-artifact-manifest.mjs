@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { basename, dirname, relative, resolve } from "node:path";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { lstat, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 
 export const schema = "sir.ci-artifact-manifest/v1";
@@ -22,6 +22,45 @@ function options(argv) {
 async function transportIdentity(root, archivePath) {
   const bytes = await readFile(resolve(root, archivePath));
   return { path: archivePath.replaceAll("\\", "/"), bytes: bytes.byteLength, sha256: sha256(bytes) };
+}
+
+function safeRelative(path) {
+  const normalized = path.replaceAll("\\", "/");
+  if (!normalized || normalized.startsWith("/") || normalized.split("/").includes("..")) throw new Error(`ci-artifact-manifest: unsafe-staged-output:${path}`);
+  return normalized;
+}
+
+async function filesUnder(root, path) {
+  const relativePath = safeRelative(path);
+  const absolute = resolve(root, relativePath);
+  const information = await lstat(absolute).catch(() => undefined);
+  if (!information) throw new Error(`ci-artifact-manifest: missing-staged-output:${relativePath}`);
+  if (information.isSymbolicLink()) throw new Error(`ci-artifact-manifest: symbolic-staged-output:${relativePath}`);
+  if (information.isFile()) return [absolute];
+  if (!information.isDirectory()) throw new Error(`ci-artifact-manifest: unsupported-staged-output:${relativePath}`);
+  const files = [];
+  for (const entry of await readdir(absolute, { withFileTypes: true })) {
+    const child = relative(root, resolve(absolute, entry.name)).replaceAll("\\", "/");
+    if (entry.isSymbolicLink()) throw new Error(`ci-artifact-manifest: symbolic-staged-output:${child}`);
+    if (entry.isDirectory()) files.push(...(await filesUnder(root, child)));
+    else if (entry.isFile()) files.push(resolve(root, child));
+  }
+  return files.sort((left, right) => relative(root, left).localeCompare(relative(root, right)));
+}
+
+async function stagedOutputs(root, outputs) {
+  const identities = [];
+  for (const output of outputs) {
+    const path = safeRelative(output.path);
+    const entries = [];
+    for (const file of await filesUnder(root, path)) {
+      const bytes = await readFile(file);
+      const information = await lstat(file);
+      entries.push({ path: relative(root, file).replaceAll("\\", "/"), mode: information.mode & 0o777, bytes: bytes.byteLength, sha256: sha256(bytes) });
+    }
+    identities.push({ id: output.id, path, files: entries, digest: sha256(canonical(entries)) });
+  }
+  return identities.sort((left, right) => left.id.localeCompare(right.id));
 }
 
 async function derive(root, routePath, buildReceiptPath, archivePath) {
@@ -93,6 +132,18 @@ async function main(argv) {
     console.log(JSON.stringify({ schema, result: "pass", transport: currentTransport }));
     return;
   }
+  if (mode === "verify-staged") {
+    if (!buildReceipt) throw new Error("ci-artifact-manifest: --build-receipt is required");
+    const actual = await readManifest(root, one("manifest", ""));
+    const receiptBytes = await readFile(resolve(root, buildReceipt));
+    const receipt = JSON.parse(receiptBytes);
+    if (actual.buildReceipt.digest !== sha256(receiptBytes) || canonical(actual.outputs) !== canonical(receipt.outputs)) throw new Error("ci-artifact-manifest: staged-receipt-binding-drift");
+    const stage = resolve(root, one("stage", ""));
+    const outputs = await stagedOutputs(stage, receipt.outputs);
+    if (canonical(outputs) !== canonical(receipt.outputs)) throw new Error("ci-artifact-manifest: staged-output-identity-drift");
+    console.log(JSON.stringify({ schema, result: "pass", stage: relative(root, stage).replaceAll("\\", "/"), outputsDigest: sha256(canonical(outputs)) }));
+    return;
+  }
   if (mode === "verify") {
     if (!buildReceipt) throw new Error("ci-artifact-manifest: --build-receipt is required");
     const path = resolve(root, one("manifest", ""));
@@ -103,7 +154,7 @@ async function main(argv) {
     console.log(JSON.stringify({ schema, result: "pass", manifest: relative(root, path).replaceAll("\\", "/") }));
     return;
   }
-  throw new Error("ci-artifact-manifest: usage create|verify-transport|verify --route PATH --build-receipt PATH --archive PATH");
+  throw new Error("ci-artifact-manifest: usage create|verify-transport|verify-staged|verify --route PATH --build-receipt PATH --archive PATH");
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) main(process.argv.slice(2)).catch((error) => { console.error(error.message); process.exitCode = 1; });

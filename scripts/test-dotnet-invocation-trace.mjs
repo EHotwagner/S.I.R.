@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { chmod, copyFile, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { chmod, copyFile, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 
@@ -37,6 +37,18 @@ try {
   const repeatedGreen = run(process.execPath, ["scripts/verify-fable-invocations.mjs", log,
     "--expect", `${expected[0]}=1`, "--expect", `${expected[1]}=1`, "--expect", `${expected[2]}=1`, "--expect", `${expected[3]}=2`]);
   if (repeatedGreen.status !== 0 || JSON.parse(repeatedGreen.stdout).total !== 5) throw new Error(`declared repeated inventory was not derived: ${repeatedGreen.stdout} ${repeatedGreen.stderr}`);
+
+  await writeFile(log, "");
+  run(shim, ["build", "tests/Build.fsproj"], env);
+  run(shim, ["publish", "src/Server.fsproj"], env);
+  run(shim, ["run", "--project", "tests/Mutation.fsproj"], env);
+  run(shim, ["run", "--project", "tests/Reused.fsproj", "--no-build", "--no-restore"], env);
+  const buildInventory = (await readFile(log, "utf8")).trim().split("\n");
+  if (JSON.stringify(buildInventory) !== JSON.stringify([
+    "build\ttests/Build.fsproj",
+    "publish\tsrc/Server.fsproj",
+    "run-build\ttests/Mutation.fsproj",
+  ])) throw new Error(`build invocation trace was incomplete or counted reuse as a build: ${JSON.stringify(buildInventory)}`);
 
   await writeFile(log, `${expected.map((project) => `fable\t${project}`).join("\n")}\n`);
   run(shim, ["fable", "src/Unknown.Direct.Invocation.fsproj"], env);
