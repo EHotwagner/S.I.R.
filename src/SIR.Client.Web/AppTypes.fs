@@ -13,6 +13,7 @@ open SIR.Domain
 open SIR.Protocol.Http
 open SIR.Protocol.Realtime
 open SIR.Client.Web.BrowserInfrastructure
+open SIR.Client.Web
 type Msg =
     | ShellMsg of SIR.Client.Msg
     | BattlefieldChanged of BattlefieldAction
@@ -55,6 +56,8 @@ type Msg =
     | EndLayoutBottomPanelResize
     | ResizeLayoutBottomPanelKeyboard of delta: int
     | OpenSupportingPanel of panelId: string
+    | ClientFeatureMessage of FeatureLoader.Message
+    | CloseDocumentation
     | ResetTacticalLayout
     | ToggleDesktopToolbarCustomization
     | AddDesktopToolbarCommand of string
@@ -149,6 +152,9 @@ type Model =
       HeldTacticalOverlays: Set<TacticalOverlayId>
       TacticalLayout: TacticalLayoutProfile
       TacticalLayoutDiagnostics: string list
+      ClientFeatures: Map<FeatureLoader.FeatureId, FeatureLoader.LoadState>
+      DocumentationOpen: bool
+      FeatureLoaderDiagnostic: string option
       DesktopToolbarCommands: string list
       DesktopToolbarCustomizationOpen: bool
       BottomPanelResizeActive: bool

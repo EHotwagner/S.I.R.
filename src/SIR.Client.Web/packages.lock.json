@@ -176,6 +176,14 @@
           "Thoth.Json.Net": "[12.0.0, 12.0.0]"
         }
       },
+      "sir.replay.core": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[10.1.303, 10.1.303]",
+          "SIR.Domain": "[1.0.0, )",
+          "SIR.Simulation": "[1.0.0, )"
+        }
+      },
       "sir.simulation": {
         "type": "Project",
         "dependencies": {

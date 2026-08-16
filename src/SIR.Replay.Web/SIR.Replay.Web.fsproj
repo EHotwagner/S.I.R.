@@ -10,8 +10,11 @@
     <Compile Include="../SIR.Client.Web/LiveSession.fs" Link="LiveSession.fs" />
     <Compile Include="../SIR.Client.Web/Worker.fs" Link="Worker.fs" />
     <Compile Include="../SIR.Client.Web/Runner.fs" Link="Runner.fs" />
+    <Compile Include="../SIR.Client.Web/FeatureLoader.fsi" Link="FeatureLoader.fsi" />
+    <Compile Include="../SIR.Client.Web/FeatureLoader.fs" Link="FeatureLoader.fs" />
     <Compile Include="../SIR.Client.Web/BrowserInfrastructure.fs" Link="BrowserInfrastructure.fs" />
     <Compile Include="../SIR.Client.Web/AppTypes.fs" Link="AppTypes.fs" />
+    <Compile Include="../SIR.Client.Web/ClientFeatureRuntime.fs" Link="ClientFeatureRuntime.fs" />
     <Compile Include="../SIR.Client.Web/AppShell.fs" Link="AppShell.fs" />
     <Compile Include="../SIR.Client.Web/CommandRegistry.fs" Link="CommandRegistry.fs" />
     <Compile Include="../SIR.Client.Web/ModeAdapters.fs" Link="ModeAdapters.fs" />

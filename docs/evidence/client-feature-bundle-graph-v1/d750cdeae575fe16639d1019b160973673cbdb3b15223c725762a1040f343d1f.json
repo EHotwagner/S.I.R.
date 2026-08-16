@@ -1,0 +1,90 @@
+{
+  "schema": "sir.client.feature-bundle-graph/v1",
+  "registryVersion": 1,
+  "registryDigest": "c994ae3b25272b6ea033e6a3e91cc70ae06c2850f6e8a62158db26e856d0a344",
+  "buildInputDigest": "5d352e36188f042cd2b230735ddea85122a79e326810c62ef22a5878d7c287a0",
+  "entry": "content/sir-client/v1/app.js",
+  "dynamicEntries": [
+    "content/sir-client/v1/RulesExplorer-DUINNfTS.js",
+    "content/sir-client/v1/deferred-delivery-support-CFKGOZNJ.js",
+    "content/sir-client/v1/docs-feature-Cx7XDDoj.js"
+  ],
+  "features": [
+    {
+      "id": "docs",
+      "phase": "deferred",
+      "route": "docs",
+      "control": "toolbar-docs",
+      "logicalChunk": "docs-feature",
+      "emitted": "content/sir-client/v1/docs-feature-Cx7XDDoj.js",
+      "bytes": {
+        "raw": 473,
+        "gzip": 285,
+        "brotli": 209
+      },
+      "budget": {
+        "raw": 8192,
+        "gzip": 4096,
+        "brotli": 3072
+      },
+      "sha256": "89faaf09c049c4f9dfbe2de0d2945b904a2b05a8ac709b2f20743649ca9ce258"
+    },
+    {
+      "id": "rules-explorer",
+      "phase": "deferred",
+      "route": "data",
+      "control": "supporting-data",
+      "logicalChunk": "RulesExplorer",
+      "emitted": "content/sir-client/v1/RulesExplorer-DUINNfTS.js",
+      "bytes": {
+        "raw": 62976,
+        "gzip": 18465,
+        "brotli": 15974
+      },
+      "budget": {
+        "raw": 65536,
+        "gzip": 20000,
+        "brotli": 16000
+      },
+      "sha256": "cf29e7493502d17d0908f4b55fcdfeb45d1b4e40d40925384c64f547db994386"
+    },
+    {
+      "id": "shell",
+      "phase": "bootstrap",
+      "route": "initial",
+      "control": "application-entry",
+      "logicalChunk": "app",
+      "emitted": "content/sir-client/v1/app.js",
+      "bytes": {
+        "raw": 1216910,
+        "gzip": 281727,
+        "brotli": 223691
+      },
+      "budget": {
+        "raw": 1250000,
+        "gzip": 320000,
+        "brotli": 280000
+      },
+      "sha256": "643fad9e0553c4bb77a863d6e408068d892b85a02dc1d4ca6b5f86f4690654d6"
+    },
+    {
+      "id": "tactical-environment",
+      "phase": "eager",
+      "route": "editor",
+      "control": "editor-environment",
+      "logicalChunk": "app",
+      "emitted": "content/sir-client/v1/app.js",
+      "bytes": {
+        "raw": 1216910,
+        "gzip": 281727,
+        "brotli": 223691
+      },
+      "budget": {
+        "raw": 1250000,
+        "gzip": 320000,
+        "brotli": 280000
+      },
+      "sha256": "643fad9e0553c4bb77a863d6e408068d892b85a02dc1d4ca6b5f86f4690654d6"
+    }
+  ]
+}

@@ -1,5 +1,4 @@
 module SIR.Client.Web.App
-
 open System
 open Browser.Dom
 open Browser.Types
@@ -15,13 +14,12 @@ open SIR.Protocol.Realtime
 open SIR.Client.Web.BrowserInfrastructure
 open SIR.Client.Web.AppTypes
 open SIR.Client.Web.AppShell
-
+open SIR.Client.Web.ClientFeatureRuntime
 open SIR.Client.Web.CommandRegistry
 open SIR.Client.Web.ModeAdapters
 open SIR.Client.Web.TacticalOverlayView
 open SIR.Client.Web.SceneAdapters
 open SIR.Client.Web.PanelViews
-
 let private tacticalCommandAvailable model (command: TacticalCommandDefinition) =
     let availability =
         match command.Availability with
@@ -520,6 +518,9 @@ let init () =
       HeldTacticalOverlays = Set.empty
       TacticalLayout = tacticalLayout
       TacticalLayoutDiagnostics = tacticalLayoutDiagnostics
+      ClientFeatures = FeatureLoader.initial
+      DocumentationOpen = false
+      FeatureLoaderDiagnostic = None
       DesktopToolbarCommands = desktopToolbarCommands
       DesktopToolbarCustomizationOpen = false
       BottomPanelResizeActive = false
@@ -543,9 +544,11 @@ let init () =
       ComparisonView = Split
       Live = LiveSession.initial },
     Cmd.ofEffect (fun dispatch -> LiveSession.start (LiveAction >> dispatch))
-
 let rec update msg model =
     match msg with
+    | ClientFeatureMessage message -> ClientFeatureRuntime.update message model
+    | CloseDocumentation ->
+        { model with DocumentationOpen = false }, Cmd.none
     | LiveStarted ->
         model, Cmd.ofEffect (fun dispatch -> LiveSession.start (LiveAction >> dispatch))
     | LiveAction action ->
@@ -1192,11 +1195,14 @@ let rec update msg model =
             if drawer.DrawerOpen then expanded
             else expanded |> TacticalWorkspaceLayout.toggleDrawer current.Side
         writeTacticalLayout (TacticalWorkspaceLayout.exportProfile drawerOpen)
-        { model with
-            TacticalLayout = drawerOpen
-            TacticalLayoutDiagnostics = [] },
-        Cmd.ofEffect (fun _ ->
-            focusElementAfterRender ("layout-panel-" + panelId + "-body"))
+        let opened =
+            { model with
+                TacticalLayout = drawerOpen
+                TacticalLayoutDiagnostics = [] }
+        let focused =
+            Cmd.ofEffect (fun _ ->
+                focusElementAfterRender ("layout-panel-" + panelId + "-body"))
+        ClientFeatureRuntime.requestSupportingPanel panelId opened focused
     | ResetTacticalLayout ->
         let layout = TacticalWorkspaceLayout.reset model.TacticalLayout
         writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
@@ -3602,9 +3608,6 @@ let private comparisonPanel (model: Model) dispatch =
         ]
     ]
 
-[<ReactLazyComponent>]
-let private LazyDeferredDataPanel simulator selectedUnit bootstrap =
-    React.DynamicImported("../RulesExplorer.js")
 let private laboratoryResults model dispatch =
     Html.section [
         prop.className "panel lab-results"
@@ -5340,7 +5343,6 @@ let private supportingPanelControls (model: Model) dispatch =
             item "Samples" "samples"
         ]
     ]
-
 let private tacticalCommandButton (model: Model) (commandId: string) (text: string) (label: string) disabled onClick =
     let effective =
         activeTacticalRegistry model
@@ -5357,7 +5359,6 @@ let private tacticalCommandButton (model: Model) (commandId: string) (text: stri
         | None -> prop.custom ("data-binding-state", "unassigned")
         prop.onClick onClick
     ]
-
 let private tacticalModalityControls model dispatch =
     let item (label: string) commandId (value: WorkspaceMode) =
         let isCurrent = model.Workspace = value
@@ -5376,7 +5377,6 @@ let private tacticalModalityControls model dispatch =
             | None -> prop.custom ("data-binding-state", "unassigned")
             prop.onClick (fun _ -> dispatch (InvokeTacticalCommand commandId))
         ]
-
     Html.nav [
         prop.className "tactical-modality-controls"
         prop.ariaLabel "Tactical modality"
@@ -5387,7 +5387,6 @@ let private tacticalModalityControls model dispatch =
             item "Review" "workspace.review" ReplayWorkspace
         ]
     ]
-
 let private tacticalTimeline model dispatch =
     let state = model.Tactical
     let playUnavailableReason =
@@ -7292,6 +7291,7 @@ let private tacticalLayoutToolbar model dispatch =
                     ]
                 ]
             ]
+            ClientFeatureRuntime.toolbar model dispatch
             if model.DesktopToolbarCustomizationOpen then
                 Html.section [
                     prop.id "desktop-toolbar-customization"
@@ -7692,10 +7692,7 @@ let private tacticalPanelBody panelId model dispatch =
             ]
         ]
     elif panelId = "data" then
-        React.Suspense(
-            [ LazyDeferredDataPanel model.Simulator model.SimulatorSelectedUnit model.Live.Bootstrap ],
-            fallback = Html.p "Loading authoritative data…"
-        )
+        ClientFeatureRuntime.rulesExplorer model dispatch
     elif panelId = "samples" && model.Workspace <> SimulatorWorkspace then
         sampleCatalogView dispatch
     elif model.Workspace = PlanningWorkspace then
@@ -8151,14 +8148,20 @@ let view model dispatch =
         | PlanningWorkspace
         | SimulatorWorkspace
         | ReplayWorkspace -> Html.none
-
     Html.main [
         prop.className "app-shell"
         prop.ariaLabel "S.I.R. simulator and editor"
+        prop.custom ("data-feature-registry-version", string FeatureLoader.registryVersion)
+        prop.custom ("data-feature-shell", "loaded")
+        prop.custom (
+            "data-feature-loader-diagnostic",
+            model.FeatureLoaderDiagnostic |> Option.defaultValue ""
+        )
         prop.onClick (fun event ->
             dismissDesktopMenus event.target)
         prop.children [
             tacticalShell model dispatch transientContent
+            ClientFeatureRuntime.documentation model dispatch
             Html.section [
                 prop.id "sir-live-session"
                 prop.className "panel"
@@ -8188,7 +8191,6 @@ let view model dispatch =
             ]
         ]
     ]
-
 if not (isNull (document.getElementById "sir-replay-app")) then
     Program.mkProgram init update view
     |> Program.withSubscription subscriptions

@@ -8,8 +8,10 @@ export default defineConfig({
     minify: "terser",
     terserOptions: {
       compress: { passes: 3 },
+      mangle: { properties: false },
       format: { comments: false },
     },
+    manifest: true,
     outDir: resolve(import.meta.dirname, "../../artifacts/client"),
     emptyOutDir: true,
     rollupOptions: {
