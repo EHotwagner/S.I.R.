@@ -1898,7 +1898,7 @@ module MapEditor =
     let private validateDocument map =
         let dimensions =
             if not (MapEditorValidation.hasSupportedDimensions map) then
-                [ issue "MAP-DIMENSIONS" "Map dimensions must be between 4 and 40 cells." ]
+                [ issue "MAP-DIMENSIONS" "Map dimensions must be between 4 and 80 cells." ]
             else
                 []
 
@@ -2104,8 +2104,8 @@ module MapEditor =
                 [ issue "REGION-DUPLICATE" "A remove command contains duplicate identifiers." ]
             | RemoveRegions identifiers when identifiers |> Array.exists (fun id -> not (Map.containsKey id map.Regions)) ->
                 [ issue "REGION-MISSING" "A removed region does not exist." ]
-            | ResizeDocument(width, height) when width < 4 || width > 40 || height < 4 || height > 40 ->
-                [ issue "MAP-DIMENSIONS" "Map dimensions must be between 4 and 40 cells." ]
+            | ResizeDocument(width, height) when width < 4 || width > 80 || height < 4 || height > 80 ->
+                [ issue "MAP-DIMENSIONS" "Map dimensions must be between 4 and 80 cells." ]
             | _ -> []
 
         if not (List.isEmpty shapeIssues) then

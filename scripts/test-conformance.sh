@@ -7,6 +7,7 @@ trap 'rm -rf -- "$task_tmp"' EXIT
 reuse_build_receipt=""
 prepared_fable=""
 prepared_modal_fable=""
+prepared_scenario_catalog_fable=""
 domain_only=false
 ordinary_pr_functional=false
 while [[ $# -gt 0 ]]; do
@@ -17,10 +18,11 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --prepared-fable)
-      [[ $# -ge 3 ]] || { echo "test-conformance: --prepared-fable requires domain and modal paths" >&2; exit 2; }
+      [[ $# -ge 4 ]] || { echo "test-conformance: --prepared-fable requires domain, modal, and scenario-catalog paths" >&2; exit 2; }
       prepared_fable=$2
       prepared_modal_fable=$3
-      shift 3
+      prepared_scenario_catalog_fable=$4
+      shift 4
       ;;
     --domain-only)
       domain_only=true
@@ -90,7 +92,7 @@ search_fixed() {
 }
 
 if [[ -n "$reuse_build_receipt" ]]; then
-  [[ -n "$prepared_fable" && -n "$prepared_modal_fable" ]] || { echo "test-conformance: prepared reuse requires both Fable fixture roots" >&2; exit 2; }
+  [[ -n "$prepared_fable" && -n "$prepared_modal_fable" && -n "$prepared_scenario_catalog_fable" ]] || { echo "test-conformance: prepared reuse requires all Fable fixture roots" >&2; exit 2; }
   node scripts/production-build-receipt.mjs verify \
     --owner-command scripts/qualify-pr.sh \
     --receipt "$reuse_build_receipt"
@@ -102,6 +104,7 @@ else
   # Later production worker qualification deliberately uses --no-build/--no-restore;
   # produce its declared Release prerequisite inside this clean aggregate route.
   dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
+  dotnet build tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore
 fi
 
 dotnet_output=$(dotnet run \
@@ -111,8 +114,17 @@ dotnet_output=$(dotnet run \
 
 dotnet run \
   --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj \
+  -c Release \
   --no-build \
   --no-restore
+
+if [[ -n "$reuse_build_receipt" ]]; then
+  ./scripts/verify-scenario-catalog-cross-runtime.sh \
+    --prepared-native tests/SIR.Client.Tests/bin/ScenarioCatalogRuntime/Debug/net10.0/ScenarioCatalogRuntime.dll \
+    --prepared-fable "$prepared_scenario_catalog_fable/ScenarioCatalogRuntime.js"
+else
+  ./scripts/verify-scenario-catalog-cross-runtime.sh
+fi
 
 modal_dotnet_output=$(dotnet run \
   --project tests/SIR.ModalInput.Tests/SIR.ModalInput.Tests.fsproj \

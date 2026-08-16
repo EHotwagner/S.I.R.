@@ -38,19 +38,29 @@ let render
         let card = element "details" "panel sample-list-item sample-card" ""
         let summary = element "summary" "" ""
         append summary (element "span" "sample-kind" "Map · Simulation")
-        append summary (element "strong" "" sample.Title)
+        let title = element "span" "sample-title" ""
+        append title (element "strong" "" sample.Title)
+        if sample.Id = "troll-assault" then
+            append title (element "span" "sample-legacy-title" "Troll assault")
+        append summary title
         append summary (element "span" "sample-summary" sample.Summary)
         append card summary
         let body = element "div" "sample-list-body" ""
         let highlights = element "ul" "" ""
         for highlight in sample.Highlights do append highlights (element "li" "" highlight)
         append body highlights
+        append body (element "p" "sample-lesson" ("Lesson: " + sample.Lesson))
+        append body (element "p" "sample-notes" ("Design notes: " + String.concat " " sample.DesignNotes))
         let controls = element "div" "control-row" ""
-        let prepare action =
-            let editor = ExperienceSamples.editorState sample
-            dispatch action editor (ExperienceSamples.simulator sample) "" [||]
+        let prepareSample action target =
+            let editor = ExperienceSamples.editorState target
+            dispatch action editor (ExperienceSamples.simulator target) "" [||]
+        let prepare action = prepareSample action sample
         append controls (actionButton ("Open " + sample.Title + " in Editor") (fun () -> prepare "map"))
         append controls (actionButton ("Run " + sample.Title + " in Simulator") (fun () -> prepare "simulation"))
+        if sample.Id = "troll-assault" then
+            append controls (actionButton "Run Troll assault in Simulator" (fun () ->
+                prepareSample "simulation" ExperienceSamples.legacyTrollAssault))
         append body controls
         append card body
         append maps card

@@ -1,0 +1,162 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-15-sir-item-184-elaborate-tactical-sample-3.md",
+  "reportSha256": "95beca690d3e9a161950bac1ae53503bb4f42051e2f66b97b066d1562011d768",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet fsgg-sdd analyze --work 184-scenario-catalog --text",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node scripts/test-production-delivery-budget.mjs",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Fresh native timings differed from the retained host receipt but remained below the declared 20/50 ms limits.",
+        "The delivery-budget command requires the production client to be built first."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show e3e40e1b2eedf353913ed0aa98198d218b1a4cbc:work/184-scenario-catalog/clarifications.md",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#184",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The pre-decision implementation state and its precise edit cost were not retained.",
+        "Prior reports were searched and contained no earlier sample-ID/layout-compatibility finding."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show e3e40e1b2eedf353913ed0aa98198d218b1a4cbc:feedback/checkpoints/item-184-elaborate-tactical-sample.jsonl",
+          "result": "verified"
+        },
+        {
+          "locator": "command:npm ci --ignore-scripts && ./fake.sh build -t Test",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The failed intermediate manifests and logs were not retained.",
+        "The cited prior reports confirm the same bundle-binding/regeneration recurrence."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git ls-files .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- validate-checkpoint-state --cycle item-184-elaborate-tactical-sample",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:FS-GG/.github#2380",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:FS-GG/.github#2548",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show 31aa2743eb520fe0d313907ec7d39c6d12601bea:work/184-scenario-catalog/evidence.yml",
+          "result": "verified"
+        },
+        {
+          "locator": "command:scripts/generate-item-184-evidence.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsgg-sdd ship --work 184-scenario-catalog --text",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#210",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.6",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-build --no-restore",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    },
+    {
+      "id": "§4.7",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:scripts/generate-item-184-evidence.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "command:scripts/test-feedback-audit-binding-exceptions.sh",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- check-invalidation --repo-root . --base origin/main --head HEAD",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:FS-GG/.github#2659",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Regeneration produced host-dependent timings different from the retained receipt while preserving the declared limits and authoritative counters.",
+        "Producer issue #2659 is open; its cited producer blob identity was independently confirmed.",
+        "Open and closed producer issues were searched; no pre-existing issue for the unused-ledger root cause was found."
+      ]
+    }
+  ]
+}

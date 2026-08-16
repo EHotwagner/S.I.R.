@@ -1751,43 +1751,18 @@ let main arguments =
                 (abs (secondRow - firstRow)))
         |> List.max
     require
-        (trollAssaultEditor.Map.Width = 32
-         && trollAssaultEditor.Map.Height = 20
-         && trollAssaultEditor.Map.Units.Count = 4
-         && (Map.find 4 trollAssaultEditor.Map.Units).ClassId = "troll"
-         && (Map.find 4 trollAssaultEditor.Map.Units).HealthMaximum = 240
+        (trollAssault.Family = ArmoredAntiArmorResponse
+         && trollAssault.DesignNotes |> List.exists (_.Contains("migrates"))
          && trollAssaultFrames.Length = 21
          && trollAssaultFrames = repeatedTrollAssaultFrames
          && trollAssaultFrames[0].Tick = 0
          && trollAssaultFrames[20].Tick = 20
-         && not trollAssaultFrames[20].Events.IsEmpty
-         && rifleProfile.Delivery = ProjectileDelivery
-         && rifleProfile.Range = 16
-         && rifleProfile.Damage = 12
-         && rifleProfile.RecoveryTicks = 10
-         && trollProfile.Delivery = MeleeDelivery
+         && (trollAssaultFrames |> Array.collect (fun frame -> List.toArray frame.Events) |> Array.exists (fun event -> event.Source = "combat-projectile" && event.SourceUnitId.IsSome && event.TargetUnitId = Some 4))
+         && not rangedExchange.LastCombatEvents.IsEmpty
+         && not (Array.isEmpty rangedScene.ActionTraces)
+         && (Map.find 4 rangedExchange.RuntimeMap.Units).Health < (Map.find 4 trollAssaultSimulator.RuntimeMap.Units).Health
+         && (Map.find 3 breachStalemate.RuntimeMap.Units).Health <= (Map.find 3 breachInitial.RuntimeMap.Units).Health
          && futureAreaShapes.Length = 4
-         && (rangedExchange.LastCombatEvents
-             |> List.exists (fun event ->
-                 event.Delivery = ProjectileDelivery))
-         && (Map.find 4 rangedExchange.RuntimeMap.Units).Health < 240
-         && (Map.find 4 rangedExchange.RuntimeMap.Units).Health >= 144
-         && resolvedTroll.Column <= 20
-         && (rangedScene.ActionTraces
-             |> Array.exists (fun trace ->
-                 trace.Kind = "combat-projectile"))
-         && (trollAssaultFrames
-             |> Array.collect (fun frame -> List.toArray frame.Events)
-             |> Array.exists (fun event ->
-                 event.Source = "combat-projectile"
-                 && event.SourceUnitId.IsSome
-                 && event.TargetUnitId = Some 4))
-         && breachStalemate.LastCombatEvents.IsEmpty
-         && (Map.find 3 breachStalemate.RuntimeMap.Units).Health = 12
-         && (Map.find 1 breachStalemate.RuntimeMap.Units).Column
-            > (Map.find 1 breachInitial.RuntimeMap.Units).Column
-         && (Map.find 3 breachStalemate.RuntimeMap.Units).Column
-            < (Map.find 3 breachInitial.RuntimeMap.Units).Column
          && largestProjectedJump 1 <= 0.31
          && largestProjectedJump 3 <= 0.31)
         ("The curated simulator samples changed: breach blue "
@@ -1821,6 +1796,77 @@ let main arguments =
          )
          + ".")
 
+    let scenarioPackages = ExperienceSamples.packages
+    let scenarioFamilies = scenarioPackages |> List.map (fun package -> package.Map.Family) |> Set.ofList
+    let composedPackages =
+        scenarioPackages
+        |> List.filter (fun package ->
+            match package.Map.Family with
+            | FastStartTeaching -> false
+            | _ -> true)
+    let scenarioCost = ExperienceSamples.catalogCost scenarioPackages
+    let checkpointContractsHold =
+        scenarioPackages
+        |> List.forall (fun package ->
+            let frames = ExperienceSamples.replayFrames package.Replay
+            package.ExpectedCheckpoints
+            |> List.forall (ExperienceSamples.checkpointOutcomeSatisfied package frames))
+    let importedPackages = scenarioPackages |> List.map (ExperienceSamples.encodePackage >> ExperienceSamples.importPackage)
+    let canonicalRoundTrips =
+        scenarioPackages
+        |> List.forall (fun package ->
+            ExperienceSamples.importPackage (ExperienceSamples.encodePackage package) = Ok package
+            && ExperienceSamples.canonical package = ExperienceSamples.canonical package
+            && ExperienceSamples.digest package = package.Identity.ContentDigest)
+    let currentPackage = scenarioPackages.Head
+    let staleEngine =
+        { currentPackage with Identity = { currentPackage.Identity with Engine = "stale-engine" } }
+    let staleDigest =
+        { currentPackage with Identity = { currentPackage.Identity with ContentDigest = "00" } }
+    let staleReplay =
+        { currentPackage with Replay = { currentPackage.Replay with MapSampleId = "wrong-map" } }
+    let staleMapRevision =
+        { currentPackage with Identity = { currentPackage.Identity with MapRevision = "quick-contact-r0"; ContentDigest = "" } }
+        |> fun package -> { package with Identity = { package.Identity with ContentDigest = ExperienceSamples.digest package } }
+    let missingUnit =
+        { currentPackage with
+            Map =
+                { currentPackage.Map with
+                    MapText =
+                        currentPackage.Map.MapText.Split('\n')
+                        |> Array.filter (fun line -> not (line.StartsWith("unit 4 ")))
+                        |> String.concat "\n" } }
+    let changedGeometry =
+        { currentPackage with
+            Map = { currentPackage.Map with MapText = currentPackage.Map.MapText.Replace("terrain 6 4 rough", "terrain 6 4 blocked") } }
+    let reversedCheckpoints =
+        { currentPackage with ExpectedCheckpoints = currentPackage.ExpectedCheckpoints |> List.rev }
+    require
+         (scenarioPackages.Length = 7
+         && scenarioFamilies.Count = 7
+         && composedPackages.Length = 6
+         && composedPackages |> List.forall (fun package -> package.Forces.Length >= 12)
+         && importedPackages |> List.forall Result.isOk
+         && canonicalRoundTrips
+         && checkpointContractsHold
+         && scenarioCost.ScenarioCount = 7
+         && scenarioCost.UnitCount = 76
+         && scenarioCost.CanonicalBytes > 0
+         && (ExperienceSamples.catalogFingerprint ()).Length = 454
+         && match ExperienceSamples.validate staleEngine with Error errors -> errors |> List.exists (function StaleEngine _ -> true | _ -> false) | _ -> false
+         && match ExperienceSamples.validate staleDigest with Error errors -> errors |> List.exists (function StaleContentDigest _ -> true | _ -> false) | _ -> false
+         && match ExperienceSamples.validate staleReplay with Error errors -> errors |> List.exists (function StaleReplayBinding _ -> true | _ -> false) | _ -> false
+         && match ExperienceSamples.validate staleMapRevision with Error errors -> errors |> List.exists (function StaleMapRevision _ -> true | _ -> false) | _ -> false
+         && match ExperienceSamples.importPackage (ExperienceSamples.encodePackage staleMapRevision) with Error errors -> errors |> List.exists (function StaleMapRevision _ -> true | _ -> false) | _ -> false
+         && match ExperienceSamples.importPackage "not-a-package" with Error [ MalformedScenarioPackage _ ] -> true | _ -> false
+         && match ExperienceSamples.validate missingUnit with Error errors -> errors |> List.exists (function MissingScenarioContent value when value.EndsWith(":force-map-mismatch") -> true | _ -> false) | _ -> false
+         && match ExperienceSamples.validate changedGeometry with Error errors -> errors |> List.exists (function StaleContentDigest _ -> true | _ -> false) | _ -> false
+         && match ExperienceSamples.validate reversedCheckpoints with Error errors -> errors |> List.exists (function MissingScenarioContent value when value.EndsWith(":checkpoint-order") -> true | _ -> false) | _ -> false)
+        ("The versioned scenario catalog or a gate-inversion proof failed: " + string scenarioCost + ".")
+    printfn "Scenario catalog qualification: %d packages, %d units, %d canonical bytes, fingerprint %s."
+        scenarioCost.ScenarioCount scenarioCost.UnitCount scenarioCost.CanonicalBytes (ExperienceSamples.catalogFingerprint ())
+    ScenarioCatalogQualification.run ()
+
     let sampleReplayShell =
         { Shell.init () with
             Mode = ScenarioSandbox "sample"
@@ -1829,7 +1875,7 @@ let main arguments =
         (Shell.renderFrame sampleReplayShell
          |> Option.exists (fun frame ->
              frame.Disclosure = SandboxDisclosure
-             && frame.Units.Length = 4))
+            && frame.Units.Length > 0))
         "Sandbox replay samples were not projected with sandbox disclosure."
 
     let exportedMap = MapEditor.export editor

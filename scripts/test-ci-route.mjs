@@ -75,6 +75,43 @@ assert.deepEqual(expectedBuildInvocations.cancellation, [
   "fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj:exception:cancellation-mutant",
   "fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj:exception:cancellation-mutant",
 ]);
+assert.deepEqual(expectedBuildInvocations["prepare-native"], [
+  "build:SIR.slnx",
+  "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj",
+  "build:tests/SIR.Client.Tests/SIR.Client.Tests.fsproj",
+  "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj",
+  "producer:native",
+]);
+const duplicatedReplayCoreOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
+  ...result,
+  buildInvocations: [...result.buildInvocations, "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj"],
+} : result), { completedAtMilliseconds: 1 });
+assert.ok(duplicatedReplayCoreOwner.failures.some(({ code, invocation }) =>
+  code === "duplicate-build-invocation" && invocation === "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj"));
+const unknownReplayCoreOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
+  ...result,
+  buildInvocations: [...result.buildInvocations, "build:src/SIR.Replay.Unknown/SIR.Replay.Unknown.fsproj"],
+} : result), { completedAtMilliseconds: 1 });
+assert.ok(unknownReplayCoreOwner.failures.some(({ code, invocation }) =>
+  code === "unknown-build-invocation" && invocation === "build:src/SIR.Replay.Unknown/SIR.Replay.Unknown.fsproj"));
+assert.deepEqual(expectedBuildInvocations["prepare-fable"], [
+  "fable:tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj",
+  "fable:tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj",
+  "fable:tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj",
+  "producer:fable",
+]);
+const duplicatedScenarioOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-fable" ? {
+  ...result,
+  buildInvocations: [...result.buildInvocations, "fable:tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj"],
+} : result), { completedAtMilliseconds: 1 });
+assert.ok(duplicatedScenarioOwner.failures.some(({ code, invocation }) =>
+  code === "duplicate-build-invocation" && invocation === "fable:tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj"));
+const unknownScenarioOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-fable" ? {
+  ...result,
+  buildInvocations: [...result.buildInvocations, "fable:tests/SIR.Client.Tests/UnknownRuntime.fsproj"],
+} : result), { completedAtMilliseconds: 1 });
+assert.ok(unknownScenarioOwner.failures.some(({ code, invocation }) =>
+  code === "unknown-build-invocation" && invocation === "fable:tests/SIR.Client.Tests/UnknownRuntime.fsproj"));
 assert.deepEqual(contracts.timingPhases, ["queue", "setup", "restore", "build", "transport", "test", "total"]);
 assert.deepEqual(contracts.schemas, { route: routeSchema, artifactManifest: "sir.ci-artifact-manifest/v1", gateResult: gateSchema, timing: timingSchema, join: joinSchema });
 for (const job of ["route:", "integrity:", "prepare-native:", "prepare-fable:", "prepare-web:", "prepare-server:", "prepare-docs:", "rules:", "spatial:", "cancellation:", "cross-runtime:", "browser:", "documentation:", "evidence:", "pr-verdict:", "full-qualification:"]) assert.match(workflow, new RegExp(`^  ${job}$`, "mu"));

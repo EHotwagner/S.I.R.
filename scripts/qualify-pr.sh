@@ -48,6 +48,8 @@ case "$mode" in
     node .github/scripts/check-npm-audit.mjs
     ./scripts/verify-fable-game-governance.sh
     dotnet fsgg-sdd dependency-surface --check --param packageId=FS.GG.Game.Core --param version=0.13.0 --root . --text
+    ./scripts/test-item-184-sdd-byte-stability.sh
+    ./scripts/test-feedback-audit-binding-exceptions.sh
     ;;
   prepare-part)
     part=${1:?qualify-pr prepare-part requires native|fable|web|server|docs}
@@ -120,18 +122,27 @@ NODE
       native)
         dotnet build SIR.slnx --no-restore >"$part_root/solution-debug.log" 2>&1 &
         solution_pid=$!
-        dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore >"$part_root/domain-release.log" 2>&1 &
-        release_pid=$!
         part_failed=0
+        # The two Release graphs share dependency outputs, so serialize them
+        # while the disjoint Debug solution graph builds in parallel.
+        dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore >"$part_root/domain-release.log" 2>&1 || part_failed=1
+        # Domain Release prepares Domain and Simulation. Replay.Core is a direct
+        # Client.Tests dependency outside that graph, so prepare only its owner
+        # before building the client test owner without duplicate dependencies.
+        dotnet build src/SIR.Replay.Core/SIR.Replay.Core.fsproj -c Release --no-restore --no-dependencies >"$part_root/replay-core-release.log" 2>&1 || part_failed=1
+        dotnet build tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore --no-dependencies >"$part_root/client-release.log" 2>&1 || part_failed=1
         wait "$solution_pid" || part_failed=1
-        wait "$release_pid" || part_failed=1
         sed -n '1,240p' "$part_root/solution-debug.log"
         sed -n '1,240p' "$part_root/domain-release.log"
+        sed -n '1,240p' "$part_root/replay-core-release.log"
+        sed -n '1,240p' "$part_root/client-release.log"
         [[ $part_failed -eq 0 ]] || { echo "qualify-pr: native prepare part failed" >&2; exit 1; }
         part_paths=(
           tests/SIR.Domain.Tests/bin/Debug/net10.0
           tests/SIR.Domain.Tests/bin/Release/net10.0
           tests/SIR.Client.Tests/bin/Debug/net10.0
+          tests/SIR.Client.Tests/bin/Release/net10.0
+          tests/SIR.Client.Tests/bin/ScenarioCatalogRuntime/Debug/net10.0
           tests/SIR.ModalInput.Tests/bin/Debug/net10.0
           tests/SIR.Match.Tests/bin/Debug/net10.0
         )
@@ -141,13 +152,17 @@ NODE
         domain_pid=$!
         dotnet fable tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj --outDir "$ci_root/prepared/modal-fable" --noCache >"$part_root/modal-fable.log" 2>&1 &
         modal_pid=$!
+        dotnet fable tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj --outDir "$ci_root/prepared/scenario-catalog-fable" --noCache >"$part_root/scenario-catalog-fable.log" 2>&1 &
+        scenario_catalog_pid=$!
         part_failed=0
         wait "$domain_pid" || part_failed=1
         wait "$modal_pid" || part_failed=1
+        wait "$scenario_catalog_pid" || part_failed=1
         sed -n '1,240p' "$part_root/domain-fable.log"
         sed -n '1,240p' "$part_root/modal-fable.log"
+        sed -n '1,240p' "$part_root/scenario-catalog-fable.log"
         [[ $part_failed -eq 0 ]] || { echo "qualify-pr: Fable prepare part failed" >&2; exit 1; }
-        part_paths=(artifacts/ci/prepared/domain-fable artifacts/ci/prepared/modal-fable)
+        part_paths=(artifacts/ci/prepared/domain-fable artifacts/ci/prepared/modal-fable artifacts/ci/prepared/scenario-catalog-fable)
         ;;
       web)
         ./scripts/build-client.sh
@@ -265,7 +280,7 @@ NODE
       cross-runtime)
         ./scripts/test-conformance.sh \
           --reuse-pr-build-receipt "$receipt" \
-          --prepared-fable "$ci_root/prepared/domain-fable" "$ci_root/prepared/modal-fable" \
+          --prepared-fable "$ci_root/prepared/domain-fable" "$ci_root/prepared/modal-fable" "$ci_root/prepared/scenario-catalog-fable" \
           --domain-only \
           --ordinary-pr-functional
         ;;

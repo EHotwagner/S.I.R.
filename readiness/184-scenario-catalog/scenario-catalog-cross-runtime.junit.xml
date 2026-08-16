@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="scenario-catalog-cross-runtime" tests="1" failures="0" errors="0" skipped="0" time="33"><testsuite name="scenario-catalog-cross-runtime" tests="1" failures="0" errors="0" skipped="0" time="33"><testcase name="scenario-catalog-cross-runtime" classname="SIR.Item184" time="33"/><system-out><![CDATA[  Determining projects to restore...
+  Restored /home/developer/projects/S.I.R-184-scenario-catalog-recovery/tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj (in 145 ms).
+  3 of 4 projects are up-to-date for restore.
+Scenario catalog cross-runtime gate passed: 1016 exact catalog/event/checkpoint bytes.]]></system-out></testsuite></testsuites>

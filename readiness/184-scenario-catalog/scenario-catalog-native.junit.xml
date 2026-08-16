@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="scenario-catalog-native" tests="1" failures="0" errors="0" skipped="0" time="26">
+  <testsuite name="scenario-catalog-native" tests="1" failures="0" errors="0" skipped="0" time="26">
+    <testcase name="scenario-catalog-native" classname="SIR.Item184" time="26"/>
+    <system-out><![CDATA[Scenario catalog qualification: 7 packages, 76 units, 19304 canonical bytes, fingerprint 2f6d96bc924578b96b5c370d8ceb39f4a0370c9662e4a654ddccb4dc20071f74|2fb98bf25b1a69505b42f778fab52a36d4d815a0b1a3f806e4c3b287463e2ee4|e45ec815ceb4e8a15a3af7475b0b19119d1db05c617addd5d28c8b5062f76a98|d76a0df9c1e16792063a35b34482b42b8e6786f2daff95eed9936aac4ed8b65f|6921bef2834a927573b52e62148b39a794797672733cdf5db785129dfbcd9a64|8b3377f725813fb5dbcefad27815ccfb452901190b65edd4f704e4c3fe7cc789|f75b2d775a51bf8aa2f50dc0d39281b8c3730ba6a30f45e425e2f03e86386c48.
+Scenario catalog structural counters: scenarios=1 maps=1 map=80x80 units=200 edges=0 zones=2 simulationTicks=8 events=1565 checkpoints=2 pathExpansions=1602 peakLosSamples=80 peakCombatResolutions=90 projectionFrames=9 sceneNodes=6601.
+Scenario catalog PERF-SMOKE: p95 4.278 ms, p99 4.851 ms.
+Scenario catalog STRESS-SMOKE: workload=scenario-catalog-80x80-200-v1 p95 11.338 ms, p99 13.156 ms.]]></system-out>
+  </testsuite>
+</testsuites>
