@@ -84,6 +84,30 @@ match argv with
         fail errors
 | [| "validate"; _ |] ->
     fail [ "validate requires --audit <feedback/audits/report.audit.json>" ]
+| args when args.Length > 0 && args.[0] = "validate-focused-receipt" ->
+    let options = parseOptions args.[1..]
+    let root = Map.tryFind "root" options |> Option.defaultValue (Directory.GetCurrentDirectory())
+    let receipt = required options "receipt"
+    let owner = required options "owner-command"
+    let allowMetadataOnly = Map.tryFind "allow-metadata-only" options |> Option.defaultValue "false"
+    let receiptTool =
+        Path.GetFullPath(Path.Combine(__SOURCE_DIRECTORY__, "../../../..", "scripts", "production-build-receipt.mjs"))
+    let start = ProcessStartInfo("node")
+    start.WorkingDirectory <- root
+    start.UseShellExecute <- false
+    start.RedirectStandardOutput <- true
+    start.RedirectStandardError <- true
+    [ receiptTool; "verify"; "--root"; root; "--receipt"; receipt; "--owner-command"; owner; "--allow-metadata-only"; allowMetadataOnly ]
+    |> List.iter start.ArgumentList.Add
+    use child = Process.Start start
+    let stdout = child.StandardOutput.ReadToEndAsync()
+    let stderr = child.StandardError.ReadToEndAsync()
+    child.WaitForExit()
+    if child.ExitCode <> 0 then
+        fail [ sprintf "focused receipt verification failed: %s" (stderr.Result.Trim()) ]
+    else
+        printfn "%s" (stdout.Result.Trim())
+        pass (sprintf "valid focused immutable receipt: %s" receipt)
 | args when args.Length > 0 && args.[0] = "check-invalidation" ->
     let options = parseOptions args.[1..]
     let root = Map.tryFind "root" options |> Option.defaultValue (Directory.GetCurrentDirectory())
@@ -180,6 +204,7 @@ match argv with
           "  feedback-tool.fsx -- activate --cycle ID --phases \"PHASE;PHASE\" --evidence \"LOCATOR;LOCATOR\" --reason TEXT [--root PATH]"
           "  feedback-tool.fsx -- digest <text-file>"
           "  feedback-tool.fsx -- validate feedback/<report>.md --audit feedback/audits/<report>.audit.json"
+          "  feedback-tool.fsx -- validate-focused-receipt --receipt PATH --owner-command COMMAND [--allow-metadata-only true] [--root PATH]"
           "  feedback-tool.fsx -- check-invalidation (--changed \"path;path\" | --base REF --head REF) [--root PATH]"
           "  feedback-tool.fsx -- validate-checkpoints feedback/checkpoints/<cycle>.jsonl"
           "  feedback-tool.fsx -- validate-checkpoint-state --cycle ID [--root PATH]" ]

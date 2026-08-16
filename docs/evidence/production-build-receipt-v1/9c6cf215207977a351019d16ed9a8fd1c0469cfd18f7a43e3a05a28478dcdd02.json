@@ -1,0 +1,3001 @@
+{
+  "schema": "sir.production-build-receipt/v1",
+  "result": "pass",
+  "ownerCommand": "scripts/qualify-production.sh",
+  "source": {
+    "commit": "032fbea9cb38100658b3d755d0fb988c5e0590a2",
+    "tree": "a688c18b8391128ecb64b624623d69d2f1fdff6c",
+    "clean": {
+      "buildInputChanges": 0,
+      "excludedGeneratedChanges": []
+    }
+  },
+  "inputs": {
+    "files": [
+      {
+        "path": ".config/dotnet-tools.json",
+        "bytes": 806,
+        "sha256": "49dcc8263caf57249a5c4b9f1c23ac1168ee459b1ccdfdc73d4b961c4b05b135"
+      },
+      {
+        "path": "Directory.Build.props",
+        "bytes": 1966,
+        "sha256": "f4458dd6ea099d326105a6715482bb51af5461ff8638eb7493bb031738a70f2c"
+      },
+      {
+        "path": "Directory.Packages.props",
+        "bytes": 1450,
+        "sha256": "7eb60608c4b67f856ec823f22cba8309c2b0880f8f442c6a21fa50914179eb3f"
+      },
+      {
+        "path": "SIR.slnx",
+        "bytes": 1385,
+        "sha256": "95f9ab29091677dfea2e48191716356651b321906f6cabf8d410bf914bba09d3"
+      },
+      {
+        "path": "global.json",
+        "bytes": 105,
+        "sha256": "0588e32d44bdf884e0305ded21820b13a59b1518efd39976c34d909eff3b1044"
+      },
+      {
+        "path": "package-lock.json",
+        "bytes": 48782,
+        "sha256": "3bec3c4dc97e076324b85ff5f79c1f8953632e8f6d0dc6adc5cb64bd6d490206"
+      },
+      {
+        "path": "package.json",
+        "bytes": 2972,
+        "sha256": "81d2e329586a3efcdf256ef37fe9ff90c7c03c04120e63a24dbc0393136fb48d"
+      },
+      {
+        "path": "scripts/build-client.sh",
+        "bytes": 1551,
+        "sha256": "84d4c3b47071a8e0f5ceae126e01e06cf782fe0474228407a373f46e55f6b82f"
+      },
+      {
+        "path": "scripts/generate-publication-manifest.mjs",
+        "bytes": 2573,
+        "sha256": "8096f56bc73621ac5ed851c37f13f64d063511af7499208eaffcc04e0870e7c8"
+      },
+      {
+        "path": "src/SIR.Client.Web/App.fs",
+        "bytes": 411170,
+        "sha256": "ec360df6e2c8f3c69d0061a4ca40428d222edfeee7c2d7b9013d2af029168b51"
+      },
+      {
+        "path": "src/SIR.Client.Web/AppShell.fs",
+        "bytes": 1395,
+        "sha256": "21994817244e5493c048e7616dedc4813bad65b0cb4d4a6aa0f9d0e66a3420e4"
+      },
+      {
+        "path": "src/SIR.Client.Web/AppTypes.fs",
+        "bytes": 6266,
+        "sha256": "f511ed147ed18efc485ad0034e6fc627c94b1a45ffbfbce0198a85e601a998fc"
+      },
+      {
+        "path": "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "bytes": 6133,
+        "sha256": "83878981d0400dad851a6572fdb59a2b44bb08bde57988a34e0b4e29690260d3"
+      },
+      {
+        "path": "src/SIR.Client.Web/ClientFeatureRuntime.fs",
+        "bytes": 6276,
+        "sha256": "cea88a09e3b274b844d51bc827cd13c2c5fd68536212cdeaf708c26713ad6d30"
+      },
+      {
+        "path": "src/SIR.Client.Web/CommandRegistry.fs",
+        "bytes": 11601,
+        "sha256": "93d6757033be29ea74620c56ba82e384b1e15bade729fa14783cf851d83e8c22"
+      },
+      {
+        "path": "src/SIR.Client.Web/FeatureLoader.fs",
+        "bytes": 3197,
+        "sha256": "d6a0751b0734b60ecccc153e0b9020d665c715e033e66e5c65b0f4ef90a39e49"
+      },
+      {
+        "path": "src/SIR.Client.Web/FeatureLoader.fsi",
+        "bytes": 1377,
+        "sha256": "b1fcf9d380edeedd5634b4c7b47f2980e5da0e20efca50d87fb34bc887747c76"
+      },
+      {
+        "path": "src/SIR.Client.Web/LiveApi.fs",
+        "bytes": 1136,
+        "sha256": "1e6ef71f8fecfa107c04adfcc7018e05272144493e200fdf3117e0a5da686d98"
+      },
+      {
+        "path": "src/SIR.Client.Web/LiveSession.fs",
+        "bytes": 4010,
+        "sha256": "0a1ff009fe8e2aca1aac468e7e894a491dbc551cabbeadd03a672fd3182246bf"
+      },
+      {
+        "path": "src/SIR.Client.Web/ModeAdapters.fs",
+        "bytes": 1296,
+        "sha256": "e71cafcc0606fb5877da3255ec3d533f609ee422e1eff8f9f961cebd07662a78"
+      },
+      {
+        "path": "src/SIR.Client.Web/PanelViews.fs",
+        "bytes": 2379,
+        "sha256": "a7aa9380c8652aa0c2b376d458917f0ebaebee814b49eeffc3ee495a77e3b3c3"
+      },
+      {
+        "path": "src/SIR.Client.Web/RulesExplorer.fs",
+        "bytes": 37808,
+        "sha256": "9db4352e7bf8e66a0ca489b56574a927a9ba146cce7e9176e371c1db84daa0b3"
+      },
+      {
+        "path": "src/SIR.Client.Web/Runner.fs",
+        "bytes": 5301,
+        "sha256": "af8eefab6cd8d1a84e3d1ceafe8b145ffef0221db7b155138506222ac24ace5a"
+      },
+      {
+        "path": "src/SIR.Client.Web/SIR.Client.Web.fsproj",
+        "bytes": 1780,
+        "sha256": "8e91f69e2ef8025be01d96cd97b3f41b3765de6ec626c3f7b839194a8e40da28"
+      },
+      {
+        "path": "src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj",
+        "bytes": 914,
+        "sha256": "8479ccabb35a9b086d452b16d0a12433177e109d57486cbf7ab4940d6c16b8b0"
+      },
+      {
+        "path": "src/SIR.Client.Web/SceneAdapters.fs",
+        "bytes": 724,
+        "sha256": "c6ac78e66f5a3d0da18af9ff73775b8c63a8e26eeff516316b10c82d3261697b"
+      },
+      {
+        "path": "src/SIR.Client.Web/SignalR.fs",
+        "bytes": 1295,
+        "sha256": "23bcefc425c725f601dbe59257dd162eed42b9b393b9b10957a140724ee73ad9"
+      },
+      {
+        "path": "src/SIR.Client.Web/TacticalEnvironmentView.fs",
+        "bytes": 18114,
+        "sha256": "4aa118f461f92bb77e6779c75eca3ee3a610288f5451053ad6cc73f1974c72ab"
+      },
+      {
+        "path": "src/SIR.Client.Web/TacticalOverlayView.fs",
+        "bytes": 2856,
+        "sha256": "27e3d822ea7dc1baf946bc67609890cd3b817682c1eda2282fcc0cab22c81978"
+      },
+      {
+        "path": "src/SIR.Client.Web/Worker.fs",
+        "bytes": 44420,
+        "sha256": "7171cc777d133910e2ad593a6dca1a7ba9e5f344b504d85207766ee94e920183"
+      },
+      {
+        "path": "src/SIR.Client.Web/deferred-delivery-support.js",
+        "bytes": 358,
+        "sha256": "173983b6245d026c1b200f8dd81f6307a5e476c22b91b7a1c781eed2c6087b88"
+      },
+      {
+        "path": "src/SIR.Client.Web/delivery-support-entry.js",
+        "bytes": 264,
+        "sha256": "8a3d76c955238bddcef8640d5368759a8f672f9210004ba542b5ff7faf978e51"
+      },
+      {
+        "path": "src/SIR.Client.Web/docs-feature.js",
+        "bytes": 530,
+        "sha256": "4943ce484de0ac4f65024da982bb53d0d245373a1928a29fdc3d943109d67f53"
+      },
+      {
+        "path": "src/SIR.Client.Web/feature-loader.js",
+        "bytes": 747,
+        "sha256": "90b61d989f2ec0aca804ffd853c1c5bd6ca6d3ee08082310bab57f2c50827c31"
+      },
+      {
+        "path": "src/SIR.Client.Web/feature-registry.v1.json",
+        "bytes": 1566,
+        "sha256": "3d0757cd77198139375d4c4ef3e07863fa27b8c2bc67c8f2cd8fae6d46c8df18"
+      },
+      {
+        "path": "src/SIR.Client.Web/index.html",
+        "bytes": 991,
+        "sha256": "9007fd3e640c67c9a9847f54c26b725b0f1d04e940ad67778ac4c3e03611fc98"
+      },
+      {
+        "path": "src/SIR.Client.Web/packages.lock.json",
+        "bytes": 7310,
+        "sha256": "11763784faaf64814af67ef43602f02f96efd44fd2fc2f57ab9063f3b598590d"
+      },
+      {
+        "path": "src/SIR.Client.Web/styles.css",
+        "bytes": 36925,
+        "sha256": "971f77e0dc1a46baf6b9fd6b51a1375540e7c762baebcc9cf3e2236ebf51652a"
+      },
+      {
+        "path": "src/SIR.Client.Web/vite.config.js",
+        "bytes": 1253,
+        "sha256": "35fbbc1b506eaa1d7a24f6d4031587fb9d3c91ce453232d0177c4dd517d106f5"
+      },
+      {
+        "path": "src/SIR.Client/Battlefield.fs",
+        "bytes": 35141,
+        "sha256": "e36e1c50719e172bb205bc2971e4181b9e584702f2302384e565b48adbda8cc7"
+      },
+      {
+        "path": "src/SIR.Client/ClientModuleBoundaries.fs",
+        "bytes": 421,
+        "sha256": "098069c194b92056adc6917ac59ac37c1d6ea5b5e8d7721adc796dfddaa7671c"
+      },
+      {
+        "path": "src/SIR.Client/Comparison.fs",
+        "bytes": 5698,
+        "sha256": "c5a54d34c6d5610901e211031239861d6de5216d4ea8a03bc88f6ac82523a56d"
+      },
+      {
+        "path": "src/SIR.Client/EngineCatalog.fs",
+        "bytes": 907,
+        "sha256": "8e67a2ea40afb7306afcce79244712100f85ae9901bb9a12504ea4e4e58c254e"
+      },
+      {
+        "path": "src/SIR.Client/EvidenceExport.fs",
+        "bytes": 14160,
+        "sha256": "9e86a92ad2e73e6c433df6c52f68fa3b69f63fc7a8ea8d2cde555bb7f7a0633a"
+      },
+      {
+        "path": "src/SIR.Client/ExperienceSamples.fs",
+        "bytes": 8822,
+        "sha256": "2e3cfb13caf95ffda9f313b436516a8254b156b734a16fa2b56f97a7fd1c28fd"
+      },
+      {
+        "path": "src/SIR.Client/Lab.fs",
+        "bytes": 19127,
+        "sha256": "dc7f1cdb798166e13943acece90dfa0d3823e2ec3ac67aad837c375d58125aa9"
+      },
+      {
+        "path": "src/SIR.Client/LiveClientBoundary.fs",
+        "bytes": 246,
+        "sha256": "b6586c954623f72164868b9df428c4ed387bc481cfdc17e0e2093b51ee4788aa"
+      },
+      {
+        "path": "src/SIR.Client/MapEditor.fs",
+        "bytes": 199245,
+        "sha256": "b306c16ca51914c88faf66ee703c33ddc65774693363bf8fb35950502861d1f1"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorHistory.fs",
+        "bytes": 667,
+        "sha256": "c2783cf99207d6cfaed169c2d5936a42f803f5fae41a936e06fffb1702ccc3c8"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorInterchange.fs",
+        "bytes": 27005,
+        "sha256": "9d74efa2c3e1a6b134a9d853100f59b9dbb585b57e0c8d33f150f46369ba26dc"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorRevision.fs",
+        "bytes": 353,
+        "sha256": "ec5a5e005e9423708f732c893fad1b860c3e792c366e9a3bed05131eb9a76712"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorSimulator.fs",
+        "bytes": 42024,
+        "sha256": "5c5fdb4089bc50bccdaef53edcd2c34e3a3fe99024c3cccaca4dba9fdf0ec148"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorTypes.fs",
+        "bytes": 13022,
+        "sha256": "d1ce54ec84e140a648e2e8212f66673b45ba774894bd072460b2df457ec95cf0"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorValidation.fs",
+        "bytes": 213,
+        "sha256": "155f94d77e33d811b49c4cb839a96df4652a63f19ec1f628e1384d68988524fe"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorWorkspace.fs",
+        "bytes": 26718,
+        "sha256": "bf0fe59e0d7af1f566d1a9cee5d12b4e3adbdafe806921d1d7bb7179b01af83a"
+      },
+      {
+        "path": "src/SIR.Client/ModalInput.fs",
+        "bytes": 99409,
+        "sha256": "43e481d27415bd51c3fa13049ade64683cd3f92ec7e467d4a47a0d24b82c838a"
+      },
+      {
+        "path": "src/SIR.Client/ModalInput.fsi",
+        "bytes": 7012,
+        "sha256": "59589ea6bebc24eae0db5f676623af8bb2a47a37da34a1896d2a9f0986b15e0b"
+      },
+      {
+        "path": "src/SIR.Client/PlanningWorkspace.fs",
+        "bytes": 22640,
+        "sha256": "23e939f6699478839d56f74d66c15cec2f679c72d85a762a3be9c29b9d9db4bc"
+      },
+      {
+        "path": "src/SIR.Client/ReplayPresentation.fs",
+        "bytes": 18244,
+        "sha256": "b0d9224f9a6a28465f7544090bcf417c465fa3585bae6d08ce1703ab7e66ca5c"
+      },
+      {
+        "path": "src/SIR.Client/RulesCatalog.fs",
+        "bytes": 15254,
+        "sha256": "c7c0dcb7f5adcba214967377a0ecbf9b0532c1453f61a295f0fd146c6449e840"
+      },
+      {
+        "path": "src/SIR.Client/SIR.Client.fsproj",
+        "bytes": 289,
+        "sha256": "510f1532297957a12f8030e64a299ac83d51e730fec865ab3cc6e18a4f420e41"
+      },
+      {
+        "path": "src/SIR.Client/Shell.fs",
+        "bytes": 33187,
+        "sha256": "e12469f40f31d74e4336d54977bd0635f1bc9cee0530d3e157acd90db6fa4359"
+      },
+      {
+        "path": "src/SIR.Client/SimulatorWorkerProtocol.fs",
+        "bytes": 8164,
+        "sha256": "1c5f63a1dd01a339aa88eb8a24eb85d901deda6ad288a4757ee4edd615cb29e6"
+      },
+      {
+        "path": "src/SIR.Client/TacticalParcelEditor.fs",
+        "bytes": 25271,
+        "sha256": "515559b1568433cfa7ec52dc043fc56d96b1161ebcc18100210fdb965ed3b629"
+      },
+      {
+        "path": "src/SIR.Client/TacticalSceneProjection.fs",
+        "bytes": 57576,
+        "sha256": "0271550f873d84d86fcb1d9ed0fa5be8c193abb211296ea6da91bb84a8d1a618"
+      },
+      {
+        "path": "src/SIR.Client/TacticalSceneProjection.fsi",
+        "bytes": 7117,
+        "sha256": "f3530a116006106364c7d8358c13c47169db37cab0397561c5f14907a44a5319"
+      },
+      {
+        "path": "src/SIR.Client/TacticalWorkspaceLayout.fs",
+        "bytes": 24658,
+        "sha256": "8087df8d94a2c02cdd23f869616993c5c507f9d247ca0a5e36ac89930fce1c19"
+      },
+      {
+        "path": "src/SIR.Client/TacticalWorkspaceLayout.fsi",
+        "bytes": 2312,
+        "sha256": "9be8bb8cb82570c285639432093c65a1e864e8804505b8ffaa6613405f621508"
+      },
+      {
+        "path": "src/SIR.Client/UnifiedTacticalWorkspace.fs",
+        "bytes": 35221,
+        "sha256": "70081df2cb92b82352b7065ce16a2f45a179a412f37129329d343d2b62a1f0ec"
+      },
+      {
+        "path": "src/SIR.Client/UnitGlyphCatalog.fs",
+        "bytes": 6434,
+        "sha256": "3ff311aef068da1f19bfcf9bfc39eeacb6aca6db203c7a14e37c5235c9e8597c"
+      },
+      {
+        "path": "src/SIR.Client/packages.lock.json",
+        "bytes": 1780,
+        "sha256": "4f1c45129f64c678ca92754105e635ff06bded477e7fceeed6687fac1841815e"
+      },
+      {
+        "path": "src/SIR.Domain/AuthoritativeProjection.fs",
+        "bytes": 731,
+        "sha256": "03835646dfc5a89f65dbf1fdb5aac12f047cea8737343bf7ef88d8805c98927c"
+      },
+      {
+        "path": "src/SIR.Domain/BoundedInt32.fs",
+        "bytes": 2233,
+        "sha256": "81a29dd46ada7c082e999873ab0aa40949be4092b567322a983a5d7f9699d5a1"
+      },
+      {
+        "path": "src/SIR.Domain/CanonicalEncoding.fs",
+        "bytes": 2079,
+        "sha256": "6ac9ad4352aeb377c5ef87c9bb17b450aba2d8d64af0b2e83cde515861b70503"
+      },
+      {
+        "path": "src/SIR.Domain/CanonicalHash.fs",
+        "bytes": 5018,
+        "sha256": "f05d74a91f24712990406b35784ffe010628530b7baa78384e16282c59032a6f"
+      },
+      {
+        "path": "src/SIR.Domain/ControlAbiV1.Generated.fs",
+        "bytes": 4601,
+        "sha256": "d7fa16fd73fc3463bcbdaa5b4311221cae72be4ddb1c86fcc4c7ff16d47aec99"
+      },
+      {
+        "path": "src/SIR.Domain/ControlAbiV1.fs",
+        "bytes": 19417,
+        "sha256": "75b6968e6f8e4866304951ebd1fadd89705a01f5579e97a68751f0a2c899ded5"
+      },
+      {
+        "path": "src/SIR.Domain/FixedPoint.fs",
+        "bytes": 2118,
+        "sha256": "fc163a6b8ee048b35b608fbd42a8563df79728d22f479435fc465615d7453b82"
+      },
+      {
+        "path": "src/SIR.Domain/HumanCapabilities.fs",
+        "bytes": 6246,
+        "sha256": "9589bf5b466bbe84f349cf6d48b6969face6f7023382652c5e0ccb0c42299199"
+      },
+      {
+        "path": "src/SIR.Domain/Orientation.fs",
+        "bytes": 3355,
+        "sha256": "b680c9325dd1f4d550190154fe61cd5299617d232495db0771065bb7d045df25"
+      },
+      {
+        "path": "src/SIR.Domain/RuleTypes.fs",
+        "bytes": 3877,
+        "sha256": "c5318fa1c398edb56d87cc18c0dd95086e2e559c608b797a5e709774bd85102d"
+      },
+      {
+        "path": "src/SIR.Domain/RuleTypes.fsi",
+        "bytes": 3377,
+        "sha256": "a565d174be1e0e78b932844d8df48a5019b9ba211d2243743052193e3ea5a392"
+      },
+      {
+        "path": "src/SIR.Domain/Rules.fs",
+        "bytes": 36880,
+        "sha256": "e81c19f26eb73dd464a0ec11bac9d138e6bdab1a3a8e4bf5e034bf0a313e212c"
+      },
+      {
+        "path": "src/SIR.Domain/Rules.fsi",
+        "bytes": 1215,
+        "sha256": "37ae7ba3bcb776a1b9f8a29232b34d85b893c5148fc8a033c4bf7c39c7a2b124"
+      },
+      {
+        "path": "src/SIR.Domain/SIR.Domain.fsproj",
+        "bytes": 922,
+        "sha256": "4f5949dca59b1f0d8e1fb232f5184485d792e18b65152d7ce87939a40f9d2913"
+      },
+      {
+        "path": "src/SIR.Domain/SpatialIdentity.fs",
+        "bytes": 2104,
+        "sha256": "2ed77ce24585d6445813e0645ee437fd18512d1cfdeee35d5725a61eb9d2bc2f"
+      },
+      {
+        "path": "src/SIR.Domain/SpatialIdentity.fsi",
+        "bytes": 820,
+        "sha256": "4d332e0965553c90d7534fa009a46097018d5f6c67949c64694f950e48023192"
+      },
+      {
+        "path": "src/SIR.Domain/TacticalEnvironment.fs",
+        "bytes": 14028,
+        "sha256": "2bb77a587c5ce52542fe9adb4103a3d7ebc891854ef8c8f67b2e8db57796d1d5"
+      },
+      {
+        "path": "src/SIR.Domain/TacticalEnvironment.fsi",
+        "bytes": 5065,
+        "sha256": "8ad019bfffa1c8b1dfe5a79123764c4cac7ef1d9b77f65c05cfb864b2c442046"
+      },
+      {
+        "path": "src/SIR.Domain/packages.lock.json",
+        "bytes": 314,
+        "sha256": "394c969535d7e82772dd93db116c36b2fe31f8705e467c93194e7dc280b89902"
+      },
+      {
+        "path": "src/SIR.Match/AwarenessProjection.fs",
+        "bytes": 4771,
+        "sha256": "f38c25e5f5618386790d66eada1e328673a723eb6b72c49a791463f7b4c40cd0"
+      },
+      {
+        "path": "src/SIR.Match/ControlHost.fs",
+        "bytes": 31462,
+        "sha256": "62800296443ea81f849fbed9e2e78b58f100127f642619bf08f787e696011839"
+      },
+      {
+        "path": "src/SIR.Match/LiveIntegration.fs",
+        "bytes": 17810,
+        "sha256": "3ccd096387f5c2c775536cbf243c40b4ded18e62ccea625cc27e96d98fb011a3"
+      },
+      {
+        "path": "src/SIR.Match/MatchReplay.fs",
+        "bytes": 8409,
+        "sha256": "63fcfc3f8335dadf6bc457b9207e293b85f1829810155730ee488bbb8cccfe24"
+      },
+      {
+        "path": "src/SIR.Match/PhysicalCombatServices.fs",
+        "bytes": 691,
+        "sha256": "e0100379d914701b19485c0344f0f7417430535a3fdd47b1367d8193188bb5c6"
+      },
+      {
+        "path": "src/SIR.Match/Plan.fs",
+        "bytes": 45620,
+        "sha256": "544bc8d85edb5fb7ec618062a0a7da3f364169b5ee08a68b34629d45508c69fa"
+      },
+      {
+        "path": "src/SIR.Match/SIR.Match.fsproj",
+        "bytes": 499,
+        "sha256": "cc9035ede2b42dfea492bb51177d44bf02b64eb0ab441c01c0073f4f2f54f774"
+      },
+      {
+        "path": "src/SIR.Match/SpatialServices.fs",
+        "bytes": 873,
+        "sha256": "5d6e1c6ad577dea9ef6844469876d6ede8fb8d567772a1cb054c47fa63cfde54"
+      },
+      {
+        "path": "src/SIR.Match/StandardController.wat",
+        "bytes": 3075,
+        "sha256": "2c58aa604d29ebafb9724b10c2c05a34a5fb0fc842e478806b39b227abddb296"
+      },
+      {
+        "path": "src/SIR.Match/packages.lock.json",
+        "bytes": 1530,
+        "sha256": "5bf64d78694ae5bf1992feb7c747f56319e9be942f3c951d731f7c963ab326d7"
+      },
+      {
+        "path": "src/SIR.Protocol.Generated/SIR.Protocol.Generated.fsproj",
+        "bytes": 291,
+        "sha256": "78c26ee36194a44f1db7706d19998c053e11613bdcf8c61a83a6570392890b90"
+      },
+      {
+        "path": "src/SIR.Protocol.Generated/packages.lock.json",
+        "bytes": 1232,
+        "sha256": "10e228c646dadbc50e6acd2e610a14d07da207aba971769348b0a0dce9f8a70c"
+      },
+      {
+        "path": "src/SIR.Protocol/Http.fs",
+        "bytes": 4025,
+        "sha256": "b28ec0dbd2a89e562445873672150b6de7f25df83d4bef2885f3207872d26a30"
+      },
+      {
+        "path": "src/SIR.Protocol/ProtocolBoundary.fs",
+        "bytes": 221,
+        "sha256": "923ed323a65648dc526c6fc914fa615169e44e6b14c5954d4fa0555355f05841"
+      },
+      {
+        "path": "src/SIR.Protocol/Realtime.fs",
+        "bytes": 3031,
+        "sha256": "6dd2eaa7850f3889c1b214f018d1aac37c75fb4e7386d5cf8866b58b66cac4b7"
+      },
+      {
+        "path": "src/SIR.Protocol/SIR.Protocol.fsproj",
+        "bytes": 240,
+        "sha256": "1342e406cbe8e6f60c90672463da69ca803030a5543fe0e6c336e2169f5d734d"
+      },
+      {
+        "path": "src/SIR.Protocol/packages.lock.json",
+        "bytes": 1445,
+        "sha256": "d49008a690ff78e9c95b69614035f11054b59b63a5f3a13f4c63ba4ec1340591"
+      },
+      {
+        "path": "src/SIR.Replay.Core/SIR.Replay.Core.fsproj",
+        "bytes": 2782,
+        "sha256": "047e2b99c5e718bace6b9d86ecaebb2fcd910cea9b451e5b8379df44ecdf289c"
+      },
+      {
+        "path": "src/SIR.Replay.Core/packages.lock.json",
+        "bytes": 1019,
+        "sha256": "a7456fb448cce9c92510d09931d76d1f5f9782601dbcc1e8872ef4fac328bb37"
+      },
+      {
+        "path": "src/SIR.Replay.Web/SIR.Replay.Web.fsproj",
+        "bytes": 2229,
+        "sha256": "6791f7383b764559a196e698ea6c929fef17d5b1fa2b4830bc2b84d4d7d4c357"
+      },
+      {
+        "path": "src/SIR.Replay.Web/packages.lock.json",
+        "bytes": 6899,
+        "sha256": "1fa1129de8bd47db4b136a240b8823cd5cae6dae27f836b41b1cd2eea4eb94fc"
+      },
+      {
+        "path": "src/SIR.Server/AwarenessReactionDiagnostics.fs",
+        "bytes": 5172,
+        "sha256": "9638d23dc66f2abcae786df99aef1d5df902b7f4af681dd7adefbcc6ff161db2"
+      },
+      {
+        "path": "src/SIR.Server/GameHub.fs",
+        "bytes": 3897,
+        "sha256": "45bff5ea7c6a5c1ed7c8e235abb784bd99abd62c1aaa70b5a982dbd314777cdc"
+      },
+      {
+        "path": "src/SIR.Server/LiveAuthentication.fs",
+        "bytes": 1986,
+        "sha256": "3fc890db036182bdd2a45f0553db60e4ea8fcdce940a3c29b2542c9813112579"
+      },
+      {
+        "path": "src/SIR.Server/LiveAuthority.fs",
+        "bytes": 11684,
+        "sha256": "2456acc479182be65db63475e6865f06ebbc8fd550cb95ec03aa6850484fbae0"
+      },
+      {
+        "path": "src/SIR.Server/PhysicalCombatDiagnostics.fs",
+        "bytes": 13179,
+        "sha256": "6ef3affdea25a3a46adc69acda4c746a46ca055ec9a730f74961beabbf185637"
+      },
+      {
+        "path": "src/SIR.Server/Program.fs",
+        "bytes": 11747,
+        "sha256": "2f6bfeb50b7389d770a130ae66f30bf76bc79dc30656ad04306967a4df7d6989"
+      },
+      {
+        "path": "src/SIR.Server/SIR.Server.fsproj",
+        "bytes": 796,
+        "sha256": "117595435e40a1d8227d7ed2c4e515d8f3edb4e3f7094fd82595d7696d976bad"
+      },
+      {
+        "path": "src/SIR.Server/SpatialDiagnostics.fs",
+        "bytes": 8813,
+        "sha256": "31d9af895b1ab46698f8f7ad775a332faf637478f452e2a09122cc6bfdbb8323"
+      },
+      {
+        "path": "src/SIR.Server/appsettings.json",
+        "bytes": 3,
+        "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+      },
+      {
+        "path": "src/SIR.Server/packages.lock.json",
+        "bytes": 5752,
+        "sha256": "358d91fb789168f56c88b5c10d21acb0ee0db04fd40363aacf0df05df6802b66"
+      },
+      {
+        "path": "src/SIR.Simulation/AwarenessReaction.fs",
+        "bytes": 20839,
+        "sha256": "bb0ec5e692cb0a3becd1d7cd340f33e621b970c906a9fb31a9144fa214ca6b43"
+      },
+      {
+        "path": "src/SIR.Simulation/AwarenessReaction.fsi",
+        "bytes": 4166,
+        "sha256": "c5130fad846ea914ff4e973a67f398ccaf9e4246194ea904e950f0fc42d0f346"
+      },
+      {
+        "path": "src/SIR.Simulation/CapabilityExecution.fs",
+        "bytes": 16951,
+        "sha256": "635f285a4b1af163c0431f7f6436095bb042b35e38b5619992ff6519363e3029"
+      },
+      {
+        "path": "src/SIR.Simulation/CombatModel.fs",
+        "bytes": 26780,
+        "sha256": "21e9e716ea5de4f0879a58f62a6e9a5f2dc61fafac85f2d2352b34a73ced980a"
+      },
+      {
+        "path": "src/SIR.Simulation/CombatModel.fsi",
+        "bytes": 3820,
+        "sha256": "79971a63598b29a63eb2e185583b505a37f31b95382486fdd4ac9ee708610833"
+      },
+      {
+        "path": "src/SIR.Simulation/CombatRules.fs",
+        "bytes": 19553,
+        "sha256": "ac082a2e876105e5f9958e03166a2c7f54d149f948e00e5bcdc2cc524a60bd71"
+      },
+      {
+        "path": "src/SIR.Simulation/CombatRules.fsi",
+        "bytes": 2455,
+        "sha256": "1fd66b3edb767b0dd97567c1014bb4a63b42617c3c35fc22b41e2105bf386bfc"
+      },
+      {
+        "path": "src/SIR.Simulation/MapScale.fs",
+        "bytes": 33048,
+        "sha256": "fcfca3c90bc6e46d58bce65b27de87a0c1a0e14af68a35cc8795c253b7615534"
+      },
+      {
+        "path": "src/SIR.Simulation/Replay.fs",
+        "bytes": 71923,
+        "sha256": "5fd3a62b97729e8c090e5e83101eb4a79a51a4928a169ac18492a90ccc99e12d"
+      },
+      {
+        "path": "src/SIR.Simulation/SIR.Simulation.fsproj",
+        "bytes": 957,
+        "sha256": "b045f3e7e12dbe4f1c2c6f3df6cbd12bda1cb770b3c907b26aa7a82910dc6d8a"
+      },
+      {
+        "path": "src/SIR.Simulation/Simulation.fs",
+        "bytes": 47611,
+        "sha256": "e7b56b539bad7359c74edda3efa73d26305466f1dbc6ed098e056669eab81ddd"
+      },
+      {
+        "path": "src/SIR.Simulation/SpatialQuery.fs",
+        "bytes": 27064,
+        "sha256": "5826ca5afda073069951ebe66ed4e88a72689c2a64d407629329784698a4308a"
+      },
+      {
+        "path": "src/SIR.Simulation/SpatialQuery.fsi",
+        "bytes": 6350,
+        "sha256": "84a519a1dc33a4646fda64fcb84bd60d094ce51ae96b5bf9d524936aeb4a02e1"
+      },
+      {
+        "path": "src/SIR.Simulation/Substrate.fs",
+        "bytes": 419,
+        "sha256": "c4ff38c44972c7a490766531862b0b2f78c59448368862fe2cf2b3af3e1e47c2"
+      },
+      {
+        "path": "src/SIR.Simulation/TacticalEnvironment.fs",
+        "bytes": 57050,
+        "sha256": "4a98aea38182762bc3fbe5f72a3c13dd0b277ddf5f390d933b0844eacb0d62bb"
+      },
+      {
+        "path": "src/SIR.Simulation/TacticalEnvironment.fsi",
+        "bytes": 1845,
+        "sha256": "0acf2c3d1509e23da5183d4a32f2271cef32bf710e5276e3e9242d5a111f8487"
+      },
+      {
+        "path": "src/SIR.Simulation/packages.lock.json",
+        "bytes": 1038,
+        "sha256": "1fb20aefe56a6e8c4ed7a1861b8c58f4e8e9f9e7dbf833cbd890355f67be0e4c"
+      },
+      {
+        "path": "src/SIR.Tools/Program.fs",
+        "bytes": 151,
+        "sha256": "aaea09d2e3b96cc8cb7239d88cc8ee4265bb47ba5bdb4154427a2eb156150f39"
+      },
+      {
+        "path": "src/SIR.Tools/SIR.Tools.fsproj",
+        "bytes": 165,
+        "sha256": "315153952f437af287827d5bcac3b290cddc7326050d13a1a9a1a2858787dfde"
+      },
+      {
+        "path": "src/SIR.Tools/packages.lock.json",
+        "bytes": 314,
+        "sha256": "394c969535d7e82772dd93db116c36b2fe31f8705e467c93194e7dc280b89902"
+      },
+      {
+        "path": "src/SIR.Wasm/SIR.Wasm.fsproj",
+        "bytes": 680,
+        "sha256": "041deefdbbe2550feb62a436b4f3927ee8a0a86ff185300f5af9ea34471a9009"
+      },
+      {
+        "path": "src/SIR.Wasm/packages.lock.json",
+        "bytes": 1259,
+        "sha256": "5dd10465a1cceb6aef7d64e592bad92865e31e7d4c74d4d850afe50d760cb274"
+      }
+    ],
+    "digest": "49cc0369b8b89152db8b90b9da7af76df5427334a7a90a68ff33ad285b18e8ff"
+  },
+  "tools": [
+    {
+      "id": "git",
+      "version": "git version 2.55.0"
+    },
+    {
+      "id": "dotnet-sdk",
+      "version": "10.0.302"
+    },
+    {
+      "id": "fable",
+      "version": "5.13.0"
+    },
+    {
+      "id": "fsdocs",
+      "version": "22.1.0"
+    },
+    {
+      "id": "node",
+      "version": "v26.7.0"
+    },
+    {
+      "id": "npm",
+      "version": "12.0.2"
+    },
+    {
+      "id": "vite",
+      "version": "8.1.5"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "main-fable",
+      "path": "src/SIR.Client.Web/.fable",
+      "files": [
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/.gitignore",
+          "bytes": 4,
+          "sha256": "ad948e60dea573d7507729349a4e9176ba815cc3c4a7880a278a84c6657c933a"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Array.js",
+          "bytes": 43085,
+          "sha256": "021a7880fac8a4a44483c1a5ff6857826f18bfea98cf358ef1703c6ac63aa190"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Async.js",
+          "bytes": 7070,
+          "sha256": "ded92e2f8732220c941cb45606f05cfdb48545add183dd66e224d9d2bddfb7af"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/AsyncBuilder.js",
+          "bytes": 6474,
+          "sha256": "69142b9fe2f6a5c0f6874344a1f2f10cc3195c167c5366f403ba9cf8c421b37e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/big.d.ts",
+          "bytes": 13955,
+          "sha256": "8a04a265385fe8591fbcc25697fd5bfc475ad5b72c5322f10648b1925fb8469b"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/BigInt.js",
+          "bytes": 11623,
+          "sha256": "fa902d136a73652de017d9e39a2359123af307a17c0f2a6bcf56182e95448b16"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/BitConverter.js",
+          "bytes": 5799,
+          "sha256": "4a9b7c669a049543a6949d1f2b1c8117f69d949358af264300b2b01cefafa7f8"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Boolean.js",
+          "bytes": 629,
+          "sha256": "b5ab325cc43624f626d21e13e8d716ff3c590c25a421fdb98117a863d11cee38"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/CHANGELOG.md",
+          "bytes": 14006,
+          "sha256": "b7371c9810e94eae61f47be33ff0b37f983095fddb4662672e7d16354a47d96d"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Char.js",
+          "bytes": 6980,
+          "sha256": "0a515a0100087198afacd489b12579300361c539429a4e76dab87ca3a12f3520"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Choice.js",
+          "bytes": 6266,
+          "sha256": "f179d6fea4489b0a1a73b8afb1999f4b87b3fb9eaa99768fb7fa45e2cba380ae"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/CollectionUtil.js",
+          "bytes": 6099,
+          "sha256": "6bd42cf80142f2af4d093e76caf369ce7463b52d5c6067f81afa5583619cdcd8"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/ConditionalWeakTable.js",
+          "bytes": 453,
+          "sha256": "0903afe3c016e420f368dfdfbc79d0faa11c0c920d54fe531249457ff188f98a"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Date.js",
+          "bytes": 32371,
+          "sha256": "7d04e88ad2899615e09e46f240768d5c5eb32826838c571930f4cee985f50f51"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/DateOffset.js",
+          "bytes": 8583,
+          "sha256": "24195f30b3978c122ceebc8e008404f2dc7156d98f2e35c1393dc07d0fecd4fc"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/DateOnly.js",
+          "bytes": 3899,
+          "sha256": "f8a35d603eca839ec14df5205c2b3528f2928e00b32462b3720473c3f5e0136e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Decimal.js",
+          "bytes": 8166,
+          "sha256": "7cb1d4747d4cceb05915b41e321bfbbebd88692ebe4da570405efc39efafc0ba"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Directory.js",
+          "bytes": 471,
+          "sha256": "3a3a44a851c14b7b01869d34307d613f3b23bb19d10416103ed585e61f4efe49"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Double.js",
+          "bytes": 1472,
+          "sha256": "46e29dd1a8c7be9748a432c330391dae12663eddb2c54ab228606ac1f2fc9de5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Encoding.js",
+          "bytes": 6871,
+          "sha256": "eada95b30d6be0fe025e8b6c482e4d80777bbe733701339ff4c2efcefe3491f3"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Environment.js",
+          "bytes": 79,
+          "sha256": "57832a1d815f8859c0647928816f320c13f39cee40aa7b9592dd7937182370ec"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Event.js",
+          "bytes": 3027,
+          "sha256": "5fe02c285e8a7730147f45510606415df7ddf8d02164348890fb3e1f6a1921a1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/File.js",
+          "bytes": 1075,
+          "sha256": "77653639348960b0647eeec09272439a15a20c8dbbf6b8bc4f2591fd66480405"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/FSharp.Collections.js",
+          "bytes": 1158,
+          "sha256": "c1f2a8e854a7812ad681f0636a51c225078284b45ec3a5fa38dd39bfcdbffc58"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/FSharp.Core.CompilerServices.js",
+          "bytes": 910,
+          "sha256": "20f5935e7dec9ed9df17cb150253f1d882bd831d19830d8b9c139d63ce5ef222"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/FSharp.Core.js",
+          "bytes": 4337,
+          "sha256": "c8801dfa13651817573c6ad1a64ad2f5f298903d4b9e564e8d3f4b36c9d46688"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Global.js",
+          "bytes": 2509,
+          "sha256": "2fee530bce779f1b84e866d0ff812c95786fb27548dd4bb1528f06c6cb2c566e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Guid.js",
+          "bytes": 5991,
+          "sha256": "23a42e4470f1dfad70671d4bb53873efb88d76364efadfae76b63782d97e6295"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Int32.js",
+          "bytes": 4508,
+          "sha256": "d147692d3f046810ef7ba909eba071722b168586bae3655232ce6854d4137cfc"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/lib/big.js",
+          "bytes": 25821,
+          "sha256": "3a379f16d1845ebcc65c448dd9848b79234242795890ad80e5af02062e283d68"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/List.js",
+          "bytes": 42902,
+          "sha256": "206ce2e44d6306b390b356e8131387eab7d24c65f9ad3afc26983e69e2089c42"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Long.js",
+          "bytes": 1253,
+          "sha256": "dc8b9fd2bf0278e8be5ec6fad5c63652dff941ac44502f287cac59061cbc74de"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/MailboxProcessor.js",
+          "bytes": 3052,
+          "sha256": "c339531b71d821669aa307dfe0a6ad8c220fbb8fe25c22e77a9400c480332cf5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Map.js",
+          "bytes": 50093,
+          "sha256": "7b7fa952f80f4bd46b85ddf9118656e4c58744b46dca7a17497ca05fa52a3cad"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/MapUtil.js",
+          "bytes": 3671,
+          "sha256": "f027e82c2d0df98ea0d616a9a099cd413ee4c51a3d93e5b61d30b0aa9212d9fa"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/MutableMap.js",
+          "bytes": 10542,
+          "sha256": "f7b89cee35613c25d0510cb8a3339cac976bead14069c55c42de189d6b4c52d4"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/MutableSet.js",
+          "bytes": 6620,
+          "sha256": "3fbffe14e018d97a188dcf637d01e2fc04d54c1e08c79c9185986893f04300f3"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Native.js",
+          "bytes": 320,
+          "sha256": "c5a4239ab2f2b8f177c481a273f721af6026b8615262b0431fb4ac6a2b19f4c6"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Numeric.js",
+          "bytes": 1852,
+          "sha256": "76e342f4edc067986ecf9260314aa42a4d030562250fd3ece5039f5f4627060f"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Observable.js",
+          "bytes": 3717,
+          "sha256": "ae5c9cb6f437329ac0abee3b69b13f877bc107fd49bf54e4497de82b904c0c0b"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Option.js",
+          "bytes": 2306,
+          "sha256": "cad97e930468cf1e12665373a56d99975fccbb7009e1068f55e151af07811177"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/package.json",
+          "bytes": 611,
+          "sha256": "492820f544d3e2e9339f11f78affcf13ad41b7278cee71a035671b5f93dfd22b"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Path.js",
+          "bytes": 1231,
+          "sha256": "b324d7935a38fa6ec015612a651075c63c5ca16e6ee1edeafb77d4ce8eaef01f"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/quotation.js",
+          "bytes": 23047,
+          "sha256": "4e6b50c09d60d5bab3df6fb7746b94c1be30d5cd00a006400bfa47b0c777d215"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Random.js",
+          "bytes": 5901,
+          "sha256": "78ab9bb0b7401e2960f479828684c2d4aad9efa685f7fd354bc63f03a2dfb1b2"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Range.js",
+          "bytes": 1977,
+          "sha256": "d9c52a8ce590ce0c7b3d137a2fe18545b3c5a981b2682e072c3c854425e25129"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/README.md",
+          "bytes": 90,
+          "sha256": "53f38c305142b992d30cb753dba8859d4bce750f95831eb6ef086affb549d6c0"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Reflection.js",
+          "bytes": 15806,
+          "sha256": "ccac613d280c782d91d0b16c96f3b338495158deb42f1768b0b5a697e3c0bf49"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/RegExp.js",
+          "bytes": 6773,
+          "sha256": "4d4ab2bfa9c8b9ead840811179e1bfd46bbf5e2c597cf6069c6a35138fd369c9"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Result.js",
+          "bytes": 3980,
+          "sha256": "f86013cfe7b0792dfdb24c2af0fe3e68fd426cd0583d41088e903983beb6c147"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Seq.js",
+          "bytes": 47978,
+          "sha256": "a95955ecade754849668d8c91a5717a0be9748163dc48680c7c79c2de7d46137"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Seq2.js",
+          "bytes": 4298,
+          "sha256": "c62a9393ce48433e2133cc7bd5587222408b27e1e41bd1aaa0638aa577513a73"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Set.js",
+          "bytes": 75290,
+          "sha256": "6e0e8f0bd97a5a836c96559670769778d0753bb747aceb34d3e53972d59500ba"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/String.js",
+          "bytes": 27231,
+          "sha256": "e2b8a8a250c080b150b1776faa209c2e3dbf477c2d351ada4d5556266660563e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/System.Collections.Generic.js",
+          "bytes": 10920,
+          "sha256": "391bf6978fa9b33c42b2fc211faa05a794490273d683390b08d63cf7960e3937"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/System.js",
+          "bytes": 11901,
+          "sha256": "5d0041e6b600c63adf3ee94d0bdecfca4cdb1389b3f82057252097052615a287"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/System.Text.js",
+          "bytes": 6410,
+          "sha256": "8cf221c55442d22923bda93b395079630e94cc634049d2676b6974c123dbf548"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Task.js",
+          "bytes": 858,
+          "sha256": "0bcf1db04cb5f6cfde1bf1a67dcaebfc352466cb736106161677f522f509c516"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/TaskBuilder.js",
+          "bytes": 1808,
+          "sha256": "0c27901317f1b8d008ec6117740c2935dae598dc5558f02c18e49b2d64698a0e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/TimeOnly.js",
+          "bytes": 4030,
+          "sha256": "96e211c27a8d14005e30de2c20fc2f32e0c830b77c88a22e88b8ebf28dcd0074"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Timer.js",
+          "bytes": 1967,
+          "sha256": "473438af77823bb18937cd45fd63ee1142d968eb4ee66651a4ffdc3d47f9960e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/TimeSpan.js",
+          "bytes": 5874,
+          "sha256": "24efbb373f1573903717777f2f304d060c481d2d2451ec9c7da1f1d548a8ec93"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Types.js",
+          "bytes": 5984,
+          "sha256": "67310adfc7751c8f129dca6bb036dd240ceca5e8c6c77fcfc2f9ca23294d6703"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Unicode.13.0.0.js",
+          "bytes": 8089,
+          "sha256": "8d60cb3a1a71f44911dbcd2608dd6bc535a953dc042f385eb5a12e7ab8aaf72b"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Uri.js",
+          "bytes": 5315,
+          "sha256": "d9687f7015c20efb2b0fc0d985ef17547fc745490b4d16fd46e0c481fca93b89"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Util.js",
+          "bytes": 24468,
+          "sha256": "9ecb09e66209ff1fd501bc6cf8b4991fa200fc4d31e3f350c4d1f63626a39a9b"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.5.0.2/cmd.fs",
+          "bytes": 13746,
+          "sha256": "670748694c5eb08df84a407a67fd547c13084393e24bbe5ec6a4310e10b43655"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.5.0.2/cmd.fs.js",
+          "bytes": 4820,
+          "sha256": "815bf2ac1759d05bfd6cd7ccd8228726aacbf7d52026ef0643da5abfee3cd238"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.5.0.2/cmd.obsolete.fs",
+          "bytes": 2201,
+          "sha256": "d943e0473bcc6ec5f39715a7b29428075285d9808cec6026fabb870704a632f5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.5.0.2/cmd.obsolete.fs.js",
+          "bytes": 788,
+          "sha256": "3cfb304469a754c28bb594fff01be117b119a9affcf0d4b9f5d98fba3570326e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.5.0.2/Fable.Elmish.fableproj",
+          "bytes": 814,
+          "sha256": "93584a5ff05abe4b78bcf36322ae4fbfbde80a9da8ed30fce3e899b2001a2650"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.5.0.2/prelude.fs",
+          "bytes": 1047,
+          "sha256": "3c7ba605c249f12b419263d378582d89c882c9324c074f2f78ef5cf26cbc34f8"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.5.0.2/prelude.fs.js",
+          "bytes": 670,
+          "sha256": "4618a129c292a3616d8b0e0ded9396fbb4600efd53892240c1b26d0d6b2c1896"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.5.0.2/program.fs",
+          "bytes": 8577,
+          "sha256": "78a47e509e3794dcc08c20edf18d9b6b92ec744b48e2f15540606e0407183e51"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.5.0.2/program.fs.js",
+          "bytes": 11167,
+          "sha256": "9acb63e04954afc11a4c96088ad7f9a104bdbf98fdcc8fe41d24a64f433fd7c5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.5.0.2/ring.fs",
+          "bytes": 1488,
+          "sha256": "c33e4b650b962cbd72fafc5bf379571e89758e0725bb17556800e6f44f82c67f"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.5.0.2/ring.fs.js",
+          "bytes": 3257,
+          "sha256": "0c92a0ce9e37c1bcc1a90f154ef619a570a4bc10a2f0bf9e464cce1341a8874c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.5.0.2/sub.fs",
+          "bytes": 3236,
+          "sha256": "056c350cdc510f89ebb6200d47aec35af31df98271040010b561f5dcb461ad22"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.5.0.2/sub.fs.js",
+          "bytes": 3959,
+          "sha256": "29dcd003d6f9050c60805d8d7ce5050c006c1c09b6c055a1fc98a9dd82a7e044"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.React.5.6.0/common.fs",
+          "bytes": 5000,
+          "sha256": "ef0799cbfb721ff478e6014925c4e28bc2ec186fa75e24b7ec9b878b8b9e8cd3"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.React.5.6.0/common.fs.js",
+          "bytes": 4538,
+          "sha256": "bf262a4901635460fe258fbd5ce7f301bb6fbb3e08f46288a3cca03e243b9b58"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.React.5.6.0/expo.fs",
+          "bytes": 1049,
+          "sha256": "f5463b9413e8081079ae68f1c0cfb62b15170051fb07876ff8d78daa40202af9"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.React.5.6.0/expo.fs.js",
+          "bytes": 951,
+          "sha256": "ff2ee2c31ef4d5a0dd578982d5185c3f7562cf2d7756a0c6303f63ae85ebb4f0"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.React.5.6.0/Fable.Elmish.React.fableproj",
+          "bytes": 628,
+          "sha256": "68492b7f48ae1cbbbfa0f5cfac6d148b60e56c52cce0920ada0b7bc65e37583c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.React.5.6.0/react-native.fs",
+          "bytes": 1832,
+          "sha256": "1bf360155a34f1dd09c71e16bee034ba8c8dab567c61a806c10594fdf935404e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.React.5.6.0/react-native.fs.js",
+          "bytes": 3190,
+          "sha256": "d215b32bcea6436b39002a78287c5bbe0e14f62459631157a6f0ecd6849257fd"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.React.5.6.0/react.fs",
+          "bytes": 3559,
+          "sha256": "fd74506ae240af369a983f07a8fda443084224d6bafacc55ca098b65606f01be"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.Elmish.React.5.6.0/react.fs.js",
+          "bytes": 3197,
+          "sha256": "6d06bac53bcf8525d74dcfc7b806c551ccfb1b3c3435ce328903476ae6dd5ec4"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.React.Types.18.4.0/Fable.React.Extensions.fs",
+          "bytes": 571,
+          "sha256": "ed542de55b7ea04d8b859af7b1f1a4d5969b64d50d0f2a5a80e5c0d63ec2b88e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.React.Types.18.4.0/Fable.React.fs",
+          "bytes": 16020,
+          "sha256": "def3af2e1f57edd673cb2196f7d8893c29b0aba5f30ca70420a2dabfd7fd3973"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.React.Types.18.4.0/Fable.React.fs.js",
+          "bytes": 417,
+          "sha256": "db629561dbe57e4584c8734125c137a5920c19d3ff23c0408f315c5768f1f6e9"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.React.Types.18.4.0/Fable.React.Hooks.fs",
+          "bytes": 7289,
+          "sha256": "48c78f454027e4c6b6b1230a76d0caeb2b96d54baa5a10c54e47bd9a9500ca8c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.React.Types.18.4.0/Fable.React.Hooks.fs.js",
+          "bytes": 439,
+          "sha256": "98fe8c5c58f8d83201ebc1652a06b7065896ab0e0d717a88028ca82d44eac2fb"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.React.Types.18.4.0/Fable.React.Types.fableproj",
+          "bytes": 1083,
+          "sha256": "9154a62150a17bbf1d1078a9d8f8d9f0a7285a462b3027864e30bb9bb4c611b7"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.ReactDom.Types.18.2.0/Fable.ReactDom.fs",
+          "bytes": 4357,
+          "sha256": "a7395a18013b2d9919813ce2e5c1ea228170299cabe3fc37a906767299febb32"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Fable.ReactDom.Types.18.2.0/Fable.ReactDom.Types.fableproj",
+          "bytes": 970,
+          "sha256": "63d2e544130bc6b903049468c809f276ae8fa5495bca7b6cbfb660132bc41c17"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/Feliz.fableproj",
+          "bytes": 2605,
+          "sha256": "fa4a6a5051face4383230bdb4b4bb3aff3d923ca73ff3ac2e183151a9d58d57e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/Helper/DateParsing.fs",
+          "bytes": 2159,
+          "sha256": "b151f4bd8b535cc48a3f8d60dacdcc27e4cb82c7cdd07a410d6a06473c92ba05"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/Helper/DateParsing.fs.js",
+          "bytes": 60814,
+          "sha256": "af9297b8f63a822d6d3d3018030967c64cceb5a6010a4350801fba9603a20a79"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/Helper/Helpers.fs",
+          "bytes": 761,
+          "sha256": "f8a7dabb213c0e2d391698c87dd31969b626cb825421418bbc631ac1c26f88ae"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/Helper/Helpers.fs.js",
+          "bytes": 639,
+          "sha256": "004f1de3486206bb98ff778450680392c18184bc6f51b9059c4bad6842a03e59"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/Helper/StringSyntax.fs",
+          "bytes": 1456,
+          "sha256": "50d02fc6e5d6471da11274b3bdf5466c63dc0636dcf25162852e5dd9ca8f925c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/Html.fs",
+          "bytes": 65463,
+          "sha256": "19f2c0e4681adc9ffc4da25f56a0dbdad94aed61deb09507b3d38c00dd5d309c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/Html.fs.js",
+          "bytes": 1080,
+          "sha256": "244e633402a6e8d4bb88e782b01d9d4321b8eea2745100c6009d791ca48fdce3"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/JSX.fs",
+          "bytes": 62990,
+          "sha256": "de8571b1082d188889fb3a247a6910371f0abdc456b531250eddbd992ca03291"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/obj/Release/netstandard2.0/.NETStandard,Version=v2.0.AssemblyAttributes.fs",
+          "bytes": 198,
+          "sha256": "387ee60baca6aa6eabc65f9fc594498732d0326d01a625899952e6e593e389f1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/obj/Release/netstandard2.0/Feliz.AssemblyInfo.fs",
+          "bytes": 834,
+          "sha256": "0f1cfa69cf210ea9a2294e47768e2ecde7bea513f930e1ba3901e3c92334bb29"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/Properties.fs",
+          "bytes": 253434,
+          "sha256": "6c3a944e782ac6136604a46e54b349c9482a5a81a56126c5455eb0a429bea0bd"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/Properties.fs.js",
+          "bytes": 3646,
+          "sha256": "eb645b9bf70299634a0a959c4164873f9d23cdeb84b03644d03a7476837d76dd"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/PropertyHelper/Key.fs",
+          "bytes": 1623,
+          "sha256": "cf04308ecd4a380c36ec427671fd4219c1bc6ba3b4c6cbba780cd166b867c66c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/PropertyHelper/Key.fs.js",
+          "bytes": 2179,
+          "sha256": "6bcfcd6ec1823682fd4c6ffcebe56eebb6ba5d7d6535540d9f2460067f60b7da"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/React/FsReact.fs",
+          "bytes": 2341,
+          "sha256": "be686a491f1a90331b510c8d87b1cbcf718de6cb79d35417bf154af89f06476c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/React/React.fs",
+          "bytes": 39971,
+          "sha256": "a1dc55878826ce0384f70d0fc76ade057f512c9e75d40e136cc84820ae2b22eb"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/React/React.fs.js",
+          "bytes": 523,
+          "sha256": "28f8a0dca0145adb4c66ea792cd0df03e9f5c04ec78ce4c1d6c67e38ea87f19e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/React/ReactDOM.fs",
+          "bytes": 5811,
+          "sha256": "50b5a9ed4e747d3ee562e1bdbcc51f3a605a7e664862ee56691f18ea33a655a8"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/React/ReactTypes.fs",
+          "bytes": 2620,
+          "sha256": "3dd3822d7fd0af6e45d3f2128cf9e8c75f0c0c8690d4576e4419b5c66b0353c1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/StringEnums/Colors.fs",
+          "bytes": 6880,
+          "sha256": "803973ce3722b2dcaf93a21f94c7af8d74ba70bafb6abca5f86ed3e55567e151"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/StringEnums/Colors.fs.js",
+          "bytes": 672,
+          "sha256": "ff58bdcb0422fcf4d0feac5c1f23b2f49994c8754488eee6fb642ba5c21de2b8"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/StringEnums/Fonts.fs",
+          "bytes": 11447,
+          "sha256": "6271e1bd91e173fb98c3bdfa8466a24a72924ffbb086968998ed6b5a165fe23e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/StringEnums/Locale.fs",
+          "bytes": 25754,
+          "sha256": "8696d8d8e34e8809bea27546d78eac87c94e64f44dfcbfad48dc3ee0cbced379"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/StyleHelper/BorderStyle.fs",
+          "bytes": 3125,
+          "sha256": "c1fa5b09403a47c0934e17c45a8615d6b52cd1cbf4ca1ff2f76a891127853532"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/StyleHelper/GridTypes.fs",
+          "bytes": 1431,
+          "sha256": "e15cb79aaf482a3e0901e0854df9eaddb5bac2f4dd68d5a4a48a6cbe79b839ae"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/StyleHelper/Length.fs",
+          "bytes": 8897,
+          "sha256": "dd4fd29fda50d324ae453454d4ddb60c9203aafec41db4d4e8d63adc4a3a6efe"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/StyleHelper/StyleTypes.fs",
+          "bytes": 1034,
+          "sha256": "14f49acb153286f3f9a191315a55b65c30c483a75fa9382b8069c13b391a65d1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/StyleHelper/TextDecorationLine.fs",
+          "bytes": 544,
+          "sha256": "138db592200c7f7e46f8129ae0cdcddf12254fda07e2c79c6dab23b762b56d90"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/StyleHelper/TextDecorationStyle.fs",
+          "bytes": 1647,
+          "sha256": "5808738df43261d0fa0fd1b4cf85c3a076e2221de4c10eceb675799190185430"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/StyleHelper/Transform.fs",
+          "bytes": 9318,
+          "sha256": "6702b5ca06e8018930d81afa7f3aee88b59c0eb7672be6320dd84f69260c3370"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/StyleHelper/TransformOrigin.fs",
+          "bytes": 632,
+          "sha256": "713b0a8a13eb08c6201706d353643c9c173fe44db5eda56860a869326169fec5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/StyleHelper/TransitionProperty.fs",
+          "bytes": 13087,
+          "sha256": "80aa8a33845e94b480560220908a48ea5fe6ad0fbec8bdb310fe65d46f9356d1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/StyleHelper/TransitionTimingFunction.fs",
+          "bytes": 3620,
+          "sha256": "8b1981f383a37c0e8ac8a00ebe1defcb4135c5b97a1bcb783285137104a17471"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/Styles.fs",
+          "bytes": 380450,
+          "sha256": "39600d37d38be9d298b803807ba9201bb84995767ab31cb02db38a637a20efcc"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/Svg.fs",
+          "bytes": 106222,
+          "sha256": "6570c59b3af8ce80f5f550183375fbcf1c1cb546e1c3ec8eb264003614dcaa21"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/Svg.fs.js",
+          "bytes": 1660,
+          "sha256": "da2ed25da6edcfb520e154c089f852943fabe48dc3e53207a92bee351ec035a9"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Feliz.3.3.3/Types.fs",
+          "bytes": 622,
+          "sha256": "5f2a1213b3e9d7746f9be1ce15333cf6f9c7b1afdb973605fc761f138cd235c5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0/Edges.fs",
+          "bytes": 10475,
+          "sha256": "ddfba4e2b1092cd58824184faafc59d0865f7bfeb0a60ea0ddf1aeeab9f9ab07"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0/Edges.fs.js",
+          "bytes": 15452,
+          "sha256": "77c5042a06c54d1e1222a6f34a1b22b15361f5a5325397e209e4a6428beeec6a"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0/Edges.fsi",
+          "bytes": 5028,
+          "sha256": "5847b55cee5c2143dae169fe7844f4a84d09dd95cd218a819cdc1dd3508eb5c8"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0/FS.GG.Game.Core.fableproj",
+          "bytes": 972,
+          "sha256": "a9f3dc59f1d6f7c2ed39d881fddd39825eb03b9523d9b031b7ebcc3a67d03734"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0/Los.fs",
+          "bytes": 4337,
+          "sha256": "5bbce612a321c25e92d9256deee3c268e7c1a4f7ece1e6a5b39b1ee7e3b3eb32"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0/Los.fs.js",
+          "bytes": 7704,
+          "sha256": "f53fac8d7f7402d9553c9f2902c92138f1e10c74cec005bd19bb876b7b49f9d5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0/Los.fsi",
+          "bytes": 6655,
+          "sha256": "e06d232167a36ad74973dd45504509fbeb8667ae9d63a3176e9666a46d6c1174"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0/Pathfinding.fs",
+          "bytes": 52411,
+          "sha256": "56d80145d6199561dc1caa78fda10ba189583ed299de9345f552665735bed871"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0/Pathfinding.fs.js",
+          "bytes": 64296,
+          "sha256": "b2200619470a96ee1bff81cc203f186eca47875658e650859246dc45d9782567"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0/Pathfinding.fsi",
+          "bytes": 31052,
+          "sha256": "cee20bf5c30d679d0b8d41e49a6885a8a0947576ca73e539f467827eaddb42c0"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0/Primitives.fs",
+          "bytes": 540,
+          "sha256": "4eb1b03b1716efd7b6818a3519e3f8f17ffa5548fb177d511a3fc444c2f99725"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0/Primitives.fs.js",
+          "bytes": 8515,
+          "sha256": "ff745959d85f93c450d86c2d4bb2d157fd1a0670ed778bbe73044656297b1523"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/FS.GG.Game.Core.0.13.0/Primitives.fsi",
+          "bytes": 5909,
+          "sha256": "b9ce0a75e2b86ca62f89237693aa7bfeb9f460ad121047a147c04184d86aac6a"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Thoth.Json.10.5.1/Decode.fs",
+          "bytes": 62032,
+          "sha256": "299c48534dd788e259898704d879d593598a516db7ee4251c2cbae2bf08418a5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Thoth.Json.10.5.1/Decode.fs.js",
+          "bytes": 84303,
+          "sha256": "6f13e77a18436a3b4d476110cfd579a4309c6887699974244a69269630925a81"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Thoth.Json.10.5.1/Encode.fs",
+          "bytes": 25525,
+          "sha256": "a609a97524ec91750fffb57e92d7664a904b554c957fec4e0907b9e58534996c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Thoth.Json.10.5.1/Encode.fs.js",
+          "bytes": 16520,
+          "sha256": "bbcf6a470da5872131b86ce857f0d76bc4452e1fc79882dbc30c3cd9b3bf2adc"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Thoth.Json.10.5.1/Extra.fs",
+          "bytes": 1211,
+          "sha256": "f8de6a06dd009f607caf1ca0f7f6bc3a0ba2985ce22cb5cd03f70468ce2b3524"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Thoth.Json.10.5.1/Extra.fs.js",
+          "bytes": 300,
+          "sha256": "d64453adf5b96888c1731d6844a2f5e01ec205056c69086e66529c9cb7603211"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Thoth.Json.10.5.1/Thoth.Json.fableproj",
+          "bytes": 1399,
+          "sha256": "54bc119991ca015028b5e362af60b38d680875768973255578a96467660e8f18"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Thoth.Json.10.5.1/Types.fs",
+          "bytes": 1818,
+          "sha256": "54b9371e064a8e1d04d5af63fd94a6e01641287f4f23f2d7207857faf121adf2"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/fable_modules/Thoth.Json.10.5.1/Types.fs.js",
+          "bytes": 3835,
+          "sha256": "75435fd6e2685604ff999306be06d5f0f71f1597579b48d2e27cd3a115921966"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/RulesExplorer.js",
+          "bytes": 58814,
+          "sha256": "1b853070409533e8823ecdffeda0442c2e7ea1b9370750bd0d672cc4f761918e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/App.js",
+          "bytes": 578690,
+          "sha256": "66e4e06d52d2e78ff5b92d603e73ff1549f9f0b92c979823b0862c1b3c0f150e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/AppShell.js",
+          "bytes": 2678,
+          "sha256": "e9aa0208b96ed4bec57da9bf61b6e12a7b8db71dbba7b446c7b736e4a0aa9ed7"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/AppTypes.js",
+          "bytes": 17064,
+          "sha256": "c3d30fe0551563feb160bd51dff5c7f46366d996230a5a52644a7c856b8c744e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/BrowserInfrastructure.js",
+          "bytes": 6269,
+          "sha256": "974691231a56b5d564a032e18c9f146321a962ee009bd6642a7d3b5ad4ad2208"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/ClientFeatureRuntime.js",
+          "bytes": 12333,
+          "sha256": "ee981130f6890ef19807458e12ea0d85c0d323a38645bec3c42c5e4f7f7f1760"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/CommandRegistry.js",
+          "bytes": 10621,
+          "sha256": "0195698101ac7005ba6f8ef546d051c1a4f8657be563e0a50cc89c1716528268"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/FeatureLoader.js",
+          "bytes": 7159,
+          "sha256": "f65c0d2278f99715ecb4c91be4b3543a19413293a7caccc316cbc14559fae339"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/LiveApi.js",
+          "bytes": 1607,
+          "sha256": "4aca72d8b483c23f46aa9cc7eeef6465a23422e51f598bdde30d78a45499723c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/LiveSession.js",
+          "bytes": 5766,
+          "sha256": "91c9c61cea90e1b136e7187888e6a6ce7d4aa5cb8e49d977725a54b1047f797c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/ModeAdapters.js",
+          "bytes": 2127,
+          "sha256": "75788637f0da1aafd1afd2a4f38ec8e622bab97a124eb223511c3a19a91c8aaf"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/PanelViews.js",
+          "bytes": 3890,
+          "sha256": "3698557b2db06228bd07126774d8965ecd0a429d259a58174804d37c151df365"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/Runner.js",
+          "bytes": 4701,
+          "sha256": "8a50674fccc6bf14ad72cf557dbe5a9ad158a96dc170efacb3b24b2a15cef853"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/SceneAdapters.js",
+          "bytes": 948,
+          "sha256": "e48c9c1bba3be9081f0d12178bfb89422ad63a3432fec29b0e8ebc6f82db905d"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/SignalR.js",
+          "bytes": 271,
+          "sha256": "20df593fdfeff62f0dcc059a0bdd1babcf7e232b3d4d6ab79e6bf90b8b231a2f"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/TacticalEnvironmentView.js",
+          "bytes": 18293,
+          "sha256": "9e533401001171cf82f194cc22643c2681a73d08ace1c308fe343a7811562f39"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/TacticalOverlayView.js",
+          "bytes": 4600,
+          "sha256": "b45b68e312c434c656b183f8fdcf796921ae24e239f9d5c94a07a818ea37fec5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client.Web/Worker.js",
+          "bytes": 52885,
+          "sha256": "e4b08dcb8d0b15987d1b1067cd77b5dea1be10492e82158e5cbd513d9bdbbfc8"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/Battlefield.js",
+          "bytes": 44667,
+          "sha256": "05a66b0b9c003720626cb2da636786ac793c497a2b088ee54d3b582972745f33"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/ClientModuleBoundaries.js",
+          "bytes": 346,
+          "sha256": "535171031902b1116d4f97c56160cc0cedc8b698ae37fa150bf693a1bce06005"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/Comparison.js",
+          "bytes": 10253,
+          "sha256": "48b89537a4af5c1c21162756eeefa0641d27ad9325f43d951d986c695d16ca88"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/EngineCatalog.js",
+          "bytes": 1601,
+          "sha256": "08fb1979a866d8acb2a99ad33aa8452a1c7d8a68aecd1d831b157893a7bdb4e9"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/EvidenceExport.js",
+          "bytes": 16814,
+          "sha256": "11e8748863dcb4a9686679fd33ca7ab49885fecc11bf13d159c61949da9c9a77"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/ExperienceSamples.js",
+          "bytes": 10660,
+          "sha256": "84cd06e4b42efa4283a403a5ec1f97d6bb8f26eb4f41981c1812071601a1da4c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/Lab.js",
+          "bytes": 22648,
+          "sha256": "7da6e80d17fd4f1f930704379a007edeaf93eac1cb0d2d879c67492561ccd7d9"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/MapEditor.js",
+          "bytes": 458993,
+          "sha256": "d1c81e40c47e0907e58aa006a3bf525d4ca03a7e4d7146e17fce9d816b94cabe"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/MapEditorHistory.js",
+          "bytes": 1299,
+          "sha256": "b4633a83c2ed242c29e77ed1d295cd0f20caba1f6de94446523feb0bbb707ae6"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/MapEditorInterchange.js",
+          "bytes": 55450,
+          "sha256": "bc5f589878b6bea2e95b4b4fa88e6da2c87575188bba75138501c174432b8a7f"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/MapEditorRevision.js",
+          "bytes": 243,
+          "sha256": "6bb210533b69ae47b8564b4eb22773b5909000129045cd6b3814153e544a19ad"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/MapEditorSimulator.js",
+          "bytes": 67439,
+          "sha256": "b531160225e86744f75b2c49d6e1b885a4aa78dbb390b4a0cac4d51c858082c7"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/MapEditorTypes.js",
+          "bytes": 38467,
+          "sha256": "b91e1253e2f052c8862dc90af02ed23c3cbc1af485fd6ecf2795ed183eabcb85"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/MapEditorValidation.js",
+          "bytes": 201,
+          "sha256": "13a35039026951d05cc6a4ed0636c082422f3c0d9d7fdd7edbf8fbd03fa72ed4"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/MapEditorWorkspace.js",
+          "bytes": 44611,
+          "sha256": "112ecf8c6e88eb1aa5114822b27db48b714f46b53e8e5bbfa869abc7406d48e1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/ModalInput.js",
+          "bytes": 147885,
+          "sha256": "63307b867f1e34fb11d6ca85276f41ef2283408738a77887ea864db13b921968"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/PlanningWorkspace.js",
+          "bytes": 43870,
+          "sha256": "5fbe99de6d0a5dfe586ac315fb4659d24190256a882e1cbd7a75eebb81fb24b0"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/ReplayPresentation.js",
+          "bytes": 36116,
+          "sha256": "1a198d7c05dae15b3625f8f4cdd313cbed8302ac1b89d1d26f95936e7a1ce278"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/RulesCatalog.js",
+          "bytes": 14458,
+          "sha256": "f35486be93b29231a61b8d7d46fcdb40018fcba285495de0de1a7b96237e055a"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/Shell.js",
+          "bytes": 52221,
+          "sha256": "ed9a1c1dbc8aaf207202224f91560819b1e27639bfc3025187d9d6e81056e8db"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/SimulatorWorkerProtocol.js",
+          "bytes": 14432,
+          "sha256": "054e5c476751e0fc17e1b5eb309d6933f97f026549ec2a82ce72db9f4a5b9863"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/TacticalParcelEditor.js",
+          "bytes": 39540,
+          "sha256": "a7a023401932b75740641005dc06d2b19303b3322235f034562b40f111d7bdcf"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/TacticalSceneProjection.js",
+          "bytes": 87207,
+          "sha256": "59e024dc338ff0fb8d164490f32d33d4189718c72a5e40f542db51f8b7c548e2"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/TacticalWorkspaceLayout.js",
+          "bytes": 45788,
+          "sha256": "f6af65ef4b8c71662b5ead96e22ae36a128574b3f07118172723a836c019b581"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/UnifiedTacticalWorkspace.js",
+          "bytes": 63155,
+          "sha256": "cc84e7894ff4b9e47d52cc93129d9fdc2b00586235d93b962ac66dc5b48b89c1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Client/UnitGlyphCatalog.js",
+          "bytes": 9125,
+          "sha256": "e70992d7747ef2f3ac61b7ee093a0512114840f276a37dbffff1af14e09c7d76"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Domain/AuthoritativeProjection.js",
+          "bytes": 2009,
+          "sha256": "27976fbf72bdf287032a97eb9999ccb4d36c085c96edbd0001c9211ed7c7730e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Domain/BoundedInt32.js",
+          "bytes": 4366,
+          "sha256": "9e763b2da77aac0edf7444b0cba390ace473671c0d1a6660a52cfe4f04caae04"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Domain/CanonicalEncoding.js",
+          "bytes": 2202,
+          "sha256": "06447916ac57202595ed5a86f583e0e0894555575aa1f4e64a07e0e138b2913c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Domain/CanonicalHash.js",
+          "bytes": 4806,
+          "sha256": "46899c9ee7020045c5f06cd4eddd5cec73ad501d8d55c6af084fa80c1ed90f65"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Domain/ControlAbiV1.js",
+          "bytes": 29461,
+          "sha256": "34a71e74b9d65a98097ffea19ddf17572990097eeee654bf296d2673a7c0e583"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Domain/FixedPoint.js",
+          "bytes": 4298,
+          "sha256": "6350352033762299058a43e8095127f7363db3ae60ca3b4eff4f2abc2bef0e9a"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Domain/HumanCapabilities.js",
+          "bytes": 7598,
+          "sha256": "862f4ffdf80d8c13ebb89de48da718af3501fed9703e8f4c91e024ec569c1ffb"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Domain/Orientation.js",
+          "bytes": 8826,
+          "sha256": "5f5955a1d8078d2fab1aa4af5b69a46fa15f70b71166377eb9937e731a9b04e1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Domain/Rules.js",
+          "bytes": 35966,
+          "sha256": "413a1524f30092a3f137ba982b3d76c4660cd9411aeaf2bb6fcda654216738d8"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Domain/RulesAuthoring.js",
+          "bytes": 74728,
+          "sha256": "6defdac5a53596f1311d05b06dac695e8dcf6f187fdca407a321561b4ac53b0b"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Domain/RuleTypes.js",
+          "bytes": 14164,
+          "sha256": "b02440a04d1070e2150d412b07d9f156054e1d3b0ec289b3bb6521d558b141ba"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Domain/SpatialIdentity.js",
+          "bytes": 3603,
+          "sha256": "38af49b83353c99c53efc2f8aedb26a9edb4fd3e0a47ed0929c63be16c5a328d"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Domain/TacticalEnvironment.js",
+          "bytes": 36836,
+          "sha256": "29b5db7dc9601b8a13695c8227635a369eca97b12a204e1a04b1240796313714"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Protocol/Http.js",
+          "bytes": 6061,
+          "sha256": "37b821cfa3722a77375789f456511f3b232fa6f68a56bce31858ff4846ab55ff"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Protocol/Realtime.js",
+          "bytes": 5041,
+          "sha256": "6153525e83afee2bbf28b6e07fe56faf0998f19638a3119456a396b156719f3e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Simulation/AwarenessReaction.js",
+          "bytes": 38804,
+          "sha256": "57c04fb56fc68553c9315a5f5eb02ca14cb520f9f42437452f4d3445ce895980"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Simulation/CapabilityExecution.js",
+          "bytes": 25207,
+          "sha256": "f05c08d208c4ac11bd4997ac59d041e366fbaa34329abfaea6608ac427660e31"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Simulation/CombatModel.js",
+          "bytes": 45627,
+          "sha256": "35cc796946024e744083c1efad178df41fe3d56075b21daf44b0f8d893bca878"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Simulation/CombatRules.js",
+          "bytes": 29395,
+          "sha256": "8106abf2684f20ff895ffe314d25f26ccff5a75dd2164b2843c165a436be76ce"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Simulation/CombatRulesAuthoring.js",
+          "bytes": 29546,
+          "sha256": "90a5bd8985c4b972249ff788520739940a9c14cc79a8a6b35bccc80e25283e73"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Simulation/MapScale.js",
+          "bytes": 57675,
+          "sha256": "ddfc5c21730a9fad50be6d8d15695b53f83557936a925170dace9515eb76bb82"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Simulation/Replay.js",
+          "bytes": 83096,
+          "sha256": "c3813c6ea4669224c39d22ce4431d69e37c52b2f445a3ca43ada22f32797cd5a"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Simulation/Simulation.js",
+          "bytes": 71660,
+          "sha256": "901213817951d782dc0dc24aa82d0d624863b00adda980d9a11cf45925edf23c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Simulation/SpatialQuery.js",
+          "bytes": 44319,
+          "sha256": "37ef511ffaa7839f692a2c2bf4839f64c335bbf795737aef9723e49af3241a90"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Simulation/Substrate.js",
+          "bytes": 328,
+          "sha256": "10d490a816f3dc25814ca05af4fa418c0d56c7ce0ab8d581df5353ed44a0faab"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable/SIR.Simulation/TacticalEnvironment.js",
+          "bytes": 87998,
+          "sha256": "1fb2e8a15656c20a8cfcd58547b48879c4feef51c355abf328763bce5eb1d06f"
+        }
+      ],
+      "digest": "c8f5af3bf1d7b6b3f31d433f0879251cf486d9512a2de58dd1df7b3b8076ed4e"
+    },
+    {
+      "id": "production-client",
+      "path": "artifacts/client",
+      "files": [
+        {
+          "path": "artifacts/client/.nojekyll",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "artifacts/client/.vite/manifest.json",
+          "bytes": 1003,
+          "sha256": "58947abd33e7841a1522fbbc1660d37c03726894a71d1eaab0ea60cd34017b26"
+        },
+        {
+          "path": "artifacts/client/content/sir-client/v1/app.js",
+          "bytes": 1216979,
+          "sha256": "3f8d91b6ba3fd98ea39eca24a4296083179e92069facccb287ad4364678ef4af"
+        },
+        {
+          "path": "artifacts/client/content/sir-client/v1/deferred-delivery-support-CFKGOZNJ.js",
+          "bytes": 304,
+          "sha256": "15b5bb33b0a0c0b78dda96ccf726783400605dc188e64731ad0f6171fe2eb608"
+        },
+        {
+          "path": "artifacts/client/content/sir-client/v1/docs-feature-Cx7XDDoj.js",
+          "bytes": 473,
+          "sha256": "89faaf09c049c4f9dfbe2de0d2945b904a2b05a8ac709b2f20743649ca9ce258"
+        },
+        {
+          "path": "artifacts/client/content/sir-client/v1/RulesExplorer-CF50-GEm.js",
+          "bytes": 62976,
+          "sha256": "b2dd82ecbd45de59743a42f6c13bf5e36d5c13ed219c9b67f10ddb00278ddfab"
+        },
+        {
+          "path": "artifacts/client/content/sir-client/v1/styles.css",
+          "bytes": 31415,
+          "sha256": "35487427a953e672e2f69f46971320882dc4c768e5314105f816d19faa721b7e"
+        },
+        {
+          "path": "artifacts/client/engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/worker.js",
+          "bytes": 291329,
+          "sha256": "855b73c2290d523af11259d8db901074ccbb7be32c9108e57130e59c428c615f"
+        },
+        {
+          "path": "artifacts/client/index.html",
+          "bytes": 968,
+          "sha256": "eaa659b476aea3720ae1ad781167d27e5c0d0223e8eea7659c118296df2f5862"
+        },
+        {
+          "path": "artifacts/client/publication-manifest.json",
+          "bytes": 1257,
+          "sha256": "19a9ad074ec8dfae3aee58ec493a510094eb7007d32ecfd79421d5ad3711b36b"
+        }
+      ],
+      "digest": "d504af11a52f9036073a88296e36a96efae8520277da96b31b1a2be30231cda4"
+    },
+    {
+      "id": "rules-fable",
+      "path": "src/SIR.Client.Web/.fable-rules",
+      "files": [
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/.gitignore",
+          "bytes": 4,
+          "sha256": "ad948e60dea573d7507729349a4e9176ba815cc3c4a7880a278a84c6657c933a"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Array.js",
+          "bytes": 43085,
+          "sha256": "021a7880fac8a4a44483c1a5ff6857826f18bfea98cf358ef1703c6ac63aa190"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Async.js",
+          "bytes": 7070,
+          "sha256": "ded92e2f8732220c941cb45606f05cfdb48545add183dd66e224d9d2bddfb7af"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/AsyncBuilder.js",
+          "bytes": 6474,
+          "sha256": "69142b9fe2f6a5c0f6874344a1f2f10cc3195c167c5366f403ba9cf8c421b37e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/big.d.ts",
+          "bytes": 13955,
+          "sha256": "8a04a265385fe8591fbcc25697fd5bfc475ad5b72c5322f10648b1925fb8469b"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/BigInt.js",
+          "bytes": 11623,
+          "sha256": "fa902d136a73652de017d9e39a2359123af307a17c0f2a6bcf56182e95448b16"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/BitConverter.js",
+          "bytes": 5799,
+          "sha256": "4a9b7c669a049543a6949d1f2b1c8117f69d949358af264300b2b01cefafa7f8"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Boolean.js",
+          "bytes": 629,
+          "sha256": "b5ab325cc43624f626d21e13e8d716ff3c590c25a421fdb98117a863d11cee38"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/CHANGELOG.md",
+          "bytes": 14006,
+          "sha256": "b7371c9810e94eae61f47be33ff0b37f983095fddb4662672e7d16354a47d96d"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Char.js",
+          "bytes": 6980,
+          "sha256": "0a515a0100087198afacd489b12579300361c539429a4e76dab87ca3a12f3520"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Choice.js",
+          "bytes": 6266,
+          "sha256": "f179d6fea4489b0a1a73b8afb1999f4b87b3fb9eaa99768fb7fa45e2cba380ae"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/CollectionUtil.js",
+          "bytes": 6099,
+          "sha256": "6bd42cf80142f2af4d093e76caf369ce7463b52d5c6067f81afa5583619cdcd8"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/ConditionalWeakTable.js",
+          "bytes": 453,
+          "sha256": "0903afe3c016e420f368dfdfbc79d0faa11c0c920d54fe531249457ff188f98a"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Date.js",
+          "bytes": 32371,
+          "sha256": "7d04e88ad2899615e09e46f240768d5c5eb32826838c571930f4cee985f50f51"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/DateOffset.js",
+          "bytes": 8583,
+          "sha256": "24195f30b3978c122ceebc8e008404f2dc7156d98f2e35c1393dc07d0fecd4fc"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/DateOnly.js",
+          "bytes": 3899,
+          "sha256": "f8a35d603eca839ec14df5205c2b3528f2928e00b32462b3720473c3f5e0136e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Decimal.js",
+          "bytes": 8166,
+          "sha256": "7cb1d4747d4cceb05915b41e321bfbbebd88692ebe4da570405efc39efafc0ba"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Directory.js",
+          "bytes": 471,
+          "sha256": "3a3a44a851c14b7b01869d34307d613f3b23bb19d10416103ed585e61f4efe49"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Double.js",
+          "bytes": 1472,
+          "sha256": "46e29dd1a8c7be9748a432c330391dae12663eddb2c54ab228606ac1f2fc9de5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Encoding.js",
+          "bytes": 6871,
+          "sha256": "eada95b30d6be0fe025e8b6c482e4d80777bbe733701339ff4c2efcefe3491f3"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Environment.js",
+          "bytes": 79,
+          "sha256": "57832a1d815f8859c0647928816f320c13f39cee40aa7b9592dd7937182370ec"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Event.js",
+          "bytes": 3027,
+          "sha256": "5fe02c285e8a7730147f45510606415df7ddf8d02164348890fb3e1f6a1921a1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/File.js",
+          "bytes": 1075,
+          "sha256": "77653639348960b0647eeec09272439a15a20c8dbbf6b8bc4f2591fd66480405"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/FSharp.Collections.js",
+          "bytes": 1158,
+          "sha256": "c1f2a8e854a7812ad681f0636a51c225078284b45ec3a5fa38dd39bfcdbffc58"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/FSharp.Core.CompilerServices.js",
+          "bytes": 910,
+          "sha256": "20f5935e7dec9ed9df17cb150253f1d882bd831d19830d8b9c139d63ce5ef222"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/FSharp.Core.js",
+          "bytes": 4337,
+          "sha256": "c8801dfa13651817573c6ad1a64ad2f5f298903d4b9e564e8d3f4b36c9d46688"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Global.js",
+          "bytes": 2509,
+          "sha256": "2fee530bce779f1b84e866d0ff812c95786fb27548dd4bb1528f06c6cb2c566e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Guid.js",
+          "bytes": 5991,
+          "sha256": "23a42e4470f1dfad70671d4bb53873efb88d76364efadfae76b63782d97e6295"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Int32.js",
+          "bytes": 4508,
+          "sha256": "d147692d3f046810ef7ba909eba071722b168586bae3655232ce6854d4137cfc"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/lib/big.js",
+          "bytes": 25821,
+          "sha256": "3a379f16d1845ebcc65c448dd9848b79234242795890ad80e5af02062e283d68"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/List.js",
+          "bytes": 42902,
+          "sha256": "206ce2e44d6306b390b356e8131387eab7d24c65f9ad3afc26983e69e2089c42"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Long.js",
+          "bytes": 1253,
+          "sha256": "dc8b9fd2bf0278e8be5ec6fad5c63652dff941ac44502f287cac59061cbc74de"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/MailboxProcessor.js",
+          "bytes": 3052,
+          "sha256": "c339531b71d821669aa307dfe0a6ad8c220fbb8fe25c22e77a9400c480332cf5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Map.js",
+          "bytes": 50093,
+          "sha256": "7b7fa952f80f4bd46b85ddf9118656e4c58744b46dca7a17497ca05fa52a3cad"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/MapUtil.js",
+          "bytes": 3671,
+          "sha256": "f027e82c2d0df98ea0d616a9a099cd413ee4c51a3d93e5b61d30b0aa9212d9fa"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/MutableMap.js",
+          "bytes": 10542,
+          "sha256": "f7b89cee35613c25d0510cb8a3339cac976bead14069c55c42de189d6b4c52d4"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/MutableSet.js",
+          "bytes": 6620,
+          "sha256": "3fbffe14e018d97a188dcf637d01e2fc04d54c1e08c79c9185986893f04300f3"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Native.js",
+          "bytes": 320,
+          "sha256": "c5a4239ab2f2b8f177c481a273f721af6026b8615262b0431fb4ac6a2b19f4c6"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Numeric.js",
+          "bytes": 1852,
+          "sha256": "76e342f4edc067986ecf9260314aa42a4d030562250fd3ece5039f5f4627060f"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Observable.js",
+          "bytes": 3717,
+          "sha256": "ae5c9cb6f437329ac0abee3b69b13f877bc107fd49bf54e4497de82b904c0c0b"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Option.js",
+          "bytes": 2306,
+          "sha256": "cad97e930468cf1e12665373a56d99975fccbb7009e1068f55e151af07811177"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/package.json",
+          "bytes": 611,
+          "sha256": "492820f544d3e2e9339f11f78affcf13ad41b7278cee71a035671b5f93dfd22b"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Path.js",
+          "bytes": 1231,
+          "sha256": "b324d7935a38fa6ec015612a651075c63c5ca16e6ee1edeafb77d4ce8eaef01f"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/quotation.js",
+          "bytes": 23047,
+          "sha256": "4e6b50c09d60d5bab3df6fb7746b94c1be30d5cd00a006400bfa47b0c777d215"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Random.js",
+          "bytes": 5901,
+          "sha256": "78ab9bb0b7401e2960f479828684c2d4aad9efa685f7fd354bc63f03a2dfb1b2"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Range.js",
+          "bytes": 1977,
+          "sha256": "d9c52a8ce590ce0c7b3d137a2fe18545b3c5a981b2682e072c3c854425e25129"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/README.md",
+          "bytes": 90,
+          "sha256": "53f38c305142b992d30cb753dba8859d4bce750f95831eb6ef086affb549d6c0"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Reflection.js",
+          "bytes": 15806,
+          "sha256": "ccac613d280c782d91d0b16c96f3b338495158deb42f1768b0b5a697e3c0bf49"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/RegExp.js",
+          "bytes": 6773,
+          "sha256": "4d4ab2bfa9c8b9ead840811179e1bfd46bbf5e2c597cf6069c6a35138fd369c9"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Result.js",
+          "bytes": 3980,
+          "sha256": "f86013cfe7b0792dfdb24c2af0fe3e68fd426cd0583d41088e903983beb6c147"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Seq.js",
+          "bytes": 47978,
+          "sha256": "a95955ecade754849668d8c91a5717a0be9748163dc48680c7c79c2de7d46137"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Seq2.js",
+          "bytes": 4298,
+          "sha256": "c62a9393ce48433e2133cc7bd5587222408b27e1e41bd1aaa0638aa577513a73"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Set.js",
+          "bytes": 75290,
+          "sha256": "6e0e8f0bd97a5a836c96559670769778d0753bb747aceb34d3e53972d59500ba"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/String.js",
+          "bytes": 27231,
+          "sha256": "e2b8a8a250c080b150b1776faa209c2e3dbf477c2d351ada4d5556266660563e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/System.Collections.Generic.js",
+          "bytes": 10920,
+          "sha256": "391bf6978fa9b33c42b2fc211faa05a794490273d683390b08d63cf7960e3937"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/System.js",
+          "bytes": 11901,
+          "sha256": "5d0041e6b600c63adf3ee94d0bdecfca4cdb1389b3f82057252097052615a287"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/System.Text.js",
+          "bytes": 6410,
+          "sha256": "8cf221c55442d22923bda93b395079630e94cc634049d2676b6974c123dbf548"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Task.js",
+          "bytes": 858,
+          "sha256": "0bcf1db04cb5f6cfde1bf1a67dcaebfc352466cb736106161677f522f509c516"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/TaskBuilder.js",
+          "bytes": 1808,
+          "sha256": "0c27901317f1b8d008ec6117740c2935dae598dc5558f02c18e49b2d64698a0e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/TimeOnly.js",
+          "bytes": 4030,
+          "sha256": "96e211c27a8d14005e30de2c20fc2f32e0c830b77c88a22e88b8ebf28dcd0074"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Timer.js",
+          "bytes": 1967,
+          "sha256": "473438af77823bb18937cd45fd63ee1142d968eb4ee66651a4ffdc3d47f9960e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/TimeSpan.js",
+          "bytes": 5874,
+          "sha256": "24efbb373f1573903717777f2f304d060c481d2d2451ec9c7da1f1d548a8ec93"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Types.js",
+          "bytes": 5984,
+          "sha256": "67310adfc7751c8f129dca6bb036dd240ceca5e8c6c77fcfc2f9ca23294d6703"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Unicode.13.0.0.js",
+          "bytes": 8089,
+          "sha256": "8d60cb3a1a71f44911dbcd2608dd6bc535a953dc042f385eb5a12e7ab8aaf72b"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Uri.js",
+          "bytes": 5315,
+          "sha256": "d9687f7015c20efb2b0fc0d985ef17547fc745490b4d16fd46e0c481fca93b89"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/fable-library-js.5.13.0/Util.js",
+          "bytes": 24468,
+          "sha256": "9ecb09e66209ff1fd501bc6cf8b4991fa200fc4d31e3f350c4d1f63626a39a9b"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.5.0.2/cmd.fs",
+          "bytes": 13746,
+          "sha256": "670748694c5eb08df84a407a67fd547c13084393e24bbe5ec6a4310e10b43655"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.5.0.2/cmd.fs.js",
+          "bytes": 4820,
+          "sha256": "815bf2ac1759d05bfd6cd7ccd8228726aacbf7d52026ef0643da5abfee3cd238"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.5.0.2/cmd.obsolete.fs",
+          "bytes": 2201,
+          "sha256": "d943e0473bcc6ec5f39715a7b29428075285d9808cec6026fabb870704a632f5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.5.0.2/cmd.obsolete.fs.js",
+          "bytes": 788,
+          "sha256": "3cfb304469a754c28bb594fff01be117b119a9affcf0d4b9f5d98fba3570326e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.5.0.2/Fable.Elmish.fableproj",
+          "bytes": 814,
+          "sha256": "93584a5ff05abe4b78bcf36322ae4fbfbde80a9da8ed30fce3e899b2001a2650"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.5.0.2/prelude.fs",
+          "bytes": 1047,
+          "sha256": "3c7ba605c249f12b419263d378582d89c882c9324c074f2f78ef5cf26cbc34f8"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.5.0.2/prelude.fs.js",
+          "bytes": 670,
+          "sha256": "4618a129c292a3616d8b0e0ded9396fbb4600efd53892240c1b26d0d6b2c1896"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.5.0.2/program.fs",
+          "bytes": 8577,
+          "sha256": "78a47e509e3794dcc08c20edf18d9b6b92ec744b48e2f15540606e0407183e51"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.5.0.2/program.fs.js",
+          "bytes": 11167,
+          "sha256": "9acb63e04954afc11a4c96088ad7f9a104bdbf98fdcc8fe41d24a64f433fd7c5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.5.0.2/ring.fs",
+          "bytes": 1488,
+          "sha256": "c33e4b650b962cbd72fafc5bf379571e89758e0725bb17556800e6f44f82c67f"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.5.0.2/ring.fs.js",
+          "bytes": 3257,
+          "sha256": "0c92a0ce9e37c1bcc1a90f154ef619a570a4bc10a2f0bf9e464cce1341a8874c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.5.0.2/sub.fs",
+          "bytes": 3236,
+          "sha256": "056c350cdc510f89ebb6200d47aec35af31df98271040010b561f5dcb461ad22"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.5.0.2/sub.fs.js",
+          "bytes": 3959,
+          "sha256": "29dcd003d6f9050c60805d8d7ce5050c006c1c09b6c055a1fc98a9dd82a7e044"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.React.5.6.0/common.fs",
+          "bytes": 5000,
+          "sha256": "ef0799cbfb721ff478e6014925c4e28bc2ec186fa75e24b7ec9b878b8b9e8cd3"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.React.5.6.0/common.fs.js",
+          "bytes": 4538,
+          "sha256": "bf262a4901635460fe258fbd5ce7f301bb6fbb3e08f46288a3cca03e243b9b58"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.React.5.6.0/expo.fs",
+          "bytes": 1049,
+          "sha256": "f5463b9413e8081079ae68f1c0cfb62b15170051fb07876ff8d78daa40202af9"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.React.5.6.0/expo.fs.js",
+          "bytes": 951,
+          "sha256": "ff2ee2c31ef4d5a0dd578982d5185c3f7562cf2d7756a0c6303f63ae85ebb4f0"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.React.5.6.0/Fable.Elmish.React.fableproj",
+          "bytes": 628,
+          "sha256": "68492b7f48ae1cbbbfa0f5cfac6d148b60e56c52cce0920ada0b7bc65e37583c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.React.5.6.0/react-native.fs",
+          "bytes": 1832,
+          "sha256": "1bf360155a34f1dd09c71e16bee034ba8c8dab567c61a806c10594fdf935404e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.React.5.6.0/react-native.fs.js",
+          "bytes": 3190,
+          "sha256": "d215b32bcea6436b39002a78287c5bbe0e14f62459631157a6f0ecd6849257fd"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.React.5.6.0/react.fs",
+          "bytes": 3559,
+          "sha256": "fd74506ae240af369a983f07a8fda443084224d6bafacc55ca098b65606f01be"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.Elmish.React.5.6.0/react.fs.js",
+          "bytes": 3197,
+          "sha256": "6d06bac53bcf8525d74dcfc7b806c551ccfb1b3c3435ce328903476ae6dd5ec4"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.React.Types.18.4.0/Fable.React.Extensions.fs",
+          "bytes": 571,
+          "sha256": "ed542de55b7ea04d8b859af7b1f1a4d5969b64d50d0f2a5a80e5c0d63ec2b88e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.React.Types.18.4.0/Fable.React.fs",
+          "bytes": 16020,
+          "sha256": "def3af2e1f57edd673cb2196f7d8893c29b0aba5f30ca70420a2dabfd7fd3973"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.React.Types.18.4.0/Fable.React.fs.js",
+          "bytes": 417,
+          "sha256": "db629561dbe57e4584c8734125c137a5920c19d3ff23c0408f315c5768f1f6e9"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.React.Types.18.4.0/Fable.React.Hooks.fs",
+          "bytes": 7289,
+          "sha256": "48c78f454027e4c6b6b1230a76d0caeb2b96d54baa5a10c54e47bd9a9500ca8c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.React.Types.18.4.0/Fable.React.Hooks.fs.js",
+          "bytes": 439,
+          "sha256": "98fe8c5c58f8d83201ebc1652a06b7065896ab0e0d717a88028ca82d44eac2fb"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.React.Types.18.4.0/Fable.React.Types.fableproj",
+          "bytes": 1083,
+          "sha256": "9154a62150a17bbf1d1078a9d8f8d9f0a7285a462b3027864e30bb9bb4c611b7"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.ReactDom.Types.18.2.0/Fable.ReactDom.fs",
+          "bytes": 4357,
+          "sha256": "a7395a18013b2d9919813ce2e5c1ea228170299cabe3fc37a906767299febb32"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Fable.ReactDom.Types.18.2.0/Fable.ReactDom.Types.fableproj",
+          "bytes": 970,
+          "sha256": "63d2e544130bc6b903049468c809f276ae8fa5495bca7b6cbfb660132bc41c17"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/Feliz.fableproj",
+          "bytes": 2605,
+          "sha256": "fa4a6a5051face4383230bdb4b4bb3aff3d923ca73ff3ac2e183151a9d58d57e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/Helper/DateParsing.fs",
+          "bytes": 2159,
+          "sha256": "b151f4bd8b535cc48a3f8d60dacdcc27e4cb82c7cdd07a410d6a06473c92ba05"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/Helper/DateParsing.fs.js",
+          "bytes": 60814,
+          "sha256": "af9297b8f63a822d6d3d3018030967c64cceb5a6010a4350801fba9603a20a79"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/Helper/Helpers.fs",
+          "bytes": 761,
+          "sha256": "f8a7dabb213c0e2d391698c87dd31969b626cb825421418bbc631ac1c26f88ae"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/Helper/Helpers.fs.js",
+          "bytes": 639,
+          "sha256": "004f1de3486206bb98ff778450680392c18184bc6f51b9059c4bad6842a03e59"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/Helper/StringSyntax.fs",
+          "bytes": 1456,
+          "sha256": "50d02fc6e5d6471da11274b3bdf5466c63dc0636dcf25162852e5dd9ca8f925c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/Html.fs",
+          "bytes": 65463,
+          "sha256": "19f2c0e4681adc9ffc4da25f56a0dbdad94aed61deb09507b3d38c00dd5d309c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/Html.fs.js",
+          "bytes": 1080,
+          "sha256": "244e633402a6e8d4bb88e782b01d9d4321b8eea2745100c6009d791ca48fdce3"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/JSX.fs",
+          "bytes": 62990,
+          "sha256": "de8571b1082d188889fb3a247a6910371f0abdc456b531250eddbd992ca03291"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/obj/Release/netstandard2.0/.NETStandard,Version=v2.0.AssemblyAttributes.fs",
+          "bytes": 198,
+          "sha256": "387ee60baca6aa6eabc65f9fc594498732d0326d01a625899952e6e593e389f1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/obj/Release/netstandard2.0/Feliz.AssemblyInfo.fs",
+          "bytes": 834,
+          "sha256": "0f1cfa69cf210ea9a2294e47768e2ecde7bea513f930e1ba3901e3c92334bb29"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/Properties.fs",
+          "bytes": 253434,
+          "sha256": "6c3a944e782ac6136604a46e54b349c9482a5a81a56126c5455eb0a429bea0bd"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/Properties.fs.js",
+          "bytes": 3646,
+          "sha256": "eb645b9bf70299634a0a959c4164873f9d23cdeb84b03644d03a7476837d76dd"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/PropertyHelper/Key.fs",
+          "bytes": 1623,
+          "sha256": "cf04308ecd4a380c36ec427671fd4219c1bc6ba3b4c6cbba780cd166b867c66c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/PropertyHelper/Key.fs.js",
+          "bytes": 2179,
+          "sha256": "6bcfcd6ec1823682fd4c6ffcebe56eebb6ba5d7d6535540d9f2460067f60b7da"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/React/FsReact.fs",
+          "bytes": 2341,
+          "sha256": "be686a491f1a90331b510c8d87b1cbcf718de6cb79d35417bf154af89f06476c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/React/React.fs",
+          "bytes": 39971,
+          "sha256": "a1dc55878826ce0384f70d0fc76ade057f512c9e75d40e136cc84820ae2b22eb"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/React/React.fs.js",
+          "bytes": 523,
+          "sha256": "28f8a0dca0145adb4c66ea792cd0df03e9f5c04ec78ce4c1d6c67e38ea87f19e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/React/ReactDOM.fs",
+          "bytes": 5811,
+          "sha256": "50b5a9ed4e747d3ee562e1bdbcc51f3a605a7e664862ee56691f18ea33a655a8"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/React/ReactTypes.fs",
+          "bytes": 2620,
+          "sha256": "3dd3822d7fd0af6e45d3f2128cf9e8c75f0c0c8690d4576e4419b5c66b0353c1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/StringEnums/Colors.fs",
+          "bytes": 6880,
+          "sha256": "803973ce3722b2dcaf93a21f94c7af8d74ba70bafb6abca5f86ed3e55567e151"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/StringEnums/Colors.fs.js",
+          "bytes": 672,
+          "sha256": "ff58bdcb0422fcf4d0feac5c1f23b2f49994c8754488eee6fb642ba5c21de2b8"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/StringEnums/Fonts.fs",
+          "bytes": 11447,
+          "sha256": "6271e1bd91e173fb98c3bdfa8466a24a72924ffbb086968998ed6b5a165fe23e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/StringEnums/Locale.fs",
+          "bytes": 25754,
+          "sha256": "8696d8d8e34e8809bea27546d78eac87c94e64f44dfcbfad48dc3ee0cbced379"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/StyleHelper/BorderStyle.fs",
+          "bytes": 3125,
+          "sha256": "c1fa5b09403a47c0934e17c45a8615d6b52cd1cbf4ca1ff2f76a891127853532"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/StyleHelper/GridTypes.fs",
+          "bytes": 1431,
+          "sha256": "e15cb79aaf482a3e0901e0854df9eaddb5bac2f4dd68d5a4a48a6cbe79b839ae"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/StyleHelper/Length.fs",
+          "bytes": 8897,
+          "sha256": "dd4fd29fda50d324ae453454d4ddb60c9203aafec41db4d4e8d63adc4a3a6efe"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/StyleHelper/StyleTypes.fs",
+          "bytes": 1034,
+          "sha256": "14f49acb153286f3f9a191315a55b65c30c483a75fa9382b8069c13b391a65d1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/StyleHelper/TextDecorationLine.fs",
+          "bytes": 544,
+          "sha256": "138db592200c7f7e46f8129ae0cdcddf12254fda07e2c79c6dab23b762b56d90"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/StyleHelper/TextDecorationStyle.fs",
+          "bytes": 1647,
+          "sha256": "5808738df43261d0fa0fd1b4cf85c3a076e2221de4c10eceb675799190185430"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/StyleHelper/Transform.fs",
+          "bytes": 9318,
+          "sha256": "6702b5ca06e8018930d81afa7f3aee88b59c0eb7672be6320dd84f69260c3370"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/StyleHelper/TransformOrigin.fs",
+          "bytes": 632,
+          "sha256": "713b0a8a13eb08c6201706d353643c9c173fe44db5eda56860a869326169fec5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/StyleHelper/TransitionProperty.fs",
+          "bytes": 13087,
+          "sha256": "80aa8a33845e94b480560220908a48ea5fe6ad0fbec8bdb310fe65d46f9356d1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/StyleHelper/TransitionTimingFunction.fs",
+          "bytes": 3620,
+          "sha256": "8b1981f383a37c0e8ac8a00ebe1defcb4135c5b97a1bcb783285137104a17471"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/Styles.fs",
+          "bytes": 380450,
+          "sha256": "39600d37d38be9d298b803807ba9201bb84995767ab31cb02db38a637a20efcc"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/Svg.fs",
+          "bytes": 106222,
+          "sha256": "6570c59b3af8ce80f5f550183375fbcf1c1cb546e1c3ec8eb264003614dcaa21"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/Svg.fs.js",
+          "bytes": 1660,
+          "sha256": "da2ed25da6edcfb520e154c089f852943fabe48dc3e53207a92bee351ec035a9"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Feliz.3.3.3/Types.fs",
+          "bytes": 622,
+          "sha256": "5f2a1213b3e9d7746f9be1ce15333cf6f9c7b1afdb973605fc761f138cd235c5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/FS.GG.Game.Core.0.13.0/Edges.fs",
+          "bytes": 10475,
+          "sha256": "ddfba4e2b1092cd58824184faafc59d0865f7bfeb0a60ea0ddf1aeeab9f9ab07"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/FS.GG.Game.Core.0.13.0/Edges.fs.js",
+          "bytes": 15452,
+          "sha256": "77c5042a06c54d1e1222a6f34a1b22b15361f5a5325397e209e4a6428beeec6a"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/FS.GG.Game.Core.0.13.0/Edges.fsi",
+          "bytes": 5028,
+          "sha256": "5847b55cee5c2143dae169fe7844f4a84d09dd95cd218a819cdc1dd3508eb5c8"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/FS.GG.Game.Core.0.13.0/FS.GG.Game.Core.fableproj",
+          "bytes": 972,
+          "sha256": "a9f3dc59f1d6f7c2ed39d881fddd39825eb03b9523d9b031b7ebcc3a67d03734"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/FS.GG.Game.Core.0.13.0/Los.fs",
+          "bytes": 4337,
+          "sha256": "5bbce612a321c25e92d9256deee3c268e7c1a4f7ece1e6a5b39b1ee7e3b3eb32"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/FS.GG.Game.Core.0.13.0/Los.fs.js",
+          "bytes": 7704,
+          "sha256": "f53fac8d7f7402d9553c9f2902c92138f1e10c74cec005bd19bb876b7b49f9d5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/FS.GG.Game.Core.0.13.0/Los.fsi",
+          "bytes": 6655,
+          "sha256": "e06d232167a36ad74973dd45504509fbeb8667ae9d63a3176e9666a46d6c1174"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/FS.GG.Game.Core.0.13.0/Pathfinding.fs",
+          "bytes": 52411,
+          "sha256": "56d80145d6199561dc1caa78fda10ba189583ed299de9345f552665735bed871"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/FS.GG.Game.Core.0.13.0/Pathfinding.fs.js",
+          "bytes": 64296,
+          "sha256": "b2200619470a96ee1bff81cc203f186eca47875658e650859246dc45d9782567"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/FS.GG.Game.Core.0.13.0/Pathfinding.fsi",
+          "bytes": 31052,
+          "sha256": "cee20bf5c30d679d0b8d41e49a6885a8a0947576ca73e539f467827eaddb42c0"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/FS.GG.Game.Core.0.13.0/Primitives.fs",
+          "bytes": 540,
+          "sha256": "4eb1b03b1716efd7b6818a3519e3f8f17ffa5548fb177d511a3fc444c2f99725"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/FS.GG.Game.Core.0.13.0/Primitives.fs.js",
+          "bytes": 8515,
+          "sha256": "ff745959d85f93c450d86c2d4bb2d157fd1a0670ed778bbe73044656297b1523"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/FS.GG.Game.Core.0.13.0/Primitives.fsi",
+          "bytes": 5909,
+          "sha256": "b9ce0a75e2b86ca62f89237693aa7bfeb9f460ad121047a147c04184d86aac6a"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Thoth.Json.10.5.1/Decode.fs",
+          "bytes": 62032,
+          "sha256": "299c48534dd788e259898704d879d593598a516db7ee4251c2cbae2bf08418a5"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Thoth.Json.10.5.1/Decode.fs.js",
+          "bytes": 84303,
+          "sha256": "6f13e77a18436a3b4d476110cfd579a4309c6887699974244a69269630925a81"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Thoth.Json.10.5.1/Encode.fs",
+          "bytes": 25525,
+          "sha256": "a609a97524ec91750fffb57e92d7664a904b554c957fec4e0907b9e58534996c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Thoth.Json.10.5.1/Encode.fs.js",
+          "bytes": 16520,
+          "sha256": "bbcf6a470da5872131b86ce857f0d76bc4452e1fc79882dbc30c3cd9b3bf2adc"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Thoth.Json.10.5.1/Extra.fs",
+          "bytes": 1211,
+          "sha256": "f8de6a06dd009f607caf1ca0f7f6bc3a0ba2985ce22cb5cd03f70468ce2b3524"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Thoth.Json.10.5.1/Extra.fs.js",
+          "bytes": 300,
+          "sha256": "d64453adf5b96888c1731d6844a2f5e01ec205056c69086e66529c9cb7603211"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Thoth.Json.10.5.1/Thoth.Json.fableproj",
+          "bytes": 1399,
+          "sha256": "54bc119991ca015028b5e362af60b38d680875768973255578a96467660e8f18"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Thoth.Json.10.5.1/Types.fs",
+          "bytes": 1818,
+          "sha256": "54b9371e064a8e1d04d5af63fd94a6e01641287f4f23f2d7207857faf121adf2"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/fable_modules/Thoth.Json.10.5.1/Types.fs.js",
+          "bytes": 3835,
+          "sha256": "75435fd6e2685604ff999306be06d5f0f71f1597579b48d2e27cd3a115921966"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/RulesExplorer.js",
+          "bytes": 58762,
+          "sha256": "2480288b84e50d61f98c745bc8a1a1e9dad07ec8a27ed8ab88727780b609a0fe"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/Battlefield.js",
+          "bytes": 44667,
+          "sha256": "05a66b0b9c003720626cb2da636786ac793c497a2b088ee54d3b582972745f33"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/ClientModuleBoundaries.js",
+          "bytes": 346,
+          "sha256": "535171031902b1116d4f97c56160cc0cedc8b698ae37fa150bf693a1bce06005"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/Comparison.js",
+          "bytes": 10253,
+          "sha256": "48b89537a4af5c1c21162756eeefa0641d27ad9325f43d951d986c695d16ca88"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/EngineCatalog.js",
+          "bytes": 1601,
+          "sha256": "08fb1979a866d8acb2a99ad33aa8452a1c7d8a68aecd1d831b157893a7bdb4e9"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/EvidenceExport.js",
+          "bytes": 16814,
+          "sha256": "11e8748863dcb4a9686679fd33ca7ab49885fecc11bf13d159c61949da9c9a77"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/ExperienceSamples.js",
+          "bytes": 10660,
+          "sha256": "84cd06e4b42efa4283a403a5ec1f97d6bb8f26eb4f41981c1812071601a1da4c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/Lab.js",
+          "bytes": 22648,
+          "sha256": "7da6e80d17fd4f1f930704379a007edeaf93eac1cb0d2d879c67492561ccd7d9"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/MapEditor.js",
+          "bytes": 458993,
+          "sha256": "d1c81e40c47e0907e58aa006a3bf525d4ca03a7e4d7146e17fce9d816b94cabe"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/MapEditorHistory.js",
+          "bytes": 1299,
+          "sha256": "b4633a83c2ed242c29e77ed1d295cd0f20caba1f6de94446523feb0bbb707ae6"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/MapEditorInterchange.js",
+          "bytes": 55450,
+          "sha256": "bc5f589878b6bea2e95b4b4fa88e6da2c87575188bba75138501c174432b8a7f"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/MapEditorRevision.js",
+          "bytes": 243,
+          "sha256": "6bb210533b69ae47b8564b4eb22773b5909000129045cd6b3814153e544a19ad"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/MapEditorSimulator.js",
+          "bytes": 67439,
+          "sha256": "b531160225e86744f75b2c49d6e1b885a4aa78dbb390b4a0cac4d51c858082c7"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/MapEditorTypes.js",
+          "bytes": 38467,
+          "sha256": "b91e1253e2f052c8862dc90af02ed23c3cbc1af485fd6ecf2795ed183eabcb85"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/MapEditorValidation.js",
+          "bytes": 201,
+          "sha256": "13a35039026951d05cc6a4ed0636c082422f3c0d9d7fdd7edbf8fbd03fa72ed4"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/MapEditorWorkspace.js",
+          "bytes": 44611,
+          "sha256": "112ecf8c6e88eb1aa5114822b27db48b714f46b53e8e5bbfa869abc7406d48e1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/ModalInput.js",
+          "bytes": 147885,
+          "sha256": "63307b867f1e34fb11d6ca85276f41ef2283408738a77887ea864db13b921968"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/PlanningWorkspace.js",
+          "bytes": 43870,
+          "sha256": "5fbe99de6d0a5dfe586ac315fb4659d24190256a882e1cbd7a75eebb81fb24b0"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/ReplayPresentation.js",
+          "bytes": 36116,
+          "sha256": "1a198d7c05dae15b3625f8f4cdd313cbed8302ac1b89d1d26f95936e7a1ce278"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/RulesCatalog.js",
+          "bytes": 14458,
+          "sha256": "f35486be93b29231a61b8d7d46fcdb40018fcba285495de0de1a7b96237e055a"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/Shell.js",
+          "bytes": 52221,
+          "sha256": "ed9a1c1dbc8aaf207202224f91560819b1e27639bfc3025187d9d6e81056e8db"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/SimulatorWorkerProtocol.js",
+          "bytes": 14432,
+          "sha256": "054e5c476751e0fc17e1b5eb309d6933f97f026549ec2a82ce72db9f4a5b9863"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/TacticalParcelEditor.js",
+          "bytes": 39540,
+          "sha256": "a7a023401932b75740641005dc06d2b19303b3322235f034562b40f111d7bdcf"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/TacticalSceneProjection.js",
+          "bytes": 87207,
+          "sha256": "59e024dc338ff0fb8d164490f32d33d4189718c72a5e40f542db51f8b7c548e2"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/TacticalWorkspaceLayout.js",
+          "bytes": 45788,
+          "sha256": "f6af65ef4b8c71662b5ead96e22ae36a128574b3f07118172723a836c019b581"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/UnifiedTacticalWorkspace.js",
+          "bytes": 63155,
+          "sha256": "cc84e7894ff4b9e47d52cc93129d9fdc2b00586235d93b962ac66dc5b48b89c1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Client/UnitGlyphCatalog.js",
+          "bytes": 9125,
+          "sha256": "e70992d7747ef2f3ac61b7ee093a0512114840f276a37dbffff1af14e09c7d76"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Domain/AuthoritativeProjection.js",
+          "bytes": 2009,
+          "sha256": "27976fbf72bdf287032a97eb9999ccb4d36c085c96edbd0001c9211ed7c7730e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Domain/BoundedInt32.js",
+          "bytes": 4366,
+          "sha256": "9e763b2da77aac0edf7444b0cba390ace473671c0d1a6660a52cfe4f04caae04"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Domain/CanonicalEncoding.js",
+          "bytes": 2202,
+          "sha256": "06447916ac57202595ed5a86f583e0e0894555575aa1f4e64a07e0e138b2913c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Domain/CanonicalHash.js",
+          "bytes": 4806,
+          "sha256": "46899c9ee7020045c5f06cd4eddd5cec73ad501d8d55c6af084fa80c1ed90f65"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Domain/ControlAbiV1.js",
+          "bytes": 29461,
+          "sha256": "34a71e74b9d65a98097ffea19ddf17572990097eeee654bf296d2673a7c0e583"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Domain/FixedPoint.js",
+          "bytes": 4298,
+          "sha256": "6350352033762299058a43e8095127f7363db3ae60ca3b4eff4f2abc2bef0e9a"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Domain/HumanCapabilities.js",
+          "bytes": 7598,
+          "sha256": "862f4ffdf80d8c13ebb89de48da718af3501fed9703e8f4c91e024ec569c1ffb"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Domain/Orientation.js",
+          "bytes": 8826,
+          "sha256": "5f5955a1d8078d2fab1aa4af5b69a46fa15f70b71166377eb9937e731a9b04e1"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Domain/Rules.js",
+          "bytes": 74728,
+          "sha256": "6defdac5a53596f1311d05b06dac695e8dcf6f187fdca407a321561b4ac53b0b"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Domain/RuleTypes.js",
+          "bytes": 14164,
+          "sha256": "b02440a04d1070e2150d412b07d9f156054e1d3b0ec289b3bb6521d558b141ba"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Domain/SpatialIdentity.js",
+          "bytes": 3603,
+          "sha256": "38af49b83353c99c53efc2f8aedb26a9edb4fd3e0a47ed0929c63be16c5a328d"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Domain/TacticalEnvironment.js",
+          "bytes": 36836,
+          "sha256": "29b5db7dc9601b8a13695c8227635a369eca97b12a204e1a04b1240796313714"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Protocol/Http.js",
+          "bytes": 6061,
+          "sha256": "37b821cfa3722a77375789f456511f3b232fa6f68a56bce31858ff4846ab55ff"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Protocol/Realtime.js",
+          "bytes": 5041,
+          "sha256": "6153525e83afee2bbf28b6e07fe56faf0998f19638a3119456a396b156719f3e"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Simulation/AwarenessReaction.js",
+          "bytes": 38804,
+          "sha256": "57c04fb56fc68553c9315a5f5eb02ca14cb520f9f42437452f4d3445ce895980"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Simulation/CapabilityExecution.js",
+          "bytes": 25207,
+          "sha256": "f05c08d208c4ac11bd4997ac59d041e366fbaa34329abfaea6608ac427660e31"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Simulation/CombatModel.js",
+          "bytes": 45627,
+          "sha256": "35cc796946024e744083c1efad178df41fe3d56075b21daf44b0f8d893bca878"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Simulation/CombatRules.js",
+          "bytes": 29537,
+          "sha256": "a0d11dcebd2e5fe1dc89e9d948952b9a2ae8cbe3b0d4e68a37face1694d4f122"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Simulation/MapScale.js",
+          "bytes": 57675,
+          "sha256": "ddfc5c21730a9fad50be6d8d15695b53f83557936a925170dace9515eb76bb82"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Simulation/Replay.js",
+          "bytes": 83096,
+          "sha256": "c3813c6ea4669224c39d22ce4431d69e37c52b2f445a3ca43ada22f32797cd5a"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Simulation/Simulation.js",
+          "bytes": 71660,
+          "sha256": "901213817951d782dc0dc24aa82d0d624863b00adda980d9a11cf45925edf23c"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Simulation/SpatialQuery.js",
+          "bytes": 44319,
+          "sha256": "37ef511ffaa7839f692a2c2bf4839f64c335bbf795737aef9723e49af3241a90"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Simulation/Substrate.js",
+          "bytes": 328,
+          "sha256": "10d490a816f3dc25814ca05af4fa418c0d56c7ce0ab8d581df5353ed44a0faab"
+        },
+        {
+          "path": "src/SIR.Client.Web/.fable-rules/SIR.Simulation/TacticalEnvironment.js",
+          "bytes": 87998,
+          "sha256": "1fb2e8a15656c20a8cfcd58547b48879c4feef51c355abf328763bce5eb1d06f"
+        }
+      ],
+      "digest": "64fc0a280f34c762342456a41c7a8a7087981da05c074d6da5b6be0b820ac0da"
+    }
+  ]
+}

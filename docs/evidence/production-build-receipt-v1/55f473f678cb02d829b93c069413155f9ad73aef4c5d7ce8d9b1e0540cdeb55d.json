@@ -1,0 +1,4531 @@
+{
+  "schema": "sir.production-build-receipt/v1",
+  "result": "pass",
+  "ownerCommand": "scripts/qualify-production.sh",
+  "source": {
+    "commit": "032fbea9cb38100658b3d755d0fb988c5e0590a2",
+    "tree": "a688c18b8391128ecb64b624623d69d2f1fdff6c",
+    "clean": {
+      "buildInputChanges": 0,
+      "excludedGeneratedChanges": []
+    }
+  },
+  "inputs": {
+    "files": [
+      {
+        "path": ".config/dotnet-tools.json",
+        "bytes": 806,
+        "sha256": "49dcc8263caf57249a5c4b9f1c23ac1168ee459b1ccdfdc73d4b961c4b05b135"
+      },
+      {
+        "path": "Directory.Build.props",
+        "bytes": 1966,
+        "sha256": "f4458dd6ea099d326105a6715482bb51af5461ff8638eb7493bb031738a70f2c"
+      },
+      {
+        "path": "Directory.Packages.props",
+        "bytes": 1450,
+        "sha256": "7eb60608c4b67f856ec823f22cba8309c2b0880f8f442c6a21fa50914179eb3f"
+      },
+      {
+        "path": "SIR.slnx",
+        "bytes": 1385,
+        "sha256": "95f9ab29091677dfea2e48191716356651b321906f6cabf8d410bf914bba09d3"
+      },
+      {
+        "path": "docs/2026-07-29-0200-svg-replay-simulation-player-design-report.md",
+        "bytes": 49273,
+        "sha256": "1cef16069dc8904c90cc81d188572d7caa2d32499188dad09bc8fb3483239ee9"
+      },
+      {
+        "path": "docs/2026-07-29-1230-map-editor-vtt-experience-design-report.md",
+        "bytes": 43422,
+        "sha256": "fbf364445aec33dd1a47793735159ebdcb8a1c018afb1c307cd0886189339e27"
+      },
+      {
+        "path": "docs/2026-07-29-1927-wasm-simulation-planning-design.md",
+        "bytes": 43638,
+        "sha256": "d9c33022517ca28930921ebbb51d53eed4ec015745b6a4bf1d924a033c209bda"
+      },
+      {
+        "path": "docs/2026-07-31-0840-vscode-style-persistent-tactical-workspace-design-report.md",
+        "bytes": 31037,
+        "sha256": "0c5f77b8e6ec92c2969de4a928897a08f3bc6c63b951569c776cb8987a28efcf"
+      },
+      {
+        "path": "docs/_body.html",
+        "bytes": 163,
+        "sha256": "cb000fc9336489c16958d3186691aedfbc9382ac173a7aede4b6dc5d1b5eb161"
+      },
+      {
+        "path": "docs/_head.html",
+        "bytes": 138,
+        "sha256": "e7d80c9c8f5258ea7eaf8663b977492739bca1d8cac4ff932a77ca52ac8a554e"
+      },
+      {
+        "path": "docs/adr-0001-executable-rules-corpus.md",
+        "bytes": 13019,
+        "sha256": "8060374da99bbd21074f4354c85dfbb4388e5396cd6f44a9f62e82a8fc32e036"
+      },
+      {
+        "path": "docs/arcane-forces.md",
+        "bytes": 29484,
+        "sha256": "f4becb47085ffc72f956197e4eed40048c950c39f56e1728b82ed4040b06850d"
+      },
+      {
+        "path": "docs/arcane-spells.md",
+        "bytes": 11800,
+        "sha256": "a10dbb3ddbf58e28708caf5c86eec1dfc92e447ee14a396447a59a48d110ee46"
+      },
+      {
+        "path": "docs/assets/concept-art/unit-footprints-and-information-faces.png",
+        "bytes": 2601395,
+        "sha256": "8ef2159cd778b19427d9f7e551bb91bc99a2809b4d079c342215d7b9fddb7321"
+      },
+      {
+        "path": "docs/assets/map-editor-review/README.md",
+        "bytes": 570,
+        "sha256": "c31f19ad37728a9a08225c718070db4feb5b0f2a9dc88629b2a26c687e0cfbff"
+      },
+      {
+        "path": "docs/assets/map-editor-review/background.png",
+        "bytes": 21074,
+        "sha256": "d1aa2c627846b4134616dbfa9f55ce05f879db41cc48bf8a46a4249528d0f139"
+      },
+      {
+        "path": "docs/assets/map-editor-review/background.svg",
+        "bytes": 135440,
+        "sha256": "2a07a1eb9cb68feb7e5874c8ec2369211b87954e9577b657ce607e984e90ca80"
+      },
+      {
+        "path": "docs/assets/map-editor-review/continuous-simulation.png",
+        "bytes": 27110,
+        "sha256": "0284c077fa653544cc48c3644569142a76431553ee5e08cdadf2b498f1b92f6d"
+      },
+      {
+        "path": "docs/assets/map-editor-review/continuous-simulation.svg",
+        "bytes": 94279,
+        "sha256": "efd0df83031daedf8b9b2064e83b767525cc3dbdf76123db190fa274fd2abe09"
+      },
+      {
+        "path": "docs/assets/map-editor-review/edges.png",
+        "bytes": 12757,
+        "sha256": "d781fb94291be76a67bf19bc24de1915b1a3a9b12bbc939585bece9794783103"
+      },
+      {
+        "path": "docs/assets/map-editor-review/edges.svg",
+        "bytes": 135022,
+        "sha256": "248f15e23cd211b305c08477fd9bdce8eafb155098bd9102a7fed36cbc6ff2c2"
+      },
+      {
+        "path": "docs/assets/map-editor-review/manifest.json",
+        "bytes": 2937,
+        "sha256": "0beeece2383394cfbcea16876f8147c595b0634c2c86267d28290f46339a15c1"
+      },
+      {
+        "path": "docs/assets/map-editor-review/terrain.png",
+        "bytes": 14529,
+        "sha256": "0a1a94639ab53c64c1271df908bc9add81da2d023f0d23467d016e984022e8b5"
+      },
+      {
+        "path": "docs/assets/map-editor-review/terrain.svg",
+        "bytes": 135024,
+        "sha256": "44e5303a5fb08c1515a3791c810138d08498faa5f4fc215883b8200445011d8f"
+      },
+      {
+        "path": "docs/assets/map-editor-review/units.png",
+        "bytes": 17097,
+        "sha256": "898f9c35da30304a659b8870e0ec7de40b103a7775bd1d0604bbd72e6a5db475"
+      },
+      {
+        "path": "docs/assets/map-editor-review/units.svg",
+        "bytes": 135022,
+        "sha256": "179a2da605260a0b7129484115b52c01087926251ff93cf3ca537cdd1726ae59"
+      },
+      {
+        "path": "docs/assets/map-editor-review/validation.png",
+        "bytes": 43297,
+        "sha256": "44d63b90ad956621167507c701c7f7f388a6326a1fd3db25e10a69de51413d1b"
+      },
+      {
+        "path": "docs/assets/map-editor-review/validation.svg",
+        "bytes": 135641,
+        "sha256": "df04709b211d93b27d20e806361f979c65183d03d074eae80319dda445752e21"
+      },
+      {
+        "path": "docs/assets/map-editor-review/zones.png",
+        "bytes": 13109,
+        "sha256": "a9c3d211b4a5795138ade94e5fc13881a158a5e9bede5ed6909c2eab8e71fb50"
+      },
+      {
+        "path": "docs/assets/map-editor-review/zones.svg",
+        "bytes": 135022,
+        "sha256": "a4f9e1f5bdebe62083b5da5710d8f2b66792ef582f34152bd668151282c2f753"
+      },
+      {
+        "path": "docs/assets/persistent-workspace-m9-review/README.md",
+        "bytes": 615,
+        "sha256": "1696ffd665832aa19945b357d0467eaab1beb1e207d9f41a260a76bf1c7e1c58"
+      },
+      {
+        "path": "docs/assets/persistent-workspace-m9-review/field-focus-geometry.svg",
+        "bytes": 10842,
+        "sha256": "1a72e3ec0a4b44a9d8531b0954f67fbe983600f5dcaa22170a124b02facd8051"
+      },
+      {
+        "path": "docs/assets/persistent-workspace-m9-review/field-focus.png",
+        "bytes": 119952,
+        "sha256": "9e7388276d1c7753dcf2e87446875eb494fd75adaa5928102409de0a60d88c27"
+      },
+      {
+        "path": "docs/assets/persistent-workspace-m9-review/manifest.json",
+        "bytes": 15507,
+        "sha256": "77d70acd02dabbd82a146ee1e45c160297763791fc5c0ef742e0658a68d9c792"
+      },
+      {
+        "path": "docs/assets/persistent-workspace-mockups/index.html",
+        "bytes": 23811,
+        "sha256": "b2b0d444202aa9c76235fa7277ba2c6a4e89d3d7dc0dd009abb8e73c72c82270"
+      },
+      {
+        "path": "docs/assets/persistent-workspace-mockups/mockups.css",
+        "bytes": 19377,
+        "sha256": "42fe748de9a51dfa7b35461b7f09aecd025366b5b5ace41661507a0ee500cf4f"
+      },
+      {
+        "path": "docs/assets/persistent-workspace-mockups/mockups.js",
+        "bytes": 4706,
+        "sha256": "280837b4769526bd54e9a40eca493ad0374c042b5abe8b09eb50418cca053feb"
+      },
+      {
+        "path": "docs/assets/svg-player-review/README.md",
+        "bytes": 4768,
+        "sha256": "e1da587c2fc5a9a36f5db5deed7f580b4931c44d1c0012e01d8898dd94a8fdac"
+      },
+      {
+        "path": "docs/assets/svg-player-review/accessible-default.png",
+        "bytes": 50561,
+        "sha256": "11824c2993d6bf74b3bc14ffbf83ae99fae992741950a2715033e75b7b9f37ae"
+      },
+      {
+        "path": "docs/assets/svg-player-review/accessible-default.svg",
+        "bytes": 22403,
+        "sha256": "cb14eb9153162096d8461087a2db27644583e57e0a36856ebdbc13f2a87b9f40"
+      },
+      {
+        "path": "docs/assets/svg-player-review/high-contrast.png",
+        "bytes": 45874,
+        "sha256": "ae45878941b3bdda755f4007bd84b89289d1a440ee874333514ed021c1c96f58"
+      },
+      {
+        "path": "docs/assets/svg-player-review/high-contrast.svg",
+        "bytes": 22398,
+        "sha256": "897024d36a8aef58530636c82da335eaf1baa113ca2077bf50aa4b0f139c1e2e"
+      },
+      {
+        "path": "docs/assets/svg-player-review/manifest.json",
+        "bytes": 3215,
+        "sha256": "b5133ef6834911c4e3ddc710f77d358af6e11330478ae915d247c83e229a51a5"
+      },
+      {
+        "path": "docs/assets/svg-player-review/monochrome-pattern.png",
+        "bytes": 48078,
+        "sha256": "b5b1b6c19bf36710c005acf920432c97c1fb173682e1e2ef8f3a41bf5f99d109"
+      },
+      {
+        "path": "docs/assets/svg-player-review/monochrome-pattern.svg",
+        "bytes": 22397,
+        "sha256": "0af9336998ab156cccf337989a9a457fc660dd3c059a7c422d90d50a5b1af0d7"
+      },
+      {
+        "path": "docs/casualty-and-medical-architecture.md",
+        "bytes": 8785,
+        "sha256": "2d206ec2dd7b8f9e8f10ef10a72af9e173ff0dfa8f79b80f8cd59a8d27897719"
+      },
+      {
+        "path": "docs/client-feature-loader.md",
+        "bytes": 2102,
+        "sha256": "0b6fc8d3a9543365a6f5f0d4b2d8aeac8a4a8bab69c601d72fa20632cc6817d6"
+      },
+      {
+        "path": "docs/codebase-architecture.md",
+        "bytes": 18758,
+        "sha256": "57273acf62d406bd1b98e9ba7c345e3b241a99692b9b60c2508f64ec507d8ee9"
+      },
+      {
+        "path": "docs/combat-formulas.fsx",
+        "bytes": 5914,
+        "sha256": "ebc2b86109e17a39f1dcc7861b438e1f920c5dd5055f8ae3df88619ae2056fe5"
+      },
+      {
+        "path": "docs/combat-resolution.md",
+        "bytes": 23020,
+        "sha256": "8b963e50fe259c731371e6b50c66a1fe29d2f647b3c68db21d897826c63a426f"
+      },
+      {
+        "path": "docs/communications-network.md",
+        "bytes": 27233,
+        "sha256": "46e9247b5d15120898a03f2e45766406b9ceb6b2238c469a1f5e2eed80896c40"
+      },
+      {
+        "path": "docs/content/fsdocs-theme.css",
+        "bytes": 13390,
+        "sha256": "0578a09c52fb15cc617e833e90990033f423911835235e133f7de3b4b7d8a218"
+      },
+      {
+        "path": "docs/content/sir-docs.js",
+        "bytes": 2689,
+        "sha256": "4c3dda74b4d1123ac711d2b9ac7bb6945e359345e62a3c9cb85b59de825f6eb3"
+      },
+      {
+        "path": "docs/control-abi-v1.json",
+        "bytes": 3945,
+        "sha256": "0f365abd87cc4ac533339ce67010de3892a4564d1758b72989b73dd391950770"
+      },
+      {
+        "path": "docs/control-abi.md",
+        "bytes": 12393,
+        "sha256": "6e536ecb4b1908a5ecbd86d74806793734f897e942b109af0cf0e9675d788a68"
+      },
+      {
+        "path": "docs/dependency-surface/FS.GG.Game.Core/0.13.0.json",
+        "bytes": 11894,
+        "sha256": "e688d74416c2003d99fdad08eb7e5a5545252ad19ddd4429f0474adabd690d57"
+      },
+      {
+        "path": "docs/deterministic-simulation.fsx",
+        "bytes": 2328,
+        "sha256": "f776349ac7e349fb0bd0b59d35826b8bf5e26b9eab7e7c46faa79472c2beea2f"
+      },
+      {
+        "path": "docs/electronic-warfare.md",
+        "bytes": 17464,
+        "sha256": "211898f89fae404fa2075cc2584bd860628dffbbec4ae5b29f8e3a08f1e853d2"
+      },
+      {
+        "path": "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
+        "bytes": 3039,
+        "sha256": "8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e"
+      },
+      {
+        "path": "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "bytes": 2499,
+        "sha256": "d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f"
+      },
+      {
+        "path": "docs/evidence/production-build-receipt-v1/1363d1f1e0b1698823038c6a6a3b1f815321b2502bbb89cd857b1c00bff6f99d.json",
+        "bytes": 54944,
+        "sha256": "1363d1f1e0b1698823038c6a6a3b1f815321b2502bbb89cd857b1c00bff6f99d"
+      },
+      {
+        "path": "docs/evidence/production-build-receipt-v1/87cf06f6c4cf32abd997cd6796a62f22ff37022e7bca954cb28c5714a64dfeaf.json",
+        "bytes": 127501,
+        "sha256": "87cf06f6c4cf32abd997cd6796a62f22ff37022e7bca954cb28c5714a64dfeaf"
+      },
+      {
+        "path": "docs/executable-rules-corpus-architecture.md",
+        "bytes": 32262,
+        "sha256": "872aa07083f837fc8e6fa90916040f2e2abfd1d0bca529119cc6b9e4f9957931"
+      },
+      {
+        "path": "docs/fable-client-and-documentation.md",
+        "bytes": 95490,
+        "sha256": "3dc1d9342ad8d2c82716003d8306ce09cf17080c5a20166e3bab0b0e557f4585"
+      },
+      {
+        "path": "docs/formations-and-referents.md",
+        "bytes": 10543,
+        "sha256": "50f0f67692b64963d69fd0922ae1f644de5d7b9c90ef3928e095f5f49ac49368"
+      },
+      {
+        "path": "docs/foundations.md",
+        "bytes": 7932,
+        "sha256": "12ee3f1807f15993a26b63e1fc669ef4d3988ddcf68de70908af3d3aba61b3d7"
+      },
+      {
+        "path": "docs/game-governance.md",
+        "bytes": 1894,
+        "sha256": "c82727b7bcf3a88847421be1260c688229712bad70394986a9e4d23cab37d167"
+      },
+      {
+        "path": "docs/game-vision.md",
+        "bytes": 125113,
+        "sha256": "ad05aaec7f52a6fe511d2f9d480f5c935021b93abd445d68b20d817c0742b3f3"
+      },
+      {
+        "path": "docs/gameplay-command-information.md",
+        "bytes": 14473,
+        "sha256": "df308ba064817892e96c45a6bada2800d4244c83221c46c77b669239293626c5"
+      },
+      {
+        "path": "docs/gameplay-formulas.md",
+        "bytes": 14914,
+        "sha256": "da2bcf9dc821cb5b9d8b950862c9d2d94991a3de4d6ef50750c4f5edbb60b106"
+      },
+      {
+        "path": "docs/gameplay-magic.md",
+        "bytes": 12500,
+        "sha256": "e0f7c7e7d1f30e594f9871464474e904b7b1ec430a31c3b86394eab4106c654b"
+      },
+      {
+        "path": "docs/gameplay-reference.md",
+        "bytes": 9733,
+        "sha256": "83f67f062726725a606c66c33673dae5d381c366f3c184a3608c6535e19ae991"
+      },
+      {
+        "path": "docs/gameplay-testing.md",
+        "bytes": 15914,
+        "sha256": "40de0437a2ef1915c1942bf2359ffeb2b458a5f6a525c84b393072c072b27060"
+      },
+      {
+        "path": "docs/gameplay-units.md",
+        "bytes": 14598,
+        "sha256": "583a077d0ea818629ef7b220610dc62f2c989e269617bd0d65122ad3095dd9b7"
+      },
+      {
+        "path": "docs/gameplay-weapons-equipment.md",
+        "bytes": 11217,
+        "sha256": "93b988d6036180c6c57c640e13091ce98d25f1bb14dc9a60ded600fe4717fadf"
+      },
+      {
+        "path": "docs/human-capability-descriptors.md",
+        "bytes": 3704,
+        "sha256": "3cd0c446922d51e50fb424cd016181d2456cff4f84940469359f875f3c26465b"
+      },
+      {
+        "path": "docs/human-forces.md",
+        "bytes": 24115,
+        "sha256": "de77209ced763a7f9e44fec7164596ad518c04af5c539e77db83962aa166f740"
+      },
+      {
+        "path": "docs/img/sir-mark.svg",
+        "bytes": 310,
+        "sha256": "c665e59823bf89f2bd3daf6e75325ebfb40fcdda0dc177a636b64dbe8ba650e2"
+      },
+      {
+        "path": "docs/index.md",
+        "bytes": 7713,
+        "sha256": "722653c1434c4011ba0f34873a36e49dba0a11922b0c4c45722d3836d64de0f7"
+      },
+      {
+        "path": "docs/interactive-rules-lab.md",
+        "bytes": 1494,
+        "sha256": "0c06698ad46628842bebdf584b71528a2d802cc15b0f69addbec742c1d753679"
+      },
+      {
+        "path": "docs/issue-138-fable-game-integration-report.md",
+        "bytes": 5105,
+        "sha256": "5c29df5cf8d756614ae8a4f387878b818deabc3ea13d8de7979007a40abcfba3"
+      },
+      {
+        "path": "docs/keyboardInput/PROVENANCE.md",
+        "bytes": 2844,
+        "sha256": "f9afea0ef9e287d47325d32de84a0cb9d7ffd34710ccdbc864355d028b8eb7a3"
+      },
+      {
+        "path": "docs/keyboardInput/README.md",
+        "bytes": 5437,
+        "sha256": "264f2e5571de8fbfd636ae39230044e40fb23df0b7c3b737b351a0fe54a6be74"
+      },
+      {
+        "path": "docs/keyboardInput/SOURCE-LICENSE-MIT.txt",
+        "bytes": 1067,
+        "sha256": "794df76bf37187d5362b0f8ebe229ba57a98af2c02db0106820090c33c2ef124"
+      },
+      {
+        "path": "docs/keyboardInput/context/DefaultKeymap.fsi",
+        "bytes": 2481,
+        "sha256": "dba808b60fd1072c2a3b556b9e8d4c121906f304265ffae03adcf451a82260af"
+      },
+      {
+        "path": "docs/keyboardInput/context/InputCommand.fsi",
+        "bytes": 3218,
+        "sha256": "f6bbc564c2d9d2c9dddae0d874ee48ddcf0706a5e6989a1edaf7d5e8da51f901"
+      },
+      {
+        "path": "docs/keyboardInput/context/adr-0028-keyboard-input-config-boundary.md",
+        "bytes": 5651,
+        "sha256": "76d69686f5c91d8c1b6261cab6a456c42cd47a04477c531c779babb1277eccdb"
+      },
+      {
+        "path": "docs/keyboardInput/context/current-keyboard-input-guidance.md",
+        "bytes": 11112,
+        "sha256": "48378dd80c74e2484af5b5f284b4aa2b57b24b3d0359303d53f9032c26a9c988"
+      },
+      {
+        "path": "docs/keyboardInput/context/design-and-controls.md",
+        "bytes": 4731,
+        "sha256": "ead74624b10fd6971930fed789e4d2ddc818a7ef945df6bc88f097521984cf06"
+      },
+      {
+        "path": "docs/keyboardInput/editor-simulator-current-input-baseline.md",
+        "bytes": 9467,
+        "sha256": "33f5c01185f5d2ee92979cc558a716e9902323e50ede39083d103f0d280a3fb5"
+      },
+      {
+        "path": "docs/keyboardInput/editor-simulator-modal-input-proposal.md",
+        "bytes": 27633,
+        "sha256": "363aee7b4c5e3f0b915018dcae845f520822d0318e59ac5ac3fc886ac20bba48"
+      },
+      {
+        "path": "docs/keyboardInput/editor-simulator-modal-key-vocabulary.md",
+        "bytes": 26504,
+        "sha256": "914b86282f865f551a8041484be683e043aa44ed5b758b0719fb08417c5db8a6"
+      },
+      {
+        "path": "docs/keyboardInput/historical/src/Input/Input.fsproj",
+        "bytes": 950,
+        "sha256": "3cb94c88268053373007834dd1de0089d2ebd5c63c44510999ec365512bb6fab"
+      },
+      {
+        "path": "docs/keyboardInput/historical/src/Input/KeyboardInput.fs",
+        "bytes": 57822,
+        "sha256": "1d54b5537ceabd9c1f96baa1bbdc87e657ab0e1161aa7c46e30c0aa6142f6802"
+      },
+      {
+        "path": "docs/keyboardInput/historical/src/Input/KeyboardInput.fsi",
+        "bytes": 14127,
+        "sha256": "08d5d211de5a821b119d35a84f9eb8e1db345fed212a0c458e364a9bf752c8ba"
+      },
+      {
+        "path": "docs/keyboardInput/historical/src/Input/README.md",
+        "bytes": 3590,
+        "sha256": "16e6019defa470b11eea78b9df593f4738bf942ab3263fad4626745db3cfb489"
+      },
+      {
+        "path": "docs/keyboardInput/historical/tests/Input.Tests/Input.Tests.fsproj",
+        "bytes": 829,
+        "sha256": "1ad024d417450f46c785fb249abaae1c88a99bf112ea75207237acf0bddf2da6"
+      },
+      {
+        "path": "docs/keyboardInput/historical/tests/Input.Tests/KeyboardInputTests.fs",
+        "bytes": 24467,
+        "sha256": "7f21a60234c951cd1adebce17560cde22fa0c6d5032fd5e9514ff4103ef1e3e2"
+      },
+      {
+        "path": "docs/keyboardInput/historical/tests/Input.Tests/Program.fs",
+        "bytes": 116,
+        "sha256": "815de9dc44d6c247e5c2b9bf37bd75ca66761a3db717b65a9aca5f44e1031611"
+      },
+      {
+        "path": "docs/live-integration-qualification.md",
+        "bytes": 5440,
+        "sha256": "19b37aba330f144606c79826aa5658b04ce99a75aebbd9a41631d6ff774e6fa8"
+      },
+      {
+        "path": "docs/logistics-architecture.md",
+        "bytes": 9859,
+        "sha256": "eed186995d0061d4be4a60e06dae83c83c8e0880d5a8f0847946b3e96c404a50"
+      },
+      {
+        "path": "docs/magic-system.md",
+        "bytes": 16926,
+        "sha256": "339ec5bec0ca951d315df63c805bcaf5ed39e4042df26772812efa9b57cee12a"
+      },
+      {
+        "path": "docs/map-editor-qualification.md",
+        "bytes": 3390,
+        "sha256": "eda19e6b112323366c2afdf4448f49e624eaa899f816fe461acc6dc1dba54aaa"
+      },
+      {
+        "path": "docs/map-editor.md",
+        "bytes": 46772,
+        "sha256": "6e583a323cec346ff4df3a242574c0a44f40e7b3d4b4f24a7714bf356998fd6d"
+      },
+      {
+        "path": "docs/mission-lifecycle.md",
+        "bytes": 12656,
+        "sha256": "e728eaa261e764064737578c6bc55e3cc8dfb572fe7ac24372176bb95ef2672d"
+      },
+      {
+        "path": "docs/performance-budget.md",
+        "bytes": 22780,
+        "sha256": "5fb42b445999b25fe2fe4dbd80ee350099a1c145e4d44006c01ab6213d72798b"
+      },
+      {
+        "path": "docs/persistent-tactical-workspace-m0-baseline.md",
+        "bytes": 19293,
+        "sha256": "a8f209d2e95c2c8c6ae95d8e2e4f3cb2e4b115d5fbaa2ee7df74740f71ef42d1"
+      },
+      {
+        "path": "docs/persistent-tactical-workspace-m1-shell-layout-evidence.md",
+        "bytes": 7731,
+        "sha256": "30618a1a46432e7ac06352ea8c795867952093823f6a587c8b24e5a4a4d2d089"
+      },
+      {
+        "path": "docs/persistent-tactical-workspace-m2-scene-projection-evidence.md",
+        "bytes": 7407,
+        "sha256": "20da676316fa493dd6b0f5705fc7b98355cd9321be41ce725d85b8e7eef5cf55"
+      },
+      {
+        "path": "docs/persistent-tactical-workspace-m3-svg-renderer-evidence.md",
+        "bytes": 7985,
+        "sha256": "daf3e988e0d4401e106342fe42d65a4818c1ad828dd333405e8e4b9508ec6896"
+      },
+      {
+        "path": "docs/persistent-tactical-workspace-m4-editor-migration-evidence.md",
+        "bytes": 4039,
+        "sha256": "083af2c179d04085922de8e09ba5c74d6e6084f19c69cca5507cbd6dfcbedf6e"
+      },
+      {
+        "path": "docs/persistent-tactical-workspace-m5-planner-migration-evidence.md",
+        "bytes": 4448,
+        "sha256": "f6bebf4ef2e0fc5714d4bd96c384ec4d69c90a82670645874f743d6b7545da06"
+      },
+      {
+        "path": "docs/persistent-tactical-workspace-m6-simulator-migration-evidence.md",
+        "bytes": 6005,
+        "sha256": "c7579f863c50807f4421c394f24b73a669ea6398d6dd42300a024e904e2f08dd"
+      },
+      {
+        "path": "docs/persistent-tactical-workspace-m7-review-migration-evidence.md",
+        "bytes": 6658,
+        "sha256": "ba0e6e2f4777dc477bee3ce0c5e1eb820ce8b12e4b5b83dc2924c926dba76264"
+      },
+      {
+        "path": "docs/persistent-tactical-workspace-m8-timeline-supporting-panels-evidence.md",
+        "bytes": 4827,
+        "sha256": "fddc070295c9c66288dd6af472b30aff40a60e482452a57cc745315578f5d49b"
+      },
+      {
+        "path": "docs/persistent-tactical-workspace-m9-acceptance-evidence.md",
+        "bytes": 6003,
+        "sha256": "7b3c6b7998548fb627beb8b4763146d53e649d70df2a9f43aa518f46a0ca6cfd"
+      },
+      {
+        "path": "docs/planning-workspace.md",
+        "bytes": 5443,
+        "sha256": "c93384bbbd75df6f73a0bf13cb132a635fa310ef98e117d5d27dcf2af2356204"
+      },
+      {
+        "path": "docs/production-qualification.md",
+        "bytes": 4424,
+        "sha256": "30a48fd6a67c0f24a9a864f55afb07859ee066c054952c2e982b6bfc9fd2fe57"
+      },
+      {
+        "path": "docs/public-protocol-architecture.md",
+        "bytes": 19986,
+        "sha256": "ba6d3645b87c62ad5d55973a56e020afa89f2fb810238edcf099f7533dd626b0"
+      },
+      {
+        "path": "docs/reporting-model.md",
+        "bytes": 11072,
+        "sha256": "5f745d79e6145db72f76a04aba47b65c11860a2fe2a9adc152513dfc9a6e7c53"
+      },
+      {
+        "path": "docs/reports/2026-08-13-workboard.md",
+        "bytes": 5158,
+        "sha256": "6b6b156f5fa1c0b3e959cb3cbdddca24f729cee09a8b29c7c59d1bfdfed328b6"
+      },
+      {
+        "path": "docs/reports/2026-08-14-workboard.md",
+        "bytes": 4805,
+        "sha256": "8fa5e55e8f414a994e62ba2a2c263f03296394ccbaf6488350276d86d138068b"
+      },
+      {
+        "path": "docs/reports/2026-08-15-workboard.md",
+        "bytes": 4112,
+        "sha256": "a733f4b6ece075042158e6f89414d5b722af613a66cccbb1f39fc96cca71a230"
+      },
+      {
+        "path": "docs/research/arcane-horde-progression-and-equipment.md",
+        "bytes": 14745,
+        "sha256": "06a8f03b2b6ea9ebda6897f6a8ba1c493eba5c7bc78286764e7218d23e074b69"
+      },
+      {
+        "path": "docs/research/browser-wasm-verification-spike.md",
+        "bytes": 3968,
+        "sha256": "feedb72fcdc05efab05138d91d7b3e7aa8c33bccc25753c24a617dbc1bed1566"
+      },
+      {
+        "path": "docs/research/combat-awareness-models.md",
+        "bytes": 19513,
+        "sha256": "a8aa8397fcb9f0ce7ab47077dea6243bf66959c340da65ece118d79bed1955ca"
+      },
+      {
+        "path": "docs/research/movement-spike.md",
+        "bytes": 6756,
+        "sha256": "cc6687ae392e115c929ff572ca8233e4c604f66bcd5e6e37981fb1795100b631"
+      },
+      {
+        "path": "docs/research/perception-spike.md",
+        "bytes": 11178,
+        "sha256": "9af38d0bbba271a5829329206d97a64acc90381405c6eaee5ac61fb658a5638d"
+      },
+      {
+        "path": "docs/research/progression-systems.md",
+        "bytes": 55643,
+        "sha256": "87cd5d831d09a8154b8d16fe04b79b818b6b365842837fe4dfcd7cf6efd6155f"
+      },
+      {
+        "path": "docs/research/public-transport-selection.md",
+        "bytes": 10048,
+        "sha256": "adca0c154c5932f73872a1f34c8a7b488a5eff1e3e714769b360f2da1bea0aad"
+      },
+      {
+        "path": "docs/research/realtime-turnbased-tactical-features.md",
+        "bytes": 15751,
+        "sha256": "5e77d363bf90d273661a6bef0317b0f912434d0915300d8c7309b4a2474205e4"
+      },
+      {
+        "path": "docs/research/rules-lab-prototype.md",
+        "bytes": 7471,
+        "sha256": "25bf709e1a3b7d2d0b935d8aea105ad80f2a7981aa30a3db53b065dd7b8d86df"
+      },
+      {
+        "path": "docs/research/squad-command-and-succession.md",
+        "bytes": 11445,
+        "sha256": "3ca25b4981bbc0784519007fa9ab629dbe642386b177ae06bbc37b728bcd96b6"
+      },
+      {
+        "path": "docs/research/wasm-invocation-spike.md",
+        "bytes": 8505,
+        "sha256": "c36ae79d7b6992fb46d273e4621644d98a885abd6f12dc9978d6a431acf92593"
+      },
+      {
+        "path": "docs/research/wasm-runtime-selection.md",
+        "bytes": 14266,
+        "sha256": "68b98fa5cbe43d910beb7ebd4bd7be4ee701182e215cd63aada1bc52646cd642"
+      },
+      {
+        "path": "docs/setting-and-factions.md",
+        "bytes": 32433,
+        "sha256": "db44b50f6f03ab167edc5094c44d363ab8122c0597fa76ee05d358299f558cfc"
+      },
+      {
+        "path": "docs/simulation-core-architecture.md",
+        "bytes": 15253,
+        "sha256": "68351c61125382b47072e15b865c449e96ab3e65636b22eed4394dc5248bd99d"
+      },
+      {
+        "path": "docs/simulator-worker-protocol.md",
+        "bytes": 4558,
+        "sha256": "4592614bf617fc07380aeae3705c49398f3099920b71e0e93115146c5e4c7ae7"
+      },
+      {
+        "path": "docs/skirmish-development-plan.md",
+        "bytes": 14841,
+        "sha256": "47fc70ff78748ba45300fb0462844bf5ddabf46974ba01c184bbe42f1ea41313"
+      },
+      {
+        "path": "docs/stakes-and-reinforcement.md",
+        "bytes": 16096,
+        "sha256": "c3a1516f1ec1f07528ca513f53f513977a44039608b458ed86f899d009d94573"
+      },
+      {
+        "path": "docs/standard-module.md",
+        "bytes": 12762,
+        "sha256": "3ba211c6bd4bbdaf7b8a977a7f93b5d48830e392011e9454001460f91291929a"
+      },
+      {
+        "path": "docs/svg-replay-player.md",
+        "bytes": 16282,
+        "sha256": "0c1725028f2c8df20268e862408070a0efcd7031b8c1cb680749f0613eed00d2"
+      },
+      {
+        "path": "docs/tactical-environment-architecture.md",
+        "bytes": 19359,
+        "sha256": "9b889436e363f7c86b94e074f5b0035f750131989b59430d94f43f6a4d73e94d"
+      },
+      {
+        "path": "docs/tactical-overlays.md",
+        "bytes": 2229,
+        "sha256": "08ffcf67e5afce5780b88d93023680edbe5925f43720a15913582b344c6329c3"
+      },
+      {
+        "path": "docs/technology-stack.md",
+        "bytes": 14941,
+        "sha256": "e9531f2a46b267c1046a0d1a67ae244bf206e74371546f2f929c8d1f6fba04f1"
+      },
+      {
+        "path": "docs/unified-tactical-workspace-baseline.md",
+        "bytes": 3900,
+        "sha256": "8de2db2d1986e2aec04db0ba723d025816064dca12d40e05aec27a6dbadca26c"
+      },
+      {
+        "path": "docs/unified-tactical-workspace-roadmap.md",
+        "bytes": 17745,
+        "sha256": "9f8b51ca95f1b88eed8aa889b252fbd18830b222b48e18cc4cdc7af852bb2176"
+      },
+      {
+        "path": "docs/unified-tactical-workspace.md",
+        "bytes": 5776,
+        "sha256": "3d6153c13b2eabbeff03d35b7693ea1274734aca8b92a87740de9c07eb530fda"
+      },
+      {
+        "path": "docs/visual-direction.md",
+        "bytes": 9521,
+        "sha256": "e5b35920ecfdeb6927fc43e32d1cec772c5a9106c39c3b41765a1980809c66f6"
+      },
+      {
+        "path": "docs/wasm-control-architecture.md",
+        "bytes": 28867,
+        "sha256": "3f75d980aaac75fe0ab70e3afd8d9263f05b1a38a0929277e945bea323af483e"
+      },
+      {
+        "path": "global.json",
+        "bytes": 105,
+        "sha256": "0588e32d44bdf884e0305ded21820b13a59b1518efd39976c34d909eff3b1044"
+      },
+      {
+        "path": "package-lock.json",
+        "bytes": 48782,
+        "sha256": "3bec3c4dc97e076324b85ff5f79c1f8953632e8f6d0dc6adc5cb64bd6d490206"
+      },
+      {
+        "path": "package.json",
+        "bytes": 2972,
+        "sha256": "81d2e329586a3efcdf256ef37fe9ff90c7c03c04120e63a24dbc0393136fb48d"
+      },
+      {
+        "path": "scripts/build-client-fable-targets.sh",
+        "bytes": 1038,
+        "sha256": "e5b70d33295bb8303ceeb0f40bc2df03dbdf74106ada280f5e782fbdeacb0c63"
+      },
+      {
+        "path": "scripts/build-client.sh",
+        "bytes": 1551,
+        "sha256": "84d4c3b47071a8e0f5ceae126e01e06cf782fe0474228407a373f46e55f6b82f"
+      },
+      {
+        "path": "scripts/build-docs.sh",
+        "bytes": 2943,
+        "sha256": "5a8c2913ffe5332ae6ce58bda51d6ce459823a0fce4d7eca3a7d70e6dfd3f17a"
+      },
+      {
+        "path": "scripts/decode-control-abi-v1.mjs",
+        "bytes": 3384,
+        "sha256": "1cb85997d9b08c9b31d320fb63ab499516048b4ec9abc5897a83957e45f45c8c"
+      },
+      {
+        "path": "scripts/dotnet-invocation-trace.sh",
+        "bytes": 587,
+        "sha256": "eb719e1b9c12e0486c7f95a1b07fb7ff621f557f936d5a03a7475e6d87bbb0f1"
+      },
+      {
+        "path": "scripts/fsgg-coord",
+        "bytes": 25050,
+        "sha256": "afbc5bab5e9fdcd5caa71ef664be7759bdc09124d00f0ab017cff6b46c3425a0"
+      },
+      {
+        "path": "scripts/generate-battlefield-review.mjs",
+        "bytes": 6360,
+        "sha256": "0b622fa3316e9484d9fd708eab32abdac22069f691ca5d7bdac78bf55f23f1ee"
+      },
+      {
+        "path": "scripts/generate-control-abi.mjs",
+        "bytes": 3041,
+        "sha256": "380ae1f260780916e7f93a18214b9f88688f9bd409ec771eef7b5dab715ef882"
+      },
+      {
+        "path": "scripts/generate-docs-manifest.mjs",
+        "bytes": 1304,
+        "sha256": "477d4ae226de7ba5cb7bcf6becd9a5dcf74993cc5dca51297c65156953b1d0a4"
+      },
+      {
+        "path": "scripts/generate-item-180-evidence.sh",
+        "bytes": 7929,
+        "sha256": "c876451324ababb44e7130c1c6dc2a8b9c92a6e17deb5a87d2888a7b3f757bcc"
+      },
+      {
+        "path": "scripts/generate-item-181-evidence.sh",
+        "bytes": 2935,
+        "sha256": "79e58d4079d647866b8b263f832288c9b49b220d17e7437e2a9c7e438bcff4f9"
+      },
+      {
+        "path": "scripts/generate-item-182-evidence.sh",
+        "bytes": 2553,
+        "sha256": "a1bcff8a4a4132dcdbb42d9e16dcbb62cf093591c6247613adf5fef054db2ae8"
+      },
+      {
+        "path": "scripts/generate-item-183-evidence.sh",
+        "bytes": 1978,
+        "sha256": "b166bc07fe684c73b0129b2724e54e542eb94cabcf7b7b22016dc9cf5205c3cb"
+      },
+      {
+        "path": "scripts/generate-item-194-evidence.sh",
+        "bytes": 5114,
+        "sha256": "78dcdd7c72f04d95c09463ee50d4b167eaad798120a16ccdca317af0e0a71e8a"
+      },
+      {
+        "path": "scripts/generate-map-editor-review.mjs",
+        "bytes": 10157,
+        "sha256": "ae2d8941f5fbfdf4fdc4dc3f40b477eaa4f97c8eafe0f1daec990af9913dc745"
+      },
+      {
+        "path": "scripts/generate-persistent-workspace-m9-review.mjs",
+        "bytes": 3727,
+        "sha256": "a4545470a5e5d22307209b6f7c312380e06115f1623812ab9a9b13307be38c86"
+      },
+      {
+        "path": "scripts/generate-publication-manifest.mjs",
+        "bytes": 2573,
+        "sha256": "8096f56bc73621ac5ed851c37f13f64d063511af7499208eaffcc04e0870e7c8"
+      },
+      {
+        "path": "scripts/generate-rules-corpus.sh",
+        "bytes": 1654,
+        "sha256": "d1d7547df44c31fbb1088c80e3e1df08014fb8e933a241f0d3a7cbbd923a6f67"
+      },
+      {
+        "path": "scripts/import-map-editor-design.mjs",
+        "bytes": 2076,
+        "sha256": "7baf3a40b2d1521a64233cd8234a18f9be5195dcbf4f50ee18037cc4674989ca"
+      },
+      {
+        "path": "scripts/lib/persistent-workspace-browser-audit.mjs",
+        "bytes": 26277,
+        "sha256": "ddc51f3494a78a00be4fa8ff0f1a9977773056d1e4b2b243a13a0386175e96b6"
+      },
+      {
+        "path": "scripts/measure-worker.mjs",
+        "bytes": 2126,
+        "sha256": "686c942d79ac020497da73963761d01ef8ce74b48df7ddd451dc09dfbb36cf6a"
+      },
+      {
+        "path": "scripts/production-build-receipt.mjs",
+        "bytes": 12187,
+        "sha256": "140c9c6afc6d790ce9df8d138151ecd59d9e31341dddc07b3b39ad515956d872"
+      },
+      {
+        "path": "scripts/prune-docs-navigation.mjs",
+        "bytes": 1287,
+        "sha256": "b39c55df054e0e0f0737be5be3e3000a2db71c969f481709d1dc9d28907ffa60"
+      },
+      {
+        "path": "scripts/qualification-provenance.mjs",
+        "bytes": 1595,
+        "sha256": "263eb106e4ef1d6af1e87622619233d9eb88f79a8e0be066f2736a58e5f32023"
+      },
+      {
+        "path": "scripts/qualify-production.sh",
+        "bytes": 6820,
+        "sha256": "7072e97d01a65a14c5f70f6a76c7703bf0c562bbe69f99c1d09d56cdd97c59da"
+      },
+      {
+        "path": "scripts/smoke-client.mjs",
+        "bytes": 69190,
+        "sha256": "2d1eace1c3221df21d34e1002413c8235251bf1dd2b364cf1d91e6f8a4d1c5a3"
+      },
+      {
+        "path": "scripts/smoke-docs.mjs",
+        "bytes": 8970,
+        "sha256": "0b6db3cfec060096da8c94bacb2bf320c470eed025dc79995be2a34e6de029be"
+      },
+      {
+        "path": "scripts/smoke-worker-roundtrip.mjs",
+        "bytes": 22613,
+        "sha256": "126e2401db1be3a08cd7eb5318dec3d746d69cd5b3b24736215efee1eef13e9d"
+      },
+      {
+        "path": "scripts/test-browser-diagnostics-gate.mjs",
+        "bytes": 1325,
+        "sha256": "c33ee06b6d28741d8b717988378ba0476d443749c05e749f0145d598eb85a2b6"
+      },
+      {
+        "path": "scripts/test-browser-import-preflight-wiring.mjs",
+        "bytes": 919,
+        "sha256": "ae6c6f180e453b20ba964f45588ad7d9b2b0fd1cceeea62b88ebd0b0fd61e709"
+      },
+      {
+        "path": "scripts/test-browser-wasm-verification.sh",
+        "bytes": 793,
+        "sha256": "497cc03d30901d7e0f930eeaecec26ebc40c383f0fc6276fda33b3112f9458c6"
+      },
+      {
+        "path": "scripts/test-build-client-fable-parallel.sh",
+        "bytes": 2035,
+        "sha256": "60e1f3ae84d517ee3f627a4f5fa70e0315ccad75a3366024dcc60efdc5f1775c"
+      },
+      {
+        "path": "scripts/test-client-feature-loader.mjs",
+        "bytes": 15574,
+        "sha256": "1f77fc2806c5641347fac345cbc32d9dd182350a1539238655fc101609a65ad3"
+      },
+      {
+        "path": "scripts/test-conformance.sh",
+        "bytes": 12266,
+        "sha256": "ca55cdecc2f7d7f21809ddfe0c8649ae268fe6eb1d93d47378d18e00088735b0"
+      },
+      {
+        "path": "scripts/test-docs-accessibility.mjs",
+        "bytes": 4773,
+        "sha256": "c880c0d26765407092b5f90e3ccf983ff61282574f07c9d294c4042a4b2ea2f4"
+      },
+      {
+        "path": "scripts/test-docs-experience.mjs",
+        "bytes": 2739,
+        "sha256": "d9ca7502525a9941e8ebfab7683f49d0c9107e0317fa1997675511cbc31711b9"
+      },
+      {
+        "path": "scripts/test-dotnet-invocation-trace.mjs",
+        "bytes": 2884,
+        "sha256": "6d47c9be75e2fbe6ae8566efde243a6640f84592e1b6807e8c5f090fb8f648b1"
+      },
+      {
+        "path": "scripts/test-fixtures/fake-parallel-dotnet.sh",
+        "bytes": 476,
+        "sha256": "d1cff25243cf67df4851d834e90d71a40759d7a374b387c8d7cf6eae856988a5"
+      },
+      {
+        "path": "scripts/test-map-editor-design-transfer.mjs",
+        "bytes": 1677,
+        "sha256": "1981c5aa713f506abb9a0b5ce758aaf32be23288a8fc21f48baf1bb65d4a2f5b"
+      },
+      {
+        "path": "scripts/test-map-editor-qualification.mjs",
+        "bytes": 38141,
+        "sha256": "08eee3a2f8583ad146936de7ec83945d1bc5fcead0dc8797b97b1adfd64b58fb"
+      },
+      {
+        "path": "scripts/test-persistent-workspace-browser-audit-portability.mjs",
+        "bytes": 5877,
+        "sha256": "42912d7ba4bd9d47dd7eba08210228d6ebbb19894eeb04e2d482ca7701587b62"
+      },
+      {
+        "path": "scripts/test-persistent-workspace-m0-baseline.mjs",
+        "bytes": 8961,
+        "sha256": "0f0632e9d08d05cfe7b4c66cd11765d0c27030b857aed5f36abf00996aaf9370"
+      },
+      {
+        "path": "scripts/test-persistent-workspace-m9-acceptance.mjs",
+        "bytes": 12408,
+        "sha256": "e9e0693401cd7dbc130f516775785c41f9e1d01f15809e39d34cef217865f15f"
+      },
+      {
+        "path": "scripts/test-physical-combat-subject-mutations.sh",
+        "bytes": 2782,
+        "sha256": "c1eeb164b9749ef2c5503c1d6bb9927d9551dbb7d28c898d09c16c16547887ad"
+      },
+      {
+        "path": "scripts/test-planning-workspace-m5-qualification.mjs",
+        "bytes": 2869,
+        "sha256": "7083c4b04e3a268e4c69e89a8f19e69c6dcc2d8f48c0a125dbda143ded219b93"
+      },
+      {
+        "path": "scripts/test-production-build-receipt.mjs",
+        "bytes": 4545,
+        "sha256": "d51ed28e641523b1c61d2f5bd04c8a886338a74dcd58ed08bea76f37f88659e9"
+      },
+      {
+        "path": "scripts/test-production-delivery-budget.mjs",
+        "bytes": 3653,
+        "sha256": "bd99b2ebb66a3b765fdc8036cb568a9b8a598d3fb4bc53666e5273f1016cde5a"
+      },
+      {
+        "path": "scripts/test-production-delivery-evidence.mjs",
+        "bytes": 2039,
+        "sha256": "80fba2d2c1dbd984f517221bf620afcbafd75ad6446b564c5324a2eb93134917"
+      },
+      {
+        "path": "scripts/test-production-replay-v3.mjs",
+        "bytes": 2055,
+        "sha256": "2186f3b9ed7d076348bde223c3407c63a96e3a993a37f77449278da7ebf48d6d"
+      },
+      {
+        "path": "scripts/test-review-workspace-m7-qualification.mjs",
+        "bytes": 6291,
+        "sha256": "356432c79496403713226ff80080a6d250db458bd67f745e589681200ec7b9b6"
+      },
+      {
+        "path": "scripts/test-simulator-workspace-m6-qualification.mjs",
+        "bytes": 5253,
+        "sha256": "bbe0e745dc87080f66bd9bbdc11320d4636262f2a11d5c383cedcb1737751f78"
+      },
+      {
+        "path": "scripts/test-spatial-diagnostic-subject-mutation.sh",
+        "bytes": 2677,
+        "sha256": "6f5bf97cdf6a49f043eb155505e20f96675e069a7e3f7795a9da0bc757fdcb33"
+      },
+      {
+        "path": "scripts/test-spatial-subject-mutations.sh",
+        "bytes": 3141,
+        "sha256": "57e88b72da90fea39ef18b120721a3922aec905bf992ca683a22255a9a837d7c"
+      },
+      {
+        "path": "scripts/test-timeline-supporting-panels-m8-qualification.mjs",
+        "bytes": 5717,
+        "sha256": "587b421fc747203fa60912acca3a3c0245098960f8e56201f7089d027e4f612e"
+      },
+      {
+        "path": "scripts/test-worker-cancellation-subject-mutation.sh",
+        "bytes": 1417,
+        "sha256": "c33770058b781a101ee504af6b43b44c62fec120ac5d08798f85f437e9b25e1a"
+      },
+      {
+        "path": "scripts/test-worker-roundtrip-race.mjs",
+        "bytes": 646,
+        "sha256": "951a463cad7d143c41af44b43b4e185b61e73ac3516575576eaa0926f2fae3ac"
+      },
+      {
+        "path": "scripts/validate-governance-yaml.fsx",
+        "bytes": 3629,
+        "sha256": "0ad33690e5f04b4b9cf5b3b68e82311663b2915683c7e28adb5f232f1fc35ddf"
+      },
+      {
+        "path": "scripts/validate-rules-coverage.sh",
+        "bytes": 517,
+        "sha256": "d261dcffa1eb14bfd76f4ac83131ab342ae66161a2291f271e403e70fe0d15ac"
+      },
+      {
+        "path": "scripts/verify-awareness-reaction.sh",
+        "bytes": 9208,
+        "sha256": "30fbd75c5c04f2137097380b1dda80ee3b85bb46373ba38dd494b3cd9aec2342"
+      },
+      {
+        "path": "scripts/verify-docs.mjs",
+        "bytes": 11419,
+        "sha256": "004a6cd379fb1c3956c038f7a0b7ccafa147b3bf06702c4398bd46ee895ff0ba"
+      },
+      {
+        "path": "scripts/verify-fable-client-baseline.mjs",
+        "bytes": 6695,
+        "sha256": "f4315d2f566d7a2d3d1763f54aa4856730dd50455fd922d05e1b08809e84141b"
+      },
+      {
+        "path": "scripts/verify-fable-game-governance.sh",
+        "bytes": 2911,
+        "sha256": "501da139aaafb16f606af2c24258822cfd7dd33b62e4499531609411c304a80f"
+      },
+      {
+        "path": "scripts/verify-fable-invocations.mjs",
+        "bytes": 1161,
+        "sha256": "f161aa2c13bf818446709e1a882310a48fe771f87137b2c674d8ddc8d059ac34"
+      },
+      {
+        "path": "scripts/verify-physical-combat-performance.sh",
+        "bytes": 1961,
+        "sha256": "0efdfc738f8a189961eca64ea5cfe147ba88d52d1a02ce0ca92cc44f3a430f65"
+      },
+      {
+        "path": "scripts/verify-physical-combat.sh",
+        "bytes": 2278,
+        "sha256": "baa7a2d3833c47894b48f354e87c2d7077e1067f11bb4e1fb7db9faaf4992142"
+      },
+      {
+        "path": "scripts/verify-project-architecture.mjs",
+        "bytes": 5266,
+        "sha256": "6967fbfc80d7da388a3a1baca407f43cdfe59573a769912d96642965f331ddf4"
+      },
+      {
+        "path": "scripts/verify-rules-corpus.sh",
+        "bytes": 9023,
+        "sha256": "1577eee105c59c6bde88efe640de8c949420efde9fdcb75e988b68befc87be4c"
+      },
+      {
+        "path": "scripts/verify-scaffold-provenance.mjs",
+        "bytes": 4795,
+        "sha256": "112be65ffbb46179af871f8c567b3042aa6347e5bbd929f56a683b4a70890cd8"
+      },
+      {
+        "path": "scripts/verify-spatial-query.sh",
+        "bytes": 4001,
+        "sha256": "79db25ce7b11778d98a36b3cbff3c4776c212bfba316dc108c68d6ae2a92a271"
+      },
+      {
+        "path": "src/SIR.Client.Web/App.fs",
+        "bytes": 411170,
+        "sha256": "ec360df6e2c8f3c69d0061a4ca40428d222edfeee7c2d7b9013d2af029168b51"
+      },
+      {
+        "path": "src/SIR.Client.Web/AppShell.fs",
+        "bytes": 1395,
+        "sha256": "21994817244e5493c048e7616dedc4813bad65b0cb4d4a6aa0f9d0e66a3420e4"
+      },
+      {
+        "path": "src/SIR.Client.Web/AppTypes.fs",
+        "bytes": 6266,
+        "sha256": "f511ed147ed18efc485ad0034e6fc627c94b1a45ffbfbce0198a85e601a998fc"
+      },
+      {
+        "path": "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "bytes": 6133,
+        "sha256": "83878981d0400dad851a6572fdb59a2b44bb08bde57988a34e0b4e29690260d3"
+      },
+      {
+        "path": "src/SIR.Client.Web/ClientFeatureRuntime.fs",
+        "bytes": 6276,
+        "sha256": "cea88a09e3b274b844d51bc827cd13c2c5fd68536212cdeaf708c26713ad6d30"
+      },
+      {
+        "path": "src/SIR.Client.Web/CommandRegistry.fs",
+        "bytes": 11601,
+        "sha256": "93d6757033be29ea74620c56ba82e384b1e15bade729fa14783cf851d83e8c22"
+      },
+      {
+        "path": "src/SIR.Client.Web/FeatureLoader.fs",
+        "bytes": 3197,
+        "sha256": "d6a0751b0734b60ecccc153e0b9020d665c715e033e66e5c65b0f4ef90a39e49"
+      },
+      {
+        "path": "src/SIR.Client.Web/FeatureLoader.fsi",
+        "bytes": 1377,
+        "sha256": "b1fcf9d380edeedd5634b4c7b47f2980e5da0e20efca50d87fb34bc887747c76"
+      },
+      {
+        "path": "src/SIR.Client.Web/LiveApi.fs",
+        "bytes": 1136,
+        "sha256": "1e6ef71f8fecfa107c04adfcc7018e05272144493e200fdf3117e0a5da686d98"
+      },
+      {
+        "path": "src/SIR.Client.Web/LiveSession.fs",
+        "bytes": 4010,
+        "sha256": "0a1ff009fe8e2aca1aac468e7e894a491dbc551cabbeadd03a672fd3182246bf"
+      },
+      {
+        "path": "src/SIR.Client.Web/ModeAdapters.fs",
+        "bytes": 1296,
+        "sha256": "e71cafcc0606fb5877da3255ec3d533f609ee422e1eff8f9f961cebd07662a78"
+      },
+      {
+        "path": "src/SIR.Client.Web/PanelViews.fs",
+        "bytes": 2379,
+        "sha256": "a7aa9380c8652aa0c2b376d458917f0ebaebee814b49eeffc3ee495a77e3b3c3"
+      },
+      {
+        "path": "src/SIR.Client.Web/RulesExplorer.fs",
+        "bytes": 37808,
+        "sha256": "9db4352e7bf8e66a0ca489b56574a927a9ba146cce7e9176e371c1db84daa0b3"
+      },
+      {
+        "path": "src/SIR.Client.Web/Runner.fs",
+        "bytes": 5301,
+        "sha256": "af8eefab6cd8d1a84e3d1ceafe8b145ffef0221db7b155138506222ac24ace5a"
+      },
+      {
+        "path": "src/SIR.Client.Web/SIR.Client.Web.fsproj",
+        "bytes": 1780,
+        "sha256": "8e91f69e2ef8025be01d96cd97b3f41b3765de6ec626c3f7b839194a8e40da28"
+      },
+      {
+        "path": "src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj",
+        "bytes": 914,
+        "sha256": "8479ccabb35a9b086d452b16d0a12433177e109d57486cbf7ab4940d6c16b8b0"
+      },
+      {
+        "path": "src/SIR.Client.Web/SceneAdapters.fs",
+        "bytes": 724,
+        "sha256": "c6ac78e66f5a3d0da18af9ff73775b8c63a8e26eeff516316b10c82d3261697b"
+      },
+      {
+        "path": "src/SIR.Client.Web/SignalR.fs",
+        "bytes": 1295,
+        "sha256": "23bcefc425c725f601dbe59257dd162eed42b9b393b9b10957a140724ee73ad9"
+      },
+      {
+        "path": "src/SIR.Client.Web/TacticalEnvironmentView.fs",
+        "bytes": 18114,
+        "sha256": "4aa118f461f92bb77e6779c75eca3ee3a610288f5451053ad6cc73f1974c72ab"
+      },
+      {
+        "path": "src/SIR.Client.Web/TacticalOverlayView.fs",
+        "bytes": 2856,
+        "sha256": "27e3d822ea7dc1baf946bc67609890cd3b817682c1eda2282fcc0cab22c81978"
+      },
+      {
+        "path": "src/SIR.Client.Web/Worker.fs",
+        "bytes": 44420,
+        "sha256": "7171cc777d133910e2ad593a6dca1a7ba9e5f344b504d85207766ee94e920183"
+      },
+      {
+        "path": "src/SIR.Client.Web/deferred-delivery-support.js",
+        "bytes": 358,
+        "sha256": "173983b6245d026c1b200f8dd81f6307a5e476c22b91b7a1c781eed2c6087b88"
+      },
+      {
+        "path": "src/SIR.Client.Web/delivery-support-entry.js",
+        "bytes": 264,
+        "sha256": "8a3d76c955238bddcef8640d5368759a8f672f9210004ba542b5ff7faf978e51"
+      },
+      {
+        "path": "src/SIR.Client.Web/docs-feature.js",
+        "bytes": 530,
+        "sha256": "4943ce484de0ac4f65024da982bb53d0d245373a1928a29fdc3d943109d67f53"
+      },
+      {
+        "path": "src/SIR.Client.Web/feature-loader.js",
+        "bytes": 747,
+        "sha256": "90b61d989f2ec0aca804ffd853c1c5bd6ca6d3ee08082310bab57f2c50827c31"
+      },
+      {
+        "path": "src/SIR.Client.Web/feature-registry.v1.json",
+        "bytes": 1566,
+        "sha256": "3d0757cd77198139375d4c4ef3e07863fa27b8c2bc67c8f2cd8fae6d46c8df18"
+      },
+      {
+        "path": "src/SIR.Client.Web/index.html",
+        "bytes": 991,
+        "sha256": "9007fd3e640c67c9a9847f54c26b725b0f1d04e940ad67778ac4c3e03611fc98"
+      },
+      {
+        "path": "src/SIR.Client.Web/packages.lock.json",
+        "bytes": 7310,
+        "sha256": "11763784faaf64814af67ef43602f02f96efd44fd2fc2f57ab9063f3b598590d"
+      },
+      {
+        "path": "src/SIR.Client.Web/styles.css",
+        "bytes": 36925,
+        "sha256": "971f77e0dc1a46baf6b9fd6b51a1375540e7c762baebcc9cf3e2236ebf51652a"
+      },
+      {
+        "path": "src/SIR.Client.Web/vite.config.js",
+        "bytes": 1253,
+        "sha256": "35fbbc1b506eaa1d7a24f6d4031587fb9d3c91ce453232d0177c4dd517d106f5"
+      },
+      {
+        "path": "src/SIR.Client/Battlefield.fs",
+        "bytes": 35141,
+        "sha256": "e36e1c50719e172bb205bc2971e4181b9e584702f2302384e565b48adbda8cc7"
+      },
+      {
+        "path": "src/SIR.Client/ClientModuleBoundaries.fs",
+        "bytes": 421,
+        "sha256": "098069c194b92056adc6917ac59ac37c1d6ea5b5e8d7721adc796dfddaa7671c"
+      },
+      {
+        "path": "src/SIR.Client/Comparison.fs",
+        "bytes": 5698,
+        "sha256": "c5a54d34c6d5610901e211031239861d6de5216d4ea8a03bc88f6ac82523a56d"
+      },
+      {
+        "path": "src/SIR.Client/EngineCatalog.fs",
+        "bytes": 907,
+        "sha256": "8e67a2ea40afb7306afcce79244712100f85ae9901bb9a12504ea4e4e58c254e"
+      },
+      {
+        "path": "src/SIR.Client/EvidenceExport.fs",
+        "bytes": 14160,
+        "sha256": "9e86a92ad2e73e6c433df6c52f68fa3b69f63fc7a8ea8d2cde555bb7f7a0633a"
+      },
+      {
+        "path": "src/SIR.Client/ExperienceSamples.fs",
+        "bytes": 8822,
+        "sha256": "2e3cfb13caf95ffda9f313b436516a8254b156b734a16fa2b56f97a7fd1c28fd"
+      },
+      {
+        "path": "src/SIR.Client/Lab.fs",
+        "bytes": 19127,
+        "sha256": "dc7f1cdb798166e13943acece90dfa0d3823e2ec3ac67aad837c375d58125aa9"
+      },
+      {
+        "path": "src/SIR.Client/LiveClientBoundary.fs",
+        "bytes": 246,
+        "sha256": "b6586c954623f72164868b9df428c4ed387bc481cfdc17e0e2093b51ee4788aa"
+      },
+      {
+        "path": "src/SIR.Client/MapEditor.fs",
+        "bytes": 199245,
+        "sha256": "b306c16ca51914c88faf66ee703c33ddc65774693363bf8fb35950502861d1f1"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorHistory.fs",
+        "bytes": 667,
+        "sha256": "c2783cf99207d6cfaed169c2d5936a42f803f5fae41a936e06fffb1702ccc3c8"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorInterchange.fs",
+        "bytes": 27005,
+        "sha256": "9d74efa2c3e1a6b134a9d853100f59b9dbb585b57e0c8d33f150f46369ba26dc"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorRevision.fs",
+        "bytes": 353,
+        "sha256": "ec5a5e005e9423708f732c893fad1b860c3e792c366e9a3bed05131eb9a76712"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorSimulator.fs",
+        "bytes": 42024,
+        "sha256": "5c5fdb4089bc50bccdaef53edcd2c34e3a3fe99024c3cccaca4dba9fdf0ec148"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorTypes.fs",
+        "bytes": 13022,
+        "sha256": "d1ce54ec84e140a648e2e8212f66673b45ba774894bd072460b2df457ec95cf0"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorValidation.fs",
+        "bytes": 213,
+        "sha256": "155f94d77e33d811b49c4cb839a96df4652a63f19ec1f628e1384d68988524fe"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorWorkspace.fs",
+        "bytes": 26718,
+        "sha256": "bf0fe59e0d7af1f566d1a9cee5d12b4e3adbdafe806921d1d7bb7179b01af83a"
+      },
+      {
+        "path": "src/SIR.Client/ModalInput.fs",
+        "bytes": 99409,
+        "sha256": "43e481d27415bd51c3fa13049ade64683cd3f92ec7e467d4a47a0d24b82c838a"
+      },
+      {
+        "path": "src/SIR.Client/ModalInput.fsi",
+        "bytes": 7012,
+        "sha256": "59589ea6bebc24eae0db5f676623af8bb2a47a37da34a1896d2a9f0986b15e0b"
+      },
+      {
+        "path": "src/SIR.Client/PlanningWorkspace.fs",
+        "bytes": 22640,
+        "sha256": "23e939f6699478839d56f74d66c15cec2f679c72d85a762a3be9c29b9d9db4bc"
+      },
+      {
+        "path": "src/SIR.Client/ReplayPresentation.fs",
+        "bytes": 18244,
+        "sha256": "b0d9224f9a6a28465f7544090bcf417c465fa3585bae6d08ce1703ab7e66ca5c"
+      },
+      {
+        "path": "src/SIR.Client/RulesCatalog.fs",
+        "bytes": 15254,
+        "sha256": "c7c0dcb7f5adcba214967377a0ecbf9b0532c1453f61a295f0fd146c6449e840"
+      },
+      {
+        "path": "src/SIR.Client/SIR.Client.fsproj",
+        "bytes": 289,
+        "sha256": "510f1532297957a12f8030e64a299ac83d51e730fec865ab3cc6e18a4f420e41"
+      },
+      {
+        "path": "src/SIR.Client/Shell.fs",
+        "bytes": 33187,
+        "sha256": "e12469f40f31d74e4336d54977bd0635f1bc9cee0530d3e157acd90db6fa4359"
+      },
+      {
+        "path": "src/SIR.Client/SimulatorWorkerProtocol.fs",
+        "bytes": 8164,
+        "sha256": "1c5f63a1dd01a339aa88eb8a24eb85d901deda6ad288a4757ee4edd615cb29e6"
+      },
+      {
+        "path": "src/SIR.Client/TacticalParcelEditor.fs",
+        "bytes": 25271,
+        "sha256": "515559b1568433cfa7ec52dc043fc56d96b1161ebcc18100210fdb965ed3b629"
+      },
+      {
+        "path": "src/SIR.Client/TacticalSceneProjection.fs",
+        "bytes": 57576,
+        "sha256": "0271550f873d84d86fcb1d9ed0fa5be8c193abb211296ea6da91bb84a8d1a618"
+      },
+      {
+        "path": "src/SIR.Client/TacticalSceneProjection.fsi",
+        "bytes": 7117,
+        "sha256": "f3530a116006106364c7d8358c13c47169db37cab0397561c5f14907a44a5319"
+      },
+      {
+        "path": "src/SIR.Client/TacticalWorkspaceLayout.fs",
+        "bytes": 24658,
+        "sha256": "8087df8d94a2c02cdd23f869616993c5c507f9d247ca0a5e36ac89930fce1c19"
+      },
+      {
+        "path": "src/SIR.Client/TacticalWorkspaceLayout.fsi",
+        "bytes": 2312,
+        "sha256": "9be8bb8cb82570c285639432093c65a1e864e8804505b8ffaa6613405f621508"
+      },
+      {
+        "path": "src/SIR.Client/UnifiedTacticalWorkspace.fs",
+        "bytes": 35221,
+        "sha256": "70081df2cb92b82352b7065ce16a2f45a179a412f37129329d343d2b62a1f0ec"
+      },
+      {
+        "path": "src/SIR.Client/UnitGlyphCatalog.fs",
+        "bytes": 6434,
+        "sha256": "3ff311aef068da1f19bfcf9bfc39eeacb6aca6db203c7a14e37c5235c9e8597c"
+      },
+      {
+        "path": "src/SIR.Client/packages.lock.json",
+        "bytes": 1780,
+        "sha256": "4f1c45129f64c678ca92754105e635ff06bded477e7fceeed6687fac1841815e"
+      },
+      {
+        "path": "src/SIR.Domain/AuthoritativeProjection.fs",
+        "bytes": 731,
+        "sha256": "03835646dfc5a89f65dbf1fdb5aac12f047cea8737343bf7ef88d8805c98927c"
+      },
+      {
+        "path": "src/SIR.Domain/BoundedInt32.fs",
+        "bytes": 2233,
+        "sha256": "81a29dd46ada7c082e999873ab0aa40949be4092b567322a983a5d7f9699d5a1"
+      },
+      {
+        "path": "src/SIR.Domain/CanonicalEncoding.fs",
+        "bytes": 2079,
+        "sha256": "6ac9ad4352aeb377c5ef87c9bb17b450aba2d8d64af0b2e83cde515861b70503"
+      },
+      {
+        "path": "src/SIR.Domain/CanonicalHash.fs",
+        "bytes": 5018,
+        "sha256": "f05d74a91f24712990406b35784ffe010628530b7baa78384e16282c59032a6f"
+      },
+      {
+        "path": "src/SIR.Domain/ControlAbiV1.Generated.fs",
+        "bytes": 4601,
+        "sha256": "d7fa16fd73fc3463bcbdaa5b4311221cae72be4ddb1c86fcc4c7ff16d47aec99"
+      },
+      {
+        "path": "src/SIR.Domain/ControlAbiV1.fs",
+        "bytes": 19417,
+        "sha256": "75b6968e6f8e4866304951ebd1fadd89705a01f5579e97a68751f0a2c899ded5"
+      },
+      {
+        "path": "src/SIR.Domain/FixedPoint.fs",
+        "bytes": 2118,
+        "sha256": "fc163a6b8ee048b35b608fbd42a8563df79728d22f479435fc465615d7453b82"
+      },
+      {
+        "path": "src/SIR.Domain/HumanCapabilities.fs",
+        "bytes": 6246,
+        "sha256": "9589bf5b466bbe84f349cf6d48b6969face6f7023382652c5e0ccb0c42299199"
+      },
+      {
+        "path": "src/SIR.Domain/Orientation.fs",
+        "bytes": 3355,
+        "sha256": "b680c9325dd1f4d550190154fe61cd5299617d232495db0771065bb7d045df25"
+      },
+      {
+        "path": "src/SIR.Domain/RuleTypes.fs",
+        "bytes": 3877,
+        "sha256": "c5318fa1c398edb56d87cc18c0dd95086e2e559c608b797a5e709774bd85102d"
+      },
+      {
+        "path": "src/SIR.Domain/RuleTypes.fsi",
+        "bytes": 3377,
+        "sha256": "a565d174be1e0e78b932844d8df48a5019b9ba211d2243743052193e3ea5a392"
+      },
+      {
+        "path": "src/SIR.Domain/Rules.fs",
+        "bytes": 36880,
+        "sha256": "e81c19f26eb73dd464a0ec11bac9d138e6bdab1a3a8e4bf5e034bf0a313e212c"
+      },
+      {
+        "path": "src/SIR.Domain/Rules.fsi",
+        "bytes": 1215,
+        "sha256": "37ae7ba3bcb776a1b9f8a29232b34d85b893c5148fc8a033c4bf7c39c7a2b124"
+      },
+      {
+        "path": "src/SIR.Domain/SIR.Domain.fsproj",
+        "bytes": 922,
+        "sha256": "4f5949dca59b1f0d8e1fb232f5184485d792e18b65152d7ce87939a40f9d2913"
+      },
+      {
+        "path": "src/SIR.Domain/SpatialIdentity.fs",
+        "bytes": 2104,
+        "sha256": "2ed77ce24585d6445813e0645ee437fd18512d1cfdeee35d5725a61eb9d2bc2f"
+      },
+      {
+        "path": "src/SIR.Domain/SpatialIdentity.fsi",
+        "bytes": 820,
+        "sha256": "4d332e0965553c90d7534fa009a46097018d5f6c67949c64694f950e48023192"
+      },
+      {
+        "path": "src/SIR.Domain/TacticalEnvironment.fs",
+        "bytes": 14028,
+        "sha256": "2bb77a587c5ce52542fe9adb4103a3d7ebc891854ef8c8f67b2e8db57796d1d5"
+      },
+      {
+        "path": "src/SIR.Domain/TacticalEnvironment.fsi",
+        "bytes": 5065,
+        "sha256": "8ad019bfffa1c8b1dfe5a79123764c4cac7ef1d9b77f65c05cfb864b2c442046"
+      },
+      {
+        "path": "src/SIR.Domain/packages.lock.json",
+        "bytes": 314,
+        "sha256": "394c969535d7e82772dd93db116c36b2fe31f8705e467c93194e7dc280b89902"
+      },
+      {
+        "path": "src/SIR.Match/AwarenessProjection.fs",
+        "bytes": 4771,
+        "sha256": "f38c25e5f5618386790d66eada1e328673a723eb6b72c49a791463f7b4c40cd0"
+      },
+      {
+        "path": "src/SIR.Match/ControlHost.fs",
+        "bytes": 31462,
+        "sha256": "62800296443ea81f849fbed9e2e78b58f100127f642619bf08f787e696011839"
+      },
+      {
+        "path": "src/SIR.Match/LiveIntegration.fs",
+        "bytes": 17810,
+        "sha256": "3ccd096387f5c2c775536cbf243c40b4ded18e62ccea625cc27e96d98fb011a3"
+      },
+      {
+        "path": "src/SIR.Match/MatchReplay.fs",
+        "bytes": 8409,
+        "sha256": "63fcfc3f8335dadf6bc457b9207e293b85f1829810155730ee488bbb8cccfe24"
+      },
+      {
+        "path": "src/SIR.Match/PhysicalCombatServices.fs",
+        "bytes": 691,
+        "sha256": "e0100379d914701b19485c0344f0f7417430535a3fdd47b1367d8193188bb5c6"
+      },
+      {
+        "path": "src/SIR.Match/Plan.fs",
+        "bytes": 45620,
+        "sha256": "544bc8d85edb5fb7ec618062a0a7da3f364169b5ee08a68b34629d45508c69fa"
+      },
+      {
+        "path": "src/SIR.Match/SIR.Match.fsproj",
+        "bytes": 499,
+        "sha256": "cc9035ede2b42dfea492bb51177d44bf02b64eb0ab441c01c0073f4f2f54f774"
+      },
+      {
+        "path": "src/SIR.Match/SpatialServices.fs",
+        "bytes": 873,
+        "sha256": "5d6e1c6ad577dea9ef6844469876d6ede8fb8d567772a1cb054c47fa63cfde54"
+      },
+      {
+        "path": "src/SIR.Match/StandardController.wat",
+        "bytes": 3075,
+        "sha256": "2c58aa604d29ebafb9724b10c2c05a34a5fb0fc842e478806b39b227abddb296"
+      },
+      {
+        "path": "src/SIR.Match/packages.lock.json",
+        "bytes": 1530,
+        "sha256": "5bf64d78694ae5bf1992feb7c747f56319e9be942f3c951d731f7c963ab326d7"
+      },
+      {
+        "path": "src/SIR.Protocol.Generated/SIR.Protocol.Generated.fsproj",
+        "bytes": 291,
+        "sha256": "78c26ee36194a44f1db7706d19998c053e11613bdcf8c61a83a6570392890b90"
+      },
+      {
+        "path": "src/SIR.Protocol.Generated/packages.lock.json",
+        "bytes": 1232,
+        "sha256": "10e228c646dadbc50e6acd2e610a14d07da207aba971769348b0a0dce9f8a70c"
+      },
+      {
+        "path": "src/SIR.Protocol/Http.fs",
+        "bytes": 4025,
+        "sha256": "b28ec0dbd2a89e562445873672150b6de7f25df83d4bef2885f3207872d26a30"
+      },
+      {
+        "path": "src/SIR.Protocol/ProtocolBoundary.fs",
+        "bytes": 221,
+        "sha256": "923ed323a65648dc526c6fc914fa615169e44e6b14c5954d4fa0555355f05841"
+      },
+      {
+        "path": "src/SIR.Protocol/Realtime.fs",
+        "bytes": 3031,
+        "sha256": "6dd2eaa7850f3889c1b214f018d1aac37c75fb4e7386d5cf8866b58b66cac4b7"
+      },
+      {
+        "path": "src/SIR.Protocol/SIR.Protocol.fsproj",
+        "bytes": 240,
+        "sha256": "1342e406cbe8e6f60c90672463da69ca803030a5543fe0e6c336e2169f5d734d"
+      },
+      {
+        "path": "src/SIR.Protocol/packages.lock.json",
+        "bytes": 1445,
+        "sha256": "d49008a690ff78e9c95b69614035f11054b59b63a5f3a13f4c63ba4ec1340591"
+      },
+      {
+        "path": "src/SIR.Replay.Core/SIR.Replay.Core.fsproj",
+        "bytes": 2782,
+        "sha256": "047e2b99c5e718bace6b9d86ecaebb2fcd910cea9b451e5b8379df44ecdf289c"
+      },
+      {
+        "path": "src/SIR.Replay.Core/packages.lock.json",
+        "bytes": 1019,
+        "sha256": "a7456fb448cce9c92510d09931d76d1f5f9782601dbcc1e8872ef4fac328bb37"
+      },
+      {
+        "path": "src/SIR.Replay.Web/SIR.Replay.Web.fsproj",
+        "bytes": 2229,
+        "sha256": "6791f7383b764559a196e698ea6c929fef17d5b1fa2b4830bc2b84d4d7d4c357"
+      },
+      {
+        "path": "src/SIR.Replay.Web/packages.lock.json",
+        "bytes": 6899,
+        "sha256": "1fa1129de8bd47db4b136a240b8823cd5cae6dae27f836b41b1cd2eea4eb94fc"
+      },
+      {
+        "path": "src/SIR.Server/AwarenessReactionDiagnostics.fs",
+        "bytes": 5172,
+        "sha256": "9638d23dc66f2abcae786df99aef1d5df902b7f4af681dd7adefbcc6ff161db2"
+      },
+      {
+        "path": "src/SIR.Server/GameHub.fs",
+        "bytes": 3897,
+        "sha256": "45bff5ea7c6a5c1ed7c8e235abb784bd99abd62c1aaa70b5a982dbd314777cdc"
+      },
+      {
+        "path": "src/SIR.Server/LiveAuthentication.fs",
+        "bytes": 1986,
+        "sha256": "3fc890db036182bdd2a45f0553db60e4ea8fcdce940a3c29b2542c9813112579"
+      },
+      {
+        "path": "src/SIR.Server/LiveAuthority.fs",
+        "bytes": 11684,
+        "sha256": "2456acc479182be65db63475e6865f06ebbc8fd550cb95ec03aa6850484fbae0"
+      },
+      {
+        "path": "src/SIR.Server/PhysicalCombatDiagnostics.fs",
+        "bytes": 13179,
+        "sha256": "6ef3affdea25a3a46adc69acda4c746a46ca055ec9a730f74961beabbf185637"
+      },
+      {
+        "path": "src/SIR.Server/Program.fs",
+        "bytes": 11747,
+        "sha256": "2f6bfeb50b7389d770a130ae66f30bf76bc79dc30656ad04306967a4df7d6989"
+      },
+      {
+        "path": "src/SIR.Server/SIR.Server.fsproj",
+        "bytes": 796,
+        "sha256": "117595435e40a1d8227d7ed2c4e515d8f3edb4e3f7094fd82595d7696d976bad"
+      },
+      {
+        "path": "src/SIR.Server/SpatialDiagnostics.fs",
+        "bytes": 8813,
+        "sha256": "31d9af895b1ab46698f8f7ad775a332faf637478f452e2a09122cc6bfdbb8323"
+      },
+      {
+        "path": "src/SIR.Server/appsettings.json",
+        "bytes": 3,
+        "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+      },
+      {
+        "path": "src/SIR.Server/packages.lock.json",
+        "bytes": 5752,
+        "sha256": "358d91fb789168f56c88b5c10d21acb0ee0db04fd40363aacf0df05df6802b66"
+      },
+      {
+        "path": "src/SIR.Simulation/AwarenessReaction.fs",
+        "bytes": 20839,
+        "sha256": "bb0ec5e692cb0a3becd1d7cd340f33e621b970c906a9fb31a9144fa214ca6b43"
+      },
+      {
+        "path": "src/SIR.Simulation/AwarenessReaction.fsi",
+        "bytes": 4166,
+        "sha256": "c5130fad846ea914ff4e973a67f398ccaf9e4246194ea904e950f0fc42d0f346"
+      },
+      {
+        "path": "src/SIR.Simulation/CapabilityExecution.fs",
+        "bytes": 16951,
+        "sha256": "635f285a4b1af163c0431f7f6436095bb042b35e38b5619992ff6519363e3029"
+      },
+      {
+        "path": "src/SIR.Simulation/CombatModel.fs",
+        "bytes": 26780,
+        "sha256": "21e9e716ea5de4f0879a58f62a6e9a5f2dc61fafac85f2d2352b34a73ced980a"
+      },
+      {
+        "path": "src/SIR.Simulation/CombatModel.fsi",
+        "bytes": 3820,
+        "sha256": "79971a63598b29a63eb2e185583b505a37f31b95382486fdd4ac9ee708610833"
+      },
+      {
+        "path": "src/SIR.Simulation/CombatRules.fs",
+        "bytes": 19553,
+        "sha256": "ac082a2e876105e5f9958e03166a2c7f54d149f948e00e5bcdc2cc524a60bd71"
+      },
+      {
+        "path": "src/SIR.Simulation/CombatRules.fsi",
+        "bytes": 2455,
+        "sha256": "1fd66b3edb767b0dd97567c1014bb4a63b42617c3c35fc22b41e2105bf386bfc"
+      },
+      {
+        "path": "src/SIR.Simulation/MapScale.fs",
+        "bytes": 33048,
+        "sha256": "fcfca3c90bc6e46d58bce65b27de87a0c1a0e14af68a35cc8795c253b7615534"
+      },
+      {
+        "path": "src/SIR.Simulation/Replay.fs",
+        "bytes": 71923,
+        "sha256": "5fd3a62b97729e8c090e5e83101eb4a79a51a4928a169ac18492a90ccc99e12d"
+      },
+      {
+        "path": "src/SIR.Simulation/SIR.Simulation.fsproj",
+        "bytes": 957,
+        "sha256": "b045f3e7e12dbe4f1c2c6f3df6cbd12bda1cb770b3c907b26aa7a82910dc6d8a"
+      },
+      {
+        "path": "src/SIR.Simulation/Simulation.fs",
+        "bytes": 47611,
+        "sha256": "e7b56b539bad7359c74edda3efa73d26305466f1dbc6ed098e056669eab81ddd"
+      },
+      {
+        "path": "src/SIR.Simulation/SpatialQuery.fs",
+        "bytes": 27064,
+        "sha256": "5826ca5afda073069951ebe66ed4e88a72689c2a64d407629329784698a4308a"
+      },
+      {
+        "path": "src/SIR.Simulation/SpatialQuery.fsi",
+        "bytes": 6350,
+        "sha256": "84a519a1dc33a4646fda64fcb84bd60d094ce51ae96b5bf9d524936aeb4a02e1"
+      },
+      {
+        "path": "src/SIR.Simulation/Substrate.fs",
+        "bytes": 419,
+        "sha256": "c4ff38c44972c7a490766531862b0b2f78c59448368862fe2cf2b3af3e1e47c2"
+      },
+      {
+        "path": "src/SIR.Simulation/TacticalEnvironment.fs",
+        "bytes": 57050,
+        "sha256": "4a98aea38182762bc3fbe5f72a3c13dd0b277ddf5f390d933b0844eacb0d62bb"
+      },
+      {
+        "path": "src/SIR.Simulation/TacticalEnvironment.fsi",
+        "bytes": 1845,
+        "sha256": "0acf2c3d1509e23da5183d4a32f2271cef32bf710e5276e3e9242d5a111f8487"
+      },
+      {
+        "path": "src/SIR.Simulation/packages.lock.json",
+        "bytes": 1038,
+        "sha256": "1fb20aefe56a6e8c4ed7a1861b8c58f4e8e9f9e7dbf833cbd890355f67be0e4c"
+      },
+      {
+        "path": "src/SIR.Tools/Program.fs",
+        "bytes": 151,
+        "sha256": "aaea09d2e3b96cc8cb7239d88cc8ee4265bb47ba5bdb4154427a2eb156150f39"
+      },
+      {
+        "path": "src/SIR.Tools/SIR.Tools.fsproj",
+        "bytes": 165,
+        "sha256": "315153952f437af287827d5bcac3b290cddc7326050d13a1a9a1a2858787dfde"
+      },
+      {
+        "path": "src/SIR.Tools/packages.lock.json",
+        "bytes": 314,
+        "sha256": "394c969535d7e82772dd93db116c36b2fe31f8705e467c93194e7dc280b89902"
+      },
+      {
+        "path": "src/SIR.Wasm/SIR.Wasm.fsproj",
+        "bytes": 680,
+        "sha256": "041deefdbbe2550feb62a436b4f3927ee8a0a86ff185300f5af9ea34471a9009"
+      },
+      {
+        "path": "src/SIR.Wasm/packages.lock.json",
+        "bytes": 1259,
+        "sha256": "5dd10465a1cceb6aef7d64e592bad92865e31e7d4c74d4d850afe50d760cb274"
+      }
+    ],
+    "digest": "57522098a90cdcb6be2c7d3b14b63a85672a4588dcdbc2a663e51db45fbffe81"
+  },
+  "tools": [
+    {
+      "id": "git",
+      "version": "git version 2.55.0"
+    },
+    {
+      "id": "dotnet-sdk",
+      "version": "10.0.302"
+    },
+    {
+      "id": "fable",
+      "version": "5.13.0"
+    },
+    {
+      "id": "fsdocs",
+      "version": "22.1.0"
+    },
+    {
+      "id": "node",
+      "version": "v26.7.0"
+    },
+    {
+      "id": "npm",
+      "version": "12.0.2"
+    },
+    {
+      "id": "vite",
+      "version": "8.1.5"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "build-receipt",
+      "path": "docs/evidence/production-build-receipt-v1/9c6cf215207977a351019d16ed9a8fd1c0469cfd18f7a43e3a05a28478dcdd02.json",
+      "files": [
+        {
+          "path": "docs/evidence/production-build-receipt-v1/9c6cf215207977a351019d16ed9a8fd1c0469cfd18f7a43e3a05a28478dcdd02.json",
+          "bytes": 127501,
+          "sha256": "9c6cf215207977a351019d16ed9a8fd1c0469cfd18f7a43e3a05a28478dcdd02"
+        }
+      ],
+      "digest": "044dfc9a68896ac9468a23cd97bcbe6204822bb197f5abd72ee96f08f9749edd"
+    },
+    {
+      "id": "conformance-receipt",
+      "path": "docs/evidence/production-build-receipt-v1/9942e1a78afd22143bd51325604f3047300c9557cbdbf33df6e6808c424d8671.json",
+      "files": [
+        {
+          "path": "docs/evidence/production-build-receipt-v1/9942e1a78afd22143bd51325604f3047300c9557cbdbf33df6e6808c424d8671.json",
+          "bytes": 56228,
+          "sha256": "9942e1a78afd22143bd51325604f3047300c9557cbdbf33df6e6808c424d8671"
+        }
+      ],
+      "digest": "019ea31677741db4b7c6d9202aac86f22cb115625a41175f039a8b4e0c426acb"
+    },
+    {
+      "id": "documentation-site",
+      "path": "artifacts/site",
+      "files": [
+        {
+          "path": "artifacts/site/_body.html",
+          "bytes": 163,
+          "sha256": "cb000fc9336489c16958d3186691aedfbc9382ac173a7aede4b6dc5d1b5eb161"
+        },
+        {
+          "path": "artifacts/site/_head.html",
+          "bytes": 138,
+          "sha256": "e7d80c9c8f5258ea7eaf8663b977492739bca1d8cac4ff932a77ca52ac8a554e"
+        },
+        {
+          "path": "artifacts/site/.nojekyll",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "artifacts/site/2026-07-29-0200-svg-replay-simulation-player-design-report.html",
+          "bytes": 104946,
+          "sha256": "8b6bac3e937c65bb64256294f6ad5e9353a2e3e882325cd2809ac6d660db466c"
+        },
+        {
+          "path": "artifacts/site/2026-07-29-0200-svg-replay-simulation-player-design-report.md",
+          "bytes": 48992,
+          "sha256": "6b3e6e3ddd6bd22cf69389a3db395f5e86a247752ffc8b3e73d41841a8bf077a"
+        },
+        {
+          "path": "artifacts/site/2026-07-29-1230-map-editor-vtt-experience-design-report.html",
+          "bytes": 105934,
+          "sha256": "6d84cbc909345e08c306f796c13286c24f3f65b51c9b6f28b0827707d51c7d27"
+        },
+        {
+          "path": "artifacts/site/2026-07-29-1230-map-editor-vtt-experience-design-report.md",
+          "bytes": 43321,
+          "sha256": "553176dc148b2aa021fb1f268ec20f6020589eb8f295aa36df962c112ce6488a"
+        },
+        {
+          "path": "artifacts/site/2026-07-29-1927-wasm-simulation-planning-design.html",
+          "bytes": 99787,
+          "sha256": "5ef6a99ccfa3c85ca67dbc28c6a548cdbcfb919d23b91a8351da9385d50f5a44"
+        },
+        {
+          "path": "artifacts/site/2026-07-29-1927-wasm-simulation-planning-design.md",
+          "bytes": 43279,
+          "sha256": "2a31790e1fe823886120022312d3fb2c5879545794eb059ecc30d9c2d72e8867"
+        },
+        {
+          "path": "artifacts/site/2026-07-31-0840-vscode-style-persistent-tactical-workspace-design-report.html",
+          "bytes": 79919,
+          "sha256": "088aebf3fa9e760fe60711e3ae423fbf8b96f15666bf4a21158a8c28e8f6156f"
+        },
+        {
+          "path": "artifacts/site/2026-07-31-0840-vscode-style-persistent-tactical-workspace-design-report.md",
+          "bytes": 30947,
+          "sha256": "a43599ac9ebeb08eaa787884e7846ccabc10f0bf2b4ba638d2a40bd92a70ec78"
+        },
+        {
+          "path": "artifacts/site/adr-0001-executable-rules-corpus.html",
+          "bytes": 51954,
+          "sha256": "6ca24a3372e4c7b194b6398e88c28206333e73d6fcfffeb8b72db4effd022ef8"
+        },
+        {
+          "path": "artifacts/site/adr-0001-executable-rules-corpus.md",
+          "bytes": 12987,
+          "sha256": "6cb287cd1f9dbfa0107e939e5451cc74b928255ac4e1b8686cbcb7f0933cbaaa"
+        },
+        {
+          "path": "artifacts/site/arcane-forces.html",
+          "bytes": 70121,
+          "sha256": "89e7db49a86742774c256f8069a7bb4f776d40acdc50d211214d655f5a120372"
+        },
+        {
+          "path": "artifacts/site/arcane-forces.md",
+          "bytes": 29306,
+          "sha256": "662692564bd09023ce838734acd636657082697defd493b62adf0ae575f3cb2a"
+        },
+        {
+          "path": "artifacts/site/arcane-spells.html",
+          "bytes": 49620,
+          "sha256": "eeda52be9dd141fabdf3e58adf5498d75987ed9ec371c6019feac805ea742733"
+        },
+        {
+          "path": "artifacts/site/arcane-spells.md",
+          "bytes": 11722,
+          "sha256": "66a55908b110ad87035d7f844087b724b4424b195ae3247a1d92c48ef136c00a"
+        },
+        {
+          "path": "artifacts/site/assets/concept-art/unit-footprints-and-information-faces.png",
+          "bytes": 2601395,
+          "sha256": "8ef2159cd778b19427d9f7e551bb91bc99a2809b4d079c342215d7b9fddb7321"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/background.png",
+          "bytes": 21074,
+          "sha256": "d1aa2c627846b4134616dbfa9f55ce05f879db41cc48bf8a46a4249528d0f139"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/background.svg",
+          "bytes": 135440,
+          "sha256": "2a07a1eb9cb68feb7e5874c8ec2369211b87954e9577b657ce607e984e90ca80"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/continuous-simulation.png",
+          "bytes": 27110,
+          "sha256": "0284c077fa653544cc48c3644569142a76431553ee5e08cdadf2b498f1b92f6d"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/continuous-simulation.svg",
+          "bytes": 94279,
+          "sha256": "efd0df83031daedf8b9b2064e83b767525cc3dbdf76123db190fa274fd2abe09"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/edges.png",
+          "bytes": 12757,
+          "sha256": "d781fb94291be76a67bf19bc24de1915b1a3a9b12bbc939585bece9794783103"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/edges.svg",
+          "bytes": 135022,
+          "sha256": "248f15e23cd211b305c08477fd9bdce8eafb155098bd9102a7fed36cbc6ff2c2"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/manifest.json",
+          "bytes": 2937,
+          "sha256": "0beeece2383394cfbcea16876f8147c595b0634c2c86267d28290f46339a15c1"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/README.html",
+          "bytes": 33433,
+          "sha256": "8cb2562954a9e254fdb6692ef35738bff0bfed712951c9f3fa31c5946791bc1f"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/README.md",
+          "bytes": 570,
+          "sha256": "c31f19ad37728a9a08225c718070db4feb5b0f2a9dc88629b2a26c687e0cfbff"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/terrain.png",
+          "bytes": 14529,
+          "sha256": "0a1a94639ab53c64c1271df908bc9add81da2d023f0d23467d016e984022e8b5"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/terrain.svg",
+          "bytes": 135024,
+          "sha256": "44e5303a5fb08c1515a3791c810138d08498faa5f4fc215883b8200445011d8f"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/units.png",
+          "bytes": 17097,
+          "sha256": "898f9c35da30304a659b8870e0ec7de40b103a7775bd1d0604bbd72e6a5db475"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/units.svg",
+          "bytes": 135022,
+          "sha256": "179a2da605260a0b7129484115b52c01087926251ff93cf3ca537cdd1726ae59"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/validation.png",
+          "bytes": 43297,
+          "sha256": "44d63b90ad956621167507c701c7f7f388a6326a1fd3db25e10a69de51413d1b"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/validation.svg",
+          "bytes": 135641,
+          "sha256": "df04709b211d93b27d20e806361f979c65183d03d074eae80319dda445752e21"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/zones.png",
+          "bytes": 13109,
+          "sha256": "a9c3d211b4a5795138ade94e5fc13881a158a5e9bede5ed6909c2eab8e71fb50"
+        },
+        {
+          "path": "artifacts/site/assets/map-editor-review/zones.svg",
+          "bytes": 135022,
+          "sha256": "a4f9e1f5bdebe62083b5da5710d8f2b66792ef582f34152bd668151282c2f753"
+        },
+        {
+          "path": "artifacts/site/assets/persistent-workspace-m9-review/field-focus-geometry.svg",
+          "bytes": 10842,
+          "sha256": "1a72e3ec0a4b44a9d8531b0954f67fbe983600f5dcaa22170a124b02facd8051"
+        },
+        {
+          "path": "artifacts/site/assets/persistent-workspace-m9-review/field-focus.png",
+          "bytes": 119952,
+          "sha256": "9e7388276d1c7753dcf2e87446875eb494fd75adaa5928102409de0a60d88c27"
+        },
+        {
+          "path": "artifacts/site/assets/persistent-workspace-m9-review/manifest.json",
+          "bytes": 15507,
+          "sha256": "77d70acd02dabbd82a146ee1e45c160297763791fc5c0ef742e0658a68d9c792"
+        },
+        {
+          "path": "artifacts/site/assets/persistent-workspace-m9-review/README.html",
+          "bytes": 33465,
+          "sha256": "3ca1cb9262c83021dbf3494b6af0e566ed5b49d413e9a03575ac938ff54e3aa6"
+        },
+        {
+          "path": "artifacts/site/assets/persistent-workspace-m9-review/README.md",
+          "bytes": 615,
+          "sha256": "1696ffd665832aa19945b357d0467eaab1beb1e207d9f41a260a76bf1c7e1c58"
+        },
+        {
+          "path": "artifacts/site/assets/persistent-workspace-mockups/index.html",
+          "bytes": 23811,
+          "sha256": "b2b0d444202aa9c76235fa7277ba2c6a4e89d3d7dc0dd009abb8e73c72c82270"
+        },
+        {
+          "path": "artifacts/site/assets/persistent-workspace-mockups/mockups.css",
+          "bytes": 19377,
+          "sha256": "42fe748de9a51dfa7b35461b7f09aecd025366b5b5ace41661507a0ee500cf4f"
+        },
+        {
+          "path": "artifacts/site/assets/persistent-workspace-mockups/mockups.js",
+          "bytes": 4706,
+          "sha256": "280837b4769526bd54e9a40eca493ad0374c042b5abe8b09eb50418cca053feb"
+        },
+        {
+          "path": "artifacts/site/assets/svg-player-review/accessible-default.png",
+          "bytes": 50561,
+          "sha256": "11824c2993d6bf74b3bc14ffbf83ae99fae992741950a2715033e75b7b9f37ae"
+        },
+        {
+          "path": "artifacts/site/assets/svg-player-review/accessible-default.svg",
+          "bytes": 22403,
+          "sha256": "cb14eb9153162096d8461087a2db27644583e57e0a36856ebdbc13f2a87b9f40"
+        },
+        {
+          "path": "artifacts/site/assets/svg-player-review/high-contrast.png",
+          "bytes": 45874,
+          "sha256": "ae45878941b3bdda755f4007bd84b89289d1a440ee874333514ed021c1c96f58"
+        },
+        {
+          "path": "artifacts/site/assets/svg-player-review/high-contrast.svg",
+          "bytes": 22398,
+          "sha256": "897024d36a8aef58530636c82da335eaf1baa113ca2077bf50aa4b0f139c1e2e"
+        },
+        {
+          "path": "artifacts/site/assets/svg-player-review/manifest.json",
+          "bytes": 3215,
+          "sha256": "b5133ef6834911c4e3ddc710f77d358af6e11330478ae915d247c83e229a51a5"
+        },
+        {
+          "path": "artifacts/site/assets/svg-player-review/monochrome-pattern.png",
+          "bytes": 48078,
+          "sha256": "b5b1b6c19bf36710c005acf920432c97c1fb173682e1e2ef8f3a41bf5f99d109"
+        },
+        {
+          "path": "artifacts/site/assets/svg-player-review/monochrome-pattern.svg",
+          "bytes": 22397,
+          "sha256": "0af9336998ab156cccf337989a9a457fc660dd3c059a7c422d90d50a5b1af0d7"
+        },
+        {
+          "path": "artifacts/site/assets/svg-player-review/README.html",
+          "bytes": 38178,
+          "sha256": "527a53ec4fb102f9151c1585d6145f71549a027c7362a4f8eddc8894362366e3"
+        },
+        {
+          "path": "artifacts/site/assets/svg-player-review/README.md",
+          "bytes": 4730,
+          "sha256": "a0c361fe86ddb176559c38964ab106aa97f56f46fb34f05d3b5b670c11428b45"
+        },
+        {
+          "path": "artifacts/site/casualty-and-medical-architecture.html",
+          "bytes": 44426,
+          "sha256": "feaee18f226231c8795fd3877f6bb85b1a84fb1bfd5ec78cb4ea2655d5a9eba2"
+        },
+        {
+          "path": "artifacts/site/casualty-and-medical-architecture.md",
+          "bytes": 8769,
+          "sha256": "4b49272a5118531b773fd8d81ed9811fad5dc4a8ee4e255683221b34f1a4b03b"
+        },
+        {
+          "path": "artifacts/site/client-feature-loader.html",
+          "bytes": 35464,
+          "sha256": "e26522639d7ba9b9948d57c701f528a650234e840ebd4bd25faa9925a3b3f3a4"
+        },
+        {
+          "path": "artifacts/site/client-feature-loader.md",
+          "bytes": 2102,
+          "sha256": "0b6fc8d3a9543365a6f5f0d4b2d8aeac8a4a8bab69c601d72fa20632cc6817d6"
+        },
+        {
+          "path": "artifacts/site/codebase-architecture.html",
+          "bytes": 58302,
+          "sha256": "18bda31d4c3c1fb645764106f1b9de6971aff6e2f08c10347b166e6e9616fa70"
+        },
+        {
+          "path": "artifacts/site/codebase-architecture.md",
+          "bytes": 18687,
+          "sha256": "5e6450977f4290da1d071042f96af13f64c2f56fb3fd0b80422beb3ef2c087bc"
+        },
+        {
+          "path": "artifacts/site/combat-formulas.html",
+          "bytes": 59867,
+          "sha256": "32749287962c09e2213af7fa757c7a442e0a3066cabca7e1c9d472326e095f66"
+        },
+        {
+          "path": "artifacts/site/combat-formulas.md",
+          "bytes": 4601,
+          "sha256": "9736c91eb50d251cfccb9276c6e8c3586f451456fab97a1ec962f73f6913cf19"
+        },
+        {
+          "path": "artifacts/site/combat-resolution.html",
+          "bytes": 62717,
+          "sha256": "f3d74b14046d25a7d6310a7fa24c628503f4ae7362ffc00c944ebef94a4df400"
+        },
+        {
+          "path": "artifacts/site/combat-resolution.md",
+          "bytes": 22951,
+          "sha256": "921b2a301fdeb0d6709986d5fcf591545a6c28c213fd03d53cbc1431489f3a7b"
+        },
+        {
+          "path": "artifacts/site/communications-network.html",
+          "bytes": 68986,
+          "sha256": "70651a3a61bb447d3a880a63c88bf7d25b3ef350553b72d6d5b4b5aa5197c5ae"
+        },
+        {
+          "path": "artifacts/site/communications-network.md",
+          "bytes": 27083,
+          "sha256": "44da2fdc5994d8532af5984d64b856c767d8f299d3428d628bf6a3b3159efc94"
+        },
+        {
+          "path": "artifacts/site/content/fsdocs-copy-button.js",
+          "bytes": 2675,
+          "sha256": "9fcff339c4ddd2322b692a2b6a9b56051f8a1800b67dfcf0691082ee276d9539"
+        },
+        {
+          "path": "artifacts/site/content/fsdocs-default.css",
+          "bytes": 32634,
+          "sha256": "3e9f979a08f4c099636d22a73f173aed4880199274549a58b693314b3cbb8658"
+        },
+        {
+          "path": "artifacts/site/content/fsdocs-details-set-expanded.js",
+          "bytes": 280,
+          "sha256": "84dda8361e60f3db0753f1b7e41516ff0faebc79f93741bd9c559995b61396ec"
+        },
+        {
+          "path": "artifacts/site/content/fsdocs-details-toggle.js",
+          "bytes": 1717,
+          "sha256": "3302acea351941c416869cb59495a7c72f395b82366e17cf61f5bd560d16b666"
+        },
+        {
+          "path": "artifacts/site/content/fsdocs-search.js",
+          "bytes": 4589,
+          "sha256": "7ffb6d564ae2e2e1dec2f4bc0f0e9692007b593acfff1e8181b3a4bb69ed6a02"
+        },
+        {
+          "path": "artifacts/site/content/fsdocs-theme-set-dark.js",
+          "bytes": 146,
+          "sha256": "4aeb030257b7fc3b1b90867cf7ff6b13c1e369a952244e2f5608e7e4bbdafbd0"
+        },
+        {
+          "path": "artifacts/site/content/fsdocs-theme-toggle.js",
+          "bytes": 1196,
+          "sha256": "8309a44095fbe90659b983d5eec771f8c271ef7344d9ecc07162bbad2143b78a"
+        },
+        {
+          "path": "artifacts/site/content/fsdocs-theme.css",
+          "bytes": 13390,
+          "sha256": "0578a09c52fb15cc617e833e90990033f423911835235e133f7de3b4b7d8a218"
+        },
+        {
+          "path": "artifacts/site/content/fsdocs-theme.js",
+          "bytes": 1374,
+          "sha256": "f3c95d260fa067bb47bd640b597d5576723b10db923a4d60e2e91aabef7b5096"
+        },
+        {
+          "path": "artifacts/site/content/fsdocs-tips.js",
+          "bytes": 2604,
+          "sha256": "75e9ab63341271ff66871d81796d6f85781bfd2d6725f5837f935f6bdaf89404"
+        },
+        {
+          "path": "artifacts/site/content/img/github-pages-settings.png",
+          "bytes": 33534,
+          "sha256": "d48f54cfc45118e4642309cd67f664b5d2ecd730e45b002cd36c2716f75d84c0"
+        },
+        {
+          "path": "artifacts/site/content/sir-client/v1/app.js",
+          "bytes": 1216979,
+          "sha256": "3f8d91b6ba3fd98ea39eca24a4296083179e92069facccb287ad4364678ef4af"
+        },
+        {
+          "path": "artifacts/site/content/sir-client/v1/asset-manifest.json",
+          "bytes": 943,
+          "sha256": "53bd76cbe388628060cdd5439be3067b5b5d0a6f743e5ab1203291262bb8459e"
+        },
+        {
+          "path": "artifacts/site/content/sir-client/v1/deferred-delivery-support-CFKGOZNJ.js",
+          "bytes": 304,
+          "sha256": "15b5bb33b0a0c0b78dda96ccf726783400605dc188e64731ad0f6171fe2eb608"
+        },
+        {
+          "path": "artifacts/site/content/sir-client/v1/docs-feature-Cx7XDDoj.js",
+          "bytes": 473,
+          "sha256": "89faaf09c049c4f9dfbe2de0d2945b904a2b05a8ac709b2f20743649ca9ce258"
+        },
+        {
+          "path": "artifacts/site/content/sir-client/v1/RulesExplorer-CF50-GEm.js",
+          "bytes": 62976,
+          "sha256": "b2dd82ecbd45de59743a42f6c13bf5e36d5c13ed219c9b67f10ddb00278ddfab"
+        },
+        {
+          "path": "artifacts/site/content/sir-client/v1/styles.css",
+          "bytes": 31415,
+          "sha256": "35487427a953e672e2f69f46971320882dc4c768e5314105f816d19faa721b7e"
+        },
+        {
+          "path": "artifacts/site/content/sir-docs.js",
+          "bytes": 2689,
+          "sha256": "4c3dda74b4d1123ac711d2b9ac7bb6945e359345e62a3c9cb85b59de825f6eb3"
+        },
+        {
+          "path": "artifacts/site/control-abi-v1.json",
+          "bytes": 3945,
+          "sha256": "0f365abd87cc4ac533339ce67010de3892a4564d1758b72989b73dd391950770"
+        },
+        {
+          "path": "artifacts/site/control-abi.html",
+          "bytes": 53995,
+          "sha256": "02cddc73e78d12fc86298c60c7072ea36ba62279e10da3ffe030d87928619e60"
+        },
+        {
+          "path": "artifacts/site/control-abi.md",
+          "bytes": 12083,
+          "sha256": "6af6b7120863c12734821c2718190b5f040ac0b91067daf6acc0157c8a48011a"
+        },
+        {
+          "path": "artifacts/site/dependency-surface/FS.GG.Game.Core/0.13.0.json",
+          "bytes": 11894,
+          "sha256": "e688d74416c2003d99fdad08eb7e5a5545252ad19ddd4429f0474adabd690d57"
+        },
+        {
+          "path": "artifacts/site/deterministic-simulation.html",
+          "bytes": 43016,
+          "sha256": "67e4fd8bacb48117cb30eca5c3e2797fd8e7026556892094572bda222d159013"
+        },
+        {
+          "path": "artifacts/site/deterministic-simulation.md",
+          "bytes": 2297,
+          "sha256": "b3b0a0dc5ed80bf7a599c776772a754a1a21be9ed4dadd08401668b8d6934e3e"
+        },
+        {
+          "path": "artifacts/site/Dockerfile",
+          "bytes": 665,
+          "sha256": "ac941c5a5a3bda4e7ca40f20e7dffcd4f7e18e13d853c6aee51e11034b1aaffb"
+        },
+        {
+          "path": "artifacts/site/electronic-warfare.html",
+          "bytes": 55811,
+          "sha256": "c459e4c81f3ec6de249002b70fe40f927cdfc14456b541a1f1530456fa221739"
+        },
+        {
+          "path": "artifacts/site/electronic-warfare.md",
+          "bytes": 17400,
+          "sha256": "67917cd1d2a7a6a1f8e67be07c8c723dff0ff56feac3f7cf85025b239b89dc41"
+        },
+        {
+          "path": "artifacts/site/engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/worker.js",
+          "bytes": 291329,
+          "sha256": "855b73c2290d523af11259d8db901074ccbb7be32c9108e57130e59c428c615f"
+        },
+        {
+          "path": "artifacts/site/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
+          "bytes": 3039,
+          "sha256": "8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e"
+        },
+        {
+          "path": "artifacts/site/evidence/client-feature-bundle-graph-v1/988982597bff2888460b135b7074be362c7957804b043b16bc6e12b5c4068238.json",
+          "bytes": 3039,
+          "sha256": "988982597bff2888460b135b7074be362c7957804b043b16bc6e12b5c4068238"
+        },
+        {
+          "path": "artifacts/site/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+          "bytes": 2499,
+          "sha256": "d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f"
+        },
+        {
+          "path": "artifacts/site/evidence/production-build-receipt-v1/1363d1f1e0b1698823038c6a6a3b1f815321b2502bbb89cd857b1c00bff6f99d.json",
+          "bytes": 54944,
+          "sha256": "1363d1f1e0b1698823038c6a6a3b1f815321b2502bbb89cd857b1c00bff6f99d"
+        },
+        {
+          "path": "artifacts/site/evidence/production-build-receipt-v1/87cf06f6c4cf32abd997cd6796a62f22ff37022e7bca954cb28c5714a64dfeaf.json",
+          "bytes": 127501,
+          "sha256": "87cf06f6c4cf32abd997cd6796a62f22ff37022e7bca954cb28c5714a64dfeaf"
+        },
+        {
+          "path": "artifacts/site/evidence/production-build-receipt-v1/9942e1a78afd22143bd51325604f3047300c9557cbdbf33df6e6808c424d8671.json",
+          "bytes": 56228,
+          "sha256": "9942e1a78afd22143bd51325604f3047300c9557cbdbf33df6e6808c424d8671"
+        },
+        {
+          "path": "artifacts/site/evidence/production-build-receipt-v1/9c6cf215207977a351019d16ed9a8fd1c0469cfd18f7a43e3a05a28478dcdd02.json",
+          "bytes": 127501,
+          "sha256": "9c6cf215207977a351019d16ed9a8fd1c0469cfd18f7a43e3a05a28478dcdd02"
+        },
+        {
+          "path": "artifacts/site/executable-rules-corpus-architecture.html",
+          "bytes": 84644,
+          "sha256": "0bef5d20c60043ef6c9afefa1a0998d23e216b84729c8062a6fcfe3b90b8a0fa"
+        },
+        {
+          "path": "artifacts/site/executable-rules-corpus-architecture.md",
+          "bytes": 32151,
+          "sha256": "af1d6a787f134ff0bfa7d87cd7ce23c2a23f3f801b916c125959fb0088fee97a"
+        },
+        {
+          "path": "artifacts/site/fable-client-and-documentation.html",
+          "bytes": 162802,
+          "sha256": "b6973ebbbd922585a92efd33d0e0a3d16e7d978a89c397c76e4f1c7d18b66387"
+        },
+        {
+          "path": "artifacts/site/fable-client-and-documentation.md",
+          "bytes": 94860,
+          "sha256": "7042232955ef91435d78ef42545befd1db3ffcdad59137ca6dba6c9db1e475c1"
+        },
+        {
+          "path": "artifacts/site/formations-and-referents.html",
+          "bytes": 46869,
+          "sha256": "5caf6b21a726c0462d8c80b1a68b05320b92eb1bb61f43092f41e653d616a934"
+        },
+        {
+          "path": "artifacts/site/formations-and-referents.md",
+          "bytes": 10533,
+          "sha256": "1c6a0515f0e1d7833f110d8c0efe848150ae415201f234396c33e8470192fcd7"
+        },
+        {
+          "path": "artifacts/site/foundations.html",
+          "bytes": 42288,
+          "sha256": "61e5565387f5d96cbf86d3d5a04dffc44ac229246f0e55efa1f1d6c1566d19f7"
+        },
+        {
+          "path": "artifacts/site/foundations.md",
+          "bytes": 7913,
+          "sha256": "86a9a2317791647536448bb8dcf1e6a71433aa37b35b5274f645809ac7469585"
+        },
+        {
+          "path": "artifacts/site/game-governance.html",
+          "bytes": 35443,
+          "sha256": "05f2927b369be6482afb12401ff1d2a235fb6676bc33720350b8ee669c6dd358"
+        },
+        {
+          "path": "artifacts/site/game-governance.md",
+          "bytes": 1862,
+          "sha256": "755f8b2a974e328591d012adccfc39e877b9b7a70ccbf0ead122b40bbfc9b245"
+        },
+        {
+          "path": "artifacts/site/game-vision.html",
+          "bytes": 181096,
+          "sha256": "ceb2efb73b47e4e1f8009843a825af72324132deb990d50679a9df10e0803495"
+        },
+        {
+          "path": "artifacts/site/game-vision.md",
+          "bytes": 123813,
+          "sha256": "7de0048e8723783d1264dda3a0d3d73799ffe91f7c924fa4208007bb89fd0d92"
+        },
+        {
+          "path": "artifacts/site/gameplay-command-information.html",
+          "bytes": 54402,
+          "sha256": "8e34006e0141702df5fc52914084a9f5b1e80a8d61ddffcfd870b5e92d2b9d39"
+        },
+        {
+          "path": "artifacts/site/gameplay-command-information.md",
+          "bytes": 14432,
+          "sha256": "ab041ec88a64655f5b3bdb051d3dc01f96eb557d8a5f9f659ab6dd1c817d2f09"
+        },
+        {
+          "path": "artifacts/site/gameplay-formulas.html",
+          "bytes": 58031,
+          "sha256": "0d103d8614c5003f6ae42d5554854ba0093e1f2660388e7a17faa704361347eb"
+        },
+        {
+          "path": "artifacts/site/gameplay-formulas.md",
+          "bytes": 14798,
+          "sha256": "8a3a4633db5e037ce928f1c1a06d10a1c710af798cf02964cbf21d09d777910a"
+        },
+        {
+          "path": "artifacts/site/gameplay-magic.html",
+          "bytes": 52519,
+          "sha256": "3316d138c5b06a9b92767817c478db85dccab16d1ce5ac47d0803e4b0a2d62e2"
+        },
+        {
+          "path": "artifacts/site/gameplay-magic.md",
+          "bytes": 12434,
+          "sha256": "da99482d79fdef8920997562220b4d1c6daf6b4d9ab79ae1e67d68c8eb5c6eee"
+        },
+        {
+          "path": "artifacts/site/gameplay-reference.html",
+          "bytes": 48472,
+          "sha256": "7c9d482a40f167972d27c9d935ec6009ecf0ab97f11ffff1e8fa589a8b890e22"
+        },
+        {
+          "path": "artifacts/site/gameplay-reference.md",
+          "bytes": 9556,
+          "sha256": "be242425684d87cf41ceb9a681fe26ddb46c2dd9197ad5713ffb94d95f6a5e17"
+        },
+        {
+          "path": "artifacts/site/gameplay-testing.html",
+          "bytes": 64157,
+          "sha256": "bc14ac14b7e467643e16487bb4722d0d9c1db4ee8697a1df3a4cce1e2371a9f1"
+        },
+        {
+          "path": "artifacts/site/gameplay-testing.md",
+          "bytes": 15530,
+          "sha256": "e425da6e4ef6c0b96b84cfdf098f8b82919c7eecd3aebcb7b763d34d3bc6e27f"
+        },
+        {
+          "path": "artifacts/site/gameplay-units.html",
+          "bytes": 57340,
+          "sha256": "4ee35f5a70ae1891942cf85fc93fd732bc9c7f0a76ebd7cc8028e8bd8153ba96"
+        },
+        {
+          "path": "artifacts/site/gameplay-units.md",
+          "bytes": 14296,
+          "sha256": "b0227ef6d8065789bcc5c16ec2e885ccd12fc641fa1f4daf77fcc7fc299cbe42"
+        },
+        {
+          "path": "artifacts/site/gameplay-weapons-equipment.html",
+          "bytes": 53344,
+          "sha256": "1198aadf9d6cd1e604925260dea4002e2f26e656b610f00d42d38e0075f06538"
+        },
+        {
+          "path": "artifacts/site/gameplay-weapons-equipment.md",
+          "bytes": 11137,
+          "sha256": "726351ec654f18854e8e019025d78f0ac8db589b0d174f07c1f0349f6a3fb15b"
+        },
+        {
+          "path": "artifacts/site/human-capability-descriptors.html",
+          "bytes": 38041,
+          "sha256": "d7bd32158b7edeaa649318922f51aba0cd7aadc4cb66272be504c27c8d819e45"
+        },
+        {
+          "path": "artifacts/site/human-capability-descriptors.md",
+          "bytes": 3676,
+          "sha256": "d72d5981f35a0379295cbec8bc1f027b4aa0f7600729fbda0b67d9fc46b82bbc"
+        },
+        {
+          "path": "artifacts/site/human-forces.html",
+          "bytes": 65047,
+          "sha256": "0bd9bfd8f41f302472ed3fb24a8e639b007a56c79f508fe9c776281afed84976"
+        },
+        {
+          "path": "artifacts/site/human-forces.md",
+          "bytes": 23865,
+          "sha256": "2a46ef31b25bfec073f96e4355d6b14b42c49a2709cc6ea71d44fd280d360567"
+        },
+        {
+          "path": "artifacts/site/img/sir-mark.svg",
+          "bytes": 310,
+          "sha256": "c665e59823bf89f2bd3daf6e75325ebfb40fcdda0dc177a636b64dbe8ba650e2"
+        },
+        {
+          "path": "artifacts/site/index.html",
+          "bytes": 41615,
+          "sha256": "826c25f1a37d780f38cc70f6d961a8639916aac553a06041929b82e64fb6e5ff"
+        },
+        {
+          "path": "artifacts/site/index.json",
+          "bytes": 2074927,
+          "sha256": "e5c1e2eee8561a5b782d65edac1fd11a0f5f564ed36aa067640c565dfcbef5ef"
+        },
+        {
+          "path": "artifacts/site/index.md",
+          "bytes": 7692,
+          "sha256": "c2348bc47b456b5bdafc5b46f02c318a62e6ca983cfdee94ca07e1e1cc595f87"
+        },
+        {
+          "path": "artifacts/site/interactive-rules-lab.html",
+          "bytes": 34288,
+          "sha256": "e3fa8a623417e5ae65908e794e41d9e913dc3be3301cb9b3122f9219e99d343a"
+        },
+        {
+          "path": "artifacts/site/interactive-rules-lab.md",
+          "bytes": 1492,
+          "sha256": "989c99ebee81b469794c72d2206772203136a48c498315cf7322920da0480877"
+        },
+        {
+          "path": "artifacts/site/issue-138-fable-game-integration-report.html",
+          "bytes": 40582,
+          "sha256": "7699495aa038a874bba1ae37d985c5d3fd336751f1e7ba9308625ecc6b580073"
+        },
+        {
+          "path": "artifacts/site/issue-138-fable-game-integration-report.md",
+          "bytes": 5069,
+          "sha256": "c9d97f35af79c3b1c6b025198b20affba33f1689f55983d5575e1400bd7b7aea"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/context/adr-0028-keyboard-input-config-boundary.html",
+          "bytes": 40180,
+          "sha256": "564dac9f26c5d44e2352ccc162603fb668feb4e289a2ff7bb54a65093fbb907c"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/context/adr-0028-keyboard-input-config-boundary.md",
+          "bytes": 5564,
+          "sha256": "3452d17018abb6d819d72552a3dce1fd963123e75045bf495de6fd80f59aca10"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/context/current-keyboard-input-guidance.html",
+          "bytes": 59698,
+          "sha256": "de795842436a369da789599487640d942c16e53f8e4d824c7fd2cea27fb6d2cd"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/context/current-keyboard-input-guidance.md",
+          "bytes": 11205,
+          "sha256": "03f2701645153ca0d6481c37f76d6c89a51ff1f8a4ab625f245e3117630b68c8"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/context/DefaultKeymap.fsi",
+          "bytes": 2481,
+          "sha256": "dba808b60fd1072c2a3b556b9e8d4c121906f304265ffae03adcf451a82260af"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/context/design-and-controls.html",
+          "bytes": 39733,
+          "sha256": "f414482c8d8f665719ed7f15c470416a0ae08cfaeedafdeb59155860a43294c4"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/context/design-and-controls.md",
+          "bytes": 4705,
+          "sha256": "b8c59f212f188719f4d3e7113c33a74bf9eef74aa4c68e7c509782f01d2005df"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/context/InputCommand.fsi",
+          "bytes": 3218,
+          "sha256": "f6bbc564c2d9d2c9dddae0d874ee48ddcf0706a5e6989a1edaf7d5e8da51f901"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/editor-simulator-current-input-baseline.html",
+          "bytes": 47405,
+          "sha256": "9bfc21fe3ea9e11af895ff5821947bf578500530053b57c4868e808f0ca55ff9"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/editor-simulator-current-input-baseline.md",
+          "bytes": 9205,
+          "sha256": "dabeea778848b042348571285600ec89a2f27f3f23ab341e57da593b2054b339"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/editor-simulator-modal-input-proposal.html",
+          "bytes": 76854,
+          "sha256": "6a3a7b1cc448eb62a80da092fbc36354b2e3d5880b84dac371b24bbee994edf0"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/editor-simulator-modal-input-proposal.md",
+          "bytes": 27498,
+          "sha256": "841114f5ed517460243b2c01b83ea1f9627e102082dbb75f7ff3730ac904c7c5"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/editor-simulator-modal-key-vocabulary.html",
+          "bytes": 95567,
+          "sha256": "6546a1abac543196c45f7119bb8103abecefcdaa2cbc77b1d1320673aaca6521"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/editor-simulator-modal-key-vocabulary.md",
+          "bytes": 25393,
+          "sha256": "6374f8de1118e42bd323261a16e2be276ba78f64cdbb3f15cee94bbfcf584874"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/historical/src/Input/Input.fsproj",
+          "bytes": 950,
+          "sha256": "3cb94c88268053373007834dd1de0089d2ebd5c63c44510999ec365512bb6fab"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/historical/src/Input/KeyboardInput.fs",
+          "bytes": 57822,
+          "sha256": "1d54b5537ceabd9c1f96baa1bbdc87e657ab0e1161aa7c46e30c0aa6142f6802"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/historical/src/Input/KeyboardInput.fsi",
+          "bytes": 14127,
+          "sha256": "08d5d211de5a821b119d35a84f9eb8e1db345fed212a0c458e364a9bf752c8ba"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/historical/src/Input/README.html",
+          "bytes": 41908,
+          "sha256": "9221470563d9982b004f61b7fd14fca04d85efc93103e7882bc117438553ec5e"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/historical/src/Input/README.md",
+          "bytes": 3638,
+          "sha256": "06b096973614670f5b61bc6fa032bbb1d775a26eaee5c23557373358fddb2cae"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/historical/tests/Input.Tests/Input.Tests.fsproj",
+          "bytes": 829,
+          "sha256": "1ad024d417450f46c785fb249abaae1c88a99bf112ea75207237acf0bddf2da6"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/historical/tests/Input.Tests/KeyboardInputTests.fs",
+          "bytes": 24467,
+          "sha256": "7f21a60234c951cd1adebce17560cde22fa0c6d5032fd5e9514ff4103ef1e3e2"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/historical/tests/Input.Tests/Program.fs",
+          "bytes": 116,
+          "sha256": "815de9dc44d6c247e5c2b9bf37bd75ca66761a3db717b65a9aca5f44e1031611"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/PROVENANCE.html",
+          "bytes": 37364,
+          "sha256": "0f215e04926b1ca59c556a5cb4531c25b9ce273d13bde0b5e8219f6de0a02b4b"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/PROVENANCE.md",
+          "bytes": 2790,
+          "sha256": "3101778c4224e513d39d03a86c751a1390c8c05bd2bbb4c7b7b1d1158dd54ef8"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/README.html",
+          "bytes": 40529,
+          "sha256": "f1756683578b4269cdd3709b8c3f423c99c176776e412833d3e04db1160dcf63"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/README.md",
+          "bytes": 5389,
+          "sha256": "f5b2f85f9f1636010f73a72f60bd380f87468aba69e8a245c2d972d63164b875"
+        },
+        {
+          "path": "artifacts/site/keyboardInput/SOURCE-LICENSE-MIT.txt",
+          "bytes": 1067,
+          "sha256": "794df76bf37187d5362b0f8ebe229ba57a98af2c02db0106820090c33c2ef124"
+        },
+        {
+          "path": "artifacts/site/live-integration-qualification.html",
+          "bytes": 40142,
+          "sha256": "33c40668560c903bb568aca263f6f95265c73da840c97d4c024d2b52a7350a03"
+        },
+        {
+          "path": "artifacts/site/live-integration-qualification.md",
+          "bytes": 5414,
+          "sha256": "a95fa747de028d9720de0b9ec7f3528a6e84b3555d6e97be64f060abe5623164"
+        },
+        {
+          "path": "artifacts/site/llms-full.txt",
+          "bytes": 1835505,
+          "sha256": "591c4697df569b64fec22ed9398622ea6274e22b4ac2e6cb3b137a5ede686de0"
+        },
+        {
+          "path": "artifacts/site/llms.txt",
+          "bytes": 37193,
+          "sha256": "a8594cc221584f289aebba750626a9eda6405009a0095e432e0b3bd723abdc95"
+        },
+        {
+          "path": "artifacts/site/logistics-architecture.html",
+          "bytes": 46884,
+          "sha256": "a8d54a59be9212b2483655ec11131ac11bebf82dab11b2243e52745afa7a5cc6"
+        },
+        {
+          "path": "artifacts/site/logistics-architecture.md",
+          "bytes": 9849,
+          "sha256": "dc81bcc79bfa052edb6bb6c777e3c5f3b6ff0f22df41e2ee644e4be137c659ef"
+        },
+        {
+          "path": "artifacts/site/magic-system.html",
+          "bytes": 54918,
+          "sha256": "94ec1cf7af9dbda7305f6da355c6c91fb6505e04153991dbf62dfbdb42d95f12"
+        },
+        {
+          "path": "artifacts/site/magic-system.md",
+          "bytes": 16881,
+          "sha256": "b0219b44e9999258b1e94e1b675babbd1dd6db536c3a187429460fdee99d4229"
+        },
+        {
+          "path": "artifacts/site/map-editor-qualification.html",
+          "bytes": 37226,
+          "sha256": "7b00d2cb31ff7b3c2cb364c00754c03a6641396e678d62aea38d38c542f31ff1"
+        },
+        {
+          "path": "artifacts/site/map-editor-qualification.md",
+          "bytes": 3384,
+          "sha256": "c0bdc82250a4b5f49d7689baff64775121909bafda40629ef1d8a4c3edfc327e"
+        },
+        {
+          "path": "artifacts/site/map-editor.html",
+          "bytes": 94392,
+          "sha256": "e95a19708214462c6985d4a465512499a3050b5c51d3bd22f877bb0dedc9e786"
+        },
+        {
+          "path": "artifacts/site/map-editor.md",
+          "bytes": 46536,
+          "sha256": "c4ac321997f53c9761a94be9eda240459a19083b69dccfa429d77090b3690d63"
+        },
+        {
+          "path": "artifacts/site/mission-lifecycle.html",
+          "bytes": 52458,
+          "sha256": "e479994e3acbf556dafaac9caf1b2846d5f36ba68d13f9053cea757fd7e804ac"
+        },
+        {
+          "path": "artifacts/site/mission-lifecycle.md",
+          "bytes": 12650,
+          "sha256": "913a95365c8f9b343f0fcd2e00c571bb70a75928f7099a45c5e9c3841e95545b"
+        },
+        {
+          "path": "artifacts/site/NuGet.config",
+          "bytes": 710,
+          "sha256": "8593b80d51e4d62c625ddef714d7f2fc7737cf86f3ab04dec7fb099dd1618e51"
+        },
+        {
+          "path": "artifacts/site/performance-budget.html",
+          "bytes": 63364,
+          "sha256": "0d6b231b25b83cbc86a0e401ef50033a2003e25b33ba2cf42516df144662ce99"
+        },
+        {
+          "path": "artifacts/site/performance-budget.md",
+          "bytes": 22644,
+          "sha256": "19cb0205e2e14a222a418365e131d91b9bb031e575aedde044eae00b5b8185a4"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m0-baseline.html",
+          "bytes": 57614,
+          "sha256": "c9530b980ad8dbda9c06e218657000c020bc63339ab736296590a5d0d4b17262"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m0-baseline.md",
+          "bytes": 19139,
+          "sha256": "583d4a047bae5bf1878b634075626fdef93c78f6fa7783fc2b69fa019906d368"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m1-shell-layout-evidence.html",
+          "bytes": 42255,
+          "sha256": "8a8e3dd355c0c8789eaa656bac1dc3d61d771b2abbd1f09b7ddb50005f9171de"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m1-shell-layout-evidence.md",
+          "bytes": 7699,
+          "sha256": "40ae8e63a6fec198f02fce4f07d5edfe4ff6e755c45332ca2738d950b61b2f12"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m2-scene-projection-evidence.html",
+          "bytes": 42753,
+          "sha256": "8ec34c1e4520bf916de8b57bc271fae6bb1b75ac14abcc82d3372b1687414da9"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m2-scene-projection-evidence.md",
+          "bytes": 7341,
+          "sha256": "e4607305d92e7e80d39aa92d19924a5429658382114ef8d105aba7014f2fec45"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m3-svg-renderer-evidence.html",
+          "bytes": 43144,
+          "sha256": "8ee5631900ec45163c5cb29125bb9da57cace1271071e016d2ae071823fc190d"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m3-svg-renderer-evidence.md",
+          "bytes": 7899,
+          "sha256": "9affab6d610daee4728413c4001e5814a0849cff3d8d58eb6f2d5d2c235e0f2a"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m4-editor-migration-evidence.html",
+          "bytes": 38559,
+          "sha256": "cf166612d86f459e7f60120dd660194f4e03e87d762fe77167b162d72779283a"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m4-editor-migration-evidence.md",
+          "bytes": 3971,
+          "sha256": "cd38a4eea7ccada607c0e493a57add576d7a45982d9da1bccbf717d9989aa7dc"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m5-planner-migration-evidence.html",
+          "bytes": 38886,
+          "sha256": "fb6cd565cb3bb12128146492200e6cf35cae58674b89e4151ea421e173f71c6a"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m5-planner-migration-evidence.md",
+          "bytes": 4380,
+          "sha256": "b6dc4a84e2ea407f595568844965823c275736f2918a3f8f63686bb7baf23056"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m6-simulator-migration-evidence.html",
+          "bytes": 40888,
+          "sha256": "f2f9c9411bc8a1ea05c61dbc88030085d03d73bc2b6b8c9fc2b8bafb45f10e10"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m6-simulator-migration-evidence.md",
+          "bytes": 5959,
+          "sha256": "36a75465dbebfbbd96bf24f0bd24c42da38330049ab7b2bcbe41f91dc617e30b"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m7-review-migration-evidence.html",
+          "bytes": 41639,
+          "sha256": "bd5f72584e1b0ba028284b6c45635ce2e03f6ce5c805159094eae31897b66993"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m7-review-migration-evidence.md",
+          "bytes": 6590,
+          "sha256": "3b6f1ed6d76c1731a77fe46f19ee480d28b87d822451a4991d006ce76734c3f4"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m8-timeline-supporting-panels-evidence.html",
+          "bytes": 39189,
+          "sha256": "0cc1c11ea04a76750ba5d138581acb470296656e2634a804aa8c57ef63bb83fc"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m8-timeline-supporting-panels-evidence.md",
+          "bytes": 4813,
+          "sha256": "9ea25cd2fb7a819e722a3143a3e40916fbe40616940cb19f7235aef4114abd39"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m9-acceptance-evidence.html",
+          "bytes": 40275,
+          "sha256": "2ced5c1eb585617ba1584216ece1545d547d5d8782ccd9c558593a083cd6581a"
+        },
+        {
+          "path": "artifacts/site/persistent-tactical-workspace-m9-acceptance-evidence.md",
+          "bytes": 5951,
+          "sha256": "4375f8adb24af8b7e616a4f1eecaa5011ddf4d09b219e03877d618124f4d572a"
+        },
+        {
+          "path": "artifacts/site/planning-workspace.html",
+          "bytes": 39670,
+          "sha256": "33cbc63befd2d20a7c25985000c93613b7fa5dc1047e8cf5041d7a6534c9c562"
+        },
+        {
+          "path": "artifacts/site/planning-workspace.md",
+          "bytes": 5415,
+          "sha256": "e17213013a5016b102fa39bae26eb9ccd322d9faecdd47791803e68402c4a208"
+        },
+        {
+          "path": "artifacts/site/production-qualification.html",
+          "bytes": 38263,
+          "sha256": "b757f0b67407a0b316645b7d58dc1c49e8840971cbe3e5d96b0312e7b223e2ab"
+        },
+        {
+          "path": "artifacts/site/production-qualification.md",
+          "bytes": 4424,
+          "sha256": "1b13c7e337f23ce00ec5c227f9fa535798c409d90d3d4704af4e5e056fe1b493"
+        },
+        {
+          "path": "artifacts/site/public-protocol-architecture.html",
+          "bytes": 59890,
+          "sha256": "f9bdf89c6417da3310362b187531323e8b3d936ad4b267f58f666e3f74d1da68"
+        },
+        {
+          "path": "artifacts/site/public-protocol-architecture.md",
+          "bytes": 19955,
+          "sha256": "55b90e99dbb53abd53e2652a47c1f356a32ea5a92c258d8be8e29b9c919de3a8"
+        },
+        {
+          "path": "artifacts/site/publication-manifest.json",
+          "bytes": 1257,
+          "sha256": "19a9ad074ec8dfae3aee58ec493a510094eb7007d32ecfd79421d5ad3711b36b"
+        },
+        {
+          "path": "artifacts/site/reference/index.html",
+          "bytes": 34048,
+          "sha256": "dbbb8504b32876d416c242ab4201dbd8c21c9920a3dac370321969deba7cd01c"
+        },
+        {
+          "path": "artifacts/site/reference/sir-client-liveclientboundary.html",
+          "bytes": 35493,
+          "sha256": "fc67075a91bbcd481c0454fb5e7df304230e91bacf24a9d1743db4cc0fe14024"
+        },
+        {
+          "path": "artifacts/site/reference/sir-client.html",
+          "bytes": 34393,
+          "sha256": "d81c463a1100a2a60b071cf194836f5f3be226f0a8fc5f73b697a0745e977b07"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-actionfailure.html",
+          "bytes": 59523,
+          "sha256": "6c9002a0ef14bb8b40a035a7d371cad94545157d4122ab88949f0943a0c8c010"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-decodeerror.html",
+          "bytes": 93513,
+          "sha256": "60e2b7e6ab6dde0791be37d1584cd00319f1d0c222b075c29b20336690199bec"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-directioncode.html",
+          "bytes": 49633,
+          "sha256": "eff989a9896486305059875d88b8909ee73723cb5f8ad0cc48a49c430b98f9c8"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-emissionpolicy.html",
+          "bytes": 40093,
+          "sha256": "82e76eeb526ad0d33a407fca638299c11b2c9d5c8e09906dc214c7a30040269f"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-engagementoperation.html",
+          "bytes": 38253,
+          "sha256": "349a1a8d96a848178728b9ddad6806780fea343370b69130eb53f81425ed6247"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-envelope.html",
+          "bytes": 46373,
+          "sha256": "453e3d716184f985c34f08701042993119516e20daa8da7161bb336ef6b78fb1"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-eventkind.html",
+          "bytes": 88477,
+          "sha256": "43fad16f91186f7dca4a46b707c47d40d1dc8d317bee31a3f59886b1df339c46"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-formationoperation.html",
+          "bytes": 40217,
+          "sha256": "140b8578772a991484df3e022208174ea274557646bcf79064aa4c66cf8c4e23"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-invocationfailure.html",
+          "bytes": 52047,
+          "sha256": "dafca51b1a8daf7aac3cfbf499c4a03d84fbef50df5836d644061c7ade3c3434"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-messagekind.html",
+          "bytes": 41044,
+          "sha256": "41749e969fa571db7b8860db4f72f7e1604fc7d37cafbf88756672961a5454da"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-modulestatus.html",
+          "bytes": 46049,
+          "sha256": "2f9469d9299c44dd4b76964cb6ebb66a5a949315aa021b172199617fe2ae6a21"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-movementposture.html",
+          "bytes": 40117,
+          "sha256": "31c75411dc71de430a4d432070d308c51546a652ed42f5c618c6730020aeca92"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-outputmessage.html",
+          "bytes": 38333,
+          "sha256": "33769afb7dbe65fd86ce6c65c6ec62f92e0fee5c2adb0ca78aac4cf06c4789fc"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-request.html",
+          "bytes": 39758,
+          "sha256": "8d1e8dd2e57e77622dfc3282933035cff25bcfc707116b951bde2d288fa36e21"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-requestfailure.html",
+          "bytes": 65649,
+          "sha256": "d8b9ba3c21801b72584704dadf5633a0576c035f422298cbfa62776a7399ed90"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-requestkind.html",
+          "bytes": 57457,
+          "sha256": "10eff78974f149ae09e7b6b2ff7966cc0a56885e8d15569bc4bd41fdd209e441"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-section.html",
+          "bytes": 41125,
+          "sha256": "2f7932ce283a610365891cae1722f8d72a06d2fc66cab8cc695edf852ca1702f"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-servicekind.html",
+          "bytes": 36255,
+          "sha256": "944593428a0c5a02bad76206bb918795cdf1e8e73edd9839c6fc53d3e1aac418"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-targetkind.html",
+          "bytes": 43809,
+          "sha256": "015416a3483419ed5f9ec7b243a38b3acb0f710c1f325bab71b5428778b64732"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-v1codec.html",
+          "bytes": 77824,
+          "sha256": "18227a5a6efd244695cb59ea6b5a9119a41611bea9ba4e5720a0ba70194e4d25"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi-v1constants.html",
+          "bytes": 70289,
+          "sha256": "eceac412d3471233f11100f225eb91e4ca294e9943dce999df57180b9229a2cb"
+        },
+        {
+          "path": "artifacts/site/reference/sir-controlabi.html",
+          "bytes": 62923,
+          "sha256": "e8b5ad3de9d403a0c768110122d40ec8c5c34cc45e1a4d4b9a45b7df5f43782e"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-algorithmcontract.html",
+          "bytes": 44816,
+          "sha256": "4548f7d11f4da69707a661ef6f4428a72ec1aca7da5ed322abfd05a7e0533232"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-areareferent.html",
+          "bytes": 36700,
+          "sha256": "983a7d11e62e4ca80a4f209cde4978e7b66130b4cf95e7ff12596181977a96d2"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-assembledenvironment.html",
+          "bytes": 54121,
+          "sha256": "3c6e773b91b0465312bafcb83b1053296b18ea0246afe8c4647a9cbe509cbe58"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-assemblycounters.html",
+          "bytes": 42619,
+          "sha256": "15ff1c9d9919c9f216f230a62aa05e8ad9f0f455379e2f529c92f4bdce2c9581"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-attentionintent.html",
+          "bytes": 57076,
+          "sha256": "2e8d5e9595b1bd162284d8419103ab2b34bff27b621ff2870fccf824d39e2d36"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-authoredplot.html",
+          "bytes": 42797,
+          "sha256": "51b88f3daf64f474f1923cdbfea8c754d35cf0854befc0b469e5028cf02aac79"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-authoredunitloadout.html",
+          "bytes": 41302,
+          "sha256": "3cdeb61b45191d8000df3a2c91ef1d6549f5a5e78b86461c5937835580f5a1e3"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-authoritativeprojectionframe.html",
+          "bytes": 45256,
+          "sha256": "f244b7c027a6084cc14576ac3af7c74057ed1a278cae5c0d293cbdf08550b685"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-boundedint32.html",
+          "bytes": 38716,
+          "sha256": "89ebd5fe69d07b6529aa738c96873f9be5d18d1c43e4c11a7858db234d56d7a2"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-boundedint32error.html",
+          "bytes": 46981,
+          "sha256": "070cee2116ebc265a0f867687828b57aaec88ed0bdcf59adce04f89f89c3ce10"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-boundedint32module.html",
+          "bytes": 58323,
+          "sha256": "29fb8cc9eb41b7babc75171d72f2d83128b5183cc347c26d1f4a4f1153881c3f"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-canonicalencoding.html",
+          "bytes": 55262,
+          "sha256": "fc7ba58403809cf07bf581a6b2218708e0f0d86ee15edc7df1be30f58ba8d3f5"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-canonicalhash.html",
+          "bytes": 37076,
+          "sha256": "7c115d3a5f6f4fa85c0f506b2c8ceea1f2fb40c6dc399f0ed8140cf8fb2b8c08"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-capabilityinterruptionrule.html",
+          "bytes": 41364,
+          "sha256": "356bd7621bcfebc7639b184c01a31ca4a0539bdf91505c7b7be39ed1e3597c4d"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-capabilitytargetcontract.html",
+          "bytes": 41231,
+          "sha256": "c7372fe16ebd9b86c70c6d7104994cbbf0f57ba9ee522d5f78cf37f86600e337"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-controlledstatement.html",
+          "bytes": 41026,
+          "sha256": "3ed967417e5dc6b7e9ff964eb4d7fb154d33b79e2dbb5fbbbdb2f7a548e2ba33"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-direction8.html",
+          "bytes": 58957,
+          "sha256": "6d284a54174dc6b2a63652d39f86e3de62f0e5a418914fb13f6834e75dbb5cc7"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-direction8module.html",
+          "bytes": 53884,
+          "sha256": "06b4a8c7c1293994da7aef36ce11a98fbbee915c9102edf4d9e6fc37c3d76ccc"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-directionalcover.html",
+          "bytes": 42985,
+          "sha256": "718a81ed3ff29127a54292c56852381f96b776218768a1830ea89f0664a5ebfd"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentaction.html",
+          "bytes": 50870,
+          "sha256": "9c5e8518101839047ce9e7060a0d088d3ac852a54ded54609b0b6346fc89cd68"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentactioncounters.html",
+          "bytes": 41090,
+          "sha256": "96cfa555a52aa2e5a343eabf6ddaf728c2108bb8a54c2a6a19e36c060b40f9a6"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentactionfailure.html",
+          "bytes": 50198,
+          "sha256": "56e2cecf430b063f5758c1e313c78775dafa9af32455a25814c6ff6a368484a5"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentactionresult.html",
+          "bytes": 40159,
+          "sha256": "525c217f605b7882b5684a6258395e11364d1e98358241c31f805a62596c411d"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentcapability.html",
+          "bytes": 41100,
+          "sha256": "937677ebabc8478b12c97dc8d099124a054a9ed60d6d1a9844aa717a02ce3e95"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentcell.html",
+          "bytes": 37794,
+          "sha256": "0e2d21308b6ea124ba8c3fd612f59cacde764253772ca75112788193fbeb7ce9"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentedge.html",
+          "bytes": 38084,
+          "sha256": "d0f40f8a36a84b48c4cbf175c5f75cc77a842cbda61ba39886674f08304c8c82"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentedgedirection.html",
+          "bytes": 40815,
+          "sha256": "52d8810ed5d27897645fe21d4a46b8a36d642332df158eca5517f918f9e91bcc"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentfeature.html",
+          "bytes": 51163,
+          "sha256": "382b6c0a5a178c119502a1b26a82c3ef70dea42972400a91b6339a77656af710"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentfeaturekind.html",
+          "bytes": 46789,
+          "sha256": "9b442ae0687bceb12ab743d6bf57c7c9e99e5a9525b0ed95b370f22901edb18f"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentfeaturestate.html",
+          "bytes": 52861,
+          "sha256": "7940b13989efcdf140824225dd07b17ed70de82f54b5a2c07b85b121e05cd40d"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentknowledge.html",
+          "bytes": 43657,
+          "sha256": "7385005e40653ac6f9be700a12116a7887e447247fc3e2bbd32a3abaf329e8e3"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentmodality.html",
+          "bytes": 56473,
+          "sha256": "e1be5f073e6980c4af37c9f2978781cc26d09e912dea29320bea221509b6fddc"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentobservation.html",
+          "bytes": 48688,
+          "sha256": "2aa06b7a8d093469127d344f38cc0d389b55327f136d50c28e7620fd2d8c2108"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentpermeability.html",
+          "bytes": 45981,
+          "sha256": "f0a21bb68441b133662f20546e0e3449ffdc9bd4cf4f9cbc06eb110c80eb5b91"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentvalidationcode.html",
+          "bytes": 68618,
+          "sha256": "a7e90d61d116b44d425ba6a0e251726f410658078baf73d11871b671af91ecd4"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-environmentvalidationfinding.html",
+          "bytes": 39677,
+          "sha256": "1dc4ea6c3ed016beb7ca97c6ffbb2deca88ba922dfd5a5e5bd7db99646e53652"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-evaluationerror.html",
+          "bytes": 52721,
+          "sha256": "a9fc59e0e9dfdd718a8bfb0cb4318f281dfe5f0f4827a459c925bce7b41aef31"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-facingintent.html",
+          "bytes": 49000,
+          "sha256": "ac695022635c70fe282efe56d9647a28762b962c5393762107171a74ff51afc7"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-fixedpoint.html",
+          "bytes": 33308,
+          "sha256": "6a7a2024873e0c69b01387766fca7dac382a588ce701fdd2afa5267d536f82bb"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-fixedpointerror.html",
+          "bytes": 36024,
+          "sha256": "174ecf3de7b1c5f0c8746a799b3c2e0ad2a806bcd64f7501812c50ec51da845c"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-fixedpointmodule.html",
+          "bytes": 59635,
+          "sha256": "88b3cec42f3040a7a46a5c674c526c7157eb1c8ab3ba725a7e665bacc2365161"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-formulaexpr.html",
+          "bytes": 87085,
+          "sha256": "2edc64135d81ba31c86463220e173657a10916ff0d7c9143a3d0ba3b07d8bbf4"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-humancapabilities.html",
+          "bytes": 50125,
+          "sha256": "120c195312ca03cf6f20ef84ddda37f88646801418d1dfcf6f64618004981e34"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-humanweaponcapabilitydescriptor.html",
+          "bytes": 53510,
+          "sha256": "61e0b9acb651a220a79c6da2c7654bc9eeef30822954aae6ca9184cea5d53498"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-parcelconnection.html",
+          "bytes": 41448,
+          "sha256": "1aebc9b6a9e099a1f47f32a4a51e910cfaed672fe99e08dd0c7575319543d352"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-parcelplacement.html",
+          "bytes": 41434,
+          "sha256": "1af1a8fd55e22ff859111531c2505f9ad8fc36108ec76c03bf0412005d773f33"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-parceltransform.html",
+          "bytes": 46859,
+          "sha256": "83652b69890d3c9ae5aa14561dd22326b940262dbb631dc49494066d1a8ecd9d"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-parcelvariant.html",
+          "bytes": 48626,
+          "sha256": "6539a4ccd5975ebdb4952b78774abdacbb3b8caac710a262835f8dda0b118e80"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-plotslot.html",
+          "bytes": 46181,
+          "sha256": "5f099a067a7229d8f3498a2c8ff9e7f42ac6f4f2da8b74095201752185ff2c39"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-qualifiedvisibleunit.html",
+          "bytes": 41254,
+          "sha256": "3d3e6cd56a342b0ebf294038aa01a6317b541fd586a45a6c6173ff73e3010a7b"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-registryerror.html",
+          "bytes": 66660,
+          "sha256": "b2f91552e6c83759be4a10c77bb11a5de45a1b81cb624b72b705665171e8b891"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-resolvedorientation.html",
+          "bytes": 40259,
+          "sha256": "8f2fffd45e89424469307425c21cb025d0bed1257e31a76995f654db46449165"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-ruleapplication.html",
+          "bytes": 46058,
+          "sha256": "e59d3ee26febb14f5b5e85ce0d19dcbbe4f7e548e36908da36ecef231f4e60ad"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-ruledefinition.html",
+          "bytes": 37319,
+          "sha256": "11d7828c30816a863857e13de6c92e92e958e5faa7a998ad451fd558581855c7"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-ruleid.html",
+          "bytes": 33861,
+          "sha256": "27411724d88a43df2e4c8cd65d51921bbc5a3410ddc0d1d088c63843a9eeb767"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-ruleidmodule.html",
+          "bytes": 38939,
+          "sha256": "25374d52f8852ed6bf64ffa4725e5b4b66a85671509ae760a5c5adb634029cfa"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-rulekind.html",
+          "bytes": 52715,
+          "sha256": "2c766d82aa517bfd81b3c31267719d8e69e774daf7fabdac260670bc29df4d1d"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-rulemetadata.html",
+          "bytes": 55358,
+          "sha256": "02307f9a8262f82f229dcfcbd1446efaccea252de748f87fa78b0ecf7815de31"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-rulepackageidentity.html",
+          "bytes": 47722,
+          "sha256": "b72a0da3cd3d59d8a1d6e5b4cc91d90b2dad40785bd2cb6a42cf8ff82d739eac"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-rules.html",
+          "bytes": 72017,
+          "sha256": "827c7ffc2c6d6509b86201a7bebabcff226eeff4acf26a0df3d06bd15f983d9f"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-rulesemantics.html",
+          "bytes": 58513,
+          "sha256": "869489c52c70d6599241c8601693a8a046d8c697c961a1b997d916f8cb137dc1"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-rulestatus.html",
+          "bytes": 49782,
+          "sha256": "03370355ea3d91b4cf5d516d13494e8bb3f465154a1e5da1b8bcc154c0c47ae2"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-rulevalue.html",
+          "bytes": 48742,
+          "sha256": "8b5772376f1c12154be7f8db2abb1e11e422ebf828e7ce47354c409cbd5c996d"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-rulevaluekind.html",
+          "bytes": 46727,
+          "sha256": "919999f7b92e5c813b3b12e407be34fa9fb850b74336c68fb552251d2f3f35d7"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-sourceref.html",
+          "bytes": 39203,
+          "sha256": "d211d7c70009931770dbdf14a238b3c286248d64d2accb7e2657227b0565b9ae"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-spatialauthorityidentity.html",
+          "bytes": 42788,
+          "sha256": "4e6c011f5625cf389fdea230399f43e91269f4586530ba11bbb92c25c34c1c1e"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-spatialauthorityidentitymodule.html",
+          "bytes": 43564,
+          "sha256": "12ed5e7c3d7930ae27ab998fd0556a552dfca9ab840a3fb04c7f6802c3ba999d"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-tacticalenvironment.html",
+          "bytes": 49027,
+          "sha256": "f7857a9e9696c633e8dfc4387d9d2119014d690672f9faed3067eb4bd2f38574"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-transitioncontract.html",
+          "bytes": 42821,
+          "sha256": "0e3b386c42ada22f945639711418776a4b1a1dd4e4ba0e88f89c3a06bdac499a"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-typedvalue.html",
+          "bytes": 38882,
+          "sha256": "6834692cd551128576c6326f92dac1bfdeae89d80073f3c316d6d3f0833b8b43"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-unitid.html",
+          "bytes": 34168,
+          "sha256": "9d0ef0b6551af4ff4e8145abd4bacb62e4802df3a1d300591338278e203e89a6"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain-unitidmodule.html",
+          "bytes": 38651,
+          "sha256": "90811b265c338433232ad54841f3cc3fc397d5c9f9a2e044216a2903effa3cca"
+        },
+        {
+          "path": "artifacts/site/reference/sir-domain.html",
+          "bytes": 136853,
+          "sha256": "53b4cdf0787fa78bfd1ffcd0c2ebff4ba5edf07da1870323b3a212cd41f3255c"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-acceptedplanningartifact.html",
+          "bytes": 46410,
+          "sha256": "d0294f31b0d678229203f5fc9b1f2a0c6c88c2551e68e2bae2407cac7e6cf672"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-awarenessprojection.html",
+          "bytes": 38242,
+          "sha256": "a0de7a9347785eb32f452b83d0e5a5c6636e70ad0e7119de9cf8838fc06c6217"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-compiledcontrolartifact.html",
+          "bytes": 37549,
+          "sha256": "1b5a37996d0b22242ec54de6a007bdf12a8738fc7f1f9f85f67f285cef0cd991"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-compiledplan.html",
+          "bytes": 39788,
+          "sha256": "f72a114c0b0168136d1996f388bd44c0f79af5560950f05bcd3e127376920c92"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-compiledunitplan.html",
+          "bytes": 39754,
+          "sha256": "721e74fecdd0a835a14d58c23657823b669903d2e7e8f77d682c348bcc8e9e08"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-controlbudgetjournal.html",
+          "bytes": 39551,
+          "sha256": "4bb60c8e3e2a6b354580befee889259e03434512653c7d10b969bbe3ba5acf07"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-controlexecutionprofile.html",
+          "bytes": 43493,
+          "sha256": "9a1d4416ab0798a0ae517550eb5f0c9cc9cd36af254b3011af3055feb3d26b18"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-controlfailure.html",
+          "bytes": 49771,
+          "sha256": "7f68fb25a7bcc7741d9ffae7906801687deae10f8c2cc37b8398020aadc316f7"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-controlglobalvalue.html",
+          "bytes": 42051,
+          "sha256": "9e698f83e7a019aa8a7e06f82a82c9f7a6362efe138b675822aea9a46c4cdc20"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-controlhost.html",
+          "bytes": 74456,
+          "sha256": "7a4e94deed27db8dc21ed39a37c6149d51e3173943788407febdc6e11da56610"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-controlinstance.html",
+          "bytes": 39163,
+          "sha256": "0e6438b13e2f30061008ac364a5f37d91c89eaea57d8a2bdaedf47948c82c652"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-controlinstancesnapshot.html",
+          "bytes": 41608,
+          "sha256": "8e78c6c33691250b5e1b93cfbdd29aa365a9cebead2b6b09314e5c1163245de6"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-controlinvocation.html",
+          "bytes": 48538,
+          "sha256": "6959a8cf03a4d78932ed22a5cd3d9f349b99365435b8683c20182c7be50258f5"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-controlinvocationjournal.html",
+          "bytes": 50427,
+          "sha256": "82d20eaaa54f107622b6efb2d07ab049db99b382aa0fefa1aa09282d61a6c8de"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-liveadmission.html",
+          "bytes": 42838,
+          "sha256": "86ad7b9972fded25d2457991bf6ae7bcfba5aa5f30ebe0a6e43da24435e1e6df"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-liveintegration.html",
+          "bytes": 51415,
+          "sha256": "09ead12b2389aff5aa101a2b08077515ef2e0b78821be1a8372fdbffb4b46395"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-livepinnedidentities.html",
+          "bytes": 49764,
+          "sha256": "4a4eddbcaf5933803d23d911cd593887948a51f99c8e6222bbf8e267c2fafe5d"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-liveprojectionframe.html",
+          "bytes": 34377,
+          "sha256": "f54b1a8314c2747d67ffa83b7411e3dc9f59ba70ceae9555a53c9a2c94267329"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-livequalification.html",
+          "bytes": 44941,
+          "sha256": "25174276ef4392e4c6353b41f21debe55f5d531c50a04d9013ec69f757b70022"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-livereconnect.html",
+          "bytes": 43188,
+          "sha256": "b3725712da4000cec0963f78df8131c62a0efaaa5fbcb1fce09e624660881360"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-livereplay.html",
+          "bytes": 43423,
+          "sha256": "5f922775324f074ac6118f2e5a9c7bab19e8969b49d30eb9546baccaf8e985a8"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-localawarenessframe.html",
+          "bytes": 41995,
+          "sha256": "4e4cf7ed57eab659bf0d0c6e45226a27cc6e009bdbd0c517f977f6a7e805b1c9"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-localawarenessprojection.html",
+          "bytes": 46929,
+          "sha256": "70bb4bdfc1035b1d6a48323c4e295613bc97e8303a36cba47944b5f19d15c40c"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-localengagementprojection.html",
+          "bytes": 48609,
+          "sha256": "943455582180ff828d91607b985f5b0a9c7d96c96b2e5d8efec5c44f74276b37"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-localstimulusprojection.html",
+          "bytes": 53403,
+          "sha256": "dd15cad17d0c72f4e37dd829e7e9617302138c250cd799497e8bdffd670b6e7c"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-matchqualification.html",
+          "bytes": 41245,
+          "sha256": "1c595986044e05dfeb99263dedcb1f65ab6e980c6c2cb51f66773c8643f9d28b"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-matchreplay.html",
+          "bytes": 37213,
+          "sha256": "08348929650c5558508007aac294130caad4329e36f8bd2525c60e1af8ad73e4"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-physicalcombatserviceresponse.html",
+          "bytes": 39068,
+          "sha256": "655538386b55c790fb596a6c0426cf9b421dc0ceddaf41bc4bea286eb44814c1"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-physicalcombatservices.html",
+          "bytes": 38729,
+          "sha256": "d1f9e5d2d4081ed819090ba1df7eee4cbac685982c29ac9b0f0ddcc14888fc78"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-plandiagnostic.html",
+          "bytes": 43198,
+          "sha256": "39d18e3022f3547a477b12cab90b8f81a7b2a1e35a657e1cce3dd61e9eeba49b"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-plandiagnosticlayer.html",
+          "bytes": 49949,
+          "sha256": "1a0216a73034f127acb0b68f2a9ceb7adaa87fc981f881c519011e8c7ff0cc67"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-plandocument.html",
+          "bytes": 49700,
+          "sha256": "4c6b1390160a803c4af9296f35e0d3c45ef369056982612de7dac6c956627b03"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-planinterruptionpolicy.html",
+          "bytes": 44125,
+          "sha256": "7653aa5e27d4c51084d28c075f72dbb7a2c9fd5a219ce20ab58e181ddb93360c"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-planmovementposture.html",
+          "bytes": 43989,
+          "sha256": "96dfbdcdaabf26e22d27877c262d0838e8933104e592359cc547d6fc596409e9"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-plannedcommand.html",
+          "bytes": 46920,
+          "sha256": "22ff1e39c660bcd4bf54d85b5396653675e53d2eebb6aee516a580c132a6df1f"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-plannedcommandkind.html",
+          "bytes": 67025,
+          "sha256": "5afdac4fa05c57d890a83f0e4b6bbbf7f345462a7ce5af1bd0617d3e94ef210e"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-plansynchronization.html",
+          "bytes": 41514,
+          "sha256": "30e4dcd7516f452939df936e72cc6c22b05ae30f85eaae9d0b09040dd6f9c816"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-plansynchronizationmode.html",
+          "bytes": 42349,
+          "sha256": "a56861eb962d03d6481083a3c006ef9015d604c4540d4014e6c61e493ff1e80e"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-plantransition.html",
+          "bytes": 47690,
+          "sha256": "3bf4d38ec7c2b78f8e5202de2c584ee6c228f5b8f8a7cd85dc40497f10c6a7fc"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-planvalidationcontext.html",
+          "bytes": 41466,
+          "sha256": "5332ffdc9ba8ed3898fb23c2808124153ff23a493cee872296e66d1fb662dc59"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-scheduledcommand.html",
+          "bytes": 41258,
+          "sha256": "9e0e134e008a3a8cb219fa754c184a9e8b441b8ebc6fa00a8e6857732030b839"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-sirplan.html",
+          "bytes": 70245,
+          "sha256": "c0ea77822f8b1c97ab2eb13132b6f29496676ed6e6252441d17cc3a0bcad833a"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-spatialserviceresponse.html",
+          "bytes": 38283,
+          "sha256": "0cd3ed6c0d349fe8e15783667c9b3d32f9194709b994dc2e982192e8789172be"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-spatialservices.html",
+          "bytes": 44023,
+          "sha256": "ec67390210fb934169339b7706922cfba34cbba0271d5d57038cf44ec8d0df90"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-standardcontroller.html",
+          "bytes": 37777,
+          "sha256": "b26116fe86914af83b1bb9bcfc971b23e933a48daec9b5e4ebeeee4945523269"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-unitplan.html",
+          "bytes": 41514,
+          "sha256": "adebcb7f4672003190b32a060004807d3a3b928d1db7839ce12af3f407f7865c"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match-wasmartifactevidence.html",
+          "bytes": 41609,
+          "sha256": "e2bcbbafc59a3067688b4dba9a87243891237fdba06437cfdb43ac5e350109e2"
+        },
+        {
+          "path": "artifacts/site/reference/sir-match.html",
+          "bytes": 100268,
+          "sha256": "ff1fd2f2a85f8952d5658b7d44859e771093348ed185ad532cd2d2ec62475f8f"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-acceptedwasmoutput.html",
+          "bytes": 39750,
+          "sha256": "7b72b9d2ff6b266306763c22eaebe29462255e2f4937fe8fba35029028e38498"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-areashape.html",
+          "bytes": 50924,
+          "sha256": "267e90c755ee69d9327eee9dff410beddf2c8915949cde3df9a088091262f516"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-armorarc.html",
+          "bytes": 40791,
+          "sha256": "e010fce42fb3c137d8479c89a47004892aca13da08676f4a5e9d7f021f0f38dc"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-armorstate.html",
+          "bytes": 39262,
+          "sha256": "72b5816bfb62b051fb0d1072dc42a20293472e99aa067982dc98681765224f49"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-awarenesscontact.html",
+          "bytes": 48706,
+          "sha256": "51f93329bca916a5fc66adc0a88283970bb2ce2377ef09496a750b16c7523dfa"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-awarenesscounters.html",
+          "bytes": 46002,
+          "sha256": "39e1a3460b04be536f3ae96d90ffe89da27750b86787e2edf6c7b053c99ac67a"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-awarenesslevel.html",
+          "bytes": 46925,
+          "sha256": "1f44366ccea4ed3a484cefa5660b1c704e0d6058fe48c258ec67b23203b7308a"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-awarenessreaction.html",
+          "bytes": 86107,
+          "sha256": "337a84743893aba109bc94ee8cfbf6ce24400a451f38b2ca08a2ecf63c503678"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-awarenessreason.html",
+          "bytes": 62518,
+          "sha256": "f0d764438f3805a91b834daf966fa9729bc374b379eef693423ba0ca3dc88009"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-board.html",
+          "bytes": 42099,
+          "sha256": "fd643e6c74c82de3f67f7ffbc08fe84dd53ce34a9b0754b10f776fe6625e8d4b"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-capabilityengagement.html",
+          "bytes": 45074,
+          "sha256": "fbec3754ea4b650bfa825de6500e6877c052008d070d8029dea9781b0002b646"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-capabilityevent.html",
+          "bytes": 64476,
+          "sha256": "7379c3910b13888f79258335a5e7843c7e9f66826f78ff21ca9ce437fd636e77"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-capabilityexecution.html",
+          "bytes": 62869,
+          "sha256": "0730a0373b869160729c52fc478a8ebc9025fd73500fa4bf4f52a74ae1fdeb0e"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-capabilityexecutionstate.html",
+          "bytes": 40461,
+          "sha256": "0b0b49c376e413e760ed0d24cd5a311aa97ea355e1142b59579b4c844471585d"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-capabilityreplayframe.html",
+          "bytes": 39681,
+          "sha256": "888bea91ef9c18ef6bfc8a62f6cb39ddcb9be126aee404aeec7346969d3fcbe9"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-capabilityreplayrequest.html",
+          "bytes": 39749,
+          "sha256": "c1d0bf8eac5fa7a1953210ceabcfbba9c8bc9786bbf6d35b737a609837f92756"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-capabilitytarget.html",
+          "bytes": 42429,
+          "sha256": "5cd757eec91a130b74865b57218734dee000af6fa8fb4d8fc6171d2268a8a70e"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-capabilitytickresult.html",
+          "bytes": 38420,
+          "sha256": "129a6b049de897229c25e32753dfa319128b1a2d0562d10aa822996d36e94168"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-capabilityunitstate.html",
+          "bytes": 45850,
+          "sha256": "ea2fc106888d6f9726be815e6bded6e3882a3363c4be8439ecbe288bccc9d54c"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combat.html",
+          "bytes": 62264,
+          "sha256": "cf2eec213bd4129865371f8bb6b0f1e96da8296e2287ac8da5d87ce10787c0d3"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combatantstate.html",
+          "bytes": 49758,
+          "sha256": "131f584bfad85bd78c2640145ff37334a38d9e12b7bdd1dbea04ce74ac7a7d6c"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combatattackinput.html",
+          "bytes": 49379,
+          "sha256": "5688594d7b4b5186ca8fac14b7aa0328b65d43578e51083f50ba43e86093e691"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combatattackresult.html",
+          "bytes": 42723,
+          "sha256": "893d71e9c58c66a9d37c055c4f00815934ccb8b2ac759aba4661f5775d75f851"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combatconsequences.html",
+          "bytes": 45525,
+          "sha256": "55656056b2e4d81abfcf586f737e2d37d4400b3ea2e70cbe83f1b00637cfb47d"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combatcoverimpact.html",
+          "bytes": 42135,
+          "sha256": "3a77cfb3dcdcae100f7fb1c8e142d5f88241ddce7603ff23757e6fae8b662f0b"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combatdelivery.html",
+          "bytes": 47339,
+          "sha256": "b4f4dad93452c173d177b55cc7c3872c652c3251c25112e4dc23b654ea8e1b13"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combatfact.html",
+          "bytes": 89275,
+          "sha256": "1f7eb0aefd24091a946c03046d4e4eb04ae9de0b22045698d26b370e051ac6e7"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combatlimits.html",
+          "bytes": 42690,
+          "sha256": "8b155c0ea50bf9ef0b636a33bc7f69bb105c31e95ab2807012928397cdae3f5f"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combatprofile.html",
+          "bytes": 43184,
+          "sha256": "ce41718d7d2c8e93ce0464d9f6757301f515a6dd422aa7664db3e94aae103670"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combatrejection.html",
+          "bytes": 54872,
+          "sha256": "5ae17b73c4521000c4ab8da1f078a55c5c7ff18c2174a4189fe9d9521c313c56"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combatrequest.html",
+          "bytes": 43058,
+          "sha256": "e533dfd62e60fc08001735277bd73383480665ec0a6cb6639c15dc199a115bc5"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combatresult.html",
+          "bytes": 46545,
+          "sha256": "b75d849e77e281c0e0d013ca558852bac9d0d3f16edc1d0f0784a6b2c3abcac8"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combatrules.html",
+          "bytes": 64188,
+          "sha256": "cb294479573ec6ac17559620df1e59dca0b56b96675f8cfcb8ca861f72f41e7c"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combattarget.html",
+          "bytes": 43054,
+          "sha256": "e4e9d188b1d73c2c7df00019c6df89852c301a0eb372ea3d497539c4318d2fdb"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-combatworld.html",
+          "bytes": 40460,
+          "sha256": "1da4a346830e2bb202336baa7d47e1e24ca149e6043e36762f1491e0f7212728"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-coverstate.html",
+          "bytes": 46254,
+          "sha256": "c9bd8fb5a2b6974a19bae8df2edb2b9c62d69f7a2f16fdeb2b17ddc4f6823490"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-damagetype.html",
+          "bytes": 43830,
+          "sha256": "bb0759261933c9fd5ee5cd7a8a6c2c1fdccfdc27ca14c2402325493299a0ad82"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-engagement.html",
+          "bytes": 46834,
+          "sha256": "6d482a41c78e4fa360d920faa670f2f09f95514ff9e8cdd82094d4a1013a1120"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-engagementphase.html",
+          "bytes": 56136,
+          "sha256": "6683ce8c69e371ff066dded123805a7a7b4f4d20c0a08a29079d04b39752c14a"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-engagementstate.html",
+          "bytes": 39948,
+          "sha256": "1fd8256ba473aa7096af83ded20dcded58c15daa733d857ccdfd668f7b703b71"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-engagementtarget.html",
+          "bytes": 47705,
+          "sha256": "400e2be43e38b31926179c0da21df5267f8c7358adb12f8fae8150e5d738a54f"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-environmentworkloadcounters.html",
+          "bytes": 46246,
+          "sha256": "adf9552d6eee1196d9538839d3c5d4e145fd0f6d29e60a4927a45983966c0410"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-fullreplay.html",
+          "bytes": 43196,
+          "sha256": "e03c72b4c6927a8738adc8d7c0d7d1338e3bc9d09382d953b142089695b4dc9e"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-historicalruleresolution.html",
+          "bytes": 42875,
+          "sha256": "7f1aa9c8b0728eaf2d7edd3b0d54bcf09ed6c6191910cb6986ae18960a4483be"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-kernelinput.html",
+          "bytes": 80241,
+          "sha256": "85e5dd728de55871bcf9b9631d926b63523e73ab43667428f138f945a25cb522"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-mapscale.html",
+          "bytes": 90957,
+          "sha256": "8fb705f52eff81f4fca6bdee5a983f4e754a5a4087759d582d3cfaefcf4c1cf5"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-mapscaleboard.html",
+          "bytes": 42584,
+          "sha256": "56ed2a3b422dcd9a78713fbbae2db71740a5d7eb38f73018dbfbc9f99a7e52bc"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-mapscalecheckpoint.html",
+          "bytes": 41766,
+          "sha256": "97e3b2a28827a963b17b6e1f98f6c1f04d2070bfbf92ead0d3f1645cfcca6a27"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-mapscalecontroller.html",
+          "bytes": 44311,
+          "sha256": "8520e1402b90daf94374412734731be9be584ca6d90622a3faecbaa82a6975fe"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-mapscaledivergence.html",
+          "bytes": 42958,
+          "sha256": "8fa2e118c4f210597d3965851a7086c8a05ed7494250dbb514b0027a668d7d7e"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-mapscaleedgedirection.html",
+          "bytes": 41123,
+          "sha256": "6cb80ae65dbaef248e4a44a628d91b5224ff485689f654acbc7bcb620f4b201a"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-mapscaleedgekind.html",
+          "bytes": 44642,
+          "sha256": "cd0dd2f01b3f68e39aaa999ed7fcf4e3fe804ed544ecf2342ecdcf36635c8897"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-mapscaleevent.html",
+          "bytes": 66198,
+          "sha256": "6b16d75012b08a50d1cde4a14ca8b770bad6fefcce9c543e9e729576d9bb109e"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-mapscalephase.html",
+          "bytes": 47203,
+          "sha256": "28a9a74065c4fb6ed2db6d3b8fae1be8f67508c6f697aa674a9d868cbb0a170f"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-mapscalestate.html",
+          "bytes": 50684,
+          "sha256": "2640ad7bfe1a954e00a25a3e4b64b8568fa9c185cf64332968d0b4fa0860a6bb"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-mapscaleterrain.html",
+          "bytes": 47307,
+          "sha256": "893514cd1518189835734b87568b7785330e0816f10dbabc19ae3ff64e897030"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-mapscaletickresult.html",
+          "bytes": 40242,
+          "sha256": "7ab41a3e16996785db656ff55873a03f49b7100eab20b82991a821adc29bf30c"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-mapscaleunit.html",
+          "bytes": 53428,
+          "sha256": "43489505e33f7a005c3b4a4e7158569a1301689fd25d246afc7f664acf2df219"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-movementblocker.html",
+          "bytes": 59597,
+          "sha256": "29b7f1d2bc816e9131903c42d4f7b700bbe398eb9d4e67de962cc309ad2bb049"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-movementprofile.html",
+          "bytes": 37970,
+          "sha256": "455b8016cd2e893a5e919d4a663c7122d07197d64fdb637aea3265e2504e9803"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-movementprogress.html",
+          "bytes": 41502,
+          "sha256": "840c95a02dea9e3d8a22a2e734b000c0201e5f5d2f119aa75ca4e6e8ea733178"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-observationsector.html",
+          "bytes": 43860,
+          "sha256": "62d1e12a58e7dbc60c83823408db293bda6317f9a80a9416913c150c1164fbab"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-perspectiveframe.html",
+          "bytes": 38013,
+          "sha256": "b87d44be8d06d24df520034904be948f67c430919d25e28db39ab1b3ad99c694"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-phasecheckpoint.html",
+          "bytes": 40914,
+          "sha256": "5ce149b49f1b794b56df152e7635e32583af4eb98d89e5ce4baa16be854a4b63"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-projectedspatialworld.html",
+          "bytes": 48465,
+          "sha256": "1e95ca4fd2e1586e2e5491067a5f49cb5726614bd67db8c8063870444d5991e0"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-querybounds.html",
+          "bytes": 41136,
+          "sha256": "4bfe1451c10db48c7d3a6f067ce6fc2f6180ea1b375bf60ac835f73663103a8a"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-reactioncandidate.html",
+          "bytes": 44942,
+          "sha256": "8eb301335f286a4a974dd36a6295cd18dde91d0825916dcdd40b667c437c2bf0"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-reactionreason.html",
+          "bytes": 65791,
+          "sha256": "a72463a840659ed2a34abb3858427a0cb3b9c72b2f9a75bdc7cea7cedf3da96d"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-reactiontriggerkind.html",
+          "bytes": 44148,
+          "sha256": "a0282f614446f5be38ac6c81f39f657fd3a8f84ec1bacf98f31b6b1e33c2921e"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-replay.html",
+          "bytes": 94021,
+          "sha256": "8088067541beb5bb55a61a3e0cc664ebda0eb2b59ca9725ba0aac0c3532a0159"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-replaycheckpoint.html",
+          "bytes": 40538,
+          "sha256": "595436a4dece16b3a69690e3be9555b650af56b02c4dc60660e47783a81237b7"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-replaycontent.html",
+          "bytes": 42376,
+          "sha256": "941bc6dda54a0e1d4e2eeb96c138ae707fdec81cb9a17831986151cebe6b32ae"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-replayerror.html",
+          "bytes": 85642,
+          "sha256": "23d306f12e9ed6044070800f47595f53d059885942c55851bc0bf7f295ebf1b0"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-replayfinalresult.html",
+          "bytes": 41298,
+          "sha256": "04dfe593a02c67ee2a3e6521ef9498e13f4afbc053908da700424b94f2d4af45"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-replayinput.html",
+          "bytes": 39696,
+          "sha256": "db9fce03222223ea15f1740f997a60616b38c2fef7033575996b72cc45c186c2"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-replaylimits.html",
+          "bytes": 54370,
+          "sha256": "ab6d63f78bc2624482a6e018c98e9d817a24fd3373d3a03f718276234682b840"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-replaypackage.html",
+          "bytes": 44172,
+          "sha256": "2adc61df74469d9d95cf2ac5f108dbef9ecabfaf22a06e49188e3ded05e3075e"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-replayrulesarchive.html",
+          "bytes": 43372,
+          "sha256": "4271f60aff83867eb2322d347adaa12861bcc8ea63b9f94446f3a0c667b4e991"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-replayverification.html",
+          "bytes": 47462,
+          "sha256": "f2b5db8f7f57d10bb3062e816e16a45015e6378a09037e39e1c12dcaed0bd5f5"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-retainedrulepackage.html",
+          "bytes": 39548,
+          "sha256": "96569162a32f9b6dd43b7955eaa38b11389f06ba83cfcc886f33abe7ecd467b1"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-retainedstimulus.html",
+          "bytes": 49908,
+          "sha256": "c9cbe091ee7bdf45b4dd9ae5486f8fe2ad1b4a07f69eb840b7ab7ffdfd52f8ec"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-routeresult.html",
+          "bytes": 39756,
+          "sha256": "e538f5a2531e1d21bba28f97ad243a9a370ad65de1114d8cdfee7ca5e78276c9"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-rulereplaybinding.html",
+          "bytes": 47473,
+          "sha256": "cf44e9695d33b1c85a77f2a36e3d4bfef7d55fc97bf3499163804b870c2ccd17"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-semanticedge.html",
+          "bytes": 41344,
+          "sha256": "9d108c66f1261aa38029a39eddce44a2daa40ee878af1ff864eb3f7f60ff88e2"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-sensorprofile.html",
+          "bytes": 49456,
+          "sha256": "5a2023c607f74430601e17a5f8041f0cfa622474d8537fe99d41ad5f34db66f9"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-side.html",
+          "bytes": 40967,
+          "sha256": "788429ab66b91527958e3ab33bd9a9d6dd73e9f16d283b5f8fd737c77962cd55"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-simulation.html",
+          "bytes": 76853,
+          "sha256": "4ffe5554a33dcb974d8aadb7ba5e7037fb8fc3f934aae11792eae8724c995b4d"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-simulationevent.html",
+          "bytes": 94136,
+          "sha256": "628c12a1183a205858a2323756a10df2b5716deb46049843db64626c7f658ee5"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-simulationphase.html",
+          "bytes": 50426,
+          "sha256": "bd43ee5e0afb510f3848243f0df887be315dc1c1dcec6e2771376565055fd065"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-simulationrules.html",
+          "bytes": 35620,
+          "sha256": "cdb762cef92a5be7341a0c5f1c6dce990d1e989d9973acf6d00d692451bcacad"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-simulationstate.html",
+          "bytes": 48211,
+          "sha256": "ad7d1119bed48c520395b2c3b08eb47be5a0994ee2f8546b8dee69ed664e7a97"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialboundary.html",
+          "bytes": 39753,
+          "sha256": "ab05884d5d0d9785c2f2bb645b393505c27a93bdf04162a87bb2fa84975bd047"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialcache.html",
+          "bytes": 37785,
+          "sha256": "b3ebac6f7acf52893f531bb32218f88e4674d17c5bacf24fc3b82134691d5a74"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialcacheentry.html",
+          "bytes": 39540,
+          "sha256": "4eb95104fee284e57eaa9510095b1ce9f5a8b6cbdf770cc7d6bf44b0deb3ee4d"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialcachekey.html",
+          "bytes": 33236,
+          "sha256": "269b4436b4a0841940d40f98c024a1529b45b27134ee64ea6fbd32c80fad274a"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialdependencyreceipt.html",
+          "bytes": 36410,
+          "sha256": "eec14131769e5d90ea1e87508e2071d105001492acbcebcf9e121ccc4dbc55eb"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialevaluationsource.html",
+          "bytes": 40957,
+          "sha256": "0c60c10b0eb182d48a9ff01c40ebb58de40c284df1920857c5c7e271e557c2d9"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialexplanation.html",
+          "bytes": 67472,
+          "sha256": "83e47cfc54902b2e867f3cbed7291fd697a1d24b12d8a3279812d813257c19dd"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialmodality.html",
+          "bytes": 44004,
+          "sha256": "2871cdbdef26bcbb7fc2fa708404c8dec6256d5ca4e2f4871019d80b2648a0b8"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialoutcome.html",
+          "bytes": 46977,
+          "sha256": "60964a4bbca0f1911969141c73207c82f700e66867ee87c2e6f0a14804084548"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialpermeability.html",
+          "bytes": 39356,
+          "sha256": "456ccefc104648f0c61e30c4b17ff397908d531ad35410435b3e8611290346d5"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialprofile.html",
+          "bytes": 43021,
+          "sha256": "0eb16ca92f9bd6365c3579c0da8466c46576560fc0641616fc0fb06334170114"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialquery.html",
+          "bytes": 80493,
+          "sha256": "21d84bb86d9021f2cb81b961ea147b82ca374c714c1a9278f93fff98fe8af098"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialquerykind.html",
+          "bytes": 56110,
+          "sha256": "ddb2545bf00733d2d00a93835c9af13885df7475d525dba0a2a8e39c06e0f783"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialqueryrequest.html",
+          "bytes": 46979,
+          "sha256": "b122d92c421f382feba8a94113102a17aa93064f4671b20d2fe126220db46c5c"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialqueryresult.html",
+          "bytes": 43257,
+          "sha256": "0ce3703c1c1d2735e0726a583d1f277e1664f13114c13c092b1037c2848ec34c"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-spatialterrain.html",
+          "bytes": 46853,
+          "sha256": "62d9b360e2c9365e21479f4a6dbb21cc23d16a68a5b6a1560a95af283dee9a6d"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-stimulus.html",
+          "bytes": 46880,
+          "sha256": "71b54ac35cd2b14f648c883734e38b948f4f8fa4fa3f1fc5f83ca9824dc52f45"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-substrate.html",
+          "bytes": 38118,
+          "sha256": "07020855186cba7248941a6f4b7279169845de0e1f016834e9fae8c4a6f427cc"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-tacticalenvironment.html",
+          "bytes": 87859,
+          "sha256": "c9a8b0699f487013f511601e0b32c73a3c3af81702fdd7222cfa53b74b5ce400"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-tickresult.html",
+          "bytes": 46268,
+          "sha256": "91ded6223db16d0eb5962eefc0323a309d0dda462241830a73300b0033a72e82"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-unitstate.html",
+          "bytes": 53295,
+          "sha256": "0afa799c657d83c9d74d4a29b4eca97dfb5c0b064bd2cccdbbd733c675c761fe"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-weaponparameters.html",
+          "bytes": 47862,
+          "sha256": "3ebe4e3dbc38a6f1dd925e42a9aefe879c55cb2981eda10dbbb873f38000d671"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-weaponposture.html",
+          "bytes": 44027,
+          "sha256": "4de5d65e203cf1d3695d47aea79f951612255443f6c8fa386e6d5bca1611e579"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-weaponprofile.html",
+          "bytes": 46879,
+          "sha256": "1573d62d8bd4ea23ffcabc451c01e59487a04fdd0ce1504ca0824c2ecce88f07"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-wound.html",
+          "bytes": 39406,
+          "sha256": "a7250d7b2a3f74e1e1dbc0c115b765d153c66967ab74f4d24317b3bed6cced1f"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation-woundseverity.html",
+          "bytes": 40817,
+          "sha256": "f2f4c709414f250aeba63c24455543138db56e9856bbc86cfeac28f0b81e0e24"
+        },
+        {
+          "path": "artifacts/site/reference/sir-simulation.html",
+          "bytes": 202520,
+          "sha256": "796ba2d75070fbdee680e2966bf767e4be49304c815818547342da8e43985fa9"
+        },
+        {
+          "path": "artifacts/site/reporting-model.html",
+          "bytes": 47407,
+          "sha256": "5b41c7461d4e8b6aab861c52b09938b17c785e5c2d48ad6a7251c2cfbb568c74"
+        },
+        {
+          "path": "artifacts/site/reporting-model.md",
+          "bytes": 11018,
+          "sha256": "b212ef19604bb7ea8275fc137f295330a74b452ea25326c87a786db4319fd28f"
+        },
+        {
+          "path": "artifacts/site/reports/2026-08-13-workboard.html",
+          "bytes": 40291,
+          "sha256": "6c95b97d3c09936660c52fa47f132ae41840ebd576078f5e10451602263e2504"
+        },
+        {
+          "path": "artifacts/site/reports/2026-08-13-workboard.md",
+          "bytes": 5124,
+          "sha256": "6b8079ff25c4926190f7e9d8a7f94eb17d085c3486a89a627991589dc4fc4ec8"
+        },
+        {
+          "path": "artifacts/site/reports/2026-08-14-workboard.html",
+          "bytes": 39542,
+          "sha256": "25f76e8bf344debe3d8771f9beb8dadc847958f8e5b3c04801609321d5530ec5"
+        },
+        {
+          "path": "artifacts/site/reports/2026-08-14-workboard.md",
+          "bytes": 4783,
+          "sha256": "e19e2d38c44dcab98bc8dd554ea4e821b384c551ba19f43a220f4d531041b1cb"
+        },
+        {
+          "path": "artifacts/site/reports/2026-08-15-workboard.html",
+          "bytes": 38751,
+          "sha256": "25e24863abfe59bbc98c568e505056ed6f2054b585e4cc75a5fe0c4e3b914f4e"
+        },
+        {
+          "path": "artifacts/site/reports/2026-08-15-workboard.md",
+          "bytes": 4092,
+          "sha256": "502a73175516359f9b98ba97810a13781ca72ac3344501b2cc6ccc5ac1ff74c9"
+        },
+        {
+          "path": "artifacts/site/research/arcane-horde-progression-and-equipment.html",
+          "bytes": 52584,
+          "sha256": "85ec0fa1ca6883591247be6990be7acf7000cdd24fe1c2ba4f99efc959f64b6a"
+        },
+        {
+          "path": "artifacts/site/research/arcane-horde-progression-and-equipment.md",
+          "bytes": 14630,
+          "sha256": "9ae9cbf3e8c7d165c1b25cc420cbb19fe96f0d1fdacb4366083b916e087f4652"
+        },
+        {
+          "path": "artifacts/site/research/browser-wasm-verification-spike.html",
+          "bytes": 38296,
+          "sha256": "d4b9bb77dfe75dd79d794752614c561e416e2f6b89e8c19b387b7c140adbe669"
+        },
+        {
+          "path": "artifacts/site/research/browser-wasm-verification-spike.md",
+          "bytes": 3930,
+          "sha256": "2639a29477a109a1feaa277522fea35109fef645fbd7bfcb43026ecb7ffd2a4e"
+        },
+        {
+          "path": "artifacts/site/research/combat-awareness-models.html",
+          "bytes": 59478,
+          "sha256": "12a3bda90ed8e4702a097d2310499da3ba00d14d6fbb19cbd2ac2d39d9bbfcfd"
+        },
+        {
+          "path": "artifacts/site/research/combat-awareness-models.md",
+          "bytes": 19395,
+          "sha256": "567399ce43144074fa61b05457c48d4251fb3c7500b88b601770351483a90750"
+        },
+        {
+          "path": "artifacts/site/research/movement-spike.html",
+          "bytes": 43665,
+          "sha256": "fabcd4ba969e0289a53ab876f3470a6ad9d9fba6211e3a53a93d7048611bda4f"
+        },
+        {
+          "path": "artifacts/site/research/movement-spike.md",
+          "bytes": 6668,
+          "sha256": "c3324d54ea56e0d9527fa9052ed48db7614dc5b2980524076f39138794855948"
+        },
+        {
+          "path": "artifacts/site/research/perception-spike.html",
+          "bytes": 50513,
+          "sha256": "486d514a32c9a0c9296ecd27a70803f173aee8c16c0bb392f6c03617b78aa8f4"
+        },
+        {
+          "path": "artifacts/site/research/perception-spike.md",
+          "bytes": 11080,
+          "sha256": "23d613e2dc1400a97b245b1db8ab0504a517a38c47f4e327fe776db7ec22804e"
+        },
+        {
+          "path": "artifacts/site/research/progression-systems.html",
+          "bytes": 112397,
+          "sha256": "37b22e06364db62e9b6696a8a53f22a33f062823f02d1f870a17775b83b0d150"
+        },
+        {
+          "path": "artifacts/site/research/progression-systems.md",
+          "bytes": 55366,
+          "sha256": "29499fe91cb2c767072c96b5b4cbd34cb7c3b170ef75986c6a6d2781b9e2479c"
+        },
+        {
+          "path": "artifacts/site/research/public-transport-selection.html",
+          "bytes": 47583,
+          "sha256": "57d97f630ee163216e7020147ea26cf94589cb248037935f5f7cbb5ab2ffe7c9"
+        },
+        {
+          "path": "artifacts/site/research/public-transport-selection.md",
+          "bytes": 9983,
+          "sha256": "8a1ff05cad30caa066cf3486c522df8ea8d41884ec527814fe181d505bc7d15f"
+        },
+        {
+          "path": "artifacts/site/research/realtime-turnbased-tactical-features.html",
+          "bytes": 57660,
+          "sha256": "845c52d524f929e96bfd96196d66bd52fef7a14803b4794992d5dbdceed19d26"
+        },
+        {
+          "path": "artifacts/site/research/realtime-turnbased-tactical-features.md",
+          "bytes": 15751,
+          "sha256": "e0de122671cf129cd278b680ed50d5d04e46ea94bab30ce6131653a9b6108682"
+        },
+        {
+          "path": "artifacts/site/research/rules-lab-prototype.html",
+          "bytes": 44101,
+          "sha256": "f6ce654ad1b0adef27c2cc81021472128ef5e3f92ecbb0614a67d9472da2abf9"
+        },
+        {
+          "path": "artifacts/site/research/rules-lab-prototype.md",
+          "bytes": 7455,
+          "sha256": "44934ce3616cf9994c1226333fe408809767ceb3d5568cb7d46e37d81ca59764"
+        },
+        {
+          "path": "artifacts/site/research/squad-command-and-succession.html",
+          "bytes": 48176,
+          "sha256": "ebb7234108cb05eaf132206b552e2046d29a591533316ee26000744f743299ac"
+        },
+        {
+          "path": "artifacts/site/research/squad-command-and-succession.md",
+          "bytes": 11401,
+          "sha256": "e1fbba1e43f177e9a638f32862924e8df05a3662ee9a8e55818570231c7bb7a6"
+        },
+        {
+          "path": "artifacts/site/research/wasm-invocation-spike.html",
+          "bytes": 47345,
+          "sha256": "81fad4e7732b4f1dc76773a178746ff2054a45d453c3e54ce5c3083ca4789d2c"
+        },
+        {
+          "path": "artifacts/site/research/wasm-invocation-spike.md",
+          "bytes": 8352,
+          "sha256": "f80f405b7b878f9e987cf9d824934a06fd235411424d0c22d2915d2482cd3793"
+        },
+        {
+          "path": "artifacts/site/research/wasm-runtime-selection.html",
+          "bytes": 51221,
+          "sha256": "0fba743e6d65d959155883d8607418538163bf6e0ba6ec6b895c5b6f77f3986c"
+        },
+        {
+          "path": "artifacts/site/research/wasm-runtime-selection.md",
+          "bytes": 14220,
+          "sha256": "b68ae3eb97ad9833c41cf5aa320ff5f0b065f0fbb0603c2bc716ced1979c7bc7"
+        },
+        {
+          "path": "artifacts/site/setting-and-factions.html",
+          "bytes": 75967,
+          "sha256": "1d4dd516651bf36ad0d9808af19d110eeca106e5fda2becf45bd76d23fa7c551"
+        },
+        {
+          "path": "artifacts/site/setting-and-factions.md",
+          "bytes": 32281,
+          "sha256": "53747325c5c78bfdaebdc173876b0a82677c5fecc93d3412e1eef18586532f3d"
+        },
+        {
+          "path": "artifacts/site/simulation-core-architecture.html",
+          "bytes": 53951,
+          "sha256": "14babb61d22873608152c2d25b59d8952ddb149e7f4bf0680a754218c7b6e279"
+        },
+        {
+          "path": "artifacts/site/simulation-core-architecture.md",
+          "bytes": 15223,
+          "sha256": "2e72148f2b369df42fd4ae268e3e21c2abe3c4e617bdcd5a4e28ed6a06889e5b"
+        },
+        {
+          "path": "artifacts/site/simulator-worker-protocol.html",
+          "bytes": 37814,
+          "sha256": "a64874c71a5303cf0a3c72fd552df3eac4b3b77030716834db20f0abab4783d2"
+        },
+        {
+          "path": "artifacts/site/simulator-worker-protocol.md",
+          "bytes": 4556,
+          "sha256": "4968f605230b22e9e15cf66659977686530cc765bf4276b054eb99fe36b96863"
+        },
+        {
+          "path": "artifacts/site/skirmish-development-plan.html",
+          "bytes": 53216,
+          "sha256": "917bb6f91a4935793d20d28980b8570de26907b3bb458f604ba3534828d6fcf9"
+        },
+        {
+          "path": "artifacts/site/skirmish-development-plan.md",
+          "bytes": 14782,
+          "sha256": "575c95af9b36dca4cdf0ecdbbef1eed5ffce692091890ab2f8e6697431826146"
+        },
+        {
+          "path": "artifacts/site/stakes-and-reinforcement.html",
+          "bytes": 54309,
+          "sha256": "687fb29976307075c6a354f8264fe59469d28bcf3ab4eb06619d5895093c72f9"
+        },
+        {
+          "path": "artifacts/site/stakes-and-reinforcement.md",
+          "bytes": 16046,
+          "sha256": "d3927f34d67b1e9299dc4c2934e1890310010c0a127fffdcdf7760a6b5ae47a7"
+        },
+        {
+          "path": "artifacts/site/standard-module.html",
+          "bytes": 50110,
+          "sha256": "bb413b521d549b95fffe12b0d2bfba3908d73c01df2db653cd684abdd4cb3455"
+        },
+        {
+          "path": "artifacts/site/standard-module.md",
+          "bytes": 12684,
+          "sha256": "97638449c10538ff13bb5feb5c022d8084925497b8aed0857bda3758e24fcac6"
+        },
+        {
+          "path": "artifacts/site/svg-replay-player.html",
+          "bytes": 54015,
+          "sha256": "e36d0badb37b79139dcbd55b3381b9cae9de351df076e4838447eb0fc3ea672a"
+        },
+        {
+          "path": "artifacts/site/svg-replay-player.md",
+          "bytes": 16140,
+          "sha256": "667c9ba4e92ffd9ca1d0d5256e10b8902ea4bd52505e68b3a801892184c91aa3"
+        },
+        {
+          "path": "artifacts/site/tactical-environment-architecture.html",
+          "bytes": 57389,
+          "sha256": "126a3a149aa829b44c22c9a0a545da06e48043b01ea411fe43352ad3ae8c916d"
+        },
+        {
+          "path": "artifacts/site/tactical-environment-architecture.md",
+          "bytes": 19305,
+          "sha256": "e92736ed07b464b08c133ff3d1215bce3ae317dfa7355c9a957c9e45596e1c4e"
+        },
+        {
+          "path": "artifacts/site/tactical-overlays.html",
+          "bytes": 35036,
+          "sha256": "1247562147517e97aabf172b47547a8e5c962a012fd5edeeed903d4eea5a0a39"
+        },
+        {
+          "path": "artifacts/site/tactical-overlays.md",
+          "bytes": 2229,
+          "sha256": "08ffcf67e5afce5780b88d93023680edbe5925f43720a15913582b344c6329c3"
+        },
+        {
+          "path": "artifacts/site/technology-stack.html",
+          "bytes": 51475,
+          "sha256": "4f967002fdbd19cc7e6ada2c71dd29ce283fd334a9337a288017331b2751684a"
+        },
+        {
+          "path": "artifacts/site/technology-stack.md",
+          "bytes": 14852,
+          "sha256": "c821fa08a3b93d84a0e90a71df37a34b3800efffda8d1774d804a38808c5d46a"
+        },
+        {
+          "path": "artifacts/site/unified-tactical-workspace-baseline.html",
+          "bytes": 37577,
+          "sha256": "ca0ea9924f62eed21e1a3f3792ae2ee751313cbe6080b6cf1261b0cbec4a924e"
+        },
+        {
+          "path": "artifacts/site/unified-tactical-workspace-baseline.md",
+          "bytes": 3854,
+          "sha256": "63ce45f39eebfce8cf2cccd2078a1856c354f6313aa1a4975434497a3929e68c"
+        },
+        {
+          "path": "artifacts/site/unified-tactical-workspace-roadmap.html",
+          "bytes": 55964,
+          "sha256": "6290927b5e788f96eb257d788b3c76e1a86ed4b1f25fe930c404687fedf0c2f9"
+        },
+        {
+          "path": "artifacts/site/unified-tactical-workspace-roadmap.md",
+          "bytes": 17969,
+          "sha256": "94e64a50662f03b04b4b5a6f00b87f35a19986f1e610e994baf1605f10d9fe0e"
+        },
+        {
+          "path": "artifacts/site/unified-tactical-workspace.html",
+          "bytes": 38398,
+          "sha256": "f689513f80baf3550513df797eee1c4d5b573b5183e359e70ecbc9b398f3d9c4"
+        },
+        {
+          "path": "artifacts/site/unified-tactical-workspace.md",
+          "bytes": 5674,
+          "sha256": "ed93355485715a0a1bdb14700bf4fa081a3bd4ba58849fc31f06401d3483d0d6"
+        },
+        {
+          "path": "artifacts/site/visual-direction.html",
+          "bytes": 45360,
+          "sha256": "a1aa0a4abac5a9e613775f64e7c05437540a86202cf7f59c9c98f79982d05b57"
+        },
+        {
+          "path": "artifacts/site/visual-direction.md",
+          "bytes": 9482,
+          "sha256": "b5fa1804a3ae30a6c8c1949cb5f8b5e07eb30f379f4e628cba1370fa47d1cfa9"
+        },
+        {
+          "path": "artifacts/site/wasm-control-architecture.html",
+          "bytes": 72080,
+          "sha256": "e81d968efe6e1354ea74bf8eae8cd1ff77236edb16ececc446627bd244917a3d"
+        },
+        {
+          "path": "artifacts/site/wasm-control-architecture.md",
+          "bytes": 28817,
+          "sha256": "52ebecffd67d82a84da199c9559b04b1e55105e655bf45a9b91aba217b09c11f"
+        }
+      ],
+      "digest": "d03654e1435c3d9931d7db78e75e990142e0f41bd641948a2788e81d0620bb7c"
+    }
+  ]
+}

@@ -4,7 +4,9 @@ set -euo pipefail
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 task_tmp=$(mktemp -d)
 trap 'rm -rf -- "$task_tmp"' EXIT
-export NUGET_PACKAGES="$task_tmp/nuget-packages"
+if [[ -z "${NUGET_PACKAGES:-}" ]]; then
+  export NUGET_PACKAGES="$task_tmp/nuget-packages"
+fi
 
 cd "$repo_root"
 
@@ -283,6 +285,15 @@ env \
   -u NPM_CONFIG_ALLOW_SCRIPTS \
   npm ci --ignore-scripts
 ./scripts/build-client.sh
+if [[ -n "${SIR_BUILD_RECEIPT_POINTER:-}" ]]; then
+  node scripts/production-build-receipt.mjs create \
+    --owner-command scripts/qualify-production.sh \
+    --pointer "$SIR_BUILD_RECEIPT_POINTER"
+  build_receipt=$(<"$SIR_BUILD_RECEIPT_POINTER")
+  node scripts/production-build-receipt.mjs verify \
+    --owner-command scripts/qualify-production.sh \
+    --receipt "$build_receipt"
+fi
 node scripts/smoke-client.mjs
 npm run test:production-delivery-budget
 npm run setup:browser
