@@ -8,7 +8,10 @@ project="$repo_root/tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj"
 temporary_dir=$(mktemp -d /tmp/sir-rules-corpus.XXXXXX)
 trap 'rm -rf "$temporary_dir"' EXIT
 
-dotnet run --project "$project" -c Release -- --print-rules-manifest > "$temporary_dir/manifest.json"
+prepared_args=()
+if [[ "${SIR_RULES_PREPARED_PR:-0}" == 1 ]]; then prepared_args=(--no-build --no-restore); fi
+
+dotnet run --project "$project" -c Release "${prepared_args[@]}" -- --print-rules-manifest > "$temporary_dir/manifest.json"
 dotnet run --project "$project" -c Release --no-build -- --print-rules-coverage > "$temporary_dir/coverage.json"
 dotnet run --project "$project" -c Release --no-build -- --print-rules-application > "$temporary_dir/representative-application.hex"
 

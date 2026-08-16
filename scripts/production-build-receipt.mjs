@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { lstat, mkdir, readFile, readdir, unlink, writeFile } from "node:fs/promises";
+import { chmod, lstat, mkdir, readFile, readdir, unlink, writeFile } from "node:fs/promises";
 import { basename, dirname, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -59,7 +59,8 @@ async function identityForFiles(root, files) {
   const entries = [];
   for (const file of files) {
     const bytes = await readFile(file);
-    entries.push({ path: slash(relative(root, file)), bytes: bytes.byteLength, sha256: sha256(bytes) });
+    const information = await lstat(file);
+    entries.push({ path: slash(relative(root, file)), mode: information.mode & 0o777, bytes: bytes.byteLength, sha256: sha256(bytes) });
   }
   return { files: entries, digest: sha256(canonicalBytes(entries)) };
 }
@@ -192,6 +193,7 @@ async function main(argv) {
     if (!mutationOutput) throw new Error(`production-build-receipt: unknown-mutation-output:${mutationOutputId}`);
     const subject = resolve(root, mutationOutput.files[0].path);
     const original = await readFile(subject);
+    const originalMode = (await lstat(subject)).mode & 0o777;
     try {
       if (mode === "mutate-missing-reuse") await unlink(subject);
       else await writeFile(subject, Buffer.concat([original, Buffer.from("\nreceipt-stale-mutation\n")]));
@@ -205,8 +207,9 @@ async function main(argv) {
       if (!rejected) throw new Error("production-build-receipt: stale-reuse-mutation-survived");
     } finally {
       await writeFile(subject, original);
+      await chmod(subject, originalMode);
     }
-    if (sha256(await readFile(subject)) !== sha256(original)) throw new Error("production-build-receipt: mutation-restoration-failed");
+    if (sha256(await readFile(subject)) !== sha256(original) || ((await lstat(subject)).mode & 0o777) !== originalMode) throw new Error("production-build-receipt: mutation-restoration-failed");
     console.log(JSON.stringify({ schema, result: "pass", mutation: mode === "mutate-missing-reuse" ? "missing-output-identity-drift" : "stale-output-identity-drift", output: mutationOutputId, restored: true }));
     return;
   }

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ci-route" tests="1" failures="0" errors="0" skipped="0" time="0">
+  <testcase classname="SIR.CI" name="route-matrix-dag-and-budget-contract" time="0" />
+</testsuite>
