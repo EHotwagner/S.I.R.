@@ -22,9 +22,9 @@ module Program =
         let rec loop (options: Options) remaining =
             match remaining with
             | [] -> Ok options
-            | "--mode" :: "changed" :: tail -> loop { options with Mode = Changed } tail
-            | "--mode" :: "cone" :: tail -> loop { options with Mode = Cone } tail
-            | "--mode" :: "corpus" :: tail -> loop { options with Mode = Corpus } tail
+            | "--mode" :: "changed" :: tail -> loop { options with Mode = CoherenceMode.Changed } tail
+            | "--mode" :: "cone" :: tail -> loop { options with Mode = CoherenceMode.Cone } tail
+            | "--mode" :: "corpus" :: tail -> loop { options with Mode = CoherenceMode.Corpus } tail
             | "--rule" :: value :: tail -> parseRuleId value |> Result.bind (fun ruleId -> loop { options with Rules = ruleId :: options.Rules } tail)
             | "--max-work" :: value :: tail ->
                 match Int32.TryParse value with
@@ -34,18 +34,18 @@ module Program =
             | "--out" :: value :: tail when not (String.IsNullOrWhiteSpace value) -> loop { options with OutputPath = Some value } tail
             | "--block-unknowns" :: tail -> loop { options with BlockUnknowns = true } tail
             | token :: _ -> Error(sprintf "unknown or incomplete argument: %s" token)
-        let defaults = { Mode = Corpus; Rules = []; MaxWork = RuleCoherence.defaultBounds.MaxWorkUnits; CachePath = None; OutputPath = None; BlockUnknowns = false }
+        let defaults = { Mode = CoherenceMode.Corpus; Rules = []; MaxWork = RuleCoherence.defaultBounds.MaxWorkUnits; CachePath = None; OutputPath = None; BlockUnknowns = false }
         loop defaults arguments
         |> Result.bind (fun options ->
-            if options.Mode <> Corpus && List.isEmpty options.Rules then Error "changed and cone modes require at least one --rule."
-            elif options.Mode = Corpus && not (List.isEmpty options.Rules) then Error "--rule is only valid for changed or cone modes."
+            if options.Mode <> CoherenceMode.Corpus && List.isEmpty options.Rules then Error "changed and cone modes require at least one --rule."
+            elif options.Mode = CoherenceMode.Corpus && not (List.isEmpty options.Rules) then Error "--rule is only valid for changed or cone modes."
             else Ok { options with Rules = List.rev options.Rules })
 
     let private strength value =
         match value with
-        | "proved-structural" -> ProvedStructural | "proved-fragment" -> ProvedFragment
-        | "exhaustive-bounded" -> ExhaustiveBounded | "tested" -> Tested | "heuristic" -> Heuristic
-        | "unknown" -> Unknown | "failed" -> Failed | _ -> failwithf "unknown cached strength: %s" value
+        | "proved-structural" -> ClaimStrength.ProvedStructural | "proved-fragment" -> ClaimStrength.ProvedFragment
+        | "exhaustive-bounded" -> ClaimStrength.ExhaustiveBounded | "tested" -> ClaimStrength.Tested | "heuristic" -> ClaimStrength.Heuristic
+        | "unknown" -> ClaimStrength.Unknown | "failed" -> ClaimStrength.Failed | _ -> failwithf "unknown cached strength: %s" value
 
     let private stringValue (name: string) (element: JsonElement) =
         element.GetProperty(name).GetString() |> Option.ofObj |> Option.defaultWith (fun () -> failwithf "cached %s is null" name)
@@ -98,8 +98,8 @@ module Program =
             options.OutputPath |> Option.iter (fun path -> write path json)
             options.CachePath |> Option.iter (fun path -> if report.CacheEntry.IsSome then write path json)
             Console.Out.Write json
-            if report.Findings |> List.exists (fun item -> item.Strength = Failed) then 3
-            elif report.Termination <> Complete || (options.BlockUnknowns && not report.CanonicalizationReady && report.Findings |> List.exists (fun item -> item.Strength = Unknown)) then 4
+            if report.Findings |> List.exists (fun item -> item.Strength = ClaimStrength.Failed) then 3
+            elif report.Termination <> AnalysisTermination.Complete || (options.BlockUnknowns && not report.CanonicalizationReady && report.Findings |> List.exists (fun item -> item.Strength = ClaimStrength.Unknown)) then 4
             else 0
 
     [<EntryPoint>]

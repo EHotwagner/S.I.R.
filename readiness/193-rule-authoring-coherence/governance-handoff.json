@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/193-rule-authoring-coherence/ship.json",
-      "digest": "sha256:0d5f27abb71ae8267f6b08b69a64d300e9f277dba835ece3c2d4b43b2a9a42d2",
+      "digest": "sha256:e366c23c1ad5414af74c3d1fb60a765486c4e58415a6c10ba87dbd68c91b5aef",
       "schemaVersion": 1
     },
     {
       "path": "readiness/193-rule-authoring-coherence/verify.json",
-      "digest": "sha256:3031433e9482f0a14448bf1ebe521c7d1fa2189f713bc523437a68b745286f85",
+      "digest": "sha256:82d38b4f0c4d7a1c9cfd88567bcb5cc176a1b5a2274259e9638b029bb039316c",
       "schemaVersion": 1
     },
     {
       "path": "readiness/193-rule-authoring-coherence/work-model.json",
-      "digest": "sha256:811aa8893cd87c1df6f614fcc22e63f4249a9af37c8f9e549ccf48916ed3a6a0",
+      "digest": "sha256:cb798b121d5ab24e82f8e71449f369d4f118bdd2cd59db709417acafb0b933ae",
       "schemaVersion": 1
     }
   ],

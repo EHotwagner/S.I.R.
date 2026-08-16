@@ -3,8 +3,13 @@ namespace SIR.Domain
 open System
 open System.Text
 
+[<RequireQualifiedAccess>]
 type CoherenceMode = Changed | Cone | Corpus
+
+[<RequireQualifiedAccess>]
 type ClaimStrength = ProvedStructural | ProvedFragment | ExhaustiveBounded | Tested | Heuristic | Unknown | Failed
+
+[<RequireQualifiedAccess>]
 type AnalysisTermination = Complete | WorkBudgetExhausted
 
 type CoherenceBounds =
@@ -74,12 +79,12 @@ module RuleCoherence =
     let private intersects left right = not (Set.intersect (Set.ofList left) (Set.ofList right) |> Set.isEmpty)
 
     let private strengthName = function
-        | ProvedStructural -> "proved-structural" | ProvedFragment -> "proved-fragment"
-        | ExhaustiveBounded -> "exhaustive-bounded" | Tested -> "tested" | Heuristic -> "heuristic"
-        | Unknown -> "unknown" | Failed -> "failed"
+        | ClaimStrength.ProvedStructural -> "proved-structural" | ClaimStrength.ProvedFragment -> "proved-fragment"
+        | ClaimStrength.ExhaustiveBounded -> "exhaustive-bounded" | ClaimStrength.Tested -> "tested" | ClaimStrength.Heuristic -> "heuristic"
+        | ClaimStrength.Unknown -> "unknown" | ClaimStrength.Failed -> "failed"
 
-    let private modeName = function Changed -> "changed" | Cone -> "cone" | Corpus -> "corpus"
-    let private terminationName = function Complete -> "complete" | WorkBudgetExhausted -> "work-budget-exhausted"
+    let private modeName = function CoherenceMode.Changed -> "changed" | CoherenceMode.Cone -> "cone" | CoherenceMode.Corpus -> "corpus"
+    let private terminationName = function AnalysisTermination.Complete -> "complete" | AnalysisTermination.WorkBudgetExhausted -> "work-budget-exhausted"
 
     let private finding dimension strength ruleIds message reason fact expected actual =
         let sortedIds = ruleIds |> List.sortBy RuleId.value
@@ -112,9 +117,9 @@ module RuleCoherence =
 
     let private selectSlice mode changed (byId: Map<string, RuleDefinition>) =
         match mode with
-        | Corpus -> byId |> Map.toList |> List.map fst |> Set.ofList
-        | Changed -> changed |> List.map RuleId.value |> Set.ofList
-        | Cone ->
+        | CoherenceMode.Corpus -> byId |> Map.toList |> List.map fst |> Set.ofList
+        | CoherenceMode.Changed -> changed |> List.map RuleId.value |> Set.ofList
+        | CoherenceMode.Cone ->
             let seed = changed |> List.map RuleId.value
             Set.union (dependencyClosure byId seed false) (dependencyClosure byId seed true)
 
@@ -153,7 +158,7 @@ module RuleCoherence =
                 | conditionType, leftType, rightType -> Error(sprintf "conditional operands disagree: %A %A %A" conditionType leftType rightType)
         match infer expression with
         | Ok _ -> []
-        | Error detail -> [ finding "types-units" Failed [ ruleId ] ("Formula is not type/unit coherent: " + detail) "formula inference" "formula" "compatible typed units" detail ]
+        | Error detail -> [ finding "types-units" ClaimStrength.Failed [ ruleId ] ("Formula is not type/unit coherent: " + detail) "formula inference" "formula" "compatible typed units" detail ]
 
     let private transition rule = match rule.Semantics with TransitionSemantics contract -> Some contract | _ -> None
 
@@ -187,9 +192,9 @@ module RuleCoherence =
         let cacheKey = requestKey packageIdentity request selectedIds slice
         match priorCache with
         | Some cached when cached.Key = cacheKey ->
-            let hasFailure = cached.Findings |> List.exists (fun item -> item.Strength = Failed)
-            let hasBlockingUnknown = request.BlockUnknowns && (cached.Findings |> List.exists (fun item -> item.Strength = Unknown))
-            { ReportSchemaVersion = 1; AnalyzerVersion = analyzerVersion; Mode = request.Mode; PackageManifestDigest = packageIdentity.ManifestDigest; AnalyzedRuleIds = slice |> List.map (fun rule -> rule.Metadata.Id); Findings = cached.Findings; PendingShards = []; Termination = Complete; CanonicalizationReady = not hasFailure && not hasBlockingUnknown; Cost = { RulesInCorpus = int32 sorted.Length; RulesInSlice = int32 slice.Length; CandidatePairs = cached.CandidatePairs; PrunedPairs = cached.PrunedPairs; WorkUnits = 0; ExpensiveAnalyses = 0; CacheHits = 1 }; CacheEntry = Some cached }
+            let hasFailure = cached.Findings |> List.exists (fun item -> item.Strength = ClaimStrength.Failed)
+            let hasBlockingUnknown = request.BlockUnknowns && (cached.Findings |> List.exists (fun item -> item.Strength = ClaimStrength.Unknown))
+            { ReportSchemaVersion = 1; AnalyzerVersion = analyzerVersion; Mode = request.Mode; PackageManifestDigest = packageIdentity.ManifestDigest; AnalyzedRuleIds = slice |> List.map (fun rule -> rule.Metadata.Id); Findings = cached.Findings; PendingShards = []; Termination = AnalysisTermination.Complete; CanonicalizationReady = not hasFailure && not hasBlockingUnknown; Cost = { RulesInCorpus = int32 sorted.Length; RulesInSlice = int32 slice.Length; CandidatePairs = cached.CandidatePairs; PrunedPairs = cached.PrunedPairs; WorkUnits = 0; ExpensiveAnalyses = 0; CacheHits = 1 }; CacheEntry = Some cached }
         | _ ->
             let mutable work = 0
             let mutable exhausted = false
@@ -200,50 +205,50 @@ module RuleCoherence =
             let requestedIds = request.ChangedRuleIds |> List.map RuleId.value |> distinctSorted
             for missingId in requestedIds |> List.filter (allIds.Contains >> not) do
                 match RuleId.create missingId with
-                | Ok missing -> add [ finding "references" Failed [ missing ] "Requested changed rule does not resolve." "analysis slice seed" "changedRuleId" "registered rule id" missingId ]
+                | Ok missing -> add [ finding "references" ClaimStrength.Failed [ missing ] "Requested changed rule does not resolve." "analysis slice seed" "changedRuleId" "registered rule id" missingId ]
                 | Error _ -> ()
-            if request.Mode = Corpus && not requestedIds.IsEmpty then
-                add [ finding "scope" Failed request.ChangedRuleIds "Corpus mode does not accept changed-rule seeds." "analysis request" "changedRuleIds" "empty for corpus mode" (String.concat "," requestedIds) ]
+            if request.Mode = CoherenceMode.Corpus && not requestedIds.IsEmpty then
+                add [ finding "scope" ClaimStrength.Failed request.ChangedRuleIds "Corpus mode does not accept changed-rule seeds." "analysis request" "changedRuleIds" "empty for corpus mode" (String.concat "," requestedIds) ]
             let duplicates = sorted |> List.countBy id |> List.filter (fun (_, count) -> count > 1)
             for duplicateId, count in duplicates do
                 match RuleId.create duplicateId with
-                | Ok duplicate -> add [ finding "identity" Failed [ duplicate ] "Rule identity is registered more than once." "registry identity index" "count" "1" (string count) ]
+                | Ok duplicate -> add [ finding "identity" ClaimStrength.Failed [ duplicate ] "Rule identity is registered more than once." "registry identity index" "count" "1" (string count) ]
                 | Error _ -> ()
             for rule in slice do
                 if spend 1 then
                     let ruleId = rule.Metadata.Id
                     let expectedKind =
                         match rule.Semantics with FactSemantics _ -> RuleKind.Fact | PredicateSemantics _ -> RuleKind.Predicate | FormulaSemantics _ -> RuleKind.Formula | TransitionSemantics _ -> RuleKind.Transition | AlgorithmSemantics _ -> RuleKind.Algorithm | NarrativeSemantics -> RuleKind.Narrative
-                    if rule.Metadata.SemanticKind <> expectedKind then add [ finding "identity" Failed [ ruleId ] "Declared semantic kind does not match executable semantics." "typed registry" "kind" (sprintf "%A" expectedKind) (sprintf "%A" rule.Metadata.SemanticKind) ]
-                    if String.IsNullOrWhiteSpace rule.Metadata.Title || (rule.Metadata.SemanticKind <> Narrative && (String.IsNullOrWhiteSpace rule.Metadata.Rationale || List.isEmpty rule.Metadata.Examples || List.isEmpty rule.Metadata.Properties || List.isEmpty rule.Metadata.Evidence)) then add [ finding "coverage" Failed [ ruleId ] "Executable rule metadata is incomplete." "canonicalization metadata policy" "metadata" "title, rationale, examples, properties, evidence" "missing" ]
+                    if rule.Metadata.SemanticKind <> expectedKind then add [ finding "identity" ClaimStrength.Failed [ ruleId ] "Declared semantic kind does not match executable semantics." "typed registry" "kind" (sprintf "%A" expectedKind) (sprintf "%A" rule.Metadata.SemanticKind) ]
+                    if String.IsNullOrWhiteSpace rule.Metadata.Title || (rule.Metadata.SemanticKind <> Narrative && (String.IsNullOrWhiteSpace rule.Metadata.Rationale || List.isEmpty rule.Metadata.Examples || List.isEmpty rule.Metadata.Properties || List.isEmpty rule.Metadata.Evidence)) then add [ finding "coverage" ClaimStrength.Failed [ ruleId ] "Executable rule metadata is incomplete." "canonicalization metadata policy" "metadata" "title, rationale, examples, properties, evidence" "missing" ]
                     match rule.Metadata.RuleSource with
-                    | Some source when source.Commit <> packageIdentity.SourceCommit -> add [ finding "history" Failed [ ruleId ] "Rule source commit does not match the analyzed package source identity." "source/package binding" "sourceCommit" packageIdentity.SourceCommit source.Commit ]
-                    | None when rule.Metadata.SemanticKind <> Narrative -> add [ finding "references" Failed [ ruleId ] "Executable rule has no source binding." "source mapping" "source" "repository path, symbol, commit" "missing" ]
+                    | Some source when source.Commit <> packageIdentity.SourceCommit -> add [ finding "history" ClaimStrength.Failed [ ruleId ] "Rule source commit does not match the analyzed package source identity." "source/package binding" "sourceCommit" packageIdentity.SourceCommit source.Commit ]
+                    | None when rule.Metadata.SemanticKind <> Narrative -> add [ finding "references" ClaimStrength.Failed [ ruleId ] "Executable rule has no source binding." "source mapping" "source" "repository path, symbol, commit" "missing" ]
                     | _ -> ()
-                    if rule.Metadata.Status = Superseded && List.isEmpty rule.Metadata.Supersedes then add [ finding "history" Failed [ ruleId ] "Superseded rule names no replacement history." "status/supersession relation" "supersedes" "at least one registered rule" "empty" ]
+                    if rule.Metadata.Status = Superseded && List.isEmpty rule.Metadata.Supersedes then add [ finding "history" ClaimStrength.Failed [ ruleId ] "Superseded rule names no replacement history." "status/supersession relation" "supersedes" "at least one registered rule" "empty" ]
                     for dependency in rule.Metadata.Dependencies do
-                        if not (Set.contains (RuleId.value dependency) allIds) then add [ finding "references" Failed [ ruleId; dependency ] "Rule dependency does not resolve." "declared dependency" "dependency" "registered rule id" (RuleId.value dependency) ]
+                        if not (Set.contains (RuleId.value dependency) allIds) then add [ finding "references" ClaimStrength.Failed [ ruleId; dependency ] "Rule dependency does not resolve." "declared dependency" "dependency" "registered rule id" (RuleId.value dependency) ]
                     if rule.Metadata.Status = Canonical then
                         for dependency in rule.Metadata.Dependencies do
                             match Map.tryFind (RuleId.value dependency) byId with
-                            | Some target when target.Metadata.Status = Proposed || target.Metadata.Status = Prototype -> add [ finding "dependency-status" Failed [ ruleId; dependency ] "Canonical rule depends on non-canonical authority." "declared dependency" "status" "canonical/deprecated/superseded dependency" (sprintf "%A" target.Metadata.Status) ]
+                            | Some target when target.Metadata.Status = Proposed || target.Metadata.Status = Prototype -> add [ finding "dependency-status" ClaimStrength.Failed [ ruleId; dependency ] "Canonical rule depends on non-canonical authority." "declared dependency" "status" "canonical/deprecated/superseded dependency" (sprintf "%A" target.Metadata.Status) ]
                             | _ -> ()
                     match rule.Semantics with
                     | FormulaSemantics(_, _, expression) | PredicateSemantics expression -> add (formulaFacts ruleId expression)
-                    | AlgorithmSemantics contract when String.IsNullOrWhiteSpace contract.Fingerprint -> add [ finding "history" Failed [ ruleId ] "Registered algorithm has no implementation fingerprint." "algorithm contract" "fingerprint" "stable non-empty identity" "missing" ]
-                    | AlgorithmSemantics _ -> add [ finding "interaction" Unknown [ ruleId ] "Opaque algorithm has no trusted read/write/event footprint for cross-rule pruning." "opaque implementation boundary" "footprint" "verified assume/guarantee summary" "unknown" ]
-                    | TransitionSemantics contract when String.IsNullOrWhiteSpace contract.Phase || (List.isEmpty contract.Reads && List.isEmpty contract.Effects && List.isEmpty contract.Events) -> add [ finding "temporal" Unknown [ ruleId ] "Transition has an incomplete interaction footprint." "transition contract" "footprint" "phase plus reads/effects/events" "incomplete" ]
+                    | AlgorithmSemantics contract when String.IsNullOrWhiteSpace contract.Fingerprint -> add [ finding "history" ClaimStrength.Failed [ ruleId ] "Registered algorithm has no implementation fingerprint." "algorithm contract" "fingerprint" "stable non-empty identity" "missing" ]
+                    | AlgorithmSemantics _ -> add [ finding "interaction" ClaimStrength.Unknown [ ruleId ] "Opaque algorithm has no trusted read/write/event footprint for cross-rule pruning." "opaque implementation boundary" "footprint" "verified assume/guarantee summary" "unknown" ]
+                    | TransitionSemantics contract when String.IsNullOrWhiteSpace contract.Phase || (List.isEmpty contract.Reads && List.isEmpty contract.Effects && List.isEmpty contract.Events) -> add [ finding "temporal" ClaimStrength.Unknown [ ruleId ] "Transition has an incomplete interaction footprint." "transition contract" "footprint" "phase plus reads/effects/events" "incomplete" ]
                     | TransitionSemantics contract ->
                         for precondition in contract.Preconditions do
                             let preconditionId = RuleId.value precondition
-                            if not (rule.Metadata.Dependencies |> List.exists (fun dependency -> RuleId.value dependency = preconditionId)) then add [ finding "dependency-structure" Failed [ ruleId; precondition ] "Transition uses an undeclared precondition dependency." "transition precondition index" "dependency" "precondition listed in metadata dependencies" preconditionId ]
+                            if not (rule.Metadata.Dependencies |> List.exists (fun dependency -> RuleId.value dependency = preconditionId)) then add [ finding "dependency-structure" ClaimStrength.Failed [ ruleId; precondition ] "Transition uses an undeclared precondition dependency." "transition precondition index" "dependency" "precondition listed in metadata dependencies" preconditionId ]
                             match Map.tryFind preconditionId byId with
-                            | None -> add [ finding "references" Failed [ ruleId; precondition ] "Transition precondition does not resolve." "transition precondition index" "precondition" "registered predicate rule" preconditionId ]
-                            | Some { Semantics = PredicateSemantics(Constant { DataKind = RuleValueKind.Boolean; Value = BooleanValue false }) } -> add [ finding "reachability" Failed [ ruleId; precondition ] "Transition is unreachable because a declared precondition is always false." "bounded constant-predicate evaluation" "precondition" "satisfiable predicate" "false" ]
+                            | None -> add [ finding "references" ClaimStrength.Failed [ ruleId; precondition ] "Transition precondition does not resolve." "transition precondition index" "precondition" "registered predicate rule" preconditionId ]
+                            | Some { Semantics = PredicateSemantics(Constant { DataKind = RuleValueKind.Boolean; Value = BooleanValue false }) } -> add [ finding "reachability" ClaimStrength.Failed [ ruleId; precondition ] "Transition is unreachable because a declared precondition is always false." "bounded constant-predicate evaluation" "precondition" "satisfiable predicate" "false" ]
                             | _ -> ()
                     | _ -> ()
                     let cyclic = rule.Metadata.Dependencies |> List.exists (fun dependency -> dependencyClosure byId [ RuleId.value dependency ] false |> Set.contains (id rule))
-                    if cyclic then add [ finding "dependency-structure" Failed [ ruleId ] "Rule dependency graph contains a cycle." "transitive dependency index" "cycle" "acyclic dependency path" (id rule) ]
+                    if cyclic then add [ finding "dependency-structure" ClaimStrength.Failed [ ruleId ] "Rule dependency graph contains a cycle." "transitive dependency index" "cycle" "acyclic dependency path" (id rule) ]
             let transitions = slice |> List.choose (fun rule -> transition rule |> Option.map (fun contract -> id rule, rule, contract))
             let grouped selector =
                 transitions
@@ -278,7 +283,7 @@ module RuleCoherence =
                         candidates <- candidates + 1
                         if conflict then
                             let fact = "writes=" + String.concat "," sharedWrites + ";events=" + String.concat "," sharedEvents
-                            add [ finding "logical-compatibility" Failed [ left.Metadata.Id; right.Metadata.Id ] "Unordered same-phase transitions share authoritative writes and events." "typed phase/read-write/event candidate" fact "declared dependency or disjoint/commutative contract" "ambiguous ordering" ]
+                            add [ finding "logical-compatibility" ClaimStrength.Failed [ left.Metadata.Id; right.Metadata.Id ] "Unordered same-phase transitions share authoritative writes and events." "typed phase/read-write/event candidate" fact "declared dependency or disjoint/commutative contract" "ambiguous ordering" ]
             let allOrderedFindings = findings |> List.sortBy (fun item -> item.Dimension, item.Fingerprint)
             let findingLimit = max 0 (int request.Bounds.MaxFindings)
             let findingsTruncated = allOrderedFindings.Length > findingLimit
@@ -290,9 +295,9 @@ module RuleCoherence =
             let pending =
                 [ if exhausted then "remaining-structural-or-interaction-work"
                   if findingsTruncated then "finding-output-truncated" ]
-            let termination = if incomplete then WorkBudgetExhausted else Complete
-            let hasFailure = allOrderedFindings |> List.exists (fun item -> item.Strength = Failed)
-            let hasUnknown = allOrderedFindings |> List.exists (fun item -> item.Strength = Unknown)
+            let termination = if incomplete then AnalysisTermination.WorkBudgetExhausted else AnalysisTermination.Complete
+            let hasFailure = allOrderedFindings |> List.exists (fun item -> item.Strength = ClaimStrength.Failed)
+            let hasUnknown = allOrderedFindings |> List.exists (fun item -> item.Strength = ClaimStrength.Unknown)
             let cache = if incomplete then None else Some { Key = cacheKey; Findings = orderedFindings; CandidatePairs = int32 candidates; PrunedPairs = int32 pruned }
             { ReportSchemaVersion = 1; AnalyzerVersion = analyzerVersion; Mode = request.Mode; PackageManifestDigest = packageIdentity.ManifestDigest; AnalyzedRuleIds = slice |> List.map (fun rule -> rule.Metadata.Id); Findings = orderedFindings; PendingShards = pending; Termination = termination; CanonicalizationReady = not incomplete && not hasFailure && not (request.BlockUnknowns && hasUnknown); Cost = { RulesInCorpus = int32 sorted.Length; RulesInSlice = int32 slice.Length; CandidatePairs = int32 candidates; PrunedPairs = int32 pruned; WorkUnits = int32 work; ExpensiveAnalyses = int32 candidates; CacheHits = 0 }; CacheEntry = cache }
 

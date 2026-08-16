@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="skill-forward-tests" tests="2" failures="0" errors="0" skipped="0"><testsuite name="skill-forward-tests" tests="2" failures="0" errors="0" skipped="0"><testcase name="sir-author-rule-cold-forward-test" classname="SIR.Item193.Skills"/><testcase name="sir-check-rule-coherence-cold-forward-test" classname="SIR.Item193.Skills"/></testsuite></testsuites>

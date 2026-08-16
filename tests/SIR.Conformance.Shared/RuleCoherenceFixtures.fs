@@ -44,7 +44,7 @@ module RuleCoherenceFixtures =
                 Metadata = { template.Metadata with Id = requiredId (sprintf "SCALE-%04d" index); Dependencies = []; Supersedes = [] } } ]
 
     let evaluateProtectedMutation mutation =
-        let baselineRequest = request Corpus [] 100_000 false
+        let baselineRequest = request CoherenceMode.Corpus [] 100_000 false
         let first = CombatRules.registry.Head
         let mutatedReport, expectedDimension =
             match mutation with
@@ -69,17 +69,17 @@ module RuleCoherenceFixtures =
                         Semantics = match transition.Semantics with TransitionSemantics contract -> TransitionSemantics { contract with Preconditions = [ predicate.Metadata.Id ] } | _ -> transition.Semantics }
                 analyze [ predicate; unreachable ] None baselineRequest, "reachability"
             | _ -> failwithf "Unknown rule-coherence mutation: %s" mutation
-        if has expectedDimension Failed mutatedReport then
+        if has expectedDimension ClaimStrength.Failed mutatedReport then
             eprintfn "first coherence failure: mutation=%s dimension=%s" mutation expectedDimension
             failwith "Rule coherence mutation correctly made the gate red."
         failwithf "Rule coherence mutation was accepted: %s" mutation
 
     let evaluate () =
-        let baselineRequest = request Corpus [] 100_000 false
+        let baselineRequest = request CoherenceMode.Corpus [] 100_000 false
         let baseline = analyze CombatRules.registry None baselineRequest
-        require (baseline.Termination = Complete) "Corpus coherence did not complete."
-        require (not (has "logical-compatibility" Failed baseline)) "The accepted combat corpus contains an unordered transition conflict."
-        require (has "interaction" Unknown baseline) "Opaque algorithm limits were not reported as unknown."
+        require (baseline.Termination = AnalysisTermination.Complete) "Corpus coherence did not complete."
+        require (not (has "logical-compatibility" ClaimStrength.Failed baseline)) "The accepted combat corpus contains an unordered transition conflict."
+        require (has "interaction" ClaimStrength.Unknown baseline) "Opaque algorithm limits were not reported as unknown."
         require (baseline.Cost.CandidatePairs = int32 (unprunedCandidateCount CombatRules.registry)) "Indexed candidate selection disagrees with the bounded unpruned oracle."
         require (baseline.Cost.WorkUnits = baseline.Cost.RulesInSlice + baseline.Cost.CandidatePairs) "Disjoint pairs consumed analyzer work."
         require (baseline.Cost.PrunedPairs > baseline.Cost.CandidatePairs) "The interaction index did not prune the combat corpus."
@@ -105,10 +105,10 @@ module RuleCoherenceFixtures =
         let invalidated = analyze fingerprintChanged (Some cache) baselineRequest
         require (invalidated.Cost.CacheHits = 0 && invalidated.Cost.WorkUnits > 0) "Algorithm fingerprint change reused poisoned cache state."
 
-        let exhausted = analyze CombatRules.registry None (request Corpus [] 1 false)
-        require (exhausted.Termination = WorkBudgetExhausted && not exhausted.PendingShards.IsEmpty && not exhausted.CanonicalizationReady) "Work exhaustion did not return a deterministic partial report."
+        let exhausted = analyze CombatRules.registry None (request CoherenceMode.Corpus [] 1 false)
+        require (exhausted.Termination = AnalysisTermination.WorkBudgetExhausted && not exhausted.PendingShards.IsEmpty && not exhausted.CanonicalizationReady) "Work exhaustion did not return a deterministic partial report."
 
-        let changed = analyze CombatRules.registry None (request Changed [ "CONTENT-WEAPON-RIFLE-001" ] 100 false)
+        let changed = analyze CombatRules.registry None (request CoherenceMode.Changed [ "CONTENT-WEAPON-RIFLE-001" ] 100 false)
         require (changed.AnalyzedRuleIds |> List.map RuleId.value = [ "CONTENT-WEAPON-RIFLE-001" ] && changed.Cost.WorkUnits = 1) "Changed mode escaped its exact slice."
         let changedCache = changed.CacheEntry |> Option.defaultWith (fun () -> failwith "Changed analysis emitted no cache entry.")
         let unrelatedAlgorithmChange =
@@ -116,37 +116,37 @@ module RuleCoherenceFixtures =
                 match rule.Semantics with
                 | AlgorithmSemantics contract -> { rule with Semantics = AlgorithmSemantics { contract with Fingerprint = contract.Fingerprint + ":outside-slice" } }
                 | _ -> failwith "Expected algorithm rule.")
-        let unchangedSlice = analyze unrelatedAlgorithmChange (Some changedCache) (request Changed [ "CONTENT-WEAPON-RIFLE-001" ] 100 false)
+        let unchangedSlice = analyze unrelatedAlgorithmChange (Some changedCache) (request CoherenceMode.Changed [ "CONTENT-WEAPON-RIFLE-001" ] 100 false)
         require (unchangedSlice.Cost.CacheHits = 1 && unchangedSlice.Cost.WorkUnits = 0) "Unrelated semantic change invalidated an exact changed-rule slice."
-        let missingChanged = analyze CombatRules.registry None (request Changed [ "MISSING-RULE-001" ] 100 false)
-        require (has "references" Failed missingChanged && not missingChanged.CanonicalizationReady) "Unknown changed-rule seed was accepted."
-        let cone = analyze CombatRules.registry None (request Cone [ "COMBAT-DAMAGE-001" ] 1_000 false)
+        let missingChanged = analyze CombatRules.registry None (request CoherenceMode.Changed [ "MISSING-RULE-001" ] 100 false)
+        require (has "references" ClaimStrength.Failed missingChanged && not missingChanged.CanonicalizationReady) "Unknown changed-rule seed was accepted."
+        let cone = analyze CombatRules.registry None (request CoherenceMode.Cone [ "COMBAT-DAMAGE-001" ] 1_000 false)
         require (cone.Cost.RulesInSlice > 1 && cone.Cost.RulesInSlice < int32 CombatRules.registry.Length) "Cone mode did not select a bounded dependency/dependant slice."
 
         let truncated =
             analyze (conflictRules ()) None
                 { baselineRequest with Bounds = { baselineRequest.Bounds with MaxFindings = 0 } }
-        require (truncated.Termination = WorkBudgetExhausted && truncated.PendingShards = [ "finding-output-truncated" ] && not truncated.CanonicalizationReady && truncated.CacheEntry.IsNone) "Finding truncation was reported as complete."
+        require (truncated.Termination = AnalysisTermination.WorkBudgetExhausted && truncated.PendingShards = [ "finding-output-truncated" ] && not truncated.CanonicalizationReady && truncated.CacheEntry.IsNone) "Finding truncation was reported as complete."
 
         let conflict = analyze (conflictRules ()) None baselineRequest
-        require (has "logical-compatibility" Failed conflict && not conflict.CanonicalizationReady) "Unordered shared-write/event contradiction was accepted."
+        require (has "logical-compatibility" ClaimStrength.Failed conflict && not conflict.CanonicalizationReady) "Unordered shared-write/event contradiction was accepted."
 
         let dangling =
             { first with Metadata = { first.Metadata with Dependencies = [ requiredId "MISSING-RULE-001" ] } } :: CombatRules.registry.Tail
             |> fun rules -> analyze rules None baselineRequest
-        require (has "references" Failed dangling) "Dangling dependency was accepted."
+        require (has "references" ClaimStrength.Failed dangling) "Dangling dependency was accepted."
 
         let prototype = withRule "COMBAT-TRACE-002" (fun rule -> { rule with Metadata = { rule.Metadata with Status = Prototype } }) |> fun rules -> analyze rules None baselineRequest
-        require (has "dependency-status" Failed prototype) "Prototype-to-canonical authority leakage was accepted."
+        require (has "dependency-status" ClaimStrength.Failed prototype) "Prototype-to-canonical authority leakage was accepted."
 
         let unitMismatch =
             withRule "COMBAT-DAMAGE-001" (fun rule ->
                 { rule with Semantics = FormulaSemantics(RuleValueKind.FixedPoint, "damage", Add(Input("damage", RuleValueKind.FixedPoint, "damage"), Input("ratio", RuleValueKind.FixedPoint, "ratio"))) })
             |> fun rules -> analyze rules None baselineRequest
-        require (has "types-units" Failed unitMismatch) "Unit mismatch was accepted."
+        require (has "types-units" ClaimStrength.Failed unitMismatch) "Unit mismatch was accepted."
 
         let duplicate = analyze (first :: CombatRules.registry) None baselineRequest
-        require (has "identity" Failed duplicate) "Duplicate rule identity was accepted."
+        require (has "identity" ClaimStrength.Failed duplicate) "Duplicate rule identity was accepted."
 
         let cycleA, cycleB = CombatRules.registry[0], CombatRules.registry[1]
         let cyclic =
@@ -156,13 +156,13 @@ module RuleCoherenceFixtures =
                 elif RuleId.value rule.Metadata.Id = RuleId.value cycleB.Metadata.Id then { rule with Metadata = { rule.Metadata with Dependencies = [ cycleA.Metadata.Id ] } }
                 else rule)
             |> fun rules -> analyze rules None baselineRequest
-        require (has "dependency-structure" Failed cyclic) "Dependency cycle was accepted."
+        require (has "dependency-structure" ClaimStrength.Failed cyclic) "Dependency cycle was accepted."
 
         let staleSource = { first with Metadata = { first.Metadata with RuleSource = first.Metadata.RuleSource |> Option.map (fun source -> { source with Commit = "0000000000000000000000000000000000000000" }) } } :: CombatRules.registry.Tail |> fun rules -> analyze rules None baselineRequest
-        require (has "history" Failed staleSource) "Historical source/package mismatch was accepted."
+        require (has "history" ClaimStrength.Failed staleSource) "Historical source/package mismatch was accepted."
 
-        let scale = analyze (scaleRules 256) None (request Corpus [] 1_000 false)
-        require (scale.Termination = Complete && scale.Cost.RulesInSlice = 256 && scale.Cost.CandidatePairs = 0 && scale.Cost.WorkUnits = 256) "Disjoint synthetic corpus did not scale with the affected slice."
+        let scale = analyze (scaleRules 256) None (request CoherenceMode.Corpus [] 1_000 false)
+        require (scale.Termination = AnalysisTermination.Complete && scale.Cost.RulesInSlice = 256 && scale.Cost.CandidatePairs = 0 && scale.Cost.WorkUnits = 256) "Disjoint synthetic corpus did not scale with the affected slice."
         require ((RuleCoherence.canonicalReportBytes scale).Length < 131_072) "Model-facing summary grew with passing corpus detail."
 
         RuleCoherence.canonicalReportBytes baseline

@@ -319,18 +319,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: scripts/verify-rule-coherence.sh
+        path: readiness/193-rule-authoring-coherence/skill-forward-tests.junit.xml
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/193-rule-authoring-coherence/rule-coherence.junit.xml
-      digest: "sha256:eacef360ebb2c1f4d9f8179d30e953d0abd25496dffe94ee47fa5d88d3a68bc1"
+      source: readiness/193-rule-authoring-coherence/skill-forward-tests.junit.xml
+      digest: "sha256:9f0d09f773cdc2f70f7c18615c559911ca3d535159d08056a27ec3ea034a9397"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
-    notes: [Focused owner verifier passed on 2026-08-16.]
+    notes: [Two independent cold skill forward tests passed on 2026-08-16.]
   - id: EV012
     kind: verification
     subject:
@@ -481,18 +481,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: scripts/verify-rule-coherence.sh
+        path: readiness/193-rule-authoring-coherence/skill-forward-tests.junit.xml
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/193-rule-authoring-coherence/rule-coherence.junit.xml
-      digest: "sha256:eacef360ebb2c1f4d9f8179d30e953d0abd25496dffe94ee47fa5d88d3a68bc1"
+      source: readiness/193-rule-authoring-coherence/skill-forward-tests.junit.xml
+      digest: "sha256:9f0d09f773cdc2f70f7c18615c559911ca3d535159d08056a27ec3ea034a9397"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
-    notes: [Focused owner verifier passed on 2026-08-16.]
+    notes: [Two independent cold skill forward tests passed on 2026-08-16.]
   - id: EV018
     kind: verification
     subject:
@@ -508,18 +508,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: scripts/verify-rule-coherence.sh
+        path: readiness/193-rule-authoring-coherence/skill-forward-tests.junit.xml
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/193-rule-authoring-coherence/rule-coherence.junit.xml
-      digest: "sha256:eacef360ebb2c1f4d9f8179d30e953d0abd25496dffe94ee47fa5d88d3a68bc1"
+      source: readiness/193-rule-authoring-coherence/skill-forward-tests.junit.xml
+      digest: "sha256:9f0d09f773cdc2f70f7c18615c559911ca3d535159d08056a27ec3ea034a9397"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
-    notes: [Focused owner verifier passed on 2026-08-16.]
+    notes: [Two independent cold skill forward tests passed on 2026-08-16.]
   - id: EV019
     kind: verification
     subject:
@@ -778,18 +778,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: scripts/verify-rule-coherence.sh
+        path: readiness/193-rule-authoring-coherence/skill-forward-tests.junit.xml
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/193-rule-authoring-coherence/rule-coherence.junit.xml
-      digest: "sha256:eacef360ebb2c1f4d9f8179d30e953d0abd25496dffe94ee47fa5d88d3a68bc1"
+      source: readiness/193-rule-authoring-coherence/skill-forward-tests.junit.xml
+      digest: "sha256:9f0d09f773cdc2f70f7c18615c559911ca3d535159d08056a27ec3ea034a9397"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
-    notes: [Focused owner verifier passed on 2026-08-16.]
+    notes: [Two independent cold skill forward tests passed on 2026-08-16.]
   - id: EV029
     kind: verification
     subject:
@@ -832,18 +832,18 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: scripts/verify-rule-coherence.sh
+        path: readiness/193-rule-authoring-coherence/skill-forward-tests.junit.xml
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/193-rule-authoring-coherence/rule-coherence.junit.xml
-      digest: "sha256:eacef360ebb2c1f4d9f8179d30e953d0abd25496dffe94ee47fa5d88d3a68bc1"
+      source: readiness/193-rule-authoring-coherence/skill-forward-tests.junit.xml
+      digest: "sha256:9f0d09f773cdc2f70f7c18615c559911ca3d535159d08056a27ec3ea034a9397"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
-    notes: [Focused owner verifier passed on 2026-08-16.]
+    notes: [Two independent cold skill forward tests passed on 2026-08-16.]
   - id: EV031
     kind: verification
     subject:
@@ -1048,17 +1048,17 @@ evidence:
     artifacts: []
     sourceRefs:
       - kind: verification
-        path: scripts/verify-rule-coherence.sh
+        path: readiness/193-rule-authoring-coherence/skill-forward-tests.junit.xml
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/193-rule-authoring-coherence/rule-coherence.junit.xml
-      digest: "sha256:eacef360ebb2c1f4d9f8179d30e953d0abd25496dffe94ee47fa5d88d3a68bc1"
+      source: readiness/193-rule-authoring-coherence/skill-forward-tests.junit.xml
+      digest: "sha256:9f0d09f773cdc2f70f7c18615c559911ca3d535159d08056a27ec3ea034a9397"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
-    notes: [Focused owner verifier passed on 2026-08-16.]
+    notes: [Two independent cold skill forward tests passed on 2026-08-16.]
 lifecycleNotes:
   - "Next lifecycle action: verify."

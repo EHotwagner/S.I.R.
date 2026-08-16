@@ -1,7 +1,12 @@
 namespace SIR.Domain
 
+[<RequireQualifiedAccess>]
 type CoherenceMode = Changed | Cone | Corpus
+
+[<RequireQualifiedAccess>]
 type ClaimStrength = ProvedStructural | ProvedFragment | ExhaustiveBounded | Tested | Heuristic | Unknown | Failed
+
+[<RequireQualifiedAccess>]
 type AnalysisTermination = Complete | WorkBudgetExhausted
 
 type CoherenceBounds =

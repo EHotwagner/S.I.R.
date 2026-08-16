@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "ff3d50797424570a108faf997a21cab3ef63648f06f99b3db1f332842e27f932"
+        "value": "f709890d57a8c905b780a81d777aa3bac71253adef6deac1fd18c396ac1c46be"
       }
     },
     {
@@ -2476,7 +2476,7 @@
           "path": "work/193-rule-authoring-coherence/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "ff3d50797424570a108faf997a21cab3ef63648f06f99b3db1f332842e27f932"
+            "value": "f709890d57a8c905b780a81d777aa3bac71253adef6deac1fd18c396ac1c46be"
           },
           "schemaVersion": 1
         },
@@ -2507,7 +2507,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "708adca35229255989f3066dd988bf20e2d26f654576769d2980fb6820e392e5"
+        "value": "f89fe05877795505284f352c8c87629b7b8498f71abb7cf9e0766c96a6d04470"
       },
       "currency": "current"
     }
