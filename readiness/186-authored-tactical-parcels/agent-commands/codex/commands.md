@@ -278,3 +278,8 @@ normalized work model, not an authored source of truth. See `guidance.json`.
 - Purpose: Carry out lifecycle task T055 (done) covering AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007.
 - Related: AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007
 
+## T056 — Bind representative predicates and dense pointer-preview host variance
+- Stage: specify
+- Purpose: Carry out lifecycle task T056 (done) covering AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007.
+- Related: AC-008, DEC-005, FR-012, PD-012, VO-006, VO-007
+

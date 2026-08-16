@@ -140,3 +140,30 @@ ceiling. The same run retained the maximum preview at 12.949 ms validation,
 37.110 ms assembly, 13,693,216 allocated bytes, and exact authored identity.
 Both hosted jobs, documentation, the complete browser suite, and downstream
 mutation gates completed successfully.
+
+## Independent-review repair round five
+
+The round-four exact-head hosted run `31917304397` retained the repaired
+80x80 tactical preview at 9.271 ms validation but exposed a separate inherited
+dense 40x40 map-editor pointer-preview observation of 9.271 ms against its
+8 ms ceiling. The pointer-preview budget is now versioned at 12 ms p95, about
+29% above that hosted observation, with the workload and every other editor
+budget unchanged. The measurement is printed and flushed before assertion.
+
+Focused local qualification observed 2.670 ms normally. A self-restoring
+production-source mutation inserted a 20 ms delay in `MapEditor.terrainPreview`
+without changing the 12 ms predicate; the gate failed at 22.735 ms, then source
+restoration rebuilt and passed at 2.652 ms with tracked no-drift.
+
+Each of the seven separately named representative combat-spatial predicates
+now owns an input/result subject inversion under its unchanged assertion. The
+source-unit, final-unit, participant, propagation, query, crossed-cell, and
+50 ms timing mutations each failed only its expected named gate; the timing
+mutation observed 77.917 ms. The single clean detached aggregate at
+`3e158a1064fd2504604785eda439dee5379ddfde` exited zero, initially observing
+the tactical preview at 19.207 ms / 12,124,472 bytes, the representative batch
+at 17.405 ms with 100/100/100/0/50/100 structure, and dense pointer preview at
+2.752 ms. After all subject mutations restored, it retained exact authored
+identity `51eedfe20ceb51fad17d33ddacfe68ce0e95cd7df031f1ef5e176226249e0a68`,
+observed 19.548 ms / 12,124,472 bytes for the tactical preview and 16.859 ms
+for the representative batch, and left tracked sources drift-free.

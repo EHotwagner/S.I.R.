@@ -41,7 +41,7 @@
       "kind": "analysis",
       "digest": {
         "algorithm": "sha256",
-        "value": "81f8f6817d45065e0eea0c4a323e47609ea45c8f06c3a348277b6c2c032498a3"
+        "value": "84d5dd0e67c48aa98307e8552bd7366510c3134f91c0164c43b8bc30fc874094"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -51,7 +51,7 @@
       "kind": "source",
       "digest": {
         "algorithm": "sha256",
-        "value": "8db05e31fb6ce7a94b78e03e84fad1abe4dcd0c9a75ebe045340b2d35db450b1"
+        "value": "24dd488d5b78d2b7e8c8688c76c124e64677d9d5c37c968c5b94c36f038ce2a4"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -61,7 +61,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "531140c26c8663adcbb29d790ac113dd03a05e8341a418c830d636c3037e9a45"
+        "value": "50237ccf54ee73b529b70804d60a7fd9c57b69da3a9bf021d098124d96ed3a35"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -91,7 +91,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "8d04af6cff332eefd60d3c991d6560ad816f4611f6ad201764bbbb2c6982af8f"
+        "value": "c546390ba43efa58fb89c54b714ac72141e5d5f9df90ec99b6ebd18b4a97368f"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -121,7 +121,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "c4b423000ac679fed06b2831854bf179f1b507e407b4c69c62f8d1b6e24a5fb1"
+        "value": "fc3c737b81e26d31e16d35c968c0f3ed3d5f1702ff090ee798ac1d79117cc007"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -167,9 +167,9 @@
   "verificationReadiness": {
     "status": "verificationReady",
     "blockingFindingIds": [],
-    "evidenceSupportedCount": 55,
+    "evidenceSupportedCount": 56,
     "evidenceSelfAttestedCount": 0,
-    "evidenceObservedCount": 55,
+    "evidenceObservedCount": 56,
     "evidenceDeferredCount": 0,
     "evidenceMissingCount": 0,
     "evidenceStaleCount": 0,
@@ -612,6 +612,14 @@
     {
       "id": "ED-EV055",
       "obligationId": "EV055",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV056",
+      "obligationId": "EV056",
       "state": "supported",
       "observed": true,
       "severity": "ready",

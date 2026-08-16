@@ -41,7 +41,7 @@
       "kind": "analysis",
       "digest": {
         "algorithm": "sha256",
-        "value": "81f8f6817d45065e0eea0c4a323e47609ea45c8f06c3a348277b6c2c032498a3"
+        "value": "84d5dd0e67c48aa98307e8552bd7366510c3134f91c0164c43b8bc30fc874094"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -51,7 +51,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "531140c26c8663adcbb29d790ac113dd03a05e8341a418c830d636c3037e9a45"
+        "value": "50237ccf54ee73b529b70804d60a7fd9c57b69da3a9bf021d098124d96ed3a35"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +81,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "8d04af6cff332eefd60d3c991d6560ad816f4611f6ad201764bbbb2c6982af8f"
+        "value": "c546390ba43efa58fb89c54b714ac72141e5d5f9df90ec99b6ebd18b4a97368f"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -111,7 +111,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "c4b423000ac679fed06b2831854bf179f1b507e407b4c69c62f8d1b6e24a5fb1"
+        "value": "fc3c737b81e26d31e16d35c968c0f3ed3d5f1702ff090ee798ac1d79117cc007"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -151,8 +151,8 @@
     ]
   },
   "taskGraph": {
-    "taskCount": 55,
-    "dependencyCount": 43,
+    "taskCount": 56,
+    "dependencyCount": 44,
     "dependenciesValid": true,
     "statusesValid": true,
     "findingIds": []
@@ -1360,6 +1360,31 @@
       "severity": "ready",
       "diagnosticIds": [],
       "correction": ""
+    },
+    {
+      "id": "ED-EV056",
+      "obligationId": "EV056",
+      "state": "supported",
+      "observed": true,
+      "classifiedRequirement": false,
+      "journeyRequirement": false,
+      "evidenceIds": [
+        "EV056"
+      ],
+      "affectedTaskIds": [
+        "T056"
+      ],
+      "affectedSourceIds": [
+        "AC-008",
+        "DEC-005",
+        "FR-012",
+        "PD-012",
+        "VO-006",
+        "VO-007"
+      ],
+      "severity": "ready",
+      "diagnosticIds": [],
+      "correction": ""
     }
   ],
   "testDispositions": [
@@ -2272,6 +2297,24 @@
       "severity": "ready",
       "diagnosticIds": [],
       "correction": ""
+    },
+    {
+      "id": "TD-EV056",
+      "obligationId": "EV056",
+      "state": "satisfied",
+      "observed": true,
+      "evidenceIds": [
+        "EV056"
+      ],
+      "affectedTaskIds": [
+        "T056"
+      ],
+      "affectedRequirementIds": [
+        "FR-012"
+      ],
+      "severity": "ready",
+      "diagnosticIds": [],
+      "correction": ""
     }
   ],
   "skillVisibility": [
@@ -2289,7 +2332,8 @@
         "T052",
         "T053",
         "T054",
-        "T055"
+        "T055",
+        "T056"
       ],
       "visibility": "visible",
       "sourceArtifactPath": "work/186-authored-tactical-parcels/tasks.yml",
@@ -2352,7 +2396,8 @@
         "T051",
         "T053",
         "T054",
-        "T055"
+        "T055",
+        "T056"
       ],
       "visibility": "visible",
       "sourceArtifactPath": "work/186-authored-tactical-parcels/tasks.yml",
@@ -2415,7 +2460,8 @@
         "T052",
         "T053",
         "T054",
-        "T055"
+        "T055",
+        "T056"
       ],
       "visibility": "visible",
       "sourceArtifactPath": "work/186-authored-tactical-parcels/tasks.yml",
@@ -2451,7 +2497,24 @@
       "diagnosticIds": []
     }
   ],
-  "findings": [],
+  "findings": [
+    {
+      "id": "VF001",
+      "severity": "warning",
+      "category": "warning",
+      "path": "work/186-authored-tactical-parcels/evidence.yml",
+      "relatedIds": [
+        "analysis",
+        "checklist",
+        "clarifications",
+        "plan",
+        "spec",
+        "tasks"
+      ],
+      "message": "One or more evidence source snapshots no longer match current source digests.",
+      "correction": "Rerun the evidence command after reviewing the changed source artifacts."
+    }
+  ],
   "governanceCompatibility": [
     {
       "path": ".fsgg/policy.yml",
@@ -2475,7 +2538,23 @@
       "diagnosticIds": []
     }
   ],
-  "diagnostics": [],
+  "diagnostics": [
+    {
+      "id": "evidence.staleEvidenceSource",
+      "severity": "warning",
+      "artifact": "work/186-authored-tactical-parcels/evidence.yml",
+      "message": "One or more evidence source snapshots no longer match current source digests.",
+      "correction": "Rerun the evidence command after reviewing the changed source artifacts.",
+      "relatedIds": [
+        "analysis",
+        "checklist",
+        "clarifications",
+        "plan",
+        "spec",
+        "tasks"
+      ]
+    }
+  ],
   "readiness": "verificationReady",
   "nextAction": {
     "actionId": "verify.next.ship",

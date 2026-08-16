@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "41718b3056ce8972f566a436493aa08d2713855a499210905e9fea33a3d986e0"
+        "value": "da5e732402f50123c6ee1b28ea0bbf4e4781b4a1a1d001734f59d86d382afc64"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "c4b423000ac679fed06b2831854bf179f1b507e407b4c69c62f8d1b6e24a5fb1"
+        "value": "fc3c737b81e26d31e16d35c968c0f3ed3d5f1702ff090ee798ac1d79117cc007"
       }
     }
   ],
@@ -385,7 +385,8 @@
         "T012",
         "T053",
         "T054",
-        "T055"
+        "T055",
+        "T056"
       ],
       "linkedEvidenceIds": [
         "EV012",
@@ -395,7 +396,8 @@
         "EV052",
         "EV053",
         "EV054",
-        "EV055"
+        "EV055",
+        "EV056"
       ]
     }
   ],
@@ -506,7 +508,8 @@
         "T017",
         "T053",
         "T054",
-        "T055"
+        "T055",
+        "T056"
       ]
     },
     {
@@ -2100,6 +2103,42 @@
         "line": 55,
         "column": 1
       }
+    },
+    {
+      "id": "T056",
+      "title": "Bind representative predicates and dense pointer-preview host variance",
+      "status": "done",
+      "owner": "shrike-f615",
+      "dependencies": [
+        "T055"
+      ],
+      "requirements": [
+        "FR-012"
+      ],
+      "decisions": [
+        "DEC-005"
+      ],
+      "sourceIds": [
+        "AC-008",
+        "DEC-005",
+        "FR-012",
+        "PD-012",
+        "VO-006",
+        "VO-007"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "fsharp",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV056"
+      ],
+      "source": "work/186-authored-tactical-parcels/tasks.yml",
+      "sourceLocation": {
+        "line": 56,
+        "column": 1
+      }
     }
   ],
   "evidence": [
@@ -3370,6 +3409,30 @@
         "line": 55,
         "column": 1
       }
+    },
+    {
+      "id": "EV056",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T056",
+      "taskRefs": [
+        "T056"
+      ],
+      "requirementRefs": [
+        "FR-012"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/186-authored-tactical-parcels/evidence.yml",
+      "sourceLocation": {
+        "line": 56,
+        "column": 1
+      }
     }
   ],
   "generatedViews": [
@@ -3426,7 +3489,7 @@
           "path": "work/186-authored-tactical-parcels/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "41718b3056ce8972f566a436493aa08d2713855a499210905e9fea33a3d986e0"
+            "value": "da5e732402f50123c6ee1b28ea0bbf4e4781b4a1a1d001734f59d86d382afc64"
           },
           "schemaVersion": 1
         },
@@ -3450,14 +3513,14 @@
           "path": "work/186-authored-tactical-parcels/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "c4b423000ac679fed06b2831854bf179f1b507e407b4c69c62f8d1b6e24a5fb1"
+            "value": "fc3c737b81e26d31e16d35c968c0f3ed3d5f1702ff090ee798ac1d79117cc007"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "acf3d35067aeca252f5111c90bdd38506b2727b531ef0644c710fd2b6eb29723"
+        "value": "126574dde6894934189643ee77c08903c68a952d8f41aac7275f21422f6f4774"
       },
       "currency": "current"
     }

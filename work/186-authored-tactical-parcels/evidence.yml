@@ -1523,5 +1523,40 @@ evidence:
       failed: 0
       skipped: 0
     notes: [Hosted qualification printed and flushed exact 100/100/100/0/50/100 structure before separate named assertions and passed the unchanged 50 ms representative timing gate at 40.130 ms.]
+  - id: EV056
+    kind: verification
+    subject:
+      type: task
+      id: T056
+    taskRefs: [T056]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: [DEC-005]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV056]
+    artifacts: []
+    sourceRefs:
+      - kind: test
+        path: tests/SIR.Match.Tests/Program.fs
+      - kind: test
+        path: tests/SIR.Client.Tests/ClientPerformanceQualification.fs
+      - kind: documentation
+        path: docs/performance-budget.md
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/performance-candidate.md
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Each named representative predicate has an unchanged-predicate subject inversion; the versioned 12 ms dense pointer-preview gate retains hosted headroom and a self-restoring production MapEditor delay mutation.]
 lifecycleNotes:
   - "Next lifecycle action: verify."
