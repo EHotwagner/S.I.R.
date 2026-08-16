@@ -121,14 +121,12 @@ NODE
       native)
         dotnet build SIR.slnx --no-restore >"$part_root/solution-debug.log" 2>&1 &
         solution_pid=$!
-        dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore >"$part_root/domain-release.log" 2>&1 &
-        release_pid=$!
-        dotnet build tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore >"$part_root/client-release.log" 2>&1 &
-        client_release_pid=$!
         part_failed=0
+        # The two Release graphs share dependency outputs, so serialize them
+        # while the disjoint Debug solution graph builds in parallel.
+        dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore >"$part_root/domain-release.log" 2>&1 || part_failed=1
+        dotnet build tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore >"$part_root/client-release.log" 2>&1 || part_failed=1
         wait "$solution_pid" || part_failed=1
-        wait "$release_pid" || part_failed=1
-        wait "$client_release_pid" || part_failed=1
         sed -n '1,240p' "$part_root/solution-debug.log"
         sed -n '1,240p' "$part_root/domain-release.log"
         sed -n '1,240p' "$part_root/client-release.log"
