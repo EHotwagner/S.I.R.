@@ -1,0 +1,1567 @@
+{
+  "schemaVersion": 1,
+  "contractVersion": "2.0.0",
+  "generatorVersion": "FS.GG.SDD.Artifacts/1.0.1",
+  "workId": "184-scenario-catalog",
+  "sources": [
+    {
+      "path": "readiness/184-scenario-catalog/ship.json",
+      "digest": "sha256:cb73d3ae0031a0cf1366f2f1b0602ae265adf94f1db707c1215a2e502247b557",
+      "schemaVersion": 1
+    },
+    {
+      "path": "readiness/184-scenario-catalog/verify.json",
+      "digest": "sha256:4b277907f8c6720f0b923b9de6444b04ba9ae8f5600952881e34b0b0f74a9613",
+      "schemaVersion": 1
+    },
+    {
+      "path": "readiness/184-scenario-catalog/work-model.json",
+      "digest": "sha256:e3378ad107285bbf206c8710ac1c590b13aab718ea6523d65a2b198e0f856d71",
+      "schemaVersion": 1
+    }
+  ],
+  "evidence": {
+    "nodes": [
+      {
+        "id": "evidence:EV001",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV002",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV003",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV004",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV005",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV006",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV007",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV008",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV009",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV010",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV011",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV012",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV013",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV014",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV015",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV016",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV017",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV018",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV019",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV020",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV021",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV022",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV023",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV024",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV025",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV026",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV027",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV028",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV029",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV030",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV031",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV032",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV033",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV034",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV035",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV036",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV037",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV038",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV039",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV040",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV041",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV042",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV043",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV044",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV045",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV046",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV047",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV048",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T001",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T002",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T003",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T004",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T005",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T006",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T007",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T008",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T009",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T010",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T011",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T012",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T013",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T014",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T015",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T016",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T017",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T018",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T019",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T020",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T021",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T022",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T023",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T024",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T025",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T026",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T027",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T028",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T029",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T030",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T031",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T032",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T033",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T034",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T035",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T036",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T037",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T038",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T039",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T040",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T041",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T042",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T043",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T044",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T045",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T046",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T047",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T048",
+        "state": "real",
+        "rationale": null
+      }
+    ],
+    "dependencies": [
+      {
+        "dependent": "evidence:EV001",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "evidence:EV002",
+        "dependency": "task:T002"
+      },
+      {
+        "dependent": "evidence:EV003",
+        "dependency": "task:T003"
+      },
+      {
+        "dependent": "evidence:EV004",
+        "dependency": "task:T004"
+      },
+      {
+        "dependent": "evidence:EV005",
+        "dependency": "task:T005"
+      },
+      {
+        "dependent": "evidence:EV006",
+        "dependency": "task:T006"
+      },
+      {
+        "dependent": "evidence:EV007",
+        "dependency": "task:T007"
+      },
+      {
+        "dependent": "evidence:EV008",
+        "dependency": "task:T008"
+      },
+      {
+        "dependent": "evidence:EV009",
+        "dependency": "task:T009"
+      },
+      {
+        "dependent": "evidence:EV010",
+        "dependency": "task:T010"
+      },
+      {
+        "dependent": "evidence:EV011",
+        "dependency": "task:T011"
+      },
+      {
+        "dependent": "evidence:EV012",
+        "dependency": "task:T012"
+      },
+      {
+        "dependent": "evidence:EV013",
+        "dependency": "task:T013"
+      },
+      {
+        "dependent": "evidence:EV014",
+        "dependency": "task:T014"
+      },
+      {
+        "dependent": "evidence:EV015",
+        "dependency": "task:T015"
+      },
+      {
+        "dependent": "evidence:EV016",
+        "dependency": "task:T016"
+      },
+      {
+        "dependent": "evidence:EV017",
+        "dependency": "task:T017"
+      },
+      {
+        "dependent": "evidence:EV018",
+        "dependency": "task:T018"
+      },
+      {
+        "dependent": "evidence:EV019",
+        "dependency": "task:T019"
+      },
+      {
+        "dependent": "evidence:EV020",
+        "dependency": "task:T020"
+      },
+      {
+        "dependent": "evidence:EV021",
+        "dependency": "task:T021"
+      },
+      {
+        "dependent": "evidence:EV022",
+        "dependency": "task:T022"
+      },
+      {
+        "dependent": "evidence:EV023",
+        "dependency": "task:T023"
+      },
+      {
+        "dependent": "evidence:EV024",
+        "dependency": "task:T024"
+      },
+      {
+        "dependent": "evidence:EV025",
+        "dependency": "task:T025"
+      },
+      {
+        "dependent": "evidence:EV026",
+        "dependency": "task:T026"
+      },
+      {
+        "dependent": "evidence:EV027",
+        "dependency": "task:T027"
+      },
+      {
+        "dependent": "evidence:EV028",
+        "dependency": "task:T028"
+      },
+      {
+        "dependent": "evidence:EV029",
+        "dependency": "task:T029"
+      },
+      {
+        "dependent": "evidence:EV030",
+        "dependency": "task:T030"
+      },
+      {
+        "dependent": "evidence:EV031",
+        "dependency": "task:T031"
+      },
+      {
+        "dependent": "evidence:EV032",
+        "dependency": "task:T032"
+      },
+      {
+        "dependent": "evidence:EV033",
+        "dependency": "task:T033"
+      },
+      {
+        "dependent": "evidence:EV034",
+        "dependency": "task:T034"
+      },
+      {
+        "dependent": "evidence:EV035",
+        "dependency": "task:T035"
+      },
+      {
+        "dependent": "evidence:EV036",
+        "dependency": "task:T036"
+      },
+      {
+        "dependent": "evidence:EV037",
+        "dependency": "task:T037"
+      },
+      {
+        "dependent": "evidence:EV038",
+        "dependency": "task:T038"
+      },
+      {
+        "dependent": "evidence:EV039",
+        "dependency": "task:T039"
+      },
+      {
+        "dependent": "evidence:EV040",
+        "dependency": "task:T040"
+      },
+      {
+        "dependent": "evidence:EV041",
+        "dependency": "task:T041"
+      },
+      {
+        "dependent": "evidence:EV042",
+        "dependency": "task:T042"
+      },
+      {
+        "dependent": "evidence:EV043",
+        "dependency": "task:T043"
+      },
+      {
+        "dependent": "evidence:EV044",
+        "dependency": "task:T044"
+      },
+      {
+        "dependent": "evidence:EV045",
+        "dependency": "task:T045"
+      },
+      {
+        "dependent": "evidence:EV046",
+        "dependency": "task:T046"
+      },
+      {
+        "dependent": "evidence:EV047",
+        "dependency": "task:T047"
+      },
+      {
+        "dependent": "evidence:EV048",
+        "dependency": "task:T048"
+      },
+      {
+        "dependent": "task:T001",
+        "dependency": "evidence:EV001"
+      },
+      {
+        "dependent": "task:T002",
+        "dependency": "evidence:EV002"
+      },
+      {
+        "dependent": "task:T003",
+        "dependency": "evidence:EV003"
+      },
+      {
+        "dependent": "task:T004",
+        "dependency": "evidence:EV004"
+      },
+      {
+        "dependent": "task:T005",
+        "dependency": "evidence:EV005"
+      },
+      {
+        "dependent": "task:T006",
+        "dependency": "evidence:EV006"
+      },
+      {
+        "dependent": "task:T007",
+        "dependency": "evidence:EV007"
+      },
+      {
+        "dependent": "task:T008",
+        "dependency": "evidence:EV008"
+      },
+      {
+        "dependent": "task:T009",
+        "dependency": "evidence:EV009"
+      },
+      {
+        "dependent": "task:T010",
+        "dependency": "evidence:EV010"
+      },
+      {
+        "dependent": "task:T011",
+        "dependency": "evidence:EV011"
+      },
+      {
+        "dependent": "task:T011",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T012",
+        "dependency": "evidence:EV012"
+      },
+      {
+        "dependent": "task:T012",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T013",
+        "dependency": "evidence:EV013"
+      },
+      {
+        "dependent": "task:T013",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T014",
+        "dependency": "evidence:EV014"
+      },
+      {
+        "dependent": "task:T014",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T015",
+        "dependency": "evidence:EV015"
+      },
+      {
+        "dependent": "task:T015",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T016",
+        "dependency": "evidence:EV016"
+      },
+      {
+        "dependent": "task:T016",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T017",
+        "dependency": "evidence:EV017"
+      },
+      {
+        "dependent": "task:T017",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T018",
+        "dependency": "evidence:EV018"
+      },
+      {
+        "dependent": "task:T018",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T019",
+        "dependency": "evidence:EV019"
+      },
+      {
+        "dependent": "task:T019",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T020",
+        "dependency": "evidence:EV020"
+      },
+      {
+        "dependent": "task:T020",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T021",
+        "dependency": "evidence:EV021"
+      },
+      {
+        "dependent": "task:T021",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T022",
+        "dependency": "evidence:EV022"
+      },
+      {
+        "dependent": "task:T022",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T023",
+        "dependency": "evidence:EV023"
+      },
+      {
+        "dependent": "task:T023",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T024",
+        "dependency": "evidence:EV024"
+      },
+      {
+        "dependent": "task:T024",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T025",
+        "dependency": "evidence:EV025"
+      },
+      {
+        "dependent": "task:T025",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T026",
+        "dependency": "evidence:EV026"
+      },
+      {
+        "dependent": "task:T026",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T027",
+        "dependency": "evidence:EV027"
+      },
+      {
+        "dependent": "task:T027",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T028",
+        "dependency": "evidence:EV028"
+      },
+      {
+        "dependent": "task:T028",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T029",
+        "dependency": "evidence:EV029"
+      },
+      {
+        "dependent": "task:T029",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T030",
+        "dependency": "evidence:EV030"
+      },
+      {
+        "dependent": "task:T030",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T031",
+        "dependency": "evidence:EV031"
+      },
+      {
+        "dependent": "task:T031",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T032",
+        "dependency": "evidence:EV032"
+      },
+      {
+        "dependent": "task:T032",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T033",
+        "dependency": "evidence:EV033"
+      },
+      {
+        "dependent": "task:T033",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T034",
+        "dependency": "evidence:EV034"
+      },
+      {
+        "dependent": "task:T034",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T035",
+        "dependency": "evidence:EV035"
+      },
+      {
+        "dependent": "task:T035",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T036",
+        "dependency": "evidence:EV036"
+      },
+      {
+        "dependent": "task:T036",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T037",
+        "dependency": "evidence:EV037"
+      },
+      {
+        "dependent": "task:T037",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T038",
+        "dependency": "evidence:EV038"
+      },
+      {
+        "dependent": "task:T038",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T039",
+        "dependency": "evidence:EV039"
+      },
+      {
+        "dependent": "task:T039",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T040",
+        "dependency": "evidence:EV040"
+      },
+      {
+        "dependent": "task:T040",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T041",
+        "dependency": "evidence:EV041"
+      },
+      {
+        "dependent": "task:T041",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T042",
+        "dependency": "evidence:EV042"
+      },
+      {
+        "dependent": "task:T042",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T043",
+        "dependency": "evidence:EV043"
+      },
+      {
+        "dependent": "task:T043",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T044",
+        "dependency": "evidence:EV044"
+      },
+      {
+        "dependent": "task:T044",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T045",
+        "dependency": "evidence:EV045"
+      },
+      {
+        "dependent": "task:T045",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T046",
+        "dependency": "evidence:EV046"
+      },
+      {
+        "dependent": "task:T046",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T047",
+        "dependency": "evidence:EV047"
+      },
+      {
+        "dependent": "task:T047",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T048",
+        "dependency": "evidence:EV048"
+      },
+      {
+        "dependent": "task:T048",
+        "dependency": "task:T001"
+      }
+    ]
+  },
+  "performanceEvidence": [
+    {
+      "evidenceId": "EV001",
+      "artifactPath": "readiness/184-scenario-catalog/performance-evidence.json",
+      "intent": {
+        "id": "scenario-catalog-v1",
+        "disposition": "active",
+        "targetFps": 20,
+        "workloadIds": [
+          "scenario-catalog-representative-v1"
+        ],
+        "workloadDefinitionDigests": [
+          "scenario-catalog-representative-v1=sha256:9fdc78516912b2e440a6d80d3d6795032edc55876f010fcb96c9f6b03e1d67ac"
+        ],
+        "maximumExpectedScale": "80x80 map; 200 units; seven scenario packages",
+        "maxP95Ms": 20,
+        "maxP99Ms": 50,
+        "maxCatchUpFrames": 0,
+        "structuralCostBudgets": [
+          "combat-resolutions\u003C=256",
+          "los-samples\u003C=256",
+          "path-expansions\u003C=4096",
+          "scene-nodes\u003C=8000"
+        ],
+        "requiredCapability": "headless-browser",
+        "liveCompositorRequired": false,
+        "deferralIssue": null,
+        "evidenceRefs": [
+          "docs/performance-budget.md"
+        ],
+        "rationale": "The catalog is an interactive workload input; deterministic structural limits and the existing 20 Hz/50 ms simulation posture gate it, while headless evidence does not claim compositor coverage."
+      },
+      "artifact": {
+        "contractVersion": "performance-evidence-v1",
+        "claimedBudgetPassed": true,
+        "sampleSets": [
+          {
+            "workloadId": "scenario-catalog-representative-v1",
+            "workloadDefinitionDigest": "sha256:9fdc78516912b2e440a6d80d3d6795032edc55876f010fcb96c9f6b03e1d67ac",
+            "workloadClass": "normal-play",
+            "targetFps": 20,
+            "maxP95Ms": 20,
+            "maxP99Ms": 50,
+            "maxCatchUpFrames": 0,
+            "measurementScope": "production-import-route-simulate-project-scene; mapSize=80x80; units=200; pathExpansions=1602; peakLosSamples=80; peakCombatResolutions=90; sceneNodes=6601; source=scenario-catalog-native.junit.xml; routes=MapEditor.tryImport/MapScale.route/MapScale.tick/Battlefield.scene",
+            "requiredCapability": "headless-browser",
+            "hostProfile": "linux-x64-headless",
+            "packageVersions": [
+              "FS.GG.Game.Core@0.13.0",
+              "Fable@5.13.0"
+            ],
+            "measurementMode": "headless",
+            "capabilities": [
+              "headless-browser"
+            ],
+            "warmupPolicy": "one-full-catalog",
+            "samplePolicy": "nearest-rank/140-package-runs",
+            "capturedAtUtc": "2026-08-15T13:06:22Z",
+            "currencyToken": "item-184-repair-round-3",
+            "probeReadbackContaminated": false,
+            "durationSamplesMs": [
+              0.671,
+              2.061,
+              1.282,
+              2.978,
+              0.966,
+              1.865,
+              0.842,
+              1.115,
+              0.944,
+              1.263,
+              2.763,
+              0.95,
+              1.855,
+              1.501,
+              0.424,
+              0.918,
+              1.273,
+              2.985,
+              0.943,
+              1.833,
+              1.563,
+              0.405,
+              0.916,
+              1.258,
+              2.759,
+              0.927,
+              2.483,
+              0.839,
+              0.397,
+              0.924,
+              1.243,
+              2.965,
+              0.937,
+              2.498,
+              0.835,
+              0.413,
+              0.919,
+              1.241,
+              2.75,
+              0.936,
+              2.463,
+              0.839,
+              0.406,
+              0.918,
+              1.238,
+              3.011,
+              1.666,
+              1.851,
+              0.836,
+              0.404,
+              0.914,
+              1.237,
+              2.758,
+              1.579,
+              1.842,
+              0.832,
+              0.41,
+              0.919,
+              1.239,
+              3.682,
+              0.935,
+              1.84,
+              0.823,
+              0.401,
+              0.894,
+              1.23,
+              3.514,
+              0.933,
+              1.822,
+              0.815,
+              0.392,
+              0.894,
+              1.22,
+              3.345,
+              0.923,
+              1.805,
+              0.812,
+              0.397,
+              0.891,
+              1.867,
+              2.883,
+              0.936,
+              1.804,
+              0.811,
+              0.39,
+              0.894,
+              1.913,
+              2.725,
+              0.932,
+              1.794,
+              0.803,
+              0.395,
+              0.888,
+              1.788,
+              2.889,
+              0.936,
+              1.823,
+              0.82,
+              0.387,
+              1.563,
+              1.234,
+              2.762,
+              0.922,
+              1.827,
+              0.809,
+              1.034,
+              0.915,
+              1.256,
+              3.012,
+              0.93,
+              1.837,
+              1.468,
+              0.41,
+              0.9,
+              1.246,
+              2.737,
+              0.927,
+              1.835,
+              1.434,
+              0.404,
+              0.905,
+              1.252,
+              2.878,
+              0.926,
+              2.431,
+              0.823,
+              0.387,
+              0.913,
+              1.227,
+              2.707,
+              0.909,
+              2.426,
+              0.812,
+              0.4,
+              0.909,
+              1.219,
+              2.862,
+              0.919,
+              2.434,
+              0.831
+            ],
+            "catchUpFrames": [
+              0
+            ]
+          },
+          {
+            "workloadId": "scenario-catalog-80x80-200-v1",
+            "workloadDefinitionDigest": "sha256:7c06caa23761a6cc43953bc50d07c343f5a6eaef57d0568b24374d740e42d251",
+            "workloadClass": "stress-throughput",
+            "targetFps": 20,
+            "maxP95Ms": 20,
+            "maxP99Ms": 50,
+            "maxCatchUpFrames": 0,
+            "measurementScope": "production-import-route-simulate-project-scene; mapSize=80x80; units=200; pathExpansions=1602; peakLosSamples=80; peakCombatResolutions=90; sceneNodes=6601; source=scenario-catalog-native.junit.xml; routes=MapEditor.tryImport/MapScale.route/MapScale.tick/Battlefield.scene",
+            "requiredCapability": "headless-browser",
+            "hostProfile": "linux-x64-headless",
+            "packageVersions": [
+              "FS.GG.Game.Core@0.13.0",
+              "Fable@5.13.0"
+            ],
+            "measurementMode": "headless",
+            "capabilities": [
+              "headless-browser"
+            ],
+            "warmupPolicy": "twenty-complete-production-stress-routes",
+            "samplePolicy": "nearest-rank/20-production-stress-routes",
+            "capturedAtUtc": "2026-08-15T13:06:22Z",
+            "currencyToken": "item-184-repair-round-3",
+            "probeReadbackContaminated": false,
+            "durationSamplesMs": [
+              0.592,
+              10.794,
+              0.15,
+              3.176,
+              2.209,
+              4.983,
+              4.145,
+              3.65,
+              4.03,
+              1.898,
+              6.428,
+              0.608,
+              10.03,
+              0.133,
+              3.066,
+              2.366,
+              4.887,
+              5.668,
+              3.67,
+              8.516,
+              1.882,
+              3.843,
+              0.614,
+              10.445,
+              0.091,
+              3.116,
+              1.355,
+              5.608,
+              3.594,
+              3.505,
+              4.256,
+              1.8,
+              3.709,
+              1.482,
+              9.989,
+              3.627,
+              8.764,
+              1.866,
+              6.224,
+              4.17,
+              3.932,
+              3.78,
+              4.082,
+              3.888,
+              0.47,
+              9.958,
+              0.09,
+              3.844,
+              1.293,
+              5.878,
+              2.797,
+              4.654,
+              3.018,
+              3.983,
+              3.789,
+              0.445,
+              9.743,
+              0.088,
+              3.562,
+              1.382,
+              6.117,
+              2.878,
+              4.558,
+              2.977,
+              1.772,
+              6.842,
+              0.439,
+              13.099,
+              0.093,
+              3.678,
+              1.255,
+              6.205,
+              2.74,
+              4.362,
+              3.118,
+              1.797,
+              7.324,
+              0.441,
+              9.701,
+              0.084,
+              3.015,
+              2.177,
+              4.735,
+              4.036,
+              3.513,
+              6.356,
+              1.756,
+              4.75,
+              0.455,
+              9.616,
+              0.094,
+              3.079,
+              2.185,
+              4.912,
+              3.947,
+              3.351,
+              3.852,
+              1.779,
+              3.525,
+              0.452,
+              11.495,
+              0.088,
+              3.044,
+              1.274,
+              5.731,
+              3.359,
+              3.368,
+              3.049,
+              3.558,
+              3.59,
+              0.46,
+              9.341,
+              0.088,
+              3.987,
+              1.378,
+              5.865,
+              2.87,
+              4.899,
+              3.151,
+              2.822,
+              3.646,
+              0.476,
+              10.738,
+              0.119,
+              3.659,
+              1.362,
+              6.251,
+              2.832,
+              4.369,
+              3.075,
+              1.713,
+              6.488,
+              0.4,
+              8.631,
+              0.09,
+              3.535,
+              1.362,
+              6.444,
+              3.27,
+              6.849,
+              3.315,
+              1.861,
+              5.482,
+              1.078,
+              10.18,
+              0.09,
+              3.245,
+              2.981,
+              5.982,
+              4.517,
+              4.658,
+              5.437,
+              2.068,
+              5.696,
+              0.409,
+              13.14,
+              0.083,
+              3.206,
+              2.158,
+              5.162,
+              4.42,
+              4.507,
+              6.031,
+              2.098,
+              4.213,
+              0.401,
+              16.858,
+              0.085,
+              3.075,
+              1.304,
+              6.742,
+              3.34,
+              3.193,
+              4.138,
+              1.647,
+              3.419,
+              0.763,
+              9.293,
+              0.092,
+              3.913,
+              1.285,
+              5.22,
+              3.922,
+              3.26,
+              3.025,
+              9.914,
+              3.633,
+              0.409,
+              8.838,
+              0.075,
+              3.947,
+              1.287,
+              5.917,
+              2.812,
+              4.86,
+              2.966,
+              1.778,
+              5.11,
+              0.398,
+              8.66,
+              0.075,
+              3.724,
+              1.297,
+              5.736,
+              2.711,
+              4.214,
+              2.898,
+              1.726,
+              6.32,
+              0.443,
+              10.911,
+              0.077,
+              3.687,
+              1.271,
+              5.475,
+              2.787,
+              4.108,
+              3.001,
+              1.769,
+              6.489
+            ],
+            "catchUpFrames": [
+              0
+            ]
+          }
+        ]
+      },
+      "measurements": [
+        {
+          "workloadId": "scenario-catalog-representative-v1",
+          "p95Ms": 2.965,
+          "p99Ms": 3.514,
+          "maxCatchUpFrames": 0
+        },
+        {
+          "workloadId": "scenario-catalog-80x80-200-v1",
+          "p95Ms": 9.958,
+          "p99Ms": 13.099,
+          "maxCatchUpFrames": 0
+        }
+      ]
+    }
+  ],
+  "governedReferences": [],
+  "governanceConfig": {
+    "policyPresent": true,
+    "policyPointer": ".fsgg/policy.yml",
+    "capabilitiesPresent": true,
+    "capabilitiesPointer": ".fsgg/capabilities.yml",
+    "toolingPresent": true,
+    "toolingPointer": ".fsgg/tooling.yml"
+  },
+  "readiness": {
+    "shipDisposition": "shipReady",
+    "verificationReadiness": "verificationReady",
+    "counts": {
+      "advisory": 0,
+      "warning": 0,
+      "blocking": 0,
+      "classifiedObligationsUnmet": 0,
+      "journeyObligationsUnmet": 0
+    },
+    "blockingDiagnosticIds": [],
+    "perViewState": [
+      {
+        "view": "ship.json",
+        "state": "current"
+      },
+      {
+        "view": "verify.json",
+        "state": "current"
+      },
+      {
+        "view": "work-model.json",
+        "state": "current"
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "id": "evidence.performanceBudgetPassed",
+      "severity": "info",
+      "message": "Every declared normal-play workload satisfies the active performance budget.",
+      "correction": "Keep the cited artifact fresh when the workload or target changes.",
+      "relatedIds": [
+        "EV001",
+        "readiness/184-scenario-catalog/performance-evidence.json",
+        "scenario-catalog-representative-v1"
+      ]
+    }
+  ]
+}

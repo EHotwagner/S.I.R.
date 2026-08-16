@@ -89,6 +89,8 @@ search_fixed() {
   fi
 }
 
+./scripts/test-item-184-sdd-byte-stability.sh
+
 if [[ -n "$reuse_build_receipt" ]]; then
   [[ -n "$prepared_fable" && -n "$prepared_modal_fable" ]] || { echo "test-conformance: prepared reuse requires both Fable fixture roots" >&2; exit 2; }
   node scripts/production-build-receipt.mjs verify \
@@ -113,6 +115,8 @@ dotnet run \
   --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj \
   --no-build \
   --no-restore
+
+./scripts/verify-scenario-catalog-cross-runtime.sh
 
 modal_dotnet_output=$(dotnet run \
   --project tests/SIR.ModalInput.Tests/SIR.ModalInput.Tests.fsproj \

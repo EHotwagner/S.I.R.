@@ -137,6 +137,9 @@ request graph against the published Release server: mutable entries revalidate;
 identity-qualified retained engines may be cached immutably. ASP.NET Core owns
 these headers. A proxy or CDN may provide compression/caching too, but must keep
 `Vary: Accept-Encoding` and must not weaken the documented cache class.
+The initial Release request graph is capped at 1,160,000 raw response bytes; the
+scenario-catalog expansion raised the observed route to 1,156,943 bytes while
+remaining below the separately tighter compressed-entry budgets.
 
 ## Browser simulator session budget
 
@@ -450,6 +453,19 @@ payload group, every shape/blocker mark, and every label text node. The built
 Chromium journey compares that declared count with `querySelectorAll("*")` on
 the overlay layer and fails on disagreement or overflow. This is a structural
 projection/view budget; compositor frame rate is not measured or claimed.
+
+## Scenario-catalog production workload
+
+The item-184 qualification imports the serialized maximum-scale sample as a
+literal current-format 80×80 map with 200 units, previews a route through the
+production map-editor simulator, advances eight production simulation ticks,
+and projects every resulting frame through `Battlefield.scene`. Its receipt
+records authoritative counters from those routes: A* expanded nodes,
+simulation LOS evaluations, resolved attacks, and the scene's interactive node
+estimate. The budgets are 4,096 path expansions, 256 LOS evaluations per tick,
+256 combat resolutions per tick, and 8,000 scene nodes. Release elapsed-time
+budgets remain 20 ms p95 and 50 ms p99. Headless browser evidence proves the
+real boot-to-visible-outcome journey; it does not claim compositor frame rate.
 
 ## Open parameters
 

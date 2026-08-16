@@ -45,6 +45,8 @@ let render
         let highlights = element "ul" "" ""
         for highlight in sample.Highlights do append highlights (element "li" "" highlight)
         append body highlights
+        append body (element "p" "sample-lesson" ("Lesson: " + sample.Lesson))
+        append body (element "p" "sample-notes" ("Design notes: " + String.concat " " sample.DesignNotes))
         let controls = element "div" "control-row" ""
         let prepare action =
             let editor = ExperienceSamples.editorState sample

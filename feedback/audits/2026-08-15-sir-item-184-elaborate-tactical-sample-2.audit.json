@@ -1,0 +1,125 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-15-sir-item-184-elaborate-tactical-sample-2.md",
+  "reportSha256": "c5f9af157b6df48a9dd71a304301118a04299df42ff67195693701de0b003a02",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:readiness/184-scenario-catalog/scenario-catalog-native.junit.xml",
+          "result": "verified",
+          "sha256": "cc31d16156bca81586e176fcd30fd7e70984443810b34e6509eea0f77e53694f"
+        },
+        {
+          "locator": "command:dotnet fsgg-sdd analyze --work 184-scenario-catalog --text",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node scripts/test-production-delivery-budget.mjs",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Timing percentiles are host-variable; the report claims repeated budget passes, not identical rerun values."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show e3e40e1b2eedf353913ed0aa98198d218b1a4cbc:work/184-scenario-catalog/clarifications.md",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:EHotwagner/S.I.R.#184",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "No intermediate snapshot proves pre-decision source state, and precise edit cost is unreconstructable; neither is claimed."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git show e3e40e1b2eedf353913ed0aa98198d218b1a4cbc:feedback/checkpoints/item-184-elaborate-tactical-sample.jsonl",
+          "result": "verified"
+        },
+        {
+          "locator": "command:npm ci --ignore-scripts && ./fake.sh build -t Test",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Failed intermediate manifests and logs were not retained; the final repaired route and recurrence chain are verified."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git ls-files .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- validate-checkpoint-state --cycle item-184-elaborate-tactical-sample",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:FS-GG/.github#2380",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:FS-GG/.github#2548",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The finding is limited to tracked local availability and checkpoint validation, not every feedback-tool command."
+      ]
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:readiness/184-scenario-catalog/scenario-catalog-native.junit.xml", "result": "verified", "sha256": "cc31d16156bca81586e176fcd30fd7e70984443810b34e6509eea0f77e53694f" },
+        { "locator": "file:readiness/184-scenario-catalog/scenario-catalog-cross-runtime.junit.xml", "result": "verified", "sha256": "2addb5b7ded84b333ce5f9d17543f647fddfe9215bbbad85e8cfff9b2f699b71" },
+        { "locator": "file:readiness/184-scenario-catalog/scenario-catalog-browser.junit.xml", "result": "verified", "sha256": "d3ac75f1bfc332b712ea194893543e5e2a263904dbe15a61ca1fc42a396837a7" },
+        { "locator": "file:readiness/184-scenario-catalog/scenario-catalog-rules.junit.xml", "result": "verified", "sha256": "618f77e8ca2652f9d377bcf61d7a615a864c4aea40f490b5252c2612e507daff" },
+        { "locator": "command:dotnet fsgg-sdd ship --work 184-scenario-catalog --text", "result": "verified" }
+      ],
+      "confidenceLimits": ["The finding is limited to obligation ownership and the retained exact-candidate receipts."]
+    },
+    {
+      "id": "§4.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:readiness/184-scenario-catalog/scenario-catalog-native.junit.xml", "result": "verified", "sha256": "cc31d16156bca81586e176fcd30fd7e70984443810b34e6509eea0f77e53694f" },
+        { "locator": "command:dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-build --no-restore", "result": "verified" }
+      ],
+      "confidenceLimits": ["The pre-repair fallback was observed during repair; the retained receipt proves the corrected 80×80/200-unit route and counters."]
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "schema": "fsgg-feedback-audit-binding-exceptions/1",
+  "exceptions": [
+    {
+      "audit": "feedback/audits/2026-08-13-sir-item-183-tactical-overlays.audit.json",
+      "findingId": "§4.2",
+      "locator": "file:tests/SIR.Browser.Tests/visible-workflows.spec.js",
+      "path": "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+      "previousSha256": "5a2db78f8ddb7ac593ddc5b52c92f24ef7076ac80905ce86433e674700ac4f42",
+      "replacementSha256": "24da63cb90a48c6c2f9e3e7e68eb1c7c315446cdfbf7087259450a91a9df0ad1",
+      "replacementEvidence": "command:npm run test:browser",
+      "reason": "Item 184 updated the exact rules-source expectation used by the existing browser workflow; the full browser matrix verifies the replacement file."
+    },
+    {
+      "audit": "feedback/audits/2026-08-13-sir-item-183-tactical-overlays.audit.json",
+      "findingId": "§4.3",
+      "locator": "file:scripts/test-conformance.sh",
+      "path": "scripts/test-conformance.sh",
+      "previousSha256": "74f29e715a9e2b3f282c68cf2554b5ad0648d9a7471ad604b4e1bc5e9a0de98e",
+      "replacementSha256": "7a1d308d3fa8d2385f597e57819873c918d83d25765a7c27d469f8f8ae96fdc3",
+      "replacementEvidence": "command:./fake.sh build -t Test",
+      "reason": "Item 184 added its focused catalog gates to the aggregate; the replacement aggregate passed from the final source set."
+    },
+    {
+      "audit": "feedback/audits/2026-08-15-sir-item-184-elaborate-tactical-sample-2.audit.json",
+      "findingId": "§4.1",
+      "locator": "file:readiness/184-scenario-catalog/scenario-catalog-native.junit.xml",
+      "path": "readiness/184-scenario-catalog/scenario-catalog-native.junit.xml",
+      "previousSha256": "cc31d16156bca81586e176fcd30fd7e70984443810b34e6509eea0f77e53694f",
+      "replacementSha256": "b5af2a30f5aa2439e86a0375f57c5e5837f263ecb40fc6f672a6937db44400ad",
+      "replacementEvidence": "command:scripts/generate-item-184-evidence.sh",
+      "reason": "The immutable report remains pinned to its reviewed receipt while the repair cycle regenerates a new exact-source receipt at the same path."
+    },
+    {
+      "audit": "feedback/audits/2026-08-15-sir-item-184-elaborate-tactical-sample-2.audit.json",
+      "findingId": "§4.5",
+      "locator": "file:readiness/184-scenario-catalog/scenario-catalog-browser.junit.xml",
+      "path": "readiness/184-scenario-catalog/scenario-catalog-browser.junit.xml",
+      "previousSha256": "d3ac75f1bfc332b712ea194893543e5e2a263904dbe15a61ca1fc42a396837a7",
+      "replacementSha256": "d3ac75f1bfc332b712ea194893543e5e2a263904dbe15a61ca1fc42a396837a7",
+      "replacementEvidence": "command:scripts/generate-item-184-evidence.sh",
+      "reason": "The immutable report remains pinned to its reviewed browser receipt while the repair cycle regenerates exact-source evidence at the same path."
+    },
+    {
+      "audit": "feedback/audits/2026-08-15-sir-item-184-elaborate-tactical-sample-2.audit.json",
+      "findingId": "§4.5",
+      "locator": "file:readiness/184-scenario-catalog/scenario-catalog-cross-runtime.junit.xml",
+      "path": "readiness/184-scenario-catalog/scenario-catalog-cross-runtime.junit.xml",
+      "previousSha256": "2addb5b7ded84b333ce5f9d17543f647fddfe9215bbbad85e8cfff9b2f699b71",
+      "replacementSha256": "3fe38f32230c18981e5fdce5052a36b16a17f0ab6172d70f5fe4c989e706d78e",
+      "replacementEvidence": "command:scripts/generate-item-184-evidence.sh",
+      "reason": "The immutable report remains pinned to its reviewed parity receipt while the repair cycle regenerates exact-source evidence at the same path."
+    },
+    {
+      "audit": "feedback/audits/2026-08-15-sir-item-184-elaborate-tactical-sample-2.audit.json",
+      "findingId": "§4.5",
+      "locator": "file:readiness/184-scenario-catalog/scenario-catalog-native.junit.xml",
+      "path": "readiness/184-scenario-catalog/scenario-catalog-native.junit.xml",
+      "previousSha256": "cc31d16156bca81586e176fcd30fd7e70984443810b34e6509eea0f77e53694f",
+      "replacementSha256": "b5af2a30f5aa2439e86a0375f57c5e5837f263ecb40fc6f672a6937db44400ad",
+      "replacementEvidence": "command:scripts/generate-item-184-evidence.sh",
+      "reason": "The immutable report remains pinned to its reviewed native receipt while the repair cycle regenerates exact-source evidence at the same path."
+    },
+    {
+      "audit": "feedback/audits/2026-08-15-sir-item-184-elaborate-tactical-sample-2.audit.json",
+      "findingId": "§4.5",
+      "locator": "file:readiness/184-scenario-catalog/scenario-catalog-rules.junit.xml",
+      "path": "readiness/184-scenario-catalog/scenario-catalog-rules.junit.xml",
+      "previousSha256": "618f77e8ca2652f9d377bcf61d7a615a864c4aea40f490b5252c2612e507daff",
+      "replacementSha256": "71d000d87301a8115857fb862125dbee7ace8c0f2ed4a003d6b426a46a4a0482",
+      "replacementEvidence": "command:scripts/generate-item-184-evidence.sh",
+      "reason": "The immutable report remains pinned to its reviewed rules receipt while the repair cycle regenerates exact-source evidence at the same path."
+    },
+    {
+      "audit": "feedback/audits/2026-08-15-sir-item-184-elaborate-tactical-sample-2.audit.json",
+      "findingId": "§4.6",
+      "locator": "file:readiness/184-scenario-catalog/scenario-catalog-native.junit.xml",
+      "path": "readiness/184-scenario-catalog/scenario-catalog-native.junit.xml",
+      "previousSha256": "cc31d16156bca81586e176fcd30fd7e70984443810b34e6509eea0f77e53694f",
+      "replacementSha256": "b5af2a30f5aa2439e86a0375f57c5e5837f263ecb40fc6f672a6937db44400ad",
+      "replacementEvidence": "command:scripts/generate-item-184-evidence.sh",
+      "reason": "The immutable report remains pinned to its reviewed map-admission receipt while the repair cycle regenerates exact-source evidence at the same path."
+    }
+  ]
+}

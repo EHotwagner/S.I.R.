@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="scenario-catalog-rules" tests="1" failures="0" errors="0" skipped="0" time="9"><testsuite name="scenario-catalog-rules" tests="1" failures="0" errors="0" skipped="0" time="9"><testcase name="scenario-catalog-rules" classname="SIR.Item184" time="9"/><system-out><![CDATA[rules corpus generation, source resolution, copied-semantics, and mutation gates passed]]></system-out></testsuite></testsuites>
