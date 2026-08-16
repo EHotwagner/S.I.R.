@@ -44,6 +44,8 @@ assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_r
 assert.match(workflow, /hashFiles\('\*\*\/packages\.lock\.json', 'Directory\.Packages\.props', '\.config\/dotnet-tools\.json'\)/u);
 const fullQualification = readFileSync(new URL("./qualify-production.sh", import.meta.url), "utf8");
 assert.ok(fullQualification.indexOf("test-worker-cancellation-subject-mutation.sh") < fullQualification.indexOf("dotnet-invocation-trace.sh"));
+assert.match(fullQualification, /--paired-optimization/u);
+assert.match(fullQualification, /if \[\[ "\$paired_mode" == true \]\]; then\n  reduction_basis_points=/u);
 for (const subject of ["rules", "spatial", "cancellation", "cross-runtime", "historical-compatibility", "governance", "production-browser", "documentation", "performance", "sdd-verify"]) assert.match(fullQualification, new RegExp(`"${subject}"`, "u"));
 assert.equal(gateOrder.length, 7);
 

@@ -3,12 +3,18 @@ set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 protected_mode=false
+paired_mode=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --protected) protected_mode=true; shift ;;
+    --paired-optimization) paired_mode=true; shift ;;
     *) echo "qualify-production: unknown argument: $1" >&2; exit 2 ;;
   esac
 done
+[[ "$protected_mode" != true || "$paired_mode" != true ]] || {
+  echo "qualify-production: --protected and --paired-optimization are mutually exclusive" >&2
+  exit 2
+}
 baseline_receipt=${SIR_QUALIFICATION_BASELINE_RECEIPT:-readiness/215-single-pass-qualification/paired-baseline.json}
 qualification_root="$repo_root/artifacts/qualification"
 qualification_packages="$qualification_root/nuget-packages"
@@ -28,7 +34,7 @@ mkdir -p "$trace_bin"
 export NUGET_PACKAGES="$qualification_packages"
 node scripts/qualification-provenance.mjs source > "$candidate_source_receipt"
 node scripts/qualification-provenance.mjs host > "$host_receipt"
-if [[ "$protected_mode" != true ]]; then
+if [[ "$paired_mode" == true ]]; then
 node - "$baseline_receipt" "$host_receipt" <<'NODE'
 const { readFileSync } = require("node:fs");
 const [baselinePath, hostPath] = process.argv.slice(2);
@@ -135,38 +141,43 @@ node scripts/verify-fable-invocations.mjs "$fable_log"
 
 end_ns=$(date +%s%N)
 candidate_ms=$(((end_ns - start_ns) / 1000000))
-if [[ "$protected_mode" == true ]]; then
-  reduction_basis_points=0
-else
+if [[ "$paired_mode" == true ]]; then
   reduction_basis_points=$(((baseline_ms - candidate_ms) * 10000 / baseline_ms))
   (( reduction_basis_points >= 2000 )) || {
     echo "qualify-production: wall-time reduction ${reduction_basis_points}bp is below the 2000bp material threshold" >&2
     exit 1
   }
+else
+  reduction_basis_points=0
 fi
 
-node - "$timing_receipt" "$baseline_receipt" "$candidate_source_receipt" "$host_receipt" "$candidate_ms" "$reduction_basis_points" "$build_receipt" "$conformance_receipt" "$site_receipt" "$protected_mode" <<'NODE'
+node - "$timing_receipt" "$baseline_receipt" "$candidate_source_receipt" "$host_receipt" "$candidate_ms" "$reduction_basis_points" "$build_receipt" "$conformance_receipt" "$site_receipt" "$protected_mode" "$paired_mode" <<'NODE'
 const { writeFileSync } = require("node:fs");
 const { readFileSync } = require("node:fs");
-const [path, baselinePath, candidateSourcePath, hostPath, candidate, reduction, buildReceipt, conformanceReceipt, siteReceipt, protectedMode] = process.argv.slice(2);
+const [path, baselinePath, candidateSourcePath, hostPath, candidate, reduction, buildReceipt, conformanceReceipt, siteReceipt, protectedMode, pairedMode] = process.argv.slice(2);
 const protectedRoute = protectedMode === "true";
-const baseline = protectedRoute ? null : JSON.parse(readFileSync(baselinePath, "utf8"));
+const pairedRoute = pairedMode === "true";
+const baseline = pairedRoute ? JSON.parse(readFileSync(baselinePath, "utf8")) : null;
 const candidateSource = JSON.parse(readFileSync(candidateSourcePath, "utf8"));
 const host = JSON.parse(readFileSync(hostPath, "utf8"));
 if (!candidateSource.clean) throw new Error(`qualify-production: candidate source is not clean: ${candidateSource.changes.join(",")}`);
 const value = {
-  schema: protectedRoute ? "sir.production-qualification-timing/v3" : "sir.production-qualification-timing/v2",
+  schema: pairedRoute ? "sir.production-qualification-timing/v2" : "sir.production-qualification-timing/v3",
   result: "pass",
-  route: protectedRoute ? "protected-clean-room" : "paired-optimization",
+  route: protectedRoute ? "protected-clean-room" : pairedRoute ? "paired-optimization" : "local-clean-room",
   host,
   baseline,
   candidate: { command: "./scripts/qualify-production.sh", wallMilliseconds: Number(candidate), fableTargetBuilds: 2, source: candidateSource, buildReceipt, conformanceReceipt, siteReceipt },
-  reductionBasisPoints: protectedRoute ? null : Number(reduction),
-  minimumReductionBasisPoints: protectedRoute ? null : 2000,
+  reductionBasisPoints: pairedRoute ? Number(reduction) : null,
+  minimumReductionBasisPoints: pairedRoute ? 2000 : null,
   retainedSubjects: ["rules", "spatial", "cancellation", "conformance", "cross-runtime", "historical-compatibility", "governance", "client-loader", "delivery-budget", "delivery-evidence", "browser-diagnostics", "spatial-diagnostic-mutation", "production-browser", "documentation", "accessibility", "performance", "sdd-verify", "sdd-doctor", "stale-reuse-mutation", "missing-site-mutation"],
 };
 writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`);
 NODE
 
-printf 'Single-pass production qualification passed: baseline=%sms candidate=%sms reduction=%sbp build=%s site=%s\n' \
-  "$baseline_ms" "$candidate_ms" "$reduction_basis_points" "$build_receipt" "$site_receipt"
+if [[ "$protected_mode" == true ]]; then route=protected-clean-room
+elif [[ "$paired_mode" == true ]]; then route=paired-optimization
+else route=local-clean-room
+fi
+printf 'Single-pass production qualification passed: route=%s baseline=%sms candidate=%sms reduction=%sbp build=%s site=%s\n' \
+  "$route" "$baseline_ms" "$candidate_ms" "$reduction_basis_points" "$build_receipt" "$site_receipt"

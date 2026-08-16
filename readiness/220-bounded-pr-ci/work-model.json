@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "f5ee3fda020536140e1617f4446224d3f04ed639e17a2670a91c6260a9b515bc"
+        "value": "9301dc45c368ed32b8b7801b02cd56599ed8d54479cd1da016a533d3d39c111a"
       }
     },
     {
@@ -1875,7 +1875,7 @@
   "evidence": [
     {
       "id": "EV001",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T001",
       "taskRefs": [
@@ -1884,8 +1884,15 @@
       "requirementRefs": [
         "FR-001"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1899,7 +1906,7 @@
     },
     {
       "id": "EV002",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T002",
       "taskRefs": [
@@ -1908,8 +1915,15 @@
       "requirementRefs": [
         "FR-002"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1923,7 +1937,7 @@
     },
     {
       "id": "EV003",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T003",
       "taskRefs": [
@@ -1932,8 +1946,15 @@
       "requirementRefs": [
         "FR-003"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1947,7 +1968,7 @@
     },
     {
       "id": "EV004",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T004",
       "taskRefs": [
@@ -1956,8 +1977,15 @@
       "requirementRefs": [
         "FR-004"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1971,7 +1999,7 @@
     },
     {
       "id": "EV005",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T005",
       "taskRefs": [
@@ -1980,8 +2008,15 @@
       "requirementRefs": [
         "FR-005"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1995,7 +2030,7 @@
     },
     {
       "id": "EV006",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T006",
       "taskRefs": [
@@ -2004,8 +2039,15 @@
       "requirementRefs": [
         "FR-006"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2019,7 +2061,7 @@
     },
     {
       "id": "EV007",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T007",
       "taskRefs": [
@@ -2028,8 +2070,15 @@
       "requirementRefs": [
         "FR-007"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2043,7 +2092,7 @@
     },
     {
       "id": "EV008",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T008",
       "taskRefs": [
@@ -2052,8 +2101,15 @@
       "requirementRefs": [
         "FR-008"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2067,7 +2123,7 @@
     },
     {
       "id": "EV009",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T009",
       "taskRefs": [
@@ -2076,8 +2132,15 @@
       "requirementRefs": [
         "FR-009"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2091,7 +2154,7 @@
     },
     {
       "id": "EV010",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T010",
       "taskRefs": [
@@ -2100,8 +2163,15 @@
       "requirementRefs": [
         "FR-010"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2115,7 +2185,7 @@
     },
     {
       "id": "EV011",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T011",
       "taskRefs": [
@@ -2124,8 +2194,15 @@
       "requirementRefs": [
         "FR-011"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2139,7 +2216,7 @@
     },
     {
       "id": "EV012",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T012",
       "taskRefs": [
@@ -2148,8 +2225,15 @@
       "requirementRefs": [
         "FR-012"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2163,15 +2247,22 @@
     },
     {
       "id": "EV013",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T013",
       "taskRefs": [
         "T013"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2185,15 +2276,22 @@
     },
     {
       "id": "EV014",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T014",
       "taskRefs": [
         "T014"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2207,15 +2305,22 @@
     },
     {
       "id": "EV015",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T015",
       "taskRefs": [
         "T015"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2229,15 +2334,22 @@
     },
     {
       "id": "EV016",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T016",
       "taskRefs": [
         "T016"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2251,15 +2363,22 @@
     },
     {
       "id": "EV017",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T017",
       "taskRefs": [
         "T017"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2273,15 +2392,22 @@
     },
     {
       "id": "EV018",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T018",
       "taskRefs": [
         "T018"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2295,7 +2421,7 @@
     },
     {
       "id": "EV019",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T019",
       "taskRefs": [
@@ -2304,8 +2430,15 @@
       "requirementRefs": [
         "FR-001"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2319,7 +2452,7 @@
     },
     {
       "id": "EV020",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T020",
       "taskRefs": [
@@ -2328,8 +2461,15 @@
       "requirementRefs": [
         "FR-002"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2343,7 +2483,7 @@
     },
     {
       "id": "EV021",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T021",
       "taskRefs": [
@@ -2352,8 +2492,15 @@
       "requirementRefs": [
         "FR-003"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2367,7 +2514,7 @@
     },
     {
       "id": "EV022",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T022",
       "taskRefs": [
@@ -2376,8 +2523,15 @@
       "requirementRefs": [
         "FR-004"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2391,7 +2545,7 @@
     },
     {
       "id": "EV023",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T023",
       "taskRefs": [
@@ -2400,8 +2554,15 @@
       "requirementRefs": [
         "FR-005"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2415,7 +2576,7 @@
     },
     {
       "id": "EV024",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T024",
       "taskRefs": [
@@ -2424,8 +2585,15 @@
       "requirementRefs": [
         "FR-006"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2439,7 +2607,7 @@
     },
     {
       "id": "EV025",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T025",
       "taskRefs": [
@@ -2448,8 +2616,15 @@
       "requirementRefs": [
         "FR-007"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2463,7 +2638,7 @@
     },
     {
       "id": "EV026",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T026",
       "taskRefs": [
@@ -2472,8 +2647,15 @@
       "requirementRefs": [
         "FR-008"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2487,7 +2669,7 @@
     },
     {
       "id": "EV027",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T027",
       "taskRefs": [
@@ -2496,8 +2678,15 @@
       "requirementRefs": [
         "FR-009"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2511,7 +2700,7 @@
     },
     {
       "id": "EV028",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T028",
       "taskRefs": [
@@ -2520,8 +2709,15 @@
       "requirementRefs": [
         "FR-010"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2535,7 +2731,7 @@
     },
     {
       "id": "EV029",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T029",
       "taskRefs": [
@@ -2544,8 +2740,15 @@
       "requirementRefs": [
         "FR-011"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2559,7 +2762,7 @@
     },
     {
       "id": "EV030",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T030",
       "taskRefs": [
@@ -2568,8 +2771,15 @@
       "requirementRefs": [
         "FR-012"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2583,15 +2793,22 @@
     },
     {
       "id": "EV031",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T031",
       "taskRefs": [
         "T031"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2605,15 +2822,22 @@
     },
     {
       "id": "EV032",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T032",
       "taskRefs": [
         "T032"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2627,15 +2851,22 @@
     },
     {
       "id": "EV033",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T033",
       "taskRefs": [
         "T033"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2649,15 +2880,22 @@
     },
     {
       "id": "EV034",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T034",
       "taskRefs": [
         "T034"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2671,15 +2909,22 @@
     },
     {
       "id": "EV035",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T035",
       "taskRefs": [
         "T035"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2693,15 +2938,22 @@
     },
     {
       "id": "EV036",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T036",
       "taskRefs": [
         "T036"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2715,15 +2967,22 @@
     },
     {
       "id": "EV037",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T037",
       "taskRefs": [
         "T037"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2737,15 +2996,22 @@
     },
     {
       "id": "EV038",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T038",
       "taskRefs": [
         "T038"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2759,15 +3025,22 @@
     },
     {
       "id": "EV039",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T039",
       "taskRefs": [
         "T039"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2781,15 +3054,22 @@
     },
     {
       "id": "EV040",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T040",
       "taskRefs": [
         "T040"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2803,15 +3083,22 @@
     },
     {
       "id": "EV041",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T041",
       "taskRefs": [
         "T041"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2825,15 +3112,22 @@
     },
     {
       "id": "EV042",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T042",
       "taskRefs": [
         "T042"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2847,15 +3141,22 @@
     },
     {
       "id": "EV043",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T043",
       "taskRefs": [
         "T043"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2869,15 +3170,22 @@
     },
     {
       "id": "EV044",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T044",
       "taskRefs": [
         "T044"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2891,15 +3199,22 @@
     },
     {
       "id": "EV045",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T045",
       "taskRefs": [
         "T045"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2913,15 +3228,22 @@
     },
     {
       "id": "EV046",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T046",
       "taskRefs": [
         "T046"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2935,15 +3257,22 @@
     },
     {
       "id": "EV047",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T047",
       "taskRefs": [
         "T047"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2957,15 +3286,22 @@
     },
     {
       "id": "EV048",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T048",
       "taskRefs": [
         "T048"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -2979,15 +3315,22 @@
     },
     {
       "id": "EV049",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T049",
       "taskRefs": [
         "T049"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        ".github/workflows/ci.yml",
+        "readiness/220-bounded-pr-ci/ci-route.junit.xml",
+        "scripts/test-ci-route-mutations.sh",
+        "scripts/test-ci-route.mjs",
+        "scripts/test-ci-scheduled-full-mutation.sh",
+        "scripts/test-production-build-receipt.mjs"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -3054,7 +3397,7 @@
           "path": "work/220-bounded-pr-ci/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "f5ee3fda020536140e1617f4446224d3f04ed639e17a2670a91c6260a9b515bc"
+            "value": "9301dc45c368ed32b8b7801b02cd56599ed8d54479cd1da016a533d3d39c111a"
           },
           "schemaVersion": 1
         },
@@ -3085,7 +3428,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "6429399a7b30e9b0a9dee61759b86037f3272bd29c25c772ccf303e0663430b9"
+        "value": "da36c99c2eef8d593fa99ab2a6aee6d59ce43931c04fe7ece1290d83660d0235"
       },
       "currency": "current"
     }
