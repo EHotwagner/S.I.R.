@@ -123,6 +123,8 @@ for (const required of [
 
 for (const required of [
   'button.textContent.trim() === "Rules"',
+  'waitFor("deferred Rules workbench owner"',
+  'aria-label="Rules workbench load failure"',
   'button.textContent.trim() === "Data"',
   'mount?.querySelector(\'[data-panel-id="rules"]\')',
   'mount?.querySelector(\'[data-panel-id="data"]\')',

@@ -6,6 +6,29 @@ import { resolve } from "node:path";
 
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const requireTruth = (condition, message) => { if (!condition) throw new Error(message); };
+const manifestDelta = (expectedBytes, actualBytes) => {
+  const expected = JSON.parse(expectedBytes.toString("utf8"));
+  const actual = JSON.parse(actualBytes.toString("utf8"));
+  const differences = [];
+  const compare = (left, right, path = "manifest") => {
+    if (Object.is(left, right)) return;
+    if (
+      left && right && typeof left === "object" && typeof right === "object" &&
+      Array.isArray(left) === Array.isArray(right)
+    ) {
+      const keys = [...new Set([...Object.keys(left), ...Object.keys(right)])].sort();
+      for (const key of keys) compare(left[key], right[key], `${path}.${key}`);
+      return;
+    }
+    differences.push(`${path}: retained=${JSON.stringify(left)}, reproduced=${JSON.stringify(right)}`);
+  };
+  compare(expected, actual);
+  return differences.length > 0 ? differences.join(" | ") : "JSON values agree but serialized bytes differ";
+};
+const exactMismatch = (relativePath, retained, reproduced, label) => {
+  const semanticDelta = relativePath === "manifest.json" ? `; delta=${manifestDelta(retained, reproduced)}` : "";
+  return `${label}: ${relativePath}; retained sha256=${hash(retained)} bytes=${retained.length}; reproduced sha256=${hash(reproduced)} bytes=${reproduced.length}${semanticDelta}`;
+};
 let clientRoot = "artifacts/client";
 let reviewRoot = "docs/assets/tactical-visual-system-review";
 for (let index = 2; index < process.argv.length; index += 2) {
@@ -74,8 +97,8 @@ try {
       readFile(resolve(reproductionRoots[0], relativePath)),
       readFile(resolve(reproductionRoots[1], relativePath)),
     ]);
-    requireTruth(expected.equals(reproducedA), `production review did not reproduce byte-for-byte: ${relativePath}`);
-    requireTruth(reproducedA.equals(reproducedB), `independent frozen production captures diverged: ${relativePath}`);
+    requireTruth(expected.equals(reproducedA), exactMismatch(relativePath, expected, reproducedA, "production review did not reproduce byte-for-byte"));
+    requireTruth(reproducedA.equals(reproducedB), exactMismatch(relativePath, reproducedA, reproducedB, "independent frozen production captures diverged"));
   }
   for (const reproductionRoot of reproductionRoots) {
     const reproducedTelemetry = JSON.parse(await readFile(resolve(reproductionRoot, "telemetry.json"), "utf8"));

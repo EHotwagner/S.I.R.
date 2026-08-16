@@ -70,4 +70,15 @@ if ! grep -q "final simultaneous workload lost distinct route" <<<"$one_route_di
 fi
 cp "$task_tmp/generate-tactical-visual-review.mjs" "$review_generator"
 
-echo "Tactical visual review mutations passed: stylesheet, lifecycle projection, production workload, sample-faction, simultaneous attack/route, and production one-route subjects fail closed."
+sed -i '/await writeFile(resolve(reviewOutput, "manifest.json")/i manifest.visualSystem.identity = "mutated-tactical-visual-system";' "$review_generator"
+if reproduction_diagnostic=$(node "$repo_root/scripts/test-tactical-visual-review.mjs" --client-root "$repo_root/artifacts/client" --review-root "$task_tmp/review" 2>&1); then
+  echo "Environment-sensitive manifest mutation survived exact reproduction." >&2
+  exit 1
+fi
+if ! grep -q 'delta=manifest.after.semantic.identity: retained="tactical-visual-system-v1", reproduced="mutated-tactical-visual-system"' <<<"$reproduction_diagnostic"; then
+  echo "Manifest reproduction mutation omitted the exact semantic delta: $reproduction_diagnostic" >&2
+  exit 1
+fi
+cp "$task_tmp/generate-tactical-visual-review.mjs" "$review_generator"
+
+echo "Tactical visual review mutations passed: stylesheet, lifecycle projection, production workload, sample-faction, simultaneous attack/route, production one-route, and exact manifest-reproduction subjects fail closed."

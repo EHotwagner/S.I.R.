@@ -5,6 +5,7 @@ import { access, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises
 import { createServer as createNetServer } from "node:net";
 import { homedir, tmpdir } from "node:os";
 import { delimiter, extname, isAbsolute, join, normalize, resolve, sep } from "node:path";
+import { chromium as playwrightChromium } from "@playwright/test";
 
 const delay = (milliseconds) => new Promise((resolveDelay) => setTimeout(resolveDelay, milliseconds));
 const chromiumStartupProbeIntervalMilliseconds = 50;
@@ -67,7 +68,7 @@ const chromiumDiscoveryFailure = (reason, attempted) => {
   );
 };
 
-const discoverChromium = async () => {
+export const discoverChromium = async () => {
   const override = process.env.CHROMIUM_PATH?.trim();
   if (override) {
     const candidate = isAbsolute(override) ? normalize(override) : resolve(override);
@@ -77,6 +78,12 @@ const discoverChromium = async () => {
       [candidate],
     );
   }
+
+  // Conformance installs the lockfile-pinned Playwright browser. Prefer that
+  // exact executable when it is present so retained raw captures do not
+  // silently depend on whichever ambient Chrome build the host provides.
+  const pinnedPlaywrightChromium = playwrightChromium.executablePath();
+  if (await executable(pinnedPlaywrightChromium)) return pinnedPlaywrightChromium;
 
   const pathDirectories = (process.env.PATH ?? "")
     .split(delimiter)
