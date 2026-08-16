@@ -78,6 +78,43 @@ module RuleCoherence =
     let private distinctSorted values = values |> Set.ofList |> Set.toList
     let private intersects left right = not (Set.intersect (Set.ofList left) (Set.ofList right) |> Set.isEmpty)
 
+    let private frame (value: string) = string (Encoding.UTF8.GetBytes(value).Length) + ":" + value
+    let private framedList values = string (List.length values) + ":" + (values |> List.map frame |> String.concat "")
+    let private present value = if String.IsNullOrWhiteSpace value then "0" else "1"
+
+    let private statusName = function
+        | Proposed -> "proposed"
+        | Prototype -> "prototype"
+        | Canonical -> "canonical"
+        | Deprecated -> "deprecated"
+        | Superseded -> "superseded"
+
+    // Rules.packageIdentity deliberately excludes authoring metadata from its semantic digest.
+    // The coherence cache has a narrower boundary: retain documentation-only reuse, but bind every
+    // metadata field the analyzer reads or reports so a warm result cannot hide a fresh diagnosis.
+    let private coherenceMetadataDigest rules =
+        rules
+        |> List.sortBy id
+        |> List.map (fun rule ->
+            let metadata = rule.Metadata
+            let source =
+                match metadata.RuleSource with
+                | None -> [ "none" ]
+                | Some value -> [ "some"; value.Symbol; value.RepositoryPath; value.Commit ]
+            String.concat "|"
+                [ frame (id rule)
+                  frame (statusName metadata.Status)
+                  metadata.Dependencies |> List.map RuleId.value |> List.sort |> framedList
+                  metadata.Supersedes |> List.map RuleId.value |> List.sort |> framedList
+                  source |> List.map frame |> String.concat ""
+                  metadata.Evidence |> framedList
+                  frame (present metadata.Title)
+                  frame (present metadata.Rationale)
+                  frame (if List.isEmpty metadata.Examples then "0" else "1")
+                  frame (if List.isEmpty metadata.Properties then "0" else "1") ])
+        |> framedList
+        |> digest
+
     let private strengthName = function
         | ClaimStrength.ProvedStructural -> "proved-structural" | ClaimStrength.ProvedFragment -> "proved-fragment"
         | ClaimStrength.ExhaustiveBounded -> "exhaustive-bounded" | ClaimStrength.Tested -> "tested" | ClaimStrength.Heuristic -> "heuristic"
@@ -140,8 +177,8 @@ module RuleCoherence =
                 | Error error, _ | _, Error error -> Error error
             | Divide(left, right) ->
                 match infer left, infer right with
-                | Ok leftType, Ok(_, "ratio") -> Ok leftType
-                | Ok leftType, Ok rightType -> Error(sprintf "division requires a ratio divisor, got %A and %A" leftType rightType)
+                | Ok((RuleValueKind.FixedPoint, _) as leftType), Ok rightType when leftType = rightType -> Ok(RuleValueKind.FixedPoint, "ratio")
+                | Ok leftType, Ok rightType -> Error(sprintf "division requires like fixed-point operands, got %A and %A" leftType rightType)
                 | Error error, _ | _, Error error -> Error error
             | Clamp(minimum, maximum, value) ->
                 match infer minimum, infer maximum, infer value with
@@ -181,7 +218,8 @@ module RuleCoherence =
         let blockUnknowns = if request.BlockUnknowns then "1" else "0"
         let requested = request.ChangedRuleIds |> List.map RuleId.value |> List.sort |> String.concat ","
         let packageSourceIdentity = String.concat ":" [ string identity.SchemaVersion; identity.EngineIdentity; identity.CompatibilityProfile; identity.PackageVersion; identity.SourceCommit ]
-        let requestText = String.concat "|" [ analyzerVersion; modeName request.Mode; string request.Bounds.MaxWorkUnits; string request.Bounds.MaxFindings; string request.Bounds.MaxWitnessRules; blockUnknowns; packageSourceIdentity; analyzedSemanticDigest; requested; selected |> Set.toList |> List.sort |> String.concat "," ]
+        let metadataDigest = coherenceMetadataDigest rules
+        let requestText = String.concat "|" [ analyzerVersion; modeName request.Mode; string request.Bounds.MaxWorkUnits; string request.Bounds.MaxFindings; string request.Bounds.MaxWitnessRules; blockUnknowns; packageSourceIdentity; analyzedSemanticDigest; metadataDigest; requested; selected |> Set.toList |> List.sort |> String.concat "," ]
         digest requestText
 
     let analyze (packageIdentity: RulePackageIdentity) (rules: RuleDefinition list) (priorCache: CoherenceCacheEntry option) (request: CoherenceRequest) =

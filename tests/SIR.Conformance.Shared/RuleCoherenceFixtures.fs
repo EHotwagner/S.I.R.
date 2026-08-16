@@ -97,6 +97,27 @@ module RuleCoherenceFixtures =
         let documentationWarm = analyze documented (Some cache) baselineRequest
         require (documentationWarm.Cost.CacheHits = 1 && documentationWarm.Cost.WorkUnits = 0) "Documentation-only change invalidated semantic analysis."
 
+        let statusChanged =
+            withRule "COMBAT-TRACE-002" (fun rule -> { rule with Metadata = { rule.Metadata with Status = Prototype } })
+            |> fun rules -> analyze rules (Some cache) baselineRequest
+        require (statusChanged.Cost.CacheHits = 0 && has "dependency-status" ClaimStrength.Failed statusChanged) "Status-only mutation reused stale coherence cache state."
+
+        let supersessionChanged =
+            let replacement = CombatRules.registry.Tail.Head.Metadata.Id
+            { first with Metadata = { first.Metadata with Supersedes = [ replacement ] } } :: CombatRules.registry.Tail
+            |> fun rules -> analyze rules (Some cache) baselineRequest
+        require (supersessionChanged.Cost.CacheHits = 0) "Supersession-only mutation reused stale coherence cache state."
+
+        let sourceChanged =
+            { first with Metadata = { first.Metadata with RuleSource = first.Metadata.RuleSource |> Option.map (fun source -> { source with Commit = String.replicate 40 "0" }) } } :: CombatRules.registry.Tail
+            |> fun rules -> analyze rules (Some cache) baselineRequest
+        require (sourceChanged.Cost.CacheHits = 0 && has "history" ClaimStrength.Failed sourceChanged) "Source-binding mutation reused stale coherence cache state."
+
+        let evidenceChanged =
+            { first with Metadata = { first.Metadata with Evidence = [] } } :: CombatRules.registry.Tail
+            |> fun rules -> analyze rules (Some cache) baselineRequest
+        require (evidenceChanged.Cost.CacheHits = 0 && has "coverage" ClaimStrength.Failed evidenceChanged) "Evidence metadata mutation reused stale coherence cache state."
+
         let fingerprintChanged =
             withRule "COMBAT-TRACE-002" (fun rule ->
                 match rule.Semantics with
@@ -144,6 +165,25 @@ module RuleCoherenceFixtures =
                 { rule with Semantics = FormulaSemantics(RuleValueKind.FixedPoint, "damage", Add(Input("damage", RuleValueKind.FixedPoint, "damage"), Input("ratio", RuleValueKind.FixedPoint, "ratio"))) })
             |> fun rules -> analyze rules None baselineRequest
         require (has "types-units" ClaimStrength.Failed unitMismatch) "Unit mismatch was accepted."
+
+        let fixedValue unitName raw = { DataKind = RuleValueKind.FixedPoint; Unit = unitName; Value = FixedPointValue(FixedPoint.fromRaw raw) }
+        let likeDivision = Divide(Input("left", RuleValueKind.FixedPoint, "damage"), Input("right", RuleValueKind.FixedPoint, "damage"))
+        let likeDivisionRules =
+            withRule "COMBAT-DAMAGE-001" (fun rule -> { rule with Semantics = FormulaSemantics(RuleValueKind.FixedPoint, "ratio", likeDivision) })
+        let likeDivisionReport = analyze likeDivisionRules None baselineRequest
+        require (not (has "types-units" ClaimStrength.Failed likeDivisionReport)) "Like-shaped fixed-point division was rejected by coherence inference."
+        match Rules.evaluate (Map.ofList [ "left", fixedValue "damage" 200; "right", fixedValue "damage" 100 ]) likeDivision with
+        | Ok value -> require (value.DataKind = RuleValueKind.FixedPoint && value.Unit = "ratio") "Executable like-shaped division did not return ratio."
+        | Error error -> failwithf "Executable like-shaped division failed: %A" error
+
+        let unlikeDivision = Divide(Input("left", RuleValueKind.FixedPoint, "damage"), Input("right", RuleValueKind.FixedPoint, "ratio"))
+        let unlikeDivisionRules =
+            withRule "COMBAT-DAMAGE-001" (fun rule -> { rule with Semantics = FormulaSemantics(RuleValueKind.FixedPoint, "ratio", unlikeDivision) })
+        let unlikeDivisionReport = analyze unlikeDivisionRules None baselineRequest
+        require (has "types-units" ClaimStrength.Failed unlikeDivisionReport) "Damage/ratio division was accepted by coherence inference."
+        match Rules.evaluate (Map.ofList [ "left", fixedValue "damage" 200; "right", fixedValue "ratio" 100 ]) unlikeDivision with
+        | Error(UnitMismatch _) -> ()
+        | verdict -> failwithf "Executable damage/ratio division did not reject the unit mismatch: %A" verdict
 
         let duplicate = analyze (first :: CombatRules.registry) None baselineRequest
         require (has "identity" ClaimStrength.Failed duplicate) "Duplicate rule identity was accepted."

@@ -57,8 +57,16 @@ else
   test "$?" -eq 2
 fi
 
-python3 /home/developer/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/sir-author-rule
-python3 /home/developer/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/sir-check-rule-coherence
+env HOME="$task_tmp/incompatible-home" CODEX_HOME="$task_tmp/incompatible-codex" python3 scripts/validate-skill-package.py .agents/skills/sir-author-rule
+env HOME="$task_tmp/incompatible-home" CODEX_HOME="$task_tmp/incompatible-codex" python3 scripts/validate-skill-package.py .agents/skills/sir-check-rule-coherence
+
+mkdir -p "$task_tmp/invalid-skill"
+printf '%s\n' '---' 'description: deliberately missing the required name' '---' > "$task_tmp/invalid-skill/SKILL.md"
+if env HOME="$task_tmp/incompatible-home" CODEX_HOME="$task_tmp/incompatible-codex" python3 scripts/validate-skill-package.py "$task_tmp/invalid-skill" > "$task_tmp/invalid-skill.log" 2>&1; then
+  echo "malformed skill unexpectedly passed repository-owned validation" >&2
+  exit 1
+fi
+grep -q "Missing or invalid 'name'" "$task_tmp/invalid-skill.log"
 
 result_path=${SIR_RULE_COHERENCE_JUNIT:-readiness/193-rule-authoring-coherence/rule-coherence.junit.xml}
 mkdir -p "$(dirname "$result_path")"
