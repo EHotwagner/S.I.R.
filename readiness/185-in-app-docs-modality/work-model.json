@@ -1,0 +1,3326 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "1.2.0",
+  "workId": "185-in-app-docs-modality",
+  "project": {
+    "id": "s.i.r",
+    "defaultWorkRoot": "work",
+    "profile": null
+  },
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      }
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      }
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      }
+    },
+    {
+      "path": "work/185-in-app-docs-modality/checklist.md",
+      "kind": "checklist",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "5803b3542b30ee2346c1c115c4598e24bc31dfa405488ad33bb0d836ce90b2ee"
+      }
+    },
+    {
+      "path": "work/185-in-app-docs-modality/clarifications.md",
+      "kind": "clarifications",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "4ea28f778102ad307dbb4e54cf690437bc6a70dff0b21cecf44edafa199eb06f"
+      }
+    },
+    {
+      "path": "work/185-in-app-docs-modality/evidence.yml",
+      "kind": "evidence",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "aadc66de7b5b99daab2634cd8ea5ff5d178d8503bba34dbc8c30bf8f60e1ee17"
+      }
+    },
+    {
+      "path": "work/185-in-app-docs-modality/plan.md",
+      "kind": "plan",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "4ea9543fa674085471019ec16cfcd83476bd6383ceb5995c4c28089b0e3632d5"
+      }
+    },
+    {
+      "path": "work/185-in-app-docs-modality/spec.md",
+      "kind": "spec",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "0540a98f00e9133723a0bd5abb28ae3bb1a463ca3c5a0997fae202a68bf8cdcc"
+      }
+    },
+    {
+      "path": "work/185-in-app-docs-modality/tasks.yml",
+      "kind": "tasks",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "6c1b7a09e159b2b8b9dca4be6c768249965a29b0a4fdfa6f098d21a3bb317117"
+      }
+    }
+  ],
+  "workItem": {
+    "id": "185-in-app-docs-modality",
+    "title": "In App Docs Modality",
+    "stage": "specify",
+    "changeTier": "tier1",
+    "status": "specified"
+  },
+  "performanceIntent": null,
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "The system MUST declare Docs once in the shared command registry and derive File/Edit/View menu presence, effective configurable shortcut, modal input, accessibility name, and navigation-history actions from that identity. (Stories: US-001; Acceptance: AC-001)",
+      "text": "The system MUST declare Docs once in the shared command registry and derive File/Edit/View menu presence, effective configurable shortcut, modal input, accessibility name, and navigation-history actions from that identity. (Stories: US-001; Acceptance: AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/185-in-app-docs-modality/spec.md",
+      "sourceLocation": {
+        "line": 47,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001"
+      ],
+      "linkedEvidenceIds": [
+        "EV001",
+        "EV018",
+        "EV051"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "title": "Entering Docs MUST preserve the existing tactical workscreen object/DOM identity plus camera, selection, timeline, playback, panel layout/visibility, and active-mode state, and returning to Editor/Plan/Simulate/Review MUST restore the exact fingerprint rather than reconstruct defaults. (Stories: US-001; Acceptance: AC-001)",
+      "text": "Entering Docs MUST preserve the existing tactical workscreen object/DOM identity plus camera, selection, timeline, playback, panel layout/visibility, and active-mode state, and returning to Editor/Plan/Simulate/Review MUST restore the exact fingerprint rather than reconstruct defaults. (Stories: US-001; Acceptance: AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/185-in-app-docs-modality/spec.md",
+      "sourceLocation": {
+        "line": 48,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T002"
+      ],
+      "linkedEvidenceIds": [
+        "EV002",
+        "EV019"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "title": "A deterministic generator MUST qualify maintained \u0060docs/\u0060 Markdown/literate content and selected generated API references into one versioned manifest with unique normalized slugs, hierarchy/order, metadata status, headings/anchors, related pages, search text, and content/source digests; the client MUST NOT maintain parallel prose. (Stories: US-001, US-002; Acceptance: AC-002)",
+      "text": "A deterministic generator MUST qualify maintained \u0060docs/\u0060 Markdown/literate content and selected generated API references into one versioned manifest with unique normalized slugs, hierarchy/order, metadata status, headings/anchors, related pages, search text, and content/source digests; the client MUST NOT maintain parallel prose. (Stories: US-001, US-002; Acceptance: AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/185-in-app-docs-modality/spec.md",
+      "sourceLocation": {
+        "line": 49,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T003"
+      ],
+      "linkedEvidenceIds": [
+        "EV003",
+        "EV020"
+      ]
+    },
+    {
+      "id": "FR-004",
+      "title": "Docs MUST provide hierarchy, TOC, breadcrumbs, deterministic search/filter for LOS/cover/armor, back/forward history, in-page anchors, related pages, and keyboard navigation over manifest identity with stable native/Fable results. (Stories: US-001, US-002; Acceptance: AC-002)",
+      "text": "Docs MUST provide hierarchy, TOC, breadcrumbs, deterministic search/filter for LOS/cover/armor, back/forward history, in-page anchors, related pages, and keyboard navigation over manifest identity with stable native/Fable results. (Stories: US-001, US-002; Acceptance: AC-002)",
+      "acceptanceCriteria": [
+        "AC-002"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/185-in-app-docs-modality/spec.md",
+      "sourceLocation": {
+        "line": 50,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T004"
+      ],
+      "linkedEvidenceIds": [
+        "EV004",
+        "EV021"
+      ]
+    },
+    {
+      "id": "FR-005",
+      "title": "Rendering MUST sanitize content before DOM construction and support headings, tables, diagrams/images, code blocks, and typed local/GitHub links under the production CSP/offline policy without executing arbitrary HTML/script or loading arbitrary remote Markdown. (Stories: US-003; Acceptance: AC-003)",
+      "text": "Rendering MUST sanitize content before DOM construction and support headings, tables, diagrams/images, code blocks, and typed local/GitHub links under the production CSP/offline policy without executing arbitrary HTML/script or loading arbitrary remote Markdown. (Stories: US-003; Acceptance: AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/185-in-app-docs-modality/spec.md",
+      "sourceLocation": {
+        "line": 51,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T005"
+      ],
+      "linkedEvidenceIds": [
+        "EV005",
+        "EV022"
+      ]
+    },
+    {
+      "id": "FR-006",
+      "title": "Docs MUST expose valid landmarks and heading order, labelled link semantics, visible focus, keyboard-only operation, responsive hierarchy/content controls at 320 CSS pixels, and usable output at 400% browser zoom without color-only status meaning. (Stories: US-003; Acceptance: AC-003)",
+      "text": "Docs MUST expose valid landmarks and heading order, labelled link semantics, visible focus, keyboard-only operation, responsive hierarchy/content controls at 320 CSS pixels, and usable output at 400% browser zoom without color-only status meaning. (Stories: US-003; Acceptance: AC-003)",
+      "acceptanceCriteria": [
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/185-in-app-docs-modality/spec.md",
+      "sourceLocation": {
+        "line": 52,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T006"
+      ],
+      "linkedEvidenceIds": [
+        "EV006",
+        "EV023"
+      ]
+    },
+    {
+      "id": "FR-007",
+      "title": "Typed concept-to-source mappings MUST cover combat, units, maps/spatial queries, simulation, planning, replay, controls, and governance, naming repository, revision/branch policy, file, symbol/concept, and stable line anchor when available; unavailable external navigation MUST preserve local content and announce failure honestly. (Stories: US-002, US-003; Acceptance: AC-004)",
+      "text": "Typed concept-to-source mappings MUST cover combat, units, maps/spatial queries, simulation, planning, replay, controls, and governance, naming repository, revision/branch policy, file, symbol/concept, and stable line anchor when available; unavailable external navigation MUST preserve local content and announce failure honestly. (Stories: US-002, US-003; Acceptance: AC-004)",
+      "acceptanceCriteria": [
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/185-in-app-docs-modality/spec.md",
+      "sourceLocation": {
+        "line": 53,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T007"
+      ],
+      "linkedEvidenceIds": [
+        "EV007",
+        "EV024"
+      ]
+    },
+    {
+      "id": "FR-008",
+      "title": "Tactical inspectors and overlays MUST offer contextual Open documentation actions only from disclosed public concept identifiers; missing, malformed, unreadable, or undisclosed inputs MUST fail closed to the same no-link shape without subject/world/timing/diagnostic leakage. (Stories: US-004; Acceptance: AC-005)",
+      "text": "Tactical inspectors and overlays MUST offer contextual Open documentation actions only from disclosed public concept identifiers; missing, malformed, unreadable, or undisclosed inputs MUST fail closed to the same no-link shape without subject/world/timing/diagnostic leakage. (Stories: US-004; Acceptance: AC-005)",
+      "acceptanceCriteria": [
+        "AC-005"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/185-in-app-docs-modality/spec.md",
+      "sourceLocation": {
+        "line": 54,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T008"
+      ],
+      "linkedEvidenceIds": [
+        "EV008",
+        "EV025"
+      ]
+    },
+    {
+      "id": "FR-009",
+      "title": "A versioned representative workload MUST traverse production command update, Docs navigation/search, manifest projection, and view construction over the qualified corpus, declaring content/node/result/history caps and timing posture before implementation, recording deterministic counters and browser host/capability facts, and labelling absence of live-compositor measurement. (Stories: US-005; Acceptance: AC-006)",
+      "text": "A versioned representative workload MUST traverse production command update, Docs navigation/search, manifest projection, and view construction over the qualified corpus, declaring content/node/result/history caps and timing posture before implementation, recording deterministic counters and browser host/capability facts, and labelling absence of live-compositor measurement. (Stories: US-005; Acceptance: AC-006)",
+      "acceptanceCriteria": [
+        "AC-006"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/185-in-app-docs-modality/spec.md",
+      "sourceLocation": {
+        "line": 55,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T009"
+      ],
+      "linkedEvidenceIds": [
+        "EV009",
+        "EV026",
+        "EV051"
+      ]
+    },
+    {
+      "id": "FR-010",
+      "title": "The change MUST ship synchronized public/client contracts, FsDocs and in-app manifest qualification, focused/full native and Fable tests, a real-entry bot-driven production-browser journey through player-visible controls, runtime-route comparison, 320/400% accessibility, schema-v2 feedback/audit, SDD evidence/verify/ship, and protected-subject plus unreadable-input mutation evidence for every added or modified gate. (Stories: US-005; Acceptance: AC-007)",
+      "text": "The change MUST ship synchronized public/client contracts, FsDocs and in-app manifest qualification, focused/full native and Fable tests, a real-entry bot-driven production-browser journey through player-visible controls, runtime-route comparison, 320/400% accessibility, schema-v2 feedback/audit, SDD evidence/verify/ship, and protected-subject plus unreadable-input mutation evidence for every added or modified gate. (Stories: US-005; Acceptance: AC-007)",
+      "acceptanceCriteria": [
+        "AC-007"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/185-in-app-docs-modality/spec.md",
+      "sourceLocation": {
+        "line": 56,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T010"
+      ],
+      "linkedEvidenceIds": [
+        "EV010",
+        "EV027",
+        "EV051"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Qualify metadata-bearing maintained pages plus selected built API entries under the four normalized status values and canonical navigation order; malformed metadata and duplicate identity fail generation.",
+      "decision": "Qualify metadata-bearing maintained pages plus selected built API entries under the four normalized status values and canonical navigation order; malformed metadata and duplicate identity fail generation.",
+      "requirementRefs": [
+        "FR-003",
+        "FR-007"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/185-in-app-docs-modality/clarifications.md",
+      "sourceLocation": {
+        "line": 38,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T011"
+      ]
+    },
+    {
+      "id": "DEC-002",
+      "title": "Generate one versioned closed-block JSON manifest from the authored corpus and built FsDocs output, with source/content digests and no raw executable HTML or client-authored prose.",
+      "decision": "Generate one versioned closed-block JSON manifest from the authored corpus and built FsDocs output, with source/content digests and no raw executable HTML or client-authored prose.",
+      "requirementRefs": [
+        "FR-003",
+        "FR-005"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/185-in-app-docs-modality/clarifications.md",
+      "sourceLocation": {
+        "line": 39,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T012"
+      ]
+    },
+    {
+      "id": "DEC-003",
+      "title": "Make Docs a modality with separate page/query/history state and a retained last-tactical modality; keep the same mounted tactical SVG/workspace instance hidden and inert, and treat URLs as an edge projection.",
+      "decision": "Make Docs a modality with separate page/query/history state and a retained last-tactical modality; keep the same mounted tactical SVG/workspace instance hidden and inert, and treat URLs as an edge projection.",
+      "requirementRefs": [
+        "FR-001",
+        "FR-002",
+        "FR-004"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/185-in-app-docs-modality/clarifications.md",
+      "sourceLocation": {
+        "line": 40,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T013"
+      ]
+    },
+    {
+      "id": "DEC-004",
+      "title": "Ship eight typed concept mappings against \u0060main\u0060, validate paths and optional line bounds at generation, and construct encoded GitHub URLs from typed fields.",
+      "decision": "Ship eight typed concept mappings against \u0060main\u0060, validate paths and optional line bounds at generation, and construct encoded GitHub URLs from typed fields.",
+      "requirementRefs": [
+        "FR-007"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/185-in-app-docs-modality/clarifications.md",
+      "sourceLocation": {
+        "line": 41,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T014"
+      ]
+    },
+    {
+      "id": "DEC-005",
+      "title": "Render only a closed sanitized block/link vocabulary, reject unsafe schemes/remote content, keep local Docs operational offline, and make undisclosed/malformed contextual input indistinguishable from absence.",
+      "decision": "Render only a closed sanitized block/link vocabulary, reject unsafe schemes/remote content, keep local Docs operational offline, and make undisclosed/malformed contextual input indistinguishable from absence.",
+      "requirementRefs": [
+        "FR-005",
+        "FR-008"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/185-in-app-docs-modality/clarifications.md",
+      "sourceLocation": {
+        "line": 42,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T015"
+      ]
+    },
+    {
+      "id": "DEC-006",
+      "title": "Adopt the full-corpus and fixed-query production update/view workload with the 512-page, 8,192-block, 262,144-token, 200-result, 128-history, 6,000-node, 20/50-ms caps and explicit compositor-not-measured capability.",
+      "decision": "Adopt the full-corpus and fixed-query production update/view workload with the 512-page, 8,192-block, 262,144-token, 200-result, 128-history, 6,000-node, 20/50-ms caps and explicit compositor-not-measured capability.",
+      "requirementRefs": [
+        "FR-009"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/185-in-app-docs-modality/clarifications.md",
+      "sourceLocation": {
+        "line": 43,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T016"
+      ]
+    },
+    {
+      "id": "DEC-007",
+      "title": "Require native/Fable fingerprints plus a real built-entry Playwright control journey covering search/navigation/source/degraded/context/state preservation and 320/400% accessibility, with subject and unreadable-input inversions for every touched gate.",
+      "decision": "Require native/Fable fingerprints plus a real built-entry Playwright control journey covering search/navigation/source/degraded/context/state preservation and 320/400% accessibility, with subject and unreadable-input inversions for every touched gate.",
+      "requirementRefs": [
+        "FR-010"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/185-in-app-docs-modality/clarifications.md",
+      "sourceLocation": {
+        "line": 44,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T017"
+      ]
+    },
+    {
+      "id": "DEC-008",
+      "title": "Integrate Docs through the canonical typed FeatureLoader as one deferred \u0060DocsView\u0060 chunk, retain immutable registry v1, and make registry v2 own both feature-chunk and browser-observed route ceilings; explicitly rebaseline the measured Rules Explorer Brotli and initial-route subjects, fail F#/JavaScript/compiled version drift, and invert version/route gates.",
+      "decision": "Integrate Docs through the canonical typed FeatureLoader as one deferred \u0060DocsView\u0060 chunk, retain immutable registry v1, and make registry v2 own both feature-chunk and browser-observed route ceilings; explicitly rebaseline the measured Rules Explorer Brotli and initial-route subjects, fail F#/JavaScript/compiled version drift, and invert version/route gates.",
+      "requirementRefs": [
+        "FR-001",
+        "FR-009",
+        "FR-010"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/185-in-app-docs-modality/clarifications.md",
+      "sourceLocation": {
+        "line": 45,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T050"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement requirement FR-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-001"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV001"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "T002",
+      "title": "Implement requirement FR-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-002"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV002"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "T003",
+      "title": "Implement requirement FR-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-003"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV003"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "T004",
+      "title": "Implement requirement FR-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-004"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "FR-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV004"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "T005",
+      "title": "Implement requirement FR-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-005"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "FR-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV005"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "T006",
+      "title": "Implement requirement FR-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-006"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "FR-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV006"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "T007",
+      "title": "Implement requirement FR-007",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-007"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "FR-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV007"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "T008",
+      "title": "Implement requirement FR-008",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-008"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "FR-008"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV008"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "T009",
+      "title": "Implement requirement FR-009",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-009"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-006",
+        "FR-009"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV009"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "T010",
+      "title": "Implement requirement FR-010",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [],
+      "requirements": [
+        "FR-010"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-007",
+        "FR-010"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV010"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "T011",
+      "title": "Implement clarification decision DEC-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-001"
+      ],
+      "sourceIds": [
+        "DEC-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV011"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "T012",
+      "title": "Implement clarification decision DEC-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-002"
+      ],
+      "sourceIds": [
+        "DEC-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV012"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "T013",
+      "title": "Implement clarification decision DEC-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-003"
+      ],
+      "sourceIds": [
+        "DEC-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV013"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "T014",
+      "title": "Implement clarification decision DEC-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-004"
+      ],
+      "sourceIds": [
+        "DEC-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV014"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "T015",
+      "title": "Implement clarification decision DEC-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-005"
+      ],
+      "sourceIds": [
+        "DEC-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV015"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "T016",
+      "title": "Implement clarification decision DEC-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-006"
+      ],
+      "sourceIds": [
+        "DEC-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV016"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 16,
+        "column": 1
+      }
+    },
+    {
+      "id": "T017",
+      "title": "Implement clarification decision DEC-007",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-007"
+      ],
+      "sourceIds": [
+        "DEC-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV017"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 17,
+        "column": 1
+      }
+    },
+    {
+      "id": "T018",
+      "title": "Implement plan decision PD-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "DEC-003",
+        "FR-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV018"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "id": "T019",
+      "title": "Implement plan decision PD-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "DEC-003",
+        "FR-002",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV019"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "id": "T020",
+      "title": "Implement plan decision PD-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "DEC-001",
+        "DEC-002",
+        "FR-003",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV020"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "id": "T021",
+      "title": "Implement plan decision PD-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "DEC-003",
+        "FR-004",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV021"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 21,
+        "column": 1
+      }
+    },
+    {
+      "id": "T022",
+      "title": "Implement plan decision PD-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "DEC-002",
+        "DEC-005",
+        "FR-005",
+        "PD-005"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV022"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 22,
+        "column": 1
+      }
+    },
+    {
+      "id": "T023",
+      "title": "Implement plan decision PD-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-003",
+        "DEC-007",
+        "FR-006",
+        "PD-006"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV023"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 23,
+        "column": 1
+      }
+    },
+    {
+      "id": "T024",
+      "title": "Implement plan decision PD-007",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "DEC-004",
+        "FR-007",
+        "PD-007"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV024"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 24,
+        "column": 1
+      }
+    },
+    {
+      "id": "T025",
+      "title": "Implement plan decision PD-008",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "DEC-005",
+        "FR-008",
+        "PD-008"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV025"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 25,
+        "column": 1
+      }
+    },
+    {
+      "id": "T026",
+      "title": "Implement plan decision PD-009",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-006",
+        "DEC-006",
+        "FR-009",
+        "PD-009"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV026"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 26,
+        "column": 1
+      }
+    },
+    {
+      "id": "T027",
+      "title": "Implement plan decision PD-010",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-007",
+        "DEC-007",
+        "FR-010",
+        "PD-010"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV027"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 27,
+        "column": 1
+      }
+    },
+    {
+      "id": "T028",
+      "title": "Update contract surface PC-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV028"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 28,
+        "column": 1
+      }
+    },
+    {
+      "id": "T029",
+      "title": "Update contract surface PC-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-003",
+        "PD-005"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV029"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "id": "T030",
+      "title": "Update contract surface PC-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV030"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      }
+    },
+    {
+      "id": "T031",
+      "title": "Update contract surface PC-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-004",
+        "PD-007"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV031"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 31,
+        "column": 1
+      }
+    },
+    {
+      "id": "T032",
+      "title": "Update contract surface PC-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-005",
+        "PD-008"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV032"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "id": "T033",
+      "title": "Update contract surface PC-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-006",
+        "PD-009"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV033"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 33,
+        "column": 1
+      }
+    },
+    {
+      "id": "T034",
+      "title": "Record verification evidence VO-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "PD-002",
+        "VO-001"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV034"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 34,
+        "column": 1
+      }
+    },
+    {
+      "id": "T035",
+      "title": "Record verification evidence VO-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-003",
+        "PD-005",
+        "VO-002"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV035"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 35,
+        "column": 1
+      }
+    },
+    {
+      "id": "T036",
+      "title": "Record verification evidence VO-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PD-004",
+        "VO-003"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV036"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 36,
+        "column": 1
+      }
+    },
+    {
+      "id": "T037",
+      "title": "Record verification evidence VO-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PD-006",
+        "VO-004"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV037"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 37,
+        "column": 1
+      }
+    },
+    {
+      "id": "T038",
+      "title": "Record verification evidence VO-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-004",
+        "PD-007",
+        "VO-005"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV038"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 38,
+        "column": 1
+      }
+    },
+    {
+      "id": "T039",
+      "title": "Record verification evidence VO-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-005",
+        "PD-008",
+        "VO-006"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV039"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 39,
+        "column": 1
+      }
+    },
+    {
+      "id": "T040",
+      "title": "Record verification evidence VO-007",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-006",
+        "PD-009",
+        "VO-007"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV040"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 40,
+        "column": 1
+      }
+    },
+    {
+      "id": "T041",
+      "title": "Record verification evidence VO-008",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PD-010",
+        "VO-008"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV041"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 41,
+        "column": 1
+      }
+    },
+    {
+      "id": "T042",
+      "title": "Record verification evidence VO-009",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PD-010",
+        "VO-009"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV042"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 42,
+        "column": 1
+      }
+    },
+    {
+      "id": "T043",
+      "title": "Handle migration posture PM-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PM-001"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV043"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 43,
+        "column": 1
+      }
+    },
+    {
+      "id": "T044",
+      "title": "Handle migration posture PM-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PM-002"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV044"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 44,
+        "column": 1
+      }
+    },
+    {
+      "id": "T045",
+      "title": "Handle migration posture PM-003",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-003",
+        "PM-003"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV045"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 45,
+        "column": 1
+      }
+    },
+    {
+      "id": "T046",
+      "title": "Handle migration posture PM-004",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-004",
+        "PM-004"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV046"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 46,
+        "column": 1
+      }
+    },
+    {
+      "id": "T047",
+      "title": "Handle migration posture PM-005",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-005",
+        "PM-005"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV047"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 47,
+        "column": 1
+      }
+    },
+    {
+      "id": "T048",
+      "title": "Refresh generated view impact GV-001",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-001",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV048"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 48,
+        "column": 1
+      }
+    },
+    {
+      "id": "T049",
+      "title": "Refresh generated view impact GV-002",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-002",
+        "PD-010"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV049"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 49,
+        "column": 1
+      }
+    },
+    {
+      "id": "T050",
+      "title": "Implement clarification decision DEC-008",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-008"
+      ],
+      "sourceIds": [
+        "DEC-008"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV050"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 50,
+        "column": 1
+      }
+    },
+    {
+      "id": "T051",
+      "title": "Implement plan decision PD-011",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "AC-006",
+        "AC-007",
+        "DEC-008",
+        "FR-001",
+        "FR-009",
+        "FR-010",
+        "PD-011"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV051"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 51,
+        "column": 1
+      }
+    },
+    {
+      "id": "T052",
+      "title": "Update contract surface PC-007",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-007",
+        "PD-011"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV052"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 52,
+        "column": 1
+      }
+    },
+    {
+      "id": "T053",
+      "title": "Record verification evidence VO-010",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-007",
+        "PD-011",
+        "VO-010"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV053"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 53,
+        "column": 1
+      }
+    },
+    {
+      "id": "T054",
+      "title": "Handle migration posture PM-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-007",
+        "PM-006"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV054"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 54,
+        "column": 1
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV001",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T001",
+      "taskRefs": [
+        "T001"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV002",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T002",
+      "taskRefs": [
+        "T002"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV003",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T003",
+      "taskRefs": [
+        "T003"
+      ],
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV004",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T004",
+      "taskRefs": [
+        "T004"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV005",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T005",
+      "taskRefs": [
+        "T005"
+      ],
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV006",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T006",
+      "taskRefs": [
+        "T006"
+      ],
+      "requirementRefs": [
+        "FR-006"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV007",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T007",
+      "taskRefs": [
+        "T007"
+      ],
+      "requirementRefs": [
+        "FR-007"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV008",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T008",
+      "taskRefs": [
+        "T008"
+      ],
+      "requirementRefs": [
+        "FR-008"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV009",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T009",
+      "taskRefs": [
+        "T009"
+      ],
+      "requirementRefs": [
+        "FR-009"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV010",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T010",
+      "taskRefs": [
+        "T010"
+      ],
+      "requirementRefs": [
+        "FR-010"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV011",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T011",
+      "taskRefs": [
+        "T011"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV012",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T012",
+      "taskRefs": [
+        "T012"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV013",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T013",
+      "taskRefs": [
+        "T013"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV014",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T014",
+      "taskRefs": [
+        "T014"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV015",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T015",
+      "taskRefs": [
+        "T015"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV016",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T016",
+      "taskRefs": [
+        "T016"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 16,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV017",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T017",
+      "taskRefs": [
+        "T017"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 17,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV018",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T018",
+      "taskRefs": [
+        "T018"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV019",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T019",
+      "taskRefs": [
+        "T019"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV020",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T020",
+      "taskRefs": [
+        "T020"
+      ],
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV021",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T021",
+      "taskRefs": [
+        "T021"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 21,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV022",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T022",
+      "taskRefs": [
+        "T022"
+      ],
+      "requirementRefs": [
+        "FR-005"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 22,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV023",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T023",
+      "taskRefs": [
+        "T023"
+      ],
+      "requirementRefs": [
+        "FR-006"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 23,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV024",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T024",
+      "taskRefs": [
+        "T024"
+      ],
+      "requirementRefs": [
+        "FR-007"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 24,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV025",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T025",
+      "taskRefs": [
+        "T025"
+      ],
+      "requirementRefs": [
+        "FR-008"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 25,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV026",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T026",
+      "taskRefs": [
+        "T026"
+      ],
+      "requirementRefs": [
+        "FR-009"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 26,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV027",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T027",
+      "taskRefs": [
+        "T027"
+      ],
+      "requirementRefs": [
+        "FR-010"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 27,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV028",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T028",
+      "taskRefs": [
+        "T028"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 28,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV029",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T029",
+      "taskRefs": [
+        "T029"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV030",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T030",
+      "taskRefs": [
+        "T030"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 30,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV031",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T031",
+      "taskRefs": [
+        "T031"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 31,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV032",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T032",
+      "taskRefs": [
+        "T032"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV033",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T033",
+      "taskRefs": [
+        "T033"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 33,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV034",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T034",
+      "taskRefs": [
+        "T034"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 34,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV035",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T035",
+      "taskRefs": [
+        "T035"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 35,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV036",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T036",
+      "taskRefs": [
+        "T036"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 36,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV037",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T037",
+      "taskRefs": [
+        "T037"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 37,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV038",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T038",
+      "taskRefs": [
+        "T038"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 38,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV039",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T039",
+      "taskRefs": [
+        "T039"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 39,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV040",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T040",
+      "taskRefs": [
+        "T040"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 40,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV041",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T041",
+      "taskRefs": [
+        "T041"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 41,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV042",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T042",
+      "taskRefs": [
+        "T042"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 42,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV043",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T043",
+      "taskRefs": [
+        "T043"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 43,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV044",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T044",
+      "taskRefs": [
+        "T044"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 44,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV045",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T045",
+      "taskRefs": [
+        "T045"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 45,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV046",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T046",
+      "taskRefs": [
+        "T046"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 46,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV047",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T047",
+      "taskRefs": [
+        "T047"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 47,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV048",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T048",
+      "taskRefs": [
+        "T048"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 48,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV049",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T049",
+      "taskRefs": [
+        "T049"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 49,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV050",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T050",
+      "taskRefs": [
+        "T050"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/evidence/client-feature-bundle-graph-v1/b0d91b9b6390b127208743b6f09058a31b09abddcd6195ee4fb5c06a1153eaa7.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 50,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV051",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T051",
+      "taskRefs": [
+        "T051"
+      ],
+      "requirementRefs": [
+        "FR-001",
+        "FR-009",
+        "FR-010"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 51,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV052",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T052",
+      "taskRefs": [
+        "T052"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 52,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV053",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T053",
+      "taskRefs": [
+        "T053"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 53,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV054",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T054",
+      "taskRefs": [
+        "T054"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 54,
+        "column": 1
+      }
+    }
+  ],
+  "generatedViews": [
+    {
+      "path": "readiness/185-in-app-docs-modality/work-model.json",
+      "kind": "workModel",
+      "schemaVersion": 1,
+      "generator": {
+        "id": "FS.GG.SDD.Artifacts",
+        "version": "1.0.0"
+      },
+      "sources": [
+        {
+          "path": ".fsgg/agents.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/project.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/sdd.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/185-in-app-docs-modality/checklist.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5803b3542b30ee2346c1c115c4598e24bc31dfa405488ad33bb0d836ce90b2ee"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/185-in-app-docs-modality/clarifications.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "4ea28f778102ad307dbb4e54cf690437bc6a70dff0b21cecf44edafa199eb06f"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/185-in-app-docs-modality/evidence.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "aadc66de7b5b99daab2634cd8ea5ff5d178d8503bba34dbc8c30bf8f60e1ee17"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/185-in-app-docs-modality/plan.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "4ea9543fa674085471019ec16cfcd83476bd6383ceb5995c4c28089b0e3632d5"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/185-in-app-docs-modality/spec.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "0540a98f00e9133723a0bd5abb28ae3bb1a463ca3c5a0997fae202a68bf8cdcc"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/185-in-app-docs-modality/tasks.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6c1b7a09e159b2b8b9dca4be6c768249965a29b0a4fdfa6f098d21a3bb317117"
+          },
+          "schemaVersion": 1
+        }
+      ],
+      "outputDigest": {
+        "algorithm": "sha256",
+        "value": "5635b1e20090e78344534dd7de16f78354e181f2f6ef1cf3593f66f832079f56"
+      },
+      "currency": "current"
+    }
+  ],
+  "diagnostics": [],
+  "governanceBoundaries": []
+}

@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="in-app-docs-rules-corpus" tests="1" failures="0" errors="0" skipped="0" time="0"><testsuite name="scripts/verify-rules-corpus.sh" tests="1" failures="0" errors="0" skipped="0" time="0"><testcase name="source-package-binding-and-mutations" classname="SIR.Item185.RulesCorpus"/><system-out><![CDATA[rules corpus generation, source resolution, copied-semantics, and mutation gates passed]]></system-out></testsuite></testsuites>

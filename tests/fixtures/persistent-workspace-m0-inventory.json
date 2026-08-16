@@ -3,6 +3,10 @@
   "knownModalCommandsCount": 252,
   "knownModalCommandsSha256": "806006d0bd2d62acc5ed402ab9417613579f039b9bb7e5c6f8242b870da54dc8",
   "staticRegistryCommands": [
+    "docs.back",
+    "docs.forward",
+    "docs.home",
+    "docs.search",
     "input.bindings",
     "input.help",
     "input.help.close",
@@ -30,6 +34,7 @@
     "timeline.remove-command",
     "timeline.step-back",
     "timeline.step-forward",
+    "workspace.docs",
     "workspace.editor",
     "workspace.plan",
     "workspace.review",

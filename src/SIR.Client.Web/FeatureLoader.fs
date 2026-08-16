@@ -29,7 +29,7 @@ type Reconciliation =
     | Applied of LoadState
     | IgnoredStale of LoadFailure
 
-let registryVersion = 1
+let registryVersion = 2
 let deliverySupport = FeatureId "delivery-support"
 let shell = FeatureId "shell"
 let tacticalEnvironment = FeatureId "tactical-environment"
@@ -48,7 +48,7 @@ let identityFor feature =
         elif feature = rulesWorkbench then "RulesWorkbenchView"
         elif feature = rulesExplorer then "RulesExplorer"
         elif feature = samples then "SamplesPanel"
-        elif feature = docs then "docs-feature"
+        elif feature = docs then "DocsView"
         else invalidArg (nameof feature) ("Unregistered client feature: " + value feature)
     { RegistryVersion = registryVersion
       Feature = feature

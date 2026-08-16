@@ -1,0 +1,70 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/item-185-in-application-docs-3.md",
+  "reportSha256": "8a8b1ea5de5d346725c0ebbcbee84c2c11cbb09404f08976c3e6811213f0e226",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git diff --exit-code origin/main -- src/SIR.Client.Web/feature-registry.v1.json",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node scripts/test-client-feature-loader.mjs --source-only",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node scripts/test-client-feature-loader.mjs --no-write",
+          "result": "verified"
+        },
+        {
+          "locator": "command:node scripts/test-client-feature-loader.mjs --aggregate-trx readiness/185-in-app-docs-modality/client-feature-loader.trx --browser-junit readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml",
+          "result": "verified"
+        },
+        {
+          "locator": "file:src/SIR.Client.Web/feature-registry.v2.json",
+          "result": "verified",
+          "sha256": "dfa01327b15feda67de3a0cae5d483cf91c846aa26587fd3fde56f21cb959a38"
+        },
+        {
+          "locator": "file:scripts/test-client-feature-loader.mjs",
+          "result": "verified",
+          "sha256": "1561f97ccf0668e246a4b62735a4815b982b3b5d77a32f0fe125558c4b898aef"
+        }
+      ],
+      "confidenceLimits": [
+        "Verified locally with Node 26.7.0, Vite 8.1.5, and Fable 5.13.0; hosted CI and fresh exact-head product review remain pending.",
+        "The origin/main comparison was verified at origin/main 97478f789480f1adf190c777f26cb619b18d1dd5."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:feedback/checkpoints/item-185-in-application-docs.jsonl",
+          "result": "verified",
+          "sha256": "92a2fd86f6efd75e60fb501b0ee84d321a753449e72efd1af63d2f962dc36e0d"
+        },
+        {
+          "locator": "issue:FS-GG/FS.GG.Rendering#1243",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsi ../FS.GG.Rendering/template/feedback-report/skill/scripts/feedback-tool.fsx -- check-invalidation --base origin/main --head HEAD --root .",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The authoritative command depends on the adjacent producer checkout at commit 219b198dda7dfa9ad4ce234d57dff6e0299aeaec and the named Git refs.",
+        "Its expected nonzero result is the verified finding: exactly five base-present bindings are invalidated and no historical report was rewritten."
+      ]
+    }
+  ]
+}

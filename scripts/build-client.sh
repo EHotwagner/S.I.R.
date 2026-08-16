@@ -24,6 +24,9 @@ sed -i 's#../SIR.Domain/Rules.js#../SIR.Domain/RulesAuthoring.js#' "$fable_outpu
 sed -i '$a export default DeferredDataPanel;' "$fable_output/RulesExplorer.js"
 sed -i '$a export default TacticalEnvironmentPanel;' "$fable_output/SIR.Client.Web/TacticalEnvironmentView.js"
 sed -i '$a export default RulesWorkbenchPanel;' "$fable_output/SIR.Client.Web/RulesWorkbenchView.js"
+sed -i '$a export default DocumentationWorkspace;' "$fable_output/SIR.Client.Web/DocsView.js"
 
 npx vite build --config src/SIR.Client.Web/vite.config.js
+node scripts/generate-in-app-docs.mjs artifacts/client
+node scripts/test-in-app-docs.mjs artifacts/client
 node scripts/generate-publication-manifest.mjs artifacts/client

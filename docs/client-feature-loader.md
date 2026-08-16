@@ -8,9 +8,9 @@ description: Versioned client bootstrap, eager and deferred feature delivery.
 # Client feature loader
 
 The client feature registry is the versioned source of truth for when a browser
-feature is present and which logical chunk supplies it. Version 1 classifies the
-application shell as bootstrap, Tactical Environment as eager, and Delivery
-Support, Rules Explorer, and Docs as deferred. A feature identity is the tuple
+feature is present and which logical chunk supplies it. Version 2 classifies the
+application shell as bootstrap and every optional workspace or supporting panel,
+including the in-application Docs workspace, as deferred. A feature identity is the tuple
 of registry version, feature id, and logical chunk; late completions with a
 different tuple are ignored deterministically. The post-build gate compares the
 complete Vite dynamic-entry inventory with those registry owners, so an
@@ -26,10 +26,24 @@ remains compatible with a restrictive script-src CSP.
 
 Each feature is in `Idle`, `Loading`, `Loaded`, or `Failed`. Failures retain a
 stable category: `missing-chunk`, `offline`, `import-rejected`, or
-`stale-identity`. Retrying uses the same declared identity. The visible Docs
-toolbar control and View → Rules data menu item are the production deferred
-entry points; Editor → Environment proves the eager feature remains available
-without a chunk request.
+`stale-identity`. Retrying uses the same declared identity. The visible tactical
+Docs modality, View → Rules data menu item, and Editor → Environment action are
+production deferred entry points.
+
+The bootstrap shell owns documentation navigation state and manifest I/O through
+`DocumentationFeatureContract`; the registered `DocsView` chunk owns rendering.
+New documentation behavior extends that deferred module and its scoped budget,
+so it does not grow the bootstrap shell or force one global size ceiling to cover
+future features.
+
+Version 2 preserves the version-1 per-feature ownership model while replacing
+the placeholder Docs module with the real deferred `DocsView`. Its source-frozen
+bundle observation rebaselines Rules Explorer Brotli from 16,000 to 16,384 bytes.
+The same registry owns browser-observed route ceilings: the initial route is
+1,310,720 response bytes and Rules Explorer activation is 65,536 response bytes.
+This removes the former second hard-coded delivery budget from the browser gate;
+future growth must defer or publish an explicit registry revision/rebaseline.
+Version 1 remains tracked as immutable prior history.
 
 ## Build evidence
 

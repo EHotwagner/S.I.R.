@@ -1,0 +1,150 @@
+{
+  "schema": "sir.client.feature-bundle-graph/v1",
+  "registryVersion": 2,
+  "registryDigest": "dfa01327b15feda67de3a0cae5d483cf91c846aa26587fd3fde56f21cb959a38",
+  "buildInputDigest": "5b25001d542898da8bce0bc3b39b7b30014a6f54e8efd38e903357146fb25e39",
+  "entry": "content/sir-client/v1/app.js",
+  "dynamicEntries": [
+    "content/sir-client/v1/DocsView-6hfwUHdi.js",
+    "content/sir-client/v1/RulesExplorer-BrH_OLlh.js",
+    "content/sir-client/v1/RulesWorkbenchView-BMBG5QGP.js",
+    "content/sir-client/v1/SamplesFeature-B4pH3r2_.js",
+    "content/sir-client/v1/TacticalEnvironmentView-DuaDISDU.js",
+    "content/sir-client/v1/deferred-delivery-support-CFKGOZNJ.js"
+  ],
+  "features": [
+    {
+      "id": "delivery-support",
+      "phase": "deferred",
+      "route": "delivery-support",
+      "control": "delivery-support",
+      "logicalChunk": "deferred-delivery-support",
+      "emitted": "content/sir-client/v1/deferred-delivery-support-CFKGOZNJ.js",
+      "bytes": {
+        "raw": 304,
+        "gzip": 230,
+        "brotli": 163
+      },
+      "budget": {
+        "raw": 8192,
+        "gzip": 4096,
+        "brotli": 3072
+      },
+      "sha256": "15b5bb33b0a0c0b78dda96ccf726783400605dc188e64731ad0f6171fe2eb608"
+    },
+    {
+      "id": "docs",
+      "phase": "deferred",
+      "route": "docs",
+      "control": "modality-docs",
+      "logicalChunk": "DocsView",
+      "emitted": "content/sir-client/v1/DocsView-6hfwUHdi.js",
+      "bytes": {
+        "raw": 6687,
+        "gzip": 2419,
+        "brotli": 2135
+      },
+      "budget": {
+        "raw": 8192,
+        "gzip": 4096,
+        "brotli": 3072
+      },
+      "sha256": "5aa0bf9e34d7175746aedf7a307489691dde0ab26875ceae51c2802aa7ec0d1a"
+    },
+    {
+      "id": "rules-explorer",
+      "phase": "deferred",
+      "route": "data",
+      "control": "supporting-data",
+      "logicalChunk": "RulesExplorer",
+      "emitted": "content/sir-client/v1/RulesExplorer-BrH_OLlh.js",
+      "bytes": {
+        "raw": 62188,
+        "gzip": 18447,
+        "brotli": 16040
+      },
+      "budget": {
+        "raw": 65536,
+        "gzip": 20000,
+        "brotli": 16384
+      },
+      "sha256": "c42ecd18c2c90f98e98403541e0d7e15db92549d0f19f63e0296d2d175367f29"
+    },
+    {
+      "id": "rules-workbench",
+      "phase": "deferred",
+      "route": "rules",
+      "control": "supporting-rules",
+      "logicalChunk": "RulesWorkbenchView",
+      "emitted": "content/sir-client/v1/RulesWorkbenchView-BMBG5QGP.js",
+      "bytes": {
+        "raw": 12820,
+        "gzip": 4044,
+        "brotli": 3568
+      },
+      "budget": {
+        "raw": 16384,
+        "gzip": 6144,
+        "brotli": 5120
+      },
+      "sha256": "f6227bfcab705220684562f337a5b7babb5f10b7d79eb8ca76e133fb7c488df4"
+    },
+    {
+      "id": "samples",
+      "phase": "deferred",
+      "route": "samples",
+      "control": "supporting-samples",
+      "logicalChunk": "SamplesFeature",
+      "emitted": "content/sir-client/v1/SamplesFeature-B4pH3r2_.js",
+      "bytes": {
+        "raw": 8816,
+        "gzip": 3554,
+        "brotli": 3062
+      },
+      "budget": {
+        "raw": 12288,
+        "gzip": 5120,
+        "brotli": 4096
+      },
+      "sha256": "c9461bbcce6f83195027dbec56d391407b0a11b658a0b3d72a2c6e88c8f328f1"
+    },
+    {
+      "id": "shell",
+      "phase": "bootstrap",
+      "route": "initial",
+      "control": "application-entry",
+      "logicalChunk": "app",
+      "emitted": "content/sir-client/v1/app.js",
+      "bytes": {
+        "raw": 510492,
+        "gzip": 119651,
+        "brotli": 98159
+      },
+      "budget": {
+        "raw": 1250000,
+        "gzip": 320000,
+        "brotli": 280000
+      },
+      "sha256": "66a7e3d40cf0f07c410b7c8a8845e91b9f86b0a8e94452e7b1f2e4a15a72ca7d"
+    },
+    {
+      "id": "tactical-environment",
+      "phase": "deferred",
+      "route": "editor",
+      "control": "editor-environment",
+      "logicalChunk": "TacticalEnvironmentView",
+      "emitted": "content/sir-client/v1/TacticalEnvironmentView-DuaDISDU.js",
+      "bytes": {
+        "raw": 9484,
+        "gzip": 2658,
+        "brotli": 2327
+      },
+      "budget": {
+        "raw": 12288,
+        "gzip": 4096,
+        "brotli": 3584
+      },
+      "sha256": "71aac66b28561c36cf40e3098c7013b0c6ed06af71aed8835aadfa38757b1151"
+    }
+  ]
+}

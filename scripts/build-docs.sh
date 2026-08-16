@@ -96,6 +96,8 @@ cp -R "$client_output/content/sir-client/v1/." \
 mkdir -p "$site_output/engines"
 cp -R "$client_output/engines/." "$site_output/engines/"
 
+node scripts/generate-in-app-docs.mjs "$site_output"
+node scripts/test-in-app-docs.mjs "$site_output"
 node scripts/generate-docs-manifest.mjs \
   "$site_output/content/sir-client/v1"
 node scripts/generate-publication-manifest.mjs "$site_output"

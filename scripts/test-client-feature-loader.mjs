@@ -6,7 +6,7 @@ import { dirname, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const root = resolve(import.meta.dirname, "..");
-const registryPath = resolve(root, "src/SIR.Client.Web/feature-registry.v1.json");
+const registryPath = resolve(root, "src/SIR.Client.Web/feature-registry.v2.json");
 const artifactRoot = resolve(root, "artifacts/client");
 const sourceOnly = process.argv.includes("--source-only");
 const noWrite = process.argv.includes("--no-write");
@@ -25,8 +25,8 @@ function fail(subject, detail) {
 
 const registryBytes = await readFile(registryPath);
 const registry = JSON.parse(registryBytes);
-if (registry.schema !== "sir.client.feature-registry/v1" || registry.version !== 1) fail("registry", "unsupported schema/version");
-if (!Array.isArray(registry.features) || registry.features.length !== 7) fail("registry", "expected exactly seven v1 features");
+if (registry.schema !== "sir.client.feature-registry/v2" || registry.version !== 2) fail("registry", "unsupported schema/version");
+if (!Array.isArray(registry.features) || registry.features.length !== 7) fail("registry", "expected exactly seven v2 features");
 const featureIds = registry.features.map((feature) => feature.id);
 if (featureIds.join("|") !== [...featureIds].sort().join("|")) fail("registry", "features are not in stable id order");
 if (new Set(featureIds).size !== featureIds.length) fail("registry", "duplicate feature id");
@@ -37,12 +37,19 @@ for (const feature of registry.features) {
   for (const kind of ["raw", "gzip", "brotli"]) if (!Number.isSafeInteger(feature.budget?.[kind]) || feature.budget[kind] <= 0) fail("budget", `${feature.id} invalid ${kind}`);
 }
 if (new Set(registry.features.map((feature) => feature.logicalChunk)).size !== 7) fail("registry", "v1 logical chunk projection changed");
+if (!Array.isArray(registry.routeBudgets) || registry.routeBudgets.length !== 2) fail("registry", "expected initial and Rules Explorer activation route budgets");
+const routeBudgetIds = registry.routeBudgets.map((route) => route.id);
+if (routeBudgetIds.join("|") !== "initial|rules-explorer-activation") fail("registry", "route budgets are not in stable id order");
+for (const route of registry.routeBudgets) {
+  if (!registry.features.some((feature) => feature.control === route.control)) fail("registry", `route budget ${route.id} has no registered control owner`);
+  if (!Number.isSafeInteger(route.budget?.responseBytes) || route.budget.responseBytes <= 0) fail("registry", `route budget ${route.id} is not a positive byte ceiling`);
+}
 
 const deliverySupportEntryPath = resolve(root, "src/SIR.Client.Web/delivery-support-entry.js");
 if (mutation === "eager-import") {
   const original = await readFile(deliverySupportEntryPath, "utf8");
   try {
-    await writeFile(deliverySupportEntryPath, `${original.trimEnd()}\nimport "./docs-feature.js";\n`);
+    await writeFile(deliverySupportEntryPath, `${original.trimEnd()}\nimport "./.fable/SIR.Client.Web/DocsView.js";\n`);
     let diagnostic = "";
     try {
       execFileSync(process.execPath, [import.meta.filename, "--source-only"], {
@@ -66,6 +73,16 @@ if (mutation === "eager-import") {
 const loaderSource = await readFile(resolve(root, "src/SIR.Client.Web/feature-loader.js"), "utf8");
 const deliverySupportEntrySource = await readFile(deliverySupportEntryPath, "utf8");
 const fsharpSource = await readFile(resolve(root, "src/SIR.Client.Web/FeatureLoader.fs"), "utf8");
+const projectedFsharpSource = mutation === "registry-version"
+  ? fsharpSource.replace(`let registryVersion = ${registry.version}`, `let registryVersion = ${registry.version + 1}`)
+  : fsharpSource;
+const projectedLoaderSource = mutation === "registry-version"
+  ? loaderSource.replace(`const registryVersion = ${registry.version};`, `const registryVersion = ${registry.version + 1};`)
+  : loaderSource;
+if (!projectedFsharpSource.includes(`let registryVersion = ${registry.version}`)
+    || !projectedLoaderSource.includes(`const registryVersion = ${registry.version};`)) {
+  fail("registry-version", "F#/JavaScript loader projection disagrees with the current registry version");
+}
 const appSource = [
   await readFile(resolve(root, "src/SIR.Client.Web/App.fs"), "utf8"),
   await readFile(resolve(root, "src/SIR.Client.Web/ClientFeatureRuntime.fs"), "utf8"),
@@ -79,16 +96,12 @@ for (const feature of registry.features) {
         fail("eager-import", `${feature.id} lacks its declared literal dynamic import`);
       }
     } else {
-      const literal = feature.id === "docs"
-        ? 'import("./docs-feature.js")'
-        : feature.id === "rules-explorer"
+      const literal = feature.id === "rules-explorer"
           ? 'import("./.fable/RulesExplorer.js")'
           : `import("./.fable/SIR.Client.Web/${feature.logicalChunk}.js")`;
       if (!loaderSource.includes(literal)) fail("eager-import", `${feature.id} lacks its declared literal dynamic import`);
       if (feature.id !== "samples") {
-        const viewLiteral = feature.id === "docs"
-          ? 'React.DynamicImported("../../docs-feature.js")'
-          : feature.id === "rules-explorer"
+        const viewLiteral = feature.id === "rules-explorer"
             ? 'React.DynamicImported("../RulesExplorer.js")'
             : `React.DynamicImported("./${feature.logicalChunk}.js")`;
         if (!appSource.includes(viewLiteral)) fail("eager-import", `${feature.id} lacks its declared lazy view edge`);
@@ -99,7 +112,7 @@ for (const feature of registry.features) {
   }
 }
 const staticImportSubjects = `${loaderSource}\n${deliverySupportEntrySource}`;
-if (/^import\s+(?!React\b).*docs-feature\.js/m.test(staticImportSubjects) || /^import\s+(?!React\b).*RulesExplorer\.js/m.test(staticImportSubjects)) {
+if (/^import\s+(?!React\b).*DocsView\.js/m.test(staticImportSubjects) || /^import\s+(?!React\b).*RulesExplorer\.js/m.test(staticImportSubjects)) {
   fail("eager-import", "deferred feature is statically reachable outside its declared edge");
 }
 const mangleSubject = mutation === "property-mangle" ? viteSource.replace("properties: false", "properties: true") : viteSource;
@@ -137,6 +150,7 @@ if (sourceOnly) {
 const compiledLoader = await import(pathToFileURL(resolve(root, "src/SIR.Client.Web/.fable/SIR.Client.Web/FeatureLoader.js")));
 const compiledResult = await import(pathToFileURL(resolve(root, "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Result.js")));
 const pendingIdentity = compiledLoader.identityFor(compiledLoader.docs);
+if (pendingIdentity.RegistryVersion !== registry.version) fail("registry-version", "compiled loader identity is stale");
 const loadingStates = compiledLoader.beginLoad(pendingIdentity, compiledLoader.initial);
 const loadingState = compiledLoader.stateFor(compiledLoader.docs, loadingStates);
 if (loadingState.tag !== 1) fail("state", "request did not enter Loading");
@@ -223,6 +237,7 @@ const receipt = {
   registryVersion: registry.version,
   registryDigest: sha256(registryBytes),
   buildInputDigest,
+  routeBudgets: registry.routeBudgets,
   entry: manifestEntry.file,
   dynamicEntries: dynamicFiles,
   features,
@@ -238,7 +253,7 @@ if (!noWrite) {
 }
 
 if (aggregateTrx) {
-  const mutationNames = ["eager-import", "property-mangle", "missing-chunk", "stale-identity", "budget"];
+  const mutationNames = ["eager-import", "property-mangle", "missing-chunk", "stale-identity", "budget", "registry-version"];
   for (const name of mutationNames) {
     try {
       execFileSync(process.execPath, [import.meta.filename, "--no-write"], {

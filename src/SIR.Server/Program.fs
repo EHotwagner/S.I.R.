@@ -33,6 +33,11 @@ module Program =
     let private configureStaticAssetResponse (context: StaticFileResponseContext) =
         context.Context.Response.Headers.CacheControl <- cacheControlForStaticAsset context.Context.Request.Path
 
+    let private contentSecurityPolicy =
+        "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
+        + "img-src 'self' data: https:; connect-src 'self' https://github.com; "
+        + "object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+
     let private readBoundedBody maximumBytes (stream: Stream) =
         task {
             use output = new MemoryStream()
@@ -143,6 +148,10 @@ module Program =
         ) |> ignore
 
         app.MapHub<GameHub>("/hub/game") |> ignore
+        app.Use(fun (context: HttpContext) (next: Func<Task>) ->
+            context.Response.Headers.ContentSecurityPolicy <- contentSecurityPolicy
+            next.Invoke())
+        |> ignore
         app.UseDefaultFiles() |> ignore
         app.UseStaticFiles(StaticFileOptions(OnPrepareResponse = Action<StaticFileResponseContext>(configureStaticAssetResponse))) |> ignore
         app.MapFallbackToFile("index.html") |> ignore

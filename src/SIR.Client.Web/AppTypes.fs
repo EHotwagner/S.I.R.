@@ -57,7 +57,6 @@ type Msg =
     | ResizeLayoutBottomPanelKeyboard of delta: int
     | OpenSupportingPanel of panelId: string
     | ClientFeatureMessage of FeatureLoader.Message
-    | CloseDocumentation
     | ResetTacticalLayout
     | ToggleDesktopToolbarCustomization
     | AddDesktopToolbarCommand of string
@@ -97,6 +96,13 @@ type Msg =
     | ToggleInputHelp of focusPanel: bool
     | ApplicationFocusLost
     | WorkspaceChanged of WorkspaceMode
+    | DocumentationLoaded of Result<DocumentationManifest, string>
+    | DocumentationQueryChanged of string
+    | DocumentationPageOpened of slug: string * anchor: string option
+    | ContextualDocumentationOpened of concept: string
+    | DocumentationBack
+    | DocumentationForward
+    | DocumentationExternalResult of string
     | EditorToolPanelChanged of EditorToolPanel
     | ToggleEditorToolPanelVisibility
     | EditorWorkspaceChanged of EditorWorkspaceAction
@@ -124,6 +130,7 @@ and WorkspaceMode =
     | PlanningWorkspace
     | EditorWorkspace
     | ReplayWorkspace
+    | DocsWorkspace
 
 and EditorToolPanel =
     | TerrainTools
@@ -153,13 +160,17 @@ type Model =
       TacticalLayout: TacticalLayoutProfile
       TacticalLayoutDiagnostics: string list
       ClientFeatures: Map<FeatureLoader.FeatureId, FeatureLoader.LoadState>
-      DocumentationOpen: bool
       FeatureLoaderDiagnostic: string option
       DesktopToolbarCommands: string list
       DesktopToolbarCustomizationOpen: bool
       BottomPanelResizeActive: bool
       TacticalSelectedUnit: int32 option
       Workspace: WorkspaceMode
+      LastTacticalWorkspace: WorkspaceMode
+      Documentation: DocumentationManifest option
+      DocumentationNavigation: DocumentationNavigation
+      DocumentationError: string option
+      DocumentationExternalAnnouncement: string
       EditorToolPanel: EditorToolPanel
       EditorToolPanelVisible: bool
       SampleReplayFrames: InspectionProjection array option

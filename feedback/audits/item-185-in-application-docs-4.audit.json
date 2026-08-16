@@ -1,0 +1,66 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/item-185-in-application-docs-4.md",
+  "reportSha256": "0a1d4e8cfa96f0c62266b4a189b69eb519941a82e62e69f758307ee0f8dab16b",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/31961720372",
+          "result": "verified"
+        },
+        {
+          "locator": "command:git diff 78800cf9d8ead197ddbfcb2eb10109ee5ab58222..35882dc4768cac0184f3bdd7d99b7501adc74690 -- src/SIR.Client.Web scripts/test-client-feature-loader.mjs tests/SIR.Browser.Tests docs/client-feature-loader.md work/185-in-app-docs-modality",
+          "result": "verified"
+        },
+        {
+          "locator": "file:readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml",
+          "result": "verified",
+          "sha256": "be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+        },
+        {
+          "locator": "file:readiness/185-in-app-docs-modality/performance-after.json",
+          "result": "verified",
+          "sha256": "a6f615896b28a3558d2bd4affeb26632445471cbaf5c4091bbac2178281df1a0"
+        },
+        {
+          "locator": "file:src/SIR.Client.Web/feature-registry.v2.json",
+          "result": "verified",
+          "sha256": "85cf678b1197b40e71f949c15efb4eed05d3da3798af7b64361d542b79f079e6"
+        },
+        {
+          "locator": "command:git diff --name-only 35882dc4768cac0184f3bdd7d99b7501adc74690..287c950e9c32f637469f542929aaa7ef702325a5",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The committed browser JUnit records seven green focused subjects but does not itself bind a candidate SHA.",
+        "Local inversion probes are not retained as separately reviewable exact-head receipts; replacement hosted CI remains the stated acceptance boundary.",
+        "No live compositor measurement was available."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:dotnet fsi ../FS.GG.Rendering/template/feedback-report/skill/scripts/feedback-tool.fsx -- check-invalidation --base 97478f789480f1adf190c777f26cb619b18d1dd5 --head 287c950e9c32f637469f542929aaa7ef702325a5 --root .",
+          "result": "verified"
+        },
+        {
+          "locator": "command:git diff --name-only 97478f789480f1adf190c777f26cb619b18d1dd5...287c950e9c32f637469f542929aaa7ef702325a5 -- feedback",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The invalidation command intentionally exits 1 because it found nine invalidated merged bindings; that failing exit is the verified expected observation."
+      ]
+    }
+  ]
+}

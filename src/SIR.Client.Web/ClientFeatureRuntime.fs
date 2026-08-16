@@ -4,6 +4,7 @@ open Elmish
 open Feliz
 open SIR.Client.Web.AppTypes
 open SIR.Client.Web.BrowserInfrastructure
+open SIR.Client.Web.DocumentationFeatureContract
 open SIR.Client.Web.EnvironmentFeatureContract
 
 let update message model =
@@ -12,17 +13,12 @@ let update message model =
         let identity = FeatureLoader.identityFor feature
         match FeatureLoader.stateFor feature model.ClientFeatures with
         | FeatureLoader.Loaded _ ->
-            { model with
-                DocumentationOpen = model.DocumentationOpen || feature = FeatureLoader.docs
-                FeatureLoaderDiagnostic = None },
-            Cmd.none
-        | FeatureLoader.Loading _ ->
-            { model with DocumentationOpen = model.DocumentationOpen || feature = FeatureLoader.docs }, Cmd.none
+            { model with FeatureLoaderDiagnostic = None }, Cmd.none
+        | FeatureLoader.Loading _ -> model, Cmd.none
         | FeatureLoader.Idle
         | FeatureLoader.Failed _ ->
             { model with
                 ClientFeatures = FeatureLoader.beginLoad identity model.ClientFeatures
-                DocumentationOpen = model.DocumentationOpen || feature = FeatureLoader.docs
                 FeatureLoaderDiagnostic = None },
             Cmd.OfAsync.perform loadClientFeature identity (fun result ->
                 ClientFeatureMessage(FeatureLoader.ImportCompleted(identity, result)))
@@ -52,55 +48,69 @@ let private actionButton (text: string) (label: string) onClick =
     ]
 
 [<ReactLazyComponent>]
-let private LazyDocumentationPanel () =
-    React.DynamicImported("../../docs-feature.js")
+let private LazyDocumentationWorkspace presentation callbacks =
+    React.DynamicImported("./DocsView.js")
 
-let documentation model dispatch =
-    if not model.DocumentationOpen then Html.none
-    else
-        Html.aside [
-            prop.id "client-documentation-drawer"
-            prop.className "client-documentation-drawer"
-            prop.ariaLabel "Documentation drawer"
+let documentationWorkspace model dispatch =
+    match FeatureLoader.stateFor FeatureLoader.docs model.ClientFeatures with
+    | FeatureLoader.Loaded _ ->
+        let presentation =
+            { Navigation = model.DocumentationNavigation
+              Manifest = model.Documentation
+              Error = model.DocumentationError
+              ExternalAnnouncement = model.DocumentationExternalAnnouncement }
+        let callbacks =
+            { SetQuery = DocumentationQueryChanged >> dispatch
+              OpenPage = fun slug anchor -> dispatch (DocumentationPageOpened(slug, anchor))
+              Back = fun () -> dispatch DocumentationBack
+              Forward = fun () -> dispatch DocumentationForward
+              ReturnToTactical = fun () -> dispatch (WorkspaceChanged model.LastTacticalWorkspace)
+              AnnounceExternal = DocumentationExternalResult >> dispatch }
+        React.Suspense(
+            [ LazyDocumentationWorkspace presentation callbacks ],
+            fallback = Html.p [ prop.role.status; prop.text "Rendering documentation…" ]
+        )
+    | FeatureLoader.Loading _ ->
+        Html.section [
+            prop.ariaLabel "S.I.R. documentation"
+            prop.children [ Html.p [ prop.role.status; prop.ariaLive.polite; prop.text "Loading documentation…" ] ]
+        ]
+    | FeatureLoader.Failed(_, failure) ->
+        Html.section [
+            prop.ariaLabel "Documentation load failure"
             prop.children [
-                actionButton "Close" "Close documentation" (fun _ -> dispatch CloseDocumentation)
-                match FeatureLoader.stateFor FeatureLoader.docs model.ClientFeatures with
-                | FeatureLoader.Loaded _ ->
-                    React.Suspense(
-                        [ LazyDocumentationPanel() ],
-                        fallback = Html.p [ prop.role.status; prop.text "Rendering documentation…" ]
-                    )
-                | FeatureLoader.Loading _ ->
-                    Html.p [ prop.role.status; prop.ariaLive.polite; prop.text "Loading documentation…" ]
-                | FeatureLoader.Failed(_, failure) ->
-                    Html.section [
-                        prop.ariaLabel "Documentation load failure"
-                        prop.children [
-                            Html.p [ prop.role.alert; prop.text (FeatureLoader.describeFailure failure) ]
-                            actionButton "Retry" "Retry documentation" (fun _ ->
-                                dispatch (ClientFeatureMessage(FeatureLoader.Request FeatureLoader.docs)))
-                        ]
-                    ]
-                | FeatureLoader.Idle ->
-                    Html.p [ prop.role.status; prop.text "Documentation is ready to load." ]
+                Html.p [ prop.role.alert; prop.text (FeatureLoader.describeFailure failure) ]
+                actionButton "Retry" "Retry documentation" (fun _ ->
+                    dispatch (ClientFeatureMessage(FeatureLoader.Request FeatureLoader.docs)))
+                actionButton "Return" "Return to tactical workspace" (fun _ ->
+                    dispatch (WorkspaceChanged model.LastTacticalWorkspace))
             ]
         ]
+    | FeatureLoader.Idle ->
+        Html.section [
+            prop.ariaLabel "S.I.R. documentation"
+            prop.children [ Html.p [ prop.role.status; prop.text "Documentation is ready to load." ] ]
+        ]
 
-let toolbar model dispatch =
+let documentationContextLinks hasSelected openConcept =
     Html.nav [
-        prop.className "client-feature-toolbar"
-        prop.ariaLabel "Client features"
+        prop.ariaLabel "Tactical contextual documentation"
+        prop.className "tactical-context-docs"
         prop.children [
+            if hasSelected then
+                Html.button [
+                    prop.custom ("data-context-origin", "inspector")
+                    prop.custom ("data-binding-state", "unassigned")
+                    prop.custom ("aria-description", "Keyboard binding unassigned.")
+                    prop.text "Open documentation for selected unit"
+                    prop.onClick (fun _ -> openConcept "units")
+                ]
             Html.button [
-                prop.type'.button
-                prop.className "command-button"
-                prop.text "Docs"
-                prop.ariaPressed model.DocumentationOpen
-                prop.ariaControls "client-documentation-drawer"
+                prop.custom ("data-context-origin", "overlay")
                 prop.custom ("data-binding-state", "unassigned")
                 prop.custom ("aria-description", "Keyboard binding unassigned.")
-                prop.onClick (fun _ ->
-                    dispatch (ClientFeatureMessage(FeatureLoader.Request FeatureLoader.docs)))
+                prop.text "Open documentation for tactical overlays"
+                prop.onClick (fun _ -> openConcept "maps-spatial")
             ]
         ]
     ]

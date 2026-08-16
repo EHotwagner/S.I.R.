@@ -91,6 +91,65 @@ type ShortcutPlatform =
     | ControlPlatform
     | MetaPlatform
 
+type DocumentationStatus =
+    | CanonicalDocumentation
+    | ImplementedDocumentation
+    | ProvisionalDocumentation
+    | ResearchDocumentation
+
+type DocumentationSource =
+    { Repository: string
+      Revision: string
+      Path: string
+      PageSlug: string
+      Concept: string
+      Symbol: string option
+      Line: int option
+      ContentDigest: string
+      LineDigest: string }
+
+type DocumentationSegment =
+    { SegmentKind: string
+      SegmentText: string
+      TargetSlug: string option
+      Anchor: string option
+      ExternalUrl: string option }
+
+type DocumentationBlock =
+    { Kind: string
+      Level: int option
+      Anchor: string option
+      Text: string
+      ContentSegments: DocumentationSegment list
+      Rows: string list list
+      ImageSource: string option }
+
+type DocumentationPage =
+    { Slug: string
+      Title: string
+      Category: string
+      Status: DocumentationStatus
+      SourcePath: string
+      ApiPath: string option
+      ContentDigest: string
+      Headings: (string * string) list
+      Related: string list
+      Blocks: DocumentationBlock list }
+
+type DocumentationManifest =
+    { Schema: string
+      DefinitionDigest: string
+      Pages: DocumentationPage list
+      Sources: Map<string, DocumentationSource>
+      SearchTokenCount: int }
+
+type DocumentationNavigation =
+    { Page: string option
+      Anchor: string option
+      Query: string
+      Back: (string * string option) list
+      Forward: (string * string option) list }
+
 [<RequireQualifiedAccess>]
 module UnifiedTacticalWorkspace =
     [<Literal>]
@@ -118,6 +177,11 @@ module UnifiedTacticalWorkspace =
           command "workspace.plan" "Switch to Plan" "Modality" all (Some "Ctrl+Shift+2") true 10 AlwaysAvailable
           command "workspace.simulate" "Switch to Simulate" "Modality" all (Some "Ctrl+Shift+3") true 10 AlwaysAvailable
           command "workspace.review" "Switch to Review" "Modality" all (Some "Ctrl+Shift+4") true 10 AlwaysAvailable
+          command "workspace.docs" "Open documentation" "Modality" all (Some "Ctrl+Shift+5") true 10 AlwaysAvailable
+          command "docs.back" "Documentation back" "Documentation" all (Some "Alt+ArrowLeft") true 15 AlwaysAvailable
+          command "docs.forward" "Documentation forward" "Documentation" all (Some "Alt+ArrowRight") true 15 AlwaysAvailable
+          command "docs.home" "Documentation home" "Documentation" all None true 15 AlwaysAvailable
+          command "docs.search" "Search documentation" "Documentation" all (Some "Ctrl+K") true 15 AlwaysAvailable
           command "timeline.play-toggle" "Play or pause" "Timeline" all (Some "Space") true 20 AlwaysAvailable
           command "timeline.step-back" "Step backward" "Timeline" all (Some "Ctrl+ArrowLeft") true 20 AlwaysAvailable
           command "timeline.step-forward" "Step forward" "Timeline" all (Some "Ctrl+ArrowRight") true 20 AlwaysAvailable
@@ -612,6 +676,94 @@ module UnifiedTacticalWorkspace =
 
     let switchModality modality (state: TacticalTimelineState) =
         { state with Modality = modality }
+
+    [<Literal>]
+    let DocumentationHistoryLimit = 128
+
+    let initialDocumentationNavigation =
+        { Page = None
+          Anchor = None
+          Query = ""
+          Back = []
+          Forward = [] }
+
+    let private normalizeDocumentationText (value: string) =
+        value.Trim().ToLowerInvariant()
+
+    let documentationSearch (query: string) (manifest: DocumentationManifest) =
+        let terms =
+            (normalizeDocumentationText query)
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            |> Array.distinct
+        manifest.Pages
+        |> List.choose (fun page ->
+            let haystack =
+                [ page.Title
+                  page.Category
+                  page.SourcePath
+                  yield! page.Headings |> List.collect (fun (title, anchor) -> [ title; anchor ])
+                  yield! page.Blocks |> List.map _.Text ]
+                |> String.concat " "
+                |> normalizeDocumentationText
+            if Array.forall (fun (term: string) -> haystack.Contains term) terms then
+                let score =
+                    terms
+                    |> Array.sumBy (fun (term: string) ->
+                        (if (normalizeDocumentationText page.Title).Contains(term) then 4 else 0)
+                        + (if page.Headings |> List.exists (fun (title, _) -> (normalizeDocumentationText title).Contains(term)) then 2 else 0)
+                        + (if haystack.Contains term then 1 else 0))
+                Some(score, page)
+            else None)
+        |> List.sortBy (fun (score, page) -> -score, page.Title, page.Slug)
+        |> List.truncate 200
+        |> List.map snd
+
+    let openDocumentationPage slug anchor state =
+        let previous = state.Page |> Option.map (fun page -> page, state.Anchor)
+        let destination = Some(slug, anchor)
+        { state with
+            Page = Some slug
+            Anchor = anchor
+            Back =
+                match previous with
+                | Some item when previous <> destination ->
+                    item :: state.Back |> List.truncate DocumentationHistoryLimit
+                | _ -> state.Back
+            Forward = [] }
+
+    let documentationBack state =
+        match state.Back with
+        | [] -> state
+        | (page, anchor) :: rest ->
+            { state with
+                Page = Some page
+                Anchor = anchor
+                Back = rest
+                Forward =
+                    match state.Page with
+                    | Some current -> (current, state.Anchor) :: state.Forward |> List.truncate DocumentationHistoryLimit
+                    | None -> state.Forward }
+
+    let documentationForward state =
+        match state.Forward with
+        | [] -> state
+        | (page, anchor) :: rest ->
+            { state with
+                Page = Some page
+                Anchor = anchor
+                Back =
+                    match state.Page with
+                    | Some current -> (current, state.Anchor) :: state.Back |> List.truncate DocumentationHistoryLimit
+                    | None -> state.Back
+                Forward = rest }
+
+    let setDocumentationQuery query state = { state with Query = query }
+
+    let tryContextualDocumentation disclosedConcept manifest =
+        disclosedConcept
+        |> Option.bind (fun concept ->
+            let key = normalizeDocumentationText concept
+            if String.IsNullOrWhiteSpace key then None else Map.tryFind key manifest.Sources)
 
     /// Scrubbing changes projection only. Segments and the committed boundary
     /// are deliberately copied unchanged.

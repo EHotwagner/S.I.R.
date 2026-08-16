@@ -1,0 +1,1496 @@
+schemaVersion: 1
+workId: 185-in-app-docs-modality
+stage: evidence
+status: evidenceReady
+sourceSpec: work/185-in-app-docs-modality/spec.md
+sourceClarifications: work/185-in-app-docs-modality/clarifications.md
+sourceChecklist: work/185-in-app-docs-modality/checklist.md
+sourcePlan: work/185-in-app-docs-modality/plan.md
+sourceTasks: work/185-in-app-docs-modality/tasks.yml
+sourceAnalysis: readiness/185-in-app-docs-modality/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/185-in-app-docs-modality/analysis.json
+    digest: b3d7ed96c81fe4f86d2e7891066871e2658aee2abf29a6114f03fca59af74f37
+    schemaVersion: 1
+  - label: checklist
+    path: work/185-in-app-docs-modality/checklist.md
+    digest: 5803b3542b30ee2346c1c115c4598e24bc31dfa405488ad33bb0d836ce90b2ee
+    schemaVersion: 1
+  - label: clarifications
+    path: work/185-in-app-docs-modality/clarifications.md
+    digest: 4ea28f778102ad307dbb4e54cf690437bc6a70dff0b21cecf44edafa199eb06f
+    schemaVersion: 1
+  - label: plan
+    path: work/185-in-app-docs-modality/plan.md
+    digest: 4ea9543fa674085471019ec16cfcd83476bd6383ceb5995c4c28089b0e3632d5
+    schemaVersion: 1
+  - label: spec
+    path: work/185-in-app-docs-modality/spec.md
+    digest: 0540a98f00e9133723a0bd5abb28ae3bb1a463ca3c5a0997fae202a68bf8cdcc
+    schemaVersion: 1
+  - label: tasks
+    path: work/185-in-app-docs-modality/tasks.yml
+    digest: 6c1b7a09e159b2b8b9dca4be6c768249965a29b0a4fdfa6f098d21a3bb317117
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV003]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-in-app-docs.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
+      digest: "sha256:82f2e3eba918f0921270e2e7927800acc4ebd8e160990c837b0e80b48597e028"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [FsDocs API, Manifest qualifier owns metadata, anchor, and mutation outcomes., content/source identity, link]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-in-app-docs.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
+      digest: "sha256:82f2e3eba918f0921270e2e7927800acc4ebd8e160990c837b0e80b48597e028"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [FsDocs API, Manifest qualifier owns metadata, anchor, and mutation outcomes., content/source identity, link]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-in-app-docs.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
+      digest: "sha256:82f2e3eba918f0921270e2e7927800acc4ebd8e160990c837b0e80b48597e028"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [FsDocs API, Manifest qualifier owns metadata, anchor, and mutation outcomes., content/source identity, link]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV006]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV007]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-native.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Native client qualification owns deterministic navigation and contextual-source negative boundaries.]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/measure-in-app-docs.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-performance.junit.xml
+      digest: "sha256:3869ce616f36714ce3f1db2534fbb1a602f2a087154397b477ac71c561d3903b"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Production measurement owns actual DOM, and real-subject inversions., budget, construction/search timing]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/build-client.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-fable-production.junit.xml
+      digest: "sha256:9db53fc8d794781213943425cc5eea8e1ca48599daf1ed44771859d4786688b0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 2
+      failed: 0
+      skipped: 0
+    notes: [Release Fable/Vite production build owns the emitted client and embedded qualified manifest.]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV012]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV013]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV014]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV015]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV016]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV017]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV018]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV019]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV020
+    kind: verification
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV020]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-in-app-docs.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
+      digest: "sha256:82f2e3eba918f0921270e2e7927800acc4ebd8e160990c837b0e80b48597e028"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [FsDocs API, Manifest qualifier owns metadata, anchor, and mutation outcomes., content/source identity, link]
+  - id: EV021
+    kind: verification
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV021]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-in-app-docs.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
+      digest: "sha256:82f2e3eba918f0921270e2e7927800acc4ebd8e160990c837b0e80b48597e028"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [FsDocs API, Manifest qualifier owns metadata, anchor, and mutation outcomes., content/source identity, link]
+  - id: EV022
+    kind: verification
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV022]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-in-app-docs.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
+      digest: "sha256:82f2e3eba918f0921270e2e7927800acc4ebd8e160990c837b0e80b48597e028"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [FsDocs API, Manifest qualifier owns metadata, anchor, and mutation outcomes., content/source identity, link]
+  - id: EV023
+    kind: verification
+    subject:
+      type: task
+      id: T023
+    taskRefs: [T023]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV023]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV024
+    kind: verification
+    subject:
+      type: task
+      id: T024
+    taskRefs: [T024]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV024]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-rules-corpus.junit.xml
+      digest: "sha256:b927802afde5abe6fb41bdfb7ef46dd4b5a419fd33201d011bedda97e117f7bd"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Rules-corpus qualification owns exact source/package binding and its protected-subject mutations.]
+  - id: EV025
+    kind: verification
+    subject:
+      type: task
+      id: T025
+    taskRefs: [T025]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV025]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-native.junit.xml
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Native client qualification owns deterministic navigation and contextual-source negative boundaries.]
+  - id: EV026
+    kind: verification
+    subject:
+      type: task
+      id: T026
+    taskRefs: [T026]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV026]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/measure-in-app-docs.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-performance.junit.xml
+      digest: "sha256:3869ce616f36714ce3f1db2534fbb1a602f2a087154397b477ac71c561d3903b"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 5
+      failed: 0
+      skipped: 0
+    notes: [Production measurement owns actual DOM, and real-subject inversions., budget, construction/search timing]
+  - id: EV027
+    kind: verification
+    subject:
+      type: task
+      id: T027
+    taskRefs: [T027]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV027]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/build-client.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-fable-production.junit.xml
+      digest: "sha256:9db53fc8d794781213943425cc5eea8e1ca48599daf1ed44771859d4786688b0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 2
+      failed: 0
+      skipped: 0
+    notes: [Release Fable/Vite production build owns the emitted client and embedded qualified manifest.]
+  - id: EV028
+    kind: verification
+    subject:
+      type: task
+      id: T028
+    taskRefs: [T028]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: [EV028]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV029
+    kind: verification
+    subject:
+      type: task
+      id: T029
+    taskRefs: [T029]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-005]
+    obligationRefs: [EV029]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV030
+    kind: verification
+    subject:
+      type: task
+      id: T030
+    taskRefs: [T030]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV030]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV031
+    kind: verification
+    subject:
+      type: task
+      id: T031
+    taskRefs: [T031]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV031]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-rules-corpus.junit.xml
+      digest: "sha256:b927802afde5abe6fb41bdfb7ef46dd4b5a419fd33201d011bedda97e117f7bd"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Rules-corpus qualification owns exact source/package binding and its protected-subject mutations.]
+  - id: EV032
+    kind: verification
+    subject:
+      type: task
+      id: T032
+    taskRefs: [T032]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV032]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV033
+    kind: verification
+    subject:
+      type: task
+      id: T033
+    taskRefs: [T033]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV033]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV034
+    kind: verification
+    subject:
+      type: task
+      id: T034
+    taskRefs: [T034]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: [EV034]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV035
+    kind: verification
+    subject:
+      type: task
+      id: T035
+    taskRefs: [T035]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-005]
+    obligationRefs: [EV035]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV036
+    kind: verification
+    subject:
+      type: task
+      id: T036
+    taskRefs: [T036]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV036]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV037
+    kind: verification
+    subject:
+      type: task
+      id: T037
+    taskRefs: [T037]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV037]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV038
+    kind: verification
+    subject:
+      type: task
+      id: T038
+    taskRefs: [T038]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV038]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-rules-corpus.junit.xml
+      digest: "sha256:b927802afde5abe6fb41bdfb7ef46dd4b5a419fd33201d011bedda97e117f7bd"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Rules-corpus qualification owns exact source/package binding and its protected-subject mutations.]
+  - id: EV039
+    kind: verification
+    subject:
+      type: task
+      id: T039
+    taskRefs: [T039]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV039]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV040
+    kind: verification
+    subject:
+      type: task
+      id: T040
+    taskRefs: [T040]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV040]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV041
+    kind: verification
+    subject:
+      type: task
+      id: T041
+    taskRefs: [T041]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV041]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV042
+    kind: verification
+    subject:
+      type: task
+      id: T042
+    taskRefs: [T042]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV042]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV043
+    kind: verification
+    subject:
+      type: task
+      id: T043
+    taskRefs: [T043]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV043]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV044
+    kind: verification
+    subject:
+      type: task
+      id: T044
+    taskRefs: [T044]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV044]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV045
+    kind: verification
+    subject:
+      type: task
+      id: T045
+    taskRefs: [T045]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV045]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV046
+    kind: verification
+    subject:
+      type: task
+      id: T046
+    taskRefs: [T046]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV046]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV047
+    kind: verification
+    subject:
+      type: task
+      id: T047
+    taskRefs: [T047]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV047]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV048
+    kind: verification
+    subject:
+      type: task
+      id: T048
+    taskRefs: [T048]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV048]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV049
+    kind: verification
+    subject:
+      type: task
+      id: T049
+    taskRefs: [T049]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV049]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Browser.Tests/in-app-docs.spec.js
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
+      digest: "sha256:be2b74d703ea56a4ff9f813ec642463b77c4a13e1ecfdb8e6e6f709b88a2d2c1"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 7
+      failed: 0
+      skipped: 0
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV050
+    kind: verification
+    subject:
+      type: task
+      id: T050
+    taskRefs: [T050]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-008]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV050]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/b0d91b9b6390b127208743b6f09058a31b09abddcd6195ee4fb5c06a1153eaa7.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-client-feature-loader.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/client-feature-loader.trx
+      digest: "sha256:b401189276a03b9ca701488d8a113cbd4fd13df19add0f42ff64480af4b8c4d5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 9
+      failed: 0
+      skipped: 0
+    notes: [The source projection, and six protected mutations passed., browser controls, compiled state machine, emitted graph, scoped budgets]
+  - id: EV051
+    kind: verification
+    subject:
+      type: task
+      id: T051
+    taskRefs: [T051]
+    requirementRefs: [FR-001, FR-009, FR-010]
+    acceptanceScenarioRefs: [AC-001, AC-006, AC-007]
+    clarificationDecisionRefs: [DEC-008]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV051]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-client-feature-loader.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/client-feature-loader.trx
+      digest: "sha256:b401189276a03b9ca701488d8a113cbd4fd13df19add0f42ff64480af4b8c4d5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 9
+      failed: 0
+      skipped: 0
+    notes: [The real DocsView renderer is deferred behind the typed bootstrap contract and canonical feature identity.]
+  - id: EV052
+    kind: verification
+    subject:
+      type: task
+      id: T052
+    taskRefs: [T052]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV052]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-client-feature-loader.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/client-feature-loader.trx
+      digest: "sha256:b401189276a03b9ca701488d8a113cbd4fd13df19add0f42ff64480af4b8c4d5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 9
+      failed: 0
+      skipped: 0
+    notes: [Registry v2 owns the deferred Docs identity and per-route size contract.]
+  - id: EV053
+    kind: verification
+    subject:
+      type: task
+      id: T053
+    taskRefs: [T053]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV053]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-client-feature-loader.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/client-feature-loader.trx
+      digest: "sha256:b401189276a03b9ca701488d8a113cbd4fd13df19add0f42ff64480af4b8c4d5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 9
+      failed: 0
+      skipped: 0
+    notes: [Version drift and each protected loader subject produce their named red diagnostic before the aggregate recovers green.]
+  - id: EV054
+    kind: verification
+    subject:
+      type: task
+      id: T054
+    taskRefs: [T054]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV054]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-client-feature-loader.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/client-feature-loader.trx
+      digest: "sha256:b401189276a03b9ca701488d8a113cbd4fd13df19add0f42ff64480af4b8c4d5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 9
+      failed: 0
+      skipped: 0
+    notes: [Registry v1 is byte-identical to main and v2 carries the explicit scoped migration.]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

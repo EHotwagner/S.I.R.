@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "viewVersion": "1.0",
+  "workId": "185-in-app-docs-modality",
+  "stage": "ship",
+  "status": "shipReady",
+  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "sourcesDigest": {
+    "algorithm": "sha256",
+    "value": "d5ed3ed05b8e2ca0bb5eb0281efde8eb3639641a6397eed9b76262fc0c67339c"
+  },
+  "verificationReadiness": {
+    "status": "verificationReady",
+    "evidenceSupportedCount": 54,
+    "evidenceSelfAttestedCount": 0,
+    "evidenceObservedCount": 54
+  },
+  "disposition": {
+    "state": "shipReady",
+    "blockingFindingIds": []
+  },
+  "readiness": "shipReady"
+}

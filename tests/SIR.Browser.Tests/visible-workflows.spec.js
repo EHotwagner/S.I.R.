@@ -8,6 +8,9 @@ const retainedReplay = Buffer.from(
   readFileSync(new URL("../fixtures/retained-perspective-replay.sirr.base64", import.meta.url), "utf8").trim(),
   "base64",
 );
+const rulesImplementationSources = JSON.parse(
+  readFileSync(new URL("../fixtures/rules-corpus/v2/implementation-sources.json", import.meta.url), "utf8"),
+);
 
 async function loadMaintainedSimulation(page) {
   await page.goto("/");
@@ -212,7 +215,7 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   }
   await expect(source).toHaveAttribute(
     "href",
-    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/e055929f1f958ad9f98f5aac9934ea28cd7a0fbe\/src\/SIR\.Simulation\/CombatRules\.fs/,
+    `https://github.com/EHotwagner/S.I.R./blob/${rulesImplementationSources.sourceCommit}/src/SIR.Simulation/CombatRules.fs`,
   );
   await expect(damageRule.getByText(/examples: tests\/SIR\.Conformance\.Shared\/RulesCorpusFixtures\.fs · properties:/)).toBeVisible();
   await expect(damageRule.getByRole("link", { name: "Coverage graph" })).toHaveAttribute("href", /rules-corpus\/v2\/coverage\.json/);

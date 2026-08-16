@@ -4,24 +4,24 @@ test("the production shell loads registered features through real controls", asy
   await page.setViewportSize({ width: 1600, height: 900 });
   const featureResponses = [];
   page.on("response", (response) => {
-    if (/\/(RulesExplorer|RulesWorkbenchView|docs-feature)-[^/]+\.js$/.test(new URL(response.url()).pathname)) {
+    if (/\/(RulesExplorer|RulesWorkbenchView|DocsView)-[^/]+\.js$/.test(new URL(response.url()).pathname)) {
       featureResponses.push(response.url());
     }
   });
 
   await page.goto("/");
   const shell = page.getByRole("main", { name: "S.I.R. simulator and editor", exact: true });
-  await expect(shell).toHaveAttribute("data-feature-registry-version", "1");
+  await expect(shell).toHaveAttribute("data-feature-registry-version", "2");
   await expect(shell).toHaveAttribute("data-feature-shell", "loaded");
   expect(featureResponses).toEqual([]);
 
-  const docsResponse = page.waitForResponse((response) => /\/docs-feature-[^/]+\.js$/.test(new URL(response.url()).pathname));
+  const docsResponse = page.waitForResponse((response) => /\/DocsView-[^/]+\.js$/.test(new URL(response.url()).pathname));
   await page.getByRole("button", { name: "Docs", exact: true }).click();
   expect((await docsResponse).status()).toBe(200);
-  const docs = page.getByRole("region", { name: "Documentation", exact: true });
+  const docs = page.getByRole("region", { name: "S.I.R. documentation", exact: true });
   await expect(docs).toBeVisible();
-  await expect(docs.getByRole("link", { name: "Open generated documentation", exact: true })).toHaveAttribute("href", "./docs/index.html");
-  await page.getByRole("button", { name: "Close documentation", exact: true }).click();
+  await expect(docs.getByRole("heading", { name: "Documentation", exact: true })).toBeVisible();
+  await docs.getByRole("button", { name: "Return to tactical workspace", exact: true }).click();
 
   const workbenchResponse = page.waitForResponse((response) => /\/RulesWorkbenchView-[^/]+\.js$/.test(new URL(response.url()).pathname));
   await page.locator("details.tactical-legacy-controls > summary").click();
@@ -40,7 +40,7 @@ test("the production shell loads registered features through real controls", asy
   await expect(page.getByRole("region", { name: "Tactical environment authoring", exact: true })).toBeVisible();
   await expect(shell).toHaveAttribute("data-feature-loader-diagnostic", "");
 
-  expect(featureResponses.filter((url) => url.includes("docs-feature-"))).toHaveLength(1);
+  expect(featureResponses.filter((url) => url.includes("DocsView-"))).toHaveLength(1);
   expect(featureResponses.filter((url) => url.includes("RulesWorkbenchView-"))).toHaveLength(1);
   expect(featureResponses.filter((url) => url.includes("RulesExplorer-"))).toHaveLength(1);
 });
@@ -50,7 +50,7 @@ test("a deferred production control reports a stable offline failure", async ({ 
   await page.addInitScript(() => {
     Object.defineProperty(Navigator.prototype, "onLine", { configurable: true, get: () => false });
   });
-  await page.route("**/docs-feature-*.js", (route) => route.abort("internetdisconnected"));
+  await page.route("**/DocsView-*.js", (route) => route.abort("internetdisconnected"));
 
   await page.goto("/");
   await page.getByRole("button", { name: "Docs", exact: true }).click();

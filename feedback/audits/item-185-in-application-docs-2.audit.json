@@ -1,0 +1,129 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/item-185-in-application-docs-2.md",
+  "reportSha256": "0cf7dbdcd0f921757df69f0255f1d7bd01d3f39706e70e75a075d989def6915c",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:test -e docs/examples/lifecycle-artifacts/spec.md",
+          "result": "verified"
+        },
+        {
+          "locator": "file:work/183-tactical-overlays/spec.md",
+          "result": "verified",
+          "sha256": "bba9f80efc9a44733cea71067c06a03c6c7aabc771af8c364ce92e4ae3c949e1"
+        },
+        {
+          "locator": "file:readiness/185-in-app-docs-modality/analysis.json",
+          "result": "verified",
+          "sha256": "01111910cf86a0d0f1a521aa66b87a4b8c32778ecd18ea8ee099e415de539cb0"
+        }
+      ],
+      "confidenceLimits": [
+        "The analysis receipt reports implementationReady with zero blocking findings.",
+        "The prior item-182 report and closed FS.GG.SDD#539 describe the same absent generated-product example paths."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-in-app-docs.mjs",
+          "result": "verified",
+          "sha256": "3988a5946a0d497fb8f7f91bb76a42da21fa51010603b3823591557c549e0447"
+        },
+        {
+          "locator": "file:src/SIR.Client.Web/WorkspaceTransitions.fs",
+          "result": "verified",
+          "sha256": "5f8eb0170e53a83d3309855aae7c30a52ac7a3c5e8913ef67932f32675b0e1ad"
+        },
+        {
+          "locator": "file:tests/fixtures/persistent-workspace-m0-inventory.json",
+          "result": "verified",
+          "sha256": "7b5c3c1c594d412083a10775ea91ce30b473f50fbf42a98d1705a7d15af6f271"
+        }
+      ],
+      "confidenceLimits": [
+        "The no-write critic did not rerun the aggregate command; the implementation files verify the current qualifier and inventory shape.",
+        "Historical failed outputs and exact retry counts were not retained and depend on checkpoint history."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml",
+          "result": "verified",
+          "sha256": "fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+        },
+        {
+          "locator": "file:readiness/185-in-app-docs-modality/verify.json",
+          "result": "verified",
+          "sha256": "32b7afbd2fe51d487836f535af99bf179ea541b3fdc38a3bee93a86436d22c8e"
+        }
+      ],
+      "confidenceLimits": [
+        "The no-write critic did not rerun the authoring command; the committed JUnit and verify receipt establish the accepted JUnit-backed observed state.",
+        "Verify is verificationReady with one non-blocking stale-source-snapshot warning."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "review:https://github.com/EHotwagner/S.I.R./pull/211#issuecomment-5302691363",
+          "result": "verified"
+        },
+        {
+          "locator": "file:work/185-in-app-docs-modality/evidence.yml",
+          "result": "verified",
+          "sha256": "6e918460d14727416509b583f1177fbaa7a9742c60890af51f6788d955bd93e6"
+        },
+        {
+          "locator": "file:readiness/185-in-app-docs-modality/verify.json",
+          "result": "verified",
+          "sha256": "32b7afbd2fe51d487836f535af99bf179ea541b3fdc38a3bee93a86436d22c8e"
+        }
+      ],
+      "confidenceLimits": [
+        "Current evidence is split across six receipt paths and verify records all 49 evidence and test dispositions observed.",
+        "This duplicates the item-194 finding and overlaps open FS.GG.SDD#839."
+      ]
+    },
+    {
+      "id": "§4.5",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "command:git cat-file -e origin/main:feedback/audits/item-185-in-application-docs.audit.json",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- check-invalidation --base origin/main --head HEAD",
+          "result": "verified"
+        },
+        {
+          "locator": "issue:FS-GG/FS.GG.Rendering#1243",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Closed Rendering #1178 and #1194 concern base-present audits and do not cover indexing a candidate-only audit.",
+        "The command depends on the locally available origin/main ref, which was present during verification."
+      ]
+    }
+  ]
+}

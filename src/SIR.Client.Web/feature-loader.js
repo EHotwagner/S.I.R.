@@ -1,4 +1,4 @@
-const registryVersion = 1;
+const registryVersion = 2;
 
 const loaders = Object.freeze({
   "tactical-environment": Object.freeze({
@@ -18,8 +18,8 @@ const loaders = Object.freeze({
     load: async () => { globalThis.__sirSamplesFeature = await import("./.fable/SIR.Client.Web/SamplesFeature.js"); },
   }),
   docs: Object.freeze({
-    logicalChunk: "docs-feature",
-    load: () => import("./docs-feature.js"),
+    logicalChunk: "DocsView",
+    load: () => import("./.fable/SIR.Client.Web/DocsView.js"),
   }),
 });
 
