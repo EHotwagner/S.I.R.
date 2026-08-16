@@ -27,7 +27,7 @@
       "locator": "file:readiness/184-scenario-catalog/scenario-catalog-native.junit.xml",
       "path": "readiness/184-scenario-catalog/scenario-catalog-native.junit.xml",
       "previousSha256": "cc31d16156bca81586e176fcd30fd7e70984443810b34e6509eea0f77e53694f",
-      "replacementSha256": "2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9",
+      "replacementSha256": "e1c48955d2768517327918c8d252609bcede99cbe92b2f1120db740c15530e2d",
       "replacementEvidence": "command:scripts/generate-item-184-evidence.sh",
       "reason": "The immutable report remains pinned to its reviewed receipt while the repair cycle regenerates a new exact-source receipt at the same path."
     },
@@ -57,7 +57,7 @@
       "locator": "file:readiness/184-scenario-catalog/scenario-catalog-native.junit.xml",
       "path": "readiness/184-scenario-catalog/scenario-catalog-native.junit.xml",
       "previousSha256": "cc31d16156bca81586e176fcd30fd7e70984443810b34e6509eea0f77e53694f",
-      "replacementSha256": "2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9",
+      "replacementSha256": "e1c48955d2768517327918c8d252609bcede99cbe92b2f1120db740c15530e2d",
       "replacementEvidence": "command:scripts/generate-item-184-evidence.sh",
       "reason": "The immutable report remains pinned to its reviewed native receipt while the repair cycle regenerates exact-source evidence at the same path."
     },
@@ -77,7 +77,7 @@
       "locator": "file:readiness/184-scenario-catalog/scenario-catalog-native.junit.xml",
       "path": "readiness/184-scenario-catalog/scenario-catalog-native.junit.xml",
       "previousSha256": "cc31d16156bca81586e176fcd30fd7e70984443810b34e6509eea0f77e53694f",
-      "replacementSha256": "2f9dbf6412c56b147be82e954eef34e4c4c97f884fdf14560119af65b9c52ad9",
+      "replacementSha256": "e1c48955d2768517327918c8d252609bcede99cbe92b2f1120db740c15530e2d",
       "replacementEvidence": "command:scripts/generate-item-184-evidence.sh",
       "reason": "The immutable report remains pinned to its reviewed map-admission receipt while the repair cycle regenerates exact-source evidence at the same path."
     }
