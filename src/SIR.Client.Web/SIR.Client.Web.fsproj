@@ -12,8 +12,11 @@
     <Compile Include="LiveSession.fs" />
     <Compile Include="Worker.fs" />
     <Compile Include="Runner.fs" />
+    <Compile Include="FeatureLoader.fsi" />
+    <Compile Include="FeatureLoader.fs" />
     <Compile Include="BrowserInfrastructure.fs" />
     <Compile Include="AppTypes.fs" />
+    <Compile Include="ClientFeatureRuntime.fs" />
     <Compile Include="AppShell.fs" />
     <Compile Include="CommandRegistry.fs" />
     <Compile Include="ModeAdapters.fs" />

@@ -1,11 +1,59 @@
 module SIR.Client.Web.BrowserInfrastructure
 
 open System
+open Browser.Dom
 open Browser.Types
 open Fable.Core
 open Fable.Core.JsInterop
 open SIR.Client
 open Elmish
+open SIR.Client.Web.FeatureLoader
+
+type private ImportedFeatureIdentity =
+    abstract registryVersion: int
+    abstract featureId: string
+    abstract logicalChunk: string
+
+[<Import("loadFeature", "./feature-loader.js")>]
+let private loadFeatureJs
+    (_registryVersion: int)
+    (_featureId: string)
+    (_logicalChunk: string)
+    : JS.Promise<ImportedFeatureIdentity> =
+    jsNative
+
+[<Emit("navigator.onLine")>]
+let private browserOnline: bool = jsNative
+
+let loadClientFeature (identity: ChunkIdentity) =
+    async {
+        try
+            let! imported =
+                loadFeatureJs
+                    identity.RegistryVersion
+                    (value identity.Feature)
+                    identity.LogicalChunk
+                |> Async.AwaitPromise
+            return
+                Ok
+                    { RegistryVersion = imported.registryVersion
+                      Feature =
+                        if imported.featureId = value rulesExplorer then rulesExplorer
+                        elif imported.featureId = value docs then docs
+                        else identity.Feature
+                      LogicalChunk = imported.logicalChunk }
+        with error ->
+            let detail = error.Message
+            if not browserOnline then return Error(Offline detail)
+            elif detail.Contains("stale-identity", StringComparison.Ordinal) then
+                return Error(ImportRejected detail)
+            elif
+                detail.Contains("Failed to fetch dynamically imported module", StringComparison.OrdinalIgnoreCase)
+                || detail.Contains("Importing a module script failed", StringComparison.OrdinalIgnoreCase)
+            then
+                return Error(MissingChunk detail)
+            else return Error(ImportRejected detail)
+    }
 
 let private sizeError label maximum (file: File) =
     try

@@ -1,0 +1,55 @@
+{
+  "schema": "sir.client.feature-registry/v1",
+  "version": 1,
+  "features": [
+    {
+      "id": "delivery-support",
+      "phase": "deferred",
+      "control": "delivery-support",
+      "route": "delivery-support",
+      "module": "src/SIR.Client.Web/deferred-delivery-support.js",
+      "logicalChunk": "deferred-delivery-support",
+      "budget": {
+        "raw": 8192,
+        "gzip": 4096,
+        "brotli": 3072
+      }
+    },
+    {
+      "id": "docs",
+      "phase": "deferred",
+      "control": "toolbar-docs",
+      "route": "docs",
+      "module": "src/SIR.Client.Web/docs-feature.js",
+      "logicalChunk": "docs-feature",
+      "budget": { "raw": 8192, "gzip": 4096, "brotli": 3072 }
+    },
+    {
+      "id": "rules-explorer",
+      "phase": "deferred",
+      "control": "supporting-data",
+      "route": "data",
+      "module": "src/SIR.Client.Web/RulesExplorer.fs",
+      "logicalChunk": "RulesExplorer",
+      "budget": { "raw": 65536, "gzip": 20000, "brotli": 16000 }
+    },
+    {
+      "id": "shell",
+      "phase": "bootstrap",
+      "control": "application-entry",
+      "route": "initial",
+      "module": "src/SIR.Client.Web/App.fs",
+      "logicalChunk": "app",
+      "budget": { "raw": 1250000, "gzip": 320000, "brotli": 280000 }
+    },
+    {
+      "id": "tactical-environment",
+      "phase": "eager",
+      "control": "editor-environment",
+      "route": "editor",
+      "module": "src/SIR.Client.Web/TacticalEnvironmentView.fs",
+      "logicalChunk": "app",
+      "budget": { "raw": 1250000, "gzip": 320000, "brotli": 280000 }
+    }
+  ]
+}
