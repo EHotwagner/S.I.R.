@@ -91,6 +91,12 @@ preview 2.628 ms, command 2.471 ms, document validation 3.239 ms, undo/redo
 nodes. The isolated worktree first required an ordinary restore because no
 `obj/project.assets.json` existed; that setup event is not a performance result.
 
+The dense maximum-map pointer-preview budget is versioned at 12 ms p95. This
+retains roughly 29% headroom above the 9.271 ms hosted observation from repair
+run 31917304397 while preserving the same 40×40 workload, structural gates,
+and all other editor budgets. Further workload or implementation growth must
+remain below this bound or explicitly rebaseline it with hosted evidence.
+
 These observations are headless and make no compositor or swapchain claim.
 Release acceptance must measure the exact candidate's new environment
 workloads, record the workload-definition digest and host facts, and remain

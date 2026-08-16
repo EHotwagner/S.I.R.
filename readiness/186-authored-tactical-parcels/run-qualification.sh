@@ -60,6 +60,73 @@ for subject in EDGE_STATE CONTENT_IDENTITY DEPENDENCY_LOCALITY DESTRUCTION_BOUND
   fi
 done
 
+# Invert each representative production workload observation while retaining
+# its named predicate and executing the real combat/environment path.
+declare -A representative_mutations=(
+  [SOURCE_UNITS]="changed its 100-unit source workload"
+  [FINAL_UNITS]="changed its 100-unit final workload"
+  [PARTICIPANTS]="did not retain exactly 100 participants"
+  [PROPAGATED]="propagated changes beyond each targeted feature"
+  [QUERIES]="did not execute exactly 50 spatial queries"
+  [CROSSED]="did not traverse any spatial cells"
+  [TIMING]="exceeded its 50 ms timing budget"
+)
+for subject in SOURCE_UNITS FINAL_UNITS PARTICIPANTS PROPAGATED QUERIES CROSSED TIMING; do
+  variable="SIR_TACTICAL_MUTATE_REP_${subject}"
+  mutation_log=$(mktemp)
+  if env "$variable=1" dotnet run --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj -c Release --no-build >"$mutation_log" 2>&1; then
+    echo "Representative mutation ${subject} unexpectedly passed" >&2
+    exit 1
+  fi
+  if ! grep -q "${representative_mutations[$subject]}" "$mutation_log"; then
+    echo "Representative mutation ${subject} failed outside its owning assertion" >&2
+    cat "$mutation_log" >&2
+    exit 1
+  fi
+  rm -f "$mutation_log"
+done
+
+# Delay the production terrain-preview subject while retaining the versioned
+# 12 ms dense maximum-map predicate. The owning client gate must turn red, then
+# source restoration, rebuild, and rerun must be drift-free and green.
+preview_subject="src/SIR.Client/MapEditor.fs"
+preview_backup=$(mktemp)
+preview_log=$(mktemp)
+restore_preview_subject() {
+  cp "$preview_backup" "$preview_subject"
+  rm -f "$preview_backup" "$preview_log"
+}
+cp "$preview_subject" "$preview_backup"
+trap restore_preview_subject EXIT
+node - "$preview_subject" <<'NODE'
+import fs from 'node:fs';
+
+const sourcePath = process.argv[2];
+const source = fs.readFileSync(sourcePath, 'utf8');
+const needle = '    let terrainPreview state =\n';
+const replacement = `${needle}        System.Threading.Thread.Sleep 20\n`;
+if (!source.includes(needle) || source.includes('System.Threading.Thread.Sleep 20')) {
+  throw new Error('dense pointer-preview subject mutation anchor is missing or duplicated');
+}
+fs.writeFileSync(sourcePath, source.replace(needle, replacement));
+NODE
+dotnet build tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore >/dev/null
+if dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-build >"$preview_log" 2>&1; then
+  echo "Production-subject dense pointer-preview mutation unexpectedly passed" >&2
+  exit 1
+fi
+if ! grep -q "Maximum-document editor budgets failed" "$preview_log" ||
+   ! grep -q "Dense maximum-map budgets: preview" "$preview_log"; then
+  echo "Production-subject dense pointer-preview mutation failed outside its owning assertion" >&2
+  cat "$preview_log" >&2
+  exit 1
+fi
+restore_preview_subject
+trap - EXIT
+dotnet build tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore >/dev/null
+git diff --exit-code -- "$preview_subject"
+dotnet run --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-build >/dev/null
+
 # Break the production identity writer, not its assertion: retain an additional
 # 14 MB allocation inside the measured subject while the identity, counters,
 # and 16 MB test bound remain unchanged. Restore and rebuild even on failure.

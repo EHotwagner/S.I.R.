@@ -11,6 +11,9 @@ open System.Diagnostics
 let private require condition message =
     if not condition then failwith message
 
+let private mutationEnabled name =
+    String.Equals(Environment.GetEnvironmentVariable name, "1", StringComparison.Ordinal)
+
 let private containsSubsequence (needle: byte array) (haystack: byte array) =
     if needle.Length = 0 then
         true
@@ -613,7 +616,7 @@ let private tacticalEnvironmentEvidence () =
           KnownEnvironmentFeatureIds = interactionEnvironment.EnvironmentFeatures |> List.map _.EnvironmentFeatureId |> Set.ofList
           KnownEnvironmentStateFeatureIds = interactionEnvironment.EnvironmentFeatures |> List.map _.EnvironmentFeatureId |> Set.ofList
           KnownEnvironmentFacts = Set.empty }
-    let combatUnits =
+    let baseCombatUnits =
         [ for index in 0 .. 99 ->
             let id = sprintf "unit-%03d" index
             id,
@@ -627,13 +630,27 @@ let private tacticalEnvironmentEvidence () =
               Incapacitated = false
               Suppression = 0 } ]
         |> Map.ofList
+    let mutationObserver =
+        { baseCombatUnits["unit-099"] with
+            EntityId = "mutation-observer"
+            Cell = { Col = 99; Row = 1 } }
+    let combatUnits =
+        if mutationEnabled "SIR_TACTICAL_MUTATE_REP_SOURCE_UNITS" then
+            baseCombatUnits |> Map.add mutationObserver.EntityId mutationObserver
+        else
+            baseCombatUnits
+    let initialCombatants =
+        if mutationEnabled "SIR_TACTICAL_MUTATE_REP_FINAL_UNITS" then
+            combatUnits |> Map.add mutationObserver.EntityId mutationObserver
+        else
+            combatUnits
     let combatWorld =
         { Spatial =
             SIR.Simulation.TacticalEnvironment.toSpatialWorld
                 "representative-combat@1"
                 interactionKnowledge
                 interactionEnvironment
-          Combatants = combatUnits
+          Combatants = initialCombatants
           Covers = Combat.environmentCovers interactionEnvironment }
     let runInteractionBatch () =
         ((interactionEnvironment, combatWorld, Set.empty, 0, 0, 0), [ 0 .. 49 ])
@@ -664,12 +681,19 @@ let private tacticalEnvironmentEvidence () =
                 |> Option.defaultValue (0, 0)
             environmentResult.UpdatedEnvironment,
             combatResult.World,
-            participants |> Set.add attackerId |> Set.add targetId,
-            propagated + environmentResult.ActionCostCounters.PropagatedChanges,
-            queries + queryCount,
-            crossed + crossedCount)
+            (participants |> Set.add attackerId
+             |> fun observed ->
+                 if mutationEnabled "SIR_TACTICAL_MUTATE_REP_PARTICIPANTS" then observed
+                 else observed |> Set.add targetId),
+            propagated
+            + environmentResult.ActionCostCounters.PropagatedChanges
+            + (if mutationEnabled "SIR_TACTICAL_MUTATE_REP_PROPAGATED" then 1 else 0),
+            queries + (if mutationEnabled "SIR_TACTICAL_MUTATE_REP_QUERIES" then 0 else queryCount),
+            crossed + (if mutationEnabled "SIR_TACTICAL_MUTATE_REP_CROSSED" then 0 else crossedCount))
     runInteractionBatch () |> ignore
     let interactionClock = Stopwatch.StartNew()
+    if mutationEnabled "SIR_TACTICAL_MUTATE_REP_TIMING" then
+        System.Threading.Thread.Sleep 60
     let _, finalCombat, participants, propagated, queryCount, crossedCount = runInteractionBatch ()
     interactionClock.Stop()
     eprintfn
