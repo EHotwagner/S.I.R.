@@ -126,7 +126,10 @@ NODE
         # The two Release graphs share dependency outputs, so serialize them
         # while the disjoint Debug solution graph builds in parallel.
         dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore >"$part_root/domain-release.log" 2>&1 || part_failed=1
-        dotnet build tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore >"$part_root/client-release.log" 2>&1 || part_failed=1
+        # Domain Release already prepared the shared graph. Build only the client
+        # test owner so the performance binary is current without rebuilding its
+        # dependencies on the hosted critical path.
+        dotnet build tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore --no-dependencies >"$part_root/client-release.log" 2>&1 || part_failed=1
         wait "$solution_pid" || part_failed=1
         sed -n '1,240p' "$part_root/solution-debug.log"
         sed -n '1,240p' "$part_root/domain-release.log"
