@@ -1,0 +1,29 @@
+{
+  "schema": "sir.production-qualification-timing/v1",
+  "result": "pass",
+  "baseline": {
+    "command": "./scripts/test-conformance.sh && ./scripts/build-docs.sh",
+    "wallMilliseconds": 373848,
+    "fableTargetBuilds": 4
+  },
+  "candidate": {
+    "command": "./scripts/qualify-production.sh",
+    "wallMilliseconds": 263125,
+    "fableTargetBuilds": 2,
+    "buildReceipt": "docs/evidence/production-build-receipt-v1/87cf06f6c4cf32abd997cd6796a62f22ff37022e7bca954cb28c5714a64dfeaf.json",
+    "conformanceReceipt": "docs/evidence/production-build-receipt-v1/1363d1f1e0b1698823038c6a6a3b1f815321b2502bbb89cd857b1c00bff6f99d.json"
+  },
+  "reductionBasisPoints": 2961,
+  "minimumReductionBasisPoints": 2000,
+  "retainedSubjects": [
+    "conformance",
+    "client-loader",
+    "delivery-budget",
+    "delivery-evidence",
+    "browser-diagnostics",
+    "production-browser",
+    "documentation",
+    "accessibility",
+    "stale-reuse-mutation"
+  ]
+}
