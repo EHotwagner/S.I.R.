@@ -4,6 +4,42 @@ set -euo pipefail
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 task_tmp=$(mktemp -d)
 trap 'rm -rf -- "$task_tmp"' EXIT
+reuse_build_receipt=""
+prepared_fable=""
+prepared_modal_fable=""
+domain_only=false
+ordinary_pr_functional=false
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --reuse-pr-build-receipt)
+      [[ $# -ge 2 ]] || { echo "test-conformance: --reuse-pr-build-receipt requires a path" >&2; exit 2; }
+      reuse_build_receipt=$2
+      shift 2
+      ;;
+    --prepared-fable)
+      [[ $# -ge 3 ]] || { echo "test-conformance: --prepared-fable requires domain and modal paths" >&2; exit 2; }
+      prepared_fable=$2
+      prepared_modal_fable=$3
+      shift 3
+      ;;
+    --domain-only)
+      domain_only=true
+      shift
+      ;;
+    --ordinary-pr-functional)
+      ordinary_pr_functional=true
+      shift
+      ;;
+    *)
+      echo "test-conformance: unknown argument: $1" >&2
+      exit 2
+      ;;
+  esac
+done
+if [[ "$ordinary_pr_functional" == true && "$domain_only" != true ]]; then
+  echo "test-conformance: --ordinary-pr-functional requires --domain-only" >&2
+  exit 2
+fi
 if [[ -z "${NUGET_PACKAGES:-}" ]]; then
   export NUGET_PACKAGES="$task_tmp/nuget-packages"
 fi
@@ -53,13 +89,20 @@ search_fixed() {
   fi
 }
 
-dotnet tool restore
-./scripts/verify-fable-game-governance.sh
-dotnet restore SIR.slnx --locked-mode
-dotnet build SIR.slnx --no-restore
-# Later production worker qualification deliberately uses --no-build/--no-restore;
-# produce its declared Release prerequisite inside this clean aggregate route.
-dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
+if [[ -n "$reuse_build_receipt" ]]; then
+  [[ -n "$prepared_fable" && -n "$prepared_modal_fable" ]] || { echo "test-conformance: prepared reuse requires both Fable fixture roots" >&2; exit 2; }
+  node scripts/production-build-receipt.mjs verify \
+    --owner-command scripts/qualify-pr.sh \
+    --receipt "$reuse_build_receipt"
+else
+  dotnet tool restore
+  ./scripts/verify-fable-game-governance.sh
+  dotnet restore SIR.slnx --locked-mode
+  dotnet build SIR.slnx --no-restore
+  # Later production worker qualification deliberately uses --no-build/--no-restore;
+  # produce its declared Release prerequisite inside this clean aggregate route.
+  dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
+fi
 
 dotnet_output=$(dotnet run \
   --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj \
@@ -76,18 +119,24 @@ modal_dotnet_output=$(dotnet run \
   --no-build \
   --no-restore)
 
+match_arguments=()
+if [[ "$ordinary_pr_functional" == true ]]; then match_arguments=(-- --functional-cross-runtime); fi
 match_output=$(dotnet run \
   --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj \
   --no-build \
-  --no-restore)
+  --no-restore \
+  "${match_arguments[@]}")
 
 browser_wasm_output=$(./scripts/test-browser-wasm-verification.sh)
 
-dotnet fable tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj \
-  --outDir "$task_tmp/fable" \
-  --noCache
-
-fable_entry="$task_tmp/fable/SIR.Conformance.Shared/Program.js"
+if [[ -n "$reuse_build_receipt" ]]; then
+  fable_entry="$prepared_fable/SIR.Conformance.Shared/Program.js"
+else
+  dotnet fable tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj \
+    --outDir "$task_tmp/fable" \
+    --noCache
+  fable_entry="$task_tmp/fable/SIR.Conformance.Shared/Program.js"
+fi
 fable_output=$(node "$fable_entry")
 
 if [[ "$dotnet_output" != "$fable_output" ]]; then
@@ -96,11 +145,14 @@ if [[ "$dotnet_output" != "$fable_output" ]]; then
   exit 1
 fi
 
-dotnet fable tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj \
-  --outDir "$task_tmp/modal-fable" \
-  --noCache
-
-modal_fable_entry="$task_tmp/modal-fable/SIR.ModalInput.Shared/Program.js"
+if [[ -n "$reuse_build_receipt" ]]; then
+  modal_fable_entry="$prepared_modal_fable/SIR.ModalInput.Shared/Program.js"
+else
+  dotnet fable tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj \
+    --outDir "$task_tmp/modal-fable" \
+    --noCache
+  modal_fable_entry="$task_tmp/modal-fable/SIR.ModalInput.Shared/Program.js"
+fi
 modal_fable_output=$(node "$modal_fable_entry")
 
 if [[ "$modal_dotnet_output" != "$modal_fable_output" ]]; then
@@ -277,14 +329,21 @@ if [[ -n "$input_presentation_leak" ]]; then
   exit 1
 fi
 
+if [[ "$domain_only" == true ]]; then
+  printf 'Focused cross-runtime domain gate passed: %d bytes agree across .NET and Fable/Node; modal input, match, replay, divergence, numeric authority, and presentation boundaries agree.\n' "$(( ${#dotnet_output} / 2 ))"
+  exit 0
+fi
+
 # The only locked dependency with an install script is optional macOS fsevents;
 # none of the Linux conformance/build dependencies require lifecycle scripts.
 # Remove an inherited npm 12 allow-scripts value and keep CI installs inert.
-env \
-  -u npm_config_allow_scripts \
-  -u NPM_CONFIG_ALLOW_SCRIPTS \
-  npm ci --ignore-scripts
-./scripts/build-client.sh
+if [[ -z "$reuse_build_receipt" ]]; then
+  env \
+    -u npm_config_allow_scripts \
+    -u NPM_CONFIG_ALLOW_SCRIPTS \
+    npm ci --ignore-scripts
+  ./scripts/build-client.sh
+fi
 if [[ -n "${SIR_BUILD_RECEIPT_POINTER:-}" ]]; then
   node scripts/production-build-receipt.mjs create \
     --owner-command scripts/qualify-production.sh \
@@ -296,8 +355,10 @@ if [[ -n "${SIR_BUILD_RECEIPT_POINTER:-}" ]]; then
 fi
 node scripts/smoke-client.mjs
 npm run test:production-delivery-budget
-npm run setup:browser
-dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish --no-restore
+if [[ -z "$reuse_build_receipt" ]]; then
+  npm run setup:browser
+  dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish --no-restore
+fi
 npm run test:browser-diagnostics-gate
 npm run test:production-delivery-evidence
 node scripts/test-client-feature-loader.mjs \

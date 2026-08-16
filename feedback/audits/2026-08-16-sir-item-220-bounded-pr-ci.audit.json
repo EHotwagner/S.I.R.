@@ -1,0 +1,39 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-16-sir-item-220-bounded-pr-ci.md",
+  "reportSha256": "dff19a438ecddeb6114f427ca0dc49df17aabd932b11b0d0a4af2e8ca0485366",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/ci-route.mjs",
+          "result": "verified",
+          "sha256": "10da76f4b2631e57c36991f263d19a15c183716e2d68ce208a31c160ed1118af"
+        },
+        {
+          "locator": "file:scripts/test-ci-route.mjs",
+          "result": "verified",
+          "sha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f"
+        },
+        {
+          "locator": "file:.github/workflows/ci.yml",
+          "result": "verified",
+          "sha256": "592b8dc4667559aabca5b89d173224a48d9deaca53569c1bd0aeccdf4ff42127"
+        },
+        {
+          "locator": "command:npm run test:ci-route",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Local focused execution and static workflow-contract inspection verify the pattern; exact-head hosted CI is pending, so this does not establish hosted routing behavior or timing.",
+        "Prior feedback and open/closed issue searches found no exact duplicate lifecycle-metadata-neutral routing pattern."
+      ]
+    }
+  ]
+}

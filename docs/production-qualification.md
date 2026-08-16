@@ -16,7 +16,7 @@ The driver runs the existing conformance, delivery, and browser subjects, builds
 - every enumerated tracked source, project, script, package configuration, and dependency-lock input;
 - Git, .NET SDK, Fable, fsdocs, Node, npm, and Vite versions;
 - the owning command identity;
-- sorted relative file paths, byte sizes, and SHA-256 identities for main Fable, Rules Explorer, and the production client bundle.
+- sorted relative file paths, POSIX permission modes, byte sizes, and SHA-256 identities for main Fable, Rules Explorer, and the production client bundle.
 
 Verification is read-only. It re-derives every field and fails on revision/tree, tracked state, source/configuration/lock, tool, command, expected path, missing output, or output-content drift. It never refreshes a stale receipt or rebuilds an output.
 
@@ -40,4 +40,12 @@ Metadata-only reuse requires the producing commit to be an ancestor and rejects 
 
 ## Mutation and timing
 
-The aggregate runs stale and missing subject mutations, requires the production verifier's `output-identity-drift` refusal, and restores the original bytes in an unconditional cleanup boundary. The driver also records baseline/candidate wall milliseconds, exact commit/tree/clean identities, one shared host fingerprint, Fable target build counts, all three receipts, retained subject inventory, and reduction basis points under `artifacts/qualification/single-pass-timing.json`. The committed paired baseline receipt must match the candidate host byte-for-byte; a different host or an unclean source is refused before timing begins. Timing is acceptance evidence, not a runtime correctness threshold.
+The aggregate runs stale and missing subject mutations, requires the production verifier's `output-identity-drift` refusal, and restores the original bytes and permission mode in an unconditional cleanup boundary. The normal local and protected aggregates record candidate wall milliseconds, exact commit/tree/clean identity, the host fingerprint, the observed per-project Fable process inventory and derived total, all three receipts, and retained subject inventory under `artifacts/qualification/single-pass-timing.json`. The protected route records the additional isolated cancellation-mutation builds explicitly instead of pretending its inventory is the local exact-once set. Neither normal route compares a growing qualification surface against a permanently frozen wall-time baseline.
+
+## Pull-request artifact topology
+
+Pull-request qualification does not publish a repository-wide build tree. Independent native, Fable, web, server, and documentation producers each seal one content-addressed archive, production receipt, artifact manifest, phase timing, and typed result. Their inventories contain only immutable outputs required by consumers; `obj` directories and unrelated `bin` trees are never transported. Rules consumes native, spatial and cross-runtime consume native plus Fable, browser consumes web plus server, documentation consumes web plus its own locked Release API closure, and cancellation/evidence consume no prepared artifact. Every consumer verifies transport, candidate, route, input/tool/command, file content, and permission modes before use, with no fallback build.
+
+The documentation producer performs the locked solution restore and builds the exact Release API project closure. The documentation consumer repeats the locked restore to materialize package assets without treating those mutable files as sealed output. The browser consumer installs the SDK selected by `global.json` before launching the framework-dependent published server. Producer and gate receipts keep setup, restore, build, transport, test, total, failure stage, cache/reuse, and invocation facts separate; the verdict sums each runner rather than collapsing concurrent producers into one synthetic prepare duration.
+
+The historical optimization experiment remains reproducible through `./scripts/qualify-production.sh --paired-optimization`. Only that explicitly named route loads the committed paired baseline, requires the host to match byte-for-byte, records reduction basis points, and asserts the original 20 percent materiality target. Use it only when the baseline and candidate subject inventories are deliberately comparable. Timing is acceptance evidence, not a runtime correctness threshold.

@@ -4,10 +4,41 @@ set -euo pipefail
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 task_tmp=$(mktemp -d)
 trap 'rm -rf -- "$task_tmp"' EXIT
+reuse_build_receipt=""
+prepared_fable=""
+static_only=false
+prepared_pr=false
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --reuse-pr-build-receipt)
+      [[ $# -ge 2 ]] || { echo "verify-spatial-query: --reuse-pr-build-receipt requires a path" >&2; exit 2; }
+      reuse_build_receipt=$2
+      shift 2
+      ;;
+    --prepared-fable)
+      [[ $# -ge 2 ]] || { echo "verify-spatial-query: --prepared-fable requires a path" >&2; exit 2; }
+      prepared_fable=$2
+      shift 2
+      ;;
+    --static-only)
+      static_only=true
+      shift
+      ;;
+    --prepared-pr)
+      prepared_pr=true
+      shift
+      ;;
+    *) echo "verify-spatial-query: unknown argument: $1" >&2; exit 2 ;;
+  esac
+done
 
 cd "$repo_root"
 
-"$repo_root/scripts/test-spatial-subject-mutations.sh"
+if [[ "$prepared_pr" == true ]]; then
+  "$repo_root/scripts/test-spatial-subject-mutations.sh" --prepared-pr
+else
+  "$repo_root/scripts/test-spatial-subject-mutations.sh"
+fi
 
 search_fixed_quiet() {
   local pattern=$1
@@ -71,11 +102,29 @@ expect_unreadable_client_scan_error() {
   fi
 }
 
-dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
+expect_unreadable_client_scan_error
+SIR_SPATIAL_FORCE_GREP=1 expect_unreadable_client_scan_error
+require_clean_scan "Client code" client_has_authority_calls
+require_clean_scan "JavaScript/TypeScript" javascript_has_spatial_authority
+if [[ "$static_only" == true ]]; then
+  echo "Spatial query static verification passed: mutations, unreadable-source guards, and authority scans."
+  exit 0
+fi
+
+if [[ -n "$reuse_build_receipt" ]]; then
+  [[ -n "$prepared_fable" ]] || { echo "verify-spatial-query: prepared reuse requires a Fable fixture root" >&2; exit 2; }
+  node scripts/production-build-receipt.mjs verify --owner-command scripts/qualify-pr.sh --receipt "$reuse_build_receipt"
+else
+  dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
+fi
 dotnet_output=$(dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-build --no-restore -- --print-spatial-query)
 
-dotnet fable tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj --outDir "$task_tmp/fable" --noCache
-fable_entry="$task_tmp/fable/SIR.Conformance.Shared/Program.js"
+if [[ -n "$reuse_build_receipt" ]]; then
+  fable_entry="$prepared_fable/SIR.Conformance.Shared/Program.js"
+else
+  dotnet fable tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj --outDir "$task_tmp/fable" --noCache
+  fable_entry="$task_tmp/fable/SIR.Conformance.Shared/Program.js"
+fi
 fable_output=$(node "$fable_entry" --print-spatial-query)
 
 if [[ "$dotnet_output" != "$fable_output" ]]; then
@@ -96,11 +145,6 @@ for runtime in dotnet fable; do
   fi
   search_fixed_quiet "first divergence: fixture=spatial-query byte=0" "$mutation_log"
 done
-
-expect_unreadable_client_scan_error
-SIR_SPATIAL_FORCE_GREP=1 expect_unreadable_client_scan_error
-require_clean_scan "Client code" client_has_authority_calls
-require_clean_scan "JavaScript/TypeScript" javascript_has_spatial_authority
 
 dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-build --no-restore -- --print-spatial-performance
 
