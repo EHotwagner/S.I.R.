@@ -13,6 +13,8 @@ const observed = readFileSync(log, "utf8")
   });
 
 const expected = [
+  "tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj",
+  "tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj",
   "src/SIR.Replay.Web/SIR.Replay.Web.fsproj",
   "src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj",
 ];
