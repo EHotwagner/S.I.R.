@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-15-SIR-186-6.md",
-  "reportSha256": "79697c1c37443a0eda7e4e0828fec8df8c83698f54db854ad965ea9e63d9a32b",
+  "reportSha256": "a0d6d381203a4a473c4c25c429e1f5aa59c36cc47fc5157ed7d234f160bf68dc",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -13,7 +13,7 @@
         { "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md", "result": "verified", "sha256": "4d75f6281128807d928298557c6c1b1a07d8cba602e24e0436112c87cce38291" },
         { "locator": "file:scripts/test-production-delivery-budget.mjs", "result": "verified", "sha256": "bd99b2ebb66a3b765fdc8036cb568a9b8a598d3fb4bc53666e5273f1016cde5a" },
         { "locator": "file:tests/SIR.Browser.Tests/production-delivery.spec.js", "result": "verified", "sha256": "0f16fa283d8b0f9ca3d38a520a00f15bfed322bf687e9b29616d5ea573da4f13" },
-        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "722dc6ef52af6e766bb9682a3edae748b0d74d04deead169fe6581491405e816" },
+        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "0b1b8704a45128205545f717d0cf6a1001e642338e7e12321bb85831dcb2c3a4" },
         { "locator": "command:node scripts/test-production-delivery-budget.mjs", "result": "verified" },
         { "locator": "command:SIR_DELIVERY_BUDGET_MAX_APP_RAW=1190000 node scripts/test-production-delivery-budget.mjs", "result": "verified" },
         { "locator": "command:SIR_DELIVERY_BROWSER_MUTATE_SUBJECT=initial-bytes npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js tests/SIR.Browser.Tests/production-delivery.spec.js", "result": "verified" },
@@ -71,7 +71,7 @@
         { "locator": "file:tests/SIR.Match.Tests/Program.fs", "result": "verified", "sha256": "a92d04ede079247545c5edb679141b01a7b2cc6ff39a61a8776ad8142d1c493e" },
         { "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md", "result": "verified", "sha256": "4d75f6281128807d928298557c6c1b1a07d8cba602e24e0436112c87cce38291" },
         { "locator": "file:readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified", "sha256": "ee26e3ffc9772f1eb1829f1d97381178a791f8a7062b75fc40baba35e79663cd" },
-        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "722dc6ef52af6e766bb9682a3edae748b0d74d04deead169fe6581491405e816" },
+        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "0b1b8704a45128205545f717d0cf6a1001e642338e7e12321bb85831dcb2c3a4" },
         { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/31910063550", "result": "verified" },
         { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/31913327392", "result": "verified" },
         { "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified" }
@@ -92,7 +92,7 @@
       "checkedEvidence": [
         { "locator": "file:tests/SIR.Match.Tests/Program.fs", "result": "verified", "sha256": "a92d04ede079247545c5edb679141b01a7b2cc6ff39a61a8776ad8142d1c493e" },
         { "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md", "result": "verified", "sha256": "4d75f6281128807d928298557c6c1b1a07d8cba602e24e0436112c87cce38291" },
-        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "722dc6ef52af6e766bb9682a3edae748b0d74d04deead169fe6581491405e816" },
+        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "0b1b8704a45128205545f717d0cf6a1001e642338e7e12321bb85831dcb2c3a4" },
         { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/31914865432", "result": "verified" },
         { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/31915418313", "result": "verified" },
         { "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified" }
@@ -115,7 +115,7 @@
         { "locator": "file:docs/performance-budget.md", "result": "verified", "sha256": "5fb42b445999b25fe2fe4dbd80ee350099a1c145e4d44006c01ab6213d72798b" },
         { "locator": "file:readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified", "sha256": "ee26e3ffc9772f1eb1829f1d97381178a791f8a7062b75fc40baba35e79663cd" },
         { "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md", "result": "verified", "sha256": "4d75f6281128807d928298557c6c1b1a07d8cba602e24e0436112c87cce38291" },
-        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "722dc6ef52af6e766bb9682a3edae748b0d74d04deead169fe6581491405e816" },
+        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "0b1b8704a45128205545f717d0cf6a1001e642338e7e12321bb85831dcb2c3a4" },
         { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/31917304397", "result": "verified" },
         { "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified" }
       ],
