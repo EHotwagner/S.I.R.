@@ -15,7 +15,7 @@ export const subjectOrder = ["integrity", ...producerOrder, ...gateOrder];
 export const gateParts = {
   rules: ["native"],
   spatial: ["native", "fable"],
-  cancellation: ["native"],
+  cancellation: ["native", "web"],
   "cross-runtime": ["native", "fable"],
   browser: ["web", "server"],
   documentation: ["web", "docs"],
@@ -33,7 +33,7 @@ export const expectedBuildInvocations = {
     "dependency-receipt", "footprint-envelope", "semantic-edge", "knowledge-cache-key", "spatial-revision-key",
     "deterministic-ordering", "package-adapter", "profile-cache-key", "trace-work-bound",
   ].map((name) => `run-build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj:exception:spatial-${name}:artifacts-path:isolated`),
-  cancellation: ["cancellation-mutant", "cancellation-restored"].flatMap((name) => [
+  cancellation: ["cancellation-mutant"].flatMap((name) => [
     `fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj:exception:${name}`,
     `fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj:exception:${name}`,
   ]),

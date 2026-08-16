@@ -301,7 +301,7 @@ jobs:
 
   cancellation:
     if: needs.route.outputs.cancellation == 'true'
-    needs: [route, integrity, prepare-native]
+    needs: [route, integrity, prepare-native, prepare-web]
     runs-on: ubuntu-latest
     steps:
       - name: Capture runner start
@@ -323,6 +323,8 @@ jobs:
         with: { name: ci-route, path: artifacts/ci }
       - uses: actions/download-artifact@v4
         with: { name: prepared-part-native, path: artifacts/ci/parts }
+      - uses: actions/download-artifact@v4
+        with: { name: prepared-part-web, path: artifacts/ci/parts }
       - run: ./scripts/run-ci-gate.sh cancellation artifacts/ci/results/cancellation.json
         env: { SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}" }
       - if: always()

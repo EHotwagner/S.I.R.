@@ -248,7 +248,7 @@ NODE
     case "$gate" in
       rules) gate_parts=(native) ;;
       spatial|cross-runtime) gate_parts=(native fable) ;;
-      cancellation) gate_parts=(native) ;;
+      cancellation) gate_parts=(native web) ;;
       browser) gate_parts=(web server) ;;
       documentation) gate_parts=(web docs) ;;
     esac
@@ -261,7 +261,7 @@ NODE
     case "$gate" in
       rules) SIR_RULES_PREPARED_PR=1 ./scripts/verify-rules-corpus.sh ;;
       spatial) ./scripts/verify-spatial-query.sh --reuse-pr-build-receipt "$receipt" --prepared-fable "$ci_root/prepared/domain-fable" --prepared-pr ;;
-      cancellation) ./scripts/test-worker-cancellation-subject-mutation.sh ;;
+      cancellation) ./scripts/test-worker-cancellation-subject-mutation.sh --prepared-pr ;;
       cross-runtime)
         ./scripts/test-conformance.sh \
           --reuse-pr-build-receipt "$receipt" \

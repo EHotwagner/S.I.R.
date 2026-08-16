@@ -71,6 +71,10 @@ const contracts = JSON.parse(readFileSync(new URL("../tests/fixtures/ci-qualific
 assert.equal(contracts.feedbackBudgetMilliseconds, feedbackBudgetMilliseconds);
 assert.deepEqual(contracts.gateOrder, gateOrder);
 assert.deepEqual(contracts.subjectOrder, subjectOrder);
+assert.deepEqual(expectedBuildInvocations.cancellation, [
+  "fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj:exception:cancellation-mutant",
+  "fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj:exception:cancellation-mutant",
+]);
 assert.deepEqual(contracts.timingPhases, ["queue", "setup", "restore", "build", "transport", "test", "total"]);
 assert.deepEqual(contracts.schemas, { route: routeSchema, artifactManifest: "sir.ci-artifact-manifest/v1", gateResult: gateSchema, timing: timingSchema, join: joinSchema });
 for (const job of ["route:", "integrity:", "prepare-native:", "prepare-fable:", "prepare-web:", "prepare-server:", "prepare-docs:", "rules:", "spatial:", "cancellation:", "cross-runtime:", "browser:", "documentation:", "evidence:", "pr-verdict:", "full-qualification:"]) assert.match(workflow, new RegExp(`^  ${job}$`, "mu"));
@@ -84,7 +88,7 @@ for (const part of ["native", "fable", "web", "server", "docs"]) assert.match(wo
 assert.doesNotMatch(workflow, /^  prepare:$/mu);
 assert.doesNotMatch(workflow, /prepared-candidate/u);
 assert.match(workflow, /rules:\n[\s\S]*?needs: \[route, integrity, prepare-native\]/u);
-assert.match(workflow, /cancellation:\n[\s\S]*?needs: \[route, integrity, prepare-native\]/u);
+assert.match(workflow, /cancellation:\n[\s\S]*?needs: \[route, integrity, prepare-native, prepare-web\]/u);
 assert.match(workflow, /browser:\n[\s\S]*?needs: \[route, integrity, prepare-web, prepare-server\]/u);
 assert.match(workflow, /documentation:\n[\s\S]*?needs: \[route, integrity, prepare-web, prepare-docs\]/u);
 assert.match(jobBody("browser"), /actions\/setup-dotnet@v4/u);
@@ -93,11 +97,12 @@ assert.doesNotMatch(jobBody("spatial"), /prepared-part-(?:web|server|docs)/u);
 assert.doesNotMatch(jobBody("browser"), /prepared-part-(?:native|fable|docs)/u);
 assert.doesNotMatch(jobBody("documentation"), /prepared-part-(?:native|fable|server)/u);
 assert.match(jobBody("cancellation"), /prepared-part-native/u);
+assert.match(jobBody("cancellation"), /prepared-part-web/u);
 assert.match(jobBody("prepare-server"), /needs: route/u);
 assert.doesNotMatch(jobBody("prepare-server"), /prepared-part-web|qualify-pr\.sh extract-parts web/u);
 const gateRunner = readFileSync(new URL("./run-ci-gate.sh", import.meta.url), "utf8");
 assert.match(gateRunner, /spatial\|cross-runtime\) preflight_parts=\(native fable\)/u);
-assert.match(gateRunner, /cancellation\) preflight_parts=\(native\)/u);
+assert.match(gateRunner, /cancellation\) preflight_parts=\(native web\)/u);
 assert.match(gateRunner, /browser\) preflight_parts=\(web server\)/u);
 assert.match(gateRunner, /documentation\) preflight_parts=\(web docs\)/u);
 assert.match(workflow, /for gate in integrity prepare-native prepare-fable prepare-web prepare-server prepare-docs rules spatial cancellation cross-runtime browser documentation evidence/u);
@@ -118,6 +123,7 @@ assert.match(focusedQualification, /browser\)[\s\S]*compose-browser[\s\S]*npm ru
 assert.match(focusedQualification, /verify-browser-composition/u);
 assert.match(focusedQualification, /rules\) SIR_RULES_PREPARED_PR=1/u);
 assert.match(focusedQualification, /spatial\).*--prepared-pr/u);
+assert.match(focusedQualification, /cancellation\).*--prepared-pr/u);
 assert.doesNotMatch(focusedQualification, /verify --work 138-sir-fable-game-scaffold/u);
 assert.match(focusedQualification, /route\.paths\.map/u);
 assert.match(fullQualification, /--paired-optimization/u);

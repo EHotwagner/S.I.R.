@@ -24,7 +24,7 @@ preflight_parts=()
 case "$subject" in
   rules) preflight_parts=(native) ;;
   spatial|cross-runtime) preflight_parts=(native fable) ;;
-  cancellation) preflight_parts=(native) ;;
+  cancellation) preflight_parts=(native web) ;;
   browser) preflight_parts=(web server) ;;
   documentation) preflight_parts=(web docs) ;;
 esac
@@ -44,6 +44,7 @@ const { writeFileSync } = require("node:fs");
 writeFileSync(process.argv[2], `${JSON.stringify({ restore: 0, build: 0, transport: 0, failureStage: "transport" })}\n`);
 NODE
 fi
+rm -f -- "$repo_root/artifacts/ci/extract-timing.json"
 
 trace_dir=""
 if [[ "$subject" != integrity && "$subject" != evidence ]]; then
@@ -73,7 +74,11 @@ completed=$(date +%s%3N)
 
 restore_ms=0
 build_ms=0
-transport_ms=$pre_transport_ms
+post_transport_ms=0
+if [[ -f "$repo_root/artifacts/ci/extract-timing.json" ]]; then
+  post_transport_ms=$(node -e 'process.stdout.write(String(JSON.parse(require("node:fs").readFileSync(process.argv[1], "utf8")).transport ?? 0))' "$repo_root/artifacts/ci/extract-timing.json")
+fi
+transport_ms=$((pre_transport_ms + post_transport_ms))
 phase_setup_ms=0
 phase_started=0
 failure_stage=test
