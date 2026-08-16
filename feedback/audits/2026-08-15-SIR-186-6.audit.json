@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-15-SIR-186-6.md",
-  "reportSha256": "055588560136ef53b16dcdec91c9bbd24ba787ffa48ca38ff8f0b25bc8c7b3ae",
+  "reportSha256": "79697c1c37443a0eda7e4e0828fec8df8c83698f54db854ad965ea9e63d9a32b",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -10,10 +10,10 @@
       "status": "positive-pattern",
       "missingFacts": [],
       "checkedEvidence": [
-        { "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md", "result": "verified", "sha256": "5853d52fd874f066b76687118281c87487d0eb8536f2fc4572e0d4df9baf5e96" },
+        { "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md", "result": "verified", "sha256": "4d75f6281128807d928298557c6c1b1a07d8cba602e24e0436112c87cce38291" },
         { "locator": "file:scripts/test-production-delivery-budget.mjs", "result": "verified", "sha256": "bd99b2ebb66a3b765fdc8036cb568a9b8a598d3fb4bc53666e5273f1016cde5a" },
         { "locator": "file:tests/SIR.Browser.Tests/production-delivery.spec.js", "result": "verified", "sha256": "0f16fa283d8b0f9ca3d38a520a00f15bfed322bf687e9b29616d5ea573da4f13" },
-        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "623412af840cdf69b0c6d9e0ba2519c1c8064b33c1c885d551b8951511232516" },
+        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "722dc6ef52af6e766bb9682a3edae748b0d74d04deead169fe6581491405e816" },
         { "locator": "command:node scripts/test-production-delivery-budget.mjs", "result": "verified" },
         { "locator": "command:SIR_DELIVERY_BUDGET_MAX_APP_RAW=1190000 node scripts/test-production-delivery-budget.mjs", "result": "verified" },
         { "locator": "command:SIR_DELIVERY_BROWSER_MUTATE_SUBJECT=initial-bytes npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js tests/SIR.Browser.Tests/production-delivery.spec.js", "result": "verified" },
@@ -23,7 +23,7 @@
         "The 1,196,127-byte application and 1,228,472-byte browser-graph values are retained round-one measurements; the last independent aggregate measured a 1,198,954-byte application entry, still below budget.",
         "The tightened static and injected browser commands are intentional red proofs and were independently reproduced against unchanged delivery subjects.",
         "The abandoned mangling experiments and rebuild count are committed collector evidence, not independently replayable history.",
-        "The exact 55b41ca detached aggregate exited zero and verified normal delivery, both intentional static/browser red mutations, the complete browser route, and tracked no-drift; delivery measurements remain headless and host-specific."
+        "The exact 3e158a1 detached aggregate exited zero and verified normal delivery, both intentional static/browser red mutations, the complete browser route, and tracked no-drift; delivery measurements remain headless and host-specific."
       ]
     },
     {
@@ -42,7 +42,7 @@
       "confidenceLimits": [
         "The historical failing browser output was not retained; the former all-interactive-target rejection is reconstructable from source history.",
         "The tactical journey verifies focused native Space behavior, resulting state, identity, and replay but does not expose a raw dispatch counter; exclusive ownership is also established by the verified target-filter source.",
-        "The exact 55b41ca detached aggregate exited zero and reverified the focused modified-key browser route, the focused native-control tactical journey, the complete browser suite, and tracked no-drift."
+        "The exact 3e158a1 detached aggregate exited zero and reverified the focused modified-key browser route, the focused native-control tactical journey, the complete browser suite, and tracked no-drift."
       ]
     },
     {
@@ -59,7 +59,7 @@
       "confidenceLimits": [
         "The prior aggregate proves repaired bindings and tracked no-drift but does not reproduce the historical red candidates.",
         "The historical diff verifies both manifest digest updates and the pinned-source assertion update.",
-        "The exact 55b41ca detached aggregate exited zero after regenerating the review manifests, completing documentation/browser qualification, and leaving tracked files drift-free."
+        "The exact 3e158a1 detached aggregate exited zero after regenerating the review manifests, completing documentation/browser qualification, and leaving tracked files drift-free."
       ]
     },
     {
@@ -68,10 +68,10 @@
       "missingFacts": [],
       "checkedEvidence": [
         { "locator": "file:src/SIR.Simulation/TacticalEnvironment.fs", "result": "verified", "sha256": "4a98aea38182762bc3fbe5f72a3c13dd0b277ddf5f390d933b0844eacb0d62bb" },
-        { "locator": "file:tests/SIR.Match.Tests/Program.fs", "result": "verified", "sha256": "2c5f6576eb9e1d96eb636f2c0b06028fb078ec18157e3d9f565decdf2588edb9" },
-        { "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md", "result": "verified", "sha256": "5853d52fd874f066b76687118281c87487d0eb8536f2fc4572e0d4df9baf5e96" },
-        { "locator": "file:readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified", "sha256": "b3742ff69eaeade0b0657b41f0dad641bb4590fc34ed91520ab15530fc6284cb" },
-        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "623412af840cdf69b0c6d9e0ba2519c1c8064b33c1c885d551b8951511232516" },
+        { "locator": "file:tests/SIR.Match.Tests/Program.fs", "result": "verified", "sha256": "a92d04ede079247545c5edb679141b01a7b2cc6ff39a61a8776ad8142d1c493e" },
+        { "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md", "result": "verified", "sha256": "4d75f6281128807d928298557c6c1b1a07d8cba602e24e0436112c87cce38291" },
+        { "locator": "file:readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified", "sha256": "ee26e3ffc9772f1eb1829f1d97381178a791f8a7062b75fc40baba35e79663cd" },
+        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "722dc6ef52af6e766bb9682a3edae748b0d74d04deead169fe6581491405e816" },
         { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/31910063550", "result": "verified" },
         { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/31913327392", "result": "verified" },
         { "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified" }
@@ -82,7 +82,7 @@
         "The production-source mutation requires the allocation-specific error and restores tracked source; its exact 26,124,528-byte red observation is retained in the receipt rather than printed by the aggregate.",
         "The round-one allocation comparison and sixteen-process timing range are committed historical measurements; the aggregate does not launch the contention batch.",
         "Unicode differential is native; explicit native/Fable comparison uses the exterior fixture; the general fallback remains source-bound without a newly executed malformed-input equivalence differential.",
-        "The exact 55b41ca detached aggregate exited zero: its initial native preview was 10.632 ms validation / 19.535 ms assembly / 12,124,472 bytes with exact identity, and its post-mutation restored rerun was 9.900 ms / 18.841 ms / 12,124,472 bytes with the same exact identity; the production allocation mutation failed its named bound and restored tracked source cleanly. Timings and allocations remain host observations."
+        "The exact 3e158a1 detached aggregate exited zero: its initial native preview was 10.650 ms validation / 19.207 ms assembly / 12,124,472 bytes with exact identity, and its post-mutation restored rerun was 9.943 ms / 19.548 ms / 12,124,472 bytes with the same exact identity; the production allocation mutation failed its named bound and restored tracked source cleanly. Timings and allocations remain host observations."
       ]
     },
     {
@@ -90,9 +90,9 @@
       "status": "actionable",
       "missingFacts": [],
       "checkedEvidence": [
-        { "locator": "file:tests/SIR.Match.Tests/Program.fs", "result": "verified", "sha256": "2c5f6576eb9e1d96eb636f2c0b06028fb078ec18157e3d9f565decdf2588edb9" },
-        { "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md", "result": "verified", "sha256": "5853d52fd874f066b76687118281c87487d0eb8536f2fc4572e0d4df9baf5e96" },
-        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "623412af840cdf69b0c6d9e0ba2519c1c8064b33c1c885d551b8951511232516" },
+        { "locator": "file:tests/SIR.Match.Tests/Program.fs", "result": "verified", "sha256": "a92d04ede079247545c5edb679141b01a7b2cc6ff39a61a8776ad8142d1c493e" },
+        { "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md", "result": "verified", "sha256": "4d75f6281128807d928298557c6c1b1a07d8cba602e24e0436112c87cce38291" },
+        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "722dc6ef52af6e766bb9682a3edae748b0d74d04deead169fe6581491405e816" },
         { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/31914865432", "result": "verified" },
         { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/31915418313", "result": "verified" },
         { "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified" }
@@ -102,7 +102,28 @@
         "Run 31915418313 cross-runtime job 95086404191 at 9ae6c4f is green and logs preview 37.110 ms / 13,693,216 bytes plus representative source/final/participants/propagation/query/crossed values 100/100/100/0/50/100 at 40.130 ms; the documentation job 95086404165 is also green.",
         "The first five representative structural values are exact gates; crossed cells are only bound to nonzero, so the observed value 100 is not an exact crossed-cell acceptance contract.",
         "The repair changes diagnostic ordering and predicate naming, not workload semantics or the 50-ms ceiling.",
-        "The exact 55b41ca detached aggregate exited zero and emitted representative values 100/100/100/0/50/100 at 17.322 ms initially and 17.384 ms after the allocation-subject restore; the first five values passed exact gates, crossed cells passed the nonzero gate, and the independent 50-ms timing gate passed. Hosted and local timings remain host-specific."
+        "The exact 3e158a1 detached aggregate exited zero and emitted representative values 100/100/100/0/50/100 at 17.405 ms initially and 16.859 ms after the allocation-subject restore; all seven unchanged predicates also turned red under their owning subject inversions and restored cleanly. Hosted and local timings remain host-specific."
+      ]
+    },
+    {
+      "id": "§4.6",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:tests/SIR.Match.Tests/Program.fs", "result": "verified", "sha256": "a92d04ede079247545c5edb679141b01a7b2cc6ff39a61a8776ad8142d1c493e" },
+        { "locator": "file:tests/SIR.Client.Tests/ClientPerformanceQualification.fs", "result": "verified", "sha256": "23d3fda9a6ff24f7eb7d324caa77b684973fd5df0fe727d61291f0f44f6f7dc1" },
+        { "locator": "file:docs/performance-budget.md", "result": "verified", "sha256": "5fb42b445999b25fe2fe4dbd80ee350099a1c145e4d44006c01ab6213d72798b" },
+        { "locator": "file:readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified", "sha256": "ee26e3ffc9772f1eb1829f1d97381178a791f8a7062b75fc40baba35e79663cd" },
+        { "locator": "file:readiness/186-authored-tactical-parcels/performance-candidate.md", "result": "verified", "sha256": "4d75f6281128807d928298557c6c1b1a07d8cba602e24e0436112c87cce38291" },
+        { "locator": "file:feedback/checkpoints/item-186-authored-tactical-parcels.jsonl", "result": "verified", "sha256": "722dc6ef52af6e766bb9682a3edae748b0d74d04deead169fe6581491405e816" },
+        { "locator": "run:https://github.com/EHotwagner/S.I.R./actions/runs/31917304397", "result": "verified" },
+        { "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "Run 31917304397 verifies the 9.271-ms dense pointer-preview observation at c19d111 but predates the later 12-ms versioned ceiling.",
+        "The exact 3e158a1 detached aggregate exited zero with dense pointer preview at 2.752 ms and independently exercised all seven representative reds plus the production MapEditor delay red and clean restores.",
+        "The focused MapEditor subject mutation observed 22.735 ms red and 2.652 ms restored green; wall-clock values remain host-specific while unchanged predicates and restoration are deterministic contracts.",
+        "Round-five hosted exact-head CI and protected acceptance remain pending."
       ]
     }
   ]
