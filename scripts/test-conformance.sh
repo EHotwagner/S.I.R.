@@ -104,6 +104,7 @@ else
   # Later production worker qualification deliberately uses --no-build/--no-restore;
   # produce its declared Release prerequisite inside this clean aggregate route.
   dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
+  dotnet build tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore
 fi
 
 dotnet_output=$(dotnet run \
@@ -113,6 +114,7 @@ dotnet_output=$(dotnet run \
 
 dotnet run \
   --project tests/SIR.Client.Tests/SIR.Client.Tests.fsproj \
+  -c Release \
   --no-build \
   --no-restore
 

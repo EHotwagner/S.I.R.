@@ -123,16 +123,21 @@ NODE
         solution_pid=$!
         dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore >"$part_root/domain-release.log" 2>&1 &
         release_pid=$!
+        dotnet build tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore >"$part_root/client-release.log" 2>&1 &
+        client_release_pid=$!
         part_failed=0
         wait "$solution_pid" || part_failed=1
         wait "$release_pid" || part_failed=1
+        wait "$client_release_pid" || part_failed=1
         sed -n '1,240p' "$part_root/solution-debug.log"
         sed -n '1,240p' "$part_root/domain-release.log"
+        sed -n '1,240p' "$part_root/client-release.log"
         [[ $part_failed -eq 0 ]] || { echo "qualify-pr: native prepare part failed" >&2; exit 1; }
         part_paths=(
           tests/SIR.Domain.Tests/bin/Debug/net10.0
           tests/SIR.Domain.Tests/bin/Release/net10.0
           tests/SIR.Client.Tests/bin/Debug/net10.0
+          tests/SIR.Client.Tests/bin/Release/net10.0
           tests/SIR.Client.Tests/bin/ScenarioCatalogRuntime/Debug/net10.0
           tests/SIR.ModalInput.Tests/bin/Debug/net10.0
           tests/SIR.Match.Tests/bin/Debug/net10.0
