@@ -28,6 +28,7 @@ if [[ -n "$reuse_build_receipt" ]]; then
   node scripts/production-build-receipt.mjs verify \
     --owner-command scripts/qualify-production.sh \
     --receipt "$reuse_build_receipt"
+  dotnet build src/SIR.Client/SIR.Client.fsproj -c Release --no-restore
 else
   dotnet tool restore
   dotnet restore SIR.slnx --locked-mode
