@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { canonicalArtifactBindings, gateOrder, gateParts, producerOrder, subjectOrder, gateResult, joinRoute, routePaths, feedbackBudgetMilliseconds, routeSchema, gateSchema, joinSchema, timingSchema } from "./ci-route.mjs";
+import { canonicalArtifactBindings, expectedBuildInvocations, gateOrder, gateParts, producerOrder, subjectOrder, gateResult, joinRoute, routePaths, feedbackBudgetMilliseconds, routeSchema, gateSchema, joinSchema, timingSchema } from "./ci-route.mjs";
 
 const route = (paths) => routePaths(paths, { commit: "a".repeat(40), tree: "b".repeat(40) });
 
@@ -31,7 +31,7 @@ const resultFor = (gate, status = "pass", overrides = {}) => gateResult(gate, st
   receiptReused: (gateParts[gate] ?? []).length > 0,
   ...overrides,
 });
-const passing = expectedSubjects.map((gate, index) => resultFor(gate, "pass", { cacheHit: index === 0, buildInvocations: gate.startsWith("prepare-") ? [gate] : [] }));
+const passing = expectedSubjects.map((gate, index) => resultFor(gate, "pass", { cacheHit: index === 0, buildInvocations: expectedBuildInvocations[gate] }));
 assert.deepEqual(canonicalArtifactBindings({ web: "1", server: "2" }), canonicalArtifactBindings({ server: "2", web: "1" }));
 assert.deepEqual(gateResult("browser", "pass", {}, { artifactBindings: { web: "1", server: "2" }, buildInvocations: ["z", "a"] }).buildInvocations, ["a", "z"]);
 const joined = joinRoute(domain, passing, { startedAtMilliseconds: 1_000, completedAtMilliseconds: 299_000 });
@@ -52,6 +52,17 @@ assert.ok(staleCandidate.failures.some(({ code }) => code === "candidate-binding
 const tamperedRoute = { ...domain, paths: ["src/SIR.Domain/Tampered.fs"] };
 const staleRoute = joinRoute(tamperedRoute, passing, { completedAtMilliseconds: 1 });
 assert.ok(staleRoute.failures.some(({ code }) => code === "route-digest-mismatch"));
+const duplicateUnknownBuild = joinRoute(domain, passing.map((result) => result.gate === "rules" ? {
+  ...result,
+  buildInvocations: ["build:SIR.slnx", "run-build:tests/Unknown.fsproj"],
+} : result), { completedAtMilliseconds: 1 });
+assert.ok(duplicateUnknownBuild.failures.some(({ code, invocation }) => code === "duplicate-build-invocation" && invocation === "build:SIR.slnx"));
+assert.ok(duplicateUnknownBuild.failures.some(({ code, invocation }) => code === "unknown-build-invocation" && invocation === "run-build:tests/Unknown.fsproj"));
+const missingBuildDuration = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
+  ...result,
+  timingMilliseconds: { ...result.timingMilliseconds, build: 0 },
+} : result), { completedAtMilliseconds: 1 });
+assert.ok(missingBuildDuration.failures.some(({ code, subject }) => code === "missing-build-duration" && subject === "prepare-native"));
 assert.throws(() => gateResult("unknown", "pass"), /unknown gate result/u);
 
 const workflow = readFileSync(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8");
@@ -82,7 +93,8 @@ assert.doesNotMatch(jobBody("spatial"), /prepared-part-(?:web|server|docs)/u);
 assert.doesNotMatch(jobBody("browser"), /prepared-part-(?:native|fable|docs)/u);
 assert.doesNotMatch(jobBody("documentation"), /prepared-part-(?:native|fable|server)/u);
 assert.match(jobBody("cancellation"), /prepared-part-native/u);
-assert.match(jobBody("prepare-server"), /needs: \[route, prepare-web\][\s\S]*prepared-part-web[\s\S]*qualify-pr\.sh extract-parts web/u);
+assert.match(jobBody("prepare-server"), /needs: route/u);
+assert.doesNotMatch(jobBody("prepare-server"), /prepared-part-web|qualify-pr\.sh extract-parts web/u);
 const gateRunner = readFileSync(new URL("./run-ci-gate.sh", import.meta.url), "utf8");
 assert.match(gateRunner, /spatial\|cross-runtime\) preflight_parts=\(native fable\)/u);
 assert.match(gateRunner, /cancellation\) preflight_parts=\(native\)/u);
@@ -102,6 +114,8 @@ assert.doesNotMatch(focusedQualification, /--output .*obj/u);
 assert.match(focusedQualification, /dotnet restore SIR\.slnx --locked-mode/u);
 assert.match(focusedQualification, /trap write_part_timing EXIT/u);
 assert.match(focusedQualification, /verify-staged[\s\S]*cp -a "\$stage\/\$output_path" "\$target"/u);
+assert.match(focusedQualification, /browser\)[\s\S]*compose-browser[\s\S]*npm run test:browser/u);
+assert.match(focusedQualification, /verify-browser-composition/u);
 assert.match(focusedQualification, /rules\) SIR_RULES_PREPARED_PR=1/u);
 assert.match(focusedQualification, /spatial\).*--prepared-pr/u);
 assert.doesNotMatch(focusedQualification, /verify --work 138-sir-fable-game-scaffold/u);

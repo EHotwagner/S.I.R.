@@ -177,7 +177,7 @@ jobs:
 
   prepare-server:
     if: needs.route.outputs.classification == 'browser' || needs.route.outputs.classification == 'cross-cutting'
-    needs: [route, prepare-web]
+    needs: route
     runs-on: ubuntu-latest
     steps:
       - name: Capture runner start
@@ -190,9 +190,6 @@ jobs:
         with: { node-version: 26.5.0 }
       - uses: actions/download-artifact@v4
         with: { name: ci-route, path: artifacts/ci }
-      - uses: actions/download-artifact@v4
-        with: { name: prepared-part-web, path: artifacts/ci/parts }
-      - run: ./scripts/qualify-pr.sh extract-parts web
       - run: ./scripts/qualify-pr.sh prepare-part server
       - if: always()
         uses: actions/upload-artifact@v4

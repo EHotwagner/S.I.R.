@@ -25,7 +25,7 @@ if ! grep -F 'do! yieldToWorkerMessages () |> Async.AwaitPromise' "$subject" >/d
 fi
 
 sed -i 's/do! yieldToWorkerMessages () |> Async.AwaitPromise/()/' "$subject"
-"$repo_root/scripts/build-client.sh" >/dev/null
+SIR_BUILD_EXCEPTION=cancellation-mutant "$repo_root/scripts/build-client.sh" >/dev/null
 
 if node "$repo_root/scripts/smoke-worker-roundtrip.mjs" >"$log" 2>&1; then
   echo "Worker cancellation subject mutation unexpectedly passed." >&2
@@ -39,6 +39,6 @@ if ! grep -E 'completed before the queued cancellation|cancellation acknowledgem
 fi
 
 restore_subject
-"$repo_root/scripts/build-client.sh" >/dev/null
+SIR_BUILD_EXCEPTION=cancellation-restored "$repo_root/scripts/build-client.sh" >/dev/null
 node "$repo_root/scripts/smoke-worker-roundtrip.mjs" >/dev/null
 echo "Worker cancellation subject mutation failed closed and the restored worker acknowledged cancellation."

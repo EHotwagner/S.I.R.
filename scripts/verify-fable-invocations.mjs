@@ -22,8 +22,11 @@ if (expected.size === 0) for (const project of defaults) expected.set(project, 1
 
 const observed = new Map();
 for (const line of readFileSync(log, "utf8").split(/\r?\n/u).filter(Boolean)) {
-  const [kind, project, extra] = line.split("\t");
-  if (kind !== "fable" || !project || extra !== undefined) throw new Error(`verify-fable-invocations: unreadable entry: ${line}`);
+  const [kind, project, identity, started, completed, extra] = line.split("\t");
+  if (kind !== "fable" || !project || !identity || !/^(-|exception:[a-z0-9-]+)$/u.test(identity)
+    || !/^\d+$/u.test(started) || !/^\d+$/u.test(completed) || Number(completed) < Number(started) || extra !== undefined) {
+    throw new Error(`verify-fable-invocations: unreadable entry: ${line}`);
+  }
   observed.set(project, (observed.get(project) ?? 0) + 1);
 }
 const canonical = (values) => [...values.entries()].sort(([left], [right]) => left.localeCompare(right)).map(([project, count]) => ({ project, count }));

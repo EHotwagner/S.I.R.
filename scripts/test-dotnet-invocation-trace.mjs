@@ -44,19 +44,34 @@ try {
   run(shim, ["run", "--project", "tests/Mutation.fsproj"], env);
   run(shim, ["run", "--project", "tests/Reused.fsproj", "--no-build", "--no-restore"], env);
   const buildInventory = (await readFile(log, "utf8")).trim().split("\n");
-  if (JSON.stringify(buildInventory) !== JSON.stringify([
+  const buildSubjects = buildInventory.map((line) => {
+    const [kind, project, identity, started, completed, extra] = line.split("\t");
+    if (!kind || !project || identity !== "-" || !/^\d+$/u.test(started) || !/^\d+$/u.test(completed) || Number(completed) < Number(started) || extra !== undefined) throw new Error(`malformed timed build trace: ${line}`);
+    return `${kind}\t${project}`;
+  });
+  if (JSON.stringify(buildSubjects) !== JSON.stringify([
     "build\ttests/Build.fsproj",
     "publish\tsrc/Server.fsproj",
     "run-build\ttests/Mutation.fsproj",
-  ])) throw new Error(`build invocation trace was incomplete or counted reuse as a build: ${JSON.stringify(buildInventory)}`);
+  ])) throw new Error(`build invocation trace was incomplete or counted reuse as a build: ${JSON.stringify(buildSubjects)}`);
 
-  await writeFile(log, `${expected.map((project) => `fable\t${project}`).join("\n")}\n`);
+  await writeFile(log, "");
+  run(shim, ["run", "--project", join(root, "tests/Mutation.fsproj"), "--artifacts-path", join(fixture, "isolated")], { ...env, SIR_DOTNET_TRACE_ROOT: root, SIR_BUILD_EXCEPTION: "spatial-fixture" });
+  const isolated = (await readFile(log, "utf8")).trim().split("\t");
+  if (isolated[0] !== "run-build" || isolated[1] !== "tests/Mutation.fsproj" || isolated[2] !== "exception:spatial-fixture:artifacts-path:isolated") throw new Error(`isolated exception identity was not traced: ${JSON.stringify(isolated)}`);
+
+  await writeFile(log, "");
+  run(shim, ["fable", expected[3]], { ...env, SIR_BUILD_EXCEPTION: "cancellation-fixture" });
+  const attributedFable = (await readFile(log, "utf8")).trim().split("\t");
+  if (attributedFable[0] !== "fable" || attributedFable[1] !== expected[3] || attributedFable[2] !== "exception:cancellation-fixture") throw new Error(`Fable exception identity was not traced: ${JSON.stringify(attributedFable)}`);
+
+  await writeFile(log, `${expected.map((project) => `fable\t${project}\t-\t1\t2`).join("\n")}\n`);
   run(shim, ["fable", "src/Unknown.Direct.Invocation.fsproj"], env);
   const unknownRed = run(process.execPath, ["scripts/verify-fable-invocations.mjs", log]);
   if (unknownRed.status === 0 || !unknownRed.stderr.includes("src/Unknown.Direct.Invocation.fsproj")) {
     throw new Error(`direct unknown invocation did not make the unchanged gate red: ${unknownRed.stdout} ${unknownRed.stderr}`);
   }
-  await writeFile(log, "not-fable\tbroken\n");
+  await writeFile(log, "not-fable\tbroken\t-\t1\t2\n");
   const unreadable = run(process.execPath, ["scripts/verify-fable-invocations.mjs", log]);
   if (unreadable.status === 0 || !unreadable.stderr.includes("unreadable entry")) throw new Error("unreadable trace produced a verdict");
   console.log("dotnet process-boundary Fable inventory passed: declared graph exact-once green, duplicate red, unknown red, unreadable trace red");

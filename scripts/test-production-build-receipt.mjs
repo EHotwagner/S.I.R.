@@ -22,7 +22,7 @@ try {
   await writeFile(join(fixture, "input.txt"), "input-v1\n");
   await writeFile(join(fixture, "output", "bundle.js"), "bundle-v1\n");
   await chmod(join(fixture, "output", "bundle.js"), 0o755);
-  await writeFile(join(fixture, ".gitignore"), "output/\nlate-output/\nreceipts/\n");
+  await writeFile(join(fixture, ".gitignore"), "artifacts/\noutput/\nlate-output/\nreceipts/\n");
   await writeFile(join(fixture, "package-lock.json"), JSON.stringify({ packages: { "node_modules/vite": { version: "8.1.5" } } }));
   await writeFile(join(fixture, ".config", "dotnet-tools.json"), JSON.stringify({ tools: { fable: { version: "5.13.0" }, "fsdocs-tool": { version: "21.0.0" } } }));
   run("git", ["init", "-q"]);
@@ -40,6 +40,28 @@ try {
   run("tar", ["--sort=name", "--mtime=@0", "--owner=0", "--group=0", "--numeric-owner", "-cf", "prepared.tar", "output", receipt]);
   const manifestCreated = JSON.parse(run(process.execPath, [artifactManifest, "create", "--root", fixture, "--route", "route.json", "--build-receipt", receipt, "--archive", "prepared.tar", "--directory", "manifests"]));
   JSON.parse(run(process.execPath, [artifactManifest, "verify-transport", "--root", fixture, "--route", "route.json", "--archive", "prepared.tar", "--manifest", manifestCreated.manifest]));
+
+  await mkdir(join(fixture, "artifacts", "client"), { recursive: true });
+  await mkdir(join(fixture, "artifacts", "publish"), { recursive: true });
+  await writeFile(join(fixture, "artifacts", "client", "index.html"), "verified web\n");
+  await writeFile(join(fixture, "artifacts", "publish", "SIR.Server.dll"), "verified server\n");
+  const webCreated = JSON.parse(run(process.execPath, receiptArgs("create", ["--output", "client=artifacts/client", "--receipt-directory", "receipts"])));
+  const serverCreated = JSON.parse(run(process.execPath, receiptArgs("create", ["--output", "publish=artifacts/publish", "--receipt-directory", "receipts"])));
+  const webReceipt = JSON.parse(await readFile(join(fixture, webCreated.receipt), "utf8"));
+  const serverReceipt = JSON.parse(await readFile(join(fixture, serverCreated.receipt), "utf8"));
+  run("tar", ["--sort=name", "--mtime=@0", "--owner=0", "--group=0", "--numeric-owner", "-cf", "web-prepared.tar", ...webReceipt.outputs.map(({ path }) => path), webCreated.receipt]);
+  run("tar", ["--sort=name", "--mtime=@0", "--owner=0", "--group=0", "--numeric-owner", "-cf", "server-prepared.tar", ...serverReceipt.outputs.map(({ path }) => path), serverCreated.receipt]);
+  const webManifest = JSON.parse(run(process.execPath, [artifactManifest, "create", "--root", fixture, "--route", "route.json", "--build-receipt", webCreated.receipt, "--archive", "web-prepared.tar", "--directory", "manifests"]));
+  const serverManifest = JSON.parse(run(process.execPath, [artifactManifest, "create", "--root", fixture, "--route", "route.json", "--build-receipt", serverCreated.receipt, "--archive", "server-prepared.tar", "--directory", "manifests"]));
+  await cp(join(fixture, "artifacts", "client"), join(fixture, "artifacts", "publish", "wwwroot"), { recursive: true });
+  const compositionArgs = ["--root", fixture, "--web-manifest", webManifest.manifest, "--server-manifest", serverManifest.manifest, "--client", "artifacts/client", "--publish", "artifacts/publish", "--output", "artifacts/ci/browser-composition.json"];
+  JSON.parse(run(process.execPath, [artifactManifest, "create-browser-composition", ...compositionArgs]));
+  JSON.parse(run(process.execPath, [artifactManifest, "verify-browser-composition", ...compositionArgs]));
+  await writeFile(join(fixture, "artifacts", "publish", "wwwroot", "index.html"), "mutated composition\n");
+  const compositionMutation = spawnSync(process.execPath, [artifactManifest, "verify-browser-composition", ...compositionArgs], { cwd: fixture, encoding: "utf8" });
+  if (compositionMutation.status === 0 || !compositionMutation.stderr.includes("browser-composition-output-drift")) throw new Error("mutated browser composition was accepted");
+  await writeFile(join(fixture, "artifacts", "publish", "wwwroot", "index.html"), "verified web\n");
+  JSON.parse(run(process.execPath, [artifactManifest, "verify-browser-composition", ...compositionArgs]));
   await mkdir(join(fixture, "extracted"));
   run("tar", ["-xf", "../prepared.tar"], { cwd: join(fixture, "extracted") });
   JSON.parse(run(process.execPath, [artifactManifest, "verify-staged", "--root", fixture, "--build-receipt", receipt, "--manifest", manifestCreated.manifest, "--stage", "extracted"]));

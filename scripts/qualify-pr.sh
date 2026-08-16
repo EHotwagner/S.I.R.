@@ -18,15 +18,18 @@ start_dotnet_trace() {
   ln -s "$repo_root/scripts/dotnet-invocation-trace.sh" "$trace_dir/dotnet"
   export SIR_REAL_DOTNET="$real_dotnet"
   export SIR_DOTNET_INVOCATION_LOG="$trace_log"
+  export SIR_DOTNET_TRACE_ROOT="$repo_root"
   export PATH="$trace_dir:$PATH"
 }
 
 append_traced_builds() {
   local -n target=$1
   [[ -f "${trace_log:-}" ]] || return 0
-  while IFS=$'\t' read -r kind project; do
+  while IFS=$'\t' read -r kind project identity _started _completed; do
     [[ -n "$kind" && -n "$project" ]] || continue
-    target+=(--build "$kind:$project")
+    invocation="$kind:$project"
+    [[ "$identity" == "-" ]] || invocation="$invocation:$identity"
+    target+=(--build "$invocation")
   done < <(sort "$trace_log")
 }
 
@@ -222,6 +225,23 @@ NODE
       node scripts/ci-artifact-manifest.mjs verify-staged --root "$repo_root" --build-receipt "$receipt" --manifest "$manifest" --stage "$ci_root/staging/$part"
     done
     ;;
+  compose-browser)
+    web_manifest=$(<"$ci_root/parts/web.manifest.path")
+    server_manifest=$(<"$ci_root/parts/server.manifest.path")
+    rm -rf -- artifacts/publish/wwwroot
+    mkdir -p artifacts/publish/wwwroot
+    cp -a artifacts/client/. artifacts/publish/wwwroot/
+    node scripts/ci-artifact-manifest.mjs create-browser-composition \
+      --web-manifest "$web_manifest" --server-manifest "$server_manifest" \
+      --client artifacts/client --publish artifacts/publish --output "$ci_root/browser-composition.json"
+    ;;
+  verify-browser-composition)
+    web_manifest=$(<"$ci_root/parts/web.manifest.path")
+    server_manifest=$(<"$ci_root/parts/server.manifest.path")
+    node scripts/ci-artifact-manifest.mjs verify-browser-composition \
+      --web-manifest "$web_manifest" --server-manifest "$server_manifest" \
+      --client artifacts/client --publish artifacts/publish --output "$ci_root/browser-composition.json"
+    ;;
   gate)
     gate=${1:?qualify-pr gate requires a gate id}
     gate_parts=()
@@ -249,6 +269,7 @@ NODE
           --domain-only
         ;;
       browser)
+        "$0" compose-browser >/dev/null
         npm run test:browser
         ;;
       documentation)
@@ -312,9 +333,10 @@ NODE
     if [[ ${#gate_parts[@]} -gt 0 ]]; then
       "$0" verify-parts "${gate_parts[@]}" >/dev/null
     fi
+    if [[ "$gate" == browser ]]; then "$0" verify-browser-composition >/dev/null; fi
     ;;
   *)
-    echo "qualify-pr: usage route PATHS|integrity|prepare-part ID|extract-parts IDS...|verify-parts IDS...|gate ID" >&2
+    echo "qualify-pr: usage route PATHS|integrity|prepare-part ID|extract-parts IDS...|verify-parts IDS...|compose-browser|verify-browser-composition|gate ID" >&2
     exit 2
     ;;
 esac

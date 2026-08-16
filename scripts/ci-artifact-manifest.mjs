@@ -5,6 +5,7 @@ import { lstat, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 
 export const schema = "sir.ci-artifact-manifest/v1";
+export const browserCompositionSchema = "sir.ci-browser-composition/v1";
 const canonical = (value) => `${JSON.stringify(value, null, 2)}\n`;
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const command = (root, program, args) => execFileSync(program, args, { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
@@ -61,6 +62,40 @@ async function stagedOutputs(root, outputs) {
     identities.push({ id: output.id, path, files: entries, digest: sha256(canonical(entries)) });
   }
   return identities.sort((left, right) => left.id.localeCompare(right.id));
+}
+
+async function treeIdentity(root, path) {
+  const base = resolve(root, safeRelative(path));
+  const entries = [];
+  for (const file of await filesUnder(root, path)) {
+    const bytes = await readFile(file);
+    const information = await lstat(file);
+    entries.push({ path: relative(base, file).replaceAll("\\", "/"), mode: information.mode & 0o777, bytes: bytes.byteLength, sha256: sha256(bytes) });
+  }
+  return { files: entries, digest: sha256(canonical(entries)) };
+}
+
+async function browserComposition(root, webManifestPath, serverManifestPath, clientPath, publishPath) {
+  const web = await readManifest(root, webManifestPath);
+  const server = await readManifest(root, serverManifestPath);
+  if (canonical(web.candidate) !== canonical(server.candidate) || canonical(web.route) !== canonical(server.route)) throw new Error("ci-artifact-manifest: composition-input-binding-drift");
+  if (!web.outputs.some(({ path }) => path === clientPath) || !server.outputs.some(({ path }) => path === publishPath)) throw new Error("ci-artifact-manifest: composition-owner-output-missing");
+  const source = await treeIdentity(root, clientPath);
+  const outputPath = `${publishPath.replace(/\/$/u, "")}/wwwroot`;
+  const output = await treeIdentity(root, outputPath);
+  if (canonical(source) !== canonical(output)) throw new Error("ci-artifact-manifest: browser-composition-output-drift");
+  return {
+    schema: browserCompositionSchema,
+    result: "pass",
+    candidate: web.candidate,
+    route: web.route,
+    inputs: {
+      serverManifest: { path: serverManifestPath.replaceAll("\\", "/"), digest: sha256(await readFile(resolve(root, serverManifestPath))) },
+      webManifest: { path: webManifestPath.replaceAll("\\", "/"), digest: sha256(await readFile(resolve(root, webManifestPath))) },
+    },
+    source: { path: clientPath, ...source },
+    output: { path: outputPath, ...output },
+  };
 }
 
 async function derive(root, routePath, buildReceiptPath, archivePath) {
@@ -144,6 +179,20 @@ async function main(argv) {
     console.log(JSON.stringify({ schema, result: "pass", stage: relative(root, stage).replaceAll("\\", "/"), outputsDigest: sha256(canonical(outputs)) }));
     return;
   }
+  if (mode === "create-browser-composition" || mode === "verify-browser-composition") {
+    const output = one("output", "artifacts/ci/browser-composition.json");
+    const current = await browserComposition(root, one("web-manifest", ""), one("server-manifest", ""), one("client", "artifacts/client"), one("publish", "artifacts/publish"));
+    const outputPath = resolve(root, output);
+    if (mode === "create-browser-composition") {
+      await mkdir(dirname(outputPath), { recursive: true });
+      await writeFile(outputPath, canonical(current));
+    } else {
+      const recorded = await readFile(outputPath, "utf8");
+      if (recorded !== canonical(current)) throw new Error("ci-artifact-manifest: browser-composition-receipt-drift");
+    }
+    console.log(JSON.stringify({ schema: browserCompositionSchema, result: "pass", receipt: relative(root, outputPath).replaceAll("\\", "/"), digest: sha256(canonical(current)) }));
+    return;
+  }
   if (mode === "verify") {
     if (!buildReceipt) throw new Error("ci-artifact-manifest: --build-receipt is required");
     const path = resolve(root, one("manifest", ""));
@@ -154,7 +203,7 @@ async function main(argv) {
     console.log(JSON.stringify({ schema, result: "pass", manifest: relative(root, path).replaceAll("\\", "/") }));
     return;
   }
-  throw new Error("ci-artifact-manifest: usage create|verify-transport|verify-staged|verify --route PATH --build-receipt PATH --archive PATH");
+  throw new Error("ci-artifact-manifest: usage create|verify-transport|verify-staged|create-browser-composition|verify-browser-composition|verify [options]");
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) main(process.argv.slice(2)).catch((error) => { console.error(error.message); process.exitCode = 1; });

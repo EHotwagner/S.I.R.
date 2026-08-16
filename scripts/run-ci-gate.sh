@@ -53,6 +53,7 @@ if [[ "$subject" != integrity && "$subject" != evidence ]]; then
   ln -s "$repo_root/scripts/dotnet-invocation-trace.sh" "$trace_dir/dotnet"
   export SIR_REAL_DOTNET="$real_dotnet"
   export SIR_DOTNET_INVOCATION_LOG="$trace_log"
+  export SIR_DOTNET_TRACE_ROOT="$repo_root"
   export PATH="$trace_dir:$PATH"
 fi
 
@@ -108,10 +109,30 @@ artifact_args=()
 receipt_reused=false
 build_args=()
 if [[ -f "${trace_log:-}" ]]; then
-  while IFS=$'\t' read -r kind project; do
+  while IFS=$'\t' read -r kind project identity _started _completed; do
     [[ -n "$kind" && -n "$project" ]] || continue
-    build_args+=(--build "$kind:$project")
+    invocation="$kind:$project"
+    [[ "$identity" == "-" ]] || invocation="$invocation:$identity"
+    build_args+=(--build "$invocation")
   done < <(sort "$trace_log")
+  traced_build_ms=$(node - "$trace_log" <<'NODE'
+const { readFileSync } = require("node:fs");
+const intervals = readFileSync(process.argv[2], "utf8").trim().split("\n").filter(Boolean).map((line) => {
+  const fields = line.split("\t");
+  return [Number(fields[3]), Number(fields[4])];
+}).filter(([start, end]) => Number.isSafeInteger(start) && Number.isSafeInteger(end) && end >= start).sort(([left], [right]) => left - right);
+let total = 0;
+let activeStart = 0;
+let activeEnd = 0;
+for (const [start, end] of intervals) {
+  if (start > activeEnd) { total += activeEnd - activeStart; activeStart = start; activeEnd = end; }
+  else if (end > activeEnd) activeEnd = end;
+}
+total += activeEnd - activeStart;
+process.stdout.write(String(total));
+NODE
+  )
+  if (( traced_build_ms > build_ms )); then build_ms=$traced_build_ms; fi
 fi
 if [[ "$subject" != integrity && "$subject" != evidence ]]; then
   for pointer in "$repo_root"/artifacts/ci/parts/*.manifest.path; do
@@ -123,6 +144,9 @@ if [[ "$subject" != integrity && "$subject" != evidence ]]; then
   if [[ ${#artifact_args[@]} -gt 0 ]]; then artifact_digest=auto; fi
   receipt_reused=true
 fi
+
+test_ms=$((total_ms - setup_ms - restore_ms - build_ms - transport_ms))
+if (( test_ms < 0 )); then test_ms=0; fi
 
 mkdir -p "$(dirname "$output")"
 node "$repo_root/scripts/ci-route.mjs" gate \

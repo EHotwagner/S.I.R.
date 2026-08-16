@@ -30,8 +30,8 @@ expect_mutation_failure() {
   local expected=$2
   local log="$temporary_dir/$name.log"
   isolated_args=()
-  if [[ "$prepared_pr" == true ]]; then isolated_args=(--artifacts-path "$temporary_dir/artifacts/$name"); fi
-  if dotnet run --project "$project" -c Release "${isolated_args[@]}" -- --print-spatial-query >"$log" 2>&1; then
+  if [[ "$prepared_pr" == true ]]; then isolated_args=(--artifacts-path "$temporary_dir/artifacts"); fi
+  if SIR_BUILD_EXCEPTION="spatial-$name" dotnet run --project "$project" -c Release "${isolated_args[@]}" -- --print-spatial-query >"$log" 2>&1; then
     echo "spatial subject mutation unexpectedly passed: $name" >&2
     exit 1
   fi

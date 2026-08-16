@@ -21,6 +21,27 @@ export const gateParts = {
   documentation: ["web", "docs"],
   evidence: [],
 };
+export const expectedBuildInvocations = {
+  integrity: [],
+  "prepare-native": ["build:SIR.slnx", "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj", "producer:native"],
+  "prepare-fable": ["fable:tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj", "fable:tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj", "producer:fable"],
+  "prepare-web": ["fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj", "fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj", "producer:web"],
+  "prepare-server": ["producer:server", "publish:src/SIR.Server/SIR.Server.fsproj"],
+  "prepare-docs": ["build:src/SIR.Client/SIR.Client.fsproj", "build:src/SIR.Match/SIR.Match.fsproj", "producer:docs"],
+  rules: [],
+  spatial: [
+    "dependency-receipt", "footprint-envelope", "semantic-edge", "knowledge-cache-key", "spatial-revision-key",
+    "deterministic-ordering", "package-adapter", "profile-cache-key", "trace-work-bound",
+  ].map((name) => `run-build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj:exception:spatial-${name}:artifacts-path:isolated`),
+  cancellation: ["cancellation-mutant", "cancellation-restored"].flatMap((name) => [
+    `fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj:exception:${name}`,
+    `fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj:exception:${name}`,
+  ]),
+  "cross-runtime": ["build:spikes/browser-wasm-verification/BrowserWasmVerificationSpike.fsproj"],
+  browser: [],
+  documentation: [],
+  evidence: [],
+};
 
 const classifications = {
   documentation: ["documentation", "evidence"],
@@ -153,8 +174,34 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
       ? `scripts/qualify-pr.sh prepare-part ${subject.slice("prepare-".length)}`
       : subject === "integrity" ? "scripts/qualify-pr.sh integrity" : `scripts/qualify-pr.sh gate ${subject}`;
     if (result.gateCommand !== expectedCommand) failures.push({ code: "gate-command-mismatch", subject });
+    const actualBuilds = Array.isArray(result.buildInvocations) ? result.buildInvocations : [];
+    const allowedBuilds = expectedBuildInvocations[subject] ?? [];
+    if (actualBuilds.some((invocation) => !invocation.startsWith("producer:")) && !(Number.isSafeInteger(result.timingMilliseconds?.build) && result.timingMilliseconds.build > 0)) {
+      failures.push({ code: "missing-build-duration", subject, ownerCommand: result.ownerCommand });
+    }
+    const allowedCounts = new Map(allowedBuilds.map((invocation) => [invocation, (allowedBuilds.filter((value) => value === invocation).length)]));
+    const actualCounts = new Map(actualBuilds.map((invocation) => [invocation, (actualBuilds.filter((value) => value === invocation).length)]));
+    for (const [invocation, count] of actualCounts) {
+      const allowed = allowedCounts.get(invocation) ?? 0;
+      if (allowed === 0) failures.push({ code: "unknown-build-invocation", subject, ownerCommand: result.ownerCommand, invocation });
+      if (count > allowed) failures.push({ code: "duplicate-build-invocation", subject, ownerCommand: result.ownerCommand, invocation, expected: allowed, actual: count });
+    }
+    for (const [invocation, count] of allowedCounts) {
+      const actual = actualCounts.get(invocation) ?? 0;
+      if (actual < count) failures.push({ code: "missing-build-invocation", subject, ownerCommand: result.ownerCommand, invocation, expected: count, actual });
+    }
   }
   for (const gate of byGate.keys()) if (!expected.has(gate)) failures.push({ code: "unexpected-gate-result", subject: gate });
+
+  const globalBuildOwners = new Map();
+  for (const subject of expectedSubjects) {
+    for (const invocation of byGate.get(subject)?.buildInvocations ?? []) {
+      if (invocation.includes(":exception:")) continue;
+      const previous = globalBuildOwners.get(invocation);
+      if (previous) failures.push({ code: "duplicate-build-invocation", subject, ownerCommand: byGate.get(subject)?.ownerCommand, invocation, previousOwner: previous });
+      else globalBuildOwners.set(invocation, subject);
+    }
+  }
 
   const producerDigests = Object.fromEntries(expectedProducers.map((subject) => [subject.slice("prepare-".length), byGate.get(subject)?.artifactDigest ?? null]));
   for (const subject of expectedProducers) {
