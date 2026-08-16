@@ -1,0 +1,63 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-16-sir-item-215-single-pass-qualification-2.md",
+  "reportSha256": "2d91ede7117a17f1991ba0913a870929c8224bae51abe0da8c118941b218dee6",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:docs/evidence/production-build-receipt-v1/55f473f678cb02d829b93c069413155f9ad73aef4c5d7ce8d9b1e0540cdeb55d.json",
+          "result": "verified",
+          "sha256": "55f473f678cb02d829b93c069413155f9ad73aef4c5d7ce8d9b1e0540cdeb55d"
+        },
+        {
+          "locator": "file:readiness/215-single-pass-qualification/single-pass-timing.json",
+          "result": "verified",
+          "sha256": "f53b27aa2e3de3cce6579733de7f1ae1999e8b9c736a15b1b6f354b0d0e42a97"
+        },
+        {
+          "locator": "command:npm run test:production-build-receipt",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "The focused command verifies stale/missing restoration through the real verifier on an isolated fixture; the production timing receipt records the corresponding retained production-site mutation subjects."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:scripts/test-build-client-fable-parallel.sh",
+          "result": "verified",
+          "sha256": "60e1f3ae84d517ee3f627a4f5fa70e0315ccad75a3366024dcc60efdc5f1775c"
+        },
+        {
+          "locator": "file:scripts/test-dotnet-invocation-trace.mjs",
+          "result": "verified",
+          "sha256": "6d47c9be75e2fbe6ae8566efde243a6640f84592e1b6807e8c5f090fb8f648b1"
+        },
+        {
+          "locator": "file:readiness/215-single-pass-qualification/single-pass-timing.json",
+          "result": "verified",
+          "sha256": "f53b27aa2e3de3cce6579733de7f1ae1999e8b9c736a15b1b6f354b0d0e42a97"
+        },
+        {
+          "locator": "command:npm run test:production-build-receipt",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": [
+        "Parallel scheduling, isolated-output parity, and deterministic joined failures are verified by a synthetic fake-process fixture.",
+        "The real aggregate timing verifies a 2,444-basis-point reduction but does not isolate the portion attributable to concurrency."
+      ]
+    }
+  ]
+}
