@@ -1,9 +1,10 @@
 import { allowExpectedDiagnostic, expect, test } from "./journey.js";
 
 test("the production shell loads registered features through real controls", async ({ page }) => {
+  await page.setViewportSize({ width: 1600, height: 900 });
   const featureResponses = [];
   page.on("response", (response) => {
-    if (/\/(RulesExplorer|docs-feature)-[^/]+\.js$/.test(new URL(response.url()).pathname)) {
+    if (/\/(RulesExplorer|RulesWorkbenchView|docs-feature)-[^/]+\.js$/.test(new URL(response.url()).pathname)) {
       featureResponses.push(response.url());
     }
   });
@@ -22,6 +23,12 @@ test("the production shell loads registered features through real controls", asy
   await expect(docs.getByRole("link", { name: "Open generated documentation", exact: true })).toHaveAttribute("href", "./docs/index.html");
   await page.getByRole("button", { name: "Close documentation", exact: true }).click();
 
+  const workbenchResponse = page.waitForResponse((response) => /\/RulesWorkbenchView-[^/]+\.js$/.test(new URL(response.url()).pathname));
+  await page.locator("details.tactical-legacy-controls > summary").click();
+  await page.getByRole("button", { name: "Rules", exact: true }).click();
+  expect((await workbenchResponse).status()).toBe(200);
+  await expect(page.getByRole("region", { name: "Design scenario catalog", exact: true })).toBeVisible();
+
   const rulesResponse = page.waitForResponse((response) => /\/RulesExplorer-[^/]+\.js$/.test(new URL(response.url()).pathname));
   await page.getByRole("button", { name: "View", exact: true }).click();
   await page.getByRole("menuitem", { name: /Rules data/ }).click();
@@ -34,6 +41,7 @@ test("the production shell loads registered features through real controls", asy
   await expect(shell).toHaveAttribute("data-feature-loader-diagnostic", "");
 
   expect(featureResponses.filter((url) => url.includes("docs-feature-"))).toHaveLength(1);
+  expect(featureResponses.filter((url) => url.includes("RulesWorkbenchView-"))).toHaveLength(1);
   expect(featureResponses.filter((url) => url.includes("RulesExplorer-"))).toHaveLength(1);
 });
 

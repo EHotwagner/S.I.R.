@@ -162,10 +162,21 @@ type OverlayVisual =
       Points: float array
       Label: Disclosure<string> }
 
+/// Typed causal status carried by an event from its owning production stage.
+/// This is deliberately independent from the event's causal kind.
+type RenderEventLifecycle =
+    | PreviewEvent
+    | PredictedEvent
+    | AcceptedEvent
+    | CommittedEvent
+    | RejectedEvent
+    | HistoricalEvent
+
 type RenderEventVisual =
     { Id: int32
       Tick: int32
       Kind: string
+      Lifecycle: RenderEventLifecycle
       SourceUnitId: Disclosure<int32>
       TargetUnitId: Disclosure<int32>
       Summary: Disclosure<string> }
@@ -234,6 +245,7 @@ type RenderEventVisualTransport =
     { Id: int32
       Tick: int32
       Kind: string
+      Lifecycle: int32
       SourceUnitIdKind: int32
       SourceUnitId: int32 option
       TargetUnitIdKind: int32
@@ -453,6 +465,14 @@ module RenderFrameTransport =
                 { Id = event.Id
                   Tick = event.Tick
                   Kind = event.Kind
+                  Lifecycle =
+                    match event.Lifecycle with
+                    | PreviewEvent -> 0
+                    | PredictedEvent -> 1
+                    | AcceptedEvent -> 2
+                    | CommittedEvent -> 3
+                    | RejectedEvent -> 4
+                    | HistoricalEvent -> 5
                   SourceUnitIdKind = sourceKind
                   SourceUnitId = source
                   TargetUnitIdKind = targetKind
@@ -509,6 +529,15 @@ module RenderFrameTransport =
                 { Id = event.Id
                   Tick = event.Tick
                   Kind = event.Kind
+                  Lifecycle =
+                    match event.Lifecycle with
+                    | 0 -> PreviewEvent
+                    | 1 -> PredictedEvent
+                    | 2 -> AcceptedEvent
+                    | 3 -> CommittedEvent
+                    | 4 -> RejectedEvent
+                    | 5 -> HistoricalEvent
+                    | value -> invalidArg "Lifecycle" ("Unknown event lifecycle tag: " + string value)
                   SourceUnitId =
                     disclosureFromTransport
                         "SourceUnitIdKind"

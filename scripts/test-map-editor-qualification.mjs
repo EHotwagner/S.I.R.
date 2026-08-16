@@ -16,6 +16,10 @@ const styles = await readFile(
   "utf8",
 );
 const appSource = await readFile(resolve("src/SIR.Client.Web/App.fs"), "utf8");
+const browserInfrastructureSource = await readFile(
+  resolve("src/SIR.Client.Web/BrowserInfrastructure.fs"),
+  "utf8",
+);
 const mapEditorSource = await readFile(resolve("src/SIR.Client/MapEditor.fs"), "utf8");
 const testCompositionSource = await readFile(
   resolve("tests/SIR.Client.Tests/Program.fs"),
@@ -86,6 +90,13 @@ require(
 require(
   testCompositionSource.split("\n").length <= 4100,
   "Client test composition exceeded its 4,100-line ownership ceiling; extract an owned qualification suite instead of regrowing Program.fs",
+);
+require(
+  browserInfrastructureSource.includes("let private isNativeInteractiveTarget") &&
+    browserInfrastructureSource.includes(
+      "allowModifiedShortcut || not (isNativeInteractiveTarget target)",
+    ),
+  "typed global-keyboard owner no longer excludes native/contenteditable targets",
 );
 const buttonByText = (text, root = window.document) =>
   [...root.querySelectorAll("button")].find(

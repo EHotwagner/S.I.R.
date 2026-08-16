@@ -84,6 +84,7 @@ type EventProjection =
     { Id: int32
       Tick: int32
       Source: string
+      Lifecycle: RenderEventLifecycle
       Summary: string
       SourceUnitId: int32 option
       TargetUnitId: int32 option }
@@ -383,6 +384,7 @@ module Shell =
                         { Id = event.Id
                           Tick = event.Tick
                           Kind = event.Source
+                          Lifecycle = event.Lifecycle
                           SourceUnitId =
                             event.SourceUnitId
                             |> Option.map Disclosed

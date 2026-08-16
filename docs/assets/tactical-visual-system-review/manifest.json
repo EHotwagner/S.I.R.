@@ -1,0 +1,185 @@
+{
+  "schema": "sir-tactical-visual-review-v2",
+  "captureInputs": {
+    "schema": "sir-tactical-capture-inputs-v1",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 1
+    },
+    "locale": "en-US",
+    "timezone": "UTC",
+    "colorScheme": "dark",
+    "reducedMotion": true,
+    "colorProfile": "srgb",
+    "gpu": "disabled",
+    "rasterThreads": 1,
+    "rasterMode": "complete-in-process",
+    "fontHinting": "none",
+    "lcdText": false,
+    "fonts": {
+      "family": "SIR Review Mono",
+      "regularSha256": "c55a6beb7399590b6818b18a235bf586c10b5ab22a496b229325d731b42c69ad",
+      "boldSha256": "a3b0ebb17a446e2c7d2b621e94c7b29e02d5b2ec0e8cfb0fc88545578c1bb92f"
+    },
+    "browserUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+    "browserVersion": "Chrome/151.0.7922.34"
+  },
+  "productionBundleSha256": "4ecf085f113c3753a921a2a7124f15704c5a968db26d53e52ee43a243f5d828b",
+  "productionStylesSha256": "d25df5340a553fa9dcf3c5a4d272942ecadc8d73d395e91bdaa9f29a7144c7d8",
+  "before": {
+    "path": "../persistent-workspace-m9-review/field-focus.png",
+    "sha256": "0cf0d85c06135089a249fd05aadf71008ed42782fc072d54654ff37b8e5d747d"
+  },
+  "after": {
+    "path": "after-production.png",
+    "sha256": "7303e5ebbf46c1d6a6b76f3b9a1d202e9642e91334bedad4356a4716846fbf01",
+    "captureKind": "actual-production-shell-chromium-screenshot",
+    "semantic": {
+      "identity": "tactical-visual-system-v1",
+      "density": "ordinary",
+      "motion": "reduced",
+      "layerOrder": "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
+      "effectCount": 4,
+      "effectLimit": 256,
+      "unitCount": 4,
+      "nodeEstimate": 739,
+      "paintedLayerOrder": "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
+      "effectKinds": [
+        "event",
+        "event",
+        "event",
+        "event"
+      ],
+      "effectLifecycles": [
+        "accepted",
+        "accepted",
+        "accepted",
+        "accepted"
+      ],
+      "tokens": {
+        "--sir-canvas": "#10161d",
+        "--sir-text": "#f7f9fa",
+        "--sir-grid": "#71808b",
+        "--sir-focus": "#ffffff",
+        "--sir-intent": "#53b7ff",
+        "--sir-impact": "#ff6b6b",
+        "--sir-suppression": "#d792ff",
+        "--sir-recovery": "#8ce99a",
+        "--sir-rejected": "#ff6b6b"
+      }
+    }
+  },
+  "densityScenes": [
+    {
+      "units": 100,
+      "path": "production-density-100.png",
+      "sha256": "213d994a1cd38e9eac2fefac5ab65a9e62fb5ed7bafba00b2dccaf79b121ef69",
+      "workload": {
+        "requestedUnits": 100,
+        "renderedUnits": 100,
+        "terrainCells": 1680,
+        "routes": 2,
+        "routeGeometries": [
+          "32,544 32,480 32,416",
+          "160,544 160,480 160,416"
+        ],
+        "plannedRouteUnits": 2,
+        "overlays": 107,
+        "effects": 63,
+        "currentAttackEffects": 60,
+        "effectKinds": [
+          "attack",
+          "event",
+          "movement"
+        ],
+        "effectLifecycles": [
+          "accepted",
+          "committed",
+          "predicted"
+        ],
+        "domNodes": 3258
+      }
+    },
+    {
+      "units": 200,
+      "path": "production-density-200.png",
+      "sha256": "b08828d50bec9b2c92a831762deb603980ebc1cf148505cab3985f201d2ab6a8",
+      "workload": {
+        "requestedUnits": 200,
+        "renderedUnits": 200,
+        "terrainCells": 1680,
+        "routes": 2,
+        "routeGeometries": [
+          "32,544 32,480 32,416",
+          "160,544 160,480 160,416"
+        ],
+        "plannedRouteUnits": 2,
+        "overlays": 207,
+        "effects": 130,
+        "currentAttackEffects": 127,
+        "effectKinds": [
+          "attack",
+          "event",
+          "movement"
+        ],
+        "effectLifecycles": [
+          "accepted",
+          "committed",
+          "predicted"
+        ],
+        "domNodes": 4806
+      }
+    }
+  ],
+  "visualSystem": {
+    "identity": "tactical-visual-system-v1",
+    "density": "ordinary",
+    "motion": "reduced",
+    "layerOrder": "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
+    "effectCount": 4,
+    "effectLimit": 256,
+    "unitCount": 4,
+    "nodeEstimate": 739,
+    "paintedLayerOrder": "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
+    "effectKinds": [
+      "event",
+      "event",
+      "event",
+      "event"
+    ],
+    "effectLifecycles": [
+      "accepted",
+      "accepted",
+      "accepted",
+      "accepted"
+    ],
+    "tokens": {
+      "--sir-canvas": "#10161d",
+      "--sir-text": "#f7f9fa",
+      "--sir-grid": "#71808b",
+      "--sir-focus": "#ffffff",
+      "--sir-intent": "#53b7ff",
+      "--sir-impact": "#ff6b6b",
+      "--sir-suppression": "#d792ff",
+      "--sir-recovery": "#8ce99a",
+      "--sir-rejected": "#ff6b6b"
+    }
+  },
+  "budgets": {
+    "representative100": {
+      "maximumDomNodes": 5000,
+      "maximumEffects": 128,
+      "maximumInputToPaintMilliseconds": 100,
+      "targetAnimationFrameMilliseconds": 16.67,
+      "measurementToleranceMilliseconds": 1
+    },
+    "stress200": {
+      "maximumDomNodes": 9000,
+      "maximumEffects": 256,
+      "maximumInputToPaintMilliseconds": 150,
+      "targetAnimationFrameMilliseconds": 16.67,
+      "measurementToleranceMilliseconds": 1
+    }
+  }
+}

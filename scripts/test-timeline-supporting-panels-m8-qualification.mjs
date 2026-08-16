@@ -1,8 +1,9 @@
 import { readFile } from "node:fs/promises";
 
-const [app, styles, layout, layoutInterface, layoutTests, browserSmoke, docsSmoke] =
+const [app, featureRuntime, styles, layout, layoutInterface, layoutTests, browserSmoke, docsSmoke] =
   await Promise.all([
     readFile("src/SIR.Client.Web/App.fs", "utf8"),
+    readFile("src/SIR.Client.Web/ClientFeatureRuntime.fs", "utf8"),
     readFile("src/SIR.Client.Web/styles.css", "utf8"),
     readFile("src/SIR.Client/TacticalWorkspaceLayout.fs", "utf8"),
     readFile("src/SIR.Client/TacticalWorkspaceLayout.fsi", "utf8"),
@@ -37,12 +38,19 @@ for (const required of [
   "OpenSupportingPanel panelId",
   'if panelId = "rules" then',
   'elif panelId = "data" then',
-  'elif model.Workspace = SimulatorWorkspace && panelId = "samples" then',
   'item "Rules" "rules"',
   'item "Data" "data"',
   'item "Samples" "samples"',
 ]) {
   require(app.includes(required), `persistent ownership token is missing: ${required}`);
+}
+for (const required of [
+  'elif panelId = "samples" then FeatureLoader.samples',
+  "let samplesPanel model dispatch =",
+  "FeatureLoader.stateFor FeatureLoader.samples model.ClientFeatures",
+  "renderSamplesFeature root",
+]) {
+  require(featureRuntime.includes(required), `typed extracted Samples ownership token is missing: ${required}`);
 }
 require(
   (app.match(/tacticalTimeline model dispatch/g) ?? []).length === 2 &&
@@ -115,6 +123,8 @@ for (const required of [
 
 for (const required of [
   'button.textContent.trim() === "Rules"',
+  'waitFor("deferred Rules workbench owner"',
+  'aria-label="Rules workbench load failure"',
   'button.textContent.trim() === "Data"',
   'mount?.querySelector(\'[data-panel-id="rules"]\')',
   'mount?.querySelector(\'[data-panel-id="data"]\')',

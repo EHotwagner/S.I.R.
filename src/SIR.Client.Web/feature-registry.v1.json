@@ -34,6 +34,24 @@
       "budget": { "raw": 65536, "gzip": 20000, "brotli": 16000 }
     },
     {
+      "id": "rules-workbench",
+      "phase": "deferred",
+      "control": "supporting-rules",
+      "route": "rules",
+      "module": "src/SIR.Client.Web/RulesWorkbenchView.fs",
+      "logicalChunk": "RulesWorkbenchView",
+      "budget": { "raw": 16384, "gzip": 6144, "brotli": 5120 }
+    },
+    {
+      "id": "samples",
+      "phase": "deferred",
+      "control": "supporting-samples",
+      "route": "samples",
+      "module": "src/SIR.Client.Web/SamplesFeature.fs",
+      "logicalChunk": "SamplesFeature",
+      "budget": { "raw": 12288, "gzip": 5120, "brotli": 4096 }
+    },
+    {
       "id": "shell",
       "phase": "bootstrap",
       "control": "application-entry",
@@ -44,12 +62,12 @@
     },
     {
       "id": "tactical-environment",
-      "phase": "eager",
+      "phase": "deferred",
       "control": "editor-environment",
       "route": "editor",
       "module": "src/SIR.Client.Web/TacticalEnvironmentView.fs",
-      "logicalChunk": "app",
-      "budget": { "raw": 1250000, "gzip": 320000, "brotli": 280000 }
+      "logicalChunk": "TacticalEnvironmentView",
+      "budget": { "raw": 12288, "gzip": 4096, "brotli": 3584 }
     }
   ]
 }

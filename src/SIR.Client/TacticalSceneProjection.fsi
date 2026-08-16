@@ -103,6 +103,73 @@ type TacticalOverlayProjection =
       Labels: TacticalOverlayPayload array
       Cost: TacticalOverlayCost }
 
+type TacticalEffectKind =
+    | MovementEffect
+    | AttackEffect
+    | ImpactEffect
+    | SuppressionEffect
+    | RecoveryEffect
+    | SignalEffect
+    | ObjectiveEffect
+    | GenericEffect
+
+type TacticalEffectLifecycle =
+    | PreviewEffect
+    | PredictedEffect
+    | AcceptedEffect
+    | CommittedEffect
+    | RejectedEffect
+    | HistoricalEffect
+
+type TacticalEffectProjection =
+    { PrimitiveId: ScenePrimitiveId
+      EventId: int32
+      Tick: int32
+      Kind: TacticalEffectKind
+      Lifecycle: TacticalEffectLifecycle
+      SourceUnitId: int32 option
+      TargetUnitId: int32 option
+      SourcePoint: (float * float) option
+      TargetPoint: (float * float) option
+      Label: string
+      Order: int }
+
+type TacticalVisualDensity =
+    | OrdinaryDensity
+    | DenseDensity
+    | StressDensity
+
+type TacticalVisualSystem =
+    { Identity: string
+      Palette: PaletteTokens
+      Density: TacticalVisualDensity
+      ReducedMotion: bool
+      TerrainOpen: string
+      TerrainRough: string
+      TerrainBlocked: string
+      TerrainObjective: string
+      UnitBody: string
+      EdgeWall: string
+      EdgeDoor: string
+      EdgeWindow: string
+      Intent: string
+      Impact: string
+      Suppression: string
+      Recovery: string
+      Rejected: string
+      UnitCornerRadius: float
+      UnitStrokeWidth: float
+      SelectedStrokeWidth: float
+      TransitionMilliseconds: int
+      EffectMilliseconds: int
+      MaximumActiveEffects: int
+      LayerOrder: string array }
+
+type TacticalVisualCost =
+    { UnitCount: int
+      EffectInstances: int
+      EstimatedSvgNodes: int }
+
 type SceneTerrainProjection =
     { PrimitiveId: ScenePrimitiveId
       Column: int32
@@ -170,6 +237,8 @@ type SharedSceneProjection =
       Units: SceneUnitProjection array
       Routes: SceneRouteProjection array
       Annotations: SceneAnnotationProjection array
+      Effects: TacticalEffectProjection array
+      VisualCost: TacticalVisualCost
       Disclosure: SceneDisclosureProjection
       Camera: SceneCameraProjection
       Selection: SceneSelectionProjection
@@ -201,6 +270,7 @@ type ReviewProjectionInput =
 
 [<RequireQualifiedAccess>]
 module TacticalSceneProjection =
+    val visualSystem: paletteId: string -> reducedMotion: bool -> unitCount: int -> TacticalVisualSystem
     val overlayRegistry: TacticalOverlayDescriptor array
     val initialOverlayPreferences: TacticalOverlayPreferences
     val exportOverlayPreferences: TacticalOverlayPreferences -> string

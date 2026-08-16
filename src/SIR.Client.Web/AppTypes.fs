@@ -84,9 +84,9 @@ type Msg =
     | CommitPlanningRevision
     | PlanningWorkerResponded of SimulatorResponseEnvelope
     | ExportPlanningReview
-    | LoadMapSample of string
-    | LoadSimulationSample of string
-    | LoadReplaySample of string
+    | LoadMapSample of editor: MapEditorState * simulator: SimulatorHandoff option
+    | LoadSimulationSample of editor: MapEditorState * simulator: SimulatorHandoff option
+    | LoadReplaySample of identity: string * title: string * frames: InspectionProjection array
     | KeyPressed of
         key: string *
         controlOrMeta: bool *

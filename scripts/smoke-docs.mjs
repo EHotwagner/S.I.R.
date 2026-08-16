@@ -17,6 +17,15 @@ const window = new Window({
 window.document.body.innerHTML = body;
 
 const workerMessages = [];
+const waitFor = async (description, predicate, timeoutMilliseconds = 1500) => {
+  const deadline = Date.now() + timeoutMilliseconds;
+  while (Date.now() < deadline) {
+    const result = predicate();
+    if (result) return result;
+    await new Promise((resolveWait) => setTimeout(resolveWait, 10));
+  }
+  throw new Error(`Timed out waiting for ${description}.`);
+};
 
 const scenarioResponse = (message) => {
   const identity = message.Request.fields[0];
@@ -209,7 +218,17 @@ const rulesButton = [...mount.querySelectorAll("button")].find(
   (button) => button.textContent.trim() === "Rules",
 );
 rulesButton?.click();
-await window.happyDOM.waitUntilComplete();
+await waitFor("deferred Rules workbench owner", () => {
+  const failure = mount?.querySelector('[aria-label="Rules workbench load failure"]');
+  if (failure) {
+    throw new Error(`The generated Rules workbench failed closed: ${failure.textContent.trim()}`);
+  }
+  return (
+    mount?.querySelectorAll(
+      '[aria-label="Design scenario catalog"] button[aria-label^="Simulate design scenario"]',
+    ).length === 6
+  );
+});
 
 const rulesPanel = mount?.querySelector('[data-panel-id="rules"]');
 const catalog = mount?.querySelector('[aria-label="Design scenario catalog"]');

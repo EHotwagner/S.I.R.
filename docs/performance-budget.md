@@ -5,8 +5,8 @@ categoryindex: 5
 index: 5
 status: proposed
 document-type: living-design
-version: "0.8"
-last-updated: 2026-08-15
+version: "0.9"
+last-updated: 2026-08-16
 related:
   - docs/simulation-core-architecture.md
   - docs/skirmish-development-plan.md
@@ -17,6 +17,28 @@ related:
 ---
 
 # Performance Budget
+
+## Tactical visual-system budget
+
+The shared production SVG reports its unit count, estimated node count, active
+effect count, effect ceiling, density tier, motion route, and exact layer order
+as reviewable metadata. `TacticalSceneProjection` computes those costs beside
+the presentation projection so Editor, Plan, Simulate, and Review cannot hide
+growth behind component-local rendering estimates.
+
+| Production workload | Estimated SVG nodes | Active effects | Release projection p95 | Browser callback/main-thread inspection |
+|---|---:|---:|---:|---:|
+| Representative 100-unit replay | ≤ 5,000 | ≤ 128 | < 4 ms | < 16.67 ms |
+| Stress 200-unit replay | ≤ 9,000 | ≤ 256 | < 8 ms | < 16.67 ms |
+
+The fixtures include overlapping routes, statuses, attacks, and review
+annotations. They preserve the inherited 200/400-unit `Battlefield` structural
+guards as a second scale check. The browser number measures one animation-frame
+callback plus tactical DOM inspection on the production route; it is explicitly
+not a compositor, paint, GPU, or swapchain claim. Layout is bounded by one
+retained SVG root, effects are capped at 256 and pointer-inert, and reduced
+motion substitutes short opacity emphasis for spatial animation. Any budget
+change requires an explicit rebaseline with exact-candidate evidence.
 
 ## Physical-combat v1 budget
 

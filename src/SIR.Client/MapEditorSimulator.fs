@@ -748,7 +748,6 @@ module MapEditorSimulator =
                           + "-step, " + string route.DistanceMillimeters + " mm path costing "
                           + string route.MovementCostMillimeters
                           + " mm of movement credit; advance simulation time to move." ]
-                    LastCombatEvents = []
                     PreviewDestination = None }
             | Some route ->
                 { handoff with
@@ -811,17 +810,24 @@ module MapEditorSimulator =
                     route.UnitId route.Origin route.Route
                     ("Route " + string route.Distance + " steps; "
                      + (if route.Collision = RouteClear then "clear" else "collision: " + string route.Collision)))
-        let plannedOverlay =
-            selectedUnitId
-            |> Option.bind (fun unitId ->
-                Map.tryFind unitId handoff.PlannedRoutes
-                |> Option.bind (fun route ->
+        let previewUnitId =
+            previewOverlay
+            |> Option.bind (fun overlay ->
+                match overlay.Scope with
+                | SelectedUnitOverlay unitId -> Some unitId
+                | WholeForceOverlay -> None)
+        let plannedOverlays =
+            handoff.PlannedRoutes
+            |> Map.toArray
+            |> Array.choose (fun (unitId, route) ->
+                if previewUnitId = Some unitId then None
+                else
                     Map.tryFind unitId handoff.RuntimeMap.Units
                     |> Option.map (fun unit ->
                         routeOverlay "route-planned" unitId
                             { CellColumn = unit.Column; CellRow = unit.Row }
                             (List.toArray route)
-                            ("Queued path with " + string route.Length + " remaining steps."))))
+                            ("Queued path with " + string route.Length + " remaining steps.")))
         let combatEvents =
             handoff.LastCombatEvents
             |> List.mapi (fun index combat ->
@@ -833,6 +839,7 @@ module MapEditorSimulator =
                     | ProjectileDelivery -> "combat-projectile"
                     | LobbedAreaDelivery -> "combat-lobbed-area"
                     | SpellAreaDelivery -> "combat-spell-area"
+                  Lifecycle = CommittedEvent
                   SourceUnitId = Disclosed combat.SourceUnitId
                   TargetUnitId =
                     match combat.Target with
@@ -842,7 +849,7 @@ module MapEditorSimulator =
             |> List.toArray
         let combatSummaries = handoff.LastCombatEvents |> List.map _.Summary |> Set.ofList
         { baseFrame with
-            Overlays = previewOverlay |> Option.orElse plannedOverlay |> Option.toArray
+            Overlays = Array.append (previewOverlay |> Option.toArray) plannedOverlays
             Events =
                 Array.append
                     (baseFrame.Events

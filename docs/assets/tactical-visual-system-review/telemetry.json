@@ -1,0 +1,17 @@
+{
+  "schema": "sir-tactical-visual-telemetry-v1",
+  "densityScenes": [
+    {
+      "units": 100,
+      "inputToPaintMilliseconds": 48.200000047683716,
+      "animationFrameIntervalMilliseconds": 16.602000000000317,
+      "usedJsHeapBytes": 19909138
+    },
+    {
+      "units": 200,
+      "inputToPaintMilliseconds": 73.10000014305115,
+      "animationFrameIntervalMilliseconds": 16.641999999999825,
+      "usedJsHeapBytes": 29618600
+    }
+  ]
+}

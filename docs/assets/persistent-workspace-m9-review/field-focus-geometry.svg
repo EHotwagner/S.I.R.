@@ -137,6 +137,31 @@
     "worksurfaceRoots": 1,
     "applicationLandmarks": 1
   },
+  "visualSystem": {
+    "identity": "tactical-visual-system-v1",
+    "density": "ordinary",
+    "motion": "full",
+    "layerOrder": "terrain&gt;edges&gt;routes&gt;units&gt;effects&gt;selection&gt;tactical-overlays&gt;annotations",
+    "effectCount": 0,
+    "effectLimit": 256,
+    "unitCount": 4,
+    "nodeEstimate": 479,
+    "paintedLayerOrder": "terrain&gt;edges&gt;routes&gt;units&gt;effects&gt;selection&gt;tactical-overlays&gt;annotations",
+    "effectKinds": [],
+    "effectLifecycles": [],
+    "workload": null,
+    "tokens": {
+      "--sir-canvas": "#10161d",
+      "--sir-text": "#f7f9fa",
+      "--sir-grid": "#71808b",
+      "--sir-focus": "#ffffff",
+      "--sir-intent": "#53b7ff",
+      "--sir-impact": "#ff6b6b",
+      "--sir-suppression": "#d792ff",
+      "--sir-recovery": "#8ce99a",
+      "--sir-rejected": "#ff6b6b"
+    }
+  },
   "channels": [
     {
       "channel": "Authored",

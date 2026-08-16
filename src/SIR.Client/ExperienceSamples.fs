@@ -18,6 +18,30 @@ type ExperienceReplaySample =
 
 [<RequireQualifiedAccess>]
 module ExperienceSamples =
+    let private tacticalDensitySample unitCount =
+        let lines =
+            [ yield "SIR-MAP 2"
+              yield "size 20 20"
+              for index in 0 .. 19 do
+                  yield "terrain " + string index + " 5 " + (if index % 7 = 0 then "objective" else "rough")
+              for index in 0 .. 9 do
+                  yield "edge " + string index + " 6 east " + (if index % 4 = 0 then "door" else "wall") + " closed"
+              for index in 0 .. unitCount - 1 do
+                  yield
+                      "unit " + string (index + 1)
+                      + (if index % 2 = 0 then " blue " else " red ")
+                      + (if index % 5 = 0 then "medic " else "rifleman ")
+                      + string (index % 20) + " " + string (4 + index / 20)
+                      + (if index % 3 = 0 then " 1 12 12 scripted E,E,N" else " 1 12 12 general -") ]
+        { Id = "tactical-density-" + string unitCount
+          Title = "Tactical density " + string unitCount
+          Summary = "Production 100/200-unit visual workload with terrain, edges, statuses, overlays, effects, and input."
+          Highlights =
+            [ "Overlapping opposing formations and semantic terrain"
+              "Production projection, SVG layout, input, effects, and overlays"
+              "Deterministic representative/stress performance fixture" ]
+          MapText = String.concat "\n" lines + "\n" }
+
     let maps: ExperienceMapSample list =
         [ { Id = "troll-assault"
             Title = "Troll assault"
@@ -100,7 +124,9 @@ unit 1 blue rifleman 1 1 2 12 12 general -
 unit 2 blue observation-drone 3 1 1 8 8 general -
 unit 3 red goblin 9 9 1 12 12 general -
 unit 4 red orc 7 8 2 35 35 general -
-""" } ]
+""" };
+          tacticalDensitySample 100;
+          tacticalDensitySample 200 ]
 
     let replays: ExperienceReplaySample list =
         [ { Id = "troll-contact"
@@ -163,6 +189,13 @@ unit 4 red orc 7 8 2 35 35 general -
                 { Id = tick * 100 + int32 index
                   Tick = tick
                   Source = "sample-simulation"
+                  Lifecycle =
+                    match index % 5 with
+                    | 0 -> PreviewEvent
+                    | 1 -> PredictedEvent
+                    | 2 -> AcceptedEvent
+                    | 3 -> CommittedEvent
+                    | _ -> RejectedEvent
                   Summary = summary
                   SourceUnitId = None
                   TargetUnitId = None })
@@ -173,6 +206,7 @@ unit 4 red orc 7 8 2 35 35 general -
                 { Id = tick * 100 + 50 + int32 index
                   Tick = tick
                   Source = combatSource combat.Delivery
+                  Lifecycle = CommittedEvent
                   Summary = combat.Summary
                   SourceUnitId = Some combat.SourceUnitId
                   TargetUnitId =

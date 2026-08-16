@@ -128,6 +128,40 @@ let private ids projection =
     |> Array.map ScenePrimitiveId.value
 
 let run () =
+    for expected in [ 100; 200 ] do
+        let sample =
+            ExperienceSamples.tryMap ("tactical-density-" + string expected)
+            |> Option.defaultWith (fun () -> failwith "Production density sample is missing.")
+        let editorSample = ExperienceSamples.editorState sample
+        let loadedSample = MapEditor.initial |> MapEditor.update (LoadMapText sample.MapText)
+        let simulator =
+            ExperienceSamples.simulator sample
+            |> Option.defaultWith (fun () -> failwith ("Production density sample failed validation: " + string expected))
+        require
+            (simulator.RuntimeMap.Units.Count = expected)
+            ("Production density sample unit count drifted: expected " + string expected + ", actual " + string simulator.RuntimeMap.Units.Count + ", dimensions " + string editorSample.Map.Width + "x" + string editorSample.Map.Height + ", load " + string loadedSample.Validation + ", validation " + string editorSample.Validation + ", source " + sample.MapText.Substring(0, min 160 sample.MapText.Length).Replace("\n", "|"))
+        require
+            (simulator.RuntimeMap.Units
+             |> Map.toSeq
+             |> Seq.map (fun (_, unit) -> unit.Side)
+             |> Set.ofSeq
+             |> Set.count
+             |> (=) 2)
+            ("Production density sample lost opposing factions: " + string expected)
+        let attacked =
+            MapEditorSimulator.update StepSimulator editorSample.SelectedUnit simulator
+        require
+            (not (List.isEmpty attacked.LastCombatEvents))
+            ("Production density sample did not produce current attacks: " + string expected)
+        let routed =
+            attacked
+            |> MapEditorSimulator.update (MoveSimulatorPreview(0, -1)) editorSample.SelectedUnit
+            |> MapEditorSimulator.update CommitSimulatorPreview editorSample.SelectedUnit
+        require
+            (routed.LastCombatEvents = attacked.LastCombatEvents
+             && editorSample.SelectedUnit
+                |> Option.exists (fun id -> Map.containsKey id routed.PlannedRoutes))
+            ("Production density route commit erased simultaneous causal attacks: " + string expected)
     let initialEditor = MapEditor.initial
     let initialSimulator = MapEditorSimulator.tryHandoff initialEditor |> Result.defaultWith failwith
     let advancedSimulator = MapEditorSimulator.update StepSimulator initialEditor.SelectedUnit initialSimulator
@@ -448,6 +482,15 @@ let run () =
           CellRow = unit.Row }
     let simulator =
         { simulatorBase with
+            Tick = 1
+            LastEvents = [ "Accepted authoritative sample event" ]
+            LastCombatEvents =
+                [ { Tick = 1
+                    SourceUnitId = firstUnit
+                    Target = UnitCombatTarget secondUnit
+                    Delivery = ProjectileDelivery
+                    Damage = 2
+                    Summary = "Committed projectile attack" } ]
             PlannedRoutes =
                 Map.ofList
                     [ firstUnit, [ routeDestination firstUnit 1 ]
@@ -465,7 +508,18 @@ let run () =
          && simulatorProjection.Owner = SimulatorScene
          && simulatorProjection.RevisionIdentity = editor.Revision.Digest
          && simulatorProjection.Units.Length = editor.Map.Units.Count
-         && simulatorProjection.Routes.Length = 1)
+         && simulatorProjection.Routes.Length = 2
+         && (simulatorProjection.Routes
+             |> Array.choose _.OwnerUnitId
+             |> Set.ofArray
+             |> Set.count
+             |> (=) 2)
+         && simulatorProjection.Effects
+            |> Array.exists (fun effect -> effect.Kind = MovementEffect && effect.Lifecycle = PredictedEffect)
+         && simulatorProjection.Effects
+            |> Array.exists (fun effect -> effect.Kind = AttackEffect && effect.Lifecycle = CommittedEffect)
+         && simulatorProjection.Effects
+            |> Array.exists (fun effect -> effect.Lifecycle = AcceptedEffect))
         "Simulator projection mutated its handoff or crossed its revision boundary."
     let simulatorRouteSource = simulator.PlannedRoutes[firstUnit]
     simulatorProjection.Routes[0].Points[0] <- 999.0
@@ -527,6 +581,7 @@ let run () =
         { Id = 44
           Tick = 7
           Source = "qualification"
+          Lifecycle = AcceptedEvent
           Summary = "Visible event"
           SourceUnitId = Some firstUnit
           TargetUnitId = None }
@@ -627,6 +682,12 @@ let run () =
           ReviewCamera = camera
           ReviewFocusedUnit = Some 999 }
     let reviewProjection = TacticalSceneProjection.review reviewInput
+    let ordinaryVisual =
+        TacticalSceneProjection.visualSystem "accessible-default" false 24
+    let denseVisual =
+        TacticalSceneProjection.visualSystem "high-contrast" false 100
+    let stressVisual =
+        TacticalSceneProjection.visualSystem "monochrome-pattern" true 200
     require
         (reviewProjection.Owner = ReviewScene
          && not reviewProjection.Disclosure.PerspectiveFiltered
@@ -646,7 +707,27 @@ let run () =
              |> Array.map ScenePrimitiveId.value)
             = [| "unit:" + string firstUnit
                  ; "review-event:" + string projectedEvent.Id |]
-         && reviewProjection.Selection.FocusedUnit.IsNone)
+         && reviewProjection.Selection.FocusedUnit.IsNone
+         && ordinaryVisual.Identity = "tactical-visual-system-v1"
+         && ordinaryVisual.Density = OrdinaryDensity
+         && denseVisual.Density = DenseDensity
+         && stressVisual.Density = StressDensity
+         && stressVisual.ReducedMotion
+         && stressVisual.TransitionMilliseconds = 1
+         && stressVisual.EffectMilliseconds = 120
+         && stressVisual.MaximumActiveEffects = 256
+         && stressVisual.LayerOrder
+            = [| "terrain"; "edges"; "routes"; "units"; "effects"; "selection"; "tactical-overlays"; "annotations" |]
+         && reviewProjection.Effects.Length = 1
+         && reviewProjection.Effects[0].Kind = GenericEffect
+         && reviewProjection.Effects[0].Lifecycle = HistoricalEffect
+         && reviewProjection.Effects[0].EventId = projectedEvent.Id
+         && reviewProjection.Effects[0].SourceUnitId = Some firstUnit
+         && reviewProjection.Effects[0].TargetUnitId.IsNone
+         && reviewProjection.Effects[0].SourcePoint.IsSome
+         && reviewProjection.Effects[0].TargetPoint.IsNone
+         && ScenePrimitiveId.value reviewProjection.Effects[0].PrimitiveId
+            = "effect:7:" + string projectedEvent.Id)
         "Review projection expanded absent fields or retained stale selection."
     let previousReviewFrame =
         { fullModel with
@@ -672,6 +753,7 @@ let run () =
          && interpolatedReview.RevisionIdentity = reviewProjection.RevisionIdentity
          && interpolatedReview.Disclosure = reviewProjection.Disclosure
          && interpolatedReview.Annotations = reviewProjection.Annotations
+         && interpolatedReview.Effects = reviewProjection.Effects
          && interpolatedReview.Selection = reviewProjection.Selection
          && interpolatedReview.Units[0].PresentationColumn = 1.0
          && interpolatedReview.Units[0].PresentationRow = 2.0
@@ -774,7 +856,9 @@ let run () =
             changedSimulator.RevisionIdentity)
         "Simulator IDs or accepted revision changed with camera or focus."
     let firstRouteId =
-        repeatedSimulatorProjection.Routes[0].PrimitiveId
+        repeatedSimulatorProjection.Routes
+        |> Array.find (fun route -> route.OwnerUnitId = Some firstUnit)
+        |> _.PrimitiveId
         |> ScenePrimitiveId.value
     let secondRouteProjection =
         TacticalSceneProjection.simulator
@@ -782,7 +866,9 @@ let run () =
                 SimulatorSelectedUnit = Some secondUnit
                 SimulatorFocusedUnit = Some secondUnit }
     let secondRouteId =
-        secondRouteProjection.Routes[0].PrimitiveId
+        secondRouteProjection.Routes
+        |> Array.find (fun route -> route.OwnerUnitId = Some secondUnit)
+        |> _.PrimitiveId
         |> ScenePrimitiveId.value
     require
         (firstRouteId = "route:simulator:" + string firstUnit + ":planned"
@@ -940,11 +1026,12 @@ let run () =
                AttentionDirection = 2 }
              : UnitProjection))
     let denseEvents =
-        [ 1 .. 200 ]
+        [ 1 .. 300 ]
         |> List.map (fun id ->
             ({ Id = int32 id
                Tick = int32 id
                Source = "dense"
+               Lifecycle = CommittedEvent
                Summary = "Event " + string id
                SourceUnitId = Some(int32 id)
                TargetUnitId = None }
@@ -965,11 +1052,27 @@ let run () =
         { AcceptedReview = denseReviewAccepted
           ReviewCamera = camera
           ReviewFocusedUnit = Some 1 }
+    let representativeReviewAccepted =
+        reviewModel
+            FullReplay
+            "representative-review"
+            VerifiedReplay
+            BrowserKernelVerified
+            (inspection 100 (denseUnits |> List.truncate 100) (denseEvents |> List.truncate 100) None)
+            (Some 1)
+            (Some 1)
+        |> TacticalSceneProjection.acceptReview
+        |> Option.defaultWith (fun () -> failwith "Representative review owner was rejected.")
+    let representativeReviewInput =
+        { AcceptedReview = representativeReviewAccepted
+          ReviewCamera = camera
+          ReviewFocusedUnit = Some 1 }
 
     TacticalSceneProjection.editor denseEditorInput |> ignore
     TacticalSceneProjection.planning densePlanningInput |> ignore
     TacticalSceneProjection.simulator denseSimulatorInput |> ignore
     TacticalSceneProjection.review denseReviewInput |> ignore
+    TacticalSceneProjection.review representativeReviewInput |> ignore
     let editorTimings =
         Array.init 80 (fun _ ->
             milliseconds (fun () ->
@@ -986,6 +1089,10 @@ let run () =
         Array.init 80 (fun _ ->
             milliseconds (fun () ->
                 TacticalSceneProjection.review denseReviewInput))
+    let representativeReviewTimings =
+        Array.init 120 (fun _ ->
+            milliseconds (fun () ->
+                TacticalSceneProjection.review representativeReviewInput))
     let allocation operation =
         let before = GC.GetAllocatedBytesForCurrentThread()
         operation () |> ignore
@@ -1227,6 +1334,9 @@ let run () =
     let planningP95 = p95 planningTimings
     let simulatorP95 = p95 simulatorTimings
     let reviewP95 = p95 reviewTimings
+    let representativeReview = TacticalSceneProjection.review representativeReviewInput
+    let stressReview = TacticalSceneProjection.review denseReviewInput
+    let representativeReviewP95 = p95 representativeReviewTimings
     require
         (editorP95 < 50.0
          && planningP95 < 50.0
@@ -1235,9 +1345,25 @@ let run () =
          && editorAllocation < 3_000_000L
          && planningAllocation < 3_000_000L
          && simulatorAllocation < 3_000_000L
-         && reviewAllocation < 3_000_000L)
+         && reviewAllocation < 3_000_000L
+         && representativeReview.VisualCost.UnitCount = 100
+         && representativeReview.VisualCost.EffectInstances = 100
+         && representativeReview.VisualCost.EstimatedSvgNodes <= 5_000
+         && representativeReviewP95 < 4.0
+         && stressReview.VisualCost.UnitCount = 200
+         && stressReview.VisualCost.EffectInstances = 256
+         && stressReview.Effects[0].Tick = 45
+         && stressReview.Effects[stressReview.Effects.Length - 1].Tick = 300
+         && stressReview.VisualCost.EstimatedSvgNodes <= 9_000
+         && reviewP95 < 8.0)
         (sprintf
-            "Shared scene projection exceeded budget: editor %.3f ms/%d; planning %.3f ms/%d; simulator %.3f ms/%d; review %.3f ms/%d."
+            "Shared scene projection exceeded budget: representative %d nodes/%d effects/%.3f ms; stress %d nodes/%d effects/%.3f ms; editor %.3f ms/%d; planning %.3f ms/%d; simulator %.3f ms/%d; review %.3f ms/%d."
+            representativeReview.VisualCost.EstimatedSvgNodes
+            representativeReview.VisualCost.EffectInstances
+            representativeReviewP95
+            stressReview.VisualCost.EstimatedSvgNodes
+            stressReview.VisualCost.EffectInstances
+            reviewP95
             editorP95
             editorAllocation
             planningP95

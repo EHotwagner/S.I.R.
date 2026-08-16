@@ -4,6 +4,7 @@ open Elmish
 open Feliz
 open SIR.Client.Web.AppTypes
 open SIR.Client.Web.BrowserInfrastructure
+open SIR.Client.Web.EnvironmentFeatureContract
 
 let update message model =
     match message with
@@ -105,8 +106,13 @@ let toolbar model dispatch =
     ]
 
 let requestSupportingPanel panelId opened focused =
-    if panelId = "data" then
-        let requested, load = update (FeatureLoader.Request FeatureLoader.rulesExplorer) opened
+    if panelId = "rules" || panelId = "data" || panelId = "samples" || panelId = "tools" then
+        let feature =
+            if panelId = "rules" then FeatureLoader.rulesWorkbench
+            elif panelId = "data" then FeatureLoader.rulesExplorer
+            elif panelId = "samples" then FeatureLoader.samples
+            else FeatureLoader.tacticalEnvironment
+        let requested, load = update (FeatureLoader.Request feature) opened
         requested, Cmd.batch [ focused; load ]
     else opened, focused
 
@@ -135,3 +141,94 @@ let rulesExplorer model dispatch =
     | FeatureLoader.Idle ->
         actionButton "Load data" "Load Rules Explorer" (fun _ ->
             dispatch (ClientFeatureMessage(FeatureLoader.Request FeatureLoader.rulesExplorer)))
+
+let samplesPanel model dispatch =
+    match FeatureLoader.stateFor FeatureLoader.samples model.ClientFeatures with
+    | FeatureLoader.Loaded _ ->
+        Html.div [
+            prop.ariaLabel "Curated samples feature"
+            prop.ref (fun root ->
+                if not (isNull root) then
+                    renderSamplesFeature root (fun action editor simulator replay frames ->
+                        if action = "map" then dispatch (LoadMapSample(editor, simulator))
+                        elif action = "simulation" then dispatch (LoadSimulationSample(editor, simulator))
+                        else
+                            let separator = replay.IndexOf '\n'
+                            dispatch (LoadReplaySample(replay.Substring(0, separator), replay.Substring(separator + 1), frames)))
+            )
+        ]
+    | FeatureLoader.Loading _ ->
+        Html.p [ prop.role.status; prop.ariaLive.polite; prop.text "Loading curated samples…" ]
+    | FeatureLoader.Failed(_, failure) ->
+        Html.section [
+            prop.ariaLabel "Samples load failure"
+            prop.children [
+                Html.p [ prop.role.alert; prop.text (FeatureLoader.describeFailure failure) ]
+                actionButton "Retry" "Retry curated samples" (fun _ ->
+                    dispatch (ClientFeatureMessage(FeatureLoader.Request FeatureLoader.samples)))
+            ]
+        ]
+    | FeatureLoader.Idle ->
+        actionButton "Load samples" "Load curated samples" (fun _ ->
+            dispatch (ClientFeatureMessage(FeatureLoader.Request FeatureLoader.samples)))
+
+[<ReactLazyComponent>]
+let private LazyRulesWorkbenchPanel model evidence dispatch =
+    React.DynamicImported("./RulesWorkbenchView.js")
+
+let rulesWorkbenchPanel model evidence dispatch =
+    match FeatureLoader.stateFor FeatureLoader.rulesWorkbench model.ClientFeatures with
+    | FeatureLoader.Loaded _ ->
+        React.Suspense(
+            [ LazyRulesWorkbenchPanel model evidence dispatch ],
+            fallback = Html.p "Rendering Rules workbench…"
+        )
+    | FeatureLoader.Loading _ ->
+        Html.p [ prop.role.status; prop.ariaLive.polite; prop.text "Loading Rules workbench…" ]
+    | FeatureLoader.Failed(_, failure) ->
+        Html.section [
+            prop.ariaLabel "Rules workbench load failure"
+            prop.children [
+                Html.p [ prop.role.alert; prop.text (FeatureLoader.describeFailure failure) ]
+                actionButton "Retry" "Retry Rules workbench" (fun _ ->
+                    dispatch (ClientFeatureMessage(FeatureLoader.Request FeatureLoader.rulesWorkbench)))
+            ]
+        ]
+    | FeatureLoader.Idle ->
+        actionButton "Load rules" "Load Rules workbench" (fun _ ->
+            dispatch (ClientFeatureMessage(FeatureLoader.Request FeatureLoader.rulesWorkbench)))
+
+let private environmentCallbacks dispatch =
+    { ParcelChanged = TacticalParcelChanged >> dispatch
+      EnterSimulation = fun () -> dispatch (WorkspaceChanged SimulatorWorkspace)
+      ImportTextChanged = TacticalParcelImportTextChanged >> dispatch
+      ImportDocument = fun () -> dispatch ImportTacticalParcelDocument
+      ExportDocument = fun () -> dispatch ExportTacticalParcelDocument
+      SimulatorChanged = SimulatorChanged >> dispatch
+      ResetSimulator = fun () -> dispatch ResetSimulator }
+
+[<ReactLazyComponent>]
+let private LazyTacticalEnvironmentPanel editor tactical importText simulator callbacks =
+    React.DynamicImported("./TacticalEnvironmentView.js")
+
+let tacticalEnvironmentPanel clientFeatures editor tactical importText simulator dispatch =
+    match FeatureLoader.stateFor FeatureLoader.tacticalEnvironment clientFeatures with
+    | FeatureLoader.Loaded _ ->
+        React.Suspense(
+            [ LazyTacticalEnvironmentPanel editor tactical importText simulator (environmentCallbacks dispatch) ],
+            fallback = Html.p "Rendering tactical environment…"
+        )
+    | FeatureLoader.Loading _ ->
+        Html.p [ prop.role.status; prop.ariaLive.polite; prop.text "Loading tactical environment…" ]
+    | FeatureLoader.Failed(_, failure) ->
+        Html.section [
+            prop.ariaLabel "Tactical environment load failure"
+            prop.children [
+                Html.p [ prop.role.alert; prop.text (FeatureLoader.describeFailure failure) ]
+                actionButton "Retry" "Retry tactical environment" (fun _ ->
+                    dispatch (ClientFeatureMessage(FeatureLoader.Request FeatureLoader.tacticalEnvironment)))
+            ]
+        ]
+    | FeatureLoader.Idle ->
+        actionButton "Load tools" "Load tactical environment tools" (fun _ ->
+            dispatch (ClientFeatureMessage(FeatureLoader.Request FeatureLoader.tacticalEnvironment)))

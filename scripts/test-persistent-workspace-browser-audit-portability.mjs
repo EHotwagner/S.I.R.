@@ -1,7 +1,10 @@
 import { readFile } from "node:fs/promises";
+import { access } from "node:fs/promises";
+import { chromium as playwrightChromium } from "@playwright/test";
 import {
   assertPortableReviewMetrics,
   createChromiumChildEnvironment,
+  discoverChromium,
 } from "./lib/persistent-workspace-browser-audit.mjs";
 
 const manifest = JSON.parse(
@@ -155,6 +158,17 @@ if (
   throw new Error("Chromium child environment isolation did not narrowly omit inherited DBus addresses.");
 }
 
+const pinnedExecutable = playwrightChromium.executablePath();
+let pinnedExecutablePresent = true;
+try {
+  await access(pinnedExecutable);
+} catch {
+  pinnedExecutablePresent = false;
+}
+if (pinnedExecutablePresent && await discoverChromium() !== pinnedExecutable) {
+  throw new Error("Browser audit did not prefer the installed lockfile-pinned Playwright Chromium.");
+}
+
 console.log(
-  "Persistent workspace browser-audit portability passed: cross-host font/layout drift is accepted, semantic/critical-geometry regressions fail closed, and inherited DBus variables are isolated from Chromium.",
+  "Persistent workspace browser-audit portability passed: installed lockfile-pinned Chromium wins over ambient host Chrome, cross-host font/layout drift is accepted, semantic/critical-geometry regressions fail closed, and inherited DBus variables are isolated from Chromium.",
 );
