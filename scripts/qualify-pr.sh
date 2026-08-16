@@ -126,13 +126,15 @@ NODE
         # The two Release graphs share dependency outputs, so serialize them
         # while the disjoint Debug solution graph builds in parallel.
         dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore >"$part_root/domain-release.log" 2>&1 || part_failed=1
-        # Domain Release already prepared the shared graph. Build only the client
-        # test owner so the performance binary is current without rebuilding its
-        # dependencies on the hosted critical path.
+        # Domain Release prepares Domain and Simulation. Replay.Core is a direct
+        # Client.Tests dependency outside that graph, so prepare only its owner
+        # before building the client test owner without duplicate dependencies.
+        dotnet build src/SIR.Replay.Core/SIR.Replay.Core.fsproj -c Release --no-restore --no-dependencies >"$part_root/replay-core-release.log" 2>&1 || part_failed=1
         dotnet build tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore --no-dependencies >"$part_root/client-release.log" 2>&1 || part_failed=1
         wait "$solution_pid" || part_failed=1
         sed -n '1,240p' "$part_root/solution-debug.log"
         sed -n '1,240p' "$part_root/domain-release.log"
+        sed -n '1,240p' "$part_root/replay-core-release.log"
         sed -n '1,240p' "$part_root/client-release.log"
         [[ $part_failed -eq 0 ]] || { echo "qualify-pr: native prepare part failed" >&2; exit 1; }
         part_paths=(

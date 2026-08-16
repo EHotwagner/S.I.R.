@@ -77,10 +77,23 @@ assert.deepEqual(expectedBuildInvocations.cancellation, [
 ]);
 assert.deepEqual(expectedBuildInvocations["prepare-native"], [
   "build:SIR.slnx",
+  "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj",
   "build:tests/SIR.Client.Tests/SIR.Client.Tests.fsproj",
   "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj",
   "producer:native",
 ]);
+const duplicatedReplayCoreOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
+  ...result,
+  buildInvocations: [...result.buildInvocations, "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj"],
+} : result), { completedAtMilliseconds: 1 });
+assert.ok(duplicatedReplayCoreOwner.failures.some(({ code, invocation }) =>
+  code === "duplicate-build-invocation" && invocation === "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj"));
+const unknownReplayCoreOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
+  ...result,
+  buildInvocations: [...result.buildInvocations, "build:src/SIR.Replay.Unknown/SIR.Replay.Unknown.fsproj"],
+} : result), { completedAtMilliseconds: 1 });
+assert.ok(unknownReplayCoreOwner.failures.some(({ code, invocation }) =>
+  code === "unknown-build-invocation" && invocation === "build:src/SIR.Replay.Unknown/SIR.Replay.Unknown.fsproj"));
 assert.deepEqual(expectedBuildInvocations["prepare-fable"], [
   "fable:tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj",
   "fable:tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj",
