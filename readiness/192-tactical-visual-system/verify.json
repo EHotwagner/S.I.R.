@@ -4,7 +4,7 @@
   "workId": "192-tactical-visual-system",
   "stage": "verify",
   "status": "verificationReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sources": [
     {
       "path": ".fsgg/agents.yml",
@@ -51,7 +51,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "07770c80494925b45b77a3ca1a68361d24b15e4ecd57d3667c0b47867986399c"
+        "value": "2eee086cea6ee12da71508203b6f4018d314e6f2102bbe97033ab07845cb7cf5"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"

@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
   "contractVersion": "2.0.0",
-  "generatorVersion": "FS.GG.SDD.Artifacts/1.0.0",
+  "generatorVersion": "FS.GG.SDD.Artifacts/1.0.1",
   "workId": "192-tactical-visual-system",
   "sources": [
     {
       "path": "readiness/192-tactical-visual-system/ship.json",
-      "digest": "sha256:f0965ade3f64b483849e64a1a75099ee2849dd3f5144abe6d44da6fff5c4cfcc",
+      "digest": "sha256:67a13c194764577278a37cb29fe2e072091e1016d616527131c3056616e65ccd",
       "schemaVersion": 1
     },
     {
       "path": "readiness/192-tactical-visual-system/verify.json",
-      "digest": "sha256:08221b3d4fd48b1bf2b748c1fc11bf6441f558f843471065cddcc602df1fcd94",
+      "digest": "sha256:df124e74b189354bbcec3befb33e2601585ff50350086a3a99730cce4b778c92",
       "schemaVersion": 1
     },
     {
       "path": "readiness/192-tactical-visual-system/work-model.json",
-      "digest": "sha256:07770c80494925b45b77a3ca1a68361d24b15e4ecd57d3667c0b47867986399c",
+      "digest": "sha256:2eee086cea6ee12da71508203b6f4018d314e6f2102bbe97033ab07845cb7cf5",
       "schemaVersion": 1
     }
   ],

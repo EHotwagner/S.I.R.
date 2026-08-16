@@ -4,10 +4,10 @@
   "workId": "192-tactical-visual-system",
   "stage": "ship",
   "status": "shipReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sourcesDigest": {
     "algorithm": "sha256",
-    "value": "dad1c4fc34f74431b6b60ec04dbf1133f983bbf03a185959fee087b45ef695a8"
+    "value": "f6b60020485caa2a5160ef434c255dfb1b35de33a3ba92888160ce2adca80225"
   },
   "verificationReadiness": {
     "status": "verificationReady",
