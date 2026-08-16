@@ -39,6 +39,50 @@ run_check() {
   dotnet fsi "$tool" -- check-invalidation --changed "$changed" --root "$test_root"
 }
 
+validate_ledger_owners() {
+  local evidence command
+  local -a argv
+  while IFS= read -r evidence; do
+    command=${evidence#command:}
+    read -r -a argv <<< "$command"
+    case "${argv[0]:-}" in
+      ./scripts/qualify-pr.sh)
+        [[ ${#argv[@]} -eq 3 && ${argv[1]} == prepare-part ]] || {
+          echo "feedback audit-binding: unsupported qualify-pr owner: $command" >&2
+          return 1
+        }
+        case "${argv[2]}" in
+          native|fable|web|server|docs) ;;
+          *) echo "feedback audit-binding: unknown prepare owner: ${argv[2]}" >&2; return 1 ;;
+        esac
+        ;;
+      ./scripts/run-ci-gate.sh)
+        [[ ${#argv[@]} -eq 3 ]] || {
+          echo "feedback audit-binding: unsupported gate owner: $command" >&2
+          return 1
+        }
+        case "${argv[1]}" in
+          integrity|rules|spatial|cross-runtime|cancellation|browser|documentation|evidence) ;;
+          *) echo "feedback audit-binding: unknown gate owner: ${argv[1]}" >&2; return 1 ;;
+        esac
+        ;;
+      node)
+        [[ ${#argv[@]} -eq 2 && -f ${argv[1]} ]] || {
+          echo "feedback audit-binding: unavailable node owner: $command" >&2
+          return 1
+        }
+        ;;
+      scripts/*)
+        [[ ${#argv[@]} -eq 1 && -x ${argv[0]} ]] || {
+          echo "feedback audit-binding: unavailable script owner: $command" >&2
+          return 1
+        }
+        ;;
+      *) echo "feedback audit-binding: unsupported executable owner: $command" >&2; return 1 ;;
+    esac
+  done < <(jq -r '.exceptions[].replacementEvidence' "$ledger")
+}
+
 run_mutant() {
   local name=$1 expected=$2 filter=$3
   cp "$pristine" "$ledger"
@@ -56,6 +100,7 @@ run_mutant() {
 }
 
 run_check >/dev/null
+validate_ledger_owners
 
 printf '{' > "$ledger"
 if run_check > "$test_root/malformed.log" 2>&1; then
@@ -69,12 +114,14 @@ run_mutant mismatched "previous digest is mismatched" '.exceptions[0].previousSh
 run_mutant duplicate "duplicate exception ledger binding" '.exceptions += [.exceptions[0]]'
 run_mutant overbroad "overbroad or mismatched exception" '.exceptions += [(.exceptions[0] | .findingId = "§9.9")]'
 
-printf '%s\n' '{"source":{"commit":"subject","tree":"subject"},"digest":"subject"}' > "$test_root/route.json"
-if SIR_CI_ROUTE="$test_root/route.json" ./scripts/run-ci-gate.sh native "$test_root/native.json" > "$test_root/nonexistent-owner.log" 2>&1; then
+cp "$pristine" "$ledger"
+jq '(.exceptions[] | select(.audit == "feedback/audits/2026-08-15-SIR-186-2.audit.json" and .locator == "file:src/SIR.Client/MapEditorSimulator.fs")).replacementEvidence = "command:./scripts/run-ci-gate.sh native artifacts/ci/results/native.json"' "$ledger" > "$ledger.next"
+mv "$ledger.next" "$ledger"
+if validate_ledger_owners > "$test_root/nonexistent-owner.log" 2>&1; then
   echo "feedback audit-binding nonexistent-owner mutant unexpectedly passed" >&2
   exit 1
 fi
-grep -F "qualify-pr: unknown gate: native" "$test_root/nonexistent-owner.log" >/dev/null || {
+grep -F "feedback audit-binding: unknown gate owner: native" "$test_root/nonexistent-owner.log" >/dev/null || {
   echo "feedback audit-binding nonexistent-owner mutant failed without the owner diagnostic" >&2
   cat "$test_root/nonexistent-owner.log" >&2
   exit 1
@@ -82,4 +129,5 @@ grep -F "qualify-pr: unknown gate: native" "$test_root/nonexistent-owner.log" >/
 
 cp "$pristine" "$ledger"
 run_check >/dev/null
+validate_ledger_owners
 echo "feedback audit-binding exception gate passed with malformed, stale, mismatched, duplicate, overbroad, and nonexistent-owner mutants rejected"
