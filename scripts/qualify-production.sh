@@ -4,12 +4,15 @@ set -euo pipefail
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 baseline_ms=${SIR_QUALIFICATION_BASELINE_MS:-373848}
 qualification_root="$repo_root/artifacts/qualification"
+qualification_packages="$qualification_root/nuget-packages"
 pointer="$qualification_root/build-receipt.path"
 fable_log="$qualification_root/fable-invocations.log"
 timing_receipt="$qualification_root/single-pass-timing.json"
 
 cd "$repo_root"
 mkdir -p "$qualification_root"
+mkdir -p "$qualification_packages"
+export NUGET_PACKAGES="$qualification_packages"
 : > "$fable_log"
 start_ns=$(date +%s%N)
 

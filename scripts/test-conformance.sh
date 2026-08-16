@@ -4,7 +4,9 @@ set -euo pipefail
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 task_tmp=$(mktemp -d)
 trap 'rm -rf -- "$task_tmp"' EXIT
-export NUGET_PACKAGES="$task_tmp/nuget-packages"
+if [[ -z "${NUGET_PACKAGES:-}" ]]; then
+  export NUGET_PACKAGES="$task_tmp/nuget-packages"
+fi
 
 cd "$repo_root"
 
