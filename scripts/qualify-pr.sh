@@ -132,6 +132,7 @@ NODE
           tests/SIR.Domain.Tests/bin/Debug/net10.0
           tests/SIR.Domain.Tests/bin/Release/net10.0
           tests/SIR.Client.Tests/bin/Debug/net10.0
+          tests/SIR.Client.Tests/bin/ScenarioCatalogRuntime/Debug/net10.0
           tests/SIR.ModalInput.Tests/bin/Debug/net10.0
           tests/SIR.Match.Tests/bin/Debug/net10.0
         )
@@ -141,13 +142,17 @@ NODE
         domain_pid=$!
         dotnet fable tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj --outDir "$ci_root/prepared/modal-fable" --noCache >"$part_root/modal-fable.log" 2>&1 &
         modal_pid=$!
+        dotnet fable tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj --outDir "$ci_root/prepared/scenario-catalog-fable" --noCache >"$part_root/scenario-catalog-fable.log" 2>&1 &
+        scenario_catalog_pid=$!
         part_failed=0
         wait "$domain_pid" || part_failed=1
         wait "$modal_pid" || part_failed=1
+        wait "$scenario_catalog_pid" || part_failed=1
         sed -n '1,240p' "$part_root/domain-fable.log"
         sed -n '1,240p' "$part_root/modal-fable.log"
+        sed -n '1,240p' "$part_root/scenario-catalog-fable.log"
         [[ $part_failed -eq 0 ]] || { echo "qualify-pr: Fable prepare part failed" >&2; exit 1; }
-        part_paths=(artifacts/ci/prepared/domain-fable artifacts/ci/prepared/modal-fable)
+        part_paths=(artifacts/ci/prepared/domain-fable artifacts/ci/prepared/modal-fable artifacts/ci/prepared/scenario-catalog-fable)
         ;;
       web)
         ./scripts/build-client.sh
@@ -265,7 +270,7 @@ NODE
       cross-runtime)
         ./scripts/test-conformance.sh \
           --reuse-pr-build-receipt "$receipt" \
-          --prepared-fable "$ci_root/prepared/domain-fable" "$ci_root/prepared/modal-fable" \
+          --prepared-fable "$ci_root/prepared/domain-fable" "$ci_root/prepared/modal-fable" "$ci_root/prepared/scenario-catalog-fable" \
           --domain-only \
           --ordinary-pr-functional
         ;;

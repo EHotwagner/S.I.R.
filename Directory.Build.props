@@ -29,6 +29,10 @@
     <FsDocsWarnOnMissingDocs>false</FsDocsWarnOnMissingDocs>
     <UsesMarkdownComments>true</UsesMarkdownComments>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'ScenarioCatalogRuntime'">
+    <BaseIntermediateOutputPath>obj/ScenarioCatalogRuntime/</BaseIntermediateOutputPath>
+    <BaseOutputPath>bin/ScenarioCatalogRuntime/</BaseOutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.Core" />
   </ItemGroup>

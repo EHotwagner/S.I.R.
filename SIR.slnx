@@ -13,6 +13,7 @@
     <Project Path="src/SIR.Wasm/SIR.Wasm.fsproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj" />
     <Project Path="tests/SIR.Client.Tests/SIR.Client.Tests.fsproj" />
     <Project Path="tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj" />
     <Project Path="tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj" />
