@@ -20,7 +20,7 @@ The driver runs the existing conformance, delivery, and browser subjects, builds
 
 Verification is read-only. It re-derives every field and fails on revision/tree, tracked state, source/configuration/lock, tool, command, expected path, missing output, or output-content drift. It never refreshes a stale receipt or rebuilds an output.
 
-`build-docs.sh --reuse-build-receipt <path>` is an explicit verified-reuse contract. It skips only the restore/solution/Fable/Vite work already bound by the receipt; all map/planning/simulation/review/timeline/workspace, fsdocs, publication, documentation experience, browser smoke, and accessibility checks still run.
+After conformance succeeds, the owner creates a second focused receipt over the build receipt, test sources and fixtures, browser and delivery JUnit, client-feature TRX, and bundle-graph receipts. `build-docs.sh --reuse-build-receipt <path> --reuse-conformance-receipt <path>` verifies both receipts before reuse. It skips the restore/solution/Fable/Vite work and map/planning/simulation/review/timeline/workspace gates already attested by conformance. The docs-only client assembly, fsdocs, publication, documentation experience, browser smoke, and accessibility checks still run.
 
 ## Feedback without an aggregate loop
 

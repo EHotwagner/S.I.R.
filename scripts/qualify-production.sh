@@ -6,6 +6,7 @@ baseline_ms=${SIR_QUALIFICATION_BASELINE_MS:-373848}
 qualification_root="$repo_root/artifacts/qualification"
 qualification_packages="$qualification_root/nuget-packages"
 pointer="$qualification_root/build-receipt.path"
+conformance_pointer="$qualification_root/conformance-receipt.path"
 fable_log="$qualification_root/fable-invocations.log"
 timing_receipt="$qualification_root/single-pass-timing.json"
 
@@ -25,7 +26,30 @@ node scripts/production-build-receipt.mjs verify \
   --owner-command scripts/qualify-production.sh \
   --receipt "$build_receipt"
 
-./scripts/build-docs.sh --reuse-build-receipt "$build_receipt"
+node scripts/production-build-receipt.mjs create \
+  --owner-command scripts/test-conformance.sh \
+  --input src \
+  --input scripts \
+  --input tests \
+  --input package.json \
+  --input package-lock.json \
+  --input global.json \
+  --input .config/dotnet-tools.json \
+  --input Directory.Build.props \
+  --input Directory.Packages.props \
+  --input SIR.slnx \
+  --output "build-receipt=$build_receipt" \
+  --output feature-bundle-graphs=docs/evidence/client-feature-bundle-graph-v1 \
+  --output browser-junit=artifacts/test-results/browser.junit.xml \
+  --output browser-diagnostics-junit=artifacts/test-results/browser-diagnostics-child.junit.xml \
+  --output delivery-junit=artifacts/test-results/production-delivery.junit.xml \
+  --output client-feature-trx=work/214-client-feature-loader/test-results/client-feature-loader.trx \
+  --pointer "$conformance_pointer"
+conformance_receipt=$(<"$conformance_pointer")
+
+./scripts/build-docs.sh \
+  --reuse-build-receipt "$build_receipt" \
+  --reuse-conformance-receipt "$conformance_receipt"
 
 node scripts/production-build-receipt.mjs mutate-stale-reuse \
   --owner-command scripts/qualify-production.sh \

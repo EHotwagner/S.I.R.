@@ -5,12 +5,18 @@ repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 site_output="$repo_root/artifacts/site"
 client_output="$repo_root/artifacts/client"
 reuse_build_receipt=""
+reuse_conformance_receipt=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --reuse-build-receipt)
       [[ $# -ge 2 ]] || { echo "build-docs: --reuse-build-receipt requires a path" >&2; exit 2; }
       reuse_build_receipt=$2
+      shift 2
+      ;;
+    --reuse-conformance-receipt)
+      [[ $# -ge 2 ]] || { echo "build-docs: --reuse-conformance-receipt requires a path" >&2; exit 2; }
+      reuse_conformance_receipt=$2
       shift 2
       ;;
     *)
@@ -25,9 +31,13 @@ cd "$repo_root"
 node scripts/verify-fable-client-baseline.mjs
 
 if [[ -n "$reuse_build_receipt" ]]; then
+  [[ -n "$reuse_conformance_receipt" ]] || { echo "build-docs: build reuse requires a conformance receipt" >&2; exit 2; }
   node scripts/production-build-receipt.mjs verify \
     --owner-command scripts/qualify-production.sh \
     --receipt "$reuse_build_receipt"
+  node scripts/production-build-receipt.mjs verify \
+    --owner-command scripts/test-conformance.sh \
+    --receipt "$reuse_conformance_receipt"
   dotnet build src/SIR.Client/SIR.Client.fsproj -c Release --no-restore
 else
   dotnet tool restore
@@ -35,12 +45,14 @@ else
   dotnet build SIR.slnx -c Release --no-restore
   ./scripts/build-client.sh
 fi
-node scripts/test-map-editor-qualification.mjs "$client_output"
-node scripts/test-planning-workspace-m5-qualification.mjs
-node scripts/test-simulator-workspace-m6-qualification.mjs
-node scripts/test-review-workspace-m7-qualification.mjs
-node scripts/test-timeline-supporting-panels-m8-qualification.mjs
-node scripts/test-persistent-workspace-m9-acceptance.mjs "$client_output"
+if [[ -z "$reuse_conformance_receipt" ]]; then
+  node scripts/test-map-editor-qualification.mjs "$client_output"
+  node scripts/test-planning-workspace-m5-qualification.mjs
+  node scripts/test-simulator-workspace-m6-qualification.mjs
+  node scripts/test-review-workspace-m7-qualification.mjs
+  node scripts/test-timeline-supporting-panels-m8-qualification.mjs
+  node scripts/test-persistent-workspace-m9-acceptance.mjs "$client_output"
+fi
 
 if [[ -d "$repo_root/.fsdocs" ]]; then
   rm -rf -- "$repo_root/.fsdocs"
