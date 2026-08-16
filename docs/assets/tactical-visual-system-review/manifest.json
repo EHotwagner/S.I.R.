@@ -8,7 +8,7 @@
   },
   "after": {
     "path": "after-production.png",
-    "sha256": "e5e3f0c5cd7dac3ef520f08a761565ac5d6c496752c610b6123777636d0b64bb",
+    "sha256": "1a6dc3119a1e2fc00c7612e1fa61f1b0e3b40a39fc436f495e92e1f60592d860",
     "captureKind": "actual-production-shell-chromium-screenshot",
     "semantic": {
       "identity": "tactical-visual-system-v1",
@@ -49,7 +49,7 @@
     {
       "units": 100,
       "path": "production-density-100.png",
-      "sha256": "a66d7371d31adc94a774cf985dc0c5186b3c5a62f1c816db23c3802a59596d58",
+      "sha256": "dd86376b888b69ff2097b5fe1248e661cee256d1488546be8de35d7fc7dc9c7c",
       "workload": {
         "requestedUnits": 100,
         "renderedUnits": 100,
@@ -79,7 +79,7 @@
     {
       "units": 200,
       "path": "production-density-200.png",
-      "sha256": "97abc6c7ace361c2d53e70bda8f9d1f4c17317e89b911ee62271ae6d9d2ed38c",
+      "sha256": "8a20d12406fdc35aff2da8fef61ad6376bfcc5d95a25a4380ce4f228998745c5",
       "workload": {
         "requestedUnits": 200,
         "renderedUnits": 200,

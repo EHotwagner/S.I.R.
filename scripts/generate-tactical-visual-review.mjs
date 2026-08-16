@@ -26,9 +26,10 @@ const [bundleBytes, stylesBytes, baselineBytes] = await Promise.all([
 
 await mkdir(reviewOutput, { recursive: true });
 const delaySource = `const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));`;
+const readinessSource = `const waitFor = async (description, predicate, timeoutMilliseconds = 5000) => { const deadline = performance.now() + timeoutMilliseconds; while (performance.now() < deadline) { const ready = predicate(); if (ready) return ready; await wait(10); } throw new Error("Timed out waiting for " + description); };`;
 const clickButtonSource = `const clickButton = (label) => { const button = [...document.querySelectorAll("button")].find((candidate) => candidate.textContent.trim() === label || candidate.getAttribute("aria-label") === label); if (!button) throw new Error("Missing production control: " + label); button.click(); };`;
 const settleCaptureSource = `const settleCapture = async () => { let style = document.querySelector("#sir-deterministic-review-style"); if (!style) { style = document.createElement("style"); style.id = "sir-deterministic-review-style"; style.textContent = "html{scroll-behavior:auto!important}*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}"; document.head.appendChild(style); } document.documentElement.dataset.reviewCaptureState = "frozen-reduced-motion"; document.activeElement?.blur(); for (const animation of document.getAnimations()) animation.cancel(); for (const element of document.querySelectorAll("*")) { element.scrollTop = 0; element.scrollLeft = 0; } window.scrollTo(0, 0); await document.fonts.ready; await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); };`;
-const maintainedSimulation = `(async () => { ${delaySource} ${clickButtonSource} ${settleCaptureSource} clickButton("Simulate"); await wait(50); clickButton("Show contextual actions"); await wait(50); clickButton("Open simulator samples"); await wait(80); const card = [...document.querySelectorAll("details.sample-card")].find((candidate) => candidate.textContent.includes("Troll assault")); if (!card) throw new Error("Missing maintained simulation sample"); card.querySelector("summary").click(); await wait(20); clickButton("Run Troll assault in Simulator"); await wait(100); clickButton("Advance the map simulation one tick"); await wait(100); await settleCapture(); })()`;
+const maintainedSimulation = `(async () => { ${delaySource} ${readinessSource} ${clickButtonSource} ${settleCaptureSource} clickButton("Simulate"); await wait(50); clickButton("Show contextual actions"); await wait(50); clickButton("Open simulator samples"); await waitFor("deferred Curated samples feature", () => document.querySelector('[aria-label="Curated samples feature"]')); const card = await waitFor("maintained Troll assault sample", () => [...document.querySelectorAll("details.sample-card")].find((candidate) => candidate.textContent.includes("Troll assault"))); card.querySelector("summary").click(); await wait(20); clickButton("Run Troll assault in Simulator"); await waitFor("maintained simulator scene", () => document.querySelector('#persistent-tactical-svg[data-scene-owner="SimulatorScene"] [data-unit-id]')); clickButton("Advance the map simulation one tick"); await wait(100); await settleCapture(); })()`;
 const afterPath = resolve(reviewOutput, "after-production.png");
 const audit = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: afterPath, prepareExpression: maintainedSimulation, reducedMotion: true });
 const { workload: ignoredAfterWorkload, ...system } = audit.wide.visualSystem;
@@ -41,16 +42,18 @@ if (system.layerOrder !== system.paintedLayerOrder) {
 
 const workloadExpression = (units) => `(async () => {
   ${delaySource} ${clickButtonSource} ${settleCaptureSource}
+  ${readinessSource}
   globalThis.__sirTacticalStage = "samples";
-  const workspaceControls = document.querySelector("details.tactical-legacy-controls"); workspaceControls?.querySelector("summary")?.click(); clickButton("Samples"); if (workspaceControls) workspaceControls.open = false; await wait(80);
-  const card = [...document.querySelectorAll("details.sample-card")].find((candidate) => candidate.textContent.includes("Tactical density ${units}"));
-  if (!card) throw new Error("Missing production tactical density ${units} sample");
+  const workspaceControls = document.querySelector("details.tactical-legacy-controls"); workspaceControls?.querySelector("summary")?.click(); clickButton("Samples"); if (workspaceControls) workspaceControls.open = false;
+  await waitFor("deferred Curated samples feature", () => document.querySelector('[aria-label="Curated samples feature"]'));
+  const card = await waitFor("production tactical density ${units} sample", () => [...document.querySelectorAll("details.sample-card")].find((candidate) => candidate.textContent.includes("Tactical density ${units}")));
   card.querySelector("summary").click(); await wait(40);
   globalThis.__sirTacticalStage = "simulate";
   const run = card.querySelector('[aria-label="Run Tactical density ${units} in Simulator"]');
   if (!run) throw new Error("Missing density sample simulator route");
-  run.click(); await wait(180);
+  run.click();
   const svg = document.querySelector("#persistent-tactical-svg");
+  await waitFor("production tactical density ${units} simulator scene", () => svg.getAttribute("data-scene-owner") === "SimulatorScene" && svg.querySelectorAll("[data-unit-id]").length === ${units});
   const beforeTick = svg.getAttribute("data-scene-tick");
   globalThis.__sirTacticalStage = "step"; const started = performance.now(); clickButton("Advance the map simulation one tick");
   while (svg.getAttribute("data-scene-tick") === beforeTick && performance.now() - started < 2000) await wait(5);
@@ -60,10 +63,11 @@ const workloadExpression = (units) => `(async () => {
   routeUnits[0].dispatchEvent(new MouseEvent("click", { bubbles: true })); await wait(25);
   clickButton("Move route preview right"); await wait(25);
   clickButton("Cancel route preview"); await wait(25);
-  for (const unit of routeUnits) {
+  for (const [routeIndex, unit] of routeUnits.entries()) {
     unit.dispatchEvent(new MouseEvent("click", { bubbles: true })); await wait(25);
     clickButton("Move route preview up"); clickButton("Move route preview up"); await wait(25);
-    clickButton("Commit clear route preview"); await wait(25);
+    clickButton("Commit clear route preview");
+    await waitFor("committed route " + (routeIndex + 1), () => svg.querySelectorAll("#persistent-layer-routes > polyline").length >= routeIndex + 1);
   }
   const frameStarted = await new Promise((resolve) => requestAnimationFrame(resolve));
   const frameEnded = await new Promise((resolve) => requestAnimationFrame(resolve));
