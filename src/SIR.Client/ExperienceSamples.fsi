@@ -93,6 +93,7 @@ type ScenarioCatalogCost =
 
 [<RequireQualifiedAccess>]
 module ExperienceSamples =
+    val legacyTrollAssault: ExperienceMapSample
     val maps: ExperienceMapSample list
     val replays: ExperienceReplaySample list
     val packages: ExperienceScenarioPackage list

@@ -169,6 +169,23 @@ module ExperienceSamples =
             (mapText 32 24 [ for row in 4 .. 20 -> $"terrain 17 {row} rough" ] []
                 [ "zone 1 deployment blue rectangle 0 0 7 24"; "zone 2 deployment red rectangle 24 0 8 24" ] armoredUnits)
 
+    // Compatibility payload for maintained workflows that entered through the former
+    // Troll assault sample. It intentionally remains outside mapCatalog so the curated
+    // catalog continues to have one armored identity and seven visible cards.
+    let legacyTrollAssault =
+        map "troll-assault" "Troll assault" "Three riflemen meet a 240 HP armored troll advancing across open ground."
+            ArmoredAntiArmorResponse "Inspect the original close-combat controller limits on the compact fixture."
+            [ "Large 3x3 footprint versus a dispersed firing line"
+              "General-controller target choice, movement, collision, and attrition" ]
+            [ "Compatibility payload for maintained Troll assault workflows; not a catalog identity." ]
+            (mapText 16 10
+                [ for row in 2 .. 7 -> $"terrain 7 {row} rough" ] []
+                [ "zone 1 deployment blue rectangle 0 0 4 10"; "zone 2 deployment red rectangle 11 0 5 10" ]
+                [ "unit 1 blue rifleman 1 0 2 12 12 general -"
+                  "unit 2 blue rifleman 1 4 2 12 12 general -"
+                  "unit 3 blue rifleman 1 8 2 12 12 general -"
+                  "unit 4 red troll 12 3 3 240 240 general -" ])
+
     let private withdrawalMap =
         map "objective-crossing" "Withdrawal and reinforcement" "A pressured patrol disengages through two objectives while reinforcements enter."
             MultiObjectiveWithdrawalReinforcement "Trade space deliberately and preserve a route for the reinforcing element."

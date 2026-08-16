@@ -52,13 +52,15 @@ let render
         append body (element "p" "sample-lesson" ("Lesson: " + sample.Lesson))
         append body (element "p" "sample-notes" ("Design notes: " + String.concat " " sample.DesignNotes))
         let controls = element "div" "control-row" ""
-        let prepare action =
-            let editor = ExperienceSamples.editorState sample
-            dispatch action editor (ExperienceSamples.simulator sample) "" [||]
+        let prepareSample action target =
+            let editor = ExperienceSamples.editorState target
+            dispatch action editor (ExperienceSamples.simulator target) "" [||]
+        let prepare action = prepareSample action sample
         append controls (actionButton ("Open " + sample.Title + " in Editor") (fun () -> prepare "map"))
         append controls (actionButton ("Run " + sample.Title + " in Simulator") (fun () -> prepare "simulation"))
         if sample.Id = "troll-assault" then
-            append controls (actionButton "Run Troll assault in Simulator" (fun () -> prepare "simulation"))
+            append controls (actionButton "Run Troll assault in Simulator" (fun () ->
+                prepareSample "simulation" ExperienceSamples.legacyTrollAssault))
         append body controls
         append card body
         append maps card
