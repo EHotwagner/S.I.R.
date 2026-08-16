@@ -3,8 +3,11 @@ import { expect, test } from "./journey.js";
 test("the production Samples panel exposes every tactical family and a playable teaching journey", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Simulate", exact: true }).click();
+  const fileMenu = page.locator("details.desktop-menu").filter({ has: page.getByRole("button", { name: "File", exact: true }) });
   await page.getByRole("button", { name: "File", exact: true }).click();
+  await expect(fileMenu).toHaveAttribute("open", "");
   await page.getByRole("menuitem", { name: "Samples", exact: true }).click();
+  await expect(fileMenu).not.toHaveAttribute("open", "");
 
   const mapCards = page.locator(".sample-card").filter({ has: page.locator('.sample-kind', { hasText: "Map · Simulation" }) });
   await expect(mapCards).toHaveCount(7);

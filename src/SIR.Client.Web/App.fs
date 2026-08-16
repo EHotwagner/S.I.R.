@@ -7159,7 +7159,9 @@ let private tacticalLayoutToolbar model dispatch =
                                 prop.type'.button
                                 prop.custom ("role", "menuitem")
                                 prop.text "Samples"
-                                prop.onClick (fun _ -> dispatch (OpenSupportingPanel "samples"))
+                                prop.onClick (fun _ ->
+                                    closeDesktopMenus ()
+                                    dispatch (OpenSupportingPanel "samples"))
                             ]
                     ]
                 ]

@@ -30,6 +30,33 @@ let run () =
         |> Result.defaultWith (fun errors -> failwith (string errors)) |> ignore
         ExperienceSamples.replayFrames { package.Replay with Ticks = 1 } |> Array.tryLast |> ignore
     ExperienceSamples.packages |> List.iter runPackage
+    let package = ExperienceSamples.packages |> List.head
+    let changedReplay =
+        { package.Replay with
+            Title = package.Replay.Title + " (fork)"
+            Summary = package.Replay.Summary + " Forked replay notes." }
+    let staleReplayMetadata = { package with Replay = changedReplay }
+    require
+        (ExperienceSamples.digest staleReplayMetadata <> package.Identity.ContentDigest)
+        "Replay title and summary changes did not alter the canonical content digest."
+    match ExperienceSamples.validate staleReplayMetadata with
+    | Error errors when errors |> List.exists (function StaleContentDigest _ -> true | _ -> false) -> ()
+    | result -> failwith ("Replay metadata subject mutation was not rejected with its stale digest: " + string result)
+    let reboundReplayMetadata =
+        { staleReplayMetadata with
+            Identity = { staleReplayMetadata.Identity with ContentDigest = ExperienceSamples.digest staleReplayMetadata } }
+    let importedReplayMetadata =
+        ExperienceSamples.importPackage (ExperienceSamples.encodePackage reboundReplayMetadata)
+        |> Result.defaultWith (fun errors -> failwith ("Replay metadata round-trip failed: " + string errors))
+    require
+        (importedReplayMetadata = reboundReplayMetadata)
+        "Replay title and summary were not preserved by the canonical package round-trip."
+    let malformedUnitPackage =
+        { package with
+            Map = { package.Map with MapText = package.Map.MapText.Replace("unit 1 ", "unit x ") } }
+    match ExperienceSamples.validate malformedUnitPackage with
+    | Error errors when errors |> List.exists (function MalformedScenarioPackage message -> message.Contains("unit identifier") | _ -> false) -> ()
+    | result -> failwith ("Malformed unit identifier escaped the typed package-validation boundary: " + string result)
     let runStressRoute () =
         let stress = ExperienceSamples.stressPackage ()
         let samples = ResizeArray<float>()

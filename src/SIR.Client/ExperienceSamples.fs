@@ -248,7 +248,8 @@ module ExperienceSamples =
           package.Objectives |> List.map (fun value -> value.Id + "|" + value.Summary + "|" + (value.ZoneId |> Option.map string |> Option.defaultValue "-")) |> addList
           addList package.InitialKnowledge; string package.Seed; package.RandomAddress
           package.ExpectedCheckpoints |> List.map (fun value -> $"{value.Tick}|{value.MinimumEvents}|{value.VisibleOutcome}") |> addList
-          package.Replay.Id; package.Replay.MapSampleId; string package.Replay.Ticks ]
+          package.Replay.Id; package.Replay.Title; package.Replay.Summary
+          package.Replay.MapSampleId; string package.Replay.Ticks ]
         |> List.map field |> String.concat ""
 
     let private hex (bytes: byte array) =
@@ -277,7 +278,13 @@ module ExperienceSamples =
             package.Map.MapText.Split('\n')
             |> Array.choose (fun line ->
                 let parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                if parts.Length > 1 && parts[0] = "unit" then Some(int32 parts[1]) else None)
+                if parts.Length > 1 && parts[0] = "unit" then
+                    match Int32.TryParse parts[1] with
+                    | true, unitId -> Some unitId
+                    | _ ->
+                        errors.Add(MalformedScenarioPackage("unit identifier is not an integer: " + parts[1]))
+                        None
+                else None)
             |> Array.toList
         if package.SchemaVersion <> 1 then errors.Add(UnsupportedSchema package.SchemaVersion)
         if package.Identity.Engine <> engine then errors.Add(StaleEngine package.Identity.Engine)
@@ -288,7 +295,9 @@ module ExperienceSamples =
         if not authoritativeMap || package.Identity.MapRevision <> expectedRevision then
             errors.Add(StaleMapRevision package.Identity.MapRevision)
         if package.Replay.MapSampleId <> package.Map.Id then errors.Add(StaleReplayBinding package.Replay.MapSampleId)
-        if List.isEmpty package.Forces || List.isEmpty package.Plans || List.isEmpty package.Objectives || String.IsNullOrWhiteSpace package.Map.MapText then
+        if List.isEmpty package.Forces || List.isEmpty package.Plans || List.isEmpty package.Objectives
+           || String.IsNullOrWhiteSpace package.Map.MapText || String.IsNullOrWhiteSpace package.Replay.Title
+           || String.IsNullOrWhiteSpace package.Replay.Summary then
             errors.Add(MissingScenarioContent package.Map.Id)
         if (package.Forces |> List.map _.UnitId |> List.sort) <> List.sort mapUnitIds then
             errors.Add(MissingScenarioContent(package.Map.Id + ":force-map-mismatch"))
@@ -301,7 +310,8 @@ module ExperienceSamples =
 
     let encodePackage package =
         [ string package.SchemaVersion; package.Identity.Engine; package.Identity.Ruleset; package.Identity.Content
-          package.Identity.MapRevision; package.Map.Id; package.Replay.MapSampleId; package.Identity.ContentDigest
+          package.Identity.MapRevision; package.Map.Id; package.Replay.MapSampleId
+          package.Replay.Title; package.Replay.Summary; package.Identity.ContentDigest
           canonical package ]
         |> List.map field
         |> String.concat ""
@@ -316,18 +326,22 @@ module ExperienceSamples =
                 | _ -> Error [ MalformedScenarioPackage "invalid length-prefixed package envelope" ]
         match readFields 0 [] with
         | Error errors -> Error errors
-        | Ok [ schema; serializedEngine; serializedRuleset; serializedContent; revision; mapId; replayMapId; serializedDigest; payload ] ->
+        | Ok [ schema; serializedEngine; serializedRuleset; serializedContent; revision; mapId; replayMapId; replayTitle; replaySummary; serializedDigest; payload ] ->
             match Int32.TryParse schema, (packages @ [ stressPackage () ] |> List.tryFind (fun package -> package.Map.Id = mapId)) with
             | (true, schemaVersion), Some package ->
+                let candidate =
+                    { package with
+                        Identity = { package.Identity with ContentDigest = serializedDigest }
+                        Replay = { package.Replay with Title = replayTitle; Summary = replaySummary } }
                 let errors = ResizeArray<ScenarioValidationError>()
-                if schemaVersion <> package.SchemaVersion then errors.Add(UnsupportedSchema schemaVersion)
-                if serializedEngine <> package.Identity.Engine then errors.Add(StaleEngine serializedEngine)
-                if serializedRuleset <> package.Identity.Ruleset then errors.Add(StaleRuleset serializedRuleset)
-                if serializedContent <> package.Identity.Content then errors.Add(StaleContent serializedContent)
-                if revision <> package.Identity.MapRevision then errors.Add(StaleMapRevision revision)
-                if replayMapId <> package.Replay.MapSampleId then errors.Add(StaleReplayBinding replayMapId)
-                if serializedDigest <> package.Identity.ContentDigest || payload <> canonical package then errors.Add(StaleContentDigest serializedDigest)
-                if errors.Count = 0 then validate package else Error(List.ofSeq errors)
+                if schemaVersion <> candidate.SchemaVersion then errors.Add(UnsupportedSchema schemaVersion)
+                if serializedEngine <> candidate.Identity.Engine then errors.Add(StaleEngine serializedEngine)
+                if serializedRuleset <> candidate.Identity.Ruleset then errors.Add(StaleRuleset serializedRuleset)
+                if serializedContent <> candidate.Identity.Content then errors.Add(StaleContent serializedContent)
+                if revision <> candidate.Identity.MapRevision then errors.Add(StaleMapRevision revision)
+                if replayMapId <> candidate.Replay.MapSampleId then errors.Add(StaleReplayBinding replayMapId)
+                if payload <> canonical candidate then errors.Add(StaleContentDigest serializedDigest)
+                if errors.Count = 0 then validate candidate else Error(List.ofSeq errors)
             | (true, schemaVersion), None -> Error [ StaleMapRevision(mapId + ":unknown") ]
             | _ -> Error [ MalformedScenarioPackage "schema is not an integer" ]
         | Ok _ -> Error [ MalformedScenarioPackage "package envelope field count changed" ]
