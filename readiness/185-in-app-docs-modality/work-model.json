@@ -53,7 +53,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "4d063a707700edc76eb103559a54330d853ab96a7c6d7a6d54036402fb041339"
+        "value": "d10adb9aa914dea258fc65628cb1c8d46663224df703219036123a0e277b4fba"
       }
     },
     {
@@ -65,7 +65,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "726b782722840a14260feff0626fcb7b70ea0d6765c5104ab6d876a55dc0a94d"
+        "value": "9443ce1b0c13f95d138681f6d937455570c7b2014699e70a5e4208be089652b7"
       }
     },
     {
@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "56d89f36596d548db7cec416514f1d6f2a376a92a49cc68c16e9bec0a74d8ac6"
+        "value": "f7e68cac1bfda914f1ee1662d75b4dbe917e46a36a52d0a71af22d68212001ba"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "b595e4c6435ee02cf712d48e406290d343bb9bdcd5931fb7674c880ae70b15bc"
+        "value": "7c159517cc03c4739344f04cc4db22ddd32fe01826cbf871e01a117178800395"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "bef21e9a436b6cdbc9a2243a2d5679a76c6c5816696ae38a7f2aea866ead3779"
+        "value": "8409752fa30181405f707204835e4c0fedfc21a6c4933a340bd27d86edae1050"
       }
     }
   ],
@@ -145,7 +145,8 @@
       ],
       "linkedEvidenceIds": [
         "EV001",
-        "EV018"
+        "EV018",
+        "EV051"
       ]
     },
     {
@@ -321,7 +322,8 @@
       ],
       "linkedEvidenceIds": [
         "EV009",
-        "EV026"
+        "EV026",
+        "EV051"
       ]
     },
     {
@@ -343,7 +345,8 @@
       ],
       "linkedEvidenceIds": [
         "EV010",
-        "EV027"
+        "EV027",
+        "EV051"
       ]
     }
   ],
@@ -360,7 +363,7 @@
       "acceptanceRefs": [],
       "source": "work/185-in-app-docs-modality/clarifications.md",
       "sourceLocation": {
-        "line": 36,
+        "line": 38,
         "column": 1
       },
       "linkedTaskIds": [
@@ -379,7 +382,7 @@
       "acceptanceRefs": [],
       "source": "work/185-in-app-docs-modality/clarifications.md",
       "sourceLocation": {
-        "line": 37,
+        "line": 39,
         "column": 1
       },
       "linkedTaskIds": [
@@ -399,7 +402,7 @@
       "acceptanceRefs": [],
       "source": "work/185-in-app-docs-modality/clarifications.md",
       "sourceLocation": {
-        "line": 38,
+        "line": 40,
         "column": 1
       },
       "linkedTaskIds": [
@@ -417,7 +420,7 @@
       "acceptanceRefs": [],
       "source": "work/185-in-app-docs-modality/clarifications.md",
       "sourceLocation": {
-        "line": 39,
+        "line": 41,
         "column": 1
       },
       "linkedTaskIds": [
@@ -436,7 +439,7 @@
       "acceptanceRefs": [],
       "source": "work/185-in-app-docs-modality/clarifications.md",
       "sourceLocation": {
-        "line": 40,
+        "line": 42,
         "column": 1
       },
       "linkedTaskIds": [
@@ -454,7 +457,7 @@
       "acceptanceRefs": [],
       "source": "work/185-in-app-docs-modality/clarifications.md",
       "sourceLocation": {
-        "line": 41,
+        "line": 43,
         "column": 1
       },
       "linkedTaskIds": [
@@ -472,11 +475,31 @@
       "acceptanceRefs": [],
       "source": "work/185-in-app-docs-modality/clarifications.md",
       "sourceLocation": {
-        "line": 42,
+        "line": 44,
         "column": 1
       },
       "linkedTaskIds": [
         "T017"
+      ]
+    },
+    {
+      "id": "DEC-008",
+      "title": "Integrate Docs through the canonical typed FeatureLoader as one deferred \u0060DocsView\u0060 chunk, retain immutable registry v1, and make registry v2 the explicit rebaseline with only the measured Rules Explorer Brotli ceiling changed; fail F#/JavaScript/compiled version drift and invert that gate.",
+      "decision": "Integrate Docs through the canonical typed FeatureLoader as one deferred \u0060DocsView\u0060 chunk, retain immutable registry v1, and make registry v2 the explicit rebaseline with only the measured Rules Explorer Brotli ceiling changed; fail F#/JavaScript/compiled version drift and invert that gate.",
+      "requirementRefs": [
+        "FR-001",
+        "FR-009",
+        "FR-010"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [],
+      "source": "work/185-in-app-docs-modality/clarifications.md",
+      "sourceLocation": {
+        "line": 45,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T050"
       ]
     }
   ],
@@ -1829,6 +1852,147 @@
         "line": 49,
         "column": 1
       }
+    },
+    {
+      "id": "T050",
+      "title": "Implement clarification decision DEC-008",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-008"
+      ],
+      "sourceIds": [
+        "DEC-008"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV050"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 50,
+        "column": 1
+      }
+    },
+    {
+      "id": "T051",
+      "title": "Implement plan decision PD-011",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "AC-006",
+        "AC-007",
+        "DEC-008",
+        "FR-001",
+        "FR-009",
+        "FR-010",
+        "PD-011"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV051"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 51,
+        "column": 1
+      }
+    },
+    {
+      "id": "T052",
+      "title": "Update contract surface PC-007",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-007",
+        "PD-011"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV052"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 52,
+        "column": 1
+      }
+    },
+    {
+      "id": "T053",
+      "title": "Record verification evidence VO-010",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-007",
+        "PD-011",
+        "VO-010"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV053"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 53,
+        "column": 1
+      }
+    },
+    {
+      "id": "T054",
+      "title": "Handle migration posture PM-006",
+      "status": "done",
+      "owner": "sdd",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-007",
+        "PM-006"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV054"
+      ],
+      "source": "work/185-in-app-docs-modality/tasks.yml",
+      "sourceLocation": {
+        "line": 54,
+        "column": 1
+      }
     }
   ],
   "evidence": [
@@ -2949,6 +3113,122 @@
         "line": 49,
         "column": 1
       }
+    },
+    {
+      "id": "EV050",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T050",
+      "taskRefs": [
+        "T050"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "docs/evidence/client-feature-bundle-graph-v1/b0d91b9b6390b127208743b6f09058a31b09abddcd6195ee4fb5c06a1153eaa7.json"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 50,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV051",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T051",
+      "taskRefs": [
+        "T051"
+      ],
+      "requirementRefs": [
+        "FR-001",
+        "FR-009",
+        "FR-010"
+      ],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 51,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV052",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T052",
+      "taskRefs": [
+        "T052"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 52,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV053",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T053",
+      "taskRefs": [
+        "T053"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 53,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV054",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T054",
+      "taskRefs": [
+        "T054"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/185-in-app-docs-modality/evidence.yml",
+      "sourceLocation": {
+        "line": 54,
+        "column": 1
+      }
     }
   ],
   "generatedViews": [
@@ -2989,7 +3269,7 @@
           "path": "work/185-in-app-docs-modality/checklist.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "4d063a707700edc76eb103559a54330d853ab96a7c6d7a6d54036402fb041339"
+            "value": "d10adb9aa914dea258fc65628cb1c8d46663224df703219036123a0e277b4fba"
           },
           "schemaVersion": 1
         },
@@ -2997,7 +3277,7 @@
           "path": "work/185-in-app-docs-modality/clarifications.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "726b782722840a14260feff0626fcb7b70ea0d6765c5104ab6d876a55dc0a94d"
+            "value": "9443ce1b0c13f95d138681f6d937455570c7b2014699e70a5e4208be089652b7"
           },
           "schemaVersion": 1
         },
@@ -3005,7 +3285,7 @@
           "path": "work/185-in-app-docs-modality/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "56d89f36596d548db7cec416514f1d6f2a376a92a49cc68c16e9bec0a74d8ac6"
+            "value": "f7e68cac1bfda914f1ee1662d75b4dbe917e46a36a52d0a71af22d68212001ba"
           },
           "schemaVersion": 1
         },
@@ -3013,7 +3293,7 @@
           "path": "work/185-in-app-docs-modality/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "b595e4c6435ee02cf712d48e406290d343bb9bdcd5931fb7674c880ae70b15bc"
+            "value": "7c159517cc03c4739344f04cc4db22ddd32fe01826cbf871e01a117178800395"
           },
           "schemaVersion": 1
         },
@@ -3029,14 +3309,14 @@
           "path": "work/185-in-app-docs-modality/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "bef21e9a436b6cdbc9a2243a2d5679a76c6c5816696ae38a7f2aea866ead3779"
+            "value": "8409752fa30181405f707204835e4c0fedfc21a6c4933a340bd27d86edae1050"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "eb7019056fcac2be8ad765287dd0a9994b2098cd76d1043937bb63d942b95561"
+        "value": "b0ec13478a60bfdad2ee7eda018d60129399bb250560da31ab4fc4f89992c0a6"
       },
       "currency": "current"
     }

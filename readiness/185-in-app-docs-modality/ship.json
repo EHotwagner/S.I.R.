@@ -41,7 +41,7 @@
       "kind": "analysis",
       "digest": {
         "algorithm": "sha256",
-        "value": "01111910cf86a0d0f1a521aa66b87a4b8c32778ecd18ea8ee099e415de539cb0"
+        "value": "29b00bd69c4f3a30043b5b4571f4ecab3c20f896142330b5ad33c2287a1cbcb3"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -51,7 +51,7 @@
       "kind": "source",
       "digest": {
         "algorithm": "sha256",
-        "value": "32b7afbd2fe51d487836f535af99bf179ea541b3fdc38a3bee93a86436d22c8e"
+        "value": "3c84e7cec93430c9cfba66a3c76a3b4c186d96f5f17188e20fdf2972df144f4a"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -61,7 +61,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "81ffe6a69b34f0edc133bddb505d68657848a87cdbcfda6f29100afe01ea3b74"
+        "value": "9dfc0e3f64baca3b533e3ea0fab43c81c97d1316f2c3f51984a2c19c00b06f16"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -71,7 +71,7 @@
       "kind": "checklist",
       "digest": {
         "algorithm": "sha256",
-        "value": "4d063a707700edc76eb103559a54330d853ab96a7c6d7a6d54036402fb041339"
+        "value": "d10adb9aa914dea258fc65628cb1c8d46663224df703219036123a0e277b4fba"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +81,7 @@
       "kind": "clarification",
       "digest": {
         "algorithm": "sha256",
-        "value": "726b782722840a14260feff0626fcb7b70ea0d6765c5104ab6d876a55dc0a94d"
+        "value": "9443ce1b0c13f95d138681f6d937455570c7b2014699e70a5e4208be089652b7"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -91,7 +91,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "6e918460d14727416509b583f1177fbaa7a9742c60890af51f6788d955bd93e6"
+        "value": "390f4df9c45557834b8275fa09fcf0421fa74c25ec3cbfe59d5e65a6e63cccff"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -101,7 +101,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "b595e4c6435ee02cf712d48e406290d343bb9bdcd5931fb7674c880ae70b15bc"
+        "value": "7c159517cc03c4739344f04cc4db22ddd32fe01826cbf871e01a117178800395"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -121,7 +121,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "bef21e9a436b6cdbc9a2243a2d5679a76c6c5816696ae38a7f2aea866ead3779"
+        "value": "8409752fa30181405f707204835e4c0fedfc21a6c4933a340bd27d86edae1050"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -167,9 +167,9 @@
   "verificationReadiness": {
     "status": "verificationReady",
     "blockingFindingIds": [],
-    "evidenceSupportedCount": 49,
+    "evidenceSupportedCount": 54,
     "evidenceSelfAttestedCount": 0,
-    "evidenceObservedCount": 49,
+    "evidenceObservedCount": 54,
     "evidenceDeferredCount": 0,
     "evidenceMissingCount": 0,
     "evidenceStaleCount": 0,
@@ -564,6 +564,46 @@
     {
       "id": "ED-EV049",
       "obligationId": "EV049",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV050",
+      "obligationId": "EV050",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV051",
+      "obligationId": "EV051",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV052",
+      "obligationId": "EV052",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV053",
+      "obligationId": "EV053",
+      "state": "supported",
+      "observed": true,
+      "severity": "ready",
+      "diagnosticIds": []
+    },
+    {
+      "id": "ED-EV054",
+      "obligationId": "EV054",
       "state": "supported",
       "observed": true,
       "severity": "ready",

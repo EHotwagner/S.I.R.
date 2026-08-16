@@ -248,3 +248,28 @@ normalized work model, not an authored source of truth. See `guidance.json`.
 - Purpose: Carry out lifecycle task T049 (done) covering GV-002, PD-010.
 - Related: GV-002, PD-010
 
+## T050 — Implement clarification decision DEC-008
+- Stage: specify
+- Purpose: Carry out lifecycle task T050 (done) covering DEC-008.
+- Related: DEC-008
+
+## T051 — Implement plan decision PD-011
+- Stage: specify
+- Purpose: Carry out lifecycle task T051 (done) covering AC-001, AC-006, AC-007, DEC-008, FR-001, FR-009, FR-010, PD-011.
+- Related: AC-001, AC-006, AC-007, DEC-008, FR-001, FR-009, FR-010, PD-011
+
+## T052 — Update contract surface PC-007
+- Stage: specify
+- Purpose: Carry out lifecycle task T052 (done) covering PC-007, PD-011.
+- Related: PC-007, PD-011
+
+## T053 — Record verification evidence VO-010
+- Stage: specify
+- Purpose: Carry out lifecycle task T053 (done) covering PC-007, PD-011, VO-010.
+- Related: PC-007, PD-011, VO-010
+
+## T054 — Handle migration posture PM-006
+- Stage: specify
+- Purpose: Carry out lifecycle task T054 (done) covering PC-007, PM-006.
+- Related: PC-007, PM-006
+

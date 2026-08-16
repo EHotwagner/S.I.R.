@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites tests="1" failures="0" skipped="0">
- <testsuite name="sir-browser" tests="1" failures="0" skipped="0">
+<testsuites tests="3" failures="0" skipped="0">
+ <testsuite name="sir-browser" tests="3" failures="0" skipped="0">
+  <testcase classname="client-feature-loader.spec.js" name="a deferred production control reports a stable offline failure"></testcase>
+  <testcase classname="client-feature-loader.spec.js" name="the production shell loads registered features through real controls"></testcase>
   <testcase classname="in-app-docs.spec.js" name="documentation is a reversible, searchable production modality"></testcase>
  </testsuite>
 </testsuites>

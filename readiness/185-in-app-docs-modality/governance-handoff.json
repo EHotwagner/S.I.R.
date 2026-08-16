@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/185-in-app-docs-modality/ship.json",
-      "digest": "sha256:ecfd0d66acabc10b4c4d285cb7db55d0e04b1a77456d8d430c5ebf6d85ecce26",
+      "digest": "sha256:350b313b477fedb0c97751a940af4590cb03a1c87d3a85ea59d2fd50d4d01896",
       "schemaVersion": 1
     },
     {
       "path": "readiness/185-in-app-docs-modality/verify.json",
-      "digest": "sha256:32b7afbd2fe51d487836f535af99bf179ea541b3fdc38a3bee93a86436d22c8e",
+      "digest": "sha256:3c84e7cec93430c9cfba66a3c76a3b4c186d96f5f17188e20fdf2972df144f4a",
       "schemaVersion": 1
     },
     {
       "path": "readiness/185-in-app-docs-modality/work-model.json",
-      "digest": "sha256:81ffe6a69b34f0edc133bddb505d68657848a87cdbcfda6f29100afe01ea3b74",
+      "digest": "sha256:9dfc0e3f64baca3b533e3ea0fab43c81c97d1316f2c3f51984a2c19c00b06f16",
       "schemaVersion": 1
     }
   ],
@@ -268,6 +268,31 @@
         "rationale": null
       },
       {
+        "id": "evidence:EV050",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV051",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV052",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV053",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "evidence:EV054",
+        "state": "real",
+        "rationale": null
+      },
+      {
         "id": "task:T001",
         "state": "real",
         "rationale": null
@@ -511,6 +536,31 @@
         "id": "task:T049",
         "state": "real",
         "rationale": null
+      },
+      {
+        "id": "task:T050",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T051",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T052",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T053",
+        "state": "real",
+        "rationale": null
+      },
+      {
+        "id": "task:T054",
+        "state": "real",
+        "rationale": null
       }
     ],
     "dependencies": [
@@ -709,6 +759,26 @@
       {
         "dependent": "evidence:EV049",
         "dependency": "task:T049"
+      },
+      {
+        "dependent": "evidence:EV050",
+        "dependency": "task:T050"
+      },
+      {
+        "dependent": "evidence:EV051",
+        "dependency": "task:T051"
+      },
+      {
+        "dependent": "evidence:EV052",
+        "dependency": "task:T052"
+      },
+      {
+        "dependent": "evidence:EV053",
+        "dependency": "task:T053"
+      },
+      {
+        "dependent": "evidence:EV054",
+        "dependency": "task:T054"
       },
       {
         "dependent": "task:T001",
@@ -1060,6 +1130,46 @@
       },
       {
         "dependent": "task:T049",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T050",
+        "dependency": "evidence:EV050"
+      },
+      {
+        "dependent": "task:T050",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T051",
+        "dependency": "evidence:EV051"
+      },
+      {
+        "dependent": "task:T051",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T052",
+        "dependency": "evidence:EV052"
+      },
+      {
+        "dependent": "task:T052",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T053",
+        "dependency": "evidence:EV053"
+      },
+      {
+        "dependent": "task:T053",
+        "dependency": "task:T001"
+      },
+      {
+        "dependent": "task:T054",
+        "dependency": "evidence:EV054"
+      },
+      {
+        "dependent": "task:T054",
         "dependency": "task:T001"
       }
     ]

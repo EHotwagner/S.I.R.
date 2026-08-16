@@ -11,19 +11,19 @@ sourceAnalysis: readiness/185-in-app-docs-modality/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/185-in-app-docs-modality/analysis.json
-    digest: a23a035ef0f95f6a5f25716881d65f5c2cef909aa10950b33d621fb05ba1b2e0
+    digest: 29b00bd69c4f3a30043b5b4571f4ecab3c20f896142330b5ad33c2287a1cbcb3
     schemaVersion: 1
   - label: checklist
     path: work/185-in-app-docs-modality/checklist.md
-    digest: 4d063a707700edc76eb103559a54330d853ab96a7c6d7a6d54036402fb041339
+    digest: d10adb9aa914dea258fc65628cb1c8d46663224df703219036123a0e277b4fba
     schemaVersion: 1
   - label: clarifications
     path: work/185-in-app-docs-modality/clarifications.md
-    digest: 726b782722840a14260feff0626fcb7b70ea0d6765c5104ab6d876a55dc0a94d
+    digest: 9443ce1b0c13f95d138681f6d937455570c7b2014699e70a5e4208be089652b7
     schemaVersion: 1
   - label: plan
     path: work/185-in-app-docs-modality/plan.md
-    digest: b595e4c6435ee02cf712d48e406290d343bb9bdcd5931fb7674c880ae70b15bc
+    digest: 7c159517cc03c4739344f04cc4db22ddd32fe01826cbf871e01a117178800395
     schemaVersion: 1
   - label: spec
     path: work/185-in-app-docs-modality/spec.md
@@ -31,7 +31,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: tasks
     path: work/185-in-app-docs-modality/tasks.yml
-    digest: bef21e9a436b6cdbc9a2243a2d5679a76c6c5816696ae38a7f2aea866ead3779
+    digest: 8409752fa30181405f707204835e4c0fedfc21a6c4933a340bd27d86edae1050
     schemaVersion: 1
 evidence:
   - id: EV001
@@ -54,13 +54,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV002
     kind: verification
     subject:
@@ -81,13 +81,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV003
     kind: verification
     subject:
@@ -108,13 +108,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
-      digest: "sha256:d6f96b0c5df698c05a03f4a1a1b40d4eb247c4246d31f53bf8d13a4fb904cadb"
+      digest: "sha256:82f2e3eba918f0921270e2e7927800acc4ebd8e160990c837b0e80b48597e028"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
       failed: 0
       skipped: 0
-    notes: [Manifest qualifier owns metadata, FsDocs API, content/source identity, link, anchor, and mutation outcomes.]
+    notes: [FsDocs API, Manifest qualifier owns metadata, anchor, and mutation outcomes., content/source identity, link]
   - id: EV004
     kind: verification
     subject:
@@ -135,13 +135,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
-      digest: "sha256:d6f96b0c5df698c05a03f4a1a1b40d4eb247c4246d31f53bf8d13a4fb904cadb"
+      digest: "sha256:82f2e3eba918f0921270e2e7927800acc4ebd8e160990c837b0e80b48597e028"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
       failed: 0
       skipped: 0
-    notes: [Manifest qualifier owns metadata, FsDocs API, content/source identity, link, anchor, and mutation outcomes.]
+    notes: [FsDocs API, Manifest qualifier owns metadata, anchor, and mutation outcomes., content/source identity, link]
   - id: EV005
     kind: verification
     subject:
@@ -162,13 +162,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
-      digest: "sha256:d6f96b0c5df698c05a03f4a1a1b40d4eb247c4246d31f53bf8d13a4fb904cadb"
+      digest: "sha256:82f2e3eba918f0921270e2e7927800acc4ebd8e160990c837b0e80b48597e028"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
       failed: 0
       skipped: 0
-    notes: [Manifest qualifier owns metadata, FsDocs API, content/source identity, link, anchor, and mutation outcomes.]
+    notes: [FsDocs API, Manifest qualifier owns metadata, anchor, and mutation outcomes., content/source identity, link]
   - id: EV006
     kind: verification
     subject:
@@ -189,13 +189,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV007
     kind: verification
     subject:
@@ -216,13 +216,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV008
     kind: verification
     subject:
@@ -243,7 +243,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-native.junit.xml
-      digest: "sha256:3282eb70ad5da80c016a96bfd62c5fdf5619209477e249c360709eab86393ce1"
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -270,13 +270,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-performance.junit.xml
-      digest: "sha256:985f79a88a2d58728037b987bc71e54972e1a0f77af4660bd054219161baca88"
+      digest: "sha256:3b9da3f82a4eabd567b79a890e441ad8c207a4deeb854877b767da46cd44270b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
       failed: 0
       skipped: 0
-    notes: [Production measurement owns actual DOM, construction/search timing, budget, and real-subject inversions.]
+    notes: [Production measurement owns actual DOM, and real-subject inversions., budget, construction/search timing]
   - id: EV010
     kind: verification
     subject:
@@ -297,7 +297,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-fable-production.junit.xml
-      digest: "sha256:b89a5f6e72287f9b8a01b093a954ead7b88f2f438fd7e5dce9586990a2db2e2b"
+      digest: "sha256:9db53fc8d794781213943425cc5eea8e1ca48599daf1ed44771859d4786688b0"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -324,13 +324,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV012
     kind: verification
     subject:
@@ -351,13 +351,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV013
     kind: verification
     subject:
@@ -378,13 +378,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV014
     kind: verification
     subject:
@@ -405,13 +405,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV015
     kind: verification
     subject:
@@ -432,13 +432,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV016
     kind: verification
     subject:
@@ -459,13 +459,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV017
     kind: verification
     subject:
@@ -486,13 +486,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV018
     kind: verification
     subject:
@@ -513,13 +513,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV019
     kind: verification
     subject:
@@ -540,13 +540,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV020
     kind: verification
     subject:
@@ -567,13 +567,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
-      digest: "sha256:d6f96b0c5df698c05a03f4a1a1b40d4eb247c4246d31f53bf8d13a4fb904cadb"
+      digest: "sha256:82f2e3eba918f0921270e2e7927800acc4ebd8e160990c837b0e80b48597e028"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
       failed: 0
       skipped: 0
-    notes: [Manifest qualifier owns metadata, FsDocs API, content/source identity, link, anchor, and mutation outcomes.]
+    notes: [FsDocs API, Manifest qualifier owns metadata, anchor, and mutation outcomes., content/source identity, link]
   - id: EV021
     kind: verification
     subject:
@@ -594,13 +594,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
-      digest: "sha256:d6f96b0c5df698c05a03f4a1a1b40d4eb247c4246d31f53bf8d13a4fb904cadb"
+      digest: "sha256:82f2e3eba918f0921270e2e7927800acc4ebd8e160990c837b0e80b48597e028"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
       failed: 0
       skipped: 0
-    notes: [Manifest qualifier owns metadata, FsDocs API, content/source identity, link, anchor, and mutation outcomes.]
+    notes: [FsDocs API, Manifest qualifier owns metadata, anchor, and mutation outcomes., content/source identity, link]
   - id: EV022
     kind: verification
     subject:
@@ -621,13 +621,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-manifest.junit.xml
-      digest: "sha256:d6f96b0c5df698c05a03f4a1a1b40d4eb247c4246d31f53bf8d13a4fb904cadb"
+      digest: "sha256:82f2e3eba918f0921270e2e7927800acc4ebd8e160990c837b0e80b48597e028"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 8
       failed: 0
       skipped: 0
-    notes: [Manifest qualifier owns metadata, FsDocs API, content/source identity, link, anchor, and mutation outcomes.]
+    notes: [FsDocs API, Manifest qualifier owns metadata, anchor, and mutation outcomes., content/source identity, link]
   - id: EV023
     kind: verification
     subject:
@@ -648,13 +648,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV024
     kind: verification
     subject:
@@ -675,7 +675,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-rules-corpus.junit.xml
-      digest: "sha256:81e5cd0d5e6a5cee059c5516eef857efacd2c1fca438292f69d873dd779c058a"
+      digest: "sha256:b927802afde5abe6fb41bdfb7ef46dd4b5a419fd33201d011bedda97e117f7bd"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -702,7 +702,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-native.junit.xml
-      digest: "sha256:3282eb70ad5da80c016a96bfd62c5fdf5619209477e249c360709eab86393ce1"
+      digest: "sha256:1afa9e3f9fe07c53ba3fa04a0a52c1c63d61aa3eadb586d2cd83d539e6745b90"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -729,13 +729,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-performance.junit.xml
-      digest: "sha256:985f79a88a2d58728037b987bc71e54972e1a0f77af4660bd054219161baca88"
+      digest: "sha256:3b9da3f82a4eabd567b79a890e441ad8c207a4deeb854877b767da46cd44270b"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 5
       failed: 0
       skipped: 0
-    notes: [Production measurement owns actual DOM, construction/search timing, budget, and real-subject inversions.]
+    notes: [Production measurement owns actual DOM, and real-subject inversions., budget, construction/search timing]
   - id: EV027
     kind: verification
     subject:
@@ -756,7 +756,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-fable-production.junit.xml
-      digest: "sha256:b89a5f6e72287f9b8a01b093a954ead7b88f2f438fd7e5dce9586990a2db2e2b"
+      digest: "sha256:9db53fc8d794781213943425cc5eea8e1ca48599daf1ed44771859d4786688b0"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 2
@@ -783,13 +783,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV029
     kind: verification
     subject:
@@ -810,13 +810,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV030
     kind: verification
     subject:
@@ -837,13 +837,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV031
     kind: verification
     subject:
@@ -864,7 +864,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-rules-corpus.junit.xml
-      digest: "sha256:81e5cd0d5e6a5cee059c5516eef857efacd2c1fca438292f69d873dd779c058a"
+      digest: "sha256:b927802afde5abe6fb41bdfb7ef46dd4b5a419fd33201d011bedda97e117f7bd"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -891,13 +891,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV033
     kind: verification
     subject:
@@ -918,13 +918,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV034
     kind: verification
     subject:
@@ -945,13 +945,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV035
     kind: verification
     subject:
@@ -972,13 +972,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV036
     kind: verification
     subject:
@@ -999,13 +999,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV037
     kind: verification
     subject:
@@ -1026,13 +1026,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV038
     kind: verification
     subject:
@@ -1053,7 +1053,7 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-rules-corpus.junit.xml
-      digest: "sha256:81e5cd0d5e6a5cee059c5516eef857efacd2c1fca438292f69d873dd779c058a"
+      digest: "sha256:b927802afde5abe6fb41bdfb7ef46dd4b5a419fd33201d011bedda97e117f7bd"
       digestContract: exact-bytes-v1
       outcome: passed
       passed: 1
@@ -1080,13 +1080,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV040
     kind: verification
     subject:
@@ -1107,13 +1107,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV041
     kind: verification
     subject:
@@ -1134,13 +1134,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV042
     kind: verification
     subject:
@@ -1161,13 +1161,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV043
     kind: verification
     subject:
@@ -1188,13 +1188,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV044
     kind: verification
     subject:
@@ -1215,13 +1215,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV045
     kind: verification
     subject:
@@ -1242,13 +1242,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV046
     kind: verification
     subject:
@@ -1269,13 +1269,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV047
     kind: verification
     subject:
@@ -1296,13 +1296,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV048
     kind: verification
     subject:
@@ -1323,13 +1323,13 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
   - id: EV049
     kind: verification
     subject:
@@ -1350,12 +1350,147 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/185-in-app-docs-modality/in-app-docs-browser.junit.xml
-      digest: "sha256:fa0cd6534c2c7d6504f53b3295887d5188a21ba60a1e67be9f4d4c6f9bd0ffe7"
+      digest: "sha256:ed20be6cb917fa16be203df0c0942854885bb0e4a30d24ec189ba8317e19e618"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 3
       failed: 0
       skipped: 0
-    notes: [Production browser owns retained-state, accessibility, CSP, host-result, and player-control outcomes.]
+    notes: [CSP, Production browser owns retained-state, accessibility, and player-control outcomes., host-result]
+  - id: EV050
+    kind: verification
+    subject:
+      type: task
+      id: T050
+    taskRefs: [T050]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: [DEC-008]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV050]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/b0d91b9b6390b127208743b6f09058a31b09abddcd6195ee4fb5c06a1153eaa7.json]
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-client-feature-loader.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/client-feature-loader.trx
+      digest: "sha256:b401189276a03b9ca701488d8a113cbd4fd13df19add0f42ff64480af4b8c4d5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 9
+      failed: 0
+      skipped: 0
+    notes: [The source projection, and six protected mutations passed., browser controls, compiled state machine, emitted graph, scoped budgets]
+  - id: EV051
+    kind: verification
+    subject:
+      type: task
+      id: T051
+    taskRefs: [T051]
+    requirementRefs: [FR-001, FR-009, FR-010]
+    acceptanceScenarioRefs: [AC-001, AC-006, AC-007]
+    clarificationDecisionRefs: [DEC-008]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV051]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-client-feature-loader.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/client-feature-loader.trx
+      digest: "sha256:b401189276a03b9ca701488d8a113cbd4fd13df19add0f42ff64480af4b8c4d5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 9
+      failed: 0
+      skipped: 0
+    notes: [The real DocsView renderer is deferred behind the typed bootstrap contract and canonical feature identity.]
+  - id: EV052
+    kind: verification
+    subject:
+      type: task
+      id: T052
+    taskRefs: [T052]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV052]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-client-feature-loader.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/client-feature-loader.trx
+      digest: "sha256:b401189276a03b9ca701488d8a113cbd4fd13df19add0f42ff64480af4b8c4d5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 9
+      failed: 0
+      skipped: 0
+    notes: [Registry v2 owns the deferred Docs identity and per-route size contract.]
+  - id: EV053
+    kind: verification
+    subject:
+      type: task
+      id: T053
+    taskRefs: [T053]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV053]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-client-feature-loader.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/client-feature-loader.trx
+      digest: "sha256:b401189276a03b9ca701488d8a113cbd4fd13df19add0f42ff64480af4b8c4d5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 9
+      failed: 0
+      skipped: 0
+    notes: [Version drift and each protected loader subject produce their named red diagnostic before the aggregate recovers green.]
+  - id: EV054
+    kind: verification
+    subject:
+      type: task
+      id: T054
+    taskRefs: [T054]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV054]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-client-feature-loader.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/185-in-app-docs-modality/client-feature-loader.trx
+      digest: "sha256:b401189276a03b9ca701488d8a113cbd4fd13df19add0f42ff64480af4b8c4d5"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 9
+      failed: 0
+      skipped: 0
+    notes: [Registry v1 is byte-identical to main and v2 carries the explicit scoped migration.]
 lifecycleNotes:
   - "Next lifecycle action: verify."
