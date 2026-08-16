@@ -1,6 +1,6 @@
 {
-  "schema": "sir.client.feature-registry/v1",
-  "version": 1,
+  "schema": "sir.client.feature-registry/v2",
+  "version": 2,
   "features": [
     {
       "id": "delivery-support",
@@ -9,19 +9,15 @@
       "route": "delivery-support",
       "module": "src/SIR.Client.Web/deferred-delivery-support.js",
       "logicalChunk": "deferred-delivery-support",
-      "budget": {
-        "raw": 8192,
-        "gzip": 4096,
-        "brotli": 3072
-      }
+      "budget": { "raw": 8192, "gzip": 4096, "brotli": 3072 }
     },
     {
       "id": "docs",
       "phase": "deferred",
-      "control": "toolbar-docs",
+      "control": "modality-docs",
       "route": "docs",
-      "module": "src/SIR.Client.Web/docs-feature.js",
-      "logicalChunk": "docs-feature",
+      "module": "src/SIR.Client.Web/DocsView.fs",
+      "logicalChunk": "DocsView",
       "budget": { "raw": 8192, "gzip": 4096, "brotli": 3072 }
     },
     {
@@ -31,7 +27,7 @@
       "route": "data",
       "module": "src/SIR.Client.Web/RulesExplorer.fs",
       "logicalChunk": "RulesExplorer",
-      "budget": { "raw": 65536, "gzip": 20000, "brotli": 16000 }
+      "budget": { "raw": 65536, "gzip": 20000, "brotli": 16384 }
     },
     {
       "id": "rules-workbench",

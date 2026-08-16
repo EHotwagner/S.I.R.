@@ -17,15 +17,15 @@ sources:
     schemaVersion: 1
   - label: clarifications
     path: work/185-in-app-docs-modality/clarifications.md
-    digest: 726b782722840a14260feff0626fcb7b70ea0d6765c5104ab6d876a55dc0a94d
+    digest: 9443ce1b0c13f95d138681f6d937455570c7b2014699e70a5e4208be089652b7
     schemaVersion: 1
   - label: checklist
     path: work/185-in-app-docs-modality/checklist.md
-    digest: 4d063a707700edc76eb103559a54330d853ab96a7c6d7a6d54036402fb041339
+    digest: d10adb9aa914dea258fc65628cb1c8d46663224df703219036123a0e277b4fba
     schemaVersion: 1
   - label: plan
     path: work/185-in-app-docs-modality/plan.md
-    digest: b595e4c6435ee02cf712d48e406290d343bb9bdcd5931fb7674c880ae70b15bc
+    digest: 7c159517cc03c4739344f04cc4db22ddd32fe01826cbf871e01a117178800395
     schemaVersion: 1
 tasks:
   - id: T001
@@ -518,6 +518,56 @@ tasks:
     sourceIds: [GV-002, PD-010]
     requiredSkills: [deterministic-json]
     requiredEvidence: [EV049]
+  - id: T050
+    title: Implement clarification decision DEC-008
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: [DEC-008]
+    sourceIds: [DEC-008]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV050]
+  - id: T051
+    title: Implement plan decision PD-011
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [AC-001, AC-006, AC-007, DEC-008, FR-001, FR-009, FR-010, PD-011]
+    requiredSkills: [fsharp, implementation]
+    requiredEvidence: [EV051]
+  - id: T052
+    title: Update contract surface PC-007
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-007, PD-011]
+    requiredSkills: [fsharp]
+    requiredEvidence: [EV052]
+  - id: T053
+    title: Record verification evidence VO-010
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-007, PD-011, VO-010]
+    requiredSkills: [automated-tests, readiness-evidence]
+    requiredEvidence: [EV053]
+  - id: T054
+    title: Handle migration posture PM-006
+    status: done
+    owner: sdd
+    dependencies: [T001]
+    requirements: []
+    decisions: []
+    sourceIds: [PC-007, PM-006]
+    requiredSkills: [schema-versioning]
+    requiredEvidence: [EV054]
 acceptedDeferrals: []
 findings: []
 advisoryNotes:

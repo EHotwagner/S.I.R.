@@ -29,7 +29,7 @@ type Reconciliation =
     | Applied of LoadState
     | IgnoredStale of LoadFailure
 
-let registryVersion = 1
+let registryVersion = 2
 let deliverySupport = FeatureId "delivery-support"
 let shell = FeatureId "shell"
 let tacticalEnvironment = FeatureId "tactical-environment"

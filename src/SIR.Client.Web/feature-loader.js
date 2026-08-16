@@ -1,4 +1,4 @@
-const registryVersion = 1;
+const registryVersion = 2;
 
 const loaders = Object.freeze({
   "tactical-environment": Object.freeze({

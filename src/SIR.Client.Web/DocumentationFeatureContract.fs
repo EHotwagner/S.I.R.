@@ -5,6 +5,20 @@ open Fable.Core.JsInterop
 open SIR.Client
 open Thoth.Json
 
+type Presentation =
+    { Navigation: DocumentationNavigation
+      Manifest: DocumentationManifest option
+      Error: string option
+      ExternalAnnouncement: string }
+
+type Callbacks =
+    { SetQuery: string -> unit
+      OpenPage: string -> string option -> unit
+      Back: unit -> unit
+      Forward: unit -> unit
+      ReturnToTactical: unit -> unit
+      AnnounceExternal: string -> unit }
+
 [<Global>]
 let private fetch (url: string, options: obj) : JS.Promise<obj> = jsNative
 

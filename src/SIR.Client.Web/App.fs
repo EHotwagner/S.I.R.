@@ -7210,7 +7210,6 @@ let private tacticalLayoutToolbar model dispatch =
                     ]
                 ]
             ]
-            ClientFeatureRuntime.toolbar model dispatch
             if model.DesktopToolbarCustomizationOpen then
                 Html.section [
                     prop.id "desktop-toolbar-customization"

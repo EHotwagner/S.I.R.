@@ -5,6 +5,7 @@ open Fable.Core
 open Fable.Core.JsInterop
 open Feliz
 open SIR.Client
+open SIR.Client.Web.DocumentationFeatureContract
 
 [<Emit("(async()=>{try{await fetch($0,{method:'HEAD',mode:'no-cors',cache:'no-store'});const w=window.open($0,'_blank');if(!w)return 'blocked';w.opener=null;return 'opened'}catch(_){return 'unavailable'}})()")>]
 let private openExternalAtHost (url: string) : JS.Promise<string> = jsNative
@@ -38,17 +39,19 @@ let private renderSegments openPage segments =
 
 [<ReactComponent>]
 let DocumentationWorkspace
-    (navigation: DocumentationNavigation)
-    (manifest: DocumentationManifest option)
-    (error: string option)
-    (externalAnnouncement: string)
-    (setQuery: string -> unit)
-    (openPage: string -> string option -> unit)
-    (back: unit -> unit)
-    (forward: unit -> unit)
-    (returnToTactical: unit -> unit)
-    (announceExternal: string -> unit)
+    (presentation: Presentation)
+    (callbacks: Callbacks)
     =
+    let navigation = presentation.Navigation
+    let manifest = presentation.Manifest
+    let error = presentation.Error
+    let externalAnnouncement = presentation.ExternalAnnouncement
+    let setQuery = callbacks.SetQuery
+    let openPage = callbacks.OpenPage
+    let back = callbacks.Back
+    let forward = callbacks.Forward
+    let returnToTactical = callbacks.ReturnToTactical
+    let announceExternal = callbacks.AnnounceExternal
     let pages = manifest |> Option.map _.Pages |> Option.defaultValue []
     let results =
         match manifest with

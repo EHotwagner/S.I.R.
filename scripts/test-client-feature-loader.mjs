@@ -6,7 +6,7 @@ import { dirname, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const root = resolve(import.meta.dirname, "..");
-const registryPath = resolve(root, "src/SIR.Client.Web/feature-registry.v1.json");
+const registryPath = resolve(root, "src/SIR.Client.Web/feature-registry.v2.json");
 const artifactRoot = resolve(root, "artifacts/client");
 const sourceOnly = process.argv.includes("--source-only");
 const noWrite = process.argv.includes("--no-write");
@@ -25,8 +25,8 @@ function fail(subject, detail) {
 
 const registryBytes = await readFile(registryPath);
 const registry = JSON.parse(registryBytes);
-if (registry.schema !== "sir.client.feature-registry/v1" || registry.version !== 1) fail("registry", "unsupported schema/version");
-if (!Array.isArray(registry.features) || registry.features.length !== 7) fail("registry", "expected exactly seven v1 features");
+if (registry.schema !== "sir.client.feature-registry/v2" || registry.version !== 2) fail("registry", "unsupported schema/version");
+if (!Array.isArray(registry.features) || registry.features.length !== 7) fail("registry", "expected exactly seven v2 features");
 const featureIds = registry.features.map((feature) => feature.id);
 if (featureIds.join("|") !== [...featureIds].sort().join("|")) fail("registry", "features are not in stable id order");
 if (new Set(featureIds).size !== featureIds.length) fail("registry", "duplicate feature id");
@@ -66,6 +66,16 @@ if (mutation === "eager-import") {
 const loaderSource = await readFile(resolve(root, "src/SIR.Client.Web/feature-loader.js"), "utf8");
 const deliverySupportEntrySource = await readFile(deliverySupportEntryPath, "utf8");
 const fsharpSource = await readFile(resolve(root, "src/SIR.Client.Web/FeatureLoader.fs"), "utf8");
+const projectedFsharpSource = mutation === "registry-version"
+  ? fsharpSource.replace(`let registryVersion = ${registry.version}`, `let registryVersion = ${registry.version + 1}`)
+  : fsharpSource;
+const projectedLoaderSource = mutation === "registry-version"
+  ? loaderSource.replace(`const registryVersion = ${registry.version};`, `const registryVersion = ${registry.version + 1};`)
+  : loaderSource;
+if (!projectedFsharpSource.includes(`let registryVersion = ${registry.version}`)
+    || !projectedLoaderSource.includes(`const registryVersion = ${registry.version};`)) {
+  fail("registry-version", "F#/JavaScript loader projection disagrees with the current registry version");
+}
 const appSource = [
   await readFile(resolve(root, "src/SIR.Client.Web/App.fs"), "utf8"),
   await readFile(resolve(root, "src/SIR.Client.Web/ClientFeatureRuntime.fs"), "utf8"),
@@ -133,6 +143,7 @@ if (sourceOnly) {
 const compiledLoader = await import(pathToFileURL(resolve(root, "src/SIR.Client.Web/.fable/SIR.Client.Web/FeatureLoader.js")));
 const compiledResult = await import(pathToFileURL(resolve(root, "src/SIR.Client.Web/.fable/fable_modules/fable-library-js.5.13.0/Result.js")));
 const pendingIdentity = compiledLoader.identityFor(compiledLoader.docs);
+if (pendingIdentity.RegistryVersion !== registry.version) fail("registry-version", "compiled loader identity is stale");
 const loadingStates = compiledLoader.beginLoad(pendingIdentity, compiledLoader.initial);
 const loadingState = compiledLoader.stateFor(compiledLoader.docs, loadingStates);
 if (loadingState.tag !== 1) fail("state", "request did not enter Loading");
@@ -234,7 +245,7 @@ if (!noWrite) {
 }
 
 if (aggregateTrx) {
-  const mutationNames = ["eager-import", "property-mangle", "missing-chunk", "stale-identity", "budget"];
+  const mutationNames = ["eager-import", "property-mangle", "missing-chunk", "stale-identity", "budget", "registry-version"];
   for (const name of mutationNames) {
     try {
       execFileSync(process.execPath, [import.meta.filename, "--no-write"], {

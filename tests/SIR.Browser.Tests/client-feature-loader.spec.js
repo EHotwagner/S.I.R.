@@ -11,7 +11,7 @@ test("the production shell loads registered features through real controls", asy
 
   await page.goto("/");
   const shell = page.getByRole("main", { name: "S.I.R. simulator and editor", exact: true });
-  await expect(shell).toHaveAttribute("data-feature-registry-version", "1");
+  await expect(shell).toHaveAttribute("data-feature-registry-version", "2");
   await expect(shell).toHaveAttribute("data-feature-shell", "loaded");
   expect(featureResponses).toEqual([]);
 

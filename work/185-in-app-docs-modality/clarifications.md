@@ -22,6 +22,7 @@ publicOrToolFacingImpact: true
 - CQ-005 [AMB:AMB-005]: Which sanitizer, CSP, offline, external-link, and contextual-link envelope fails closed?
 - CQ-006 [AMB:AMB-006]: Which production workload, counters, caps, and timing posture qualify Docs?
 - CQ-007 [AMB:AMB-007]: Which production controls, accessibility checks, runtime comparisons, and mutations prove acceptance?
+- CQ-008: How does the in-app Docs modality compose with the canonical deferred FeatureLoader and a route budget that no longer fits the immutable registry-v1 ceiling?
 
 ## Answers
 - CQ-001 → qualify every top-level maintained `.md`/`.fsx` page carrying valid frontmatter plus selected generated `reference/*.html` API entries; v1 status is the explicit pair `status` and `decision-status`, normalized to `canonical`, `implemented`, `provisional`, or `research`. Navigation orders by category index, page index, title, then slug; malformed metadata fails generation.
@@ -31,6 +32,7 @@ publicOrToolFacingImpact: true
 - CQ-005 → parsing discards raw HTML/script/style/event attributes and remote media, admits only headings, paragraphs, lists, tables, fenced code, local images, and typed links, and rejects unsafe URI schemes. Local navigation always works. External links open only after the host reports capability and otherwise produce an announced degraded result. Context actions accept a disclosed concept enum/string only; unknown/unreadable input yields exactly no link and generic diagnostics/counters.
 - CQ-006 → run deterministic manifest/search/navigation/update/view over the complete qualified corpus and a fixed LOS/cover/armor query set. Caps: 512 pages, 8,192 blocks, 262,144 search tokens, 200 search results, 128 local-history entries, and 6,000 rendered Docs DOM nodes; Release p95 posture is 20 ms for representative query/update/view and 50 ms for full-corpus construction on the qualification host. The token cap was set after a pre-feature baseline measured 202,423 source tokens. Receipt records definition digest, candidate/runtime/host, counters and explicitly says compositor not measured.
 - CQ-007 → Playwright boots the built production entry, captures a battlefield identity/state fingerprint, opens Docs via View menu and effective shortcut, searches LOS/cover/armor, traverses cross-links/anchors/back-forward, inspects a typed GitHub link, exercises degraded external navigation, uses a disclosed contextual link, checks 320 CSS pixels/400% zoom/landmarks/headings/keyboard focus, returns to each tactical modality, and confirms the fingerprint. Native/Fable compare manifest/query/history fingerprints; every new/modified gate has protected-subject and unreadable-input mutants.
+- CQ-008 → keep manifest I/O and navigation state in a typed bootstrap contract, place the actual Feliz Docs renderer behind the registered Fable dynamic edge, and preserve registry v1 unchanged. Publish registry v2 for the real `DocsView` identity and rebaseline only Rules Explorer Brotli from 16,000 to 16,384 bytes after the source-frozen composition measured 16,040 bytes; all other ceilings remain unchanged and version projection has a dedicated red mutation.
 
 ## Decisions
 - **DEC-001** [CQ-001] [AMB:AMB-001] [FR-003] [FR-007]: Qualify metadata-bearing maintained pages plus selected built API entries under the four normalized status values and canonical navigation order; malformed metadata and duplicate identity fail generation.
@@ -40,12 +42,13 @@ publicOrToolFacingImpact: true
 - **DEC-005** [CQ-005] [AMB:AMB-005] [FR-005] [FR-008]: Render only a closed sanitized block/link vocabulary, reject unsafe schemes/remote content, keep local Docs operational offline, and make undisclosed/malformed contextual input indistinguishable from absence.
 - **DEC-006** [CQ-006] [AMB:AMB-006] [FR-009]: Adopt the full-corpus and fixed-query production update/view workload with the 512-page, 8,192-block, 262,144-token, 200-result, 128-history, 6,000-node, 20/50-ms caps and explicit compositor-not-measured capability.
 - **DEC-007** [CQ-007] [AMB:AMB-007] [FR-010]: Require native/Fable fingerprints plus a real built-entry Playwright control journey covering search/navigation/source/degraded/context/state preservation and 320/400% accessibility, with subject and unreadable-input inversions for every touched gate.
+- **DEC-008** [CQ-008] [FR-001] [FR-009] [FR-010]: Integrate Docs through the canonical typed FeatureLoader as one deferred `DocsView` chunk, retain immutable registry v1, and make registry v2 the explicit rebaseline with only the measured Rules Explorer Brotli ceiling changed; fail F#/JavaScript/compiled version drift and invert that gate.
 
 ## Accepted Deferrals
 No accepted deferrals recorded.
 
 ## Remaining Ambiguity
-- None. All blocking ambiguities are resolved by DEC-001 through DEC-007.
+- None. All blocking ambiguities are resolved by DEC-001 through DEC-008.
 
 ## Lifecycle Notes
 - Next lifecycle action: `fsgg-sdd checklist --work 185-in-app-docs-modality`.
