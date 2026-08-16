@@ -32,7 +32,7 @@ export const expectedBuildInvocations = {
   spatial: [
     "dependency-receipt", "footprint-envelope", "semantic-edge", "knowledge-cache-key", "spatial-revision-key",
     "deterministic-ordering", "package-adapter", "profile-cache-key", "trace-work-bound",
-  ].map((name) => `run-build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj:exception:spatial-${name}:artifacts-path:isolated`),
+  ].map((name) => `build:src/SIR.Simulation/SIR.Simulation.fsproj:exception:spatial-${name}:artifacts-path:isolated`),
   cancellation: ["cancellation-mutant"].flatMap((name) => [
     `fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj:exception:${name}`,
     `fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj:exception:${name}`,

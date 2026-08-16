@@ -31,7 +31,7 @@ expect_mutation_failure() {
   local expected=$2
   local log="$temporary_dir/$name.log"
   if [[ "$prepared_pr" == true ]]; then
-    if ! dotnet build "$simulation_project" -c Release --no-restore --artifacts-path "$temporary_dir/artifacts" >"$log" 2>&1; then
+    if ! SIR_BUILD_EXCEPTION="spatial-$name" dotnet build "$simulation_project" -c Release --no-restore --artifacts-path "$temporary_dir/artifacts" >"$log" 2>&1; then
       echo "spatial subject mutation could not build: $name" >&2
       cat "$log" >&2
       exit 1
