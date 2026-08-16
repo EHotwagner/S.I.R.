@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-16-sir-item-214-client-feature-loader.md",
-  "reportSha256": "f41a71370ce9828456415fb7f13452a30a1edc9ab5031260b52cf421895adcb1",
+  "reportSha256": "b85069130de25c2de4d4b13570bad44d6cfc652a58e32c7251d11e5cfba4a497",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [

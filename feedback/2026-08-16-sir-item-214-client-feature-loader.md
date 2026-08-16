@@ -5,20 +5,20 @@ workspace: S.I.R
 cycle: item-214-client-feature-loader
 lane: sdd
 toolVersion: 1.0.0
-commit: e6da2b33f35fbbc15c1c7d8f596364ef697ce3a5
+commit: e5545b83ef70085cbd3dcee1b97a60ad35068617
 ---
 
 ## §1 Provenance and confidence
 
-The cycle used the existing S.I.R scaffold, canonical Project 6 route revision 1, SDD stages 1–10, and the tracked checkpoint `feedback/checkpoints/item-214-client-feature-loader.jsonl` (one record). The candidate product commit is `e6da2b3`; exact-head independent review and hosted CI remain pending. Local evidence covers locked builds, compiled Fable state, five mutations, production browser controls, budgets, map-editor ownership/review gates, and SDD ship readiness.
+The cycle used the existing S.I.R scaffold, canonical Project 6 route revision 1, SDD stages 1–10, and the tracked checkpoint `feedback/checkpoints/item-214-client-feature-loader.jsonl` (one record). The round-1 repaired implementation commit is `e5545b8`; same-critic confirmation and replacement exact-head hosted CI remain pending. Local evidence covers locked builds, compiled Fable state, five mutations, production browser controls, budgets, rules-corpus identity, both production-bundle review consumers, and SDD ship readiness.
 
 ## §2 What worked
 
-The SDD authoring contracts made the registry, public loader state, build graph, mutations, and real browser controls explicit before product edits. The existing full browser and map-editor gates caught three integration defects—toolbar persistence, App ownership growth, and keyboard-binding disclosure—while focused reruns kept each repair small. Content-addressing the graph receipt and excluding feedback paths from its build-input digest kept evidence regeneration separate from product rebuilds.
+The SDD authoring contracts made the registry, public loader state, build graph, mutations, and real browser controls explicit before product edits. Existing browser and map-editor gates caught toolbar persistence, App ownership growth, and keyboard-binding disclosure. The canonical critic plus first hosted run then exposed the stale rules source pin, stale persistent-workspace review binding, and an unowned dynamic entry/decorative eager mutation. Focused repairs made the complete Vite dynamic inventory registry-owned and kept the graph receipt content-addressed while feedback paths remained outside its build-input digest.
 
 ## §3 What did not
 
-The repository-pinned coordinator could not parse the current route receipt. During integration, placing Docs inside the customizable toolbar violated its empty-state contract; adding feature behavior directly to App exceeded its 8,200-line ownership ceiling; and the extracted Docs button initially lacked explicit unassigned keyboard disclosure. All product defects were repaired before the candidate commit. The last local aggregate reached the full browser inventory and found the disclosure omission; per the lean boundary, only owning focused checks ran afterward and hosted CI is the remaining full pass.
+The repository-pinned coordinator could not parse the current route receipt. During integration, placing Docs inside the customizable toolbar violated its empty-state contract; adding feature behavior directly to App exceeded its 8,200-line ownership ceiling; and the extracted Docs button initially lacked explicit unassigned keyboard disclosure. The last local aggregate reached the full browser inventory and found that disclosure omission. The first exact-head hosted run then failed because App was not rebound to the rules-corpus identity and the persistent-workspace review still named an older bundle; independent review also proved that the eager mutation was a test-local proxy and the Vite graph accepted an unregistered delivery-support chunk. Round 1 repaired only those numbered findings and used their owning focused commands; no new broad local aggregate ran.
 
 ## §4 Findings
 
@@ -37,7 +37,7 @@ The repository-pinned coordinator could not parse the current route receipt. Dur
 
 ## §5 Did not exercise
 
-No new scaffold, server protocol, gameplay semantics, package release, or live-compositor timing claim was exercised. Exact-head hosted CI, independent PR review, merge, and post-merge stamp remain pending.
+No new scaffold, server protocol, gameplay semantics, package release, or live-compositor timing claim was exercised. Same-critic confirmation, replacement exact-head hosted CI, merge, and post-merge stamp remain pending.
 
 ## §6 Doc-versus-behavior contradictions
 
@@ -49,7 +49,7 @@ None in product source. A source-current coordination engine was used only to re
 
 ## §8 Friction and avoidable cost
 
-Coordination paused while the route receipt was verified with a schema-compatible reader. Integration required focused repairs for toolbar placement, typed App extraction, review-receipt regeneration, and keyboard disclosure. Failed local aggregate attempts were not promoted as acceptance evidence.
+Coordination paused while the route receipt was verified with a schema-compatible reader. Integration required focused repairs for toolbar placement, typed App extraction, review-receipt regeneration, and keyboard disclosure. The first hosted run was not promoted as acceptance evidence: it supplied decisive red rules-corpus and M9 diagnostics. Round 1 rebound both review consumers, registered Delivery Support, compared the complete Vite dynamic inventory with the registry, and replaced the proxy eager mutation with a self-restoring real static Docs import.
 
 ## §9 Skill value and gaps
 
@@ -57,7 +57,7 @@ The lifecycle, authoring-contract, playtest, performance, parallel-work, next-it
 
 ## §10 Outcome markers
 
-Baseline was recorded before edits. The final focused candidate reports app 1,216,910 raw / 281,727 gzip / 223,691 Brotli, Rules Explorer 62,976 / 18,465 / 15,974, and Docs 473 / 285 / 209. The #214 browser journeys pass 2/2, command coverage passes 1/1, five mutations fail red, App is 8,198 lines, evidence is 37/37 observed, verification is ready, and ship is ready. Hosted exact-head CI and merge remain pending.
+Baseline was recorded before edits. The round-1 focused candidate reports app 1,216,979 raw / 281,756 gzip / 223,688 Brotli; Rules Explorer 62,976 / 18,465 / 15,937; Docs 473 / 285 / 209; and Delivery Support 304 / 230 / 163. The #214 browser journeys pass 2/2, command coverage passes 1/1 from the frozen implementation boundary, both rules-corpus modes pass, M9 pre/post proves red then green, five mutations fail red, App remains 8,198 lines, evidence is 37/37 observed, verification is ready, and ship is ready. Replacement hosted exact-head CI and merge remain pending.
 
 ## §11 Falsifiable improvements
 
@@ -74,9 +74,9 @@ Baseline was recorded before edits. The final focused candidate reports app 1,21
 | implementation-apis | exercised | Signed F# loader state and JavaScript import edge compile through Fable. |
 | dependencies-build | exercised | Locked build, Vite production bundle, and Release publish passed on the candidate sources. |
 | testing | exercised | Compiled-Fable state, five mutations, browser journeys, command coverage, and ownership gate passed. |
-| evidence | exercised | Content-addressed graph plus deterministic TRX bind 37 observed obligations. |
+| evidence | exercised | Content-addressed five-feature graph plus deterministic TRX bind 37 observed obligations. |
 | runtime-playtest | exercised | Real Docs, View → Rules data, and Editor → Environment controls passed in Chromium. |
 | performance | exercised | Raw/gzip/Brotli ceilings passed against the frozen production artifact. |
 | documentation | exercised | Loader architecture and contributor navigation were added and review artifacts rebound. |
 | packaging-upgrade | not-exercised | No package release or upgrade was performed. |
-| worker-git-pr | partial | Claim and lifecycle converged; exact-head review, hosted CI, merge, stamp, and release remain pending. |
+| worker-git-pr | partial | Claim and initial review converged; same-critic confirmation, replacement hosted CI, merge, stamp, and release remain pending. |
