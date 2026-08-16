@@ -5,6 +5,7 @@ repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 task_tmp=$(mktemp -d /tmp/sir-rule-coherence.XXXXXX)
 cd "$repo_root"
 
+dotnet tool restore
 dotnet restore tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj --locked-mode
 dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
 dotnet restore src/SIR.Tools/SIR.Tools.fsproj --locked-mode
