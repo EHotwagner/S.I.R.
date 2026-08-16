@@ -75,7 +75,10 @@ URL.revokeObjectURL(url);
 let downloadTacticalEnvironmentDocument (_content: string) : unit = jsNative
 
 [<Emit("(() => { const t = $0; const tag = t && typeof t.tagName === 'string' ? t.tagName.toLowerCase() : ''; return tag === 'input' || tag === 'button' || tag === 'summary' || (tag === 'a' && t.hasAttribute('href')) || tag === 'textarea' || tag === 'select' || (t && t.isContentEditable); })()")>]
-let acceptsGlobalKeyboardTarget (_target: EventTarget) (allowModifiedShortcut: bool) : bool = jsNative
+let private isNativeInteractiveTarget (_target: EventTarget) : bool = jsNative
+
+let acceptsGlobalKeyboardTarget target allowModifiedShortcut =
+    allowModifiedShortcut || not (isNativeInteractiveTarget target)
 
 let private sizeError label maximum (file: File) =
     try

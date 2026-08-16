@@ -5,11 +5,14 @@ repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 task_tmp=$(mktemp -d)
 projection_source="$repo_root/src/SIR.Client/TacticalSceneProjection.fs"
 samples_source="$repo_root/src/SIR.Client/ExperienceSamples.fs"
+simulator_source="$repo_root/src/SIR.Client/MapEditorSimulator.fs"
 cp "$projection_source" "$task_tmp/TacticalSceneProjection.fs"
 cp "$samples_source" "$task_tmp/ExperienceSamples.fs"
+cp "$simulator_source" "$task_tmp/MapEditorSimulator.fs"
 restore_sources() {
   cp "$task_tmp/TacticalSceneProjection.fs" "$projection_source"
   cp "$task_tmp/ExperienceSamples.fs" "$samples_source"
+  cp "$task_tmp/MapEditorSimulator.fs" "$simulator_source"
 }
 trap 'restore_sources; rm -rf "$task_tmp"' EXIT
 
@@ -37,4 +40,18 @@ if dotnet run --project "$repo_root/tests/SIR.Client.Tests/SIR.Client.Tests.fspr
 fi
 cp "$task_tmp/ExperienceSamples.fs" "$samples_source"
 
-echo "Tactical visual review mutations passed: stylesheet, lifecycle projection, and production workload subjects fail closed."
+sed -i 's/if index % 2 = 0 then " blue " else " red "/if index % 2 = 0 then " blue " else " blue "/' "$samples_source"
+if dotnet run --project "$repo_root/tests/SIR.Client.Tests/SIR.Client.Tests.fsproj" -c Release --no-restore >/dev/null 2>&1; then
+  echo "Production simultaneous density composition mutation survived its focused owner." >&2
+  exit 1
+fi
+cp "$task_tmp/ExperienceSamples.fs" "$samples_source"
+
+sed -i '/+ " mm of movement credit; advance simulation time to move\." ]/a\                    LastCombatEvents = []' "$simulator_source"
+if dotnet run --project "$repo_root/tests/SIR.Client.Tests/SIR.Client.Tests.fsproj" -c Release --no-restore >/dev/null 2>&1; then
+  echo "Production simultaneous attack/route retention mutation survived its focused owner." >&2
+  exit 1
+fi
+cp "$task_tmp/MapEditorSimulator.fs" "$simulator_source"
+
+echo "Tactical visual review mutations passed: stylesheet, lifecycle projection, production workload, sample-faction, and simultaneous attack/route subjects fail closed."

@@ -41,29 +41,41 @@ for (const scene of manifest.densityScenes) {
   const budget = scene.units === 100 ? manifest.budgets.representative100 : manifest.budgets.stress200;
   const measured = telemetry.densityScenes.find(({ units }) => units === scene.units);
   requireTruth(scene.workload.renderedUnits === scene.units, `${scene.units}-unit production render drifted`);
-  requireTruth(scene.workload.effects > 0 && scene.workload.observedAttackEffects > 0 && scene.workload.routes > 0 && scene.workload.plannedRouteUnits >= 2 && scene.workload.overlays > 0 && scene.workload.terrainCells > 0, `${scene.units}-unit combined workload lost tactical content`);
+  requireTruth(scene.workload.effects > 0 && scene.workload.currentAttackEffects > 0 && scene.workload.routes > 0 && scene.workload.plannedRouteUnits >= 1 && scene.workload.overlays > 0 && scene.workload.terrainCells > 0, `${scene.units}-unit final simultaneous workload lost tactical content`);
   requireTruth(["attack", "movement"].every((kind) => scene.workload.effectKinds.includes(kind)), `${scene.units}-unit production effect kinds drifted`);
-  requireTruth(["accepted", "committed", "predicted", "preview", "rejected"].every((lifecycle) => scene.workload.effectLifecycles.includes(lifecycle)), `${scene.units}-unit production lifecycle observations drifted`);
+  requireTruth(["accepted", "committed", "predicted"].every((lifecycle) => scene.workload.effectLifecycles.includes(lifecycle)), `${scene.units}-unit final simultaneous lifecycle state drifted`);
   requireTruth(scene.workload.domNodes <= budget.maximumDomNodes && scene.workload.effects <= budget.maximumEffects, `${scene.units}-unit structural budget exceeded`);
   requireTruth(measured && measured.inputToPaintMilliseconds < budget.maximumInputToPaintMilliseconds, `${scene.units}-unit input-to-paint budget exceeded`);
   requireTruth(measured.animationFrameIntervalMilliseconds <= budget.targetAnimationFrameMilliseconds + budget.measurementToleranceMilliseconds, `${scene.units}-unit frame interval budget exceeded`);
   requireTruth(hash(await readFile(resolve(root, scene.path))) === scene.sha256, `production density image drifted: ${scene.path}`);
 }
 requireTruth(hash(await readFile(resolve(root, manifest.after.path))) === manifest.after.sha256, "production after screenshot drifted");
-const reproductionRoot = await mkdtemp(resolve(tmpdir(), "sir-tactical-review-reproduction-"));
+const reproductionRoots = await Promise.all([
+  mkdtemp(resolve(tmpdir(), "sir-tactical-review-reproduction-a-")),
+  mkdtemp(resolve(tmpdir(), "sir-tactical-review-reproduction-b-")),
+]);
 try {
-  execFileSync(process.execPath, [resolve("scripts/generate-tactical-visual-review.mjs"), "--client-root", resolve(clientRoot), "--review-root", reproductionRoot], { cwd: process.cwd(), stdio: "pipe" });
-  for (const relativePath of ["manifest.json", "after-production.png", "production-density-100.png", "production-density-200.png"]) {
-    const [expected, reproduced] = await Promise.all([readFile(resolve(root, relativePath)), readFile(resolve(reproductionRoot, relativePath))]);
-    requireTruth(expected.equals(reproduced), `production review did not reproduce byte-for-byte: ${relativePath}`);
+  for (const reproductionRoot of reproductionRoots) {
+    execFileSync(process.execPath, [resolve("scripts/generate-tactical-visual-review.mjs"), "--client-root", resolve(clientRoot), "--review-root", reproductionRoot], { cwd: process.cwd(), stdio: "pipe" });
   }
-  const reproducedTelemetry = JSON.parse(await readFile(resolve(reproductionRoot, "telemetry.json"), "utf8"));
-  for (const scene of reproducedTelemetry.densityScenes) {
-    const budget = scene.units === 100 ? manifest.budgets.representative100 : manifest.budgets.stress200;
-    requireTruth(scene.inputToPaintMilliseconds < budget.maximumInputToPaintMilliseconds, `${scene.units}-unit reproduced input-to-paint budget exceeded`);
-    requireTruth(scene.animationFrameIntervalMilliseconds <= budget.targetAnimationFrameMilliseconds + budget.measurementToleranceMilliseconds, `${scene.units}-unit reproduced frame interval budget exceeded`);
+  for (const relativePath of ["manifest.json", "after-production.png", "production-density-100.png", "production-density-200.png"]) {
+    const [expected, reproducedA, reproducedB] = await Promise.all([
+      readFile(resolve(root, relativePath)),
+      readFile(resolve(reproductionRoots[0], relativePath)),
+      readFile(resolve(reproductionRoots[1], relativePath)),
+    ]);
+    requireTruth(expected.equals(reproducedA), `production review did not reproduce byte-for-byte: ${relativePath}`);
+    requireTruth(reproducedA.equals(reproducedB), `independent frozen production captures diverged: ${relativePath}`);
+  }
+  for (const reproductionRoot of reproductionRoots) {
+    const reproducedTelemetry = JSON.parse(await readFile(resolve(reproductionRoot, "telemetry.json"), "utf8"));
+    for (const scene of reproducedTelemetry.densityScenes) {
+      const budget = scene.units === 100 ? manifest.budgets.representative100 : manifest.budgets.stress200;
+      requireTruth(scene.inputToPaintMilliseconds < budget.maximumInputToPaintMilliseconds, `${scene.units}-unit reproduced input-to-paint budget exceeded`);
+      requireTruth(scene.animationFrameIntervalMilliseconds <= budget.targetAnimationFrameMilliseconds + budget.measurementToleranceMilliseconds, `${scene.units}-unit reproduced frame interval budget exceeded`);
+    }
   }
 } finally {
-  await rm(reproductionRoot, { recursive: true, force: true });
+  await Promise.all(reproductionRoots.map((path) => rm(path, { recursive: true, force: true })));
 }
 console.log("Tactical visual review is bundle/style-bound to effectful production 100/200-unit semantic and visual subjects.");

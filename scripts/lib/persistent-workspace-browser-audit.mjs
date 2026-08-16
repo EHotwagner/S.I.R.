@@ -445,7 +445,7 @@ export const assertPortableReviewMetrics = ({ storedWide, storedNarrow, liveWide
   }
 };
 
-export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/client", screenshotPath, prepareExpression } = {}) => {
+export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/client", screenshotPath, prepareExpression, reducedMotion = false } = {}) => {
   const chromiumExecutable = await discoverChromium();
   const { server, port } = await serve(clientRoot);
   const profile = await mkdtemp(join(tmpdir(), "sir-m9-chromium-"));
@@ -517,6 +517,11 @@ export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/
     await cdp.send("Runtime.enable");
     await cdp.send("Page.enable");
     await cdp.send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
+    if (reducedMotion) {
+      await cdp.send("Emulation.setEmulatedMedia", {
+        features: [{ name: "prefers-reduced-motion", value: "reduce" }],
+      });
+    }
     await cdp.send("Page.navigate", { url: `http://127.0.0.1:${port}/` });
     await waitForShell(cdp);
     await delay(250);

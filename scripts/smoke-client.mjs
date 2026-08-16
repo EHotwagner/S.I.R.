@@ -1573,8 +1573,17 @@ if (!workerMessages.some((message) => message.Kind === "sir-simulator-session"))
   throw new Error("Plan modality did not initialize through the real worker boundary.");
 }
 
-buttonByText(application, "Rules")?.click();
-await window.happyDOM.waitUntilComplete();
+buttonByText(
+  window.document.querySelector('[aria-label="Supporting application sections"]'),
+  "Rules",
+)?.click();
+await waitFor(
+  "deferred Rules workbench owner",
+  () =>
+    window.document.querySelectorAll(
+      '[aria-label="Design scenario catalog"] button[aria-label^="Simulate design scenario"]',
+    ).length === 6,
+);
 const rulesPanel = window.document.querySelector('[data-panel-id="rules"]');
 const scenarioCatalog = window.document.querySelector(
   '[aria-label="Design scenario catalog"]',
@@ -1594,14 +1603,31 @@ assertSingleWorksurface("open Rules supporting panel");
 assertCamera("open Rules supporting panel");
 assertSelection("open Rules supporting panel", 2);
 
-buttonByText(application, "Data")?.click();
-await window.happyDOM.waitUntilComplete();
+buttonByText(
+  window.document.querySelector('[aria-label="Supporting application sections"]'),
+  "Data",
+)?.click();
+await waitFor(
+  "deferred Rules data owner",
+  () =>
+    window.document.querySelectorAll('[data-panel-id="data"] table')
+      .length === 7,
+).catch((error) => {
+  const dataPanel = window.document.querySelector('[data-panel-id="data"]');
+  const currentTables = window.document.querySelectorAll(
+    '[data-panel-id="data"] table',
+  ).length;
+  const failure = dataPanel?.querySelector('[role="alert"]')?.textContent.trim();
+  throw new Error(
+    `${error.message} Current tables: ${currentTables}; panel=${dataPanel ? "mounted" : "missing"}; failure=${failure ?? "none"}.`,
+  );
+});
 const rulesTables = window.document.querySelectorAll(
-  '[aria-label="Rules data tables"] table',
+  '[data-panel-id="data"] table',
 );
 if (
   scenarioButtons?.length !== 6 ||
-  (rulesTables.length !== 0 && rulesTables.length !== 7) ||
+  rulesTables.length !== 7 ||
   !window.document.querySelector('[data-panel-id="data"]') ||
   window.document.querySelector(".dashboard") ||
   window.document.querySelector(".samples-workspace")
@@ -1654,8 +1680,25 @@ assertSingleWorksurface("hide focused Rules supporting panel");
 assertCamera("hide focused Rules supporting panel");
 assertSelection("hide focused Rules supporting panel", 2);
 
-buttonByText(application, "Samples")?.click();
-await window.happyDOM.waitUntilComplete();
+buttonByText(
+  window.document.querySelector('[aria-label="Supporting application sections"]'),
+  "Samples",
+)?.click();
+await waitFor(
+  "deferred Samples owner",
+  () => {
+    const owner = window.document.querySelector(
+      '[aria-label="Curated maps simulations and replays"]',
+    );
+    const kinds = [...(owner?.querySelectorAll(".sample-kind") ?? [])].map(
+      (item) => item.textContent.trim(),
+    );
+    return (
+      kinds.filter((kind) => kind === "Map · Simulation").length === 5 &&
+      kinds.filter((kind) => kind === "Replay").length === 2
+    );
+  },
+);
 const samplesWorkspace = window.document.querySelector(
   '[aria-label="Curated maps simulations and replays"]',
 );
@@ -1705,7 +1748,7 @@ const firstMapSample = [
 ].find((card) => card.textContent.includes("Map · Simulation"));
 firstMapSample?.querySelector("summary")?.click();
 await window.happyDOM.waitUntilComplete();
-buttonByText(firstMapSample, "Open map")?.click();
+firstMapSample?.querySelector('button[aria-label$=" in Editor"]')?.click();
 await window.happyDOM.waitUntilComplete();
 const reopenedShell = window.document.querySelector(
   '#unified-tactical-workspace[data-mounted-shell="persistent"]',
@@ -1728,7 +1771,18 @@ if (
   !reopenedShell.querySelector('[data-panel-id="tools"]') ||
   !reopenedShell.querySelector('[data-panel-id="document"]')
 ) {
-  throw new Error("Opening a curated map did not return to the persistent Editor workscreen.");
+  throw new Error(
+    `Opening a curated map did not return to the persistent Editor workscreen: ${JSON.stringify({
+      sameShell: reopenedShell === shell,
+      sameSvg: reopenedSvg === worksurface,
+      owner: reopenedSvg?.getAttribute("data-scene-owner"),
+      layers: reopenedSvg?.querySelectorAll("[data-scene-layer]").length,
+      declared: reopenedSvg?.getAttribute("data-layer-order"),
+      painted: reopenedPaintOrder,
+      tools: Boolean(reopenedShell?.querySelector('[data-panel-id="tools"]')),
+      document: Boolean(reopenedShell?.querySelector('[data-panel-id="document"]')),
+    })}.`,
+  );
 }
 
 console.log(

@@ -748,7 +748,6 @@ module MapEditorSimulator =
                           + "-step, " + string route.DistanceMillimeters + " mm path costing "
                           + string route.MovementCostMillimeters
                           + " mm of movement credit; advance simulation time to move." ]
-                    LastCombatEvents = []
                     PreviewDestination = None }
             | Some route ->
                 { handoff with

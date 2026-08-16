@@ -140,6 +140,28 @@ let run () =
         require
             (simulator.RuntimeMap.Units.Count = expected)
             ("Production density sample unit count drifted: expected " + string expected + ", actual " + string simulator.RuntimeMap.Units.Count + ", dimensions " + string editorSample.Map.Width + "x" + string editorSample.Map.Height + ", load " + string loadedSample.Validation + ", validation " + string editorSample.Validation + ", source " + sample.MapText.Substring(0, min 160 sample.MapText.Length).Replace("\n", "|"))
+        require
+            (simulator.RuntimeMap.Units
+             |> Map.toSeq
+             |> Seq.map (fun (_, unit) -> unit.Side)
+             |> Set.ofSeq
+             |> Set.count
+             |> (=) 2)
+            ("Production density sample lost opposing factions: " + string expected)
+        let attacked =
+            MapEditorSimulator.update StepSimulator editorSample.SelectedUnit simulator
+        require
+            (not (List.isEmpty attacked.LastCombatEvents))
+            ("Production density sample did not produce current attacks: " + string expected)
+        let routed =
+            attacked
+            |> MapEditorSimulator.update (MoveSimulatorPreview(0, -1)) editorSample.SelectedUnit
+            |> MapEditorSimulator.update CommitSimulatorPreview editorSample.SelectedUnit
+        require
+            (routed.LastCombatEvents = attacked.LastCombatEvents
+             && editorSample.SelectedUnit
+                |> Option.exists (fun id -> Map.containsKey id routed.PlannedRoutes))
+            ("Production density route commit erased simultaneous causal attacks: " + string expected)
     let initialEditor = MapEditor.initial
     let initialSimulator = MapEditorSimulator.tryHandoff initialEditor |> Result.defaultWith failwith
     let advancedSimulator = MapEditorSimulator.update StepSimulator initialEditor.SelectedUnit initialSimulator

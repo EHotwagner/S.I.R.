@@ -304,6 +304,7 @@ node scripts/test-client-feature-loader.mjs \
   --aggregate-trx work/214-client-feature-loader/test-results/client-feature-loader.trx \
   --browser-junit artifacts/test-results/browser.junit.xml
 node scripts/test-map-editor-qualification.mjs
+./scripts/test-map-editor-keyboard-subject-mutation.sh
 node scripts/test-planning-workspace-m5-qualification.mjs
 node scripts/test-simulator-workspace-m6-qualification.mjs
 node scripts/test-worker-roundtrip-race.mjs

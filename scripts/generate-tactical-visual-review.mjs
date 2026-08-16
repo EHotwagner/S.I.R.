@@ -27,10 +27,10 @@ const [bundleBytes, stylesBytes, baselineBytes] = await Promise.all([
 await mkdir(reviewOutput, { recursive: true });
 const delaySource = `const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));`;
 const clickButtonSource = `const clickButton = (label) => { const button = [...document.querySelectorAll("button")].find((candidate) => candidate.textContent.trim() === label || candidate.getAttribute("aria-label") === label); if (!button) throw new Error("Missing production control: " + label); button.click(); };`;
-const settleCaptureSource = `const settleCapture = async () => { let style = document.querySelector("#sir-deterministic-review-style"); if (!style) { style = document.createElement("style"); style.id = "sir-deterministic-review-style"; style.textContent = "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}"; document.head.appendChild(style); } await document.fonts.ready; await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); };`;
+const settleCaptureSource = `const settleCapture = async () => { let style = document.querySelector("#sir-deterministic-review-style"); if (!style) { style = document.createElement("style"); style.id = "sir-deterministic-review-style"; style.textContent = "html{scroll-behavior:auto!important}*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}"; document.head.appendChild(style); } document.documentElement.dataset.reviewCaptureState = "frozen-reduced-motion"; document.activeElement?.blur(); for (const animation of document.getAnimations()) animation.cancel(); for (const element of document.querySelectorAll("*")) { element.scrollTop = 0; element.scrollLeft = 0; } window.scrollTo(0, 0); await document.fonts.ready; await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); };`;
 const maintainedSimulation = `(async () => { ${delaySource} ${clickButtonSource} ${settleCaptureSource} clickButton("Simulate"); await wait(50); clickButton("Show contextual actions"); await wait(50); clickButton("Open simulator samples"); await wait(80); const card = [...document.querySelectorAll("details.sample-card")].find((candidate) => candidate.textContent.includes("Troll assault")); if (!card) throw new Error("Missing maintained simulation sample"); card.querySelector("summary").click(); await wait(20); clickButton("Run Troll assault in Simulator"); await wait(100); clickButton("Advance the map simulation one tick"); await wait(100); await settleCapture(); })()`;
 const afterPath = resolve(reviewOutput, "after-production.png");
-const audit = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: afterPath, prepareExpression: maintainedSimulation });
+const audit = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: afterPath, prepareExpression: maintainedSimulation, reducedMotion: true });
 const { workload: ignoredAfterWorkload, ...system } = audit.wide.visualSystem;
 if (system.identity !== "tactical-visual-system-v1" || system.effectLimit !== 256 || system.effectCount < 1) {
   throw new Error(`Production visual registry/effects did not render: ${JSON.stringify(system)}`);
@@ -41,8 +41,6 @@ if (system.layerOrder !== system.paintedLayerOrder) {
 
 const workloadExpression = (units) => `(async () => {
   ${delaySource} ${clickButtonSource} ${settleCaptureSource}
-  const observedKinds = new Set(); const observedLifecycles = new Set(); const observedAttackEffects = new Set();
-  const recordEffects = () => { const effects = [...document.querySelectorAll("[data-effect-kind]")]; for (const effect of effects) { const kind = effect.getAttribute("data-effect-kind"); const lifecycle = effect.getAttribute("data-effect-lifecycle"); if (kind) observedKinds.add(kind); if (lifecycle) observedLifecycles.add(lifecycle); if (kind === "attack") observedAttackEffects.add([effect.getAttribute("data-effect-event"), effect.getAttribute("data-effect-tick"), lifecycle].join(":")); } };
   globalThis.__sirTacticalStage = "samples";
   const workspaceControls = document.querySelector("details.tactical-legacy-controls"); workspaceControls?.querySelector("summary")?.click(); clickButton("Samples"); if (workspaceControls) workspaceControls.open = false; await wait(80);
   const card = [...document.querySelectorAll("details.sample-card")].find((candidate) => candidate.textContent.includes("Tactical density ${units}"));
@@ -56,20 +54,23 @@ const workloadExpression = (units) => `(async () => {
   const beforeTick = svg.getAttribute("data-scene-tick");
   globalThis.__sirTacticalStage = "step"; const started = performance.now(); clickButton("Advance the map simulation one tick");
   while (svg.getAttribute("data-scene-tick") === beforeTick && performance.now() - started < 2000) await wait(5);
-  const inputToPaintMilliseconds = performance.now() - started; recordEffects();
+  const inputToPaintMilliseconds = performance.now() - started;
   globalThis.__sirTacticalStage = "routes";
   const routeUnits = [...document.querySelectorAll("#persistent-layer-units [data-unit-id]")].slice(0, 2);
   routeUnits[0].dispatchEvent(new MouseEvent("click", { bubbles: true })); await wait(25);
-  clickButton("Move route preview right"); await wait(25); recordEffects();
+  clickButton("Move route preview right"); await wait(25);
   clickButton("Cancel route preview"); await wait(25);
   for (const unit of routeUnits) {
     unit.dispatchEvent(new MouseEvent("click", { bubbles: true })); await wait(25);
-    clickButton("Move route preview up"); clickButton("Move route preview up"); await wait(25); recordEffects();
-    clickButton("Commit clear route preview"); await wait(25); recordEffects();
+    clickButton("Move route preview up"); clickButton("Move route preview up"); await wait(25);
+    clickButton("Commit clear route preview"); await wait(25);
   }
   const frameStarted = await new Promise((resolve) => requestAnimationFrame(resolve));
   const frameEnded = await new Promise((resolve) => requestAnimationFrame(resolve));
-  recordEffects(); await settleCapture();
+  await settleCapture();
+  const currentEffects = [...svg.querySelectorAll("[data-effect-kind]")];
+  const currentKinds = [...new Set(currentEffects.map((effect) => effect.getAttribute("data-effect-kind")).filter(Boolean))].sort();
+  const currentLifecycles = [...new Set(currentEffects.map((effect) => effect.getAttribute("data-effect-lifecycle")).filter(Boolean))].sort();
   globalThis.__sirTacticalStage = "measure"; globalThis.__sirTacticalWorkload = {
     requestedUnits: ${units}, renderedUnits: svg.querySelectorAll("[data-unit-id]").length,
     terrainCells: svg.querySelectorAll("#persistent-layer-terrain > *").length,
@@ -77,8 +78,8 @@ const workloadExpression = (units) => `(async () => {
     plannedRouteUnits: [...svg.querySelectorAll("[data-unit-status]")].filter((unit) => unit.getAttribute("data-unit-status").includes("route-planned")).length,
     overlays: svg.querySelectorAll("[data-overlay-id]").length,
     effects: svg.querySelectorAll("[data-effect-event]").length,
-    observedAttackEffects: observedAttackEffects.size,
-    effectKinds: [...observedKinds].sort(), effectLifecycles: [...observedLifecycles].sort(),
+    currentAttackEffects: currentEffects.filter((effect) => effect.getAttribute("data-effect-kind") === "attack").length,
+    effectKinds: currentKinds, effectLifecycles: currentLifecycles,
     domNodes: svg.querySelectorAll("*").length,
     inputToPaintMilliseconds, animationFrameIntervalMilliseconds: frameEnded - frameStarted,
     usedJsHeapBytes: performance.memory?.usedJSHeapSize ?? null,
@@ -89,9 +90,9 @@ const densityAudits = [];
 const telemetryScenes = [];
 for (const units of [100, 200]) {
   const path = resolve(reviewOutput, `production-density-${units}.png`);
-  const result = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: path, prepareExpression: workloadExpression(units) });
+  const result = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: path, prepareExpression: workloadExpression(units), reducedMotion: true });
   const workload = result.wide.visualSystem.workload;
-  if (workload.renderedUnits !== units || workload.effects < 1 || workload.overlays < 1 || workload.observedAttackEffects < 1) throw new Error(`Production density workload ${units} is incomplete: ${JSON.stringify(workload)}`);
+  if (workload.renderedUnits !== units || workload.effects < 1 || workload.overlays < 1 || workload.currentAttackEffects < 1) throw new Error(`Production density workload ${units} is incomplete: ${JSON.stringify(workload)}`);
   const { inputToPaintMilliseconds, animationFrameIntervalMilliseconds, usedJsHeapBytes, ...structure } = workload;
   densityAudits.push({ units, path: `production-density-${units}.png`, sha256: hash(await readFile(path)), workload: structure });
   telemetryScenes.push({ units, inputToPaintMilliseconds, animationFrameIntervalMilliseconds, usedJsHeapBytes });

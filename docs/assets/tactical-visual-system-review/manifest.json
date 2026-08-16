@@ -1,6 +1,6 @@
 {
   "schema": "sir-tactical-visual-review-v2",
-  "productionBundleSha256": "95114a2c0d53072e90c4ae4c0eab485483a972f37a3a776ba312078c06f76565",
+  "productionBundleSha256": "f83aa3e24bc1e5ef169aa5cb993675691dfdc06dacf49e37a3d90182c6b4f800",
   "productionStylesSha256": "d25df5340a553fa9dcf3c5a4d272942ecadc8d73d395e91bdaa9f29a7144c7d8",
   "before": {
     "path": "../persistent-workspace-m9-review/field-focus.png",
@@ -8,12 +8,12 @@
   },
   "after": {
     "path": "after-production.png",
-    "sha256": "13107a8382b12c9b23da00b16e29b667f3629dde0d8a078bf580291dcf52d135",
+    "sha256": "e5e3f0c5cd7dac3ef520f08a761565ac5d6c496752c610b6123777636d0b64bb",
     "captureKind": "actual-production-shell-chromium-screenshot",
     "semantic": {
       "identity": "tactical-visual-system-v1",
       "density": "ordinary",
-      "motion": "full",
+      "motion": "reduced",
       "layerOrder": "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
       "effectCount": 4,
       "effectLimit": 256,
@@ -49,7 +49,7 @@
     {
       "units": 100,
       "path": "production-density-100.png",
-      "sha256": "f2ec55d0b9ed4afc3ca7e4f50fc4945910083e5bd3e83ec0dae9016356f921a9",
+      "sha256": "e3d5a444f5437ba28f51ecee784e487a6e0e978ae92e960e1c1c7d22fb09638a",
       "workload": {
         "requestedUnits": 100,
         "renderedUnits": 100,
@@ -57,8 +57,8 @@
         "routes": 1,
         "plannedRouteUnits": 2,
         "overlays": 106,
-        "effects": 2,
-        "observedAttackEffects": 60,
+        "effects": 62,
+        "currentAttackEffects": 60,
         "effectKinds": [
           "attack",
           "event",
@@ -67,17 +67,15 @@
         "effectLifecycles": [
           "accepted",
           "committed",
-          "predicted",
-          "preview",
-          "rejected"
+          "predicted"
         ],
-        "domNodes": 3012
+        "domNodes": 3252
       }
     },
     {
       "units": 200,
       "path": "production-density-200.png",
-      "sha256": "f1a980d69d26be782779f6590ff1fd6ebd1a71a383df9c2e6de2619ed442a3a2",
+      "sha256": "33d764ae80ac34857b17eaf6c852d825a155d6de6ddbf07ef28d60208c028337",
       "workload": {
         "requestedUnits": 200,
         "renderedUnits": 200,
@@ -85,8 +83,8 @@
         "routes": 1,
         "plannedRouteUnits": 2,
         "overlays": 206,
-        "effects": 2,
-        "observedAttackEffects": 127,
+        "effects": 129,
+        "currentAttackEffects": 127,
         "effectKinds": [
           "attack",
           "event",
@@ -95,18 +93,16 @@
         "effectLifecycles": [
           "accepted",
           "committed",
-          "predicted",
-          "preview",
-          "rejected"
+          "predicted"
         ],
-        "domNodes": 4292
+        "domNodes": 4800
       }
     }
   ],
   "visualSystem": {
     "identity": "tactical-visual-system-v1",
     "density": "ordinary",
-    "motion": "full",
+    "motion": "reduced",
     "layerOrder": "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
     "effectCount": 4,
     "effectLimit": 256,

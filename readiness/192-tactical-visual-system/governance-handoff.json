@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/192-tactical-visual-system/ship.json",
-      "digest": "sha256:3d1a5687fe2f0d2f22fcedb5cc0a37774b5b2620ba01ea941023abf18e9a391b",
+      "digest": "sha256:80cb26f3bf788afde25605cf1841f4653ee9a30d1d549ecfc78e3a2b8b66d833",
       "schemaVersion": 1
     },
     {
       "path": "readiness/192-tactical-visual-system/verify.json",
-      "digest": "sha256:6844cb91db9b66383c5156d8871588f73ecf72ccf2a998153d4a1afe7c80531c",
+      "digest": "sha256:3899a8e2b362089e73c8aef503be636a1c49d667f6c9d9ecb2051daae6edc5ff",
       "schemaVersion": 1
     },
     {
       "path": "readiness/192-tactical-visual-system/work-model.json",
-      "digest": "sha256:b0e0cf7e09864f7e790c4638f5a2a86b0b07e8fabe9778b2e42b7be1a5dbc2f5",
+      "digest": "sha256:8b0f5246a6401abb5c84cd852a7cf1918c54f276cddd87a80b66240d1ef12cdd",
       "schemaVersion": 1
     }
   ],
