@@ -9,10 +9,20 @@ cd "$repo_root"
 mkdir -p "$test_root/feedback/audits" "$test_root/scripts"
 cp "$repo_root/feedback/audits/2026-08-13-sir-item-183-tactical-overlays.audit.json" "$test_root/feedback/audits/"
 cp "$repo_root/feedback/audits/2026-08-15-sir-item-184-elaborate-tactical-sample-2.audit.json" "$test_root/feedback/audits/"
+cp "$repo_root/feedback/audits/2026-08-15-SIR-186-2.audit.json" "$test_root/feedback/audits/"
+cp "$repo_root/feedback/audits/2026-08-15-SIR-186-3.audit.json" "$test_root/feedback/audits/"
+cp "$repo_root/feedback/audits/2026-08-15-SIR-186-6.audit.json" "$test_root/feedback/audits/"
+cp "$repo_root/feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json" "$test_root/feedback/audits/"
 cp "$repo_root/scripts/audit-binding-exceptions.json" "$test_root/scripts/"
 cp --parents \
   tests/SIR.Browser.Tests/visible-workflows.spec.js \
   scripts/test-conformance.sh \
+  scripts/smoke-client.mjs \
+  scripts/ci-route.mjs \
+  scripts/test-ci-route.mjs \
+  src/SIR.Client.Web/App.fs \
+  src/SIR.Client/MapEditorSimulator.fs \
+  docs/performance-budget.md \
   readiness/184-scenario-catalog/scenario-catalog-native.junit.xml \
   readiness/184-scenario-catalog/scenario-catalog-browser.junit.xml \
   readiness/184-scenario-catalog/scenario-catalog-cross-runtime.junit.xml \
@@ -20,7 +30,7 @@ cp --parents \
   "$test_root"
 
 tool="$repo_root/.agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx"
-changed="tests/SIR.Browser.Tests/visible-workflows.spec.js;scripts/test-conformance.sh;readiness/184-scenario-catalog/scenario-catalog-native.junit.xml;readiness/184-scenario-catalog/scenario-catalog-browser.junit.xml;readiness/184-scenario-catalog/scenario-catalog-cross-runtime.junit.xml;readiness/184-scenario-catalog/scenario-catalog-rules.junit.xml"
+changed="scripts/test-conformance.sh;scripts/smoke-client.mjs;scripts/ci-route.mjs;scripts/test-ci-route.mjs;src/SIR.Client.Web/App.fs;src/SIR.Client/MapEditorSimulator.fs;docs/performance-budget.md;readiness/184-scenario-catalog/scenario-catalog-native.junit.xml;readiness/184-scenario-catalog/scenario-catalog-browser.junit.xml;readiness/184-scenario-catalog/scenario-catalog-cross-runtime.junit.xml;readiness/184-scenario-catalog/scenario-catalog-rules.junit.xml"
 ledger="$test_root/scripts/audit-binding-exceptions.json"
 pristine="$test_root/scripts/audit-binding-exceptions.pristine.json"
 cp "$ledger" "$pristine"

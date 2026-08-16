@@ -2,14 +2,104 @@
   "schema": "fsgg-feedback-audit-binding-exceptions/1",
   "exceptions": [
     {
-      "audit": "feedback/audits/2026-08-13-sir-item-183-tactical-overlays.audit.json",
+      "audit": "feedback/audits/2026-08-15-SIR-186-2.audit.json",
+      "findingId": "§4.7",
+      "locator": "file:scripts/smoke-client.mjs",
+      "path": "scripts/smoke-client.mjs",
+      "previousSha256": "2d1eace1c3221df21d34e1002413c8235251bf1dd2b364cf1d91e6f8a4d1c5a3",
+      "replacementSha256": "ff408d6d4afead42476f2de5b9700fc55ef19df0b71ea40e3fa573bed89636df",
+      "replacementEvidence": "command:./scripts/run-ci-gate.sh cross-runtime artifacts/ci/results/cross-runtime.json",
+      "reason": "Item 184 changes the cited smoke owner; the exact-head hosted cross-runtime gate executes the replacement through the conformance owner."
+    },
+    {
+      "audit": "feedback/audits/2026-08-15-SIR-186-2.audit.json",
+      "findingId": "§4.7",
+      "locator": "file:src/SIR.Client.Web/App.fs",
+      "path": "src/SIR.Client.Web/App.fs",
+      "previousSha256": "6d86a1690e2876dab1b6e6ee9d20c8077972e68ad31bdb509650124614a1555d",
+      "replacementSha256": "dfd0aae8079085c8b183b8b2995d22e8c79df29890f33d7f2be38f9ecd9335dc",
+      "replacementEvidence": "command:./scripts/run-ci-gate.sh browser artifacts/ci/results/browser.json",
+      "reason": "Item 184 changes the cited application owner; the exact-head hosted browser gate verifies the replacement production behavior."
+    },
+    {
+      "audit": "feedback/audits/2026-08-15-SIR-186-2.audit.json",
+      "findingId": "§4.7",
+      "locator": "file:src/SIR.Client/MapEditorSimulator.fs",
+      "path": "src/SIR.Client/MapEditorSimulator.fs",
+      "previousSha256": "5c5fdb4089bc50bccdaef53edcd2c34e3a3fe99024c3cccaca4dba9fdf0ec148",
+      "replacementSha256": "f3ae01071f252a9945da86a6b08fd48d2f03e1c77b4afc7f37bc056ed0538bfc",
+      "replacementEvidence": "command:./scripts/run-ci-gate.sh native artifacts/ci/results/native.json",
+      "reason": "Item 184 changes the cited simulator owner; the exact-head hosted native gate verifies the replacement through focused client qualification."
+    },
+    {
+      "audit": "feedback/audits/2026-08-15-SIR-186-3.audit.json",
+      "findingId": "§4.7",
+      "locator": "file:scripts/smoke-client.mjs",
+      "path": "scripts/smoke-client.mjs",
+      "previousSha256": "2d1eace1c3221df21d34e1002413c8235251bf1dd2b364cf1d91e6f8a4d1c5a3",
+      "replacementSha256": "ff408d6d4afead42476f2de5b9700fc55ef19df0b71ea40e3fa573bed89636df",
+      "replacementEvidence": "command:./scripts/run-ci-gate.sh cross-runtime artifacts/ci/results/cross-runtime.json",
+      "reason": "Item 184 changes the cited smoke owner; the exact-head hosted cross-runtime gate executes the replacement through the conformance owner."
+    },
+    {
+      "audit": "feedback/audits/2026-08-15-SIR-186-3.audit.json",
+      "findingId": "§4.7",
+      "locator": "file:src/SIR.Client.Web/App.fs",
+      "path": "src/SIR.Client.Web/App.fs",
+      "previousSha256": "6d86a1690e2876dab1b6e6ee9d20c8077972e68ad31bdb509650124614a1555d",
+      "replacementSha256": "dfd0aae8079085c8b183b8b2995d22e8c79df29890f33d7f2be38f9ecd9335dc",
+      "replacementEvidence": "command:./scripts/run-ci-gate.sh browser artifacts/ci/results/browser.json",
+      "reason": "Item 184 changes the cited application owner; the exact-head hosted browser gate verifies the replacement production behavior."
+    },
+    {
+      "audit": "feedback/audits/2026-08-15-SIR-186-3.audit.json",
+      "findingId": "§4.7",
+      "locator": "file:src/SIR.Client/MapEditorSimulator.fs",
+      "path": "src/SIR.Client/MapEditorSimulator.fs",
+      "previousSha256": "5c5fdb4089bc50bccdaef53edcd2c34e3a3fe99024c3cccaca4dba9fdf0ec148",
+      "replacementSha256": "f3ae01071f252a9945da86a6b08fd48d2f03e1c77b4afc7f37bc056ed0538bfc",
+      "replacementEvidence": "command:./scripts/run-ci-gate.sh native artifacts/ci/results/native.json",
+      "reason": "Item 184 changes the cited simulator owner; the exact-head hosted native gate verifies the replacement through focused client qualification."
+    },
+    {
+      "audit": "feedback/audits/2026-08-15-SIR-186-6.audit.json",
       "findingId": "§4.2",
-      "locator": "file:tests/SIR.Browser.Tests/visible-workflows.spec.js",
-      "path": "tests/SIR.Browser.Tests/visible-workflows.spec.js",
-      "previousSha256": "5a2db78f8ddb7ac593ddc5b52c92f24ef7076ac80905ce86433e674700ac4f42",
-      "replacementSha256": "0558a9384585aad617d53cffcaae711149d27c63360a965c61c917c52c3dbd63",
-      "replacementEvidence": "command:npm run test:browser",
-      "reason": "Item 184 updated the exact rules-source expectation used by the existing browser workflow; the full browser matrix verifies the replacement file."
+      "locator": "file:src/SIR.Client.Web/App.fs",
+      "path": "src/SIR.Client.Web/App.fs",
+      "previousSha256": "f18830d84a37723a9a42a833bd4ad4b7c3f96b0bb43aedd1922ba02a04b43e81",
+      "replacementSha256": "dfd0aae8079085c8b183b8b2995d22e8c79df29890f33d7f2be38f9ecd9335dc",
+      "replacementEvidence": "command:./scripts/run-ci-gate.sh browser artifacts/ci/results/browser.json",
+      "reason": "Item 184 changes the cited application owner; the exact-head hosted browser gate verifies the replacement production behavior."
+    },
+    {
+      "audit": "feedback/audits/2026-08-15-SIR-186-6.audit.json",
+      "findingId": "§4.6",
+      "locator": "file:docs/performance-budget.md",
+      "path": "docs/performance-budget.md",
+      "previousSha256": "5fb42b445999b25fe2fe4dbd80ee350099a1c145e4d44006c01ab6213d72798b",
+      "replacementSha256": "8014423d9a0a2f56d1a967524fddf73347655e1e34a91e88cbf0121aa3382f28",
+      "replacementEvidence": "command:./scripts/run-ci-gate.sh native artifacts/ci/results/native.json",
+      "reason": "Item 184 changes the cited performance contract; the exact-head hosted native gate measures the documented unchanged stress thresholds."
+    },
+    {
+      "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",
+      "findingId": "§4.1",
+      "locator": "file:scripts/ci-route.mjs",
+      "path": "scripts/ci-route.mjs",
+      "previousSha256": "10da76f4b2631e57c36991f263d19a15c183716e2d68ce208a31c160ed1118af",
+      "replacementSha256": "16d9a09b203e47d64072bdf588335289c241bba7ef423ef873d6da51943891cd",
+      "replacementEvidence": "command:node scripts/test-ci-route.mjs",
+      "reason": "Item 184 changes the bounded route owner; its focused route qualification verifies the replacement route and dependency inventory."
+    },
+    {
+      "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",
+      "findingId": "§4.1",
+      "locator": "file:scripts/test-ci-route.mjs",
+      "path": "scripts/test-ci-route.mjs",
+      "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
+      "replacementSha256": "7541751d8080f2aa3c49bbfb19a7bdcc8d3bfa57d4fccf69130fd506b6255685",
+      "replacementEvidence": "command:node scripts/test-ci-route.mjs",
+      "reason": "Item 184 changes the bounded route qualification; the focused route test verifies the replacement assertions and mutation coverage."
     },
     {
       "audit": "feedback/audits/2026-08-13-sir-item-183-tactical-overlays.audit.json",
