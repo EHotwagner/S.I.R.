@@ -6,6 +6,8 @@ site_output="$repo_root/artifacts/site"
 client_output="$repo_root/artifacts/client"
 reuse_build_receipt=""
 reuse_conformance_receipt=""
+reuse_build_owner="scripts/qualify-production.sh"
+prepared_pr=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -19,6 +21,15 @@ while [[ $# -gt 0 ]]; do
       reuse_conformance_receipt=$2
       shift 2
       ;;
+    --reuse-build-owner)
+      [[ $# -ge 2 ]] || { echo "build-docs: --reuse-build-owner requires a command" >&2; exit 2; }
+      reuse_build_owner=$2
+      shift 2
+      ;;
+    --prepared-pr)
+      prepared_pr=true
+      shift
+      ;;
     *)
       echo "build-docs: unknown argument: $1" >&2
       exit 2
@@ -31,14 +42,20 @@ cd "$repo_root"
 node scripts/verify-fable-client-baseline.mjs
 
 if [[ -n "$reuse_build_receipt" ]]; then
-  [[ -n "$reuse_conformance_receipt" ]] || { echo "build-docs: build reuse requires a conformance receipt" >&2; exit 2; }
+  if [[ "$prepared_pr" != true ]]; then
+    [[ -n "$reuse_conformance_receipt" ]] || { echo "build-docs: production build reuse requires a conformance receipt" >&2; exit 2; }
+  fi
   node scripts/production-build-receipt.mjs verify \
-    --owner-command scripts/qualify-production.sh \
+    --owner-command "$reuse_build_owner" \
     --receipt "$reuse_build_receipt"
-  node scripts/production-build-receipt.mjs verify \
-    --owner-command scripts/test-conformance.sh \
-    --receipt "$reuse_conformance_receipt"
-  dotnet build src/SIR.Client/SIR.Client.fsproj -c Release --no-restore
+  if [[ -n "$reuse_conformance_receipt" ]]; then
+    node scripts/production-build-receipt.mjs verify \
+      --owner-command scripts/test-conformance.sh \
+      --receipt "$reuse_conformance_receipt"
+  fi
+  if [[ "$prepared_pr" != true ]]; then
+    dotnet build src/SIR.Client/SIR.Client.fsproj -c Release --no-restore
+  fi
 else
   dotnet tool restore
   dotnet restore SIR.slnx --locked-mode

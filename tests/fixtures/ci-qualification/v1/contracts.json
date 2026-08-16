@@ -1,0 +1,24 @@
+{
+  "schema": "sir.ci-contracts/v1",
+  "feedbackBudgetMilliseconds": 300000,
+  "runnerClass": "ubuntu-latest",
+  "gateOrder": [
+    "rules",
+    "spatial",
+    "cancellation",
+    "cross-runtime",
+    "browser",
+    "documentation",
+    "evidence"
+  ],
+  "schemas": {
+    "route": "sir.ci-route/v1",
+    "artifactManifest": "sir.ci-artifact-manifest/v1",
+    "gateResult": "sir.ci-gate-result/v1",
+    "timing": "sir.ci-timing/v1",
+    "join": "sir.ci-join/v1"
+  },
+  "gateStates": ["pass", "fail", "cancelled"],
+  "timingPhases": ["queue", "setup", "restore", "build", "test", "total"],
+  "fullRoutes": ["protected-main", "scheduled"]
+}

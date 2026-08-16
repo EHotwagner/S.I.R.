@@ -1,0 +1,969 @@
+schemaVersion: 1
+workId: 220-bounded-pr-ci
+stage: evidence
+status: needsEvidenceCorrection
+sourceSpec: work/220-bounded-pr-ci/spec.md
+sourceClarifications: work/220-bounded-pr-ci/clarifications.md
+sourceChecklist: work/220-bounded-pr-ci/checklist.md
+sourcePlan: work/220-bounded-pr-ci/plan.md
+sourceTasks: work/220-bounded-pr-ci/tasks.yml
+sourceAnalysis: readiness/220-bounded-pr-ci/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/220-bounded-pr-ci/analysis.json
+    digest: 6f286c04fe3a6e25ce9b97826a40979d75a9ee3ea4bc6f9f07d0ffc9a643873f
+    schemaVersion: 1
+  - label: checklist
+    path: work/220-bounded-pr-ci/checklist.md
+    digest: dbdba47c86a1973f217b00976e914effb64098f5067d699737fa9838072691da
+    schemaVersion: 1
+  - label: clarifications
+    path: work/220-bounded-pr-ci/clarifications.md
+    digest: b00176a02d8591ac695beaf6d6094ad4cb2504b076d6ea5ac96dc9b8504958ca
+    schemaVersion: 1
+  - label: plan
+    path: work/220-bounded-pr-ci/plan.md
+    digest: 99ff450341ba348b275903bbc802010ccbfab94687d1a945e933e423ebf90f65
+    schemaVersion: 1
+  - label: spec
+    path: work/220-bounded-pr-ci/spec.md
+    digest: 997daa8007aefb252e19fe9a177265edbfa64f1e9ac2747eb0f05b97ea825f2c
+    schemaVersion: 1
+  - label: tasks
+    path: work/220-bounded-pr-ci/tasks.yml
+    digest: d624df1aca82203c81279d41183dad480358c5730e74f9b0c2167f81f92cf4c3
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: missing
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV002
+    kind: missing
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV003
+    kind: missing
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV003]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV004
+    kind: missing
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV005
+    kind: missing
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV006
+    kind: missing
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV006]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV007
+    kind: missing
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV007]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV008
+    kind: missing
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV009
+    kind: missing
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV010
+    kind: missing
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV011
+    kind: missing
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: [FR-011]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV012
+    kind: missing
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV012]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV013
+    kind: missing
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV013]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV014
+    kind: missing
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV014]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV015
+    kind: missing
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV015]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV016
+    kind: missing
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV016]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV017
+    kind: missing
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV017]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV018
+    kind: missing
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV018]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV019
+    kind: missing
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV019]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV020
+    kind: missing
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV020]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV021
+    kind: missing
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV021]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV022
+    kind: missing
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV022]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV023
+    kind: missing
+    subject:
+      type: task
+      id: T023
+    taskRefs: [T023]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV023]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV024
+    kind: missing
+    subject:
+      type: task
+      id: T024
+    taskRefs: [T024]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV024]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV025
+    kind: missing
+    subject:
+      type: task
+      id: T025
+    taskRefs: [T025]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV025]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV026
+    kind: missing
+    subject:
+      type: task
+      id: T026
+    taskRefs: [T026]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV026]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV027
+    kind: missing
+    subject:
+      type: task
+      id: T027
+    taskRefs: [T027]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV027]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV028
+    kind: missing
+    subject:
+      type: task
+      id: T028
+    taskRefs: [T028]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV028]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV029
+    kind: missing
+    subject:
+      type: task
+      id: T029
+    taskRefs: [T029]
+    requirementRefs: [FR-011]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV029]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV030
+    kind: missing
+    subject:
+      type: task
+      id: T030
+    taskRefs: [T030]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV030]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV031
+    kind: missing
+    subject:
+      type: task
+      id: T031
+    taskRefs: [T031]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: [EV031]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV032
+    kind: missing
+    subject:
+      type: task
+      id: T032
+    taskRefs: [T032]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005, PD-006]
+    obligationRefs: [EV032]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV033
+    kind: missing
+    subject:
+      type: task
+      id: T033
+    taskRefs: [T033]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-007, PD-011]
+    obligationRefs: [EV033]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV034
+    kind: missing
+    subject:
+      type: task
+      id: T034
+    taskRefs: [T034]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008, PD-009]
+    obligationRefs: [EV034]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV035
+    kind: missing
+    subject:
+      type: task
+      id: T035
+    taskRefs: [T035]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: [EV035]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV036
+    kind: missing
+    subject:
+      type: task
+      id: T036
+    taskRefs: [T036]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-011]
+    obligationRefs: [EV036]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV037
+    kind: missing
+    subject:
+      type: task
+      id: T037
+    taskRefs: [T037]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004, PD-007]
+    obligationRefs: [EV037]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV038
+    kind: missing
+    subject:
+      type: task
+      id: T038
+    taskRefs: [T038]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005, PD-006]
+    obligationRefs: [EV038]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV039
+    kind: missing
+    subject:
+      type: task
+      id: T039
+    taskRefs: [T039]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008, PD-009]
+    obligationRefs: [EV039]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV040
+    kind: missing
+    subject:
+      type: task
+      id: T040
+    taskRefs: [T040]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV040]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV041
+    kind: missing
+    subject:
+      type: task
+      id: T041
+    taskRefs: [T041]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-004]
+    obligationRefs: [EV041]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV042
+    kind: missing
+    subject:
+      type: task
+      id: T042
+    taskRefs: [T042]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV042]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV043
+    kind: missing
+    subject:
+      type: task
+      id: T043
+    taskRefs: [T043]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV043]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV044
+    kind: missing
+    subject:
+      type: task
+      id: T044
+    taskRefs: [T044]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV044]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV045
+    kind: missing
+    subject:
+      type: task
+      id: T045
+    taskRefs: [T045]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV045]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV046
+    kind: missing
+    subject:
+      type: task
+      id: T046
+    taskRefs: [T046]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-010]
+    obligationRefs: [EV046]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV047
+    kind: missing
+    subject:
+      type: task
+      id: T047
+    taskRefs: [T047]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005, PD-010]
+    obligationRefs: [EV047]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV048
+    kind: missing
+    subject:
+      type: task
+      id: T048
+    taskRefs: [T048]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007, PD-011]
+    obligationRefs: [EV048]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+  - id: EV049
+    kind: missing
+    subject:
+      type: task
+      id: T049
+    taskRefs: [T049]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008, PD-009]
+    obligationRefs: [EV049]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-ci-route.mjs
+    result: missing
+    synthetic: false
+    notes: [Evidence required before verify.]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

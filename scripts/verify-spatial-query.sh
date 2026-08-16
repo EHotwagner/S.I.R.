@@ -4,6 +4,23 @@ set -euo pipefail
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 task_tmp=$(mktemp -d)
 trap 'rm -rf -- "$task_tmp"' EXIT
+reuse_build_receipt=""
+prepared_fable=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --reuse-pr-build-receipt)
+      [[ $# -ge 2 ]] || { echo "verify-spatial-query: --reuse-pr-build-receipt requires a path" >&2; exit 2; }
+      reuse_build_receipt=$2
+      shift 2
+      ;;
+    --prepared-fable)
+      [[ $# -ge 2 ]] || { echo "verify-spatial-query: --prepared-fable requires a path" >&2; exit 2; }
+      prepared_fable=$2
+      shift 2
+      ;;
+    *) echo "verify-spatial-query: unknown argument: $1" >&2; exit 2 ;;
+  esac
+done
 
 cd "$repo_root"
 
@@ -71,11 +88,20 @@ expect_unreadable_client_scan_error() {
   fi
 }
 
-dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
+if [[ -n "$reuse_build_receipt" ]]; then
+  [[ -n "$prepared_fable" ]] || { echo "verify-spatial-query: prepared reuse requires a Fable fixture root" >&2; exit 2; }
+  node scripts/production-build-receipt.mjs verify --owner-command scripts/qualify-pr.sh --receipt "$reuse_build_receipt"
+else
+  dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore
+fi
 dotnet_output=$(dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-build --no-restore -- --print-spatial-query)
 
-dotnet fable tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj --outDir "$task_tmp/fable" --noCache
-fable_entry="$task_tmp/fable/SIR.Conformance.Shared/Program.js"
+if [[ -n "$reuse_build_receipt" ]]; then
+  fable_entry="$prepared_fable/SIR.Conformance.Shared/Program.js"
+else
+  dotnet fable tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj --outDir "$task_tmp/fable" --noCache
+  fable_entry="$task_tmp/fable/SIR.Conformance.Shared/Program.js"
+fi
 fable_output=$(node "$fable_entry" --print-spatial-query)
 
 if [[ "$dotnet_output" != "$fable_output" ]]; then
