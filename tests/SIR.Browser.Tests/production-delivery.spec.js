@@ -24,13 +24,21 @@ test("Release delivery uses cache-safe compression and defers spatial diagnostic
   const initialDeferred = responses.filter((response) => response.url().includes("RulesExplorer-")).length;
   const responseBytes = async (selected) =>
     (await Promise.all(selected.map((response) => response.body().then((body) => body.byteLength)))).reduce((total, bytes) => total + bytes, 0);
-  const initialBytes = await responseBytes(responses);
-  const maximumInitialBytes = Number(process.env.SIR_DELIVERY_MAX_INITIAL_ROUTE_BYTES ?? 1_150_000);
+  let initialBytes = await responseBytes(responses);
+  if (process.env.SIR_DELIVERY_BROWSER_MUTATE_SUBJECT === "initial-bytes") initialBytes += 1_250_001;
+  // Initial boot budget v2 (2026-08-15). This bounds the default production
+  // route, not every future product route; growth must defer or deliberately
+  // rebaseline this versioned contract with a new failing mutation receipt.
+  const maximumInitialBytes = Number(process.env.SIR_DELIVERY_MAX_INITIAL_ROUTE_BYTES ?? 1_250_000);
   expect(initialDeferred).toBe(0);
   await page.getByRole("button", { name: "Simulate", exact: true }).click();
   await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
   await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
-  await page.getByRole("button", { name: /^Load simulation sample:/ }).first().click();
+  const samplesOwner = page.getByLabel("Curated samples feature", { exact: true });
+  await expect(samplesOwner).toBeVisible();
+  await expect(samplesOwner.getByRole("region", { name: "Curated maps simulations and replays", exact: true })).toBeVisible();
+  await samplesOwner.getByText("Troll assault", { exact: true }).click();
+  await samplesOwner.getByRole("button", { name: "Run Troll assault in Simulator", exact: true }).click();
   await page.locator("#persistent-layer-units [data-unit-id]").first().click();
   await page.getByRole("button", { name: "View", exact: true }).click();
   await page.getByRole("menuitem", { name: /Spatial diagnostics/ }).click();
@@ -54,7 +62,9 @@ test("Release delivery uses cache-safe compression and defers spatial diagnostic
   expect(deferredBytes).toBeGreaterThan(0);
   expect(initialBytes).toBeLessThanOrEqual(maximumInitialBytes);
   expect(deferredBytes).toBeLessThanOrEqual(maximumDeferredBytes);
-  console.log(JSON.stringify({ schema: "sir-production-delivery-route-v1", throttle: "Slow-3G/4x CPU", deferredChunk: "RulesExplorer", initialResponseBytes: initialBytes, deferredActivationBytes: deferredBytes, diagnosticApiBytes }));
+  const initialRouteHeadroomBytes = maximumInitialBytes - initialBytes;
+  expect(initialRouteHeadroomBytes).toBeGreaterThanOrEqual(0);
+  console.log(JSON.stringify({ schema: "sir-production-delivery-route-v1", throttle: "Slow-3G/4x CPU", deferredChunk: "RulesExplorer", initialResponseBytes: initialBytes, maximumInitialResponseBytes: maximumInitialBytes, initialRouteHeadroomBytes, deferredActivationBytes: deferredBytes, diagnosticApiBytes }));
 
   const engine = await page.request.get("/engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/worker.js", {
     headers: { "Accept-Encoding": "gzip" },

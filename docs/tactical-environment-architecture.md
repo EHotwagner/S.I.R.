@@ -5,8 +5,8 @@ categoryindex: 2
 index: 5
 status: proposed
 document-type: living-design
-version: "0.1"
-last-updated: 2026-07-27
+version: "0.2"
+last-updated: 2026-08-15
 related:
   - docs/game-vision.md
   - docs/combat-resolution.md
@@ -105,6 +105,64 @@ a possibly changed parcel library.
 
 Assembly runs before the match. It is not part of the deterministic tick
 pipeline.
+
+### Tactical environment schema v1
+
+Schema v1 makes the assembly inputs and result explicit rather than treating
+the finished map as an unstructured tile image. An authored plot declares its
+identity, dimensions, sorted slots, slot roles, origins, bounds, required
+routes, and connectivity. A parcel catalog supplies compatible, hand-authored
+variants with walkable and objective cells, connections, and semantic
+features. A placement records the selected variant, slot, origin, and one of
+four quarter-turn transforms.
+
+Assembly validates the plot and catalog before selection. Slots and compatible
+variants are ordered by ordinal identifier. Selection is product-owned,
+SHA-256-addressed randomness over the seed and stable slot id because the
+published Fable profile classifies sequential `FS.GG.Game.Core.Rng` as
+`DotNetOnly`. The same schema-v1 inputs and seed therefore produce the same
+placements, cells, features, counters, canonical bytes, and lowercase SHA-256
+content identity on .NET and Fable. The match retains the assembled instance
+and its identity; it does not silently reinterpret old bytes against a changed
+catalog.
+
+The canonical envelope uses explicit schema version `1`, stable union tags,
+little-endian integers, UTF-8 length-prefixed strings, count-prefixed
+collections, and sorted authored and assembled collections. Import verifies a
+supplied identity against the recomputed identity. Unsupported versions,
+invalid geometry, impossible states, and stale identities are typed failures,
+not best-effort repairs.
+
+The assembly identity hashes a separately domain-tagged binary encoding of the
+complete authored plot and catalog, including unused variants, feature cell
+volumes, cover semantics, capabilities, and dependency keys. The assembled
+canonical envelope embeds that identity, so either authored-catalog drift or
+runtime state drift changes the final content identity without requiring the
+runtime to retain mutable authoring objects.
+
+### Semantic features and requester knowledge
+
+Doors, windows, walls, and cover are semantic features attached to canonical
+cell edges. Each feature carries a legal state, independent permeability for
+movement, sight, projectile traces, area effects, sound, cover, and named
+interactions, plus stable query-dependency keys. These axes must not be folded
+into one `blocked` flag: a window can block movement while admitting sight, and
+a damaged barrier can admit sound without admitting a projectile.
+
+Directional cover additionally declares material, current and maximum
+integrity, penetration resistance, and protected directions. Combat, LOS,
+pathfinding, and cover evaluation consume projections of the same committed
+feature state. A geometry edge used for rendering and an edge used for routing
+may have different representations, but both derive from the feature's one
+canonical edge address.
+
+Every interaction is described by a stable capability identifier, action,
+cost, and optional required knowledge. Observation is requester-specific:
+unknown features are absent, known features may disclose no current state, and
+only capabilities whose knowledge requirements are met are returned. Canonical
+observation bytes bind the environment and knowledge revisions, so replay and
+controller inputs can establish exactly what was knowable without leaking
+hidden state, dependency topology, or cache activity.
 
 ## Cell-scale translation
 
@@ -209,6 +267,22 @@ Destruction spans both spatial layers:
 
 Every destruction event advances the spatial revision and invalidates only the
 dependent cached queries.
+
+### Targeted transitions and local invalidation
+
+Open, close, damage, breach, and destroy are pure actions against one declared
+feature. The feature-kind/state transition matrix rejects unsupported actions,
+non-positive costs, hidden targets, and stale content identities. A transition
+that changes canonical state advances the spatial revision exactly once and
+returns the changed dependency keys with deterministic work counters. A
+no-change result does not manufacture a revision.
+
+Invalidation intersects those keys with cached dependency receipts. Entries
+that do not name a changed dependency remain warm; the operation does not clear
+the complete spatial cache. Destruction changes only its target in schema v1,
+and the reported propagated-change count remains zero. This is the explicit
+boundary that prevents an inexpensive local breach from becoming an unbounded
+collapse simulation.
 
 ### Bounding the Silent Storm failure
 
@@ -319,6 +393,12 @@ Practical consequences:
 - deformable terrain outside declared destruction rules;
 - weather, lighting, and time-of-day as authoritative tactical state; and
 - runtime map generation during a live match.
+
+Schema v1 also deliberately excludes arbitrary procedural parcel synthesis,
+physics debris, unconstrained transforms, final art production, and a second
+geometry or combat authority in the browser client. Procedural helpers may
+produce non-tactical fill, but authored tactical composition, validation, and
+the immutable assembled environment remain authoritative.
 
 ## Open parameters
 

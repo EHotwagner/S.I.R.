@@ -1,0 +1,1091 @@
+schemaVersion: 1
+workId: 215-single-pass-qualification
+stage: evidence
+status: evidenceReady
+sourceSpec: work/215-single-pass-qualification/spec.md
+sourceClarifications: work/215-single-pass-qualification/clarifications.md
+sourceChecklist: work/215-single-pass-qualification/checklist.md
+sourcePlan: work/215-single-pass-qualification/plan.md
+sourceTasks: work/215-single-pass-qualification/tasks.yml
+sourceAnalysis: readiness/215-single-pass-qualification/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/215-single-pass-qualification/analysis.json
+    digest: 98dfc44f81c363b0b466e3a06d3450459c4ddaf8ed418a93c53da78c23fd5c2d
+    schemaVersion: 1
+  - label: checklist
+    path: work/215-single-pass-qualification/checklist.md
+    digest: 39a468ec1b1d1e144a739be1c2bcbeb1e29768227099279803a3c219fca451e2
+    schemaVersion: 1
+  - label: clarifications
+    path: work/215-single-pass-qualification/clarifications.md
+    digest: 3ce348c6cec5931d9065aacaed8ad6524620a09852b0ba98759cbd8289df61e6
+    schemaVersion: 1
+  - label: plan
+    path: work/215-single-pass-qualification/plan.md
+    digest: 7d63a77e220f13ee9137f383debc58d6faa10e4fb9c63b0f4c6a591aa9026e19
+    schemaVersion: 1
+  - label: spec
+    path: work/215-single-pass-qualification/spec.md
+    digest: 3c8737b6ff275cf7e3319963c9f1e71b72d176c7e9a89e29ea1635946f0f801a
+    schemaVersion: 1
+  - label: tasks
+    path: work/215-single-pass-qualification/tasks.yml
+    digest: 89b06f91ffc2e051c0e9c2478045a48ebfb65a12cac926790d94ae082e1feadf
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV003]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV005]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV006]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV007]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV012]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV013]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV014]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV015]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV016]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV017]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV018]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV019]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV020
+    kind: verification
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV020]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV021
+    kind: verification
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV021]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV022
+    kind: verification
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV022]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV023
+    kind: verification
+    subject:
+      type: task
+      id: T023
+    taskRefs: [T023]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV023]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV024
+    kind: verification
+    subject:
+      type: task
+      id: T024
+    taskRefs: [T024]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV024]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV025
+    kind: verification
+    subject:
+      type: task
+      id: T025
+    taskRefs: [T025]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-003]
+    obligationRefs: [EV025]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV026
+    kind: verification
+    subject:
+      type: task
+      id: T026
+    taskRefs: [T026]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV026]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV027
+    kind: verification
+    subject:
+      type: task
+      id: T027
+    taskRefs: [T027]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV027]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV028
+    kind: verification
+    subject:
+      type: task
+      id: T028
+    taskRefs: [T028]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-003, PD-006]
+    obligationRefs: [EV028]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV029
+    kind: verification
+    subject:
+      type: task
+      id: T029
+    taskRefs: [T029]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV029]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV030
+    kind: verification
+    subject:
+      type: task
+      id: T030
+    taskRefs: [T030]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV030]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV031
+    kind: verification
+    subject:
+      type: task
+      id: T031
+    taskRefs: [T031]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV031]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV032
+    kind: verification
+    subject:
+      type: task
+      id: T032
+    taskRefs: [T032]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV032]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV033
+    kind: verification
+    subject:
+      type: task
+      id: T033
+    taskRefs: [T033]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV033]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV034
+    kind: verification
+    subject:
+      type: task
+      id: T034
+    taskRefs: [T034]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV034]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV035
+    kind: verification
+    subject:
+      type: task
+      id: T035
+    taskRefs: [T035]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV035]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV036
+    kind: verification
+    subject:
+      type: task
+      id: T036
+    taskRefs: [T036]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV036]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV037
+    kind: verification
+    subject:
+      type: task
+      id: T037
+    taskRefs: [T037]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV037]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV038
+    kind: verification
+    subject:
+      type: task
+      id: T038
+    taskRefs: [T038]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-003]
+    obligationRefs: [EV038]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+  - id: EV039
+    kind: verification
+    subject:
+      type: task
+      id: T039
+    taskRefs: [T039]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV039]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: scripts/test-production-build-receipt.mjs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: work/214-client-feature-loader/test-results/client-feature-loader.trx
+      digest: "sha256:fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 8
+      failed: 0
+      skipped: 0
+    notes: [Focused receipt qualification and clean aggregate passed.]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

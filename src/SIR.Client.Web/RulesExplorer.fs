@@ -246,7 +246,13 @@ let private requestBody (simulator: SimulatorHandoff option) selectedUnit =
                 |> Encode.toString 0)
     | _ -> None
 
-let private loadDiagnostics accessToken body =
+let private postJson<'value>
+    (accessToken: string)
+    (path: string)
+    (body: string)
+    (decoder: Decoder<'value>)
+    (label: string)
+    : Async<'value> =
     async {
         let options =
             createObj [
@@ -254,50 +260,32 @@ let private loadDiagnostics accessToken body =
                 "headers" ==> createObj [ "Content-Type" ==> "application/json"; "Authorization" ==> ("Bearer " + accessToken) ]
                 "body" ==> body
             ]
-        let! response = fetch ("/api/spatial/diagnostics", options) |> Async.AwaitPromise
+        let! response = fetch (path, options) |> Async.AwaitPromise
         let! responseBody = response?text() |> Async.AwaitPromise
         if not (unbox<bool> response?ok) then
-            failwith $"spatial diagnostic request failed: {responseBody}"
+            failwith $"{label} request failed: {responseBody}"
         return
-            Decode.fromString responseDecoder (string responseBody)
-            |> Result.defaultWith (fun error -> failwith $"spatial diagnostic response did not decode: {error}")
+            Decode.fromString decoder (string responseBody)
+            |> Result.defaultWith (fun error -> failwith $"{label} response did not decode: {error}")
     }
+
+let private loadDiagnostics accessToken body =
+    postJson accessToken "/api/spatial/diagnostics" body responseDecoder "spatial diagnostic"
 
 let private loadPhysicalCombat accessToken =
-    async {
-        let body =
-            Encode.object [
-                "AttackId", Encode.string "player-visible-four-profile"
-                "Scenario", Encode.string "four-profile-cover-replay-v1"
-            ]
-            |> Encode.toString 0
-        let options =
-            createObj [
-                "method" ==> "POST"
-                "headers" ==> createObj [ "Content-Type" ==> "application/json"; "Authorization" ==> ("Bearer " + accessToken) ]
-                "body" ==> body
-            ]
-        let! response = fetch ("/api/combat/physical-drill", options) |> Async.AwaitPromise
-        let! responseBody = response?text() |> Async.AwaitPromise
-        if not (unbox<bool> response?ok) then failwith $"physical combat request failed: {responseBody}"
-        return Decode.fromString combatResponseDecoder (string responseBody) |> Result.defaultWith (fun error -> failwith $"physical combat response did not decode: {error}")
-    }
+    let body =
+        Encode.object [
+            "AttackId", Encode.string "player-visible-four-profile"
+            "Scenario", Encode.string "four-profile-cover-replay-v1"
+        ]
+        |> Encode.toString 0
+    postJson accessToken "/api/combat/physical-drill" body combatResponseDecoder "physical combat"
 
 let private loadLocalAwareness accessToken action =
-    async {
-        let options =
-            createObj [
-                "method" ==> "POST"
-                "headers" ==> createObj [ "Authorization" ==> ("Bearer " + accessToken); "Content-Type" ==> "application/json" ]
-                "body" ==> Encode.toString 0 (Encode.object [ "action", Encode.string action ])
-            ]
-        let! response = fetch ("/api/awareness/local-projection", options) |> Async.AwaitPromise
-        let! responseBody = response?text() |> Async.AwaitPromise
-        if not (unbox<bool> response?ok) then failwith $"local awareness request failed: {responseBody}"
-        return Decode.fromString awarenessResponseDecoder (string responseBody) |> Result.defaultWith (fun error -> failwith $"local awareness response did not decode: {error}")
-    }
+    let body = Encode.toString 0 (Encode.object [ "action", Encode.string action ])
+    postJson accessToken "/api/awareness/local-projection" body awarenessResponseDecoder "local awareness"
 
-let private valueText value =
+let private valueText (value: TypedValue) =
     match value.Value with
     | IntegerValue number -> string number + " " + value.Unit
     | FixedPointValue number -> string (FixedPoint.raw number) + "/" + string FixedPoint.Scale + " " + value.Unit
@@ -346,7 +334,7 @@ let private rulesCatalog () =
                 catalogTable "Human armor packages" [ "Package"; "Coverage"; "Cost" ] [ for armor in RulesCatalog.armorProfiles do [ armor.Name; armor.Coverage; armor.Cost ] ]
                 catalogTable "Equipment catalog" [ "Faction"; "Status"; "Category"; "Items" ] [ for equipment in RulesCatalog.equipmentGroups do [ equipment.Faction; equipment.Status; equipment.Category; equipment.Items ] ]
             ]
-            Html.p [ Html.a [ prop.href "gameplay-reference.html"; prop.text "Read definitions, formulas, and design rationale in the Gameplay Reference." ] ]
+            Html.p [ Html.a [ prop.href "gameplay-reference.html"; prop.text "Gameplay Reference: definitions, formulas, and rationale." ] ]
         ]
     ]
 
@@ -404,7 +392,7 @@ let ExecutableRulesPanel (bootstrap: BootstrapV1.Response option) =
                 prop.ariaLabel "Physical combat drill"
                 prop.children [
                     Html.h3 "Physical combat drill"
-                    Html.p "One authoritative scenario verifies four weapon profiles, evolving cover, and replay from every seek point."
+                    Html.p "Four authoritative profiles verify evolving cover and every replay seek."
                     Html.button [
                         prop.text "Run four-profile combat scenario"
                         prop.disabled (Option.isNone bootstrap)
@@ -466,7 +454,7 @@ let ExecutableRulesPanel (bootstrap: BootstrapV1.Response option) =
                 prop.ariaLabel "Local awareness and reaction projection"
                 prop.children [
                     Html.h3 "Local awareness and reaction projection"
-                    Html.p "The host advances awareness and reactions; the browser receives only observer-local knowledge."
+                    Html.p "The host advances reactions; the browser receives observer-local knowledge."
                     Html.button [
                         prop.text "Reset awareness drill"
                         prop.disabled (Option.isNone bootstrap)

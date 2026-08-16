@@ -1,0 +1,105 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-15-SIR-186-2.md",
+  "reportSha256": "9f79f3b041eb3e5d592538394421d797af4c5498253ea2b0e388ed9d6b20ec5c",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:test -e docs/examples/lifecycle-artifacts/charter.md", "result": "verified" },
+        { "locator": "issue:FS-GG/FS.GG.SDD#539", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The current product checkout proves recurrence, while the closed issue carries the existing root-cause record."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "duplicate",
+      "missingFacts": [
+        "A durable failing compiler output or minimal reproducer for the checkpoint's historical inference failure.",
+        "The exact affected consumers and diagnostics from the pre-repair state."
+      ],
+      "checkedEvidence": [
+        { "locator": "file:src/SIR.Domain/TacticalEnvironment.fsi", "result": "verified", "sha256": "8ad019bfffa1c8b1dfe5a79123764c4cac7ef1d9b77f65c05cfb864b2c442046" },
+        { "locator": "command:dotnet build SIR.slnx -c Release --no-restore", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The evidence proves only the repaired prefixed API and green Release build; the prior documented hazard supplies recurrence."
+      ]
+    },
+    {
+      "id": "§4.3",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:readiness/186-authored-tactical-parcels/cross-runtime.md", "result": "verified", "sha256": "5c0d24be263b0e08388aaa5ce34741a608d912015c8acb3383179dc753240cb5" },
+        { "locator": "command:npm run build:client", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The original rejected build was not preserved; the finding is limited to the published compatibility contract and current exact cross-runtime result."
+      ]
+    },
+    {
+      "id": "§4.4",
+      "status": "duplicate",
+      "missingFacts": [
+        "A durable pre-repair production-browser failure receipt."
+      ],
+      "checkedEvidence": [
+        { "locator": "file:tests/SIR.Browser.Tests/tactical-environment.spec.js", "result": "verified", "sha256": "e634addc4b7a2b38d4caa72c14483d2a3dd32f8b83902c433df22bf2426b5fd4" },
+        { "locator": "file:readiness/186-authored-tactical-parcels/qualification.junit.xml", "result": "verified", "sha256": "5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858" },
+        { "locator": "command:npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js tests/SIR.Browser.Tests/tactical-environment.spec.js", "result": "verified" },
+        { "locator": "file:src/SIR.Client.Web/TacticalEnvironmentView.fs", "result": "verified", "sha256": "02f687334c016305ab1c1099bed5f0c6b0322eb3d055b29a0340fed90cadc462" }
+      ],
+      "confidenceLimits": [
+        "The retained journey proves repaired native Space activation, not the checkpoint's historical failure or Enter behavior."
+      ]
+    },
+    {
+      "id": "§4.5",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:src/SIR.Client/TacticalParcelEditor.fs", "result": "verified", "sha256": "515559b1568433cfa7ec52dc043fc56d96b1161ebcc18100210fdb965ed3b629" },
+        { "locator": "file:src/SIR.Client.Web/TacticalEnvironmentView.fs", "result": "verified", "sha256": "02f687334c016305ab1c1099bed5f0c6b0322eb3d055b29a0340fed90cadc462" },
+        { "locator": "command:npm run build:docs", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The evidence verifies the final extraction and active ceilings, not the causal history of the extraction."
+      ]
+    },
+    {
+      "id": "§4.6",
+      "status": "duplicate",
+      "missingFacts": [
+        "A durable receipt for the checkpoint's historical stale M9 failure."
+      ],
+      "checkedEvidence": [
+        { "locator": "file:readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified", "sha256": "ab6737cbf8b04c66ca7d62258da03b0967b4f768368366b967577d64f13fc039" },
+        { "locator": "command:npm run review:persistent-workspace-m9 && npm run build:docs", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The evidence verifies the repaired aggregate; the report preserves the prior stale state only as a checkpoint-qualified observation."
+      ]
+    },
+    {
+      "id": "§4.7",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "command:bash readiness/186-authored-tactical-parcels/run-qualification.sh", "result": "verified" },
+        { "locator": "file:src/SIR.Client.Web/App.fs", "result": "verified", "sha256": "6d86a1690e2876dab1b6e6ee9d20c8077972e68ad31bdb509650124614a1555d" },
+        { "locator": "file:src/SIR.Client/MapEditorSimulator.fs", "result": "verified", "sha256": "5c5fdb4089bc50bccdaef53edcd2c34e3a3fe99024c3cccaca4dba9fdf0ec148" },
+        { "locator": "file:scripts/smoke-client.mjs", "result": "verified", "sha256": "2d1eace1c3221df21d34e1002413c8235251bf1dd2b364cf1d91e6f8a4d1c5a3" }
+      ],
+      "confidenceLimits": [
+        "Historical red outputs are checkpoint and diff evidence; the repaired behavior is independently executable."
+      ]
+    }
+  ]
+}

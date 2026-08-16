@@ -1,5 +1,4 @@
 module SIR.Client.Web.App
-
 open System
 open Browser.Dom
 open Browser.Types
@@ -15,14 +14,12 @@ open SIR.Protocol.Realtime
 open SIR.Client.Web.BrowserInfrastructure
 open SIR.Client.Web.AppTypes
 open SIR.Client.Web.AppShell
-
+open SIR.Client.Web.ClientFeatureRuntime
 open SIR.Client.Web.CommandRegistry
 open SIR.Client.Web.ModeAdapters
 open SIR.Client.Web.TacticalOverlayView
 open SIR.Client.Web.SceneAdapters
 open SIR.Client.Web.PanelViews
-open SIR.Client.Web.DocsView
-
 let private tacticalCommandAvailable model (command: TacticalCommandDefinition) =
     let availability =
         match command.Availability with
@@ -127,26 +124,13 @@ let private prefersReducedMotion: bool = jsNative
 [<Emit("/(Mac|iPhone|iPad|iPod)/.test(navigator.platform)")>]
 let private usesMetaShortcutPlatform: bool = jsNative
 
-let private shortcutPlatform =
-    if usesMetaShortcutPlatform then MetaPlatform else ControlPlatform
-
-[<Emit("(() => { const eventTarget = $0; const tag = eventTarget && typeof eventTarget.tagName === 'string' ? eventTarget.tagName.toLowerCase() : ''; return tag === 'input' ? 'input' : tag === 'textarea' ? 'textarea' : tag === 'select' ? 'select' : eventTarget && eventTarget.isContentEditable ? 'contenteditable' : 'application'; })()")>]
-let private currentInputTargetName (target: EventTarget) : string = jsNative
-
-let private currentInputTarget target =
-    match currentInputTargetName target with
-    | "input" -> ModalInputTarget.InputElement
-    | "textarea" -> ModalInputTarget.TextAreaElement
-    | "select" -> ModalInputTarget.SelectElement
-    | "contenteditable" -> ModalInputTarget.ContentEditableElement
-    | _ -> ModalInputTarget.ApplicationElement
-
+let private shortcutPlatform = if usesMetaShortcutPlatform then MetaPlatform else ControlPlatform
 let private validSimulatorFor editor current =
     match MapEditorSimulator.tryHandoff editor with
     | Error _ -> current
     | Ok initial ->
         current
-        |> Option.map (MapEditorSimulator.reconcile editor)
+        |> Option.map (fun simulator -> if MapEditorSimulator.isBehindDraft editor simulator then MapEditorSimulator.reconcile editor simulator else simulator)
         |> Option.orElse (Some initial)
 
 /// Browser `key` represents shifted digits as printable symbols (for example
@@ -403,15 +387,16 @@ let private evidenceFor model =
         frame
 
 let private sampleReplayShell
-    (sample: ExperienceReplaySample)
+    sampleIdentity
+    sampleTitle
     (frames: InspectionProjection array)
     =
     let first = Array.head frames
-    let identity = "sample-replay-" + sample.Id
+    let identity = "sample-replay-" + sampleIdentity
     { Shell.init () with
         Source =
             Loaded
-                { SourceName = sample.Title
+                { SourceName = sampleTitle
                   SourceIdentity = identity
                   EngineIdentity = "map-editor-sample-simulator-v1"
                   FinalTick = Array.last frames |> _.Tick
@@ -425,7 +410,7 @@ let private sampleReplayShell
               Speed = Normal }
         Inspection = Some first
         Worker = WorkerReady
-        Announcement = "Loaded curated replay walkthrough “" + sample.Title + "”." }
+        Announcement = "Loaded curated replay walkthrough “" + sampleTitle + "”." }
 
 let private sampleReplayFrameAt tick (frames: InspectionProjection array) =
     frames
@@ -467,13 +452,10 @@ let init () =
         let autosave = readMapAutosave ()
         if isNull autosave then initial
         else MapEditor.update (OfferCrashRecovery autosave) initial
-    let editorView =
-        MapEditorWorkspace.initial prefersReducedMotion
-        |> MapEditorWorkspace.update
-            editor.Map
-            (MapEditor.selected editor)
-            FitEditorBoard
+    let editorView = MapEditorWorkspace.initial prefersReducedMotion |> MapEditorWorkspace.update editor.Map (MapEditor.selected editor) FitEditorBoard
     let simulator = validSimulatorFor editor None
+    let tacticalParcelEditor = TacticalParcelEditor.fromCanonicalEditor "Tactical parcel preview ready." editor
+    let tacticalParcelText = TacticalParcelEditor.exportTacticalParcelDocument editor.TacticalDocument
     let simulatorSelectedUnit =
         editor.SelectedUnit
         |> Option.filter (fun id ->
@@ -521,6 +503,8 @@ let init () =
 
     { Shell = Shell.init ()
       Editor = editor
+      TacticalParcelEditor = tacticalParcelEditor
+      TacticalParcelImportText = tacticalParcelText
       Simulator = simulator
       SimulatorSelectedUnit = simulatorSelectedUnit
       SimulatorControllerSelection = None
@@ -535,6 +519,8 @@ let init () =
       HeldTacticalOverlays = Set.empty
       TacticalLayout = tacticalLayout
       TacticalLayoutDiagnostics = tacticalLayoutDiagnostics
+      ClientFeatures = FeatureLoader.initial
+      FeatureLoaderDiagnostic = None
       DesktopToolbarCommands = desktopToolbarCommands
       DesktopToolbarCustomizationOpen = false
       BottomPanelResizeActive = false
@@ -563,9 +549,9 @@ let init () =
       ComparisonView = Split
       Live = LiveSession.initial },
     Cmd.ofEffect (fun dispatch -> LiveSession.start (LiveAction >> dispatch))
-
 let rec update msg model =
     match msg with
+    | ClientFeatureMessage message -> ClientFeatureRuntime.update message model
     | LiveStarted ->
         model, Cmd.ofEffect (fun dispatch -> LiveSession.start (LiveAction >> dispatch))
     | LiveAction action ->
@@ -697,12 +683,8 @@ let rec update msg model =
                 ]
             | Error _ -> model, Cmd.none
         | None -> model, Cmd.none
-    | LoadMapSample sampleId ->
-        match ExperienceSamples.tryMap sampleId with
-        | None -> model, Cmd.none
-        | Some sample ->
-            let editor = ExperienceSamples.editorState sample
-            let simulator = validSimulatorFor editor None
+    | LoadMapSample(editor, preparedSimulator) ->
+            let simulator = validSimulatorFor editor preparedSimulator
             let simulatorSelectedUnit =
                 editor.SelectedUnit
                 |> Option.filter (fun id ->
@@ -732,12 +714,8 @@ let rec update msg model =
                          |> Option.defaultValue (MapEditor.frame editor))
                         model.Battlefield },
             Cmd.none
-    | LoadSimulationSample sampleId ->
-        match ExperienceSamples.tryMap sampleId with
-        | None -> model, Cmd.none
-        | Some sample ->
-            let editor = ExperienceSamples.editorState sample
-            match ExperienceSamples.simulator sample with
+    | LoadSimulationSample(editor, preparedSimulator) ->
+            match preparedSimulator with
             | None ->
                 { model with
                     Editor =
@@ -765,15 +743,11 @@ let rec update msg model =
                     PreviousFrame = None
                     PresentationAlpha = 1.0 },
                 Cmd.none
-    | LoadReplaySample sampleId ->
-        match ExperienceSamples.tryReplay sampleId with
-        | None -> model, Cmd.none
-        | Some sample ->
-            let frames = ExperienceSamples.replayFrames sample
+    | LoadReplaySample(sampleIdentity, sampleTitle, frames) ->
             if Array.isEmpty frames then
                 model, Cmd.none
             else
-                let shell = sampleReplayShell sample frames
+                let shell = sampleReplayShell sampleIdentity sampleTitle frames
                 let frame =
                     Shell.renderFrame shell
                     |> Option.defaultValue Battlefield.representativeFrame
@@ -795,7 +769,16 @@ let rec update msg model =
                     PresentationAlpha = 1.0 },
                 Cmd.none
     | WorkspaceChanged workspace ->
-        WorkspaceTransitions.change workspace model
+        let next, transition = WorkspaceTransitions.change workspace model
+        if workspace = DocsWorkspace then
+            let loading, load =
+                ClientFeatureRuntime.update (FeatureLoader.Request FeatureLoader.docs) next
+            loading, Cmd.batch [ transition; load ]
+        elif workspace = SimulatorWorkspace then
+            let loaded, load =
+                ClientFeatureRuntime.update (FeatureLoader.Request FeatureLoader.tacticalEnvironment) next
+            loaded, Cmd.batch [ transition; load ]
+        else next, transition
     | DocumentationLoaded result ->
         match result with
         | Ok manifest ->
@@ -1182,11 +1165,14 @@ let rec update msg model =
             if drawer.DrawerOpen then expanded
             else expanded |> TacticalWorkspaceLayout.toggleDrawer current.Side
         writeTacticalLayout (TacticalWorkspaceLayout.exportProfile drawerOpen)
-        { model with
-            TacticalLayout = drawerOpen
-            TacticalLayoutDiagnostics = [] },
-        Cmd.ofEffect (fun _ ->
-            focusElementAfterRender ("layout-panel-" + panelId + "-body"))
+        let opened =
+            { model with
+                TacticalLayout = drawerOpen
+                TacticalLayoutDiagnostics = [] }
+        let focused =
+            Cmd.ofEffect (fun _ ->
+                focusElementAfterRender ("layout-panel-" + panelId + "-body"))
+        ClientFeatureRuntime.requestSupportingPanel panelId opened focused
     | ResetTacticalLayout ->
         let layout = TacticalWorkspaceLayout.reset model.TacticalLayout
         writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
@@ -1477,11 +1463,14 @@ let rec update msg model =
                 |> TacticalWorkspaceLayout.togglePanelCollapsed panelId
             else visible
         writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
-        { model with
-            EditorToolPanel = panel
-            EditorToolPanelVisible = true
-            TacticalLayout = layout },
-        Cmd.none
+        let next =
+            { model with
+                EditorToolPanel = panel
+                EditorToolPanelVisible = true
+                TacticalLayout = layout }
+        if panel = TacticalEnvironmentTools then
+            ClientFeatureRuntime.update (FeatureLoader.Request FeatureLoader.tacticalEnvironment) next
+        else next, Cmd.none
     | ToggleEditorToolPanelVisibility ->
         let panelId =
             if model.EditorToolPanel = DocumentTools then "document" else "tools"
@@ -1507,10 +1496,7 @@ let rec update msg model =
     | EditorChanged action ->
         let editor = MapEditor.update action model.Editor
         let simulator = validSimulatorFor editor model.Simulator
-        let simulatorSelected =
-            (if model.Workspace = EditorWorkspace then editor.SelectedUnit
-             else model.SimulatorSelectedUnit)
-            |> Option.filter (fun id -> simulator |> Option.exists (fun value -> Map.containsKey id value.RuntimeMap.Units))
+        let simulatorSelected = (if model.Workspace = EditorWorkspace then editor.SelectedUnit else model.SimulatorSelectedUnit) |> Option.filter (fun id -> simulator |> Option.exists (fun value -> Map.containsKey id value.RuntimeMap.Units))
         let editorView =
             match action with
             | ChooseTool _ ->
@@ -1530,6 +1516,8 @@ let rec update msg model =
                 Battlefield.reconcile (MapEditor.frame editor) model.Battlefield
         { model with
             Editor = editor
+            TacticalParcelEditor = TacticalParcelEditor.fromCanonicalEditor model.TacticalParcelEditor.TacticalAnnouncement editor
+            TacticalParcelImportText = TacticalParcelEditor.exportTacticalParcelDocument editor.TacticalDocument
             Simulator = simulator
             SimulatorSelectedUnit = simulatorSelected
             EditorView = editorView
@@ -1547,6 +1535,32 @@ let rec update msg model =
             | CancelDestructiveChange ->
                 focusElementAfterRender "persistent-tactical-svg"
             | _ -> ())
+    | TacticalParcelChanged action ->
+        match action with
+        | TacticalParcelEditor.UndoTacticalParcelEdit
+        | TacticalParcelEditor.RedoTacticalParcelEdit ->
+            let editorAction = if action = TacticalParcelEditor.UndoTacticalParcelEdit then UndoEditorCommand else RedoEditorCommand
+            let editor = MapEditor.update editorAction model.Editor
+            let announcement = if action = TacticalParcelEditor.UndoTacticalParcelEdit then "Tactical parcel edit undone." else "Tactical parcel edit redone."
+            let tactical = TacticalParcelEditor.fromCanonicalEditor announcement editor
+            { model with Editor = editor; TacticalParcelEditor = tactical; TacticalParcelImportText = TacticalParcelEditor.exportTacticalParcelDocument editor.TacticalDocument }, Cmd.none
+        | _ ->
+            let tactical, text = TacticalParcelEditor.updateWithExport action model.TacticalParcelEditor
+            let editor = MapEditor.update (ReplaceTacticalParcelDocument(tactical.TacticalDocument, tactical.TacticalSeed)) model.Editor
+            { model with Editor = editor; TacticalParcelEditor = TacticalParcelEditor.fromCanonicalEditor tactical.TacticalAnnouncement editor; TacticalParcelImportText = text }, Cmd.none
+    | TacticalParcelImportTextChanged text ->
+        { model with TacticalParcelImportText = text }, Cmd.none
+    | ImportTacticalParcelDocument ->
+        match TacticalParcelEditor.tryImportTacticalParcelDocument model.TacticalParcelImportText with
+        | Ok document -> update (TacticalParcelChanged(TacticalParcelEditor.ReplaceTacticalDocument document)) model
+        | Error message ->
+            { model with
+                TacticalParcelEditor =
+                    { model.TacticalParcelEditor with
+                        TacticalAnnouncement = message } },
+            Cmd.none
+    | ExportTacticalParcelDocument ->
+        model, Cmd.ofEffect (fun _ -> downloadTacticalEnvironmentDocument model.TacticalParcelImportText)
     | EditorPulse ->
         match model.Simulator with
         | Some simulator when simulator.IsRunning ->
@@ -1730,6 +1744,7 @@ let rec update msg model =
                             | UnitTools -> UnitDomain
                             | EdgeTools -> EdgeDomain
                             | ZoneTools -> RegionDomain
+                            | TacticalEnvironmentTools -> DocumentDomain
                             | DocumentTools -> DocumentDomain
                           PanHeld = editorPanHeld model
                           InputHelpExpanded = model.InputHelpExpanded }
@@ -1793,6 +1808,7 @@ let rec update msg model =
             | Some page -> update (DocumentationPageOpened(page.Slug, None)) model
             | None -> model, Cmd.none
         | "docs.search" -> model, Cmd.ofEffect (fun _ -> focusElementAfterRender "docs-search")
+        | "environment.editor.open" -> update (EditorToolPanelChanged TacticalEnvironmentTools) model
         | "panel.data" -> update (OpenSupportingPanel "data") model
         | "timeline.play-toggle" -> update TacticalPlaybackToggled model
         | "timeline.step-back" -> update (TacticalTimeStepped -1L) model
@@ -2192,6 +2208,7 @@ let rec update msg model =
                 | UnitTools -> UnitDomain
                 | EdgeTools -> EdgeDomain
                 | ZoneTools -> RegionDomain
+                | TacticalEnvironmentTools -> DocumentDomain
                 | DocumentTools -> DocumentDomain
             let facts =
                 { Editor = model.Editor
@@ -2316,6 +2333,7 @@ let rec update msg model =
                     | UnitTools -> UnitDomain
                     | EdgeTools -> EdgeDomain
                     | ZoneTools -> RegionDomain
+                    | TacticalEnvironmentTools -> DocumentDomain
                     | DocumentTools -> DocumentDomain
                   PanHeld = true
                   InputHelpExpanded = model.InputHelpExpanded }
@@ -2397,6 +2415,7 @@ let subscriptions model =
                         | UnitTools -> UnitDomain
                         | EdgeTools -> EdgeDomain
                         | ZoneTools -> RegionDomain
+                        | TacticalEnvironmentTools -> DocumentDomain
                         | DocumentTools -> DocumentDomain
                       PanHeld = editorPanHeld model
                       InputHelpExpanded = model.InputHelpExpanded }
@@ -2467,11 +2486,7 @@ let subscriptions model =
             fun (event: Event) ->
                 let keyboardEvent: KeyboardEvent = unbox event
                 let key = registryKeyboardKey keyboardEvent
-                if
-                    keyboardEvent.target
-                    |> currentInputTarget
-                    |> ModalInput.acceptsTarget
-                then
+                if acceptsGlobalKeyboardTarget keyboardEvent.target (keyboardEvent.ctrlKey || keyboardEvent.metaKey) then
                     let controlOrMeta =
                         keyboardEvent.ctrlKey || keyboardEvent.metaKey
                     if
@@ -2503,17 +2518,20 @@ let subscriptions model =
             fun (event: Event) ->
                 let keyboardEvent: KeyboardEvent = unbox event
                 if
-                    modalResolution
-                        KeyUp
-                        keyboardEvent.key
-                        false
-                        false
-                        false
-                        false
-                    |> isCatalogGesture
+                    acceptsGlobalKeyboardTarget keyboardEvent.target false
                 then
-                    keyboardEvent.preventDefault ()
-                dispatch (KeyReleased keyboardEvent.key)
+                    if
+                        modalResolution
+                            KeyUp
+                            keyboardEvent.key
+                            false
+                            false
+                            false
+                            false
+                        |> isCatalogGesture
+                    then
+                        keyboardEvent.preventDefault ()
+                    dispatch (KeyReleased keyboardEvent.key)
         let blurHandler =
             fun (_: Event) -> dispatch ApplicationFocusLost
         window.addEventListener ("keydown", downHandler)
@@ -3572,9 +3590,6 @@ let private comparisonPanel (model: Model) dispatch =
         ]
     ]
 
-[<ReactLazyComponent>]
-let private LazyDeferredDataPanel simulator selectedUnit bootstrap =
-    React.DynamicImported("../RulesExplorer.js")
 let private laboratoryResults model dispatch =
     Html.section [
         prop.className "panel lab-results"
@@ -3781,6 +3796,9 @@ let private editorScreenPoint
 
 let private editorToolbar
     (state: MapEditorState)
+    (tactical: TacticalParcelEditor.TacticalParcelEditorState)
+    (tacticalImportText: string)
+    clientFeatures
     (view: EditorWorkspaceState)
     (activePanel: EditorToolPanel)
     panelVisible
@@ -3864,6 +3882,7 @@ let private editorToolbar
                         choosePanel "Terrain" TerrainTools
                         choosePanel "Units" UnitTools
                         choosePanel "Edges" EdgeTools
+                        choosePanel "Environment" TacticalEnvironmentTools
                         choosePanel "Zones" ZoneTools
                     ]
                 ]
@@ -4094,6 +4113,8 @@ let private editorToolbar
                                     ))
                             ]
                         ]
+                    | TacticalEnvironmentTools ->
+                        ClientFeatureRuntime.tacticalEnvironmentPanel clientFeatures state tactical tacticalImportText None dispatch
                     | ZoneTools ->
                         let cursor =
                             { CellColumn =
@@ -4933,93 +4954,6 @@ let private editorDestructiveConfirmation state dispatch =
             ]
         ]
 
-let private sampleCatalogView (dispatch: Msg -> unit) =
-    let mapCard (sample: ExperienceMapSample) =
-        Html.details [
-            prop.className "panel sample-list-item sample-card"
-            prop.children [
-                Html.summary [
-                    Html.span [ prop.className "sample-kind"; prop.text "Map · Simulation" ]
-                    Html.strong sample.Title
-                    Html.span [ prop.className "sample-summary"; prop.text sample.Summary ]
-                ]
-                Html.div [
-                    prop.className "sample-list-body"
-                    prop.children [
-                        Html.ul [
-                            for highlight in sample.Highlights do
-                                Html.li highlight
-                        ]
-                        Html.div [
-                            prop.className "control-row"
-                            prop.children [
-                                button "Open map" ("Open " + sample.Title + " in Editor") false (fun _ ->
-                                    dispatch (LoadMapSample sample.Id))
-                                button "Run simulation" ("Run " + sample.Title + " in Simulator") false (fun _ ->
-                                    dispatch (LoadSimulationSample sample.Id))
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    let replayCard (sample: ExperienceReplaySample) =
-        Html.details [
-            prop.className "panel sample-list-item sample-card"
-            prop.children [
-                Html.summary [
-                    Html.span [ prop.className "sample-kind"; prop.text "Replay" ]
-                    Html.strong sample.Title
-                    Html.span [ prop.className "sample-summary"; prop.text sample.Summary ]
-                ]
-                Html.div [
-                    prop.className "sample-list-body"
-                    prop.children [
-                        Html.p (
-                            string sample.Ticks
-                            + " deterministic sample ticks · locally navigable · sandbox evidence"
-                        )
-                        button "Open replay" ("Open replay walkthrough " + sample.Title) false (fun _ ->
-                            dispatch (LoadReplaySample sample.Id))
-                    ]
-                ]
-            ]
-        ]
-    Html.section [
-        prop.className "samples-panel-content"
-        prop.ariaLabel "Curated maps simulations and replays"
-        prop.children [
-            Html.div [
-                prop.className "samples-heading"
-                prop.children [
-                    Html.p [ prop.className "eyebrow"; prop.text "Explore mechanics" ]
-                    Html.h2 "Curated samples"
-                    Html.p "Open a map, run its sandbox, or inspect a replay walkthrough."
-                ]
-            ]
-            Html.h3 "Maps and simulations"
-            Html.div [
-                prop.className "sample-list"
-                prop.children [
-                    for sample in ExperienceSamples.maps do
-                        mapCard sample
-                ]
-            ]
-            Html.h3 "Replay walkthroughs"
-            Html.div [
-                prop.className "sample-list"
-                prop.children [
-                    for sample in ExperienceSamples.replays do
-                        replayCard sample
-                ]
-            ]
-            Html.p [
-                prop.className "sample-disclosure"
-                prop.text "Walkthroughs are sandbox evidence, not verified match replays."
-            ]
-        ]
-    ]
-
 let private planningCommandLabel (command: PlanningCommand) =
     match command.Kind with
     | PlannedRoute cells -> "Route · " + string cells.Length + " waypoints"
@@ -5305,7 +5239,6 @@ let private supportingPanelControls (model: Model) dispatch =
             item "Samples" "samples"
         ]
     ]
-
 let private tacticalCommandButton (model: Model) (commandId: string) (text: string) (label: string) disabled onClick =
     let effective =
         activeTacticalRegistry model
@@ -5322,7 +5255,6 @@ let private tacticalCommandButton (model: Model) (commandId: string) (text: stri
         | None -> prop.custom ("data-binding-state", "unassigned")
         prop.onClick onClick
     ]
-
 let private tacticalModalityControls model dispatch =
     let item (label: string) commandId (value: WorkspaceMode) =
         let isCurrent = model.Workspace = value
@@ -5341,7 +5273,6 @@ let private tacticalModalityControls model dispatch =
             | None -> prop.custom ("data-binding-state", "unassigned")
             prop.onClick (fun _ -> dispatch (InvokeTacticalCommand commandId))
         ]
-
     Html.nav [
         prop.className "tactical-modality-controls"
         prop.ariaLabel "Tactical modality"
@@ -5353,7 +5284,6 @@ let private tacticalModalityControls model dispatch =
             item "Docs" "workspace.docs" DocsWorkspace
         ]
     ]
-
 let private tacticalTimeline model dispatch =
     let state = model.Tactical
     let playUnavailableReason =
@@ -5720,6 +5650,7 @@ let private currentModalInputs model =
                 | UnitTools -> UnitDomain
                 | EdgeTools -> EdgeDomain
                 | ZoneTools -> RegionDomain
+                | TacticalEnvironmentTools -> DocumentDomain
                 | DocumentTools -> DocumentDomain
               PanHeld = editorPanHeld model
               InputHelpExpanded = model.InputHelpExpanded }
@@ -5947,36 +5878,7 @@ let private activeSceneProjection (model: Model) =
                   SimulatorFocusedUnit = focusedUnit })
     let withRuntimeTruth (contextual: SharedSceneProjection) =
         simulatorProjection ()
-        |> Option.map (fun runtime ->
-            let runtimeUnits =
-                runtime.Units
-                |> Array.map (fun unit -> unit.Visual.Id, unit)
-                |> Map.ofArray
-            let units =
-                Array.append
-                    (contextual.Units
-                     |> Array.choose (fun authored ->
-                         Map.tryFind authored.Visual.Id runtimeUnits
-                         |> Option.map (fun live ->
-                             { authored with
-                                 PresentationColumn = live.PresentationColumn
-                                 PresentationRow = live.PresentationRow
-                                 Visual = live.Visual })))
-                    (runtime.Units
-                     |> Array.filter (fun live ->
-                         contextual.Units
-                         |> Array.exists (fun authored ->
-                             authored.Visual.Id = live.Visual.Id)
-                         |> not))
-            { contextual with
-                RevisionIdentity = runtime.RevisionIdentity
-                Tick = runtime.Tick
-                Board = runtime.Board
-                Terrain = runtime.Terrain
-                Edges = runtime.Edges
-                Units = units
-                Routes = Array.append contextual.Routes runtime.Routes
-                Annotations = Array.append contextual.Annotations runtime.Annotations })
+        |> Option.map (mergeRuntimeTruth contextual)
         |> Option.defaultValue contextual
     match model.Workspace, TacticalSceneProjection.acceptReview model.Shell with
     | ReplayWorkspace, Some accepted ->
@@ -6083,6 +5985,13 @@ let private persistentSceneSvg
     // projection is temporarily unavailable (for example before Simulate or
     // Review has accepted input).
     let camera = model.EditorView.Camera
+    let unitCount = projection |> Option.map _.Units.Length |> Option.defaultValue 0
+    let visualSystem =
+        TacticalSceneProjection.visualSystem
+            model.Battlefield.PaletteId
+            model.Battlefield.ReducedMotion
+            unitCount
+    let densityToken = tacticalDensityToken visualSystem.Density
     let tacticalOverlays =
         projection
         |> Option.map (TacticalSceneProjection.projectOverlays model.TacticalOverlays model.HeldTacticalOverlays)
@@ -6162,6 +6071,27 @@ let private persistentSceneSvg
         svg.id "persistent-tactical-svg"
         svg.custom ("data-work-surface-root", "persistent-svg")
         svg.custom ("data-render-contract", "shared-scene-projection-v1")
+        svg.custom ("data-visual-system", visualSystem.Identity)
+        svg.custom ("data-visual-density", densityToken)
+        svg.custom ("data-motion", if visualSystem.ReducedMotion then "reduced" else "full")
+        svg.custom ("data-effect-count", projection |> Option.map _.Effects.Length |> Option.defaultValue 0 |> string)
+        svg.custom ("data-effect-limit", string visualSystem.MaximumActiveEffects)
+        svg.custom ("data-visual-unit-count", projection |> Option.map _.VisualCost.UnitCount |> Option.defaultValue 0 |> string)
+        svg.custom ("data-visual-node-estimate", projection |> Option.map _.VisualCost.EstimatedSvgNodes |> Option.defaultValue 0 |> string)
+        svg.custom ("data-layer-order", String.concat ">" visualSystem.LayerOrder)
+        unbox<ISvgAttribute> (prop.style [
+            style.custom ("--sir-canvas", visualSystem.Palette.Canvas)
+            style.custom ("--sir-text", visualSystem.Palette.Text)
+            style.custom ("--sir-grid", visualSystem.Palette.Grid)
+            style.custom ("--sir-focus", visualSystem.Palette.Focus)
+            style.custom ("--sir-intent", visualSystem.Intent)
+            style.custom ("--sir-impact", visualSystem.Impact)
+            style.custom ("--sir-suppression", visualSystem.Suppression)
+            style.custom ("--sir-recovery", visualSystem.Recovery)
+            style.custom ("--sir-rejected", visualSystem.Rejected)
+            style.custom ("--sir-motion-ms", string visualSystem.TransitionMilliseconds + "ms")
+            style.custom ("--sir-effect-ms", string visualSystem.EffectMilliseconds + "ms")
+        ])
         svg.custom ("data-scene-owner", owner)
         svg.custom (
             "data-scene-disclosure",
@@ -6370,29 +6300,6 @@ let private persistentSceneSvg
                 )
                 svg.children [
                     Svg.g [
-                        svg.id "persistent-tactical-overlay-layer"
-                        svg.custom ("data-scene-layer", "tactical-overlays"); svg.custom ("data-overlay-order", "registry")
-                        svg.custom ("data-overlay-contrast", model.Battlefield.PaletteId); svg.custom ("data-overlay-patterns", "non-color-only"); svg.custom ("pointer-events", "none")
-                        svg.children [
-                            for payload in tacticalOverlays.Payloads do
-                                Svg.g [
-                                    svg.key (TacticalOverlayId.value payload.OverlayId + ":" + ScenePrimitiveId.value payload.PrimitiveId)
-                                    svg.custom ("data-overlay-id", TacticalOverlayId.value payload.OverlayId); svg.custom ("data-overlay-kind", payload.Kind)
-                                    svg.custom ("data-overlay-payload-kind", string payload.PayloadKind); svg.custom ("data-overlay-order", string payload.Order)
-                                    svg.custom ("data-overlay-priority", string payload.Priority); svg.custom ("data-overlay-pattern", "directional-hatch")
-                                    svg.children (payloadChildren cellSize payload)
-                                ]
-                            for label in tacticalOverlays.Labels do
-                                if label.Points.Length >= 2 then
-                                    Svg.text [
-                                        svg.key ("overlay-label:" + TacticalOverlayId.value label.OverlayId + ":" + label.SubjectId)
-                                        svg.custom ("data-overlay-label", TacticalOverlayId.value label.OverlayId)
-                                        svg.x (label.Points[0] * cellSize + 8.0); svg.y (label.Points[1] * cellSize - 8.0); svg.fill "currentColor"
-                                        svg.text (sceneDisclosureText label.Label)
-                                    ]
-                        ]
-                    ]
-                    Svg.g [
                         svg.id "persistent-live-authority-layer"
                         svg.custom ("data-live-layer", "live-authority")
                         svg.custom ("data-live-projection", "accepted-server-snapshot")
@@ -6510,12 +6417,12 @@ let private persistentSceneSvg
                                         svg.height cellSize
                                         svg.fill (
                                             match terrain.Kind with
-                                            | "rough" -> "#35443a"
-                                            | "blocked" -> "#202925"
-                                            | "objective" -> "#4b4630"
-                                            | _ -> "#2b3832"
+                                            | "rough" -> visualSystem.TerrainRough
+                                            | "blocked" -> visualSystem.TerrainBlocked
+                                            | "objective" -> visualSystem.TerrainObjective
+                                            | _ -> visualSystem.TerrainOpen
                                         )
-                                        svg.stroke "#52675d"
+                                        svg.stroke visualSystem.Palette.Grid
                                         svg.strokeWidth 1
                                         match command with
                                         | Some commandId when available ->
@@ -6535,7 +6442,7 @@ let private persistentSceneSvg
                                             svg.y1 (float (terrain.Row + 1) * cellSize - 8.0)
                                             svg.x2 (float (terrain.Column + 1) * cellSize - 8.0)
                                             svg.y2 (float terrain.Row * cellSize + 8.0)
-                                            svg.stroke "#9bb0a5"
+                                            svg.stroke visualSystem.Palette.Text
                                             svg.strokeWidth 3
                                             svg.custom ("pointer-events", "none")
                                         ]
@@ -6550,7 +6457,7 @@ let private persistentSceneSvg
                                                 svg.y1 (float terrain.Row * cellSize + 9.0)
                                                 svg.x2 (float terrain.Column * cellSize + last)
                                                 svg.y2 (float (terrain.Row + 1) * cellSize - 9.0)
-                                                svg.stroke "#ff6b6b"
+                                                svg.stroke visualSystem.Rejected
                                                 svg.strokeWidth 3
                                                 svg.custom ("pointer-events", "none")
                                             ]
@@ -6563,7 +6470,7 @@ let private persistentSceneSvg
                                             svg.width (cellSize - 14.0)
                                             svg.height (cellSize - 14.0)
                                             svg.fill "none"
-                                            svg.stroke "#ffd166"
+                                            svg.stroke visualSystem.Palette.NeutralFaction
                                             svg.strokeWidth 3
                                             svg.custom ("pointer-events", "none")
                                         ]
@@ -6593,9 +6500,9 @@ let private persistentSceneSvg
                                         svg.y2 (float edge.EndRow * cellSize)
                                         svg.stroke (
                                             match edge.Kind with
-                                            | "door" -> "#ffd166"
-                                            | "window" -> "#67b7ff"
-                                            | _ -> "#eef7f2"
+                                            | "door" -> visualSystem.EdgeDoor
+                                            | "window" -> visualSystem.EdgeWindow
+                                            | _ -> visualSystem.EdgeWall
                                         )
                                         svg.strokeWidth (if edge.Kind = "wall" then 6 else 5)
                                         svg.custom (
@@ -6712,25 +6619,25 @@ let private persistentSceneSvg
                                                 svg.y (presentationY + 5.0)
                                                 svg.width (width - 10.0)
                                                 svg.height (depth - 10.0)
-                                                svg.rx 6
-                                                svg.fill "#101916"
+                                                svg.rx visualSystem.UnitCornerRadius
+                                                svg.fill visualSystem.UnitBody
                                                 svg.stroke (
-                                                    if selected unit.PrimitiveId then "#ffd166"
+                                                    if selected unit.PrimitiveId then visualSystem.Palette.Focus
                                                     else
                                                         match visual.Faction with
-                                                        | Human -> "#67b7ff"
-                                                        | Arcane -> "#e384ff"
-                                                        | Neutral -> "#c9d7d0"
-                                                        | OtherFaction _ -> "#f2a65a"
+                                                        | Human -> visualSystem.Palette.HumanFaction
+                                                        | Arcane -> visualSystem.Palette.ArcaneFaction
+                                                        | Neutral -> visualSystem.Palette.NeutralFaction
+                                                        | OtherFaction _ -> visualSystem.Palette.NeutralFaction
                                                 )
-                                                svg.strokeWidth (if selected unit.PrimitiveId then 5 else 3)
+                                                svg.strokeWidth (if selected unit.PrimitiveId then visualSystem.SelectedStrokeWidth else visualSystem.UnitStrokeWidth)
                                             ]
                                             Svg.g [
                                                 svg.custom ("data-unit-glyph", UnitClassId.value visual.ClassId)
                                                 svg.custom ("pointer-events", "none")
                                                 svg.children [
                                                     glyphView
-                                                        ReplayPalettes.accessibleDefault
+                                                        visualSystem.Palette
                                                         (presentationX + width / 2.0)
                                                         (presentationY + depth / 2.0)
                                                         (max 1.0 ((min width depth - 16.0) / 24.0))
@@ -6748,7 +6655,7 @@ let private persistentSceneSvg
                                                     svg.y1 centerY
                                                     svg.x2 (centerX + Math.Cos(radians) * 22.0)
                                                     svg.y2 (centerY + Math.Sin(radians) * 22.0)
-                                                    svg.stroke "#eef7f2"
+                                                    svg.stroke visualSystem.Palette.Text
                                                     svg.strokeWidth 4
                                                     svg.custom ("pointer-events", "none")
                                                 ]
@@ -6764,7 +6671,7 @@ let private persistentSceneSvg
                                                     svg.y1 centerY
                                                     svg.x2 (centerX + Math.Cos(radians) * 28.0)
                                                     svg.y2 (centerY + Math.Sin(radians) * 28.0)
-                                                    svg.stroke "#e5b8ff"
+                                                    svg.stroke visualSystem.Intent
                                                     svg.strokeWidth 3
                                                     svg.custom ("stroke-dasharray", "3 2")
                                                     svg.custom ("pointer-events", "none")
@@ -6776,7 +6683,7 @@ let private persistentSceneSvg
                                                     svg.custom ("data-unit-stance-label", stance)
                                                     svg.x (presentationX + 9.0)
                                                     svg.y (presentationY + depth - 9.0)
-                                                    svg.fill "#8ce99a"
+                                                    svg.fill visualSystem.Recovery
                                                     svg.fontSize 10
                                                     svg.text stance
                                                 ]
@@ -6785,7 +6692,7 @@ let private persistentSceneSvg
                                                 svg.x (presentationX + width - 9.0)
                                                 svg.y (presentationY + depth - 9.0)
                                                 svg.custom ("text-anchor", "end")
-                                                svg.fill "#eef7f2"
+                                                svg.fill visualSystem.Palette.Text
                                                 svg.fontSize 13
                                                 svg.text (string visual.Id)
                                             ]
@@ -6794,6 +6701,7 @@ let private persistentSceneSvg
                             | None -> ()
                         ]
                     ]
+                    tacticalEffectLayer cellSize visualSystem projection
                     Svg.g [
                         svg.id "persistent-layer-selection"
                         svg.custom ("data-scene-layer", "selection")
@@ -6819,6 +6727,29 @@ let private persistentSceneSvg
                                             svg.custom ("stroke-dasharray", "6 3")
                                         ]
                             | None -> ()
+                        ]
+                    ]
+                    Svg.g [
+                        svg.id "persistent-tactical-overlay-layer"
+                        svg.custom ("data-scene-layer", "tactical-overlays"); svg.custom ("data-overlay-order", "registry")
+                        svg.custom ("data-overlay-contrast", model.Battlefield.PaletteId); svg.custom ("data-overlay-patterns", "non-color-only"); svg.custom ("pointer-events", "none")
+                        svg.children [
+                            for payload in tacticalOverlays.Payloads do
+                                Svg.g [
+                                    svg.key (TacticalOverlayId.value payload.OverlayId + ":" + ScenePrimitiveId.value payload.PrimitiveId)
+                                    svg.custom ("data-overlay-id", TacticalOverlayId.value payload.OverlayId); svg.custom ("data-overlay-kind", payload.Kind)
+                                    svg.custom ("data-overlay-payload-kind", string payload.PayloadKind); svg.custom ("data-overlay-order", string payload.Order)
+                                    svg.custom ("data-overlay-priority", string payload.Priority); svg.custom ("data-overlay-pattern", "directional-hatch")
+                                    svg.children (payloadChildren cellSize payload)
+                                ]
+                            for label in tacticalOverlays.Labels do
+                                if label.Points.Length >= 2 then
+                                    Svg.text [
+                                        svg.key ("overlay-label:" + TacticalOverlayId.value label.OverlayId + ":" + label.SubjectId)
+                                        svg.custom ("data-overlay-label", TacticalOverlayId.value label.OverlayId)
+                                        svg.x (label.Points[0] * cellSize + 8.0); svg.y (label.Points[1] * cellSize - 8.0); svg.fill "currentColor"
+                                        svg.text (sceneDisclosureText label.Label)
+                                    ]
                         ]
                     ]
                     Svg.g [
@@ -7125,22 +7056,12 @@ let private tacticalWorkscreenRegion model dispatch =
                 prop.ariaHidden (model.Workspace = DocsWorkspace)
                 prop.custom ("data-retained-while-docs", "true")
                 prop.children [
-                    DocsView.contextLinks model.TacticalSelectedUnit.IsSome (ContextualDocumentationOpened >> dispatch)
+                    ClientFeatureRuntime.documentationContextLinks model.TacticalSelectedUnit.IsSome (ContextualDocumentationOpened >> dispatch)
                     persistentSceneSvg model projection presentationAlpha dispatch
                 ]
             ]
             if model.Workspace = DocsWorkspace then
-                DocsView.view
-                    model.DocumentationNavigation
-                    model.Documentation
-                    model.DocumentationError
-                    model.DocumentationExternalAnnouncement
-                    (DocumentationQueryChanged >> dispatch)
-                    (fun slug anchor -> dispatch (DocumentationPageOpened(slug, anchor)))
-                    (fun () -> dispatch DocumentationBack)
-                    (fun () -> dispatch DocumentationForward)
-                    (fun () -> dispatch (WorkspaceChanged model.LastTacticalWorkspace))
-                    (DocumentationExternalResult >> dispatch)
+                ClientFeatureRuntime.documentationWorkspace model dispatch
         ]
     ]
 
@@ -7289,6 +7210,7 @@ let private tacticalLayoutToolbar model dispatch =
                     ]
                 ]
             ]
+            ClientFeatureRuntime.toolbar model dispatch
             if model.DesktopToolbarCustomizationOpen then
                 Html.section [
                     prop.id "desktop-toolbar-customization"
@@ -7662,14 +7584,7 @@ let private simulatorPanelBody
             ]
         ]
     | "samples" ->
-        Html.div [
-            prop.ariaLabel "Simulator samples"
-            prop.children [
-                for sample in ExperienceSamples.maps do
-                    button sample.Title ("Load simulation sample: " + sample.Summary) false (fun _ ->
-                        dispatch (LoadSimulationSample sample.Id))
-            ]
-        ]
+        Html.p "Curated samples load through the registered Samples feature."
     | _ ->
         Html.p [
             prop.className "tactical-layout-panel-placeholder"
@@ -7681,20 +7596,14 @@ let private tacticalPanelBody panelId model dispatch =
         Html.div [
             prop.ariaLabel "Rules supporting panel"
             prop.children [
-                scenarioCatalog model.Shell dispatch
-                laboratoryResults model.Shell dispatch
-                comparisonPanel model dispatch
-                sandbox model.Shell dispatch
+                ClientFeatureRuntime.rulesWorkbenchPanel model (evidenceFor model) dispatch
                 inspector model.Shell dispatch
             ]
         ]
     elif panelId = "data" then
-        React.Suspense(
-            [ LazyDeferredDataPanel model.Simulator model.SimulatorSelectedUnit model.Live.Bootstrap ],
-            fallback = Html.p "Loading authoritative data…"
-        )
-    elif panelId = "samples" && model.Workspace <> SimulatorWorkspace then
-        sampleCatalogView dispatch
+        ClientFeatureRuntime.rulesExplorer model dispatch
+    elif panelId = "samples" then
+        ClientFeatureRuntime.samplesPanel model dispatch
     elif model.Workspace = PlanningWorkspace then
         match model.Planning with
         | Some planning when
@@ -7710,24 +7619,13 @@ let private tacticalPanelBody panelId model dispatch =
                 prop.text "No Plan capability is assigned to this panel."
             ]
         | None -> Html.p "Planner unavailable for the current map revision."
-    elif model.Workspace = SimulatorWorkspace && panelId = "samples" then
-        Html.div [
-            prop.ariaLabel "Simulator samples"
-            prop.children [
-                for sample in ExperienceSamples.maps do
-                    button sample.Title ("Load simulation sample: " + sample.Summary) false (fun _ ->
-                        dispatch (LoadSimulationSample sample.Id))
-            ]
-        ]
     elif model.Workspace = SimulatorWorkspace then
         match model.Simulator with
         | Some simulator ->
-            simulatorPanelBody
-                model.Editor
-                simulator
-                model.SimulatorSelectedUnit
-                panelId
-                dispatch
+            Html.div [
+                if panelId = "tools" then ClientFeatureRuntime.tacticalEnvironmentPanel model.ClientFeatures model.Editor model.TacticalParcelEditor model.TacticalParcelImportText (Some simulator) dispatch
+                simulatorPanelBody model.Editor simulator model.SimulatorSelectedUnit panelId dispatch
+            ]
         | None ->
             Html.p "Correct the current map so a valid simulation can be maintained."
     elif model.Workspace = EditorWorkspace then
@@ -7740,6 +7638,9 @@ let private tacticalPanelBody panelId model dispatch =
                 | panel -> panel
             editorToolbar
                 model.Editor
+                model.TacticalParcelEditor
+                model.TacticalParcelImportText
+                model.ClientFeatures
                 model.EditorView
                 activePanel
                 true
@@ -7751,6 +7652,9 @@ let private tacticalPanelBody panelId model dispatch =
         | "document" ->
             editorToolbar
                 model.Editor
+                model.TacticalParcelEditor
+                model.TacticalParcelImportText
+                model.ClientFeatures
                 model.EditorView
                 DocumentTools
                 true
@@ -8051,13 +7955,6 @@ let private modalInputStrip
         ]
     ]
 
-let private editorDomain = function
-    | TerrainTools -> TerrainDomain
-    | UnitTools -> UnitDomain
-    | EdgeTools -> EdgeDomain
-    | ZoneTools -> RegionDomain
-    | DocumentTools -> DocumentDomain
-
 let view model dispatch =
     let shell = model.Shell
     let transientContent =
@@ -8073,7 +7970,14 @@ let view model dispatch =
         | EditorWorkspace ->
             let facts =
                 { Editor = model.Editor
-                  ActiveDomain = editorDomain model.EditorToolPanel
+                  ActiveDomain =
+                    match model.EditorToolPanel with
+                    | TerrainTools -> TerrainDomain
+                    | UnitTools -> UnitDomain
+                    | EdgeTools -> EdgeDomain
+                    | ZoneTools -> RegionDomain
+                    | TacticalEnvironmentTools
+                    | DocumentTools -> DocumentDomain
                   PanHeld = editorPanHeld model
                   InputHelpExpanded = model.InputHelpExpanded }
             let catalog = ModalInput.editorCatalog facts
@@ -8154,10 +8058,15 @@ let view model dispatch =
         | SimulatorWorkspace
         | ReplayWorkspace
         | DocsWorkspace -> Html.none
-
     Html.main [
         prop.className "app-shell"
         prop.ariaLabel "S.I.R. simulator and editor"
+        prop.custom ("data-feature-registry-version", string FeatureLoader.registryVersion)
+        prop.custom ("data-feature-shell", "loaded")
+        prop.custom (
+            "data-feature-loader-diagnostic",
+            model.FeatureLoaderDiagnostic |> Option.defaultValue ""
+        )
         prop.onClick (fun event ->
             dismissDesktopMenus event.target)
         prop.children [
@@ -8191,7 +8100,6 @@ let view model dispatch =
             ]
         ]
     ]
-
 if not (isNull (document.getElementById "sir-replay-app")) then
     Program.mkProgram init update view
     |> Program.withSubscription subscriptions

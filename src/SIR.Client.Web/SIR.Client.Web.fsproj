@@ -12,9 +12,14 @@
     <Compile Include="LiveSession.fs" />
     <Compile Include="Worker.fs" />
     <Compile Include="Runner.fs" />
+    <Compile Include="FeatureLoader.fsi" />
+    <Compile Include="FeatureLoader.fs" />
     <Compile Include="BrowserInfrastructure.fs" />
-    <Compile Include="DocsView.fs" />
+    <Compile Include="DocumentationFeatureContract.fs" />
     <Compile Include="AppTypes.fs" />
+    <Compile Include="EnvironmentFeatureContract.fs" />
+    <Compile Include="RulesWorkbenchView.fs" />
+    <Compile Include="ClientFeatureRuntime.fs" />
     <Compile Include="AppShell.fs" />
     <Compile Include="WorkspaceTransitions.fs" />
     <Compile Include="CommandRegistry.fs" />
@@ -22,10 +27,14 @@
     <Compile Include="SceneAdapters.fs" />
     <Compile Include="PanelViews.fs" />
     <Compile Include="TacticalOverlayView.fs" />
+    <Compile Include="TacticalEnvironmentView.fs" />
+    <Compile Include="DocsView.fs" />
     <Compile Include="App.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../SIR.Client/SIR.Client.fsproj" />
+    <ProjectReference Include="../SIR.Domain/SIR.Domain.fsproj" />
+    <ProjectReference Include="../SIR.Replay.Core/SIR.Replay.Core.fsproj" />
     <ProjectReference Include="../SIR.Simulation/SIR.Simulation.fsproj" />
     <PackageReference Include="Fable.Browser.Dom" />
     <PackageReference Include="Fable.Core" />

@@ -373,6 +373,7 @@ module Lab =
                 { Id = int32 index
                   Tick = int32 (index + 1)
                   Kind = "derived-attack"
+                  Lifecycle = CommittedEvent
                   SourceUnitId = Disclosed 10
                   TargetUnitId = Disclosed 20
                   Summary = NotPresent })

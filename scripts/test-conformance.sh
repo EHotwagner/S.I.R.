@@ -4,7 +4,9 @@ set -euo pipefail
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 task_tmp=$(mktemp -d)
 trap 'rm -rf -- "$task_tmp"' EXIT
-export NUGET_PACKAGES="$task_tmp/nuget-packages"
+if [[ -z "${NUGET_PACKAGES:-}" ]]; then
+  export NUGET_PACKAGES="$task_tmp/nuget-packages"
+fi
 
 cd "$repo_root"
 
@@ -283,19 +285,34 @@ env \
   -u NPM_CONFIG_ALLOW_SCRIPTS \
   npm ci --ignore-scripts
 ./scripts/build-client.sh
+if [[ -n "${SIR_BUILD_RECEIPT_POINTER:-}" ]]; then
+  node scripts/production-build-receipt.mjs create \
+    --owner-command scripts/qualify-production.sh \
+    --pointer "$SIR_BUILD_RECEIPT_POINTER"
+  build_receipt=$(<"$SIR_BUILD_RECEIPT_POINTER")
+  node scripts/production-build-receipt.mjs verify \
+    --owner-command scripts/qualify-production.sh \
+    --receipt "$build_receipt"
+fi
 node scripts/smoke-client.mjs
 npm run test:production-delivery-budget
 npm run setup:browser
 dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish --no-restore
 npm run test:browser-diagnostics-gate
 npm run test:production-delivery-evidence
+node scripts/test-client-feature-loader.mjs \
+  --aggregate-trx work/214-client-feature-loader/test-results/client-feature-loader.trx \
+  --browser-junit artifacts/test-results/browser.junit.xml
 node scripts/test-map-editor-qualification.mjs
+./scripts/test-map-editor-keyboard-subject-mutation.sh
 node scripts/test-planning-workspace-m5-qualification.mjs
 node scripts/test-simulator-workspace-m6-qualification.mjs
 node scripts/test-worker-roundtrip-race.mjs
 node scripts/test-review-workspace-m7-qualification.mjs
 node scripts/test-timeline-supporting-panels-m8-qualification.mjs
 node scripts/test-persistent-workspace-m9-acceptance.mjs
+node scripts/test-tactical-visual-review.mjs
+bash scripts/test-tactical-visual-review-mutations.sh
 worker_measurement=$(node scripts/measure-worker.mjs)
 
 printf 'Conformance passed: %d bytes agree across .NET and Fable/Node.\n' \

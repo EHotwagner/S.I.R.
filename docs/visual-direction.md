@@ -5,8 +5,8 @@ categoryindex: 3
 index: 13
 status: proposed
 document-type: living-vision
-version: 0.10
-last-updated: 2026-07-27
+version: 0.11
+last-updated: 2026-08-16
 related:
   - docs/game-vision.md
 reference-assets:
@@ -83,6 +83,67 @@ The current concept combines:
 
 This contrast allows the battlefield to feel like a place while the active
 tactical state remains legible.
+
+## Production tactical visual system
+
+The shared workscreen implements `tactical-visual-system-v1`. Its renderer-level
+registry is the source for terrain, edge, unit, intent, effect, stroke, radius,
+motion, density, and layer tokens; component-local color choices are not a
+second vocabulary. The default production palette uses canvas `#10161d`, text
+`#f7f9fa`, grid `#71808b`, human `#53b7ff`, arcane `#d792ff`, neutral
+`#ffd166`, active health/impact `#ff6b6b`, and focus `#ffffff`. High-contrast
+and monochrome-pattern routes retain the same semantic roles with their own
+tokens, shapes, and patterns.
+
+Materials are deliberately flat and inspectable in the SVG: open, rough,
+blocked, and objective terrain use distinct restrained fills; walls, doors, and
+windows use semantic edge strokes; unit bodies keep the box-piece silhouette
+with a strong faction frame, top glyph, health segments, facing mark, and stance
+label. Lighting is expressed by local contrast and ordered faces rather than
+glow or translucency accumulation. Typography stays system-sans for prose and
+compact labels, with weight and outline carrying hierarchy over size alone.
+
+The exact production layer order is:
+
+`terrain → edges → routes → units → effects → selection → tactical overlays → annotations`
+
+Effects therefore explain causality around a piece without covering its
+selection, exact analytical geometry, or final annotation. Every effect has a
+stable primitive/event/tick identity and is derived only from disclosed facts.
+Its source or target endpoint is omitted when that unit is not in the disclosed
+projection. Preview, accepted, rejected, committed, and historical states use
+named kinds and structure as well as color; the renderer never invents an
+event, endpoint, count, or outcome.
+
+### Motion and effect grammar
+
+| Category | Production treatment | Full motion | Reduced motion |
+|---|---|---:|---:|
+| Unit movement/facing | projection-only transform/opacity transition | 160 ms | 1 ms |
+| Attack or signal | non-scaling trace between disclosed endpoints | 420 ms emphasis | 120 ms opacity emphasis |
+| Impact/suppression/recovery | bounded ring/mark at disclosed consequence | one scale-and-fade | no spatial scale |
+| Selection/focus | persistent high-contrast outline | state transition only | immediate outline |
+| Replay seek/step | reconstruct effects from the target committed frame | reversible | identical causal mark |
+
+Effects are one-shot, pointer-inert SVG primitives capped at 256 active
+instances. Stress density strengthens traces instead of adding particles.
+Animation never changes the committed coordinate stored in the projection and
+never delays the exact current state.
+
+### Semantic zoom and density
+
+Ordinary (up to 40 units), dense (41–100), and stress (over 100) scenes use the
+same grammar. Density removes decoration before tactical truth: footprint,
+faction, glyph/role, facing, selection, health, immediate intent, and decisive
+effects remain; supporting labels yield to semantic zoom and focused
+inspection. The existing 24/48-pixel semantic thresholds and ten-percent
+hysteresis remain authoritative for overview/standard/detailed transitions.
+At narrow widths and 400% browser zoom the retained workscreen and native
+controls reflow without changing disclosure or layer ownership.
+
+Deterministic ordinary/dense/stress prototypes and an exact production-bundle
+before/after capture are recorded in
+[the tactical visual review](assets/tactical-visual-system-review/README.md).
 
 ## Unit-as-interface principle
 

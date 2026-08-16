@@ -50,7 +50,10 @@ type CoverState =
     { CoverId: string
       Cell: Cell
       Integrity: int32
-      ProjectileBlocking: bool }
+      ProjectileBlocking: bool
+      Material: string
+      PenetrationResistance: int32
+      ProtectedDirections: Direction8 list }
 
 type CombatWorld =
     { Spatial: ProjectedSpatialWorld
@@ -109,6 +112,7 @@ module Combat =
     val compatibilityProfile: string
     val defaultLimits: CombatLimits
     val parameters: WeaponProfile -> WeaponParameters
+    val environmentCovers: AssembledEnvironment -> Map<string, CoverState>
     val suppressionEffectivenessPercent: suppression: int32 -> int32
     val suppressionTimingPercent: suppression: int32 -> int32
     val resolve: CombatWorld -> CombatRequest -> Result<CombatResult, CombatRejection>

@@ -1,0 +1,1507 @@
+{
+  "schema": "sir.production-build-receipt/v1",
+  "result": "pass",
+  "ownerCommand": "scripts/test-conformance.sh",
+  "source": {
+    "commit": "5f2f54ed3e0bb06f3b151247c97e994f365aee7f",
+    "tree": "ae98bc1d903f0b0008d306dd759767f82b430a8c",
+    "clean": {
+      "buildInputChanges": 0,
+      "excludedGeneratedChanges": []
+    }
+  },
+  "inputs": {
+    "files": [
+      {
+        "path": ".config/dotnet-tools.json",
+        "bytes": 806,
+        "sha256": "49dcc8263caf57249a5c4b9f1c23ac1168ee459b1ccdfdc73d4b961c4b05b135"
+      },
+      {
+        "path": "Directory.Build.props",
+        "bytes": 1966,
+        "sha256": "f4458dd6ea099d326105a6715482bb51af5461ff8638eb7493bb031738a70f2c"
+      },
+      {
+        "path": "Directory.Packages.props",
+        "bytes": 1450,
+        "sha256": "7eb60608c4b67f856ec823f22cba8309c2b0880f8f442c6a21fa50914179eb3f"
+      },
+      {
+        "path": "SIR.slnx",
+        "bytes": 1385,
+        "sha256": "95f9ab29091677dfea2e48191716356651b321906f6cabf8d410bf914bba09d3"
+      },
+      {
+        "path": "global.json",
+        "bytes": 105,
+        "sha256": "0588e32d44bdf884e0305ded21820b13a59b1518efd39976c34d909eff3b1044"
+      },
+      {
+        "path": "package-lock.json",
+        "bytes": 48782,
+        "sha256": "3bec3c4dc97e076324b85ff5f79c1f8953632e8f6d0dc6adc5cb64bd6d490206"
+      },
+      {
+        "path": "package.json",
+        "bytes": 2874,
+        "sha256": "65eaf60752a2316f4acdc7d323de728cfe45e0aae4d016dd423943fec5cdfe5c"
+      },
+      {
+        "path": "scripts/build-client.sh",
+        "bytes": 1983,
+        "sha256": "22aac2007fdb55ab0b45479780ee24dc2c81555aa2dc73dbe5b799c604569a43"
+      },
+      {
+        "path": "scripts/build-docs.sh",
+        "bytes": 2943,
+        "sha256": "5a8c2913ffe5332ae6ce58bda51d6ce459823a0fce4d7eca3a7d70e6dfd3f17a"
+      },
+      {
+        "path": "scripts/decode-control-abi-v1.mjs",
+        "bytes": 3384,
+        "sha256": "1cb85997d9b08c9b31d320fb63ab499516048b4ec9abc5897a83957e45f45c8c"
+      },
+      {
+        "path": "scripts/fsgg-coord",
+        "bytes": 25050,
+        "sha256": "afbc5bab5e9fdcd5caa71ef664be7759bdc09124d00f0ab017cff6b46c3425a0"
+      },
+      {
+        "path": "scripts/generate-battlefield-review.mjs",
+        "bytes": 6360,
+        "sha256": "0b622fa3316e9484d9fd708eab32abdac22069f691ca5d7bdac78bf55f23f1ee"
+      },
+      {
+        "path": "scripts/generate-control-abi.mjs",
+        "bytes": 3041,
+        "sha256": "380ae1f260780916e7f93a18214b9f88688f9bd409ec771eef7b5dab715ef882"
+      },
+      {
+        "path": "scripts/generate-docs-manifest.mjs",
+        "bytes": 1304,
+        "sha256": "477d4ae226de7ba5cb7bcf6becd9a5dcf74993cc5dca51297c65156953b1d0a4"
+      },
+      {
+        "path": "scripts/generate-item-180-evidence.sh",
+        "bytes": 7929,
+        "sha256": "c876451324ababb44e7130c1c6dc2a8b9c92a6e17deb5a87d2888a7b3f757bcc"
+      },
+      {
+        "path": "scripts/generate-item-181-evidence.sh",
+        "bytes": 2935,
+        "sha256": "79e58d4079d647866b8b263f832288c9b49b220d17e7437e2a9c7e438bcff4f9"
+      },
+      {
+        "path": "scripts/generate-item-182-evidence.sh",
+        "bytes": 2553,
+        "sha256": "a1bcff8a4a4132dcdbb42d9e16dcbb62cf093591c6247613adf5fef054db2ae8"
+      },
+      {
+        "path": "scripts/generate-item-183-evidence.sh",
+        "bytes": 1978,
+        "sha256": "b166bc07fe684c73b0129b2724e54e542eb94cabcf7b7b22016dc9cf5205c3cb"
+      },
+      {
+        "path": "scripts/generate-item-194-evidence.sh",
+        "bytes": 5114,
+        "sha256": "78dcdd7c72f04d95c09463ee50d4b167eaad798120a16ccdca317af0e0a71e8a"
+      },
+      {
+        "path": "scripts/generate-map-editor-review.mjs",
+        "bytes": 10157,
+        "sha256": "ae2d8941f5fbfdf4fdc4dc3f40b477eaa4f97c8eafe0f1daec990af9913dc745"
+      },
+      {
+        "path": "scripts/generate-persistent-workspace-m9-review.mjs",
+        "bytes": 3727,
+        "sha256": "a4545470a5e5d22307209b6f7c312380e06115f1623812ab9a9b13307be38c86"
+      },
+      {
+        "path": "scripts/generate-publication-manifest.mjs",
+        "bytes": 2573,
+        "sha256": "8096f56bc73621ac5ed851c37f13f64d063511af7499208eaffcc04e0870e7c8"
+      },
+      {
+        "path": "scripts/generate-rules-corpus.sh",
+        "bytes": 1654,
+        "sha256": "d1d7547df44c31fbb1088c80e3e1df08014fb8e933a241f0d3a7cbbd923a6f67"
+      },
+      {
+        "path": "scripts/import-map-editor-design.mjs",
+        "bytes": 2076,
+        "sha256": "7baf3a40b2d1521a64233cd8234a18f9be5195dcbf4f50ee18037cc4674989ca"
+      },
+      {
+        "path": "scripts/lib/persistent-workspace-browser-audit.mjs",
+        "bytes": 26277,
+        "sha256": "ddc51f3494a78a00be4fa8ff0f1a9977773056d1e4b2b243a13a0386175e96b6"
+      },
+      {
+        "path": "scripts/measure-worker.mjs",
+        "bytes": 2126,
+        "sha256": "686c942d79ac020497da73963761d01ef8ce74b48df7ddd451dc09dfbb36cf6a"
+      },
+      {
+        "path": "scripts/production-build-receipt.mjs",
+        "bytes": 11669,
+        "sha256": "e3a82bfb1e2a3c5bc5ff53e38464292c701090afc4513262e109d02e8b24ff6a"
+      },
+      {
+        "path": "scripts/prune-docs-navigation.mjs",
+        "bytes": 1287,
+        "sha256": "b39c55df054e0e0f0737be5be3e3000a2db71c969f481709d1dc9d28907ffa60"
+      },
+      {
+        "path": "scripts/qualify-production.sh",
+        "bytes": 3846,
+        "sha256": "3cc1ed313af50b5972f4ef3b956749785d41481b351e92a7c8a070726f4ee131"
+      },
+      {
+        "path": "scripts/smoke-client.mjs",
+        "bytes": 69190,
+        "sha256": "2d1eace1c3221df21d34e1002413c8235251bf1dd2b364cf1d91e6f8a4d1c5a3"
+      },
+      {
+        "path": "scripts/smoke-docs.mjs",
+        "bytes": 8970,
+        "sha256": "0b6db3cfec060096da8c94bacb2bf320c470eed025dc79995be2a34e6de029be"
+      },
+      {
+        "path": "scripts/smoke-worker-roundtrip.mjs",
+        "bytes": 22613,
+        "sha256": "126e2401db1be3a08cd7eb5318dec3d746d69cd5b3b24736215efee1eef13e9d"
+      },
+      {
+        "path": "scripts/test-browser-diagnostics-gate.mjs",
+        "bytes": 1325,
+        "sha256": "c33ee06b6d28741d8b717988378ba0476d443749c05e749f0145d598eb85a2b6"
+      },
+      {
+        "path": "scripts/test-browser-import-preflight-wiring.mjs",
+        "bytes": 919,
+        "sha256": "ae6c6f180e453b20ba964f45588ad7d9b2b0fd1cceeea62b88ebd0b0fd61e709"
+      },
+      {
+        "path": "scripts/test-browser-wasm-verification.sh",
+        "bytes": 793,
+        "sha256": "497cc03d30901d7e0f930eeaecec26ebc40c383f0fc6276fda33b3112f9458c6"
+      },
+      {
+        "path": "scripts/test-client-feature-loader.mjs",
+        "bytes": 15574,
+        "sha256": "1f77fc2806c5641347fac345cbc32d9dd182350a1539238655fc101609a65ad3"
+      },
+      {
+        "path": "scripts/test-conformance.sh",
+        "bytes": 12266,
+        "sha256": "ca55cdecc2f7d7f21809ddfe0c8649ae268fe6eb1d93d47378d18e00088735b0"
+      },
+      {
+        "path": "scripts/test-docs-accessibility.mjs",
+        "bytes": 4773,
+        "sha256": "c880c0d26765407092b5f90e3ccf983ff61282574f07c9d294c4042a4b2ea2f4"
+      },
+      {
+        "path": "scripts/test-docs-experience.mjs",
+        "bytes": 2739,
+        "sha256": "d9ca7502525a9941e8ebfab7683f49d0c9107e0317fa1997675511cbc31711b9"
+      },
+      {
+        "path": "scripts/test-map-editor-design-transfer.mjs",
+        "bytes": 1677,
+        "sha256": "1981c5aa713f506abb9a0b5ce758aaf32be23288a8fc21f48baf1bb65d4a2f5b"
+      },
+      {
+        "path": "scripts/test-map-editor-qualification.mjs",
+        "bytes": 38141,
+        "sha256": "08eee3a2f8583ad146936de7ec83945d1bc5fcead0dc8797b97b1adfd64b58fb"
+      },
+      {
+        "path": "scripts/test-persistent-workspace-browser-audit-portability.mjs",
+        "bytes": 5877,
+        "sha256": "42912d7ba4bd9d47dd7eba08210228d6ebbb19894eeb04e2d482ca7701587b62"
+      },
+      {
+        "path": "scripts/test-persistent-workspace-m0-baseline.mjs",
+        "bytes": 8961,
+        "sha256": "0f0632e9d08d05cfe7b4c66cd11765d0c27030b857aed5f36abf00996aaf9370"
+      },
+      {
+        "path": "scripts/test-persistent-workspace-m9-acceptance.mjs",
+        "bytes": 12408,
+        "sha256": "e9e0693401cd7dbc130f516775785c41f9e1d01f15809e39d34cef217865f15f"
+      },
+      {
+        "path": "scripts/test-physical-combat-subject-mutations.sh",
+        "bytes": 2782,
+        "sha256": "c1eeb164b9749ef2c5503c1d6bb9927d9551dbb7d28c898d09c16c16547887ad"
+      },
+      {
+        "path": "scripts/test-planning-workspace-m5-qualification.mjs",
+        "bytes": 2869,
+        "sha256": "7083c4b04e3a268e4c69e89a8f19e69c6dcc2d8f48c0a125dbda143ded219b93"
+      },
+      {
+        "path": "scripts/test-production-build-receipt.mjs",
+        "bytes": 4114,
+        "sha256": "c57e447ebdb99f092d1a8d716a49e2d25b1c5d8d511f1af04e961c830709db9c"
+      },
+      {
+        "path": "scripts/test-production-delivery-budget.mjs",
+        "bytes": 3653,
+        "sha256": "bd99b2ebb66a3b765fdc8036cb568a9b8a598d3fb4bc53666e5273f1016cde5a"
+      },
+      {
+        "path": "scripts/test-production-delivery-evidence.mjs",
+        "bytes": 2039,
+        "sha256": "80fba2d2c1dbd984f517221bf620afcbafd75ad6446b564c5324a2eb93134917"
+      },
+      {
+        "path": "scripts/test-production-replay-v3.mjs",
+        "bytes": 2055,
+        "sha256": "2186f3b9ed7d076348bde223c3407c63a96e3a993a37f77449278da7ebf48d6d"
+      },
+      {
+        "path": "scripts/test-review-workspace-m7-qualification.mjs",
+        "bytes": 6291,
+        "sha256": "356432c79496403713226ff80080a6d250db458bd67f745e589681200ec7b9b6"
+      },
+      {
+        "path": "scripts/test-simulator-workspace-m6-qualification.mjs",
+        "bytes": 5253,
+        "sha256": "bbe0e745dc87080f66bd9bbdc11320d4636262f2a11d5c383cedcb1737751f78"
+      },
+      {
+        "path": "scripts/test-spatial-diagnostic-subject-mutation.sh",
+        "bytes": 2677,
+        "sha256": "6f5bf97cdf6a49f043eb155505e20f96675e069a7e3f7795a9da0bc757fdcb33"
+      },
+      {
+        "path": "scripts/test-spatial-subject-mutations.sh",
+        "bytes": 3141,
+        "sha256": "57e88b72da90fea39ef18b120721a3922aec905bf992ca683a22255a9a837d7c"
+      },
+      {
+        "path": "scripts/test-timeline-supporting-panels-m8-qualification.mjs",
+        "bytes": 5717,
+        "sha256": "587b421fc747203fa60912acca3a3c0245098960f8e56201f7089d027e4f612e"
+      },
+      {
+        "path": "scripts/test-worker-cancellation-subject-mutation.sh",
+        "bytes": 1417,
+        "sha256": "c33770058b781a101ee504af6b43b44c62fec120ac5d08798f85f437e9b25e1a"
+      },
+      {
+        "path": "scripts/test-worker-roundtrip-race.mjs",
+        "bytes": 646,
+        "sha256": "951a463cad7d143c41af44b43b4e185b61e73ac3516575576eaa0926f2fae3ac"
+      },
+      {
+        "path": "scripts/validate-governance-yaml.fsx",
+        "bytes": 3629,
+        "sha256": "0ad33690e5f04b4b9cf5b3b68e82311663b2915683c7e28adb5f232f1fc35ddf"
+      },
+      {
+        "path": "scripts/validate-rules-coverage.sh",
+        "bytes": 517,
+        "sha256": "d261dcffa1eb14bfd76f4ac83131ab342ae66161a2291f271e403e70fe0d15ac"
+      },
+      {
+        "path": "scripts/verify-awareness-reaction.sh",
+        "bytes": 9208,
+        "sha256": "30fbd75c5c04f2137097380b1dda80ee3b85bb46373ba38dd494b3cd9aec2342"
+      },
+      {
+        "path": "scripts/verify-docs.mjs",
+        "bytes": 11419,
+        "sha256": "004a6cd379fb1c3956c038f7a0b7ccafa147b3bf06702c4398bd46ee895ff0ba"
+      },
+      {
+        "path": "scripts/verify-fable-client-baseline.mjs",
+        "bytes": 6695,
+        "sha256": "f4315d2f566d7a2d3d1763f54aa4856730dd50455fd922d05e1b08809e84141b"
+      },
+      {
+        "path": "scripts/verify-fable-game-governance.sh",
+        "bytes": 2911,
+        "sha256": "501da139aaafb16f606af2c24258822cfd7dd33b62e4499531609411c304a80f"
+      },
+      {
+        "path": "scripts/verify-physical-combat-performance.sh",
+        "bytes": 1961,
+        "sha256": "0efdfc738f8a189961eca64ea5cfe147ba88d52d1a02ce0ca92cc44f3a430f65"
+      },
+      {
+        "path": "scripts/verify-physical-combat.sh",
+        "bytes": 2278,
+        "sha256": "baa7a2d3833c47894b48f354e87c2d7077e1067f11bb4e1fb7db9faaf4992142"
+      },
+      {
+        "path": "scripts/verify-project-architecture.mjs",
+        "bytes": 5266,
+        "sha256": "6967fbfc80d7da388a3a1baca407f43cdfe59573a769912d96642965f331ddf4"
+      },
+      {
+        "path": "scripts/verify-rules-corpus.sh",
+        "bytes": 9023,
+        "sha256": "1577eee105c59c6bde88efe640de8c949420efde9fdcb75e988b68befc87be4c"
+      },
+      {
+        "path": "scripts/verify-scaffold-provenance.mjs",
+        "bytes": 4795,
+        "sha256": "112be65ffbb46179af871f8c567b3042aa6347e5bbd929f56a683b4a70890cd8"
+      },
+      {
+        "path": "scripts/verify-spatial-query.sh",
+        "bytes": 4001,
+        "sha256": "79db25ce7b11778d98a36b3cbff3c4776c212bfba316dc108c68d6ae2a92a271"
+      },
+      {
+        "path": "src/SIR.Client.Web/App.fs",
+        "bytes": 411170,
+        "sha256": "ec360df6e2c8f3c69d0061a4ca40428d222edfeee7c2d7b9013d2af029168b51"
+      },
+      {
+        "path": "src/SIR.Client.Web/AppShell.fs",
+        "bytes": 1395,
+        "sha256": "21994817244e5493c048e7616dedc4813bad65b0cb4d4a6aa0f9d0e66a3420e4"
+      },
+      {
+        "path": "src/SIR.Client.Web/AppTypes.fs",
+        "bytes": 6266,
+        "sha256": "f511ed147ed18efc485ad0034e6fc627c94b1a45ffbfbce0198a85e601a998fc"
+      },
+      {
+        "path": "src/SIR.Client.Web/BrowserInfrastructure.fs",
+        "bytes": 6133,
+        "sha256": "83878981d0400dad851a6572fdb59a2b44bb08bde57988a34e0b4e29690260d3"
+      },
+      {
+        "path": "src/SIR.Client.Web/ClientFeatureRuntime.fs",
+        "bytes": 6276,
+        "sha256": "cea88a09e3b274b844d51bc827cd13c2c5fd68536212cdeaf708c26713ad6d30"
+      },
+      {
+        "path": "src/SIR.Client.Web/CommandRegistry.fs",
+        "bytes": 11601,
+        "sha256": "93d6757033be29ea74620c56ba82e384b1e15bade729fa14783cf851d83e8c22"
+      },
+      {
+        "path": "src/SIR.Client.Web/FeatureLoader.fs",
+        "bytes": 3197,
+        "sha256": "d6a0751b0734b60ecccc153e0b9020d665c715e033e66e5c65b0f4ef90a39e49"
+      },
+      {
+        "path": "src/SIR.Client.Web/FeatureLoader.fsi",
+        "bytes": 1377,
+        "sha256": "b1fcf9d380edeedd5634b4c7b47f2980e5da0e20efca50d87fb34bc887747c76"
+      },
+      {
+        "path": "src/SIR.Client.Web/LiveApi.fs",
+        "bytes": 1136,
+        "sha256": "1e6ef71f8fecfa107c04adfcc7018e05272144493e200fdf3117e0a5da686d98"
+      },
+      {
+        "path": "src/SIR.Client.Web/LiveSession.fs",
+        "bytes": 4010,
+        "sha256": "0a1ff009fe8e2aca1aac468e7e894a491dbc551cabbeadd03a672fd3182246bf"
+      },
+      {
+        "path": "src/SIR.Client.Web/ModeAdapters.fs",
+        "bytes": 1296,
+        "sha256": "e71cafcc0606fb5877da3255ec3d533f609ee422e1eff8f9f961cebd07662a78"
+      },
+      {
+        "path": "src/SIR.Client.Web/PanelViews.fs",
+        "bytes": 2379,
+        "sha256": "a7aa9380c8652aa0c2b376d458917f0ebaebee814b49eeffc3ee495a77e3b3c3"
+      },
+      {
+        "path": "src/SIR.Client.Web/RulesExplorer.fs",
+        "bytes": 37808,
+        "sha256": "9db4352e7bf8e66a0ca489b56574a927a9ba146cce7e9176e371c1db84daa0b3"
+      },
+      {
+        "path": "src/SIR.Client.Web/Runner.fs",
+        "bytes": 5301,
+        "sha256": "af8eefab6cd8d1a84e3d1ceafe8b145ffef0221db7b155138506222ac24ace5a"
+      },
+      {
+        "path": "src/SIR.Client.Web/SIR.Client.Web.fsproj",
+        "bytes": 1780,
+        "sha256": "8e91f69e2ef8025be01d96cd97b3f41b3765de6ec626c3f7b839194a8e40da28"
+      },
+      {
+        "path": "src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj",
+        "bytes": 914,
+        "sha256": "8479ccabb35a9b086d452b16d0a12433177e109d57486cbf7ab4940d6c16b8b0"
+      },
+      {
+        "path": "src/SIR.Client.Web/SceneAdapters.fs",
+        "bytes": 724,
+        "sha256": "c6ac78e66f5a3d0da18af9ff73775b8c63a8e26eeff516316b10c82d3261697b"
+      },
+      {
+        "path": "src/SIR.Client.Web/SignalR.fs",
+        "bytes": 1295,
+        "sha256": "23bcefc425c725f601dbe59257dd162eed42b9b393b9b10957a140724ee73ad9"
+      },
+      {
+        "path": "src/SIR.Client.Web/TacticalEnvironmentView.fs",
+        "bytes": 18114,
+        "sha256": "4aa118f461f92bb77e6779c75eca3ee3a610288f5451053ad6cc73f1974c72ab"
+      },
+      {
+        "path": "src/SIR.Client.Web/TacticalOverlayView.fs",
+        "bytes": 2856,
+        "sha256": "27e3d822ea7dc1baf946bc67609890cd3b817682c1eda2282fcc0cab22c81978"
+      },
+      {
+        "path": "src/SIR.Client.Web/Worker.fs",
+        "bytes": 44420,
+        "sha256": "7171cc777d133910e2ad593a6dca1a7ba9e5f344b504d85207766ee94e920183"
+      },
+      {
+        "path": "src/SIR.Client.Web/deferred-delivery-support.js",
+        "bytes": 358,
+        "sha256": "173983b6245d026c1b200f8dd81f6307a5e476c22b91b7a1c781eed2c6087b88"
+      },
+      {
+        "path": "src/SIR.Client.Web/delivery-support-entry.js",
+        "bytes": 264,
+        "sha256": "8a3d76c955238bddcef8640d5368759a8f672f9210004ba542b5ff7faf978e51"
+      },
+      {
+        "path": "src/SIR.Client.Web/docs-feature.js",
+        "bytes": 530,
+        "sha256": "4943ce484de0ac4f65024da982bb53d0d245373a1928a29fdc3d943109d67f53"
+      },
+      {
+        "path": "src/SIR.Client.Web/feature-loader.js",
+        "bytes": 747,
+        "sha256": "90b61d989f2ec0aca804ffd853c1c5bd6ca6d3ee08082310bab57f2c50827c31"
+      },
+      {
+        "path": "src/SIR.Client.Web/feature-registry.v1.json",
+        "bytes": 1566,
+        "sha256": "3d0757cd77198139375d4c4ef3e07863fa27b8c2bc67c8f2cd8fae6d46c8df18"
+      },
+      {
+        "path": "src/SIR.Client.Web/index.html",
+        "bytes": 991,
+        "sha256": "9007fd3e640c67c9a9847f54c26b725b0f1d04e940ad67778ac4c3e03611fc98"
+      },
+      {
+        "path": "src/SIR.Client.Web/packages.lock.json",
+        "bytes": 7310,
+        "sha256": "11763784faaf64814af67ef43602f02f96efd44fd2fc2f57ab9063f3b598590d"
+      },
+      {
+        "path": "src/SIR.Client.Web/styles.css",
+        "bytes": 36925,
+        "sha256": "971f77e0dc1a46baf6b9fd6b51a1375540e7c762baebcc9cf3e2236ebf51652a"
+      },
+      {
+        "path": "src/SIR.Client.Web/vite.config.js",
+        "bytes": 1253,
+        "sha256": "35fbbc1b506eaa1d7a24f6d4031587fb9d3c91ce453232d0177c4dd517d106f5"
+      },
+      {
+        "path": "src/SIR.Client/Battlefield.fs",
+        "bytes": 35141,
+        "sha256": "e36e1c50719e172bb205bc2971e4181b9e584702f2302384e565b48adbda8cc7"
+      },
+      {
+        "path": "src/SIR.Client/ClientModuleBoundaries.fs",
+        "bytes": 421,
+        "sha256": "098069c194b92056adc6917ac59ac37c1d6ea5b5e8d7721adc796dfddaa7671c"
+      },
+      {
+        "path": "src/SIR.Client/Comparison.fs",
+        "bytes": 5698,
+        "sha256": "c5a54d34c6d5610901e211031239861d6de5216d4ea8a03bc88f6ac82523a56d"
+      },
+      {
+        "path": "src/SIR.Client/EngineCatalog.fs",
+        "bytes": 907,
+        "sha256": "8e67a2ea40afb7306afcce79244712100f85ae9901bb9a12504ea4e4e58c254e"
+      },
+      {
+        "path": "src/SIR.Client/EvidenceExport.fs",
+        "bytes": 14160,
+        "sha256": "9e86a92ad2e73e6c433df6c52f68fa3b69f63fc7a8ea8d2cde555bb7f7a0633a"
+      },
+      {
+        "path": "src/SIR.Client/ExperienceSamples.fs",
+        "bytes": 8822,
+        "sha256": "2e3cfb13caf95ffda9f313b436516a8254b156b734a16fa2b56f97a7fd1c28fd"
+      },
+      {
+        "path": "src/SIR.Client/Lab.fs",
+        "bytes": 19127,
+        "sha256": "dc7f1cdb798166e13943acece90dfa0d3823e2ec3ac67aad837c375d58125aa9"
+      },
+      {
+        "path": "src/SIR.Client/LiveClientBoundary.fs",
+        "bytes": 246,
+        "sha256": "b6586c954623f72164868b9df428c4ed387bc481cfdc17e0e2093b51ee4788aa"
+      },
+      {
+        "path": "src/SIR.Client/MapEditor.fs",
+        "bytes": 199245,
+        "sha256": "b306c16ca51914c88faf66ee703c33ddc65774693363bf8fb35950502861d1f1"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorHistory.fs",
+        "bytes": 667,
+        "sha256": "c2783cf99207d6cfaed169c2d5936a42f803f5fae41a936e06fffb1702ccc3c8"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorInterchange.fs",
+        "bytes": 27005,
+        "sha256": "9d74efa2c3e1a6b134a9d853100f59b9dbb585b57e0c8d33f150f46369ba26dc"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorRevision.fs",
+        "bytes": 353,
+        "sha256": "ec5a5e005e9423708f732c893fad1b860c3e792c366e9a3bed05131eb9a76712"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorSimulator.fs",
+        "bytes": 42024,
+        "sha256": "5c5fdb4089bc50bccdaef53edcd2c34e3a3fe99024c3cccaca4dba9fdf0ec148"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorTypes.fs",
+        "bytes": 13022,
+        "sha256": "d1ce54ec84e140a648e2e8212f66673b45ba774894bd072460b2df457ec95cf0"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorValidation.fs",
+        "bytes": 213,
+        "sha256": "155f94d77e33d811b49c4cb839a96df4652a63f19ec1f628e1384d68988524fe"
+      },
+      {
+        "path": "src/SIR.Client/MapEditorWorkspace.fs",
+        "bytes": 26718,
+        "sha256": "bf0fe59e0d7af1f566d1a9cee5d12b4e3adbdafe806921d1d7bb7179b01af83a"
+      },
+      {
+        "path": "src/SIR.Client/ModalInput.fs",
+        "bytes": 99409,
+        "sha256": "43e481d27415bd51c3fa13049ade64683cd3f92ec7e467d4a47a0d24b82c838a"
+      },
+      {
+        "path": "src/SIR.Client/ModalInput.fsi",
+        "bytes": 7012,
+        "sha256": "59589ea6bebc24eae0db5f676623af8bb2a47a37da34a1896d2a9f0986b15e0b"
+      },
+      {
+        "path": "src/SIR.Client/PlanningWorkspace.fs",
+        "bytes": 22640,
+        "sha256": "23e939f6699478839d56f74d66c15cec2f679c72d85a762a3be9c29b9d9db4bc"
+      },
+      {
+        "path": "src/SIR.Client/ReplayPresentation.fs",
+        "bytes": 18244,
+        "sha256": "b0d9224f9a6a28465f7544090bcf417c465fa3585bae6d08ce1703ab7e66ca5c"
+      },
+      {
+        "path": "src/SIR.Client/RulesCatalog.fs",
+        "bytes": 15254,
+        "sha256": "c7c0dcb7f5adcba214967377a0ecbf9b0532c1453f61a295f0fd146c6449e840"
+      },
+      {
+        "path": "src/SIR.Client/SIR.Client.fsproj",
+        "bytes": 289,
+        "sha256": "510f1532297957a12f8030e64a299ac83d51e730fec865ab3cc6e18a4f420e41"
+      },
+      {
+        "path": "src/SIR.Client/Shell.fs",
+        "bytes": 33187,
+        "sha256": "e12469f40f31d74e4336d54977bd0635f1bc9cee0530d3e157acd90db6fa4359"
+      },
+      {
+        "path": "src/SIR.Client/SimulatorWorkerProtocol.fs",
+        "bytes": 8164,
+        "sha256": "1c5f63a1dd01a339aa88eb8a24eb85d901deda6ad288a4757ee4edd615cb29e6"
+      },
+      {
+        "path": "src/SIR.Client/TacticalParcelEditor.fs",
+        "bytes": 25271,
+        "sha256": "515559b1568433cfa7ec52dc043fc56d96b1161ebcc18100210fdb965ed3b629"
+      },
+      {
+        "path": "src/SIR.Client/TacticalSceneProjection.fs",
+        "bytes": 57576,
+        "sha256": "0271550f873d84d86fcb1d9ed0fa5be8c193abb211296ea6da91bb84a8d1a618"
+      },
+      {
+        "path": "src/SIR.Client/TacticalSceneProjection.fsi",
+        "bytes": 7117,
+        "sha256": "f3530a116006106364c7d8358c13c47169db37cab0397561c5f14907a44a5319"
+      },
+      {
+        "path": "src/SIR.Client/TacticalWorkspaceLayout.fs",
+        "bytes": 24658,
+        "sha256": "8087df8d94a2c02cdd23f869616993c5c507f9d247ca0a5e36ac89930fce1c19"
+      },
+      {
+        "path": "src/SIR.Client/TacticalWorkspaceLayout.fsi",
+        "bytes": 2312,
+        "sha256": "9be8bb8cb82570c285639432093c65a1e864e8804505b8ffaa6613405f621508"
+      },
+      {
+        "path": "src/SIR.Client/UnifiedTacticalWorkspace.fs",
+        "bytes": 35221,
+        "sha256": "70081df2cb92b82352b7065ce16a2f45a179a412f37129329d343d2b62a1f0ec"
+      },
+      {
+        "path": "src/SIR.Client/UnitGlyphCatalog.fs",
+        "bytes": 6434,
+        "sha256": "3ff311aef068da1f19bfcf9bfc39eeacb6aca6db203c7a14e37c5235c9e8597c"
+      },
+      {
+        "path": "src/SIR.Client/packages.lock.json",
+        "bytes": 1780,
+        "sha256": "4f1c45129f64c678ca92754105e635ff06bded477e7fceeed6687fac1841815e"
+      },
+      {
+        "path": "src/SIR.Domain/AuthoritativeProjection.fs",
+        "bytes": 731,
+        "sha256": "03835646dfc5a89f65dbf1fdb5aac12f047cea8737343bf7ef88d8805c98927c"
+      },
+      {
+        "path": "src/SIR.Domain/BoundedInt32.fs",
+        "bytes": 2233,
+        "sha256": "81a29dd46ada7c082e999873ab0aa40949be4092b567322a983a5d7f9699d5a1"
+      },
+      {
+        "path": "src/SIR.Domain/CanonicalEncoding.fs",
+        "bytes": 2079,
+        "sha256": "6ac9ad4352aeb377c5ef87c9bb17b450aba2d8d64af0b2e83cde515861b70503"
+      },
+      {
+        "path": "src/SIR.Domain/CanonicalHash.fs",
+        "bytes": 5018,
+        "sha256": "f05d74a91f24712990406b35784ffe010628530b7baa78384e16282c59032a6f"
+      },
+      {
+        "path": "src/SIR.Domain/ControlAbiV1.Generated.fs",
+        "bytes": 4601,
+        "sha256": "d7fa16fd73fc3463bcbdaa5b4311221cae72be4ddb1c86fcc4c7ff16d47aec99"
+      },
+      {
+        "path": "src/SIR.Domain/ControlAbiV1.fs",
+        "bytes": 19417,
+        "sha256": "75b6968e6f8e4866304951ebd1fadd89705a01f5579e97a68751f0a2c899ded5"
+      },
+      {
+        "path": "src/SIR.Domain/FixedPoint.fs",
+        "bytes": 2118,
+        "sha256": "fc163a6b8ee048b35b608fbd42a8563df79728d22f479435fc465615d7453b82"
+      },
+      {
+        "path": "src/SIR.Domain/HumanCapabilities.fs",
+        "bytes": 6246,
+        "sha256": "9589bf5b466bbe84f349cf6d48b6969face6f7023382652c5e0ccb0c42299199"
+      },
+      {
+        "path": "src/SIR.Domain/Orientation.fs",
+        "bytes": 3355,
+        "sha256": "b680c9325dd1f4d550190154fe61cd5299617d232495db0771065bb7d045df25"
+      },
+      {
+        "path": "src/SIR.Domain/RuleTypes.fs",
+        "bytes": 3877,
+        "sha256": "c5318fa1c398edb56d87cc18c0dd95086e2e559c608b797a5e709774bd85102d"
+      },
+      {
+        "path": "src/SIR.Domain/RuleTypes.fsi",
+        "bytes": 3377,
+        "sha256": "a565d174be1e0e78b932844d8df48a5019b9ba211d2243743052193e3ea5a392"
+      },
+      {
+        "path": "src/SIR.Domain/Rules.fs",
+        "bytes": 36880,
+        "sha256": "e81c19f26eb73dd464a0ec11bac9d138e6bdab1a3a8e4bf5e034bf0a313e212c"
+      },
+      {
+        "path": "src/SIR.Domain/Rules.fsi",
+        "bytes": 1215,
+        "sha256": "37ae7ba3bcb776a1b9f8a29232b34d85b893c5148fc8a033c4bf7c39c7a2b124"
+      },
+      {
+        "path": "src/SIR.Domain/SIR.Domain.fsproj",
+        "bytes": 922,
+        "sha256": "4f5949dca59b1f0d8e1fb232f5184485d792e18b65152d7ce87939a40f9d2913"
+      },
+      {
+        "path": "src/SIR.Domain/SpatialIdentity.fs",
+        "bytes": 2104,
+        "sha256": "2ed77ce24585d6445813e0645ee437fd18512d1cfdeee35d5725a61eb9d2bc2f"
+      },
+      {
+        "path": "src/SIR.Domain/SpatialIdentity.fsi",
+        "bytes": 820,
+        "sha256": "4d332e0965553c90d7534fa009a46097018d5f6c67949c64694f950e48023192"
+      },
+      {
+        "path": "src/SIR.Domain/TacticalEnvironment.fs",
+        "bytes": 14028,
+        "sha256": "2bb77a587c5ce52542fe9adb4103a3d7ebc891854ef8c8f67b2e8db57796d1d5"
+      },
+      {
+        "path": "src/SIR.Domain/TacticalEnvironment.fsi",
+        "bytes": 5065,
+        "sha256": "8ad019bfffa1c8b1dfe5a79123764c4cac7ef1d9b77f65c05cfb864b2c442046"
+      },
+      {
+        "path": "src/SIR.Domain/packages.lock.json",
+        "bytes": 314,
+        "sha256": "394c969535d7e82772dd93db116c36b2fe31f8705e467c93194e7dc280b89902"
+      },
+      {
+        "path": "src/SIR.Match/AwarenessProjection.fs",
+        "bytes": 4771,
+        "sha256": "f38c25e5f5618386790d66eada1e328673a723eb6b72c49a791463f7b4c40cd0"
+      },
+      {
+        "path": "src/SIR.Match/ControlHost.fs",
+        "bytes": 31462,
+        "sha256": "62800296443ea81f849fbed9e2e78b58f100127f642619bf08f787e696011839"
+      },
+      {
+        "path": "src/SIR.Match/LiveIntegration.fs",
+        "bytes": 17810,
+        "sha256": "3ccd096387f5c2c775536cbf243c40b4ded18e62ccea625cc27e96d98fb011a3"
+      },
+      {
+        "path": "src/SIR.Match/MatchReplay.fs",
+        "bytes": 8409,
+        "sha256": "63fcfc3f8335dadf6bc457b9207e293b85f1829810155730ee488bbb8cccfe24"
+      },
+      {
+        "path": "src/SIR.Match/PhysicalCombatServices.fs",
+        "bytes": 691,
+        "sha256": "e0100379d914701b19485c0344f0f7417430535a3fdd47b1367d8193188bb5c6"
+      },
+      {
+        "path": "src/SIR.Match/Plan.fs",
+        "bytes": 45620,
+        "sha256": "544bc8d85edb5fb7ec618062a0a7da3f364169b5ee08a68b34629d45508c69fa"
+      },
+      {
+        "path": "src/SIR.Match/SIR.Match.fsproj",
+        "bytes": 499,
+        "sha256": "cc9035ede2b42dfea492bb51177d44bf02b64eb0ab441c01c0073f4f2f54f774"
+      },
+      {
+        "path": "src/SIR.Match/SpatialServices.fs",
+        "bytes": 873,
+        "sha256": "5d6e1c6ad577dea9ef6844469876d6ede8fb8d567772a1cb054c47fa63cfde54"
+      },
+      {
+        "path": "src/SIR.Match/StandardController.wat",
+        "bytes": 3075,
+        "sha256": "2c58aa604d29ebafb9724b10c2c05a34a5fb0fc842e478806b39b227abddb296"
+      },
+      {
+        "path": "src/SIR.Match/packages.lock.json",
+        "bytes": 1530,
+        "sha256": "5bf64d78694ae5bf1992feb7c747f56319e9be942f3c951d731f7c963ab326d7"
+      },
+      {
+        "path": "src/SIR.Protocol.Generated/SIR.Protocol.Generated.fsproj",
+        "bytes": 291,
+        "sha256": "78c26ee36194a44f1db7706d19998c053e11613bdcf8c61a83a6570392890b90"
+      },
+      {
+        "path": "src/SIR.Protocol.Generated/packages.lock.json",
+        "bytes": 1232,
+        "sha256": "10e228c646dadbc50e6acd2e610a14d07da207aba971769348b0a0dce9f8a70c"
+      },
+      {
+        "path": "src/SIR.Protocol/Http.fs",
+        "bytes": 4025,
+        "sha256": "b28ec0dbd2a89e562445873672150b6de7f25df83d4bef2885f3207872d26a30"
+      },
+      {
+        "path": "src/SIR.Protocol/ProtocolBoundary.fs",
+        "bytes": 221,
+        "sha256": "923ed323a65648dc526c6fc914fa615169e44e6b14c5954d4fa0555355f05841"
+      },
+      {
+        "path": "src/SIR.Protocol/Realtime.fs",
+        "bytes": 3031,
+        "sha256": "6dd2eaa7850f3889c1b214f018d1aac37c75fb4e7386d5cf8866b58b66cac4b7"
+      },
+      {
+        "path": "src/SIR.Protocol/SIR.Protocol.fsproj",
+        "bytes": 240,
+        "sha256": "1342e406cbe8e6f60c90672463da69ca803030a5543fe0e6c336e2169f5d734d"
+      },
+      {
+        "path": "src/SIR.Protocol/packages.lock.json",
+        "bytes": 1445,
+        "sha256": "d49008a690ff78e9c95b69614035f11054b59b63a5f3a13f4c63ba4ec1340591"
+      },
+      {
+        "path": "src/SIR.Replay.Core/SIR.Replay.Core.fsproj",
+        "bytes": 2782,
+        "sha256": "047e2b99c5e718bace6b9d86ecaebb2fcd910cea9b451e5b8379df44ecdf289c"
+      },
+      {
+        "path": "src/SIR.Replay.Core/packages.lock.json",
+        "bytes": 1019,
+        "sha256": "a7456fb448cce9c92510d09931d76d1f5f9782601dbcc1e8872ef4fac328bb37"
+      },
+      {
+        "path": "src/SIR.Replay.Web/SIR.Replay.Web.fsproj",
+        "bytes": 2229,
+        "sha256": "6791f7383b764559a196e698ea6c929fef17d5b1fa2b4830bc2b84d4d7d4c357"
+      },
+      {
+        "path": "src/SIR.Replay.Web/packages.lock.json",
+        "bytes": 6899,
+        "sha256": "1fa1129de8bd47db4b136a240b8823cd5cae6dae27f836b41b1cd2eea4eb94fc"
+      },
+      {
+        "path": "src/SIR.Server/AwarenessReactionDiagnostics.fs",
+        "bytes": 5172,
+        "sha256": "9638d23dc66f2abcae786df99aef1d5df902b7f4af681dd7adefbcc6ff161db2"
+      },
+      {
+        "path": "src/SIR.Server/GameHub.fs",
+        "bytes": 3897,
+        "sha256": "45bff5ea7c6a5c1ed7c8e235abb784bd99abd62c1aaa70b5a982dbd314777cdc"
+      },
+      {
+        "path": "src/SIR.Server/LiveAuthentication.fs",
+        "bytes": 1986,
+        "sha256": "3fc890db036182bdd2a45f0553db60e4ea8fcdce940a3c29b2542c9813112579"
+      },
+      {
+        "path": "src/SIR.Server/LiveAuthority.fs",
+        "bytes": 11684,
+        "sha256": "2456acc479182be65db63475e6865f06ebbc8fd550cb95ec03aa6850484fbae0"
+      },
+      {
+        "path": "src/SIR.Server/PhysicalCombatDiagnostics.fs",
+        "bytes": 13179,
+        "sha256": "6ef3affdea25a3a46adc69acda4c746a46ca055ec9a730f74961beabbf185637"
+      },
+      {
+        "path": "src/SIR.Server/Program.fs",
+        "bytes": 11747,
+        "sha256": "2f6bfeb50b7389d770a130ae66f30bf76bc79dc30656ad04306967a4df7d6989"
+      },
+      {
+        "path": "src/SIR.Server/SIR.Server.fsproj",
+        "bytes": 796,
+        "sha256": "117595435e40a1d8227d7ed2c4e515d8f3edb4e3f7094fd82595d7696d976bad"
+      },
+      {
+        "path": "src/SIR.Server/SpatialDiagnostics.fs",
+        "bytes": 8813,
+        "sha256": "31d9af895b1ab46698f8f7ad775a332faf637478f452e2a09122cc6bfdbb8323"
+      },
+      {
+        "path": "src/SIR.Server/appsettings.json",
+        "bytes": 3,
+        "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+      },
+      {
+        "path": "src/SIR.Server/packages.lock.json",
+        "bytes": 5752,
+        "sha256": "358d91fb789168f56c88b5c10d21acb0ee0db04fd40363aacf0df05df6802b66"
+      },
+      {
+        "path": "src/SIR.Simulation/AwarenessReaction.fs",
+        "bytes": 20839,
+        "sha256": "bb0ec5e692cb0a3becd1d7cd340f33e621b970c906a9fb31a9144fa214ca6b43"
+      },
+      {
+        "path": "src/SIR.Simulation/AwarenessReaction.fsi",
+        "bytes": 4166,
+        "sha256": "c5130fad846ea914ff4e973a67f398ccaf9e4246194ea904e950f0fc42d0f346"
+      },
+      {
+        "path": "src/SIR.Simulation/CapabilityExecution.fs",
+        "bytes": 16951,
+        "sha256": "635f285a4b1af163c0431f7f6436095bb042b35e38b5619992ff6519363e3029"
+      },
+      {
+        "path": "src/SIR.Simulation/CombatModel.fs",
+        "bytes": 26780,
+        "sha256": "21e9e716ea5de4f0879a58f62a6e9a5f2dc61fafac85f2d2352b34a73ced980a"
+      },
+      {
+        "path": "src/SIR.Simulation/CombatModel.fsi",
+        "bytes": 3820,
+        "sha256": "79971a63598b29a63eb2e185583b505a37f31b95382486fdd4ac9ee708610833"
+      },
+      {
+        "path": "src/SIR.Simulation/CombatRules.fs",
+        "bytes": 19553,
+        "sha256": "ac082a2e876105e5f9958e03166a2c7f54d149f948e00e5bcdc2cc524a60bd71"
+      },
+      {
+        "path": "src/SIR.Simulation/CombatRules.fsi",
+        "bytes": 2455,
+        "sha256": "1fd66b3edb767b0dd97567c1014bb4a63b42617c3c35fc22b41e2105bf386bfc"
+      },
+      {
+        "path": "src/SIR.Simulation/MapScale.fs",
+        "bytes": 33048,
+        "sha256": "fcfca3c90bc6e46d58bce65b27de87a0c1a0e14af68a35cc8795c253b7615534"
+      },
+      {
+        "path": "src/SIR.Simulation/Replay.fs",
+        "bytes": 71923,
+        "sha256": "5fd3a62b97729e8c090e5e83101eb4a79a51a4928a169ac18492a90ccc99e12d"
+      },
+      {
+        "path": "src/SIR.Simulation/SIR.Simulation.fsproj",
+        "bytes": 957,
+        "sha256": "b045f3e7e12dbe4f1c2c6f3df6cbd12bda1cb770b3c907b26aa7a82910dc6d8a"
+      },
+      {
+        "path": "src/SIR.Simulation/Simulation.fs",
+        "bytes": 47611,
+        "sha256": "e7b56b539bad7359c74edda3efa73d26305466f1dbc6ed098e056669eab81ddd"
+      },
+      {
+        "path": "src/SIR.Simulation/SpatialQuery.fs",
+        "bytes": 27064,
+        "sha256": "5826ca5afda073069951ebe66ed4e88a72689c2a64d407629329784698a4308a"
+      },
+      {
+        "path": "src/SIR.Simulation/SpatialQuery.fsi",
+        "bytes": 6350,
+        "sha256": "84a519a1dc33a4646fda64fcb84bd60d094ce51ae96b5bf9d524936aeb4a02e1"
+      },
+      {
+        "path": "src/SIR.Simulation/Substrate.fs",
+        "bytes": 419,
+        "sha256": "c4ff38c44972c7a490766531862b0b2f78c59448368862fe2cf2b3af3e1e47c2"
+      },
+      {
+        "path": "src/SIR.Simulation/TacticalEnvironment.fs",
+        "bytes": 57050,
+        "sha256": "4a98aea38182762bc3fbe5f72a3c13dd0b277ddf5f390d933b0844eacb0d62bb"
+      },
+      {
+        "path": "src/SIR.Simulation/TacticalEnvironment.fsi",
+        "bytes": 1845,
+        "sha256": "0acf2c3d1509e23da5183d4a32f2271cef32bf710e5276e3e9242d5a111f8487"
+      },
+      {
+        "path": "src/SIR.Simulation/packages.lock.json",
+        "bytes": 1038,
+        "sha256": "1fb20aefe56a6e8c4ed7a1861b8c58f4e8e9f9e7dbf833cbd890355f67be0e4c"
+      },
+      {
+        "path": "src/SIR.Tools/Program.fs",
+        "bytes": 151,
+        "sha256": "aaea09d2e3b96cc8cb7239d88cc8ee4265bb47ba5bdb4154427a2eb156150f39"
+      },
+      {
+        "path": "src/SIR.Tools/SIR.Tools.fsproj",
+        "bytes": 165,
+        "sha256": "315153952f437af287827d5bcac3b290cddc7326050d13a1a9a1a2858787dfde"
+      },
+      {
+        "path": "src/SIR.Tools/packages.lock.json",
+        "bytes": 314,
+        "sha256": "394c969535d7e82772dd93db116c36b2fe31f8705e467c93194e7dc280b89902"
+      },
+      {
+        "path": "src/SIR.Wasm/SIR.Wasm.fsproj",
+        "bytes": 680,
+        "sha256": "041deefdbbe2550feb62a436b4f3927ee8a0a86ff185300f5af9ea34471a9009"
+      },
+      {
+        "path": "src/SIR.Wasm/packages.lock.json",
+        "bytes": 1259,
+        "sha256": "5dd10465a1cceb6aef7d64e592bad92865e31e7d4c74d4d850afe50d760cb274"
+      },
+      {
+        "path": "tests/SIR.Browser.Tests/browser-setup.js",
+        "bytes": 1032,
+        "sha256": "6f39b2d028f747e68c9675db6b7ed8118ad1433f11e317a676bcdaee28257f0a"
+      },
+      {
+        "path": "tests/SIR.Browser.Tests/client-feature-loader.spec.js",
+        "bytes": 2947,
+        "sha256": "174a6e796e413c40855eeca06a4df190d547868291b08a8e50a06bf878946623"
+      },
+      {
+        "path": "tests/SIR.Browser.Tests/desktop-command-surface.spec.js",
+        "bytes": 3869,
+        "sha256": "7ab8adbebcbd274b17b1ea2ad27d462193f2b623502ce904d926ca400425008d"
+      },
+      {
+        "path": "tests/SIR.Browser.Tests/deterministic-junit-reporter.js",
+        "bytes": 2970,
+        "sha256": "ab8c9ff1cdad47d0ed8b4afb62d028bf56c10fffb08af02594fcf75a129a0e01"
+      },
+      {
+        "path": "tests/SIR.Browser.Tests/journey.js",
+        "bytes": 1519,
+        "sha256": "50f67f8103a855a9103ec4d3ac75f0d0f3bd93c99436a795c9181c69f9da8ffe"
+      },
+      {
+        "path": "tests/SIR.Browser.Tests/live-session.spec.js",
+        "bytes": 13915,
+        "sha256": "19b0789634d13710e50e5e0094459f0e3802b444413cddefe160e44599bbcaad"
+      },
+      {
+        "path": "tests/SIR.Browser.Tests/playwright.config.js",
+        "bytes": 1829,
+        "sha256": "d17baead68c516f01e68b5b314bd7c1b757a4820c7a8192fa682ea29a4bb35fe"
+      },
+      {
+        "path": "tests/SIR.Browser.Tests/production-delivery.spec.js",
+        "bytes": 4483,
+        "sha256": "0f16fa283d8b0f9ca3d38a520a00f15bfed322bf687e9b29616d5ea573da4f13"
+      },
+      {
+        "path": "tests/SIR.Browser.Tests/tactical-environment.spec.js",
+        "bytes": 7150,
+        "sha256": "7fc6f5bcca9eb3d897fa04966e86f6ee116251bf80cb07fd26cdea62b44716c3"
+      },
+      {
+        "path": "tests/SIR.Browser.Tests/visible-workflows.spec.js",
+        "bytes": 30995,
+        "sha256": "dd0107d9bae09925eb3706b35956998701537c24599b3ab58d3cec73df13ee5f"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/ClientBoundaryQualification.fs",
+        "bytes": 1765,
+        "sha256": "d0ccbb85f0ee1081fb199bc85e861fe86bfd01f61717d8d950eb02671450d799"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/ClientPerformanceQualification.fs",
+        "bytes": 8086,
+        "sha256": "23d3fda9a6ff24f7eb7d324caa77b684973fd5df0fe727d61291f0f44f6f7dc1"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/ModalInputCatalogAuthority.fs",
+        "bytes": 9137,
+        "sha256": "79c6a30489dee4727e66c98260a0c28cdb94aa56e5eb7398bea91bb0b62f96e6"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/Program.fs",
+        "bytes": 169093,
+        "sha256": "cf66595d2108fab82d53f82a63f3aed0476fd91a3639f28ccfdcab1f94804cc8"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/SIR.Client.Tests.fsproj",
+        "bytes": 1655,
+        "sha256": "39f40c5e148d662b1e1e7ca283e04b73750d23898509082e0d3f300e837b6e6a"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/TacticalSceneProjectionQualification.fs",
+        "bytes": 59178,
+        "sha256": "954257e0d99c609914165a48faf0bfcb9d5642ca6156994cf80191210eead5e7"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/TacticalWorkspaceLayoutQualification.fs",
+        "bytes": 7807,
+        "sha256": "7e42fb269094548426e812e3757c85981723419fe62191921b3c0b104ba57b56"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/UnifiedTacticalWorkspaceQualification.fs",
+        "bytes": 14732,
+        "sha256": "781fd82ec49e089eeafd4a69881e24c167d3b29193d4c1b7babf0ecc4eb94ad9"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/fixtures/attack-power-30.sir-lab",
+        "bytes": 886,
+        "sha256": "162744d55cf909d70f4814940dffcce8065250a58f8d316bd26f3e43d3ab7abc"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/fixtures/map-editor-milestone-0-footprints.txt",
+        "bytes": 253,
+        "sha256": "6c2cb932000ba6adea26620950b0e4f73000a89f053bc70600ffb02537b62eb4"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/fixtures/map-editor-milestone-1-camera.txt",
+        "bytes": 147,
+        "sha256": "f370487c841165b0a890585c7da8e088e1eb36c7379915ab6e81defbcb4c8325"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/fixtures/map-editor-milestone-2-history.txt",
+        "bytes": 237,
+        "sha256": "8113c3f4edfc094fc3e07a97f78a4bd05c0977cde31265dcc9b76843666191b7"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/fixtures/map-editor-milestone-3-terrain.txt",
+        "bytes": 409,
+        "sha256": "5d112fb312a06a8c03a7c7bbb87ec1714901e440d1c1e47eaa0714b25b281876"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/fixtures/map-editor-milestone-4-units.txt",
+        "bytes": 694,
+        "sha256": "bace1d07eb90932a51ad7f2cef42bcc600d9c6b014533ef61bb846d6da2056ff"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/fixtures/map-editor-milestone-5-edges.txt",
+        "bytes": 387,
+        "sha256": "9b528506184804f90712c0b422ec11e07efd15bc68ca4d531ba454c479a50d3a"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/fixtures/map-editor-milestone-6-lifecycle.txt",
+        "bytes": 398,
+        "sha256": "a6ea9162974a091ef984f59bbffc5ad1e8f401f2ae79f62f342aebce52a95056"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/fixtures/map-editor-milestone-7-zones.txt",
+        "bytes": 1304,
+        "sha256": "d164ce2ed90299c249666c8de986cf57dfb6fe36e8395dcfb8c2ff33d51451c2"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/fixtures/map-editor-milestone-8-interchange.txt",
+        "bytes": 718,
+        "sha256": "93381af75cd1b5f042c1eb13870e7e6f78def54d69ffcea9e0ef3c7276f4673e"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/fixtures/map-editor-milestone-9-simulator.txt",
+        "bytes": 385,
+        "sha256": "9ec07dfc61d4b4bfc31d9f9c3fe65d4fa793fd79649302463bb04ab4c73dbe00"
+      },
+      {
+        "path": "tests/SIR.Client.Tests/packages.lock.json",
+        "bytes": 1244,
+        "sha256": "fe135486b33dace2a1f5b1eba3f9b04a4437baa78960cc0b9d50513c98228650"
+      },
+      {
+        "path": "tests/SIR.Conformance.Shared/AwarenessReactionFixtures.fs",
+        "bytes": 13783,
+        "sha256": "8cc496671de9e55d0a385c0f0627cf5371451b473f3a9bfb319bcaa8b9b21bcf"
+      },
+      {
+        "path": "tests/SIR.Conformance.Shared/CombatFixtures.fs",
+        "bytes": 15713,
+        "sha256": "cff3d728c45a1793a0abbf87eddcab32e7a4705e0e6ce20ecd02448add3c1c8f"
+      },
+      {
+        "path": "tests/SIR.Conformance.Shared/ControlAbiFixtures.fs",
+        "bytes": 7924,
+        "sha256": "0ef97702daab046be692dd08932283907a87a38b6df4176e3deef0f378193326"
+      },
+      {
+        "path": "tests/SIR.Conformance.Shared/GameCoreFixtures.fs",
+        "bytes": 3537,
+        "sha256": "a89b6c6b7a253ecbe9a677fb6b54231679e974bf17a5ae4576e02992b3089a27"
+      },
+      {
+        "path": "tests/SIR.Conformance.Shared/NumericFixtures.fs",
+        "bytes": 6823,
+        "sha256": "755f3c717ef8a3f7322a713297cc7f3033fb528eb17cd7c0650f5ec4927e9d1b"
+      },
+      {
+        "path": "tests/SIR.Conformance.Shared/OrientationFixtures.fs",
+        "bytes": 2739,
+        "sha256": "72e5384575b31efcda822a7b9dcfeafd065ed868bf83b3292d8de89a8df204a4"
+      },
+      {
+        "path": "tests/SIR.Conformance.Shared/Program.fs",
+        "bytes": 11221,
+        "sha256": "4fc2f2b569186058d8dd3dc7905d1a8776f7947ddd60d7b614a6db0a84b4923b"
+      },
+      {
+        "path": "tests/SIR.Conformance.Shared/ReplayFixtures.fs",
+        "bytes": 41858,
+        "sha256": "a99750ce71b55f6717c1257f1e90183d5e41b5fc2d59c45ec0edd7eec961c718"
+      },
+      {
+        "path": "tests/SIR.Conformance.Shared/RulesCorpusFixtures.fs",
+        "bytes": 15885,
+        "sha256": "3faeb0dfa5488d633804c776687bc1c5afdcc5d8b6a9c1c954aca69725f5bc47"
+      },
+      {
+        "path": "tests/SIR.Conformance.Shared/SimulationFixtures.fs",
+        "bytes": 12702,
+        "sha256": "8fef96dc6d1790e42d6b3995308b1b1a91816221688de34180eb8d5c48702eb7"
+      },
+      {
+        "path": "tests/SIR.Conformance.Shared/SpatialQueryFixtures.fs",
+        "bytes": 14956,
+        "sha256": "143e6da316f854fe75ba5ba37d98cd0ddfa99ff161be1b10abbf0ae423b4d7dd"
+      },
+      {
+        "path": "tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj",
+        "bytes": 1436,
+        "sha256": "93bad812e5dece1bd13a567b29f75004ecdc1be89dbbe558d538d0d19472a72f"
+      },
+      {
+        "path": "tests/SIR.Domain.Fable.Tests/packages.lock.json",
+        "bytes": 1019,
+        "sha256": "a7456fb448cce9c92510d09931d76d1f5f9782601dbcc1e8872ef4fac328bb37"
+      },
+      {
+        "path": "tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj",
+        "bytes": 1436,
+        "sha256": "93bad812e5dece1bd13a567b29f75004ecdc1be89dbbe558d538d0d19472a72f"
+      },
+      {
+        "path": "tests/SIR.Domain.Tests/packages.lock.json",
+        "bytes": 1019,
+        "sha256": "a7456fb448cce9c92510d09931d76d1f5f9782601dbcc1e8872ef4fac328bb37"
+      },
+      {
+        "path": "tests/SIR.Match.Tests/Program.fs",
+        "bytes": 90166,
+        "sha256": "a92d04ede079247545c5edb679141b01a7b2cc6ff39a61a8776ad8142d1c493e"
+      },
+      {
+        "path": "tests/SIR.Match.Tests/SIR.Match.Tests.fsproj",
+        "bytes": 438,
+        "sha256": "a9570763d71de89fde036367b95fb7ed489b57938be55ed771d06666ee281624"
+      },
+      {
+        "path": "tests/SIR.Match.Tests/packages.lock.json",
+        "bytes": 1784,
+        "sha256": "eeb8ddf6742fee851ad8311e89547bb6118bc694dee237c9c18c0412ac996caf"
+      },
+      {
+        "path": "tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj",
+        "bytes": 439,
+        "sha256": "2405017cbb05254569089fd3b39700547b41a9f132a016a38062f2c879eb2c77"
+      },
+      {
+        "path": "tests/SIR.ModalInput.Fable.Tests/packages.lock.json",
+        "bytes": 1244,
+        "sha256": "fe135486b33dace2a1f5b1eba3f9b04a4437baa78960cc0b9d50513c98228650"
+      },
+      {
+        "path": "tests/SIR.ModalInput.Shared/ModalInputFixtures.fs",
+        "bytes": 61883,
+        "sha256": "624d6a4a3e9fd577086e039618c13973e95b4c8eb09d2ed41e8f44135aef9d7f"
+      },
+      {
+        "path": "tests/SIR.ModalInput.Shared/Program.fs",
+        "bytes": 126,
+        "sha256": "06df57fe2d6d9726a578f0a2e2a1e3bad77f0304c7d781aae7a3f7c13a24a3c0"
+      },
+      {
+        "path": "tests/SIR.ModalInput.Tests/SIR.ModalInput.Tests.fsproj",
+        "bytes": 439,
+        "sha256": "2405017cbb05254569089fd3b39700547b41a9f132a016a38062f2c879eb2c77"
+      },
+      {
+        "path": "tests/SIR.ModalInput.Tests/packages.lock.json",
+        "bytes": 1244,
+        "sha256": "fe135486b33dace2a1f5b1eba3f9b04a4437baa78960cc0b9d50513c98228650"
+      },
+      {
+        "path": "tests/SIR.PhysicalCombat.Performance/Program.fs",
+        "bytes": 39020,
+        "sha256": "5de4479e5779a8d790155a53f97d80e99b2dc777d79777687d32616f9b9cc5ea"
+      },
+      {
+        "path": "tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj",
+        "bytes": 292,
+        "sha256": "06669aa53beaa9349411810b1140877e8aff783685b3cf8fe8c9c822640f078b"
+      },
+      {
+        "path": "tests/SIR.PhysicalCombat.Performance/packages.lock.json",
+        "bytes": 1019,
+        "sha256": "a7456fb448cce9c92510d09931d76d1f5f9782601dbcc1e8872ef4fac328bb37"
+      },
+      {
+        "path": "tests/SIR.Server.Tests/Program.fs",
+        "bytes": 27469,
+        "sha256": "3da2d08401ddaaecba7556b751321522be3affb481c402d599149763704bf7af"
+      },
+      {
+        "path": "tests/SIR.Server.Tests/SIR.Server.Tests.fsproj",
+        "bytes": 583,
+        "sha256": "3c44ac69afa91da8d91ddd58943f9d4c1c7c281ecd1006cb20d5e17bd117b6bd"
+      },
+      {
+        "path": "tests/SIR.Server.Tests/TestResults/147-server.trx",
+        "bytes": 30706,
+        "sha256": "166c06325bf57b42c7677457be162c36517b56b1727b9c07cedf1e208caf4560"
+      },
+      {
+        "path": "tests/SIR.Server.Tests/packages.lock.json",
+        "bytes": 24034,
+        "sha256": "ab6244ca07b535a07ba433087891cd77d3887aa09ff93c6d5e83c6295da88abb"
+      },
+      {
+        "path": "tests/fixtures/control-abi-v1-output.hex",
+        "bytes": 147,
+        "sha256": "fe71e7685aa58f99e6505328c4898b3ac91384418985b99b5b6712af78f225ce"
+      },
+      {
+        "path": "tests/fixtures/persistent-workspace-m0-inventory.json",
+        "bytes": 6242,
+        "sha256": "549f482873994e83f25ed024c50d9ca2ced82476bce49ca29dd26ca4241ac6a3"
+      },
+      {
+        "path": "tests/fixtures/replay/v3-minimal-pre-combat.sirr.base64",
+        "bytes": 5937,
+        "sha256": "d95c88369c64fff2193b3a4df8790b4f43bd62a94bac58325877853dff1f0397"
+      },
+      {
+        "path": "tests/fixtures/retained-perspective-replay.sirr.base64",
+        "bytes": 105,
+        "sha256": "2d344d1dc43d73beedd5533892e1689e551c133b8b6616d9fcf3966cdbb069fe"
+      },
+      {
+        "path": "tests/fixtures/rules-corpus/v1/coverage.json",
+        "bytes": 3011,
+        "sha256": "39eecda1018c504eab7b03c60228bf155c99aa42433724655da42d9ee470d554"
+      },
+      {
+        "path": "tests/fixtures/rules-corpus/v1/manifest.json",
+        "bytes": 5149,
+        "sha256": "e5bfe82d40e72ff8b41898e408c50dd0d8fb7e05b72c6acc24baab0e3b451ddc"
+      },
+      {
+        "path": "tests/fixtures/rules-corpus/v1/representative-application.hex",
+        "bytes": 1971,
+        "sha256": "f42835c3fc4691b59ff71c0b31de0e74caa21455bf9d5e7658b483e0b2da2606"
+      },
+      {
+        "path": "tests/fixtures/rules-corpus/v2/coverage.json",
+        "bytes": 26032,
+        "sha256": "67535aad491528acc80ce4f9a5dc3f68758ef0ab05f2521f370a10e9862d604b"
+      },
+      {
+        "path": "tests/fixtures/rules-corpus/v2/implementation-sources.json",
+        "bytes": 888,
+        "sha256": "cfb31c10233f407a5f114c677861a90f2ce212721c7a4b457cda9f4c0ab9799d"
+      },
+      {
+        "path": "tests/fixtures/rules-corpus/v2/manifest.json",
+        "bytes": 15430,
+        "sha256": "90714a52dc8fc9d77fe9e582e4de5b040897c663cb8828100243b2faba65130e"
+      },
+      {
+        "path": "tests/fixtures/rules-corpus/v2/representative-application.hex",
+        "bytes": 1971,
+        "sha256": "2b4cc22f415e36f0ca6384e6f7f5f98edc1b8ff7c63052674ca30433d8794b4e"
+      }
+    ],
+    "digest": "cf23fdf6b47b061b83e4228c04fb543f485c001c0dca4748d55720937fd02239"
+  },
+  "tools": [
+    {
+      "id": "git",
+      "version": "git version 2.55.0"
+    },
+    {
+      "id": "dotnet-sdk",
+      "version": "10.0.302"
+    },
+    {
+      "id": "fable",
+      "version": "5.13.0"
+    },
+    {
+      "id": "fsdocs",
+      "version": "22.1.0"
+    },
+    {
+      "id": "node",
+      "version": "v26.7.0"
+    },
+    {
+      "id": "npm",
+      "version": "12.0.2"
+    },
+    {
+      "id": "vite",
+      "version": "8.1.5"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "browser-diagnostics-junit",
+      "path": "artifacts/test-results/browser-diagnostics-child.junit.xml",
+      "files": [
+        {
+          "path": "artifacts/test-results/browser-diagnostics-child.junit.xml",
+          "bytes": 824,
+          "sha256": "41705a4713391898612c871d4b8e4a8454b1915c7477c5d98431d4b811549b62"
+        }
+      ],
+      "digest": "456bc09840f1ece4c7ea6c8aac4ab3f30ad348d8b35e51c5b53170f368f7d3a4"
+    },
+    {
+      "id": "browser-junit",
+      "path": "artifacts/test-results/browser.junit.xml",
+      "files": [
+        {
+          "path": "artifacts/test-results/browser.junit.xml",
+          "bytes": 5327,
+          "sha256": "21938dd18d05e0e045d0ce79ab84b3cbc2720f4f34813c8a16c65b5344a0fe5b"
+        }
+      ],
+      "digest": "6e4656ac123581e4f1af12c6af1175ecb599a8cbf8045e501da13234527b301a"
+    },
+    {
+      "id": "build-receipt",
+      "path": "docs/evidence/production-build-receipt-v1/87cf06f6c4cf32abd997cd6796a62f22ff37022e7bca954cb28c5714a64dfeaf.json",
+      "files": [
+        {
+          "path": "docs/evidence/production-build-receipt-v1/87cf06f6c4cf32abd997cd6796a62f22ff37022e7bca954cb28c5714a64dfeaf.json",
+          "bytes": 127501,
+          "sha256": "87cf06f6c4cf32abd997cd6796a62f22ff37022e7bca954cb28c5714a64dfeaf"
+        }
+      ],
+      "digest": "93a4f81f8b3a8808d9cfe834148d4cca12b339f078f4aa86dc51bf37cffd5d65"
+    },
+    {
+      "id": "client-feature-trx",
+      "path": "work/214-client-feature-loader/test-results/client-feature-loader.trx",
+      "files": [
+        {
+          "path": "work/214-client-feature-loader/test-results/client-feature-loader.trx",
+          "bytes": 1965,
+          "sha256": "fa2393b056382aafde941f8da8e3cb67529ef04e65d71cdeee8584a9cb482105"
+        }
+      ],
+      "digest": "a2224c98be8c09901dc0b1851aa0599519bb7191c184f48042734a238b06c03e"
+    },
+    {
+      "id": "delivery-junit",
+      "path": "artifacts/test-results/production-delivery.junit.xml",
+      "files": [
+        {
+          "path": "artifacts/test-results/production-delivery.junit.xml",
+          "bytes": 329,
+          "sha256": "27f356af8d3b49c8da8f9b23d4810b99d52e7a8762b4256f9e3d27d68865337f"
+        }
+      ],
+      "digest": "bbb980e26fe5a2b58091a47cdd2750767ee00a7e5ba11222a407d86894fee0cb"
+    },
+    {
+      "id": "feature-bundle-graphs",
+      "path": "docs/evidence/client-feature-bundle-graph-v1",
+      "files": [
+        {
+          "path": "docs/evidence/client-feature-bundle-graph-v1/40e670465b0439d7ac613db4d58d31aa91de7ca2731e35160cb2ddaf51e6ac50.json",
+          "bytes": 3039,
+          "sha256": "40e670465b0439d7ac613db4d58d31aa91de7ca2731e35160cb2ddaf51e6ac50"
+        },
+        {
+          "path": "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
+          "bytes": 3039,
+          "sha256": "8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e"
+        },
+        {
+          "path": "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+          "bytes": 2499,
+          "sha256": "d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f"
+        }
+      ],
+      "digest": "72fd602b25ce9ab41ff9db3c413bc997d77c215fce3e32888a156b5e693f6891"
+    }
+  ]
+}

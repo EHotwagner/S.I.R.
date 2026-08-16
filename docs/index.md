@@ -137,5 +137,7 @@ discrete simulation ticks represent game state.
 
 The [engineering section](simulation-core-architecture.md) covers the
 deterministic kernel, control ABI, public protocol, browser projection, and
-performance budgets. Generated [API reference](reference/index.html) remains a
+performance budgets. The [client feature loader](client-feature-loader.md)
+documents deterministic bootstrap and deferred chunk delivery. Generated
+[API reference](reference/index.html) remains a
 precise companion to the narrative manual.

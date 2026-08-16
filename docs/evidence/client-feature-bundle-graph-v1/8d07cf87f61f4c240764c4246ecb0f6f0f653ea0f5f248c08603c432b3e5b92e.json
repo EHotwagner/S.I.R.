@@ -1,0 +1,109 @@
+{
+  "schema": "sir.client.feature-bundle-graph/v1",
+  "registryVersion": 1,
+  "registryDigest": "3d0757cd77198139375d4c4ef3e07863fa27b8c2bc67c8f2cd8fae6d46c8df18",
+  "buildInputDigest": "53e8c718ebf60502c72e7bba8d43101c3068075b8f6e3dea6cd70995ec82018f",
+  "entry": "content/sir-client/v1/app.js",
+  "dynamicEntries": [
+    "content/sir-client/v1/RulesExplorer-CF50-GEm.js",
+    "content/sir-client/v1/deferred-delivery-support-CFKGOZNJ.js",
+    "content/sir-client/v1/docs-feature-Cx7XDDoj.js"
+  ],
+  "features": [
+    {
+      "id": "delivery-support",
+      "phase": "deferred",
+      "route": "delivery-support",
+      "control": "delivery-support",
+      "logicalChunk": "deferred-delivery-support",
+      "emitted": "content/sir-client/v1/deferred-delivery-support-CFKGOZNJ.js",
+      "bytes": {
+        "raw": 304,
+        "gzip": 230,
+        "brotli": 163
+      },
+      "budget": {
+        "raw": 8192,
+        "gzip": 4096,
+        "brotli": 3072
+      },
+      "sha256": "15b5bb33b0a0c0b78dda96ccf726783400605dc188e64731ad0f6171fe2eb608"
+    },
+    {
+      "id": "docs",
+      "phase": "deferred",
+      "route": "docs",
+      "control": "toolbar-docs",
+      "logicalChunk": "docs-feature",
+      "emitted": "content/sir-client/v1/docs-feature-Cx7XDDoj.js",
+      "bytes": {
+        "raw": 473,
+        "gzip": 285,
+        "brotli": 209
+      },
+      "budget": {
+        "raw": 8192,
+        "gzip": 4096,
+        "brotli": 3072
+      },
+      "sha256": "89faaf09c049c4f9dfbe2de0d2945b904a2b05a8ac709b2f20743649ca9ce258"
+    },
+    {
+      "id": "rules-explorer",
+      "phase": "deferred",
+      "route": "data",
+      "control": "supporting-data",
+      "logicalChunk": "RulesExplorer",
+      "emitted": "content/sir-client/v1/RulesExplorer-CF50-GEm.js",
+      "bytes": {
+        "raw": 62976,
+        "gzip": 18465,
+        "brotli": 15937
+      },
+      "budget": {
+        "raw": 65536,
+        "gzip": 20000,
+        "brotli": 16000
+      },
+      "sha256": "b2dd82ecbd45de59743a42f6c13bf5e36d5c13ed219c9b67f10ddb00278ddfab"
+    },
+    {
+      "id": "shell",
+      "phase": "bootstrap",
+      "route": "initial",
+      "control": "application-entry",
+      "logicalChunk": "app",
+      "emitted": "content/sir-client/v1/app.js",
+      "bytes": {
+        "raw": 1216979,
+        "gzip": 281756,
+        "brotli": 223688
+      },
+      "budget": {
+        "raw": 1250000,
+        "gzip": 320000,
+        "brotli": 280000
+      },
+      "sha256": "3f8d91b6ba3fd98ea39eca24a4296083179e92069facccb287ad4364678ef4af"
+    },
+    {
+      "id": "tactical-environment",
+      "phase": "eager",
+      "route": "editor",
+      "control": "editor-environment",
+      "logicalChunk": "app",
+      "emitted": "content/sir-client/v1/app.js",
+      "bytes": {
+        "raw": 1216979,
+        "gzip": 281756,
+        "brotli": 223688
+      },
+      "budget": {
+        "raw": 1250000,
+        "gzip": 320000,
+        "brotli": 280000
+      },
+      "sha256": "3f8d91b6ba3fd98ea39eca24a4296083179e92069facccb287ad4364678ef4af"
+    }
+  ]
+}

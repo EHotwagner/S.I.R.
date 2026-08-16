@@ -5,8 +5,8 @@ categoryindex: 5
 index: 1
 status: implemented
 decision-status: implemented
-version: "1.1"
-last-updated: 2026-07-31
+version: "1.2"
+last-updated: 2026-08-16
 ---
 
 # Unified Tactical Workspace
@@ -75,6 +75,15 @@ channels together. Drag its range control, enter an exact time, use Home/End,
 step, or play to move the cursor. Seeking is projection-only: it neither edits
 a plan nor commits execution. Committed intervals are immutable; new planning
 starts at the displayed next-editable boundary.
+
+The retained SVG now consumes the shared `tactical-visual-system-v1` registry
+in every modality. Terrain, semantic edges, box pieces, routes, disclosed
+event effects, selection, exact overlays, and annotations have one stable
+z-order and one palette/motion vocabulary. Event traces and impacts are
+projection-only, bounded, pointer-inert, and keyed to event/tick identity, so
+pause, step, scrub, and speed changes reconstruct coherent historical feedback
+without stale particles or invented endpoints. Reduced-motion mode keeps the
+same causal feedback through short opacity emphasis.
 
 Plan authors route, facing, attention, stance, hold, engagement, and
 synchronization commands at the current editable time. Selected commands can

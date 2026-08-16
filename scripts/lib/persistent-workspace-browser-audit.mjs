@@ -5,6 +5,7 @@ import { access, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises
 import { createServer as createNetServer } from "node:net";
 import { homedir, tmpdir } from "node:os";
 import { delimiter, extname, isAbsolute, join, normalize, resolve, sep } from "node:path";
+import { chromium as playwrightChromium } from "@playwright/test";
 
 const delay = (milliseconds) => new Promise((resolveDelay) => setTimeout(resolveDelay, milliseconds));
 const chromiumStartupProbeIntervalMilliseconds = 50;
@@ -67,7 +68,7 @@ const chromiumDiscoveryFailure = (reason, attempted) => {
   );
 };
 
-const discoverChromium = async () => {
+export const discoverChromium = async () => {
   const override = process.env.CHROMIUM_PATH?.trim();
   if (override) {
     const candidate = isAbsolute(override) ? normalize(override) : resolve(override);
@@ -77,6 +78,12 @@ const discoverChromium = async () => {
       [candidate],
     );
   }
+
+  // Conformance installs the lockfile-pinned Playwright browser. Prefer that
+  // exact executable when it is present so retained raw captures do not
+  // silently depend on whichever ambient Chrome build the host provides.
+  const pinnedPlaywrightChromium = playwrightChromium.executablePath();
+  if (await executable(pinnedPlaywrightChromium)) return pinnedPlaywrightChromium;
 
   const pathDirectories = (process.env.PATH ?? "")
     .split(delimiter)
@@ -226,6 +233,7 @@ const collectGeometry = () => {
     rect: rect(body),
     children: [...body.children].map((child) => ({ className: child.className, position: getComputedStyle(child).position, rect: rect(child) })),
   }));
+  const svgStyles = getComputedStyle(svg);
   return {
     viewport: { width: innerWidth, height: innerHeight, devicePixelRatio },
     document: {
@@ -246,6 +254,25 @@ const collectGeometry = () => {
     counts: {
       worksurfaceRoots: shell.querySelectorAll("[data-work-surface-root]").length,
       applicationLandmarks: shell.querySelectorAll("svg[role='application']").length,
+    },
+    visualSystem: {
+      identity: svg.getAttribute("data-visual-system"),
+      density: svg.getAttribute("data-visual-density"),
+      motion: svg.getAttribute("data-motion"),
+      layerOrder: svg.getAttribute("data-layer-order"),
+      effectCount: Number(svg.getAttribute("data-effect-count")),
+      effectLimit: Number(svg.getAttribute("data-effect-limit")),
+      unitCount: Number(svg.getAttribute("data-visual-unit-count")),
+      nodeEstimate: Number(svg.getAttribute("data-visual-node-estimate")),
+      paintedLayerOrder: [...svg.querySelector("#persistent-scene-camera").children]
+        .map((node) => node.getAttribute("data-scene-layer")).filter(Boolean).join(">"),
+      effectKinds: [...svg.querySelectorAll("[data-effect-kind]")].map((node) => node.getAttribute("data-effect-kind")),
+      effectLifecycles: [...svg.querySelectorAll("[data-effect-lifecycle]")].map((node) => node.getAttribute("data-effect-lifecycle")),
+      workload: globalThis.__sirTacticalWorkload ?? null,
+      tokens: Object.fromEntries([
+        "--sir-canvas", "--sir-text", "--sir-grid", "--sir-focus",
+        "--sir-intent", "--sir-impact", "--sir-suppression", "--sir-recovery", "--sir-rejected",
+      ].map((name) => [name, svgStyles.getPropertyValue(name).trim()])),
     },
     channels,
     toolbarChildren,
@@ -425,7 +452,7 @@ export const assertPortableReviewMetrics = ({ storedWide, storedNarrow, liveWide
   }
 };
 
-export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/client", screenshotPath } = {}) => {
+export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/client", screenshotPath, prepareExpression, captureStyleText, reducedMotion = false } = {}) => {
   const chromiumExecutable = await discoverChromium();
   const { server, port } = await serve(clientRoot);
   const profile = await mkdtemp(join(tmpdir(), "sir-m9-chromium-"));
@@ -435,7 +462,11 @@ export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/
   const sanitizedDbusVariables = Object.keys(process.env).filter((name) => inheritedChromiumDbusAddresses.has(name));
   let browserStderr = "";
   const browser = spawn(chromiumExecutable, [
-    "--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars",
+    "--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars", "--lang=en-US",
+    "--deterministic-mode",
+    "--force-color-profile=srgb", "--num-raster-threads=1",
+    "--disable-partial-raster", "--disable-oop-rasterization",
+    "--disable-font-subpixel-positioning", "--disable-lcd-text", "--font-render-hinting=none",
     "--disable-dev-shm-usage", "--no-first-run", "--no-default-browser-check",
     "--disable-background-networking", "--disable-default-apps", "--disable-extensions",
     "--force-device-scale-factor=1", "--remote-debugging-address=127.0.0.1",
@@ -496,10 +527,36 @@ export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/
     cdp = new Cdp(page.webSocketDebuggerUrl);
     await cdp.send("Runtime.enable");
     await cdp.send("Page.enable");
+    await cdp.send("Emulation.setLocaleOverride", { locale: "en-US" });
+    await cdp.send("Emulation.setTimezoneOverride", { timezoneId: "UTC" });
     await cdp.send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
+    await cdp.send("Emulation.setEmulatedMedia", {
+      media: "screen",
+      features: [
+        { name: "prefers-reduced-motion", value: reducedMotion ? "reduce" : "no-preference" },
+        { name: "prefers-color-scheme", value: "dark" },
+        { name: "prefers-contrast", value: "no-preference" },
+        { name: "forced-colors", value: "none" },
+      ],
+    });
     await cdp.send("Page.navigate", { url: `http://127.0.0.1:${port}/` });
     await waitForShell(cdp);
+    if (captureStyleText) {
+      await evaluate(cdp, `(() => { const style = document.createElement("style"); style.id = "sir-capture-input-style"; style.textContent = ${JSON.stringify(captureStyleText)}; document.head.appendChild(style); return document.fonts.ready; })()`);
+    }
     await delay(250);
+    if (prepareExpression) {
+      try {
+        await Promise.race([
+          evaluate(cdp, prepareExpression),
+          delay(20_000).then(() => { throw new Error("production review preparation exceeded 20 seconds"); }),
+        ]);
+      } catch (error) {
+        const stage = await evaluate(cdp, "globalThis.__sirTacticalStage ?? 'unspecified'");
+        throw new Error(`${error.message}; stage=${stage}`, { cause: error });
+      }
+      await delay(250);
+    }
     const wide = await evaluate(cdp, `(${collectGeometry.toString()})()`);
     assertWide(wide);
     if (screenshotPath) {
@@ -513,6 +570,7 @@ export const auditPersistentWorkspaceBrowser = async ({ clientRoot = "artifacts/
     return {
       chromiumExecutable,
       chromium: await evaluate(cdp, "navigator.userAgent"),
+      chromiumVersion: version.Browser,
       wide,
       narrow,
     };

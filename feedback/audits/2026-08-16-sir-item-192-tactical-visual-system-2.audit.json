@@ -1,0 +1,37 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-16-sir-item-192-tactical-visual-system-2.md",
+  "reportSha256": "3be6eb3a802d4cf06534e73eb39acdbc7721e301a2698fcffeaf446b37404e8e",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:work/192-tactical-visual-system/test-results/tactical-visual.trx",
+          "result": "verified",
+          "sha256": "172decc406b2f8c3e59105129cc1a4a32725a157958071af008ce11152a8a371"
+        },
+        {
+          "locator": "file:docs/assets/tactical-visual-system-review/manifest.json",
+          "result": "verified",
+          "sha256": "9d1b6eddf9232b8b5e2e586d4b355516535b709adbbe6b7c733eccf037af678c"
+        },
+        {
+          "locator": "file:scripts/test-tactical-visual-review-mutations.sh",
+          "result": "verified",
+          "sha256": "8533464dcfbe00569d8e0e068351fef0f6ae367069526b7e6fc5be404188cbdc"
+        }
+      ],
+      "confidenceLimits": [
+        "Verification was read-only; focused commands and mutations were not rerun.",
+        "The tracked receipt records eight passes, including protected-stylesheet and production-workload mutations; it is not hosted-CI evidence.",
+        "The manifest records production bundle and stylesheet hashes, but those ephemeral build outputs are not audit file locators.",
+        "Replacement hosted CI and merge remain pending."
+      ]
+    }
+  ]
+}

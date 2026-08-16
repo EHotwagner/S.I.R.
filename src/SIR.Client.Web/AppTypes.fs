@@ -13,6 +13,7 @@ open SIR.Domain
 open SIR.Protocol.Http
 open SIR.Protocol.Realtime
 open SIR.Client.Web.BrowserInfrastructure
+open SIR.Client.Web
 type Msg =
     | ShellMsg of SIR.Client.Msg
     | BattlefieldChanged of BattlefieldAction
@@ -55,6 +56,7 @@ type Msg =
     | EndLayoutBottomPanelResize
     | ResizeLayoutBottomPanelKeyboard of delta: int
     | OpenSupportingPanel of panelId: string
+    | ClientFeatureMessage of FeatureLoader.Message
     | ResetTacticalLayout
     | ToggleDesktopToolbarCustomization
     | AddDesktopToolbarCommand of string
@@ -81,9 +83,9 @@ type Msg =
     | CommitPlanningRevision
     | PlanningWorkerResponded of SimulatorResponseEnvelope
     | ExportPlanningReview
-    | LoadMapSample of string
-    | LoadSimulationSample of string
-    | LoadReplaySample of string
+    | LoadMapSample of editor: MapEditorState * simulator: SimulatorHandoff option
+    | LoadSimulationSample of editor: MapEditorState * simulator: SimulatorHandoff option
+    | LoadReplaySample of identity: string * title: string * frames: InspectionProjection array
     | KeyPressed of
         key: string *
         controlOrMeta: bool *
@@ -106,6 +108,10 @@ type Msg =
     | EditorWorkspaceChanged of EditorWorkspaceAction
     | RecallEditorView of string
     | EditorChanged of MapEditorAction
+    | TacticalParcelChanged of TacticalParcelEditor.TacticalParcelEditorAction
+    | TacticalParcelImportTextChanged of string
+    | ImportTacticalParcelDocument
+    | ExportTacticalParcelDocument
     | ExportMap
     | ExportDesignBundle
     | ExportExperiment
@@ -131,11 +137,14 @@ and EditorToolPanel =
     | UnitTools
     | EdgeTools
     | ZoneTools
+    | TacticalEnvironmentTools
     | DocumentTools
 
 type Model =
     { Shell: SIR.Client.Model
       Editor: MapEditorState
+      TacticalParcelEditor: TacticalParcelEditor.TacticalParcelEditorState
+      TacticalParcelImportText: string
       Simulator: SimulatorHandoff option
       SimulatorSelectedUnit: int32 option
       SimulatorControllerSelection: MapController option
@@ -150,6 +159,8 @@ type Model =
       HeldTacticalOverlays: Set<TacticalOverlayId>
       TacticalLayout: TacticalLayoutProfile
       TacticalLayoutDiagnostics: string list
+      ClientFeatures: Map<FeatureLoader.FeatureId, FeatureLoader.LoadState>
+      FeatureLoaderDiagnostic: string option
       DesktopToolbarCommands: string list
       DesktopToolbarCustomizationOpen: bool
       BottomPanelResizeActive: bool

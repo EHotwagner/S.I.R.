@@ -115,8 +115,8 @@ let private representativeWorkload () =
           WeaponProfile.LobbedArea ]
 
     let covers =
-        [ { CoverId = "representative-soft-cover"; Cell = cell 2 2; Integrity = 100; ProjectileBlocking = false }
-          { CoverId = "representative-hard-cover"; Cell = cell 3 3; Integrity = 100; ProjectileBlocking = true } ]
+        [ { CoverId = "representative-soft-cover"; Cell = cell 2 2; Integrity = 100; ProjectileBlocking = false; Material = "soft"; PenetrationResistance = 0; ProtectedDirections = [] }
+          { CoverId = "representative-hard-cover"; Cell = cell 3 3; Integrity = 100; ProjectileBlocking = true; Material = "hard"; PenetrationResistance = 100; ProtectedDirections = [] } ]
 
     let inputs =
         [ for index in 0 .. 11 ->

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="b5ed7afb-13b6-0f37-7e81-0e83d8cdb17f" name="client-feature-loader aggregate" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Results>
+    <UnitTestResult executionId="ac1cd862-bd39-1c1b-b149-b2ad00e8621b" testId="9d82116d-90b2-3cdd-4a78-56ce5dc05dcf" testName="registry, compiled-Fable state, bundle graph, and budgets pass" outcome="Passed" />
+    <UnitTestResult executionId="db3a7c44-6107-165a-be18-d24de8b0bd98" testId="a3bfd306-b844-917a-a202-900ec5c65a2b" testName="eager-import mutation is rejected" outcome="Passed" />
+    <UnitTestResult executionId="d3f81e0f-4ae5-584c-4345-690905585e67" testId="649d4c81-f90c-d400-29f5-1f97bbe3f301" testName="property-mangle mutation is rejected" outcome="Passed" />
+    <UnitTestResult executionId="be5c9dbb-6e41-4c0d-6903-52f3736a1965" testId="6ae1a1bb-d953-bb8a-2552-8d8b26c839c4" testName="missing-chunk mutation is rejected" outcome="Passed" />
+    <UnitTestResult executionId="da23f6f1-fca7-9960-924d-e8a1fdae6b30" testId="993a725e-2ac7-a37b-102a-6d8b77b34586" testName="stale-identity mutation is rejected" outcome="Passed" />
+    <UnitTestResult executionId="25dde6f1-e5cb-20bc-44ea-bfbef445a94e" testId="c1ff6af7-939a-ba86-e0d5-8a164f172adb" testName="budget mutation is rejected" outcome="Passed" />
+    <UnitTestResult executionId="3337a6e2-f21e-9f13-56f6-e551d6617d32" testId="f5f363de-7b0c-8240-f48e-dbdf3e2993f9" testName="a deferred production control reports a stable offline failure" outcome="Passed" />
+    <UnitTestResult executionId="ed834e4b-f6bb-9666-17b8-22b1c971a51d" testId="1ced7f48-5f3e-2e32-8fcb-4ea026f1cbe5" testName="the production shell loads registered features through real controls" outcome="Passed" />
+  </Results>
+  <ResultSummary outcome="Completed">
+    <Counters total="8" executed="8" passed="8" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" notExecuted="0" />
+  </ResultSummary>
+</TestRun>

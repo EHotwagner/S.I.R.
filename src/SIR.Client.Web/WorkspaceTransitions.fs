@@ -4,6 +4,15 @@ open Elmish
 open SIR.Client
 open SIR.Client.Web.AppShell
 open SIR.Client.Web.AppTypes
+open SIR.Client.Web.DocumentationFeatureContract
+
+let private validSimulatorFor editor current =
+    match MapEditorSimulator.tryHandoff editor with
+    | Error _ -> current
+    | Ok initial ->
+        current
+        |> Option.map (MapEditorSimulator.reconcile editor)
+        |> Option.orElse (Some initial)
 
 let change workspace model =
     if workspace = DocsWorkspace then
@@ -12,7 +21,7 @@ let change workspace model =
             LastTacticalWorkspace = if model.Workspace = DocsWorkspace then model.LastTacticalWorkspace else model.Workspace
             InputHelpExpanded = false
             DocumentationError = None },
-        if model.Documentation.IsNone then Cmd.OfAsync.perform DocsView.load () DocumentationLoaded else Cmd.none
+        if model.Documentation.IsNone then Cmd.OfAsync.perform load () DocumentationLoaded else Cmd.none
     else
         let editor =
             if workspace = ReplayWorkspace then MapEditor.update CancelEditorGesture model.Editor else model.Editor
@@ -42,6 +51,7 @@ let change workspace model =
         { model with
             Editor = editor
             Planning = planning
+            Simulator = if workspace = SimulatorWorkspace then validSimulatorFor editor model.Simulator else model.Simulator
             TacticalSelectedUnit = reconcileTacticalSelectedUnit workspace transitionModel
             Workspace = workspace
             LastTacticalWorkspace = workspace

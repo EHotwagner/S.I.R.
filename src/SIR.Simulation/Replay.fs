@@ -879,7 +879,10 @@ module Replay =
                               { CoverId = coverId
                                 Cell = readCell reader
                                 Integrity = readInt32 reader
-                                ProjectileBlocking = readBool reader } ]
+                                ProjectileBlocking = readBool reader
+                                Material = "legacy"
+                                PenetrationResistance = 0
+                                ProtectedDirections = [] } ]
                 if values |> List.map fst |> Set.ofList |> Set.count <> coverCount then
                     failDecode "Snapshot contains duplicate cover identifiers."
                 Map.ofList values

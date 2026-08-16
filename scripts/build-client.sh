@@ -7,14 +7,8 @@ rules_fable_output="$repo_root/src/SIR.Client.Web/.fable-rules"
 
 cd "$repo_root"
 
-dotnet fable src/SIR.Replay.Web/SIR.Replay.Web.fsproj \
-  --outDir "$fable_output" \
-  --define SIR_WEB_CLIENT \
-  --noCache
+./scripts/build-client-fable-targets.sh "$fable_output" "$rules_fable_output"
 
-dotnet fable src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj \
-  --outDir "$rules_fable_output" \
-  --noCache
 cp "$rules_fable_output/RulesExplorer.js" "$fable_output/RulesExplorer.js"
 cp "$rules_fable_output/SIR.Domain/Rules.js" "$fable_output/SIR.Domain/RulesAuthoring.js"
 cp "$rules_fable_output/SIR.Simulation/CombatRules.js" "$fable_output/SIR.Simulation/CombatRulesAuthoring.js"
@@ -28,6 +22,9 @@ sed -i 's#./SIR.Simulation/CombatRules.js#./SIR.Simulation/CombatRulesAuthoring.
 sed -i 's#./SIR.Domain/Rules.js#./SIR.Domain/RulesAuthoring.js#' "$fable_output/RulesExplorer.js"
 sed -i 's#../SIR.Domain/Rules.js#../SIR.Domain/RulesAuthoring.js#' "$fable_output/SIR.Simulation/CombatRulesAuthoring.js"
 sed -i '$a export default DeferredDataPanel;' "$fable_output/RulesExplorer.js"
+sed -i '$a export default TacticalEnvironmentPanel;' "$fable_output/SIR.Client.Web/TacticalEnvironmentView.js"
+sed -i '$a export default RulesWorkbenchPanel;' "$fable_output/SIR.Client.Web/RulesWorkbenchView.js"
+sed -i '$a export default DocumentationWorkspace;' "$fable_output/SIR.Client.Web/DocsView.js"
 
 npx vite build --config src/SIR.Client.Web/vite.config.js
 node scripts/generate-in-app-docs.mjs artifacts/client

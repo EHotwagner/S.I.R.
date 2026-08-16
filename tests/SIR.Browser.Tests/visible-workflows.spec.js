@@ -14,7 +14,11 @@ async function loadMaintainedSimulation(page) {
   await page.getByRole("button", { name: "Simulate", exact: true }).click();
   await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
   await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
-  await page.getByRole("button", { name: /^Load simulation sample:/ }).first().click();
+  const samplesOwner = page.getByLabel("Curated samples feature", { exact: true });
+  await expect(samplesOwner).toBeVisible();
+  await expect(samplesOwner.getByRole("region", { name: "Curated maps simulations and replays", exact: true })).toBeVisible();
+  await samplesOwner.getByText("Troll assault", { exact: true }).click();
+  await samplesOwner.getByRole("button", { name: "Run Troll assault in Simulator", exact: true }).click();
 }
 
 async function expandPanel(page, panelId) {
@@ -89,6 +93,53 @@ test("visible mode controls preserve a usable tactical workspace across authorin
   }
 });
 
+test("the production tactical visual system preserves causal feedback under reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await loadMaintainedSimulation(page);
+  const battlefield = page.locator("#persistent-tactical-svg");
+  await expect(battlefield).toHaveAttribute("data-visual-system", "tactical-visual-system-v1");
+  await expect(battlefield).toHaveAttribute("data-motion", "reduced");
+  await expect(battlefield).toHaveAttribute(
+    "data-layer-order",
+    "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations",
+  );
+  const paintedOrder = await battlefield.locator("#persistent-scene-camera").evaluate((camera) =>
+    [...camera.children].map((node) => node.getAttribute("data-scene-layer")).filter(Boolean).join(">"),
+  );
+  expect(paintedOrder).toBe(await battlefield.getAttribute("data-layer-order"));
+  await expect(battlefield.locator("#persistent-layer-effects")).toHaveAttribute("data-effect-motion", "emphasis-120ms");
+
+  await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();
+  const effectCount = Number(await battlefield.getAttribute("data-effect-count"));
+  const effectLimit = Number(await battlefield.getAttribute("data-effect-limit"));
+  const unitCount = Number(await battlefield.getAttribute("data-visual-unit-count"));
+  const nodeEstimate = Number(await battlefield.getAttribute("data-visual-node-estimate"));
+  expect(effectCount).toBeGreaterThan(0);
+  expect(effectCount).toBeLessThanOrEqual(effectLimit);
+  expect(unitCount).toBeGreaterThan(0);
+  expect(nodeEstimate).toBeLessThanOrEqual(unitCount <= 100 ? 5000 : 9000);
+  const firstEffect = battlefield.locator("#persistent-layer-effects [data-effect-event]").first();
+  await expect(firstEffect).toHaveAttribute("data-effect-kind", /movement|attack|impact|suppression|recovery|signal|objective|event/);
+  await expect(firstEffect).toHaveAttribute("data-effect-lifecycle", /preview|predicted|accepted|committed|rejected|historical/);
+  expect(await firstEffect.evaluate((node) => getComputedStyle(node).animationDuration)).toBe("0.12s");
+  await expect(battlefield.locator("#persistent-layer-effects")).toHaveAttribute("pointer-events", "none");
+  await expect(battlefield.locator("#persistent-layer-units [data-unit-id]").first()).toBeVisible();
+
+  const samples = await battlefield.evaluate(async (root) => {
+    const values = [];
+    for (let index = 0; index < 24; index += 1) {
+      await new Promise((resolve) => requestAnimationFrame(() => {
+        const started = performance.now();
+        root.querySelectorAll("[data-unit-id], [data-effect-event], [data-overlay-id]").length;
+        values.push(performance.now() - started);
+        resolve();
+      }));
+    }
+    return values.sort((left, right) => left - right);
+  });
+  expect(samples[Math.floor(samples.length * 0.95)]).toBeLessThan(16.67);
+});
+
 test("View analysis overlays share pointer and keyboard commands and restore independently", async ({ page }) => {
   await page.goto("/");
   const battlefield = page.locator("#persistent-tactical-svg");
@@ -161,7 +212,7 @@ test("the player-visible Rules explorer renders the executable combat corpus and
   }
   await expect(source).toHaveAttribute(
     "href",
-    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/1194ce757373f0443430e0fbf142a232c2916062\/src\/SIR\.Simulation\/CombatRules\.fs/,
+    /github\.com\/EHotwagner\/S\.I\.R\.\/blob\/e055929f1f958ad9f98f5aac9934ea28cd7a0fbe\/src\/SIR\.Simulation\/CombatRules\.fs/,
   );
   await expect(damageRule.getByText(/examples: tests\/SIR\.Conformance\.Shared\/RulesCorpusFixtures\.fs · properties:/)).toBeVisible();
   await expect(damageRule.getByRole("link", { name: "Coverage graph" })).toHaveAttribute("href", /rules-corpus\/v2\/coverage\.json/);
@@ -404,7 +455,9 @@ test("the normal UI remains operable at 400 percent browser zoom", async ({ page
   await page.getByRole("button", { name: "Simulate", exact: true }).click();
   await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
   await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
-  await expect(page.getByLabel("Simulator samples", { exact: true })).toBeVisible();
+  const samplesOwner = page.getByLabel("Curated samples feature", { exact: true });
+  await expect(samplesOwner).toBeVisible();
+  await expect(samplesOwner.getByRole("region", { name: "Curated maps simulations and replays", exact: true })).toBeVisible();
 });
 
 test("a valid map selected through the visible import control reports success", async ({ page }) => {
@@ -457,11 +510,7 @@ test("the visible background picker rejects an oversized file then reports attac
 });
 
 test("a curated sample exposes maintained playback and can reset", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "Simulate", exact: true }).click();
-  await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
-  await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
-  await page.getByRole("button", { name: /^Load simulation sample:/ }).first().click();
+  await loadMaintainedSimulation(page);
 
   const play = page.getByRole("button", { name: "Play tactical timeline", exact: true });
   await expect(play).toBeEnabled();
@@ -479,11 +528,7 @@ test("a curated sample exposes maintained playback and can reset", async ({ page
 });
 
 test("production simulator status exposes continuous runtime time without handoff chrome", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "Simulate", exact: true }).click();
-  await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
-  await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
-  await page.getByRole("button", { name: /^Load simulation sample:/ }).first().click();
+  await loadMaintainedSimulation(page);
   await expect(page.getByText(/^Authoritative runtime tick 0/)).toBeVisible();
   await expect(page.getByText(/manual.*handoff/i)).toHaveCount(0);
   await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();

@@ -88,7 +88,7 @@ module PhysicalCombatDiagnostics =
         let target =
             { EntityId = "blue-20"; Faction = "blue"; Cell = cell 4 0; Facing = Direction8.West; Health = 100
               Armor = { FrontRating = 50; RearRating = 20; Integrity = 100 }; Wounds = []; Incapacitated = false; Suppression = 0 }
-        let cover = { CoverId = coverId; Cell = cell 2 0; Integrity = 50; ProjectileBlocking = false }
+        let cover = { CoverId = coverId; Cell = cell 2 0; Integrity = 50; ProjectileBlocking = false; Material = "diagnostic"; PenetrationResistance = 0; ProtectedDirections = [] }
         let identity = SpatialAuthorityIdentity.create "physical-combat-drill" "combat-rules-v1" 1L "player-authority" 1L |> Result.defaultWith failwith
         { Spatial =
             { Identity = identity; Minimum = cell 0 0; Maximum = cell 6 2; Terrain = Map.empty
@@ -152,7 +152,7 @@ module PhysicalCombatDiagnostics =
         { Tick = 0
           Board =
             { Minimum = cell 0 0; Maximum = cell 6 2; Edges = []
-              Covers = [ coverId, { CoverId = coverId; Cell = cell 2 0; Integrity = 50; ProjectileBlocking = false } ] |> Map.ofList }
+              Covers = [ coverId, { CoverId = coverId; Cell = cell 2 0; Integrity = 50; ProjectileBlocking = false; Material = "diagnostic"; PenetrationResistance = 0; ProtectedDirections = [] } ] |> Map.ofList }
           Units = [ red.Id, red; blue.Id, blue ] |> Map.ofList
           Observations = Set.empty
           Awareness = Map.empty

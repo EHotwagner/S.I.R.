@@ -17,113 +17,113 @@
       "x": 14.391,
       "y": 14.391,
       "width": 1411.219,
-      "height": 941.703,
+      "height": 988.094,
       "right": 1425.609,
-      "bottom": 956.094
+      "bottom": 1002.484
     },
     "toolbar": {
       "x": 14.391,
       "y": 14.391,
       "width": 1411.219,
-      "height": 95.094,
+      "height": 141.484,
       "right": 1425.609,
-      "bottom": 109.484
+      "bottom": 155.875
     },
     "frame": {
       "x": 14.391,
-      "y": 117.484,
+      "y": 163.875,
       "width": 1411.219,
       "height": 722.391,
       "right": 1425.609,
-      "bottom": 839.875
+      "bottom": 886.266
     },
     "workscreen": {
       "x": 228.781,
-      "y": 117.484,
+      "y": 163.875,
       "width": 966.438,
       "height": 564,
       "right": 1195.219,
-      "bottom": 681.484
+      "bottom": 727.875
     },
     "svg": {
       "x": 229.781,
-      "y": 158.078,
+      "y": 164.875,
       "width": 964.438,
-      "height": 642.953,
+      "height": 562,
       "right": 1194.219,
-      "bottom": 801.031
+      "bottom": 726.875
     },
     "left": {
       "x": 14.391,
-      "y": 117.484,
+      "y": 163.875,
       "width": 208,
       "height": 564,
       "right": 222.391,
-      "bottom": 681.484
+      "bottom": 727.875
     },
     "right": {
       "x": 1201.609,
-      "y": 117.484,
+      "y": 163.875,
       "width": 224,
       "height": 564,
       "right": 1425.609,
-      "bottom": 681.484
+      "bottom": 727.875
     },
     "bottom": {
       "x": 14.391,
-      "y": 687.875,
+      "y": 734.266,
       "width": 1411.219,
       "height": 152,
       "right": 1425.609,
-      "bottom": 839.875
+      "bottom": 886.266
     },
     "timeline": {
       "x": 14.391,
-      "y": 692.672,
+      "y": 739.063,
       "width": 1411.219,
       "height": 146.094,
       "right": 1425.609,
-      "bottom": 838.766
+      "bottom": 885.156
     },
     "timelineLegend": {
       "x": 15.391,
-      "y": 693.672,
+      "y": 740.063,
       "width": 325.594,
       "height": 17.719,
       "right": 340.984,
-      "bottom": 711.391
+      "bottom": 757.781
     },
     "timelineTransport": {
       "x": 15.391,
-      "y": 712.984,
+      "y": 759.375,
       "width": 1409.219,
       "height": 44,
       "right": 1424.609,
-      "bottom": 756.984
+      "bottom": 803.375
     },
     "timelineRuler": {
       "x": 17.391,
-      "y": 760.578,
+      "y": 806.969,
       "width": 1409.219,
       "height": 44,
       "right": 1426.609,
-      "bottom": 804.578
+      "bottom": 850.969
     },
     "timelineCursor": {
       "x": 342.578,
-      "y": 693.672,
+      "y": 740.063,
       "width": 1082.031,
       "height": 17.719,
       "right": 1424.609,
-      "bottom": 711.391
+      "bottom": 757.781
     },
     "timelineLanes": {
       "x": 15.391,
-      "y": 808.172,
+      "y": 854.563,
       "width": 1409.219,
       "height": 29.594,
       "right": 1424.609,
-      "bottom": 837.766
+      "bottom": 884.156
     }
   },
   "styles": {
@@ -137,16 +137,41 @@
     "worksurfaceRoots": 1,
     "applicationLandmarks": 1
   },
+  "visualSystem": {
+    "identity": "tactical-visual-system-v1",
+    "density": "ordinary",
+    "motion": "full",
+    "layerOrder": "terrain&gt;edges&gt;routes&gt;units&gt;effects&gt;selection&gt;tactical-overlays&gt;annotations",
+    "effectCount": 0,
+    "effectLimit": 256,
+    "unitCount": 4,
+    "nodeEstimate": 479,
+    "paintedLayerOrder": "terrain&gt;edges&gt;routes&gt;units&gt;effects&gt;selection&gt;tactical-overlays&gt;annotations",
+    "effectKinds": [],
+    "effectLifecycles": [],
+    "workload": null,
+    "tokens": {
+      "--sir-canvas": "#10161d",
+      "--sir-text": "#f7f9fa",
+      "--sir-grid": "#71808b",
+      "--sir-focus": "#ffffff",
+      "--sir-intent": "#53b7ff",
+      "--sir-impact": "#ff6b6b",
+      "--sir-suppression": "#d792ff",
+      "--sir-recovery": "#8ce99a",
+      "--sir-rejected": "#ff6b6b"
+    }
+  },
   "channels": [
     {
       "channel": "Authored",
       "rect": {
         "x": 15.391,
-        "y": 693.672,
+        "y": 740.063,
         "width": 68.797,
         "height": 17.719,
         "right": 84.188,
-        "bottom": 711.391
+        "bottom": 757.781
       },
       "text": "Authored"
     },
@@ -154,11 +179,11 @@
       "channel": "Predicted",
       "rect": {
         "x": 96.188,
-        "y": 693.672,
+        "y": 740.063,
         "width": 76,
         "height": 17.719,
         "right": 172.188,
-        "bottom": 711.391
+        "bottom": 757.781
       },
       "text": "Predicted"
     },
@@ -166,11 +191,11 @@
       "channel": "Accepted",
       "rect": {
         "x": 184.188,
-        "y": 693.672,
+        "y": 740.063,
         "width": 68.797,
         "height": 17.719,
         "right": 252.984,
-        "bottom": 711.391
+        "bottom": 757.781
       },
       "text": "Accepted"
     },
@@ -178,11 +203,11 @@
       "channel": "Committed",
       "rect": {
         "x": 264.984,
-        "y": 693.672,
+        "y": 740.063,
         "width": 76,
         "height": 17.719,
         "right": 340.984,
-        "bottom": 711.391
+        "bottom": 757.781
       },
       "text": "Committed"
     },
@@ -190,11 +215,11 @@
       "channel": "Committed",
       "rect": {
         "x": 15.391,
-        "y": 808.172,
+        "y": 854.563,
         "width": 1409.219,
         "height": 29.594,
         "right": 1424.609,
-        "bottom": 837.766
+        "bottom": 884.156
       },
       "text": "Committed Committed simulator execution · 0–0"
     }
@@ -271,172 +296,161 @@
       "rect": {
         "x": 432.156,
         "y": 16.984,
-        "width": 95.547,
+        "width": 148.781,
         "height": 44,
-        "right": 527.703,
+        "right": 580.938,
         "bottom": 60.984
       }
     },
     {
       "label": "Switch to Plan",
       "rect": {
-        "x": 529.609,
+        "x": 582.844,
         "y": 16.984,
-        "width": 95.563,
+        "width": 148.797,
         "height": 44,
-        "right": 625.172,
+        "right": 731.641,
         "bottom": 60.984
       }
     },
     {
       "label": "Switch to Simulate",
       "rect": {
-        "x": 627.078,
+        "x": 733.547,
         "y": 16.984,
-        "width": 95.563,
+        "width": 148.797,
         "height": 44,
-        "right": 722.641,
+        "right": 882.344,
         "bottom": 60.984
       }
     },
     {
       "label": "Switch to Review",
       "rect": {
-        "x": 724.547,
+        "x": 884.25,
         "y": 16.984,
-        "width": 95.563,
+        "width": 148.797,
         "height": 44,
-        "right": 820.109,
+        "right": 1033.047,
         "bottom": 60.984
-      }
-    },
-    {
-      "label": "Open documentation",
-      "rect": {
-        "x": 432.156,
-        "y": 62.891,
-        "width": 95.547,
-        "height": 44,
-        "right": 527.703,
-        "bottom": 106.891
       }
     },
     {
       "label": "Play or pause",
       "rect": {
-        "x": 529.609,
+        "x": 432.156,
         "y": 62.891,
-        "width": 95.563,
+        "width": 148.781,
         "height": 44,
-        "right": 625.172,
+        "right": 580.938,
         "bottom": 106.891
       }
     },
     {
       "label": "Show contextual actions",
       "rect": {
-        "x": 627.078,
+        "x": 582.844,
         "y": 62.891,
-        "width": 95.563,
+        "width": 148.797,
         "height": 44,
-        "right": 722.641,
+        "right": 731.641,
         "bottom": 106.891
       }
     },
     {
       "label": "Customize toolbar",
       "rect": {
-        "x": 724.547,
+        "x": 733.547,
         "y": 62.891,
-        "width": 95.563,
+        "width": 148.797,
         "height": 44,
-        "right": 820.109,
+        "right": 882.344,
         "bottom": 106.891
+      }
+    },
+    {
+      "label": "Docs",
+      "rect": {
+        "x": 1035.438,
+        "y": 39.938,
+        "width": 58,
+        "height": 44,
+        "right": 1093.438,
+        "bottom": 83.938
       }
     },
     {
       "label": "Editor",
       "rect": {
-        "x": 822.5,
+        "x": 1095.828,
         "y": 39.938,
         "width": 77.203,
         "height": 44,
-        "right": 899.703,
+        "right": 1173.031,
         "bottom": 83.938
       }
     },
     {
       "label": "Plan",
       "rect": {
-        "x": 905.297,
+        "x": 1178.625,
         "y": 39.938,
         "width": 58,
         "height": 44,
-        "right": 963.297,
+        "right": 1236.625,
         "bottom": 83.938
       }
     },
     {
       "label": "Simulate",
       "rect": {
-        "x": 968.891,
+        "x": 1242.219,
         "y": 39.938,
         "width": 96.406,
         "height": 44,
-        "right": 1065.297,
+        "right": 1338.625,
         "bottom": 83.938
       }
     },
     {
       "label": "Review",
       "rect": {
-        "x": 1070.891,
+        "x": 1344.219,
         "y": 39.938,
         "width": 77.203,
         "height": 44,
-        "right": 1148.094,
-        "bottom": 83.938
-      }
-    },
-    {
-      "label": "Docs",
-      "rect": {
-        "x": 1153.688,
-        "y": 39.938,
-        "width": 58,
-        "height": 44,
-        "right": 1211.688,
+        "right": 1421.422,
         "bottom": 83.938
       }
     },
     {
       "label": "Workspace controls",
       "rect": {
-        "x": 1214.078,
-        "y": 39.938,
-        "width": 207.344,
+        "x": 18.578,
+        "y": 109.281,
+        "width": 411.188,
         "height": 44,
-        "right": 1421.422,
-        "bottom": 83.938
+        "right": 429.766,
+        "bottom": 153.281
       }
     }
   ],
   "tools": {
     "rect": {
       "x": 15.391,
-      "y": 548.484,
+      "y": 594.875,
       "width": 206,
-      "height": 764,
+      "height": 799.188,
       "right": 221.391,
-      "bottom": 1312.484
+      "bottom": 1394.063
     },
     "hostRect": {
       "x": 15.391,
-      "y": 548.484,
+      "y": 594.875,
       "width": 206,
-      "height": 764,
+      "height": 799.188,
       "right": 221.391,
-      "bottom": 1312.484
+      "bottom": 1394.063
     }
   },
   "panelBodies": [
@@ -444,11 +458,11 @@
       "panelId": "roster",
       "rect": {
         "x": 15.391,
-        "y": 212.531,
+        "y": 258.922,
         "width": 206,
         "height": 240.906,
         "right": 221.391,
-        "bottom": 453.438
+        "bottom": 499.828
       },
       "children": [
         {
@@ -456,11 +470,11 @@
           "position": "static",
           "rect": {
             "x": 15.391,
-            "y": 212.531,
+            "y": 258.922,
             "width": 206,
             "height": 240.906,
             "right": 221.391,
-            "bottom": 453.438
+            "bottom": 499.828
           }
         }
       ]
@@ -469,11 +483,11 @@
       "panelId": "tools",
       "rect": {
         "x": 15.391,
-        "y": 548.484,
+        "y": 594.875,
         "width": 206,
-        "height": 764,
+        "height": 799.188,
         "right": 221.391,
-        "bottom": 1312.484
+        "bottom": 1394.063
       },
       "children": [
         {
@@ -481,11 +495,11 @@
           "position": "static",
           "rect": {
             "x": 15.391,
-            "y": 548.484,
+            "y": 594.875,
             "width": 206,
-            "height": 764,
+            "height": 799.188,
             "right": 221.391,
-            "bottom": 1312.484
+            "bottom": 1394.063
           }
         }
       ]
@@ -494,11 +508,11 @@
       "panelId": "selection",
       "rect": {
         "x": 1202.609,
-        "y": 191.266,
+        "y": 237.656,
         "width": 222,
         "height": 561,
         "right": 1424.609,
-        "bottom": 752.266
+        "bottom": 798.656
       },
       "children": [
         {
@@ -506,11 +520,11 @@
           "position": "static",
           "rect": {
             "x": 1202.609,
-            "y": 191.266,
+            "y": 237.656,
             "width": 222,
             "height": 561,
             "right": 1424.609,
-            "bottom": 752.266
+            "bottom": 798.656
           }
         }
       ]

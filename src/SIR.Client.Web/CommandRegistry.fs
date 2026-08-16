@@ -28,6 +28,7 @@ let activeTacticalRegistry model =
                     | UnitTools -> UnitDomain
                     | EdgeTools -> EdgeDomain
                     | ZoneTools -> RegionDomain
+                    | TacticalEnvironmentTools -> DocumentDomain
                     | DocumentTools -> DocumentDomain
                   PanHeld = editorPanHeld model
                   InputHelpExpanded = model.InputHelpExpanded }
@@ -44,6 +45,17 @@ let activeTacticalRegistry model =
         match model.Workspace, model.Planning with
         | EditorWorkspace, _ ->
             [ yield
+                  { Id = "environment.editor.open"
+                    Label = "Open tactical environment authoring"
+                    Category = "Editor environment"
+                    Modalities = Set.singleton Editor
+                    DefaultGesture = Some "Shift+E"
+                    PointerAvailable = true
+                    Precedence = 390
+                    ModalContext = None
+                    ModalPhase = None
+                    Availability = AlwaysAvailable }
+              yield
                   pointerCommand
                       "editor.scene.create-simulator-handoff"
                       "Inspect maintained simulation for authored revision"

@@ -1,0 +1,66 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-16-sir-item-215-single-pass-qualification.md",
+  "reportSha256": "4ab7668d160c6001e2282c35724d79caacaf4c40f61150dd63fc80264a6218f2",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "duplicate",
+      "missingFacts": [
+        "The original failed route-read output and source-current success output were not retained as durable local evidence."
+      ],
+      "checkedEvidence": [
+        {
+          "locator": "file:feedback/checkpoints/item-215-single-pass-qualification.jsonl",
+          "result": "claim-only",
+          "sha256": "7d26d67af8a27edd35d877a83fe105a0a7ffc3639fe091272e8e2e7083082436"
+        },
+        {
+          "locator": "command:scripts/fsgg-coord --version",
+          "result": "verified"
+        },
+        {
+          "locator": "file:feedback/2026-08-16-sir-item-214-client-feature-loader.md",
+          "result": "verified",
+          "sha256": "b85069130de25c2de4d4b13570bad44d6cfc652a58e32c7251d11e5cfba4a497"
+        }
+      ],
+      "confidenceLimits": [
+        "The duplicate classification is verified locally, while the current cycle's exact route digest remains checkpoint-reported."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:readiness/215-single-pass-qualification/single-pass-timing.json",
+          "result": "verified",
+          "sha256": "a6c73eb322a03a3e91bf95d7bef8f63a57b4caf2c245ee6cdcaadd1ef511499e"
+        },
+        {
+          "locator": "file:docs/evidence/production-build-receipt-v1/87cf06f6c4cf32abd997cd6796a62f22ff37022e7bca954cb28c5714a64dfeaf.json",
+          "result": "verified",
+          "sha256": "87cf06f6c4cf32abd997cd6796a62f22ff37022e7bca954cb28c5714a64dfeaf"
+        },
+        {
+          "locator": "file:docs/evidence/production-build-receipt-v1/1363d1f1e0b1698823038c6a6a3b1f815321b2502bbb89cd857b1c00bff6f99d.json",
+          "result": "verified",
+          "sha256": "1363d1f1e0b1698823038c6a6a3b1f815321b2502bbb89cd857b1c00bff6f99d"
+        },
+        {
+          "locator": "command:npm run test:production-build-receipt",
+          "result": "verified"
+        },
+        {
+          "locator": "command:dotnet fsi .agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx -- validate-focused-receipt --receipt docs/evidence/production-build-receipt-v1/87cf06f6c4cf32abd997cd6796a62f22ff37022e7bca954cb28c5714a64dfeaf.json --owner-command scripts/qualify-production.sh --allow-metadata-only true",
+          "result": "verified"
+        }
+      ],
+      "confidenceLimits": []
+    }
+  ]
+}

@@ -11,7 +11,7 @@ type ArmorState = { FrontRating: int32; RearRating: int32; Integrity: int32 }
 type WoundSeverity = Serious | Critical
 type Wound = { AttackId: string; Severity: WoundSeverity; Damage: int32 }
 type CombatantState = { EntityId: string; Faction: string; Cell: Cell; Facing: Direction8; Health: int32; Armor: ArmorState; Wounds: Wound list; Incapacitated: bool; Suppression: int32 }
-type CoverState = { CoverId: string; Cell: Cell; Integrity: int32; ProjectileBlocking: bool }
+type CoverState = { CoverId: string; Cell: Cell; Integrity: int32; ProjectileBlocking: bool; Material: string; PenetrationResistance: int32; ProtectedDirections: Direction8 list }
 type CombatWorld = { Spatial: ProjectedSpatialWorld; Combatants: Map<string, CombatantState>; Covers: Map<string, CoverState> }
 type CombatLimits = { MaximumTraceCells: int32; MaximumAreaCells: int32; MaximumRecipients: int32; MaximumFacts: int32; MaximumExplanationBytes: int32 }
 type CombatRequest = { AttackId: string; AttackerId: string; AimCell: Cell; Weapon: WeaponProfile; Limits: CombatLimits }
@@ -30,6 +30,21 @@ module Combat =
         | WeaponProfile.SupportWeapon -> { Profile = WeaponProfile.SupportWeapon; DamageType = DamageType.Ballistic; BaseDamage = 15; Penetration = 10; Suppression = 25; RangeCells = 20; AreaRadius = 1; Lobbed = false }
         | WeaponProfile.AntiArmor -> { Profile = WeaponProfile.AntiArmor; DamageType = DamageType.AntiArmor; BaseDamage = 50; Penetration = 70; Suppression = 12; RangeCells = 12; AreaRadius = 0; Lobbed = false }
         | WeaponProfile.LobbedArea -> { Profile = WeaponProfile.LobbedArea; DamageType = DamageType.Explosive; BaseDamage = 30; Penetration = 25; Suppression = 30; RangeCells = 10; AreaRadius = 2; Lobbed = true }
+
+    let environmentCovers (environment: AssembledEnvironment) =
+        environment.EnvironmentFeatures
+        |> List.choose (fun feature ->
+            feature.DirectionalCover
+            |> Option.map (fun cover ->
+                feature.EnvironmentFeatureId,
+                { CoverId = feature.EnvironmentFeatureId
+                  Cell = { Col = feature.EnvironmentEdge.EdgeCell.EnvironmentColumn; Row = feature.EnvironmentEdge.EdgeCell.EnvironmentRow }
+                  Integrity = cover.CoverIntegrity
+                  ProjectileBlocking = not feature.ModalityPermeability.AllowsProjectile && feature.EnvironmentState <> EnvironmentFeatureState.Destroyed
+                  Material = cover.CoverMaterial
+                  PenetrationResistance = cover.CoverPenetrationResistance
+                  ProtectedDirections = cover.CoverProtectedDirections |> List.distinct |> List.sortBy Direction8.toCode }))
+        |> Map.ofList
 
     let private clamp (maximum: int32) (value: int32) = max 0 value |> min maximum
     let suppressionEffectivenessPercent (suppression: int32) = if suppression >= 75 then 40 elif suppression >= 50 then 60 elif suppression >= 25 then 80 else 100
@@ -169,7 +184,12 @@ module Combat =
                             | Ok(currentWorld, facts, apps, _) ->
                                 match subject with
                                 | CoverCandidate cover ->
-                                    let impact = CombatRules.resolveCoverImpact p.BaseDamage cover.Integrity cover.ProjectileBlocking (p.AreaRadius = 0) (request.AttackId + ":" + id)
+                                    let protectedArc =
+                                        cover.ProtectedDirections.IsEmpty
+                                        || directionToSource attacker.Cell cover.Cell |> Option.exists (fun direction -> List.contains direction cover.ProtectedDirections)
+                                    let resistsPenetration = cover.PenetrationResistance <= 0 || p.Penetration < cover.PenetrationResistance
+                                    let blocksProjectile = cover.ProjectileBlocking && protectedArc && resistsPenetration
+                                    let impact = CombatRules.resolveCoverImpact p.BaseDamage cover.Integrity blocksProjectile (p.AreaRadius = 0) (request.AttackId + ":" + id + ":" + cover.Material)
                                     let applied = impact.Damage
                                     let remaining = impact.RemainingIntegrity
                                     let updated = { cover with Integrity = remaining; ProjectileBlocking = cover.ProjectileBlocking && remaining > 0 }

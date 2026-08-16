@@ -1,0 +1,1562 @@
+schemaVersion: 1
+workId: 186-authored-tactical-parcels
+stage: evidence
+status: evidenceReady
+sourceSpec: work/186-authored-tactical-parcels/spec.md
+sourceClarifications: work/186-authored-tactical-parcels/clarifications.md
+sourceChecklist: work/186-authored-tactical-parcels/checklist.md
+sourcePlan: work/186-authored-tactical-parcels/plan.md
+sourceTasks: work/186-authored-tactical-parcels/tasks.yml
+sourceAnalysis: readiness/186-authored-tactical-parcels/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/186-authored-tactical-parcels/analysis.json
+    digest: 81f8f6817d45065e0eea0c4a323e47609ea45c8f06c3a348277b6c2c032498a3
+    schemaVersion: 1
+  - label: checklist
+    path: work/186-authored-tactical-parcels/checklist.md
+    digest: 974fdc8551c75e438487eef93bd25abd8455f84073f824d21b92a41cd1ff593f
+    schemaVersion: 1
+  - label: clarifications
+    path: work/186-authored-tactical-parcels/clarifications.md
+    digest: 32d22a8a41846f92365aa9267f0b6c39d7dcaa262b0556c63861998e40111af3
+    schemaVersion: 1
+  - label: plan
+    path: work/186-authored-tactical-parcels/plan.md
+    digest: ac3da389b26e1c96eec4874d6c4be1a662a43007b36a124b8481757f245e5aa3
+    schemaVersion: 1
+  - label: spec
+    path: work/186-authored-tactical-parcels/spec.md
+    digest: 913940d4b9d86eef4dfa845028e0a53ffc2001ab20c24dd495c8d9893ba83874
+    schemaVersion: 1
+  - label: tasks
+    path: work/186-authored-tactical-parcels/tasks.yml
+    digest: c4b423000ac679fed06b2831854bf179f1b507e407b4c69c62f8d1b6e24a5fb1
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV002]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV003]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV006]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV007]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV009]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV010]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: [FR-011]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV012]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV013]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV014]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV015]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV016]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV017]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV018]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV019]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV020
+    kind: verification
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV020]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV021
+    kind: verification
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV021]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV022
+    kind: verification
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV022]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV023
+    kind: verification
+    subject:
+      type: task
+      id: T023
+    taskRefs: [T023]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV023]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV024
+    kind: verification
+    subject:
+      type: task
+      id: T024
+    taskRefs: [T024]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV024]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV025
+    kind: verification
+    subject:
+      type: task
+      id: T025
+    taskRefs: [T025]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV025]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV026
+    kind: verification
+    subject:
+      type: task
+      id: T026
+    taskRefs: [T026]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV026]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV027
+    kind: verification
+    subject:
+      type: task
+      id: T027
+    taskRefs: [T027]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV027]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV028
+    kind: verification
+    subject:
+      type: task
+      id: T028
+    taskRefs: [T028]
+    requirementRefs: [FR-011]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV028]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV029
+    kind: verification
+    subject:
+      type: task
+      id: T029
+    taskRefs: [T029]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV029]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV030
+    kind: verification
+    subject:
+      type: task
+      id: T030
+    taskRefs: [T030]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: [EV030]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV031
+    kind: verification
+    subject:
+      type: task
+      id: T031
+    taskRefs: [T031]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003, PD-004, PD-007]
+    obligationRefs: [EV031]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV032
+    kind: verification
+    subject:
+      type: task
+      id: T032
+    taskRefs: [T032]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV032]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV033
+    kind: verification
+    subject:
+      type: task
+      id: T033
+    taskRefs: [T033]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV033]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV034
+    kind: verification
+    subject:
+      type: task
+      id: T034
+    taskRefs: [T034]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV034]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV035
+    kind: verification
+    subject:
+      type: task
+      id: T035
+    taskRefs: [T035]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV035]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV036
+    kind: verification
+    subject:
+      type: task
+      id: T036
+    taskRefs: [T036]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV036]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV037
+    kind: verification
+    subject:
+      type: task
+      id: T037
+    taskRefs: [T037]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-003]
+    obligationRefs: [EV037]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV038
+    kind: verification
+    subject:
+      type: task
+      id: T038
+    taskRefs: [T038]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004, PD-005, PD-006, PD-007]
+    obligationRefs: [EV038]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV039
+    kind: verification
+    subject:
+      type: task
+      id: T039
+    taskRefs: [T039]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008, PD-009]
+    obligationRefs: [EV039]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV040
+    kind: verification
+    subject:
+      type: task
+      id: T040
+    taskRefs: [T040]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV040]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV041
+    kind: verification
+    subject:
+      type: task
+      id: T041
+    taskRefs: [T041]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV041]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV042
+    kind: verification
+    subject:
+      type: task
+      id: T042
+    taskRefs: [T042]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV042]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV043
+    kind: verification
+    subject:
+      type: task
+      id: T043
+    taskRefs: [T043]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV043]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV044
+    kind: verification
+    subject:
+      type: task
+      id: T044
+    taskRefs: [T044]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV044]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV045
+    kind: verification
+    subject:
+      type: task
+      id: T045
+    taskRefs: [T045]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV045]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV046
+    kind: verification
+    subject:
+      type: task
+      id: T046
+    taskRefs: [T046]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV046]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV047
+    kind: verification
+    subject:
+      type: task
+      id: T047
+    taskRefs: [T047]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV047]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV048
+    kind: verification
+    subject:
+      type: task
+      id: T048
+    taskRefs: [T048]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002, PD-010]
+    obligationRefs: [EV048]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV049
+    kind: verification
+    subject:
+      type: task
+      id: T049
+    taskRefs: [T049]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV049]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Aggregate qualification passed with non-synthetic production-path evidence.]
+  - id: EV050
+    kind: verification
+    subject:
+      type: task
+      id: T050
+    taskRefs: [T050]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: [DEC-007]
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV050]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Unmangled initial-boot budget v2 passes real static and throttled browser routes and both delivery mutations fail.]
+  - id: EV051
+    kind: verification
+    subject:
+      type: task
+      id: T051
+    taskRefs: [T051]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: [DEC-007]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-013]
+    obligationRefs: [EV051]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [The production route remains unmangled and future growth is bound to defer or explicitly rebaseline.]
+  - id: EV052
+    kind: verification
+    subject:
+      type: task
+      id: T052
+    taskRefs: [T052]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: [DEC-007]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-013]
+    obligationRefs: [EV052]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [The fresh aggregate executes static/browser delivery gates, and the complete browser suite., oversized mutations]
+  - id: EV053
+    kind: verification
+    subject:
+      type: task
+      id: T053
+    taskRefs: [T053]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: [DEC-005]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV053]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Exact-sized canonical identity writing halves preview allocation while retaining native/Fable identities, and the strict 50 ms gate under sixteen-process contention., counters]
+  - id: EV054
+    kind: verification
+    subject:
+      type: task
+      id: T054
+    taskRefs: [T054]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: [DEC-005]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV054]
+    artifacts: []
+    sourceRefs:
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Hosted allocation variance has measured headroom while the unchanged production-subject allocation mutation fails and restores cleanly.]
+  - id: EV055
+    kind: verification
+    subject:
+      type: task
+      id: T055
+    taskRefs: [T055]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: [DEC-005]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV055]
+    artifacts: []
+    sourceRefs:
+      - kind: test
+        path: tests/SIR.Match.Tests/Program.fs
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/performance-candidate.md
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Hosted qualification printed and flushed exact 100/100/100/0/50/100 structure before separate named assertions and passed the unchanged 50 ms representative timing gate at 40.130 ms.]
+  - id: EV056
+    kind: verification
+    subject:
+      type: task
+      id: T056
+    taskRefs: [T056]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: [AC-008]
+    clarificationDecisionRefs: [DEC-005]
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV056]
+    artifacts: []
+    sourceRefs:
+      - kind: test
+        path: tests/SIR.Match.Tests/Program.fs
+      - kind: test
+        path: tests/SIR.Client.Tests/ClientPerformanceQualification.fs
+      - kind: documentation
+        path: docs/performance-budget.md
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/run-qualification.sh
+      - kind: verification
+        path: readiness/186-authored-tactical-parcels/performance-candidate.md
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/186-authored-tactical-parcels/qualification.junit.xml
+      digest: "sha256:5402528e0fcdf0a3084224ba3c142551f894f9d008b7fb78c287b361ead82858"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Each named representative predicate has an unchanged-predicate subject inversion; the versioned 12 ms dense pointer-preview gate retains hosted headroom and a self-restoring production MapEditor delay mutation.]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

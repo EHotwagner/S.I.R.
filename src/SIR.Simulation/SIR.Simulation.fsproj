@@ -5,6 +5,8 @@
     <Compile Include="CombatRules.fs" />
     <Compile Include="SpatialQuery.fsi" />
     <Compile Include="SpatialQuery.fs" />
+    <Compile Include="TacticalEnvironment.fsi" />
+    <Compile Include="TacticalEnvironment.fs" />
     <Compile Include="AwarenessReaction.fsi" />
     <Compile Include="AwarenessReaction.fs" />
     <Compile Include="CombatModel.fsi" />
