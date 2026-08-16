@@ -29,6 +29,8 @@ jobs:
       evidence: ${{ steps.route.outputs.evidence }}
       prepare: ${{ steps.route.outputs.prepare }}
     steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-node@v4
@@ -38,7 +40,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p artifacts/ci
-          date +%s%3N > artifacts/ci/started-ms
+          echo "$SIR_CI_RUNNER_START_MS" > artifacts/ci/started-ms
           git diff --name-only '${{ github.event.pull_request.base.sha }}' '${{ github.event.pull_request.head.sha }}' > artifacts/ci/changed-paths.txt
           node scripts/ci-route.mjs route \
             --paths-file artifacts/ci/changed-paths.txt \
@@ -54,6 +56,8 @@ jobs:
     needs: route
     runs-on: ubuntu-latest
     steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-dotnet@v4
@@ -62,13 +66,20 @@ jobs:
         with: { node-version: 26.5.0, cache: npm }
       - run: npm ci --ignore-scripts
       - run: dotnet tool restore
-      - run: ./scripts/qualify-pr.sh integrity
+      - uses: actions/download-artifact@v4
+        with: { name: ci-route, path: artifacts/ci }
+      - run: ./scripts/run-ci-gate.sh integrity artifacts/ci/results/integrity.json
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: gate-integrity, path: artifacts/ci/results/integrity.json, retention-days: 1 }
 
   prepare:
     if: needs.route.outputs.prepare == 'true'
-    needs: [route, integrity]
+    needs: route
     runs-on: ubuntu-latest
     steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-dotnet@v4
@@ -78,42 +89,44 @@ jobs:
       - run: npm ci --ignore-scripts
       - uses: actions/download-artifact@v4
         with: { name: ci-route, path: artifacts/ci }
-      - run: ./scripts/qualify-pr.sh prepare
+      - run: ./scripts/run-ci-gate.sh prepare artifacts/ci/results/prepare.json
       - uses: actions/upload-artifact@v4
         with:
           name: prepared-candidate
           include-hidden-files: true
+          compression-level: 0
           retention-days: 1
           path: |
             artifacts/ci
-            artifacts/client
-            artifacts/publish
-            src/**/bin
-            src/**/obj
-            tests/**/bin
-            tests/**/obj
-            src/SIR.Client.Web/.fable
-            src/SIR.Client.Web/.fable-rules
+            artifacts/prepared-candidate.tar
             docs/evidence/production-build-receipt-v1
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: gate-prepare, path: artifacts/ci/results/prepare.json, retention-days: 1 }
 
   rules:
     if: needs.route.outputs.rules == 'true'
     needs: [route, integrity, prepare]
     runs-on: ubuntu-latest
     steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-dotnet@v4
         with: { global-json-file: global.json }
       - uses: actions/setup-node@v4
         with: { node-version: 26.5.0 }
-      - uses: actions/cache@v4
+      - id: nuget-cache
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json', 'Directory.Packages.props', '.config/dotnet-tools.json') }}
       - uses: actions/download-artifact@v4
         with: { name: prepared-candidate, path: . }
+      - run: ./scripts/qualify-pr.sh extract-prepared
       - run: ./scripts/run-ci-gate.sh rules artifacts/ci/results/rules.json
+        env: { SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}" }
       - if: always()
         uses: actions/upload-artifact@v4
         with: { name: gate-rules, path: artifacts/ci/results/rules.json, retention-days: 1 }
@@ -123,19 +136,24 @@ jobs:
     needs: [route, integrity, prepare]
     runs-on: ubuntu-latest
     steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-dotnet@v4
         with: { global-json-file: global.json }
       - uses: actions/setup-node@v4
         with: { node-version: 26.5.0 }
-      - uses: actions/cache@v4
+      - id: nuget-cache
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json', 'Directory.Packages.props', '.config/dotnet-tools.json') }}
       - uses: actions/download-artifact@v4
         with: { name: prepared-candidate, path: . }
+      - run: ./scripts/qualify-pr.sh extract-prepared
       - run: ./scripts/run-ci-gate.sh spatial artifacts/ci/results/spatial.json
+        env: { SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}" }
       - if: always()
         uses: actions/upload-artifact@v4
         with: { name: gate-spatial, path: artifacts/ci/results/spatial.json, retention-days: 1 }
@@ -145,13 +163,16 @@ jobs:
     needs: [route, integrity, prepare]
     runs-on: ubuntu-latest
     steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-dotnet@v4
         with: { global-json-file: global.json }
       - uses: actions/setup-node@v4
         with: { node-version: 26.5.0, cache: npm }
-      - uses: actions/cache@v4
+      - id: nuget-cache
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json', 'Directory.Packages.props', '.config/dotnet-tools.json') }}
@@ -159,7 +180,9 @@ jobs:
       - run: dotnet tool restore
       - uses: actions/download-artifact@v4
         with: { name: prepared-candidate, path: . }
+      - run: ./scripts/qualify-pr.sh extract-prepared
       - run: ./scripts/run-ci-gate.sh cancellation artifacts/ci/results/cancellation.json
+        env: { SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}" }
       - if: always()
         uses: actions/upload-artifact@v4
         with: { name: gate-cancellation, path: artifacts/ci/results/cancellation.json, retention-days: 1 }
@@ -169,21 +192,27 @@ jobs:
     needs: [route, integrity, prepare]
     runs-on: ubuntu-latest
     steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-dotnet@v4
         with: { global-json-file: global.json }
       - uses: actions/setup-node@v4
         with: { node-version: 26.5.0, cache: npm }
-      - uses: actions/cache@v4
+      - id: nuget-cache
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json', 'Directory.Packages.props', '.config/dotnet-tools.json') }}
       - run: npm ci --ignore-scripts
       - uses: actions/download-artifact@v4
         with: { name: prepared-candidate, path: . }
+      - run: ./scripts/qualify-pr.sh extract-prepared
       - run: ./scripts/run-ci-gate.sh cross-runtime artifacts/ci/results/cross-runtime.json
-        env: { PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium }
+        env:
+          PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium
+          SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}"
       - if: always()
         uses: actions/upload-artifact@v4
         with: { name: gate-cross-runtime, path: artifacts/ci/results/cross-runtime.json, retention-days: 1 }
@@ -193,6 +222,8 @@ jobs:
     needs: [route, integrity, prepare]
     runs-on: ubuntu-latest
     steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-node@v4
@@ -200,6 +231,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - uses: actions/download-artifact@v4
         with: { name: prepared-candidate, path: . }
+      - run: ./scripts/qualify-pr.sh extract-prepared
       - run: ./scripts/run-ci-gate.sh browser artifacts/ci/results/browser.json
         env: { PLAYWRIGHT_EXECUTABLE_PATH: /usr/bin/chromium }
       - if: always()
@@ -211,13 +243,16 @@ jobs:
     needs: [route, integrity, prepare]
     runs-on: ubuntu-latest
     steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-dotnet@v4
         with: { global-json-file: global.json }
       - uses: actions/setup-node@v4
         with: { node-version: 26.5.0, cache: npm }
-      - uses: actions/cache@v4
+      - id: nuget-cache
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json', 'Directory.Packages.props', '.config/dotnet-tools.json') }}
@@ -225,7 +260,9 @@ jobs:
       - run: dotnet tool restore
       - uses: actions/download-artifact@v4
         with: { name: prepared-candidate, path: . }
+      - run: ./scripts/qualify-pr.sh extract-prepared
       - run: ./scripts/run-ci-gate.sh documentation artifacts/ci/results/documentation.json
+        env: { SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}" }
       - if: always()
         uses: actions/upload-artifact@v4
         with: { name: gate-documentation, path: artifacts/ci/results/documentation.json, retention-days: 1 }
@@ -235,19 +272,25 @@ jobs:
     needs: [route, integrity]
     runs-on: ubuntu-latest
     steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-dotnet@v4
         with: { global-json-file: global.json }
       - uses: actions/setup-node@v4
         with: { node-version: 26.5.0, cache: npm }
-      - uses: actions/cache@v4
+      - id: nuget-cache
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json', 'Directory.Packages.props', '.config/dotnet-tools.json') }}
       - run: npm ci --ignore-scripts
       - run: dotnet tool restore
+      - uses: actions/download-artifact@v4
+        with: { name: ci-route, path: artifacts/ci }
       - run: ./scripts/run-ci-gate.sh evidence artifacts/ci/results/evidence.json
+        env: { SIR_CI_CACHE_HIT: "${{ steps.nuget-cache.outputs.cache-hit == 'true' }}" }
       - if: always()
         uses: actions/upload-artifact@v4
         with: { name: gate-evidence, path: artifacts/ci/results/evidence.json, retention-days: 1 }
@@ -257,6 +300,8 @@ jobs:
     needs: [route, integrity, prepare, rules, spatial, cancellation, cross-runtime, browser, documentation, evidence]
     runs-on: ubuntu-latest
     steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-node@v4
@@ -266,16 +311,24 @@ jobs:
       - uses: actions/download-artifact@v4
         continue-on-error: true
         with: { pattern: gate-*, path: artifacts/ci/results, merge-multiple: true }
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with: { name: prepared-candidate, path: prepared }
       - name: Join required gate receipts
         shell: bash
         run: |
           args=()
-          for gate in rules spatial cancellation cross-runtime browser documentation evidence; do
+          for gate in integrity prepare rules spatial cancellation cross-runtime browser documentation evidence; do
             if [[ -f "artifacts/ci/results/$gate.json" ]]; then args+=(--result "$gate=artifacts/ci/results/$gate.json"); fi
           done
+          manifest_args=()
+          if [[ -f prepared/artifacts/ci/artifact-manifest.path ]]; then
+            manifest_args+=(--artifact-manifest "prepared/$(<prepared/artifacts/ci/artifact-manifest.path)")
+          fi
           node scripts/ci-route.mjs join \
             --route artifacts/ci/route.json \
             "${args[@]}" \
+            "${manifest_args[@]}" \
             --started-ms "$(<artifacts/ci/started-ms)" \
             --completed-ms "$(date +%s%3N)" \
             --output artifacts/ci/pr-verdict.json
@@ -287,6 +340,8 @@ jobs:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
       - uses: actions/setup-dotnet@v4

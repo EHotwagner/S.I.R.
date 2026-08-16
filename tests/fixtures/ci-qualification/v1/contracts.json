@@ -11,6 +11,17 @@
     "documentation",
     "evidence"
   ],
+  "subjectOrder": [
+    "integrity",
+    "prepare",
+    "rules",
+    "spatial",
+    "cancellation",
+    "cross-runtime",
+    "browser",
+    "documentation",
+    "evidence"
+  ],
   "schemas": {
     "route": "sir.ci-route/v1",
     "artifactManifest": "sir.ci-artifact-manifest/v1",

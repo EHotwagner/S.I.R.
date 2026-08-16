@@ -19,7 +19,12 @@ function options(argv) {
   return { mode, one: (name, fallback) => values.get(name) ?? fallback };
 }
 
-async function derive(root, routePath, buildReceiptPath) {
+async function transportIdentity(root, archivePath) {
+  const bytes = await readFile(resolve(root, archivePath));
+  return { path: archivePath.replaceAll("\\", "/"), bytes: bytes.byteLength, sha256: sha256(bytes) };
+}
+
+async function derive(root, routePath, buildReceiptPath, archivePath) {
   const routeBytes = await readFile(resolve(root, routePath));
   const route = JSON.parse(routeBytes);
   if (route.schema !== "sir.ci-route/v1") throw new Error("ci-artifact-manifest: malformed-route-receipt");
@@ -39,8 +44,18 @@ async function derive(root, routePath, buildReceiptPath) {
     candidate: { commit, tree },
     route: { path: routePath.replaceAll("\\", "/"), digest: route.digest },
     buildReceipt: { path: buildReceiptPath.replaceAll("\\", "/"), digest: sha256(receiptBytes) },
+    transport: await transportIdentity(root, archivePath),
     outputs: buildReceipt.outputs,
   };
+}
+
+async function readManifest(root, path) {
+  const absolute = resolve(root, path);
+  const bytes = await readFile(absolute);
+  if (basename(absolute) !== `${sha256(bytes)}.json`) throw new Error("ci-artifact-manifest: content-address-drift");
+  const actual = JSON.parse(bytes);
+  if (actual.schema !== schema || actual.result !== "pass" || canonical(actual) !== bytes.toString("utf8")) throw new Error("ci-artifact-manifest: malformed-manifest");
+  return actual;
 }
 
 async function main(argv) {
@@ -48,9 +63,10 @@ async function main(argv) {
   const root = resolve(one("root", resolve(import.meta.dirname, "..")));
   const route = one("route", "artifacts/ci/route.json");
   const buildReceipt = one("build-receipt", "");
-  if (!buildReceipt) throw new Error("ci-artifact-manifest: --build-receipt is required");
+  const archive = one("archive", "artifacts/prepared-candidate.tar");
   if (mode === "create") {
-    const value = await derive(root, route, buildReceipt);
+    if (!buildReceipt) throw new Error("ci-artifact-manifest: --build-receipt is required");
+    const value = await derive(root, route, buildReceipt, archive);
     const bytes = canonical(value);
     const digest = sha256(bytes);
     const path = resolve(root, one("directory", "artifacts/ci/manifests"), `${digest}.json`);
@@ -63,19 +79,31 @@ async function main(argv) {
     console.log(JSON.stringify({ schema, result: "pass", manifest: relative(root, path).replaceAll("\\", "/"), digest }));
     return;
   }
+  if (mode === "verify-transport") {
+    const actual = await readManifest(root, one("manifest", ""));
+    const routeBytes = await readFile(resolve(root, route));
+    const currentRoute = JSON.parse(routeBytes);
+    const { digest: claimedRouteDigest, ...routeBody } = currentRoute;
+    if (claimedRouteDigest !== sha256(canonical(routeBody)) || actual.route.digest !== claimedRouteDigest) throw new Error("ci-artifact-manifest: stale-route-receipt");
+    if (actual.candidate.commit !== currentRoute.source.commit || actual.candidate.tree !== currentRoute.source.tree) throw new Error("ci-artifact-manifest: route-candidate-drift");
+    const currentTransport = await transportIdentity(root, archive);
+    if (canonical(actual.transport) !== canonical(currentTransport)) throw new Error("ci-artifact-manifest: transport-identity-drift");
+    const listing = command(root, "tar", ["-tf", archive]).split("\n").filter(Boolean);
+    if (listing.length === 0 || listing.some((path) => path.startsWith("/") || path.split("/").includes(".."))) throw new Error("ci-artifact-manifest: unsafe-or-empty-transport");
+    console.log(JSON.stringify({ schema, result: "pass", transport: currentTransport }));
+    return;
+  }
   if (mode === "verify") {
+    if (!buildReceipt) throw new Error("ci-artifact-manifest: --build-receipt is required");
     const path = resolve(root, one("manifest", ""));
-    const bytes = await readFile(path);
-    if (basename(path) !== `${sha256(bytes)}.json`) throw new Error("ci-artifact-manifest: content-address-drift");
-    const actual = JSON.parse(bytes);
-    if (actual.schema !== schema || actual.result !== "pass" || canonical(actual) !== bytes.toString("utf8")) throw new Error("ci-artifact-manifest: malformed-manifest");
-    const current = await derive(root, route, buildReceipt);
+    const actual = await readManifest(root, path);
+    const current = await derive(root, route, buildReceipt, archive);
     if (canonical(actual) !== canonical(current)) throw new Error("ci-artifact-manifest: candidate-input-tool-command-output-drift");
     execFileSync(process.execPath, ["scripts/production-build-receipt.mjs", "verify", "--owner-command", "scripts/qualify-pr.sh", "--receipt", buildReceipt], { cwd: root, stdio: "inherit" });
     console.log(JSON.stringify({ schema, result: "pass", manifest: relative(root, path).replaceAll("\\", "/") }));
     return;
   }
-  throw new Error("ci-artifact-manifest: usage create|verify --route PATH --build-receipt PATH");
+  throw new Error("ci-artifact-manifest: usage create|verify-transport|verify --route PATH --build-receipt PATH --archive PATH");
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) main(process.argv.slice(2)).catch((error) => { console.error(error.message); process.exitCode = 1; });

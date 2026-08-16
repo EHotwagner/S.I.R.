@@ -6,6 +6,7 @@ task_tmp=$(mktemp -d)
 trap 'rm -rf -- "$task_tmp"' EXIT
 reuse_build_receipt=""
 prepared_fable=""
+static_only=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --reuse-pr-build-receipt)
@@ -17,6 +18,10 @@ while [[ $# -gt 0 ]]; do
       [[ $# -ge 2 ]] || { echo "verify-spatial-query: --prepared-fable requires a path" >&2; exit 2; }
       prepared_fable=$2
       shift 2
+      ;;
+    --static-only)
+      static_only=true
+      shift
       ;;
     *) echo "verify-spatial-query: unknown argument: $1" >&2; exit 2 ;;
   esac
@@ -88,6 +93,15 @@ expect_unreadable_client_scan_error() {
   fi
 }
 
+expect_unreadable_client_scan_error
+SIR_SPATIAL_FORCE_GREP=1 expect_unreadable_client_scan_error
+require_clean_scan "Client code" client_has_authority_calls
+require_clean_scan "JavaScript/TypeScript" javascript_has_spatial_authority
+if [[ "$static_only" == true ]]; then
+  echo "Spatial query static verification passed: mutations, unreadable-source guards, and authority scans."
+  exit 0
+fi
+
 if [[ -n "$reuse_build_receipt" ]]; then
   [[ -n "$prepared_fable" ]] || { echo "verify-spatial-query: prepared reuse requires a Fable fixture root" >&2; exit 2; }
   node scripts/production-build-receipt.mjs verify --owner-command scripts/qualify-pr.sh --receipt "$reuse_build_receipt"
@@ -122,11 +136,6 @@ for runtime in dotnet fable; do
   fi
   search_fixed_quiet "first divergence: fixture=spatial-query byte=0" "$mutation_log"
 done
-
-expect_unreadable_client_scan_error
-SIR_SPATIAL_FORCE_GREP=1 expect_unreadable_client_scan_error
-require_clean_scan "Client code" client_has_authority_calls
-require_clean_scan "JavaScript/TypeScript" javascript_has_spatial_authority
 
 dotnet run --project tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-build --no-restore -- --print-spatial-performance
 

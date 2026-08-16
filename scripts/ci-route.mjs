@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
+import { basename, dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 export const routeSchema = "sir.ci-route/v1";
@@ -10,6 +10,7 @@ export const timingSchema = "sir.ci-timing/v1";
 export const policyVersion = "1";
 export const feedbackBudgetMilliseconds = 300_000;
 export const gateOrder = ["rules", "spatial", "cancellation", "cross-runtime", "browser", "documentation", "evidence"];
+export const subjectOrder = ["integrity", "prepare", ...gateOrder];
 
 const classifications = {
   documentation: ["documentation", "evidence"],
@@ -31,6 +32,8 @@ const isCrossCutting = (path) => [".github", ".config", ".fsgg"].some((prefix) =
 
 const canonical = (value) => `${JSON.stringify(value, null, 2)}\n`;
 const digest = (value) => createHash("sha256").update(canonical(value)).digest("hex");
+const routeBody = (route) => Object.fromEntries(Object.entries(route ?? {}).filter(([key]) => key !== "digest"));
+export const routeDigest = (route) => digest(routeBody(route));
 
 function classifyOne(path) {
   if (isEvidence(path)) return { classification: "evidence-only", rule: "RP-000-evidence-metadata" };
@@ -71,50 +74,100 @@ export function routePaths(rawPaths, source = {}) {
 }
 
 export function gateResult(gate, status, timing = {}, details = {}) {
-  if (!gateOrder.includes(gate)) throw new Error(`ci-route: unknown gate result:${gate}`);
+  if (!subjectOrder.includes(gate)) throw new Error(`ci-route: unknown gate result:${gate}`);
   if (!["pass", "fail", "cancelled"].includes(status)) throw new Error(`ci-route: invalid gate status:${status}`);
-  const phases = { queue: 0, setup: 0, restore: 0, build: 0, test: 0, total: 0, ...timing };
-  for (const [name, value] of Object.entries(phases)) if (!Number.isSafeInteger(value) || value < 0) throw new Error(`ci-route: invalid ${gate} ${name} duration`);
-  return { schema: gateSchema, gate, status, timingMilliseconds: phases, cacheHit: false, receiptReused: false, buildInvocations: [], retryCount: 0, failureStage: status === "pass" ? null : "test", ...details };
+  const phases = { queue: null, setup: 0, restore: 0, build: 0, test: 0, total: 0, ...timing };
+  for (const [name, value] of Object.entries(phases)) {
+    if (name === "queue" && value === null) continue;
+    if (!Number.isSafeInteger(value) || value < 0) throw new Error(`ci-route: invalid ${gate} ${name} duration`);
+  }
+  return {
+    schema: gateSchema,
+    gate,
+    status,
+    source: { commit: "unknown", tree: "unknown" },
+    routeDigest: "unknown",
+    artifactDigest: null,
+    ownerCommand: "scripts/run-ci-gate.sh",
+    gateCommand: gate === "prepare" ? "scripts/qualify-pr.sh prepare" : gate === "integrity" ? "scripts/qualify-pr.sh integrity" : `scripts/qualify-pr.sh gate ${gate}`,
+    timingMilliseconds: phases,
+    cacheHit: false,
+    receiptReused: false,
+    buildInvocations: [],
+    retryCount: 0,
+    failureStage: status === "pass" ? null : "test",
+    ...details,
+  };
 }
 
-export function joinRoute(route, results, { startedAtMilliseconds = 0, completedAtMilliseconds = 0, enforceBudget = true } = {}) {
-  if (route?.schema !== routeSchema || route.policyVersion !== policyVersion) throw new Error("ci-route: stale-or-malformed-route-receipt");
+export function joinRoute(route, results, { startedAtMilliseconds = 0, completedAtMilliseconds = 0, enforceBudget = true, expectedArtifactDigest = null, artifactManifestFailure = null } = {}) {
+  const failures = [];
+  if (route?.schema !== routeSchema || route.policyVersion !== policyVersion) failures.push({ code: "stale-or-malformed-route-receipt", subject: "route" });
+  const computedRouteDigest = routeDigest(route);
+  if (route?.digest !== computedRouteDigest) failures.push({ code: "route-digest-mismatch", subject: "route", expected: computedRouteDigest, actual: route?.digest ?? null });
+  const selectedGates = Array.isArray(route?.selectedGates) ? route.selectedGates : [];
+  const needsPrepared = selectedGates.some((gate) => gate !== "evidence");
+  const expectedSubjects = ["integrity", ...(needsPrepared ? ["prepare"] : []), ...selectedGates];
   const byGate = new Map();
   for (const result of results) {
-    if (result?.schema !== gateSchema) throw new Error("ci-route: malformed-gate-result");
-    if (byGate.has(result.gate)) throw new Error(`ci-route: duplicate-gate-result:${result.gate}`);
-    if (!gateOrder.includes(result.gate)) throw new Error(`ci-route: unknown-gate-result:${result.gate}`);
-    byGate.set(result.gate, result);
+    const subject = typeof result?.gate === "string" ? result.gate : "unknown";
+    if (result?.schema !== gateSchema) failures.push({ code: "malformed-gate-result", subject });
+    if (byGate.has(subject)) {
+      failures.push({ code: "duplicate-gate-result", subject });
+      continue;
+    }
+    if (!subjectOrder.includes(subject)) failures.push({ code: "unknown-gate-result", subject });
+    byGate.set(subject, result);
   }
-  const selected = new Set(route.selectedGates);
-  for (const gate of route.selectedGates) {
-    const result = byGate.get(gate);
-    if (!result) throw new Error(`ci-route: missing-gate-result:${gate}`);
-    if (result.status !== "pass") throw new Error(`ci-route: required-gate-${result.status}:${gate}`);
+  const expected = new Set(expectedSubjects);
+  for (const subject of expectedSubjects) {
+    const result = byGate.get(subject);
+    if (!result) {
+      failures.push({ code: "missing-gate-result", subject });
+      continue;
+    }
+    if (result.status !== "pass") failures.push({ code: `required-gate-${result.status ?? "malformed"}`, subject });
+    if (result.source?.commit !== route?.source?.commit || result.source?.tree !== route?.source?.tree) failures.push({ code: "candidate-binding-mismatch", subject });
+    if (result.routeDigest !== route?.digest) failures.push({ code: "route-binding-mismatch", subject });
+    if (result.ownerCommand !== "scripts/run-ci-gate.sh") failures.push({ code: "owner-command-mismatch", subject });
+    if (typeof result.gateCommand !== "string" || !result.gateCommand.endsWith(subject)) failures.push({ code: "gate-command-mismatch", subject });
   }
-  for (const gate of byGate.keys()) if (!selected.has(gate)) throw new Error(`ci-route: unexpected-gate-result:${gate}`);
+  for (const gate of byGate.keys()) if (!expected.has(gate)) failures.push({ code: "unexpected-gate-result", subject: gate });
+
+  const preparedDigest = byGate.get("prepare")?.artifactDigest ?? null;
+  if (artifactManifestFailure) failures.push({ code: artifactManifestFailure, subject: "prepared-artifact" });
+  if (needsPrepared && expectedArtifactDigest === null) failures.push({ code: "missing-artifact-manifest", subject: "prepared-artifact" });
+  if (needsPrepared && expectedArtifactDigest !== null && preparedDigest !== expectedArtifactDigest) failures.push({ code: "artifact-manifest-binding-mismatch", subject: "prepare" });
+  if (needsPrepared && (typeof preparedDigest !== "string" || preparedDigest.length !== 64)) failures.push({ code: "missing-prepared-artifact-binding", subject: "prepare" });
+  for (const subject of expectedSubjects) {
+    const result = byGate.get(subject);
+    if (!result) continue;
+    const needsArtifact = subject === "prepare" || (gateOrder.includes(subject) && subject !== "evidence");
+    if (needsArtifact && result.artifactDigest !== preparedDigest) failures.push({ code: "artifact-binding-mismatch", subject });
+    if (!needsArtifact && result.artifactDigest !== null) failures.push({ code: "unexpected-artifact-binding", subject });
+  }
   const elapsed = completedAtMilliseconds - startedAtMilliseconds;
-  if (!Number.isSafeInteger(elapsed) || elapsed < 0) throw new Error("ci-route: invalid-feedback-duration");
-  if (enforceBudget && elapsed > feedbackBudgetMilliseconds) throw new Error(`ci-route: feedback-budget-exceeded:${elapsed}`);
-  const ordered = gateOrder.filter((gate) => byGate.has(gate)).map((gate) => byGate.get(gate));
-  const criticalPath = Math.max(0, ...ordered.map((result) => result.timingMilliseconds.total));
-  const runnerMilliseconds = ordered.reduce((sum, result) => sum + result.timingMilliseconds.total, 0);
+  if (!Number.isSafeInteger(elapsed) || elapsed < 0) failures.push({ code: "invalid-feedback-duration", subject: "timing" });
+  if (enforceBudget && Number.isSafeInteger(elapsed) && elapsed > feedbackBudgetMilliseconds) failures.push({ code: "feedback-budget-exceeded", subject: "timing", actual: elapsed, budget: feedbackBudgetMilliseconds });
+  const ordered = subjectOrder.filter((gate) => byGate.has(gate)).map((gate) => byGate.get(gate));
+  const validTotals = ordered.map((result) => result?.timingMilliseconds?.total).filter((value) => Number.isSafeInteger(value) && value >= 0);
+  const criticalPath = Math.max(0, ...validTotals);
+  const runnerMilliseconds = validTotals.reduce((sum, value) => sum + value, 0);
   const timing = {
     schema: timingSchema,
     subject: "runner-feedback",
     startedAtMilliseconds,
     completedAtMilliseconds,
-    totalMilliseconds: elapsed,
+    totalMilliseconds: Number.isSafeInteger(elapsed) && elapsed >= 0 ? elapsed : null,
     budgetMilliseconds: feedbackBudgetMilliseconds,
     criticalPathMilliseconds: criticalPath,
     runnerMilliseconds,
     cacheHits: ordered.filter((result) => result.cacheHit).length,
     receiptReuses: ordered.filter((result) => result.receiptReused).length,
     buildInvocations: ordered.flatMap((result) => result.buildInvocations),
-    retryCount: ordered.reduce((sum, result) => sum + result.retryCount, 0),
+    retryCount: ordered.reduce((sum, result) => sum + (Number.isSafeInteger(result.retryCount) ? result.retryCount : 0), 0),
   };
-  return { schema: joinSchema, result: "pass", routeDigest: route.digest, classification: route.classification, selectedGates: route.selectedGates, skippedGates: route.skippedGates, gateResults: ordered, timing };
+  return { schema: joinSchema, result: failures.length === 0 ? "pass" : "fail", routeDigest: route?.digest ?? null, classification: route?.classification ?? null, selectedGates, skippedGates: route?.skippedGates ?? [], gateResults: ordered, failures, timing };
 }
 
 async function writeJson(path, value) {
@@ -153,9 +206,17 @@ async function main(argv) {
   if (mode === "gate") {
     const gate = one("gate", "");
     const status = one("status", "pass");
-    const started = Number(one("started-ms", "0"));
-    const completed = Number(one("completed-ms", "0"));
-    const result = gateResult(gate, status, { total: completed - started }, {
+    const result = gateResult(gate, status, {
+      queue: one("queue-ms", "unknown") === "unknown" ? null : Number(one("queue-ms", "0")),
+      setup: Number(one("setup-ms", "0")),
+      restore: Number(one("restore-ms", "0")),
+      build: Number(one("build-ms", "0")),
+      test: Number(one("test-ms", "0")),
+      total: Number(one("total-ms", "0")),
+    }, {
+      source: { commit: one("commit", "unknown"), tree: one("tree", "unknown") },
+      routeDigest: one("route-digest", "unknown"),
+      artifactDigest: one("artifact-digest", "none") === "none" ? null : one("artifact-digest", ""),
       cacheHit: one("cache-hit", "false") === "true",
       receiptReused: one("receipt-reused", "false") === "true",
       buildInvocations: many("build"),
@@ -177,10 +238,25 @@ async function main(argv) {
       if (result.gate !== declaration.slice(0, separator)) throw new Error(`ci-route: gate-result-name-drift:${declaration.slice(0, separator)}`);
       results.push(result);
     }
-    const joined = joinRoute(route, results, { startedAtMilliseconds: Number(one("started-ms", "0")), completedAtMilliseconds: Number(one("completed-ms", "0")), enforceBudget: one("enforce-budget", "true") === "true" });
+    let expectedArtifactDigest = null;
+    let artifactManifestFailure = null;
+    const artifactManifestPath = one("artifact-manifest", undefined);
+    if (artifactManifestPath) {
+      try {
+        const bytes = await readFile(artifactManifestPath);
+        expectedArtifactDigest = createHash("sha256").update(bytes).digest("hex");
+        const manifest = JSON.parse(bytes);
+        if (basename(artifactManifestPath) !== `${expectedArtifactDigest}.json` || manifest.schema !== "sir.ci-artifact-manifest/v1" || manifest.result !== "pass") artifactManifestFailure = "malformed-artifact-manifest";
+        else if (manifest.candidate?.commit !== route.source?.commit || manifest.candidate?.tree !== route.source?.tree || manifest.route?.digest !== route.digest) artifactManifestFailure = "artifact-manifest-binding-mismatch";
+      } catch {
+        artifactManifestFailure = "unreadable-artifact-manifest";
+      }
+    }
+    const joined = joinRoute(route, results, { startedAtMilliseconds: Number(one("started-ms", "0")), completedAtMilliseconds: Number(one("completed-ms", "0")), enforceBudget: one("enforce-budget", "true") === "true", expectedArtifactDigest, artifactManifestFailure });
     const output = one("output", undefined);
     if (output) await writeJson(output, joined);
     process.stdout.write(canonical(joined));
+    if (joined.result !== "pass") process.exitCode = 1;
     return;
   }
   throw new Error("ci-route: usage route|gate|join [options]");

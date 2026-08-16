@@ -34,6 +34,9 @@ try {
   if (duplicateRed.status === 0 || !duplicateRed.stderr.includes(expected[3])) {
     throw new Error(`direct duplicate invocation did not make the unchanged gate red: ${duplicateRed.stdout} ${duplicateRed.stderr}`);
   }
+  const repeatedGreen = run(process.execPath, ["scripts/verify-fable-invocations.mjs", log,
+    "--expect", `${expected[0]}=1`, "--expect", `${expected[1]}=1`, "--expect", `${expected[2]}=1`, "--expect", `${expected[3]}=2`]);
+  if (repeatedGreen.status !== 0 || JSON.parse(repeatedGreen.stdout).total !== 5) throw new Error(`declared repeated inventory was not derived: ${repeatedGreen.stdout} ${repeatedGreen.stderr}`);
 
   await writeFile(log, `${expected.map((project) => `fable\t${project}`).join("\n")}\n`);
   run(shim, ["fable", "src/Unknown.Direct.Invocation.fsproj"], env);

@@ -62,7 +62,7 @@ else
   dotnet build SIR.slnx -c Release --no-restore
   ./scripts/build-client.sh
 fi
-if [[ -z "$reuse_conformance_receipt" ]]; then
+if [[ -z "$reuse_conformance_receipt" && "$prepared_pr" != true ]]; then
   node scripts/test-map-editor-qualification.mjs "$client_output"
   node scripts/test-planning-workspace-m5-qualification.mjs
   node scripts/test-simulator-workspace-m6-qualification.mjs

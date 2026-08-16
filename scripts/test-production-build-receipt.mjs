@@ -1,10 +1,12 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 
 const script = resolve(import.meta.dirname, "production-build-receipt.mjs");
 const feedbackTool = resolve(import.meta.dirname, "..", ".agents", "skills", "fs-gg-feedback-report", "scripts", "feedback-tool.fsx");
+const ciRoute = resolve(import.meta.dirname, "ci-route.mjs");
+const artifactManifest = resolve(import.meta.dirname, "ci-artifact-manifest.mjs");
 const fixture = await mkdtemp(join(tmpdir(), "sir-build-receipt-"));
 const run = (program, args, options = {}) => execFileSync(program, args, { cwd: fixture, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], ...options }).trim();
 const receiptArgs = (mode, extra = []) => [script, mode, "--root", fixture, "--owner-command", "fixture-owner", "--input", "input.txt", "--input", "package-lock.json", "--input", ".config/dotnet-tools.json", "--output", "fixture=output", ...extra];
@@ -19,6 +21,7 @@ try {
   await mkdir(join(fixture, "output"), { recursive: true });
   await writeFile(join(fixture, "input.txt"), "input-v1\n");
   await writeFile(join(fixture, "output", "bundle.js"), "bundle-v1\n");
+  await chmod(join(fixture, "output", "bundle.js"), 0o755);
   await writeFile(join(fixture, ".gitignore"), "output/\nreceipts/\n");
   await writeFile(join(fixture, "package-lock.json"), JSON.stringify({ packages: { "node_modules/vite": { version: "8.1.5" } } }));
   await writeFile(join(fixture, ".config", "dotnet-tools.json"), JSON.stringify({ tools: { fable: { version: "5.13.0" }, "fsdocs-tool": { version: "21.0.0" } } }));
@@ -31,6 +34,18 @@ try {
   const created = JSON.parse(run(process.execPath, receiptArgs("create", ["--receipt-directory", "receipts"])));
   receipt = created.receipt;
   JSON.parse(run(process.execPath, receiptArgs("verify", ["--receipt", receipt])));
+  const commit = run("git", ["rev-parse", "HEAD"]);
+  const tree = run("git", ["rev-parse", "HEAD^{tree}"]);
+  run(process.execPath, [ciRoute, "route", "--path", "scripts/example.sh", "--commit", commit, "--tree", tree, "--output", "route.json"]);
+  run("tar", ["--sort=name", "--mtime=@0", "--owner=0", "--group=0", "--numeric-owner", "-cf", "prepared.tar", "output", receipt]);
+  const manifestCreated = JSON.parse(run(process.execPath, [artifactManifest, "create", "--root", fixture, "--route", "route.json", "--build-receipt", receipt, "--archive", "prepared.tar", "--directory", "manifests"]));
+  JSON.parse(run(process.execPath, [artifactManifest, "verify-transport", "--root", fixture, "--route", "route.json", "--archive", "prepared.tar", "--manifest", manifestCreated.manifest]));
+  await mkdir(join(fixture, "extracted"));
+  run("tar", ["-xf", "../prepared.tar"], { cwd: join(fixture, "extracted") });
+  if (((await stat(join(fixture, "extracted", "output", "bundle.js"))).mode & 0o777) !== 0o755) throw new Error("prepared transport did not preserve executable mode");
+  await writeFile(join(fixture, "prepared.tar"), "tampered", { flag: "a" });
+  const tamperedTransport = spawnSync(process.execPath, [artifactManifest, "verify-transport", "--root", fixture, "--route", "route.json", "--archive", "prepared.tar", "--manifest", manifestCreated.manifest], { cwd: fixture, encoding: "utf8" });
+  if (tamperedTransport.status === 0 || !tamperedTransport.stderr.includes("transport-identity-drift")) throw new Error("tampered prepared transport was accepted");
   JSON.parse(run(process.execPath, receiptArgs("mutate-stale-reuse", ["--receipt", receipt, "--mutation-output-id", "fixture"])));
   JSON.parse(run(process.execPath, receiptArgs("mutate-missing-reuse", ["--receipt", receipt, "--mutation-output-id", "fixture"])));
   if (await readFile(join(fixture, "output", "bundle.js"), "utf8") !== "bundle-v1\n") throw new Error("mutation subject was not restored");
@@ -39,6 +54,11 @@ try {
   await writeFile(join(fixture, "output", "bundle.js"), "bundle-v2\n");
   expectRed("output-identity-drift");
   await writeFile(join(fixture, "output", "bundle.js"), "bundle-v1\n");
+  await chmod(join(fixture, "output", "bundle.js"), 0o755);
+
+  await chmod(join(fixture, "output", "bundle.js"), 0o644);
+  expectRed("output-identity-drift");
+  await chmod(join(fixture, "output", "bundle.js"), 0o755);
 
   await writeFile(join(fixture, "input.txt"), "input-v2\n");
   expectRed("dirty-tracked-state:input.txt");

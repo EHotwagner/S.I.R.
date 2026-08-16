@@ -29,6 +29,7 @@ trace_bin="$qualification_root/trace-bin"
 
 cd "$repo_root"
 mkdir -p "$qualification_root"
+if [[ "$protected_mode" == true ]]; then rm -rf -- "$qualification_packages"; fi
 mkdir -p "$qualification_packages"
 mkdir -p "$trace_bin"
 export NUGET_PACKAGES="$qualification_packages"
@@ -52,16 +53,20 @@ real_dotnet=$(command -v dotnet)
 start_ns=$(date +%s%N)
 
 if [[ "$protected_mode" == true ]]; then
-  ./scripts/verify-rules-corpus.sh
-  ./scripts/verify-spatial-query.sh
-  ./scripts/test-worker-cancellation-subject-mutation.sh
+  dotnet tool restore
+  dotnet restore SIR.slnx --locked-mode
 fi
-
 ln -sfn "$repo_root/scripts/dotnet-invocation-trace.sh" "$trace_bin/dotnet"
 export SIR_REAL_DOTNET="$real_dotnet"
 export SIR_DOTNET_INVOCATION_LOG="$fable_log"
 export PATH="$trace_bin:$PATH"
 : > "$fable_log"
+
+if [[ "$protected_mode" == true ]]; then
+  ./scripts/verify-rules-corpus.sh
+  ./scripts/verify-spatial-query.sh --static-only
+  ./scripts/test-worker-cancellation-subject-mutation.sh
+fi
 
 SIR_BUILD_RECEIPT_POINTER="$pointer" ./scripts/test-conformance.sh
 
@@ -137,7 +142,16 @@ node scripts/production-build-receipt.mjs mutate-missing-reuse \
   --receipt "$site_receipt" \
   --mutation-output-id documentation-site
 
-node scripts/verify-fable-invocations.mjs "$fable_log"
+if [[ "$protected_mode" == true ]]; then
+  fable_inventory=$(node scripts/verify-fable-invocations.mjs "$fable_log" \
+    --expect tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj=1 \
+    --expect tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj=1 \
+    --expect src/SIR.Replay.Web/SIR.Replay.Web.fsproj=3 \
+    --expect src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj=3)
+else
+  fable_inventory=$(node scripts/verify-fable-invocations.mjs "$fable_log")
+fi
+fable_target_builds=$(node -e 'process.stdout.write(String(JSON.parse(process.argv[1]).total))' "$fable_inventory")
 
 end_ns=$(date +%s%N)
 candidate_ms=$(((end_ns - start_ns) / 1000000))
@@ -151,10 +165,10 @@ else
   reduction_basis_points=0
 fi
 
-node - "$timing_receipt" "$baseline_receipt" "$candidate_source_receipt" "$host_receipt" "$candidate_ms" "$reduction_basis_points" "$build_receipt" "$conformance_receipt" "$site_receipt" "$protected_mode" "$paired_mode" <<'NODE'
+node - "$timing_receipt" "$baseline_receipt" "$candidate_source_receipt" "$host_receipt" "$candidate_ms" "$reduction_basis_points" "$build_receipt" "$conformance_receipt" "$site_receipt" "$protected_mode" "$paired_mode" "$fable_target_builds" <<'NODE'
 const { writeFileSync } = require("node:fs");
 const { readFileSync } = require("node:fs");
-const [path, baselinePath, candidateSourcePath, hostPath, candidate, reduction, buildReceipt, conformanceReceipt, siteReceipt, protectedMode, pairedMode] = process.argv.slice(2);
+const [path, baselinePath, candidateSourcePath, hostPath, candidate, reduction, buildReceipt, conformanceReceipt, siteReceipt, protectedMode, pairedMode, fableTargetBuilds] = process.argv.slice(2);
 const protectedRoute = protectedMode === "true";
 const pairedRoute = pairedMode === "true";
 const baseline = pairedRoute ? JSON.parse(readFileSync(baselinePath, "utf8")) : null;
@@ -167,7 +181,7 @@ const value = {
   route: protectedRoute ? "protected-clean-room" : pairedRoute ? "paired-optimization" : "local-clean-room",
   host,
   baseline,
-  candidate: { command: "./scripts/qualify-production.sh", wallMilliseconds: Number(candidate), fableTargetBuilds: 2, source: candidateSource, buildReceipt, conformanceReceipt, siteReceipt },
+  candidate: { command: "./scripts/qualify-production.sh", wallMilliseconds: Number(candidate), fableTargetBuilds: Number(fableTargetBuilds), source: candidateSource, buildReceipt, conformanceReceipt, siteReceipt },
   reductionBasisPoints: pairedRoute ? Number(reduction) : null,
   minimumReductionBasisPoints: pairedRoute ? 2000 : null,
   retainedSubjects: ["rules", "spatial", "cancellation", "conformance", "cross-runtime", "historical-compatibility", "governance", "client-loader", "delivery-budget", "delivery-evidence", "browser-diagnostics", "spatial-diagnostic-mutation", "production-browser", "documentation", "accessibility", "performance", "sdd-verify", "sdd-doctor", "stale-reuse-mutation", "missing-site-mutation"],

@@ -16,7 +16,7 @@ The driver runs the existing conformance, delivery, and browser subjects, builds
 - every enumerated tracked source, project, script, package configuration, and dependency-lock input;
 - Git, .NET SDK, Fable, fsdocs, Node, npm, and Vite versions;
 - the owning command identity;
-- sorted relative file paths, byte sizes, and SHA-256 identities for main Fable, Rules Explorer, and the production client bundle.
+- sorted relative file paths, POSIX permission modes, byte sizes, and SHA-256 identities for main Fable, Rules Explorer, and the production client bundle.
 
 Verification is read-only. It re-derives every field and fails on revision/tree, tracked state, source/configuration/lock, tool, command, expected path, missing output, or output-content drift. It never refreshes a stale receipt or rebuilds an output.
 
@@ -40,6 +40,6 @@ Metadata-only reuse requires the producing commit to be an ancestor and rejects 
 
 ## Mutation and timing
 
-The aggregate runs stale and missing subject mutations, requires the production verifier's `output-identity-drift` refusal, and restores the original bytes in an unconditional cleanup boundary. The normal local and protected aggregates record candidate wall milliseconds, exact commit/tree/clean identity, the host fingerprint, Fable target build counts, all three receipts, and retained subject inventory under `artifacts/qualification/single-pass-timing.json`. They do not compare a growing qualification surface against a permanently frozen wall-time baseline.
+The aggregate runs stale and missing subject mutations, requires the production verifier's `output-identity-drift` refusal, and restores the original bytes and permission mode in an unconditional cleanup boundary. The normal local and protected aggregates record candidate wall milliseconds, exact commit/tree/clean identity, the host fingerprint, the observed per-project Fable process inventory and derived total, all three receipts, and retained subject inventory under `artifacts/qualification/single-pass-timing.json`. The protected route records the additional isolated cancellation-mutation builds explicitly instead of pretending its inventory is the local exact-once set. Neither normal route compares a growing qualification surface against a permanently frozen wall-time baseline.
 
 The historical optimization experiment remains reproducible through `./scripts/qualify-production.sh --paired-optimization`. Only that explicitly named route loads the committed paired baseline, requires the host to match byte-for-byte, records reduction basis points, and asserts the original 20 percent materiality target. Use it only when the baseline and candidate subject inventories are deliberately comparable. Timing is acceptance evidence, not a runtime correctness threshold.
