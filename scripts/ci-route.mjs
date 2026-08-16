@@ -76,7 +76,7 @@ export function routePaths(rawPaths, source = {}) {
 export function gateResult(gate, status, timing = {}, details = {}) {
   if (!subjectOrder.includes(gate)) throw new Error(`ci-route: unknown gate result:${gate}`);
   if (!["pass", "fail", "cancelled"].includes(status)) throw new Error(`ci-route: invalid gate status:${status}`);
-  const phases = { queue: null, setup: 0, restore: 0, build: 0, test: 0, total: 0, ...timing };
+  const phases = { queue: null, setup: 0, restore: 0, build: 0, transport: 0, test: 0, total: 0, ...timing };
   for (const [name, value] of Object.entries(phases)) {
     if (name === "queue" && value === null) continue;
     if (!Number.isSafeInteger(value) || value < 0) throw new Error(`ci-route: invalid ${gate} ${name} duration`);
@@ -151,7 +151,8 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
   if (enforceBudget && Number.isSafeInteger(elapsed) && elapsed > feedbackBudgetMilliseconds) failures.push({ code: "feedback-budget-exceeded", subject: "timing", actual: elapsed, budget: feedbackBudgetMilliseconds });
   const ordered = subjectOrder.filter((gate) => byGate.has(gate)).map((gate) => byGate.get(gate));
   const validTotals = ordered.map((result) => result?.timingMilliseconds?.total).filter((value) => Number.isSafeInteger(value) && value >= 0);
-  const criticalPath = Math.max(0, ...validTotals);
+  const observedGateCriticalPath = Math.max(0, ...validTotals);
+  const criticalPath = Number.isSafeInteger(elapsed) && elapsed >= 0 ? elapsed : observedGateCriticalPath;
   const runnerMilliseconds = validTotals.reduce((sum, value) => sum + value, 0);
   const timing = {
     schema: timingSchema,
@@ -161,6 +162,7 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
     totalMilliseconds: Number.isSafeInteger(elapsed) && elapsed >= 0 ? elapsed : null,
     budgetMilliseconds: feedbackBudgetMilliseconds,
     criticalPathMilliseconds: criticalPath,
+    observedGateCriticalPathMilliseconds: observedGateCriticalPath,
     runnerMilliseconds,
     cacheHits: ordered.filter((result) => result.cacheHit).length,
     receiptReuses: ordered.filter((result) => result.receiptReused).length,
@@ -211,6 +213,7 @@ async function main(argv) {
       setup: Number(one("setup-ms", "0")),
       restore: Number(one("restore-ms", "0")),
       build: Number(one("build-ms", "0")),
+      transport: Number(one("transport-ms", "0")),
       test: Number(one("test-ms", "0")),
       total: Number(one("total-ms", "0")),
     }, {

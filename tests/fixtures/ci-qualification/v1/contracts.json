@@ -30,6 +30,6 @@
     "join": "sir.ci-join/v1"
   },
   "gateStates": ["pass", "fail", "cancelled"],
-  "timingPhases": ["queue", "setup", "restore", "build", "test", "total"],
+  "timingPhases": ["queue", "setup", "restore", "build", "transport", "test", "total"],
   "fullRoutes": ["protected-main", "scheduled"]
 }

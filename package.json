@@ -9,6 +9,8 @@
     "qualify:pr": "./scripts/qualify-pr.sh",
     "test:ci-route": "node scripts/test-ci-route.mjs",
     "test:ci-route-mutations": "bash scripts/test-ci-route-mutations.sh",
+    "test:ci-evidence-mutation": "bash scripts/test-ci-evidence-mutation.sh",
+    "test:ci-failure-timing-mutation": "bash scripts/test-ci-failure-timing-mutation.sh",
     "test:production-build-receipt": "node scripts/test-production-build-receipt.mjs && node scripts/test-dotnet-invocation-trace.mjs && ./scripts/test-build-client-fable-parallel.sh",
     "dev:client": "vite --config src/SIR.Client.Web/vite.config.js",
     "import:map-design": "node scripts/import-map-editor-design.mjs",

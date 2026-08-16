@@ -20,6 +20,7 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     outputs:
+      classification: ${{ steps.route.outputs.classification }}
       rules: ${{ steps.route.outputs.rules }}
       spatial: ${{ steps.route.outputs.spatial }}
       cancellation: ${{ steps.route.outputs.cancellation }}
@@ -34,7 +35,7 @@ jobs:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
       - uses: actions/setup-node@v4
-        with: { node-version: 26.5.0, cache: npm }
+        with: { node-version: 26.5.0 }
       - id: route
         name: Classify changed paths
         shell: bash
@@ -48,7 +49,8 @@ jobs:
             --tree "$(git rev-parse '${{ github.event.pull_request.head.sha }}^{tree}')" \
             --output artifacts/ci/route.json \
             --github-output "$GITHUB_OUTPUT"
-      - uses: actions/upload-artifact@v4
+      - if: always()
+        uses: actions/upload-artifact@v4
         with: { name: ci-route, path: artifacts/ci, retention-days: 1 }
 
   integrity:
@@ -74,7 +76,93 @@ jobs:
         with: { name: gate-integrity, path: artifacts/ci/results/integrity.json, retention-days: 1 }
 
   prepare:
-    if: needs.route.outputs.prepare == 'true'
+    if: always() && needs.route.outputs.prepare == 'true'
+    needs: [route, prepare-native, prepare-fable, prepare-web, prepare-server]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+      - uses: actions/setup-dotnet@v4
+        with: { global-json-file: global.json }
+      - uses: actions/setup-node@v4
+        with: { node-version: 26.5.0 }
+      - uses: actions/download-artifact@v4
+        with: { name: ci-route, path: artifacts/ci }
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with: { pattern: prepared-part-*, path: artifacts/ci/parts, merge-multiple: true }
+      - run: ./scripts/run-ci-gate.sh prepare artifacts/ci/results/prepare.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prepared-candidate
+          include-hidden-files: true
+          compression-level: 0
+          retention-days: 1
+          path: |
+            artifacts/ci
+            !artifacts/ci/parts/**
+            artifacts/prepared-candidate.tar
+            docs/evidence/production-build-receipt-v1
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: gate-prepare, path: artifacts/ci/results/prepare.json, retention-days: 1 }
+
+  prepare-native:
+    if: needs.route.outputs.classification == 'domain' || needs.route.outputs.classification == 'cross-cutting'
+    needs: route
+    runs-on: ubuntu-latest
+    steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+      - uses: actions/setup-dotnet@v4
+        with: { global-json-file: global.json }
+      - uses: actions/setup-node@v4
+        with: { node-version: 26.5.0 }
+      - uses: actions/download-artifact@v4
+        with: { name: ci-route, path: artifacts/ci }
+      - run: ./scripts/qualify-pr.sh prepare-part native
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prepared-part-native
+          compression-level: 0
+          retention-days: 1
+          path: |
+            artifacts/ci/parts/native.tar
+            artifacts/ci/parts/native.timing.json
+
+  prepare-fable:
+    if: needs.route.outputs.classification == 'domain' || needs.route.outputs.classification == 'cross-cutting'
+    needs: route
+    runs-on: ubuntu-latest
+    steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+      - uses: actions/setup-dotnet@v4
+        with: { global-json-file: global.json }
+      - uses: actions/setup-node@v4
+        with: { node-version: 26.5.0 }
+      - uses: actions/download-artifact@v4
+        with: { name: ci-route, path: artifacts/ci }
+      - run: ./scripts/qualify-pr.sh prepare-part fable
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prepared-part-fable
+          compression-level: 0
+          retention-days: 1
+          path: |
+            artifacts/ci/parts/fable.tar
+            artifacts/ci/parts/fable.timing.json
+
+  prepare-web:
+    if: needs.route.outputs.classification == 'documentation' || needs.route.outputs.classification == 'browser' || needs.route.outputs.classification == 'cross-cutting'
     needs: route
     runs-on: ubuntu-latest
     steps:
@@ -89,20 +177,42 @@ jobs:
       - run: npm ci --ignore-scripts
       - uses: actions/download-artifact@v4
         with: { name: ci-route, path: artifacts/ci }
-      - run: ./scripts/run-ci-gate.sh prepare artifacts/ci/results/prepare.json
-      - uses: actions/upload-artifact@v4
+      - run: ./scripts/qualify-pr.sh prepare-part web
+      - if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: prepared-candidate
-          include-hidden-files: true
+          name: prepared-part-web
           compression-level: 0
           retention-days: 1
           path: |
-            artifacts/ci
-            artifacts/prepared-candidate.tar
-            docs/evidence/production-build-receipt-v1
+            artifacts/ci/parts/web.tar
+            artifacts/ci/parts/web.timing.json
+
+  prepare-server:
+    if: needs.route.outputs.classification == 'browser' || needs.route.outputs.classification == 'cross-cutting'
+    needs: route
+    runs-on: ubuntu-latest
+    steps:
+      - name: Capture runner start
+        run: echo "SIR_CI_RUNNER_START_MS=$(date +%s%3N)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0, ref: "${{ github.event.pull_request.head.sha }}" }
+      - uses: actions/setup-dotnet@v4
+        with: { global-json-file: global.json }
+      - uses: actions/setup-node@v4
+        with: { node-version: 26.5.0 }
+      - uses: actions/download-artifact@v4
+        with: { name: ci-route, path: artifacts/ci }
+      - run: ./scripts/qualify-pr.sh prepare-part server
       - if: always()
         uses: actions/upload-artifact@v4
-        with: { name: gate-prepare, path: artifacts/ci/results/prepare.json, retention-days: 1 }
+        with:
+          name: prepared-part-server
+          compression-level: 0
+          retention-days: 1
+          path: |
+            artifacts/ci/parts/server.tar
+            artifacts/ci/parts/server.timing.json
 
   rules:
     if: needs.route.outputs.rules == 'true'
