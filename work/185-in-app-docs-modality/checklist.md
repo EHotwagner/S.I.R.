@@ -22,7 +22,7 @@ Prose status: checklistReady
 
 ## Source Snapshot
 - spec: work/185-in-app-docs-modality/spec.md sha256:0540a98f00e9133723a0bd5abb28ae3bb1a463ca3c5a0997fae202a68bf8cdcc schemaVersion:1
-- clarifications: work/185-in-app-docs-modality/clarifications.md sha256:9443ce1b0c13f95d138681f6d937455570c7b2014699e70a5e4208be089652b7 schemaVersion:1
+- clarifications: work/185-in-app-docs-modality/clarifications.md sha256:4ea28f778102ad307dbb4e54cf690437bc6a70dff0b21cecf44edafa199eb06f schemaVersion:1
 
 ## Checklist Items
 - CHK-001 [FR-001] [AC-001] blocking: Requirement FR-001 is testable and linked to acceptance coverage.

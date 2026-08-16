@@ -53,7 +53,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "d10adb9aa914dea258fc65628cb1c8d46663224df703219036123a0e277b4fba"
+        "value": "5803b3542b30ee2346c1c115c4598e24bc31dfa405488ad33bb0d836ce90b2ee"
       }
     },
     {
@@ -65,7 +65,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "9443ce1b0c13f95d138681f6d937455570c7b2014699e70a5e4208be089652b7"
+        "value": "4ea28f778102ad307dbb4e54cf690437bc6a70dff0b21cecf44edafa199eb06f"
       }
     },
     {
@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "f7e68cac1bfda914f1ee1662d75b4dbe917e46a36a52d0a71af22d68212001ba"
+        "value": "aadc66de7b5b99daab2634cd8ea5ff5d178d8503bba34dbc8c30bf8f60e1ee17"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "7c159517cc03c4739344f04cc4db22ddd32fe01826cbf871e01a117178800395"
+        "value": "4ea9543fa674085471019ec16cfcd83476bd6383ceb5995c4c28089b0e3632d5"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "8409752fa30181405f707204835e4c0fedfc21a6c4933a340bd27d86edae1050"
+        "value": "6c1b7a09e159b2b8b9dca4be6c768249965a29b0a4fdfa6f098d21a3bb317117"
       }
     }
   ],
@@ -484,8 +484,8 @@
     },
     {
       "id": "DEC-008",
-      "title": "Integrate Docs through the canonical typed FeatureLoader as one deferred \u0060DocsView\u0060 chunk, retain immutable registry v1, and make registry v2 the explicit rebaseline with only the measured Rules Explorer Brotli ceiling changed; fail F#/JavaScript/compiled version drift and invert that gate.",
-      "decision": "Integrate Docs through the canonical typed FeatureLoader as one deferred \u0060DocsView\u0060 chunk, retain immutable registry v1, and make registry v2 the explicit rebaseline with only the measured Rules Explorer Brotli ceiling changed; fail F#/JavaScript/compiled version drift and invert that gate.",
+      "title": "Integrate Docs through the canonical typed FeatureLoader as one deferred \u0060DocsView\u0060 chunk, retain immutable registry v1, and make registry v2 own both feature-chunk and browser-observed route ceilings; explicitly rebaseline the measured Rules Explorer Brotli and initial-route subjects, fail F#/JavaScript/compiled version drift, and invert version/route gates.",
+      "decision": "Integrate Docs through the canonical typed FeatureLoader as one deferred \u0060DocsView\u0060 chunk, retain immutable registry v1, and make registry v2 own both feature-chunk and browser-observed route ceilings; explicitly rebaseline the measured Rules Explorer Brotli and initial-route subjects, fail F#/JavaScript/compiled version drift, and invert version/route gates.",
       "requirementRefs": [
         "FR-001",
         "FR-009",
@@ -3238,7 +3238,7 @@
       "schemaVersion": 1,
       "generator": {
         "id": "FS.GG.SDD.Artifacts",
-        "version": "1.0.1"
+        "version": "1.0.0"
       },
       "sources": [
         {
@@ -3269,7 +3269,7 @@
           "path": "work/185-in-app-docs-modality/checklist.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "d10adb9aa914dea258fc65628cb1c8d46663224df703219036123a0e277b4fba"
+            "value": "5803b3542b30ee2346c1c115c4598e24bc31dfa405488ad33bb0d836ce90b2ee"
           },
           "schemaVersion": 1
         },
@@ -3277,7 +3277,7 @@
           "path": "work/185-in-app-docs-modality/clarifications.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "9443ce1b0c13f95d138681f6d937455570c7b2014699e70a5e4208be089652b7"
+            "value": "4ea28f778102ad307dbb4e54cf690437bc6a70dff0b21cecf44edafa199eb06f"
           },
           "schemaVersion": 1
         },
@@ -3285,7 +3285,7 @@
           "path": "work/185-in-app-docs-modality/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "f7e68cac1bfda914f1ee1662d75b4dbe917e46a36a52d0a71af22d68212001ba"
+            "value": "aadc66de7b5b99daab2634cd8ea5ff5d178d8503bba34dbc8c30bf8f60e1ee17"
           },
           "schemaVersion": 1
         },
@@ -3293,7 +3293,7 @@
           "path": "work/185-in-app-docs-modality/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "7c159517cc03c4739344f04cc4db22ddd32fe01826cbf871e01a117178800395"
+            "value": "4ea9543fa674085471019ec16cfcd83476bd6383ceb5995c4c28089b0e3632d5"
           },
           "schemaVersion": 1
         },
@@ -3309,14 +3309,14 @@
           "path": "work/185-in-app-docs-modality/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "8409752fa30181405f707204835e4c0fedfc21a6c4933a340bd27d86edae1050"
+            "value": "6c1b7a09e159b2b8b9dca4be6c768249965a29b0a4fdfa6f098d21a3bb317117"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "b0ec13478a60bfdad2ee7eda018d60129399bb250560da31ab4fc4f89992c0a6"
+        "value": "5635b1e20090e78344534dd7de16f78354e181f2f6ef1cf3593f66f832079f56"
       },
       "currency": "current"
     }

@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites tests="3" failures="0" skipped="0">
- <testsuite name="sir-browser" tests="3" failures="0" skipped="0">
-  <testcase classname="client-feature-loader.spec.js" name="a deferred production control reports a stable offline failure"></testcase>
-  <testcase classname="client-feature-loader.spec.js" name="the production shell loads registered features through real controls"></testcase>
+<testsuites tests="7" failures="0" skipped="0">
+ <testsuite name="sir-browser" tests="7" failures="0" skipped="0">
   <testcase classname="in-app-docs.spec.js" name="documentation is a reversible, searchable production modality"></testcase>
+  <testcase classname="production-delivery.spec.js" name="Release delivery uses cache-safe compression and defers spatial diagnostics"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="advance pause place seek activation and resume preserve continuous state"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="terrain edits reset with a terrain-specific visible explanation"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="the player-visible Rules explorer renders the executable combat corpus and pinned source"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="topology edits reset with a topology-specific visible explanation"></testcase>
+  <testcase classname="visible-workflows.spec.js" name="visible mode controls preserve a usable tactical workspace across authoring modes"></testcase>
  </testsuite>
 </testsuites>

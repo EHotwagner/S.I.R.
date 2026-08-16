@@ -17,15 +17,15 @@ sources:
     schemaVersion: 1
   - label: clarifications
     path: work/185-in-app-docs-modality/clarifications.md
-    digest: 9443ce1b0c13f95d138681f6d937455570c7b2014699e70a5e4208be089652b7
+    digest: 4ea28f778102ad307dbb4e54cf690437bc6a70dff0b21cecf44edafa199eb06f
     schemaVersion: 1
   - label: checklist
     path: work/185-in-app-docs-modality/checklist.md
-    digest: d10adb9aa914dea258fc65628cb1c8d46663224df703219036123a0e277b4fba
+    digest: 5803b3542b30ee2346c1c115c4598e24bc31dfa405488ad33bb0d836ce90b2ee
     schemaVersion: 1
   - label: plan
     path: work/185-in-app-docs-modality/plan.md
-    digest: 7c159517cc03c4739344f04cc4db22ddd32fe01826cbf871e01a117178800395
+    digest: 4ea9543fa674085471019ec16cfcd83476bd6383ceb5995c4c28089b0e3632d5
     schemaVersion: 1
 tasks:
   - id: T001

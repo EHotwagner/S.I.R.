@@ -4,7 +4,7 @@
   "workId": "185-in-app-docs-modality",
   "stage": "verify",
   "status": "verificationReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.1",
+  "generator": "FS.GG.SDD.Artifacts/1.0.0",
   "sources": [
     {
       "path": ".fsgg/agents.yml",
@@ -41,7 +41,7 @@
       "kind": "analysis",
       "digest": {
         "algorithm": "sha256",
-        "value": "29b00bd69c4f3a30043b5b4571f4ecab3c20f896142330b5ad33c2287a1cbcb3"
+        "value": "b3d7ed96c81fe4f86d2e7891066871e2658aee2abf29a6114f03fca59af74f37"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -51,7 +51,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "9dfc0e3f64baca3b533e3ea0fab43c81c97d1316f2c3f51984a2c19c00b06f16"
+        "value": "71c9f7d1bb481560aa30296fb92e9572a002a7b88ca6eeece9f88f04bc6cbfca"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -61,7 +61,7 @@
       "kind": "checklist",
       "digest": {
         "algorithm": "sha256",
-        "value": "d10adb9aa914dea258fc65628cb1c8d46663224df703219036123a0e277b4fba"
+        "value": "5803b3542b30ee2346c1c115c4598e24bc31dfa405488ad33bb0d836ce90b2ee"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -71,7 +71,7 @@
       "kind": "clarification",
       "digest": {
         "algorithm": "sha256",
-        "value": "9443ce1b0c13f95d138681f6d937455570c7b2014699e70a5e4208be089652b7"
+        "value": "4ea28f778102ad307dbb4e54cf690437bc6a70dff0b21cecf44edafa199eb06f"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +81,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "390f4df9c45557834b8275fa09fcf0421fa74c25ec3cbfe59d5e65a6e63cccff"
+        "value": "aadc66de7b5b99daab2634cd8ea5ff5d178d8503bba34dbc8c30bf8f60e1ee17"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -91,7 +91,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "7c159517cc03c4739344f04cc4db22ddd32fe01826cbf871e01a117178800395"
+        "value": "4ea9543fa674085471019ec16cfcd83476bd6383ceb5995c4c28089b0e3632d5"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -111,7 +111,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "8409752fa30181405f707204835e4c0fedfc21a6c4933a340bd27d86edae1050"
+        "value": "6c1b7a09e159b2b8b9dca4be6c768249965a29b0a4fdfa6f098d21a3bb317117"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"

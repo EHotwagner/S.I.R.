@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
   "contractVersion": "2.0.0",
-  "generatorVersion": "FS.GG.SDD.Artifacts/1.0.1",
+  "generatorVersion": "FS.GG.SDD.Artifacts/1.0.0",
   "workId": "185-in-app-docs-modality",
   "sources": [
     {
       "path": "readiness/185-in-app-docs-modality/ship.json",
-      "digest": "sha256:350b313b477fedb0c97751a940af4590cb03a1c87d3a85ea59d2fd50d4d01896",
+      "digest": "sha256:ee78d1e017afeeaea3423ec8312a1f62631a5b0360709d11377b7247c5df079a",
       "schemaVersion": 1
     },
     {
       "path": "readiness/185-in-app-docs-modality/verify.json",
-      "digest": "sha256:3c84e7cec93430c9cfba66a3c76a3b4c186d96f5f17188e20fdf2972df144f4a",
+      "digest": "sha256:4eef6ced722dd48b479252f8479370c4bcfa33095bb548dbeca962f23d9d4ebd",
       "schemaVersion": 1
     },
     {
       "path": "readiness/185-in-app-docs-modality/work-model.json",
-      "digest": "sha256:9dfc0e3f64baca3b533e3ea0fab43c81c97d1316f2c3f51984a2c19c00b06f16",
+      "digest": "sha256:71c9f7d1bb481560aa30296fb92e9572a002a7b88ca6eeece9f88f04bc6cbfca",
       "schemaVersion": 1
     }
   ],

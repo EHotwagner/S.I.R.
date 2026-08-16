@@ -3,7 +3,7 @@
   "viewVersion": "1.0",
   "workId": "185-in-app-docs-modality",
   "targetId": "claude",
-  "generator": "FS.GG.SDD.Artifacts/1.0.1",
+  "generator": "FS.GG.SDD.Artifacts/1.0.0",
   "generated": true,
   "sources": [
     {
@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "9dfc0e3f64baca3b533e3ea0fab43c81c97d1316f2c3f51984a2c19c00b06f16"
+        "value": "71c9f7d1bb481560aa30296fb92e9572a002a7b88ca6eeece9f88f04bc6cbfca"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
