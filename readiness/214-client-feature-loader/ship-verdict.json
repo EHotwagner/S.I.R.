@@ -4,10 +4,10 @@
   "workId": "214-client-feature-loader",
   "stage": "ship",
   "status": "shipReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sourcesDigest": {
     "algorithm": "sha256",
-    "value": "14932acf09a2c63310e1e72a8db2df41a59b2a85920758b065b86240b3a678bf"
+    "value": "a3d60c81878a8888b4d6f8430bb3e06a26412d54a57337b783bb5c9766d2b0b9"
   },
   "verificationReadiness": {
     "status": "verificationReady",

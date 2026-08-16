@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "111672c3a85cfada7a7e87e05c8726ffa9999b07282209c62f47f87997c299d1"
+        "value": "a52c13d37ec1e78625bd7192b1792301a93c2db3fae964678562a716d9f120db"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "03020c539abf9cc63ef4f618b691c25a399bed5e976cc75d0e9b0191638e8a68"
+        "value": "64bf942f7db5566e4e55d986548e88dcff4a158c2d16a5ec81b268b7fa6e5fe7"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "51c45ee4bae86f38e8077eb4c99002714a291c1f64bb7141583f1af50e29522b"
+        "value": "a9d2c4aed923a059486d4418b9157c9d1d811e84d19962b3e0dd5fdb7f42ec2c"
       }
     }
   ],
@@ -1508,7 +1508,7 @@
         "FR-001"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1536,7 +1536,7 @@
         "FR-002"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1564,7 +1564,7 @@
         "FR-003"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1592,7 +1592,7 @@
         "FR-004"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1620,7 +1620,7 @@
         "FR-005"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1648,7 +1648,7 @@
         "FR-006"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1676,7 +1676,7 @@
         "FR-007"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1704,7 +1704,7 @@
         "FR-008"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1732,7 +1732,7 @@
         "FR-009"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1760,7 +1760,7 @@
         "FR-010"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1788,7 +1788,7 @@
         "FR-011"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1814,7 +1814,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1840,7 +1840,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1866,7 +1866,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1892,7 +1892,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1918,7 +1918,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1946,7 +1946,7 @@
         "FR-001"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -1974,7 +1974,7 @@
         "FR-002"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2002,7 +2002,7 @@
         "FR-003"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2030,7 +2030,7 @@
         "FR-004"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2058,7 +2058,7 @@
         "FR-006"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2086,7 +2086,7 @@
         "FR-007"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2114,7 +2114,7 @@
         "FR-008"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2142,7 +2142,7 @@
         "FR-010"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2170,7 +2170,7 @@
         "FR-011"
       ],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2196,7 +2196,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2222,7 +2222,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2248,7 +2248,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2274,7 +2274,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2300,7 +2300,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2326,7 +2326,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2352,7 +2352,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2378,7 +2378,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2404,7 +2404,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2430,7 +2430,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2456,7 +2456,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2482,7 +2482,7 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json",
+        "docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json",
         "scripts/test-client-feature-loader.mjs",
         "tests/SIR.Browser.Tests/client-feature-loader.spec.js"
       ],
@@ -2506,7 +2506,7 @@
       "schemaVersion": 1,
       "generator": {
         "id": "FS.GG.SDD.Artifacts",
-        "version": "1.0.0"
+        "version": "1.0.1"
       },
       "sources": [
         {
@@ -2553,7 +2553,7 @@
           "path": "work/214-client-feature-loader/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "111672c3a85cfada7a7e87e05c8726ffa9999b07282209c62f47f87997c299d1"
+            "value": "a52c13d37ec1e78625bd7192b1792301a93c2db3fae964678562a716d9f120db"
           },
           "schemaVersion": 1
         },
@@ -2561,7 +2561,7 @@
           "path": "work/214-client-feature-loader/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "03020c539abf9cc63ef4f618b691c25a399bed5e976cc75d0e9b0191638e8a68"
+            "value": "64bf942f7db5566e4e55d986548e88dcff4a158c2d16a5ec81b268b7fa6e5fe7"
           },
           "schemaVersion": 1
         },
@@ -2577,14 +2577,14 @@
           "path": "work/214-client-feature-loader/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "51c45ee4bae86f38e8077eb4c99002714a291c1f64bb7141583f1af50e29522b"
+            "value": "a9d2c4aed923a059486d4418b9157c9d1d811e84d19962b3e0dd5fdb7f42ec2c"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "0c49e0ecc0c974220995f9ac98440b826260b2311d506514a176c1cf89b1efd9"
+        "value": "0d0bedaf37533453aaf1ff1be80277d21488395f770f456713dddc9e0ed213f3"
       },
       "currency": "current"
     }

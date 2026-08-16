@@ -4,7 +4,7 @@
   "workId": "214-client-feature-loader",
   "stage": "analyze",
   "status": "implementationReady",
-  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sources": [
     {
       "path": ".fsgg/agents.yml",
@@ -37,6 +37,16 @@
       "schemaStatus": "current"
     },
     {
+      "path": "readiness/214-client-feature-loader/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "a190cbb77937a3f11539561457a6d7113b1837d7981da34ceef1459d1d8fe37a"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
       "path": "work/214-client-feature-loader/checklist.md",
       "kind": "checklist",
       "digest": {
@@ -61,7 +71,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "03020c539abf9cc63ef4f618b691c25a399bed5e976cc75d0e9b0191638e8a68"
+        "value": "64bf942f7db5566e4e55d986548e88dcff4a158c2d16a5ec81b268b7fa6e5fe7"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "6d96e6a35265594682bf4371cdfd59076ebb05eb35b4fd9d393b9ac3f13147b1"
+        "value": "a9d2c4aed923a059486d4418b9157c9d1d811e84d19962b3e0dd5fdb7f42ec2c"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -916,7 +926,7 @@
     {
       "path": "readiness/214-client-feature-loader/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
+      "currency": "current",
       "diagnosticIds": []
     }
   ],

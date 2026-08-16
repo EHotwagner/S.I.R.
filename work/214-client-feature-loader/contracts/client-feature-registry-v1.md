@@ -20,4 +20,7 @@ build projections that disagree with the registry fail closed. Increasing a
 budget requires a registry version/rebaseline and a red budget mutation receipt.
 
 Version 1 entries are `shell`/bootstrap, `tactical-environment`/eager,
-`rules-explorer`/deferred, and `docs`/deferred.
+`delivery-support`/deferred, `rules-explorer`/deferred, and `docs`/deferred.
+Delivery support is included because its production control owns a real Vite
+dynamic entry; every emitted dynamic identity must have exactly one registry
+owner.

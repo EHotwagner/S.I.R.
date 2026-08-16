@@ -3,6 +3,8 @@
 Generated from `readiness/214-client-feature-loader/work-model.json`. This is a generated projection of the
 normalized work model, not an authored source of truth. See `guidance.json`.
 
+For public-impact F# work, author or update the compiled `.fsi` signature before implementation hardens the surface. Prefer simple modules, functions, records, and discriminated unions; keep effects at explicit boundaries.
+
 ## automated-tests — automated-tests
 - Capability: Required by tasks: T029, T030, T031, T032, T033.
 - Related: T029, T030, T031, T032, T033

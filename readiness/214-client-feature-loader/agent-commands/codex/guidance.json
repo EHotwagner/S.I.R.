@@ -3,7 +3,7 @@
   "viewVersion": "1.0",
   "workId": "214-client-feature-loader",
   "targetId": "codex",
-  "generator": "FS.GG.SDD.Artifacts/1.0.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "generated": true,
   "sources": [
     {
@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "e21857326cff69ff98055205a43237aec67db5c0710f3ce85c29a73465566cb8"
+        "value": "a190cbb77937a3f11539561457a6d7113b1837d7981da34ceef1459d1d8fe37a"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -541,5 +541,16 @@
       "kind": "skills"
     }
   ],
-  "diagnostics": []
+  "diagnostics": [
+    {
+      "id": "agents.staleGeneratedGuidance",
+      "severity": "warning",
+      "artifact": "readiness/214-client-feature-loader/agent-commands/codex/guidance.json",
+      "message": "Generated agent guidance for target \u0027codex\u0027 no longer matches the current normalized work model.",
+      "correction": "Regenerate agent guidance so the generated view matches the current work model.",
+      "relatedIds": [
+        "codex"
+      ]
+    }
+  ]
 }

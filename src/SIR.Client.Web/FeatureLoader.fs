@@ -30,6 +30,7 @@ type Reconciliation =
     | IgnoredStale of LoadFailure
 
 let registryVersion = 1
+let deliverySupport = FeatureId "delivery-support"
 let shell = FeatureId "shell"
 let tacticalEnvironment = FeatureId "tactical-environment"
 let rulesExplorer = FeatureId "rules-explorer"
@@ -39,7 +40,8 @@ let value (FeatureId value) = value
 
 let identityFor feature =
     let logicalChunk =
-        if feature = shell || feature = tacticalEnvironment then "app"
+        if feature = deliverySupport then "deferred-delivery-support"
+        elif feature = shell || feature = tacticalEnvironment then "app"
         elif feature = rulesExplorer then "RulesExplorer"
         elif feature = docs then "docs-feature"
         else invalidArg (nameof feature) ("Unregistered client feature: " + value feature)
@@ -48,7 +50,7 @@ let identityFor feature =
       LogicalChunk = logicalChunk }
 
 let initial =
-    [ shell; tacticalEnvironment; rulesExplorer; docs ]
+    [ deliverySupport; shell; tacticalEnvironment; rulesExplorer; docs ]
     |> List.map (fun feature ->
         let identity = identityFor feature
         feature,

@@ -30,6 +30,7 @@ type Reconciliation =
     | IgnoredStale of LoadFailure
 
 val registryVersion: int
+val deliverySupport: FeatureId
 val shell: FeatureId
 val tacticalEnvironment: FeatureId
 val rulesExplorer: FeatureId

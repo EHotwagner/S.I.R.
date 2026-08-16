@@ -3,6 +3,19 @@
   "version": 1,
   "features": [
     {
+      "id": "delivery-support",
+      "phase": "deferred",
+      "control": "delivery-support",
+      "route": "delivery-support",
+      "module": "src/SIR.Client.Web/deferred-delivery-support.js",
+      "logicalChunk": "deferred-delivery-support",
+      "budget": {
+        "raw": 8192,
+        "gzip": 4096,
+        "brotli": 3072
+      }
+    },
+    {
       "id": "docs",
       "phase": "deferred",
       "control": "toolbar-docs",

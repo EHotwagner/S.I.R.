@@ -26,7 +26,7 @@ function fail(subject, detail) {
 const registryBytes = await readFile(registryPath);
 const registry = JSON.parse(registryBytes);
 if (registry.schema !== "sir.client.feature-registry/v1" || registry.version !== 1) fail("registry", "unsupported schema/version");
-if (!Array.isArray(registry.features) || registry.features.length !== 4) fail("registry", "expected exactly four v1 features");
+if (!Array.isArray(registry.features) || registry.features.length !== 5) fail("registry", "expected exactly five v1 features");
 const featureIds = registry.features.map((feature) => feature.id);
 if (featureIds.join("|") !== [...featureIds].sort().join("|")) fail("registry", "features are not in stable id order");
 if (new Set(featureIds).size !== featureIds.length) fail("registry", "duplicate feature id");
@@ -36,9 +36,35 @@ for (const feature of registry.features) {
   for (const field of ["control", "route", "module", "logicalChunk"]) if (typeof feature[field] !== "string" || feature[field].length === 0) fail("registry", `${feature.id} missing ${field}`);
   for (const kind of ["raw", "gzip", "brotli"]) if (!Number.isSafeInteger(feature.budget?.[kind]) || feature.budget[kind] <= 0) fail("budget", `${feature.id} invalid ${kind}`);
 }
-if (new Set(registry.features.map((feature) => feature.logicalChunk)).size !== 3) fail("registry", "v1 logical chunk projection changed");
+if (new Set(registry.features.map((feature) => feature.logicalChunk)).size !== 4) fail("registry", "v1 logical chunk projection changed");
+
+const deliverySupportEntryPath = resolve(root, "src/SIR.Client.Web/delivery-support-entry.js");
+if (mutation === "eager-import") {
+  const original = await readFile(deliverySupportEntryPath, "utf8");
+  try {
+    await writeFile(deliverySupportEntryPath, `${original.trimEnd()}\nimport "./docs-feature.js";\n`);
+    let diagnostic = "";
+    try {
+      execFileSync(process.execPath, [import.meta.filename, "--source-only"], {
+        cwd: root,
+        env: { ...process.env, SIR_FEATURE_LOADER_MUTATION: "" },
+        encoding: "utf8",
+        stdio: "pipe",
+      });
+    } catch (error) {
+      diagnostic = `${error.stdout ?? ""}\n${error.stderr ?? ""}`;
+    }
+    if (!diagnostic.includes("client-feature-loader:eager-import")) {
+      fail("eager-import", "real static Docs import mutation passed or lacked its subject-specific diagnostic");
+    }
+    fail("eager-import", "self-restoring real static Docs import mutation was rejected");
+  } finally {
+    await writeFile(deliverySupportEntryPath, original);
+  }
+}
 
 const loaderSource = await readFile(resolve(root, "src/SIR.Client.Web/feature-loader.js"), "utf8");
+const deliverySupportEntrySource = await readFile(deliverySupportEntryPath, "utf8");
 const fsharpSource = await readFile(resolve(root, "src/SIR.Client.Web/FeatureLoader.fs"), "utf8");
 const appSource = [
   await readFile(resolve(root, "src/SIR.Client.Web/App.fs"), "utf8"),
@@ -48,18 +74,24 @@ const viteSource = await readFile(resolve(root, "src/SIR.Client.Web/vite.config.
 for (const feature of registry.features) {
   if (!fsharpSource.includes(`\"${feature.id}\"`)) fail("projection", `F# projection missing ${feature.id}`);
   if (feature.phase === "deferred") {
-    const literal = feature.id === "rules-explorer"
-      ? 'import("./.fable/RulesExplorer.js")'
-      : `import(\"./${feature.logicalChunk}.js\")`;
-    if (!loaderSource.includes(literal)) fail("eager-import", `${feature.id} lacks its declared literal dynamic import`);
-    const viewLiteral = feature.id === "docs"
-      ? 'React.DynamicImported("../../docs-feature.js")'
-      : `React.DynamicImported(\"../${feature.logicalChunk}.js\")`;
-    if (!appSource.includes(viewLiteral)) fail("eager-import", `${feature.id} lacks its declared lazy view edge`);
+    if (feature.id === "delivery-support") {
+      if (!deliverySupportEntrySource.includes('import("./deferred-delivery-support.js")')) {
+        fail("eager-import", `${feature.id} lacks its declared literal dynamic import`);
+      }
+    } else {
+      const literal = feature.id === "rules-explorer"
+        ? 'import("./.fable/RulesExplorer.js")'
+        : `import(\"./${feature.logicalChunk}.js\")`;
+      if (!loaderSource.includes(literal)) fail("eager-import", `${feature.id} lacks its declared literal dynamic import`);
+      const viewLiteral = feature.id === "docs"
+        ? 'React.DynamicImported("../../docs-feature.js")'
+        : `React.DynamicImported(\"../${feature.logicalChunk}.js\")`;
+      if (!appSource.includes(viewLiteral)) fail("eager-import", `${feature.id} lacks its declared lazy view edge`);
+    }
   }
 }
-const forbiddenStaticImport = mutation === "eager-import" ? 'import "./docs-feature.js";' : loaderSource;
-if (/^import\s+(?!React\b).*docs-feature\.js/m.test(forbiddenStaticImport) || /^import\s+(?!React\b).*RulesExplorer\.js/m.test(forbiddenStaticImport)) {
+const staticImportSubjects = `${loaderSource}\n${deliverySupportEntrySource}`;
+if (/^import\s+(?!React\b).*docs-feature\.js/m.test(staticImportSubjects) || /^import\s+(?!React\b).*RulesExplorer\.js/m.test(staticImportSubjects)) {
   fail("eager-import", "deferred feature is statically reachable outside its declared edge");
 }
 const mangleSubject = mutation === "property-mangle" ? viteSource.replace("properties: false", "properties: true") : viteSource;
@@ -133,7 +165,19 @@ const emittedNames = (await readdir(contentDirectory)).filter((name) => name.end
 const manifest = JSON.parse(await readFile(resolve(artifactRoot, ".vite/manifest.json"), "utf8"));
 const manifestEntry = Object.values(manifest).find((entry) => entry.isEntry);
 if (!manifestEntry) fail("bundle-graph", "Vite entry is missing");
-const dynamicFiles = Object.values(manifest).filter((entry) => entry.isDynamicEntry).map((entry) => entry.file).sort();
+const dynamicEntries = Object.entries(manifest).filter(([, entry]) => entry.isDynamicEntry);
+const dynamicKeys = dynamicEntries.map(([key]) => key).sort();
+const dynamicFiles = dynamicEntries.map(([, entry]) => entry.file).sort();
+const expectedDynamicKeys = registry.features
+  .filter((feature) => feature.phase === "deferred")
+  .map((feature) => feature.id === "rules-explorer" ? ".fable/RulesExplorer.js" : feature.module.replace("src/SIR.Client.Web/", ""))
+  .sort();
+const unregisteredDynamicKeys = dynamicKeys.filter((key) => !expectedDynamicKeys.includes(key));
+const missingDynamicKeys = expectedDynamicKeys.filter((key) => !dynamicKeys.includes(key));
+if (unregisteredDynamicKeys.length > 0) fail("bundle-graph", `unregistered dynamic identity: ${unregisteredDynamicKeys.join(", ")}`);
+if (missingDynamicKeys.length > 0) fail("bundle-graph", `registered dynamic identity missing: ${missingDynamicKeys.join(", ")}`);
+const entryDynamicKeys = [...(manifestEntry.dynamicImports ?? [])].sort();
+if (entryDynamicKeys.join("|") !== expectedDynamicKeys.join("|")) fail("bundle-graph", "entry dynamic-import inventory disagrees with registry ownership");
 
 const features = [];
 for (const feature of registry.features) {

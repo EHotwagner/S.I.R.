@@ -25,7 +25,7 @@ sources:
     schemaVersion: 1
   - label: plan
     path: work/214-client-feature-loader/plan.md
-    digest: bc432f468bc940070c6ceb3753a4a3d71c1106efad4583aba86036a3979fc982
+    digest: 64bf942f7db5566e4e55d986548e88dcff4a158c2d16a5ec81b268b7fa6e5fe7
     schemaVersion: 1
 tasks:
   - id: T001

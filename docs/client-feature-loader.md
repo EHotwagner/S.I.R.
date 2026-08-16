@@ -9,10 +9,12 @@ description: Versioned client bootstrap, eager and deferred feature delivery.
 
 The client feature registry is the versioned source of truth for when a browser
 feature is present and which logical chunk supplies it. Version 1 classifies the
-application shell as bootstrap, Tactical Environment as eager, and Rules
-Explorer and Docs as deferred. A feature identity is the tuple of registry
-version, feature id, and logical chunk; late completions with a different tuple
-are ignored deterministically.
+application shell as bootstrap, Tactical Environment as eager, and Delivery
+Support, Rules Explorer, and Docs as deferred. A feature identity is the tuple
+of registry version, feature id, and logical chunk; late completions with a
+different tuple are ignored deterministically. The post-build gate compares the
+complete Vite dynamic-entry inventory with those registry owners, so an
+unregistered future chunk fails closed.
 
 Deferred imports use literal module paths so Fable and Vite can construct a
 stable bundle graph without runtime code generation. The production build

@@ -11,7 +11,7 @@ sourceAnalysis: readiness/214-client-feature-loader/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/214-client-feature-loader/analysis.json
-    digest: 2bb5ed0dc2c4a430c53366b84c84324c0bf359c93202ec5744aebd26e2a2491a
+    digest: 8dbcd230f947a55dfd999b70bb7fbadf34880f4f6462f7230ddc94eb27b0a5a5
     schemaVersion: 1
   - label: checklist
     path: work/214-client-feature-loader/checklist.md
@@ -23,7 +23,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: plan
     path: work/214-client-feature-loader/plan.md
-    digest: 03020c539abf9cc63ef4f618b691c25a399bed5e976cc75d0e9b0191638e8a68
+    digest: 64bf942f7db5566e4e55d986548e88dcff4a158c2d16a5ec81b268b7fa6e5fe7
     schemaVersion: 1
   - label: spec
     path: work/214-client-feature-loader/spec.md
@@ -31,7 +31,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: tasks
     path: work/214-client-feature-loader/tasks.yml
-    digest: 51c45ee4bae86f38e8077eb4c99002714a291c1f64bb7141583f1af50e29522b
+    digest: a9d2c4aed923a059486d4418b9157c9d1d811e84d19962b3e0dd5fdb7f42ec2c
     schemaVersion: 1
 evidence:
   - id: EV001
@@ -46,7 +46,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV001]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -73,7 +73,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV002]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -100,7 +100,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV003]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -127,7 +127,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV004]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -154,7 +154,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-005]
     obligationRefs: [EV005]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -181,7 +181,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV006]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -208,7 +208,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV007]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -235,7 +235,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV008]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -262,7 +262,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-009]
     obligationRefs: [EV009]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -289,7 +289,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV010]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -316,7 +316,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV011]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -343,7 +343,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV012]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -370,7 +370,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV013]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -397,7 +397,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV014]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -424,7 +424,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV015]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -451,7 +451,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV016]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -478,7 +478,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001]
     obligationRefs: [EV017]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -505,7 +505,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-002]
     obligationRefs: [EV018]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -532,7 +532,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-003]
     obligationRefs: [EV019]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -559,7 +559,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-004]
     obligationRefs: [EV020]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -586,7 +586,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-006]
     obligationRefs: [EV021]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -613,7 +613,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-007]
     obligationRefs: [EV022]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -640,7 +640,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-008]
     obligationRefs: [EV023]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -667,7 +667,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-010]
     obligationRefs: [EV024]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -694,7 +694,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-011]
     obligationRefs: [EV025]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -721,7 +721,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001]
     obligationRefs: [EV026]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -748,7 +748,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-002, PD-003]
     obligationRefs: [EV027]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -775,7 +775,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-010]
     obligationRefs: [EV028]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -802,7 +802,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001, PD-002]
     obligationRefs: [EV029]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -829,7 +829,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-004, PD-005, PD-007]
     obligationRefs: [EV030]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -856,7 +856,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-008]
     obligationRefs: [EV031]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -883,7 +883,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-009]
     obligationRefs: [EV032]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -910,7 +910,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-010, PD-011]
     obligationRefs: [EV033]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -937,7 +937,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV034]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -964,7 +964,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV035]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -991,7 +991,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-010]
     obligationRefs: [EV036]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
@@ -1018,7 +1018,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-011]
     obligationRefs: [EV037]
-    artifacts: [docs/evidence/client-feature-bundle-graph-v1/d750cdeae575fe16639d1019b160973673cbdb3b15223c725762a1040f343d1f.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
+    artifacts: [docs/evidence/client-feature-bundle-graph-v1/8d07cf87f61f4c240764c4246ecb0f6f0f653ea0f5f248c08603c432b3e5b92e.json, scripts/test-client-feature-loader.mjs, tests/SIR.Browser.Tests/client-feature-loader.spec.js]
     sourceRefs:
       - kind: verification
         path: tests/SIR.Browser.Tests/client-feature-loader.spec.js
