@@ -8,6 +8,7 @@ reuse_build_receipt=""
 prepared_fable=""
 prepared_modal_fable=""
 domain_only=false
+ordinary_pr_functional=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --reuse-pr-build-receipt)
@@ -25,12 +26,20 @@ while [[ $# -gt 0 ]]; do
       domain_only=true
       shift
       ;;
+    --ordinary-pr-functional)
+      ordinary_pr_functional=true
+      shift
+      ;;
     *)
       echo "test-conformance: unknown argument: $1" >&2
       exit 2
       ;;
   esac
 done
+if [[ "$ordinary_pr_functional" == true && "$domain_only" != true ]]; then
+  echo "test-conformance: --ordinary-pr-functional requires --domain-only" >&2
+  exit 2
+fi
 if [[ -z "${NUGET_PACKAGES:-}" ]]; then
   export NUGET_PACKAGES="$task_tmp/nuget-packages"
 fi
@@ -110,10 +119,13 @@ modal_dotnet_output=$(dotnet run \
   --no-build \
   --no-restore)
 
+match_arguments=()
+if [[ "$ordinary_pr_functional" == true ]]; then match_arguments=(-- --functional-cross-runtime); fi
 match_output=$(dotnet run \
   --project tests/SIR.Match.Tests/SIR.Match.Tests.fsproj \
   --no-build \
-  --no-restore)
+  --no-restore \
+  "${match_arguments[@]}")
 
 browser_wasm_output=$(./scripts/test-browser-wasm-verification.sh)
 

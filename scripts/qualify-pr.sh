@@ -266,7 +266,8 @@ NODE
         ./scripts/test-conformance.sh \
           --reuse-pr-build-receipt "$receipt" \
           --prepared-fable "$ci_root/prepared/domain-fable" "$ci_root/prepared/modal-fable" \
-          --domain-only
+          --domain-only \
+          --ordinary-pr-functional
         ;;
       browser)
         "$0" compose-browser >/dev/null

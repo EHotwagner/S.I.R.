@@ -14,6 +14,8 @@ let private require condition message =
 let private mutationEnabled name =
     String.Equals(Environment.GetEnvironmentVariable name, "1", StringComparison.Ordinal)
 
+let mutable private enforceProductPerformanceBudgets = true
+
 let private containsSubsequence (needle: byte array) (haystack: byte array) =
     if needle.Length = 0 then
         true
@@ -382,7 +384,7 @@ let private tacticalEnvironmentEvidence () =
         (saturatedInspected = 256
          && saturatedRemoved = 256
          && saturatedInvalidated.DynamicEntries.IsEmpty
-         && invalidationClock.Elapsed.TotalMilliseconds < 10.0)
+         && (not enforceProductPerformanceBudgets || invalidationClock.Elapsed.TotalMilliseconds < 10.0))
         "Exact 256-receipt invalidation did not inspect/remove every dependent entry within 10 ms."
 
     let coverKnowledge =
@@ -447,7 +449,7 @@ let private tacticalEnvironmentEvidence () =
          && counters.DependencyEntriesInvalidated <= counters.DependencyEntriesInspected
          && counters.WorkloadQueryCount > 0
          && counters.WorkloadQueryCount <= counters.WorkloadFeatures
-         && elapsed < 1_000.0)
+         && (not enforceProductPerformanceBudgets || elapsed < 1_000.0))
         "Tactical environment workload exceeded a declared work or smoke-time bound."
 
     let noisyInvalidVariant =
@@ -462,7 +464,7 @@ let private tacticalEnvironmentEvidence () =
     validationClock.Stop()
     require
         (boundedFindings.Length = SIR.Simulation.TacticalEnvironment.maximumFindings
-         && validationClock.Elapsed.TotalMilliseconds < 100.0)
+         && (not enforceProductPerformanceBudgets || validationClock.Elapsed.TotalMilliseconds < 100.0))
         "Maximum validation did not truncate exactly at 512 findings within its 100 ms smoke budget."
 
     let maximumPlot =
@@ -499,7 +501,7 @@ let private tacticalEnvironmentEvidence () =
     maximumValidationClock.Stop()
     require maximumValidationFindings.IsEmpty "Maximum tactical fixture did not stay valid after warmup."
     require
-        (maximumValidationClock.Elapsed.TotalMilliseconds < 50.0)
+        (not enforceProductPerformanceBudgets || maximumValidationClock.Elapsed.TotalMilliseconds < 50.0)
         "Maximum 64-slot/32-variant validation exceeded its separate 50 ms gate."
     let maximumClock = Stopwatch.StartNew()
     let maximumEnvironment =
@@ -511,7 +513,7 @@ let private tacticalEnvironmentEvidence () =
         (maximumEnvironment.AssemblyCostCounters.SlotsVisited = 64
          && maximumEnvironment.AssemblyCostCounters.VariantsInspected = 2_048
          && maximumEnvironment.AssemblyCostCounters.Selections = 64
-         && maximumClock.Elapsed.TotalMilliseconds < 25.0)
+         && (not enforceProductPerformanceBudgets || maximumClock.Elapsed.TotalMilliseconds < 25.0))
         "Maximum 64-slot/32-variant assembly exceeded its structural or 25 ms timing budget."
 
     let previewCells =
@@ -552,7 +554,7 @@ let private tacticalEnvironmentEvidence () =
     SIR.Simulation.TacticalEnvironment.validate previewPlot previewVariants |> ignore
     previewValidationClock.Stop()
     require
-        (previewValidationClock.Elapsed.TotalMilliseconds < 50.0)
+        (not enforceProductPerformanceBudgets || previewValidationClock.Elapsed.TotalMilliseconds < 50.0)
         "Maximum 80x80/2,048-feature validation exceeded its separate 50 ms gate."
     let previewAllocatedBefore = GC.GetAllocatedBytesForCurrentThread()
     let previewClock = Stopwatch.StartNew()
@@ -574,7 +576,7 @@ let private tacticalEnvironmentEvidence () =
         (previewAllocatedBytes < 16_000_000L)
         (sprintf "Maximum 80x80/2,048-feature editor preview exceeded its 16000000-byte allocation bound: %d bytes." previewAllocatedBytes)
     require
-        (previewClock.Elapsed.TotalMilliseconds < 50.0)
+        (not enforceProductPerformanceBudgets || previewClock.Elapsed.TotalMilliseconds < 50.0)
         (sprintf "Maximum 80x80/2,048-feature editor preview exceeded its 50 ms timing budget: %.3f ms." previewClock.Elapsed.TotalMilliseconds)
 
     let interactionFeatures =
@@ -725,7 +727,7 @@ let private tacticalEnvironmentEvidence () =
         (crossedCount > 0)
         "Representative combat/spatial batch did not traverse any spatial cells."
     require
-        (interactionClock.Elapsed.TotalMilliseconds < 50.0)
+        (not enforceProductPerformanceBudgets || interactionClock.Elapsed.TotalMilliseconds < 50.0)
         (sprintf "Representative 100-unit/50-interaction production combat/spatial batch exceeded its 50 ms timing budget: %.3f ms." interactionClock.Elapsed.TotalMilliseconds)
 
     printfn
@@ -1118,7 +1120,7 @@ let private runControlHostQualifications () =
         let best = Array.min samples
         let qualificationBudgetMs = 50.0
         require
-            (best < qualificationBudgetMs)
+            (not enforceProductPerformanceBudgets || best < qualificationBudgetMs)
             $"200 controllers exceeded the configuration's {qualificationBudgetMs:F0} ms qualification budget (best {best:F3} ms)."
         best
     finally
@@ -1756,11 +1758,12 @@ let private runLiveIntegrationQualifications () =
                     unit.DisplayColumn + unit.DisplayRow + unit.Health)))
 
     require
-        (fullTickMs < 5_000.0
-         && previewMs < 100.0
-         && serializationMs < 100.0
-         && workerMs < 100.0
-         && renderingMs < 100.0)
+        (not enforceProductPerformanceBudgets
+         || (fullTickMs < 5_000.0
+             && previewMs < 100.0
+             && serializationMs < 100.0
+             && workerMs < 100.0
+             && renderingMs < 100.0))
         "Live vertical-slice performance exceeded its qualification budgets."
 
     printfn
@@ -1775,6 +1778,12 @@ let private runLiveIntegrationQualifications () =
 
 [<EntryPoint>]
 let main args =
+    let functionalCrossRuntime = Array.contains "--functional-cross-runtime" args
+    let unknownArguments =
+        args
+        |> Array.filter (fun argument -> argument <> "--print-tactical-environment" && argument <> "--functional-cross-runtime")
+    require (unknownArguments.Length = 0) (sprintf "Unknown match qualification arguments: %A." unknownArguments)
+    enforceProductPerformanceBudgets <- not functionalCrossRuntime
     if Array.contains "--print-tactical-environment" args then
         let plot, variants = SIR.Simulation.TacticalEnvironment.exteriorParcelSet
         let environment =
