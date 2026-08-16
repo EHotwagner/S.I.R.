@@ -4422,6 +4422,7 @@ module MapEditor =
                 { Id = state.Tick * 1000 + int32 index
                   Tick = state.Tick
                   Kind = "editor"
+                  Lifecycle = AcceptedEvent
                   SourceUnitId = NotPresent
                   TargetUnitId = NotPresent
                   Summary = Disclosed summary })

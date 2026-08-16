@@ -16,6 +16,8 @@
     <Compile Include="FeatureLoader.fs" />
     <Compile Include="BrowserInfrastructure.fs" />
     <Compile Include="AppTypes.fs" />
+    <Compile Include="EnvironmentFeatureContract.fs" />
+    <Compile Include="RulesWorkbenchView.fs" />
     <Compile Include="ClientFeatureRuntime.fs" />
     <Compile Include="AppShell.fs" />
     <Compile Include="CommandRegistry.fs" />

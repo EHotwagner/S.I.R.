@@ -7,6 +7,7 @@ open Browser.Types
 open SIR.Client
 open SIR.Domain
 open SIR.Client.Web.AppTypes
+open SIR.Client.Web.EnvironmentFeatureContract
 
 [<Emit("""
 const blob = new Blob([$0], { type: "text/plain;charset=utf-8" });
@@ -50,17 +51,15 @@ let view
     (state: MapEditorState)
     (tactical: TacticalParcelEditor.TacticalParcelEditorState)
     (tacticalImportText: string)
-    (dispatch: Msg -> unit)
+    (callbacks: Callbacks)
     =
     let preview =
         MapEditorSimulator.tacticalEnvironmentPreview tactical
     let loadFixture (plot, variants) =
-        dispatch (
-            TacticalParcelChanged(
-                TacticalParcelEditor.ReplaceTacticalDocument
-                    { TacticalPlot = plot
-                      TacticalVariants = variants }
-            )
+        callbacks.ParcelChanged (
+            TacticalParcelEditor.ReplaceTacticalDocument
+                { TacticalPlot = plot
+                  TacticalVariants = variants }
         )
     let stateLabel = function
         | EnvironmentFeatureState.Intact -> "intact"
@@ -111,28 +110,27 @@ let view
                             state.Map
                             |> TacticalParcelEditor.migrateLegacyTacticalEnvironment
                             |> TacticalParcelEditor.ReplaceTacticalDocument
-                            |> TacticalParcelChanged
-                            |> dispatch)
+                            |> callbacks.ParcelChanged)
                     ]
                     commandButton [
                         prop.type'.button
                         prop.text "Undo"
                         prop.disabled tactical.TacticalUndo.IsEmpty
                         prop.custom ("data-testid", "tactical-undo")
-                        prop.onClick (fun _ -> dispatch (TacticalParcelChanged TacticalParcelEditor.UndoTacticalParcelEdit))
+                        prop.onClick (fun _ -> callbacks.ParcelChanged TacticalParcelEditor.UndoTacticalParcelEdit)
                     ]
                     commandButton [
                         prop.type'.button
                         prop.text "Redo"
                         prop.disabled tactical.TacticalRedo.IsEmpty
                         prop.custom ("data-testid", "tactical-redo")
-                        prop.onClick (fun _ -> dispatch (TacticalParcelChanged TacticalParcelEditor.RedoTacticalParcelEdit))
+                        prop.onClick (fun _ -> callbacks.ParcelChanged TacticalParcelEditor.RedoTacticalParcelEdit)
                     ]
                     commandButton [
                         prop.type'.button
                         prop.text "Refresh preview"
                         prop.custom ("data-testid", "tactical-refresh-preview")
-                        prop.onClick (fun _ -> dispatch (TacticalParcelChanged TacticalParcelEditor.RefreshTacticalPreview))
+                        prop.onClick (fun _ -> callbacks.ParcelChanged TacticalParcelEditor.RefreshTacticalPreview)
                     ]
                 ]
             ]
@@ -147,7 +145,7 @@ let view
             ]
             Html.p [ prop.custom ("data-testid", "tactical-editor-revision"); prop.text (string state.Revision.Number) ]
             Html.p [ prop.custom ("data-testid", "tactical-editor-history"); prop.text (string state.UndoHistory.Length + " undo · " + string state.RedoHistory.Length + " redo") ]
-            commandButton [ prop.type'.button; prop.text "Enter simulation"; prop.custom ("data-testid", "tactical-enter-simulate"); prop.onClick (fun _ -> dispatch (WorkspaceChanged SimulatorWorkspace)) ]
+            commandButton [ prop.type'.button; prop.text "Enter simulation"; prop.custom ("data-testid", "tactical-enter-simulate"); prop.onClick (fun _ -> callbacks.EnterSimulation ()) ]
             Html.p (string preview.TacticalPreviewFeatureCount + " features · " + string preview.TacticalPreviewWalkableCellCount + " walkable cells · revision " + string preview.TacticalPreviewSpatialRevision)
             for message in preview.TacticalPreviewFindingMessages do
                 Html.p [ prop.role.alert; prop.text message ]
@@ -169,7 +167,7 @@ let view
                                             prop.text label
                                             prop.ariaPressed (feature.EnvironmentState = featureState)
                                             prop.custom ("data-testid", "tactical-state-" + feature.EnvironmentFeatureId + "-" + label)
-                                            prop.onClick (fun _ -> dispatch (TacticalParcelChanged(TacticalParcelEditor.SetTacticalFeatureState(feature.EnvironmentFeatureId, featureState))))
+                                            prop.onClick (fun _ -> callbacks.ParcelChanged(TacticalParcelEditor.SetTacticalFeatureState(feature.EnvironmentFeatureId, featureState)))
                                         ]
                                 ]
                             ]
@@ -185,7 +183,7 @@ let view
                                                 prop.type'.button
                                                 prop.text capability.DescriptorAction
                                                 prop.custom ("data-testid", "tactical-action-" + feature.EnvironmentFeatureId + "-" + capability.DescriptorAction)
-                                                prop.onClick (fun _ -> dispatch (TacticalParcelChanged(TacticalParcelEditor.RunTacticalEnvironmentAction(feature.EnvironmentFeatureId, environmentAction))))
+                                                prop.onClick (fun _ -> callbacks.ParcelChanged(TacticalParcelEditor.RunTacticalEnvironmentAction(feature.EnvironmentFeatureId, environmentAction)))
                                             ]
                                         | None -> ()
                                 ]
@@ -208,7 +206,7 @@ let view
                                             prop.text label
                                             prop.ariaPressed enabled
                                             prop.custom ("data-testid", "tactical-permeability-" + feature.EnvironmentFeatureId + "-" + label.Replace(" ", "-"))
-                                            prop.onClick (fun _ -> dispatch (TacticalParcelChanged(TacticalParcelEditor.SetTacticalPermeability(feature.EnvironmentFeatureId, modality, not enabled))))
+                                            prop.onClick (fun _ -> callbacks.ParcelChanged(TacticalParcelEditor.SetTacticalPermeability(feature.EnvironmentFeatureId, modality, not enabled)))
                                         ]
                                 ]
                             ]
@@ -223,7 +221,7 @@ let view
                                             prop.max cover.CoverMaximumIntegrity
                                             prop.value cover.CoverIntegrity
                                             prop.ariaLabel ("Cover integrity for " + feature.EnvironmentFeatureId)
-                                            prop.onChange (fun (value: int) -> dispatch (TacticalParcelChanged(TacticalParcelEditor.SetTacticalCoverIntegrity(feature.EnvironmentFeatureId, int32 value))))
+                                            prop.onChange (fun (value: int) -> callbacks.ParcelChanged(TacticalParcelEditor.SetTacticalCoverIntegrity(feature.EnvironmentFeatureId, int32 value)))
                                         ]
                                     ]
                                 ]
@@ -237,21 +235,21 @@ let view
                         prop.custom ("data-testid", "tactical-parcel-interchange")
                         prop.ariaLabel "Tactical parcel interchange"
                         prop.value tacticalImportText
-                        prop.onChange (TacticalParcelImportTextChanged >> dispatch)
+                        prop.onChange callbacks.ImportTextChanged
                     ]
                 ]
             ]
             Html.div [
                 prop.className "control-row"
                 prop.children [
-                    commandButton [ prop.type'.button; prop.text "Import parcel"; prop.custom ("data-testid", "tactical-import"); prop.onClick (fun _ -> dispatch ImportTacticalParcelDocument) ]
-                    commandButton [ prop.type'.button; prop.text "Export parcel"; prop.custom ("data-testid", "tactical-export"); prop.onClick (fun _ -> dispatch ExportTacticalParcelDocument) ]
+                    commandButton [ prop.type'.button; prop.text "Import parcel"; prop.custom ("data-testid", "tactical-import"); prop.onClick (fun _ -> callbacks.ImportDocument ()) ]
+                    commandButton [ prop.type'.button; prop.text "Export parcel"; prop.custom ("data-testid", "tactical-export"); prop.onClick (fun _ -> callbacks.ExportDocument ()) ]
                 ]
             ]
         ]
     ]
 
-let simulationView (simulator: SimulatorHandoff) (dispatch: Msg -> unit) =
+let simulationView (simulator: SimulatorHandoff) (callbacks: Callbacks) =
     let actionValue = function
         | "open" -> Some EnvironmentAction.Open
         | "close" -> Some EnvironmentAction.Close
@@ -273,9 +271,9 @@ let simulationView (simulator: SimulatorHandoff) (dispatch: Msg -> unit) =
                 prop.role.toolbar
                 prop.ariaLabel "Tactical simulation playback"
                 prop.children [
-                    commandButton [ prop.type'.button; prop.text "Step"; prop.custom ("data-testid", "tactical-runtime-step"); prop.onClick (fun _ -> dispatch (SimulatorChanged StepSimulator)) ]
-                    commandButton [ prop.type'.button; prop.text "Reset"; prop.custom ("data-testid", "tactical-runtime-reset"); prop.onClick (fun _ -> dispatch ResetSimulator) ]
-                    commandButton [ prop.type'.button; prop.text "Replay actions"; prop.custom ("data-testid", "tactical-runtime-replay"); prop.onClick (fun _ -> dispatch (SimulatorChanged ReplaySimulatorEnvironment)) ]
+                    commandButton [ prop.type'.button; prop.text "Step"; prop.custom ("data-testid", "tactical-runtime-step"); prop.onClick (fun _ -> callbacks.SimulatorChanged StepSimulator) ]
+                    commandButton [ prop.type'.button; prop.text "Reset"; prop.custom ("data-testid", "tactical-runtime-reset"); prop.onClick (fun _ -> callbacks.ResetSimulator ()) ]
+                    commandButton [ prop.type'.button; prop.text "Replay actions"; prop.custom ("data-testid", "tactical-runtime-replay"); prop.onClick (fun _ -> callbacks.SimulatorChanged ReplaySimulatorEnvironment) ]
                 ]
             ]
             for feature in simulator.RuntimeEnvironment.EnvironmentFeatures do
@@ -293,10 +291,22 @@ let simulationView (simulator: SimulatorHandoff) (dispatch: Msg -> unit) =
                                     prop.type'.button
                                     prop.text capability.DescriptorAction
                                     prop.custom ("data-testid", "tactical-runtime-action-" + authoredId + "-" + capability.DescriptorAction)
-                                    prop.onClick (fun _ -> dispatch (SimulatorChanged(ApplySimulatorEnvironmentAction(authoredId, action))))
+                                    prop.onClick (fun _ -> callbacks.SimulatorChanged(ApplySimulatorEnvironmentAction(authoredId, action)))
                                 ]
                             | None -> ()
                     ]
                 ]
         ]
     ]
+
+[<ReactComponent>]
+let TacticalEnvironmentPanel
+    (editor: MapEditorState)
+    (tactical: TacticalParcelEditor.TacticalParcelEditorState)
+    (importText: string)
+    (simulator: SimulatorHandoff option)
+    (callbacks: Callbacks)
+    =
+    match simulator with
+    | Some handoff -> simulationView handoff callbacks
+    | None -> view editor tactical importText callbacks

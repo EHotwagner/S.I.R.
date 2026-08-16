@@ -460,6 +460,15 @@ let run () =
           CellRow = unit.Row }
     let simulator =
         { simulatorBase with
+            Tick = 1
+            LastEvents = [ "Accepted authoritative sample event" ]
+            LastCombatEvents =
+                [ { Tick = 1
+                    SourceUnitId = firstUnit
+                    Target = UnitCombatTarget secondUnit
+                    Delivery = ProjectileDelivery
+                    Damage = 2
+                    Summary = "Committed projectile attack" } ]
             PlannedRoutes =
                 Map.ofList
                     [ firstUnit, [ routeDestination firstUnit 1 ]
@@ -477,7 +486,13 @@ let run () =
          && simulatorProjection.Owner = SimulatorScene
          && simulatorProjection.RevisionIdentity = editor.Revision.Digest
          && simulatorProjection.Units.Length = editor.Map.Units.Count
-         && simulatorProjection.Routes.Length = 1)
+         && simulatorProjection.Routes.Length = 1
+         && simulatorProjection.Effects
+            |> Array.exists (fun effect -> effect.Kind = MovementEffect && effect.Lifecycle = PredictedEffect)
+         && simulatorProjection.Effects
+            |> Array.exists (fun effect -> effect.Kind = AttackEffect && effect.Lifecycle = CommittedEffect)
+         && simulatorProjection.Effects
+            |> Array.exists (fun effect -> effect.Lifecycle = AcceptedEffect))
         "Simulator projection mutated its handoff or crossed its revision boundary."
     let simulatorRouteSource = simulator.PlannedRoutes[firstUnit]
     simulatorProjection.Routes[0].Points[0] <- 999.0
@@ -539,6 +554,7 @@ let run () =
         { Id = 44
           Tick = 7
           Source = "qualification"
+          Lifecycle = AcceptedEvent
           Summary = "Visible event"
           SourceUnitId = Some firstUnit
           TargetUnitId = None }
@@ -984,6 +1000,7 @@ let run () =
             ({ Id = int32 id
                Tick = int32 id
                Source = "dense"
+               Lifecycle = CommittedEvent
                Summary = "Event " + string id
                SourceUnitId = Some(int32 id)
                TargetUnitId = None }

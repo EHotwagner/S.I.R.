@@ -33,7 +33,9 @@ let registryVersion = 1
 let deliverySupport = FeatureId "delivery-support"
 let shell = FeatureId "shell"
 let tacticalEnvironment = FeatureId "tactical-environment"
+let rulesWorkbench = FeatureId "rules-workbench"
 let rulesExplorer = FeatureId "rules-explorer"
+let samples = FeatureId "samples"
 let docs = FeatureId "docs"
 
 let value (FeatureId value) = value
@@ -41,8 +43,11 @@ let value (FeatureId value) = value
 let identityFor feature =
     let logicalChunk =
         if feature = deliverySupport then "deferred-delivery-support"
-        elif feature = shell || feature = tacticalEnvironment then "app"
+        elif feature = shell then "app"
+        elif feature = tacticalEnvironment then "TacticalEnvironmentView"
+        elif feature = rulesWorkbench then "RulesWorkbenchView"
         elif feature = rulesExplorer then "RulesExplorer"
+        elif feature = samples then "SamplesPanel"
         elif feature = docs then "docs-feature"
         else invalidArg (nameof feature) ("Unregistered client feature: " + value feature)
     { RegistryVersion = registryVersion
@@ -50,11 +55,11 @@ let identityFor feature =
       LogicalChunk = logicalChunk }
 
 let initial =
-    [ deliverySupport; shell; tacticalEnvironment; rulesExplorer; docs ]
+    [ deliverySupport; shell; tacticalEnvironment; rulesWorkbench; rulesExplorer; samples; docs ]
     |> List.map (fun feature ->
         let identity = identityFor feature
         feature,
-        if feature = shell || feature = tacticalEnvironment then Loaded identity
+        if feature = shell then Loaded identity
         else Idle)
     |> Map.ofList
 

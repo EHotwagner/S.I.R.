@@ -34,7 +34,8 @@ test("Release delivery uses cache-safe compression and defers spatial diagnostic
   await page.getByRole("button", { name: "Simulate", exact: true }).click();
   await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
   await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
-  await page.getByRole("button", { name: /^Load simulation sample:/ }).first().click();
+  await page.getByText("Troll assault", { exact: true }).click();
+  await page.getByRole("button", { name: "Run Troll assault in Simulator", exact: true }).click();
   await page.locator("#persistent-layer-units [data-unit-id]").first().click();
   await page.getByRole("button", { name: "View", exact: true }).click();
   await page.getByRole("menuitem", { name: /Spatial diagnostics/ }).click();
@@ -58,7 +59,9 @@ test("Release delivery uses cache-safe compression and defers spatial diagnostic
   expect(deferredBytes).toBeGreaterThan(0);
   expect(initialBytes).toBeLessThanOrEqual(maximumInitialBytes);
   expect(deferredBytes).toBeLessThanOrEqual(maximumDeferredBytes);
-  console.log(JSON.stringify({ schema: "sir-production-delivery-route-v1", throttle: "Slow-3G/4x CPU", deferredChunk: "RulesExplorer", initialResponseBytes: initialBytes, deferredActivationBytes: deferredBytes, diagnosticApiBytes }));
+  const initialRouteHeadroomBytes = maximumInitialBytes - initialBytes;
+  expect(initialRouteHeadroomBytes).toBeGreaterThanOrEqual(0);
+  console.log(JSON.stringify({ schema: "sir-production-delivery-route-v1", throttle: "Slow-3G/4x CPU", deferredChunk: "RulesExplorer", initialResponseBytes: initialBytes, maximumInitialResponseBytes: maximumInitialBytes, initialRouteHeadroomBytes, deferredActivationBytes: deferredBytes, diagnosticApiBytes }));
 
   const engine = await page.request.get("/engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/worker.js", {
     headers: { "Accept-Encoding": "gzip" },

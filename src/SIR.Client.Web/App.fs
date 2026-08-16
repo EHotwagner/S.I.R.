@@ -387,15 +387,16 @@ let private evidenceFor model =
         frame
 
 let private sampleReplayShell
-    (sample: ExperienceReplaySample)
+    sampleIdentity
+    sampleTitle
     (frames: InspectionProjection array)
     =
     let first = Array.head frames
-    let identity = "sample-replay-" + sample.Id
+    let identity = "sample-replay-" + sampleIdentity
     { Shell.init () with
         Source =
             Loaded
-                { SourceName = sample.Title
+                { SourceName = sampleTitle
                   SourceIdentity = identity
                   EngineIdentity = "map-editor-sample-simulator-v1"
                   FinalTick = Array.last frames |> _.Tick
@@ -409,7 +410,7 @@ let private sampleReplayShell
               Speed = Normal }
         Inspection = Some first
         Worker = WorkerReady
-        Announcement = "Loaded curated replay walkthrough “" + sample.Title + "”." }
+        Announcement = "Loaded curated replay walkthrough “" + sampleTitle + "”." }
 
 let private sampleReplayFrameAt tick (frames: InspectionProjection array) =
     frames
@@ -680,12 +681,8 @@ let rec update msg model =
                 ]
             | Error _ -> model, Cmd.none
         | None -> model, Cmd.none
-    | LoadMapSample sampleId ->
-        match ExperienceSamples.tryMap sampleId with
-        | None -> model, Cmd.none
-        | Some sample ->
-            let editor = ExperienceSamples.editorState sample
-            let simulator = validSimulatorFor editor None
+    | LoadMapSample(editor, preparedSimulator) ->
+            let simulator = validSimulatorFor editor preparedSimulator
             let simulatorSelectedUnit =
                 editor.SelectedUnit
                 |> Option.filter (fun id ->
@@ -715,12 +712,8 @@ let rec update msg model =
                          |> Option.defaultValue (MapEditor.frame editor))
                         model.Battlefield },
             Cmd.none
-    | LoadSimulationSample sampleId ->
-        match ExperienceSamples.tryMap sampleId with
-        | None -> model, Cmd.none
-        | Some sample ->
-            let editor = ExperienceSamples.editorState sample
-            match ExperienceSamples.simulator sample with
+    | LoadSimulationSample(editor, preparedSimulator) ->
+            match preparedSimulator with
             | None ->
                 { model with
                     Editor =
@@ -748,15 +741,11 @@ let rec update msg model =
                     PreviousFrame = None
                     PresentationAlpha = 1.0 },
                 Cmd.none
-    | LoadReplaySample sampleId ->
-        match ExperienceSamples.tryReplay sampleId with
-        | None -> model, Cmd.none
-        | Some sample ->
-            let frames = ExperienceSamples.replayFrames sample
+    | LoadReplaySample(sampleIdentity, sampleTitle, frames) ->
             if Array.isEmpty frames then
                 model, Cmd.none
             else
-                let shell = sampleReplayShell sample frames
+                let shell = sampleReplayShell sampleIdentity sampleTitle frames
                 let frame =
                     Shell.renderFrame shell
                     |> Option.defaultValue Battlefield.representativeFrame
@@ -823,22 +812,29 @@ let rec update msg model =
         let tacticalSelectedUnit =
             reconcileTacticalSelectedUnit workspace transitionModel
 
-        { model with
-            Editor = editor
-            Planning = planning
-            Simulator = if workspace = SimulatorWorkspace then validSimulatorFor editor model.Simulator else model.Simulator
-            TacticalSelectedUnit = tacticalSelectedUnit
-            Workspace = workspace
-            Tactical =
-                model.Tactical
-                |> UnifiedTacticalWorkspace.switchModality tacticalModality
-            EditorView = editorView
-            InputHelpExpanded = false
-            SimulatorControllerSelection = None
-            HeldInputs = HeldInputSession.recover model.HeldInputs },
-        if initializePlanning then
-            Cmd.ofEffect (fun dispatch -> dispatch InitializePlanningWorker)
-        else Cmd.none
+        let next =
+            { model with
+                Editor = editor
+                Planning = planning
+                Simulator = if workspace = SimulatorWorkspace then validSimulatorFor editor model.Simulator else model.Simulator
+                TacticalSelectedUnit = tacticalSelectedUnit
+                Workspace = workspace
+                Tactical =
+                    model.Tactical
+                    |> UnifiedTacticalWorkspace.switchModality tacticalModality
+                EditorView = editorView
+                InputHelpExpanded = false
+                SimulatorControllerSelection = None
+                HeldInputs = HeldInputSession.recover model.HeldInputs }
+        let initialize =
+            if initializePlanning then
+                Cmd.ofEffect (fun dispatch -> dispatch InitializePlanningWorker)
+            else Cmd.none
+        if workspace = SimulatorWorkspace then
+            let loaded, load =
+                ClientFeatureRuntime.update (FeatureLoader.Request FeatureLoader.tacticalEnvironment) next
+            loaded, Cmd.batch [ initialize; load ]
+        else next, initialize
     | ToggleInputHelp focusPanel ->
         let expanded = not model.InputHelpExpanded
         { model with InputHelpExpanded = expanded },
@@ -1493,11 +1489,14 @@ let rec update msg model =
                 |> TacticalWorkspaceLayout.togglePanelCollapsed panelId
             else visible
         writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
-        { model with
-            EditorToolPanel = panel
-            EditorToolPanelVisible = true
-            TacticalLayout = layout },
-        Cmd.none
+        let next =
+            { model with
+                EditorToolPanel = panel
+                EditorToolPanelVisible = true
+                TacticalLayout = layout }
+        if panel = TacticalEnvironmentTools then
+            ClientFeatureRuntime.update (FeatureLoader.Request FeatureLoader.tacticalEnvironment) next
+        else next, Cmd.none
     | ToggleEditorToolPanelVisibility ->
         let panelId =
             if model.EditorToolPanel = DocumentTools then "document" else "tools"
@@ -1587,7 +1586,7 @@ let rec update msg model =
                         TacticalAnnouncement = message } },
             Cmd.none
     | ExportTacticalParcelDocument ->
-        model, Cmd.ofEffect (fun _ -> TacticalEnvironmentView.downloadDocument model.TacticalParcelImportText)
+        model, Cmd.ofEffect (fun _ -> downloadTacticalEnvironmentDocument model.TacticalParcelImportText)
     | EditorPulse ->
         match model.Simulator with
         | Some simulator when simulator.IsRunning ->
@@ -2504,7 +2503,7 @@ let subscriptions model =
             fun (event: Event) ->
                 let keyboardEvent: KeyboardEvent = unbox event
                 let key = registryKeyboardKey keyboardEvent
-                if TacticalEnvironmentView.acceptsGlobalKeyboardTarget keyboardEvent.target (keyboardEvent.ctrlKey || keyboardEvent.metaKey) then
+                if acceptsGlobalKeyboardTarget keyboardEvent.target (keyboardEvent.ctrlKey || keyboardEvent.metaKey) then
                     let controlOrMeta =
                         keyboardEvent.ctrlKey || keyboardEvent.metaKey
                     if
@@ -2536,7 +2535,7 @@ let subscriptions model =
             fun (event: Event) ->
                 let keyboardEvent: KeyboardEvent = unbox event
                 if
-                    TacticalEnvironmentView.acceptsGlobalKeyboardTarget keyboardEvent.target false
+                    acceptsGlobalKeyboardTarget keyboardEvent.target false
                 then
                     if
                         modalResolution
@@ -3816,6 +3815,7 @@ let private editorToolbar
     (state: MapEditorState)
     (tactical: TacticalParcelEditor.TacticalParcelEditorState)
     (tacticalImportText: string)
+    clientFeatures
     (view: EditorWorkspaceState)
     (activePanel: EditorToolPanel)
     panelVisible
@@ -4131,7 +4131,7 @@ let private editorToolbar
                             ]
                         ]
                     | TacticalEnvironmentTools ->
-                        TacticalEnvironmentView.view state tactical tacticalImportText dispatch
+                        ClientFeatureRuntime.tacticalEnvironmentPanel clientFeatures state tactical tacticalImportText None dispatch
                     | ZoneTools ->
                         let cursor =
                             { CellColumn =
@@ -4970,93 +4970,6 @@ let private editorDestructiveConfirmation state dispatch =
                 ]
             ]
         ]
-
-let private sampleCatalogView (dispatch: Msg -> unit) =
-    let mapCard (sample: ExperienceMapSample) =
-        Html.details [
-            prop.className "panel sample-list-item sample-card"
-            prop.children [
-                Html.summary [
-                    Html.span [ prop.className "sample-kind"; prop.text "Map · Simulation" ]
-                    Html.strong sample.Title
-                    Html.span [ prop.className "sample-summary"; prop.text sample.Summary ]
-                ]
-                Html.div [
-                    prop.className "sample-list-body"
-                    prop.children [
-                        Html.ul [
-                            for highlight in sample.Highlights do
-                                Html.li highlight
-                        ]
-                        Html.div [
-                            prop.className "control-row"
-                            prop.children [
-                                button "Open map" ("Open " + sample.Title + " in Editor") false (fun _ ->
-                                    dispatch (LoadMapSample sample.Id))
-                                button "Run simulation" ("Run " + sample.Title + " in Simulator") false (fun _ ->
-                                    dispatch (LoadSimulationSample sample.Id))
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    let replayCard (sample: ExperienceReplaySample) =
-        Html.details [
-            prop.className "panel sample-list-item sample-card"
-            prop.children [
-                Html.summary [
-                    Html.span [ prop.className "sample-kind"; prop.text "Replay" ]
-                    Html.strong sample.Title
-                    Html.span [ prop.className "sample-summary"; prop.text sample.Summary ]
-                ]
-                Html.div [
-                    prop.className "sample-list-body"
-                    prop.children [
-                        Html.p (
-                            string sample.Ticks
-                            + " deterministic sample ticks · locally navigable · sandbox evidence"
-                        )
-                        button "Open replay" ("Open replay walkthrough " + sample.Title) false (fun _ ->
-                            dispatch (LoadReplaySample sample.Id))
-                    ]
-                ]
-            ]
-        ]
-    Html.section [
-        prop.className "samples-panel-content"
-        prop.ariaLabel "Curated maps simulations and replays"
-        prop.children [
-            Html.div [
-                prop.className "samples-heading"
-                prop.children [
-                    Html.p [ prop.className "eyebrow"; prop.text "Explore mechanics" ]
-                    Html.h2 "Curated samples"
-                    Html.p "Open a map, run its sandbox, or inspect a replay walkthrough."
-                ]
-            ]
-            Html.h3 "Maps and simulations"
-            Html.div [
-                prop.className "sample-list"
-                prop.children [
-                    for sample in ExperienceSamples.maps do
-                        mapCard sample
-                ]
-            ]
-            Html.h3 "Replay walkthroughs"
-            Html.div [
-                prop.className "sample-list"
-                prop.children [
-                    for sample in ExperienceSamples.replays do
-                        replayCard sample
-                ]
-            ]
-            Html.p [
-                prop.className "sample-disclosure"
-                prop.text "Walkthroughs are sandbox evidence, not verified match replays."
-            ]
-        ]
-    ]
 
 let private planningCommandLabel (command: PlanningCommand) =
     match command.Kind with
@@ -7665,14 +7578,7 @@ let private simulatorPanelBody
             ]
         ]
     | "samples" ->
-        Html.div [
-            prop.ariaLabel "Simulator samples"
-            prop.children [
-                for sample in ExperienceSamples.maps do
-                    button sample.Title ("Load simulation sample: " + sample.Summary) false (fun _ ->
-                        dispatch (LoadSimulationSample sample.Id))
-            ]
-        ]
+        Html.p "Curated samples load through the registered Samples feature."
     | _ ->
         Html.p [
             prop.className "tactical-layout-panel-placeholder"
@@ -7684,17 +7590,14 @@ let private tacticalPanelBody panelId model dispatch =
         Html.div [
             prop.ariaLabel "Rules supporting panel"
             prop.children [
-                scenarioCatalog model.Shell dispatch
-                laboratoryResults model.Shell dispatch
-                comparisonPanel model dispatch
-                sandbox model.Shell dispatch
+                ClientFeatureRuntime.rulesWorkbenchPanel model (evidenceFor model) dispatch
                 inspector model.Shell dispatch
             ]
         ]
     elif panelId = "data" then
         ClientFeatureRuntime.rulesExplorer model dispatch
-    elif panelId = "samples" && model.Workspace <> SimulatorWorkspace then
-        sampleCatalogView dispatch
+    elif panelId = "samples" then
+        ClientFeatureRuntime.samplesPanel model dispatch
     elif model.Workspace = PlanningWorkspace then
         match model.Planning with
         | Some planning when
@@ -7710,20 +7613,11 @@ let private tacticalPanelBody panelId model dispatch =
                 prop.text "No Plan capability is assigned to this panel."
             ]
         | None -> Html.p "Planner unavailable for the current map revision."
-    elif model.Workspace = SimulatorWorkspace && panelId = "samples" then
-        Html.div [
-            prop.ariaLabel "Simulator samples"
-            prop.children [
-                for sample in ExperienceSamples.maps do
-                    button sample.Title ("Load simulation sample: " + sample.Summary) false (fun _ ->
-                        dispatch (LoadSimulationSample sample.Id))
-            ]
-        ]
     elif model.Workspace = SimulatorWorkspace then
         match model.Simulator with
         | Some simulator ->
             Html.div [
-                if panelId = "tools" then TacticalEnvironmentView.simulationView simulator dispatch
+                if panelId = "tools" then ClientFeatureRuntime.tacticalEnvironmentPanel model.ClientFeatures model.Editor model.TacticalParcelEditor model.TacticalParcelImportText (Some simulator) dispatch
                 simulatorPanelBody model.Editor simulator model.SimulatorSelectedUnit panelId dispatch
             ]
         | None ->
@@ -7740,6 +7634,7 @@ let private tacticalPanelBody panelId model dispatch =
                 model.Editor
                 model.TacticalParcelEditor
                 model.TacticalParcelImportText
+                model.ClientFeatures
                 model.EditorView
                 activePanel
                 true
@@ -7753,6 +7648,7 @@ let private tacticalPanelBody panelId model dispatch =
                 model.Editor
                 model.TacticalParcelEditor
                 model.TacticalParcelImportText
+                model.ClientFeatures
                 model.EditorView
                 DocumentTools
                 true
@@ -8068,7 +7964,14 @@ let view model dispatch =
         | EditorWorkspace ->
             let facts =
                 { Editor = model.Editor
-                  ActiveDomain = TacticalEnvironmentView.editorDomain model.EditorToolPanel
+                  ActiveDomain =
+                    match model.EditorToolPanel with
+                    | TerrainTools -> TerrainDomain
+                    | UnitTools -> UnitDomain
+                    | EdgeTools -> EdgeDomain
+                    | ZoneTools -> RegionDomain
+                    | TacticalEnvironmentTools
+                    | DocumentTools -> DocumentDomain
                   PanHeld = editorPanHeld model
                   InputHelpExpanded = model.InputHelpExpanded }
             let catalog = ModalInput.editorCatalog facts

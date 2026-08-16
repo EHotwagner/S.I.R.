@@ -4,8 +4,15 @@ import { resolve } from "node:path";
 import { auditPersistentWorkspaceBrowser } from "./lib/persistent-workspace-browser-audit.mjs";
 
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
-const clientOutput = resolve("artifacts/client");
-const reviewOutput = resolve("docs/assets/tactical-visual-system-review");
+let clientRoot = "artifacts/client";
+let reviewRoot = "docs/assets/tactical-visual-system-review";
+for (let index = 2; index < process.argv.length; index += 2) {
+  if (process.argv[index] === "--client-root") clientRoot = process.argv[index + 1];
+  else if (process.argv[index] === "--review-root") reviewRoot = process.argv[index + 1];
+  else throw new Error(`Unknown argument: ${process.argv[index]}`);
+}
+const clientOutput = resolve(clientRoot);
+const reviewOutput = resolve(reviewRoot);
 const html = await readFile(resolve(clientOutput, "index.html"), "utf8");
 const scriptMatch = html.match(/<script[^>]+src="([^"]+\.js)"/);
 if (!scriptMatch) throw new Error("Build the production client before tactical visual review generation.");
@@ -20,10 +27,11 @@ const [bundleBytes, stylesBytes, baselineBytes] = await Promise.all([
 await mkdir(reviewOutput, { recursive: true });
 const delaySource = `const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));`;
 const clickButtonSource = `const clickButton = (label) => { const button = [...document.querySelectorAll("button")].find((candidate) => candidate.textContent.trim() === label || candidate.getAttribute("aria-label") === label); if (!button) throw new Error("Missing production control: " + label); button.click(); };`;
-const maintainedSimulation = `(async () => { ${delaySource} ${clickButtonSource} clickButton("Simulate"); await wait(50); clickButton("Show contextual actions"); await wait(50); clickButton("Open simulator samples"); await wait(50); const sample = document.querySelector('[aria-label^="Load simulation sample:"]'); if (!sample) throw new Error("Missing maintained simulation sample"); sample.click(); await wait(100); clickButton("Advance the map simulation one tick"); await wait(100); })()`;
+const settleCaptureSource = `const settleCapture = async () => { let style = document.querySelector("#sir-deterministic-review-style"); if (!style) { style = document.createElement("style"); style.id = "sir-deterministic-review-style"; style.textContent = "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}"; document.head.appendChild(style); } await document.fonts.ready; await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame); };`;
+const maintainedSimulation = `(async () => { ${delaySource} ${clickButtonSource} ${settleCaptureSource} clickButton("Simulate"); await wait(50); clickButton("Show contextual actions"); await wait(50); clickButton("Open simulator samples"); await wait(80); const card = [...document.querySelectorAll("details.sample-card")].find((candidate) => candidate.textContent.includes("Troll assault")); if (!card) throw new Error("Missing maintained simulation sample"); card.querySelector("summary").click(); await wait(20); clickButton("Run Troll assault in Simulator"); await wait(100); clickButton("Advance the map simulation one tick"); await wait(100); await settleCapture(); })()`;
 const afterPath = resolve(reviewOutput, "after-production.png");
 const audit = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: afterPath, prepareExpression: maintainedSimulation });
-const system = audit.wide.visualSystem;
+const { workload: ignoredAfterWorkload, ...system } = audit.wide.visualSystem;
 if (system.identity !== "tactical-visual-system-v1" || system.effectLimit !== 256 || system.effectCount < 1) {
   throw new Error(`Production visual registry/effects did not render: ${JSON.stringify(system)}`);
 }
@@ -32,9 +40,11 @@ if (system.layerOrder !== system.paintedLayerOrder) {
 }
 
 const workloadExpression = (units) => `(async () => {
-  ${delaySource} ${clickButtonSource}
+  ${delaySource} ${clickButtonSource} ${settleCaptureSource}
+  const observedKinds = new Set(); const observedLifecycles = new Set(); let observedAttackEffects = 0;
+  const recordEffects = () => { const effects = [...document.querySelectorAll("[data-effect-kind]")]; for (const effect of effects) { const kind = effect.getAttribute("data-effect-kind"); const lifecycle = effect.getAttribute("data-effect-lifecycle"); if (kind) observedKinds.add(kind); if (lifecycle) observedLifecycles.add(lifecycle); if (kind === "attack") observedAttackEffects += 1; } };
   globalThis.__sirTacticalStage = "samples";
-  clickButton("Samples"); await wait(80);
+  document.querySelector("details.tactical-legacy-controls > summary")?.click(); clickButton("Samples"); await wait(80);
   const card = [...document.querySelectorAll("details.sample-card")].find((candidate) => candidate.textContent.includes("Tactical density ${units}"));
   if (!card) throw new Error("Missing production tactical density ${units} sample");
   card.querySelector("summary").click(); await wait(40);
@@ -42,19 +52,24 @@ const workloadExpression = (units) => `(async () => {
   const run = card.querySelector('[aria-label="Run Tactical density ${units} in Simulator"]');
   if (!run) throw new Error("Missing density sample simulator route");
   run.click(); await wait(180);
-  globalThis.__sirTacticalStage = "routes";
-  const routeUnits = [...document.querySelectorAll("#persistent-layer-units [data-unit-id]")].slice(0, 2);
-  for (const unit of routeUnits) {
-    unit.dispatchEvent(new MouseEvent("click", { bubbles: true })); await wait(25);
-    clickButton("Move route preview up"); clickButton("Move route preview up"); await wait(25);
-    clickButton("Commit clear route preview"); await wait(25);
-  }
-  const svg = document.querySelector("#persistent-tactical-svg"); const beforeTick = svg.getAttribute("data-scene-tick");
+  const svg = document.querySelector("#persistent-tactical-svg");
+  const beforeTick = svg.getAttribute("data-scene-tick");
   globalThis.__sirTacticalStage = "step"; const started = performance.now(); clickButton("Advance the map simulation one tick");
   while (svg.getAttribute("data-scene-tick") === beforeTick && performance.now() - started < 2000) await wait(5);
-  const inputToPaintMilliseconds = performance.now() - started;
+  const inputToPaintMilliseconds = performance.now() - started; recordEffects();
+  globalThis.__sirTacticalStage = "routes";
+  const routeUnits = [...document.querySelectorAll("#persistent-layer-units [data-unit-id]")].slice(0, 2);
+  routeUnits[0].dispatchEvent(new MouseEvent("click", { bubbles: true })); await wait(25);
+  clickButton("Move route preview right"); await wait(25); recordEffects();
+  clickButton("Cancel route preview"); await wait(25);
+  for (const unit of routeUnits) {
+    unit.dispatchEvent(new MouseEvent("click", { bubbles: true })); await wait(25);
+    clickButton("Move route preview up"); clickButton("Move route preview up"); await wait(25); recordEffects();
+    clickButton("Commit clear route preview"); await wait(25); recordEffects();
+  }
   const frameStarted = await new Promise((resolve) => requestAnimationFrame(resolve));
   const frameEnded = await new Promise((resolve) => requestAnimationFrame(resolve));
+  recordEffects(); await settleCapture();
   globalThis.__sirTacticalStage = "measure"; globalThis.__sirTacticalWorkload = {
     requestedUnits: ${units}, renderedUnits: svg.querySelectorAll("[data-unit-id]").length,
     terrainCells: svg.querySelectorAll("#persistent-layer-terrain > *").length,
@@ -62,6 +77,8 @@ const workloadExpression = (units) => `(async () => {
     plannedRouteUnits: [...svg.querySelectorAll("[data-unit-status]")].filter((unit) => unit.getAttribute("data-unit-status").includes("route-planned")).length,
     overlays: svg.querySelectorAll("[data-overlay-id]").length,
     effects: svg.querySelectorAll("[data-effect-event]").length,
+    attackEffects: observedAttackEffects,
+    effectKinds: [...observedKinds].sort(), effectLifecycles: [...observedLifecycles].sort(),
     domNodes: svg.querySelectorAll("*").length,
     inputToPaintMilliseconds, animationFrameIntervalMilliseconds: frameEnded - frameStarted,
     usedJsHeapBytes: performance.memory?.usedJSHeapSize ?? null,
@@ -69,12 +86,15 @@ const workloadExpression = (units) => `(async () => {
 })()`;
 
 const densityAudits = [];
+const telemetryScenes = [];
 for (const units of [100, 200]) {
   const path = resolve(reviewOutput, `production-density-${units}.png`);
   const result = await auditPersistentWorkspaceBrowser({ clientRoot: clientOutput, screenshotPath: path, prepareExpression: workloadExpression(units) });
   const workload = result.wide.visualSystem.workload;
-  if (workload.renderedUnits !== units || workload.effects < 1 || workload.overlays < 1) throw new Error(`Production density workload ${units} is incomplete: ${JSON.stringify(workload)}`);
-  densityAudits.push({ units, path: `production-density-${units}.png`, sha256: hash(await readFile(path)), workload });
+  if (workload.renderedUnits !== units || workload.effects < 1 || workload.overlays < 1 || workload.attackEffects < 1) throw new Error(`Production density workload ${units} is incomplete: ${JSON.stringify(workload)}`);
+  const { inputToPaintMilliseconds, animationFrameIntervalMilliseconds, usedJsHeapBytes, ...structure } = workload;
+  densityAudits.push({ units, path: `production-density-${units}.png`, sha256: hash(await readFile(path)), workload: structure });
+  telemetryScenes.push({ units, inputToPaintMilliseconds, animationFrameIntervalMilliseconds, usedJsHeapBytes });
 }
 
 const afterBytes = await readFile(afterPath);
@@ -91,4 +111,5 @@ const manifest = {
   },
 };
 await writeFile(resolve(reviewOutput, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+await writeFile(resolve(reviewOutput, "telemetry.json"), `${JSON.stringify({ schema: "sir-tactical-visual-telemetry-v1", densityScenes: telemetryScenes }, null, 2)}\n`, "utf8");
 console.log("Captured exact production tactical visual review with effectful after-state and 100/200-unit workloads.");

@@ -9,6 +9,7 @@ node_modules/
 test-results/
 .nuget/
 src/SIR.Client.Web/.fable/
+src/SIR.Client.Web/.fable-rules/
 src/SIR.Client.Web/fable/
 
 # local tooling

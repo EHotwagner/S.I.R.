@@ -39,6 +39,7 @@ let loadClientFeature (identity: ChunkIdentity) =
                     { RegistryVersion = imported.registryVersion
                       Feature =
                         if imported.featureId = value rulesExplorer then rulesExplorer
+                        elif imported.featureId = value samples then samples
                         elif imported.featureId = value docs then docs
                         else identity.Feature
                       LogicalChunk = imported.logicalChunk }
@@ -54,6 +55,27 @@ let loadClientFeature (identity: ChunkIdentity) =
                 return Error(MissingChunk detail)
             else return Error(ImportRejected detail)
     }
+
+[<Emit("if (!$0.dataset.sirSamplesRendered) { $0.dataset.sirSamplesRendered = 'true'; globalThis.__sirSamplesFeature.render($0,$1); }")>]
+let renderSamplesFeature
+    (_root: Element)
+    (_dispatch: string -> MapEditorState -> SimulatorHandoff option -> string -> InspectionProjection array -> unit)
+    : unit =
+    jsNative
+
+[<Emit("""
+const blob = new Blob([$0], { type: "text/plain;charset=utf-8" });
+const url = URL.createObjectURL(blob);
+const anchor = document.createElement("a");
+anchor.href = url;
+anchor.download = "tactical-environment.sir-parcel";
+anchor.click();
+URL.revokeObjectURL(url);
+""")>]
+let downloadTacticalEnvironmentDocument (_content: string) : unit = jsNative
+
+[<Emit("(() => { const t = $0; const tag = t && typeof t.tagName === 'string' ? t.tagName.toLowerCase() : ''; return tag === 'input' || tag === 'button' || tag === 'summary' || (tag === 'a' && t.hasAttribute('href')) || tag === 'textarea' || tag === 'select' || (t && t.isContentEditable); })()")>]
+let acceptsGlobalKeyboardTarget (_target: EventTarget) (allowModifiedShortcut: bool) : bool = jsNative
 
 let private sizeError label maximum (file: File) =
     try

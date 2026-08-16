@@ -189,6 +189,13 @@ unit 4 red orc 7 8 2 35 35 general -
                 { Id = tick * 100 + int32 index
                   Tick = tick
                   Source = "sample-simulation"
+                  Lifecycle =
+                    match index % 5 with
+                    | 0 -> PreviewEvent
+                    | 1 -> PredictedEvent
+                    | 2 -> AcceptedEvent
+                    | 3 -> CommittedEvent
+                    | _ -> RejectedEvent
                   Summary = summary
                   SourceUnitId = None
                   TargetUnitId = None })
@@ -199,6 +206,7 @@ unit 4 red orc 7 8 2 35 35 general -
                 { Id = tick * 100 + 50 + int32 index
                   Tick = tick
                   Source = combatSource combat.Delivery
+                  Lifecycle = CommittedEvent
                   Summary = combat.Summary
                   SourceUnitId = Some combat.SourceUnitId
                   TargetUnitId =

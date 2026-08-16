@@ -14,6 +14,9 @@
     <Compile Include="../SIR.Client.Web/FeatureLoader.fs" Link="FeatureLoader.fs" />
     <Compile Include="../SIR.Client.Web/BrowserInfrastructure.fs" Link="BrowserInfrastructure.fs" />
     <Compile Include="../SIR.Client.Web/AppTypes.fs" Link="AppTypes.fs" />
+    <Compile Include="../SIR.Client.Web/SamplesFeature.fs" Link="SamplesFeature.fs" />
+    <Compile Include="../SIR.Client.Web/EnvironmentFeatureContract.fs" Link="EnvironmentFeatureContract.fs" />
+    <Compile Include="../SIR.Client.Web/RulesWorkbenchView.fs" Link="RulesWorkbenchView.fs" />
     <Compile Include="../SIR.Client.Web/ClientFeatureRuntime.fs" Link="ClientFeatureRuntime.fs" />
     <Compile Include="../SIR.Client.Web/AppShell.fs" Link="AppShell.fs" />
     <Compile Include="../SIR.Client.Web/CommandRegistry.fs" Link="CommandRegistry.fs" />

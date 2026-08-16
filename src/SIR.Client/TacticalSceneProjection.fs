@@ -510,7 +510,7 @@ module TacticalSceneProjection =
     let private effectKind (kind: string) =
         let normalized = kind.ToLowerInvariant()
         if normalized.Contains("move") then MovementEffect
-        elif normalized.Contains("attack") || normalized.Contains("trace") then AttackEffect
+        elif normalized.Contains("attack") || normalized.Contains("trace") || normalized.StartsWith("combat-") then AttackEffect
         elif normalized.Contains("impact") || normalized.Contains("damage") || normalized.Contains("wound") then ImpactEffect
         elif normalized.Contains("suppress") then SuppressionEffect
         elif normalized.Contains("heal") || normalized.Contains("recover") then RecoveryEffect
@@ -518,14 +518,14 @@ module TacticalSceneProjection =
         elif normalized.Contains("objective") then ObjectiveEffect
         else GenericEffect
 
-    let private effectLifecycle historical (kind: string) =
-        let normalized = kind.ToLowerInvariant()
-        if historical then HistoricalEffect
-        elif normalized.Contains("preview") then PreviewEffect
-        elif normalized.Contains("predict") || normalized.Contains("plan") then PredictedEffect
-        elif normalized.Contains("reject") || normalized.Contains("cancel") then RejectedEffect
-        elif normalized.Contains("commit") || normalized.Contains("resolve") then CommittedEffect
-        else AcceptedEffect
+    let private effectLifecycle historical = function
+        | _ when historical -> HistoricalEffect
+        | PreviewEvent -> PreviewEffect
+        | PredictedEvent -> PredictedEffect
+        | AcceptedEvent -> AcceptedEffect
+        | CommittedEvent -> CommittedEffect
+        | RejectedEvent -> RejectedEffect
+        | HistoricalEvent -> HistoricalEffect
 
     let private effectOrder = function
         | MovementEffect -> 10
@@ -557,7 +557,7 @@ module TacticalSceneProjection =
                       EventId = event.Id
                       Tick = event.Tick
                       Kind = kind
-                      Lifecycle = effectLifecycle historical event.Kind
+                      Lifecycle = effectLifecycle historical event.Lifecycle
                       SourceUnitId = sourceId
                       TargetUnitId = targetId
                       SourcePoint = sourceId |> Option.map (fun id -> centers[id])
@@ -566,6 +566,39 @@ module TacticalSceneProjection =
                       Order = effectOrder kind }
             | _ -> None)
         // Bound the current causal window, then restore deterministic paint order.
+        |> Array.sortByDescending (fun effect -> effect.Tick, effect.EventId)
+        |> Array.truncate MaximumEffectInstances
+        |> Array.sortBy (fun effect -> effect.Tick, effect.Order, effect.EventId)
+
+    let private routeEffects tick (routes: SceneRouteProjection array) =
+        routes
+        |> Array.mapi (fun index route ->
+            let pointAt offset =
+                if route.Points.Length >= offset + 2 then
+                    Some(route.Points[offset], route.Points[offset + 1])
+                else None
+            let lifecycle =
+                if route.Kind.Contains("collision", StringComparison.OrdinalIgnoreCase) then RejectedEffect
+                elif route.Kind.Contains("preview", StringComparison.OrdinalIgnoreCase) then PreviewEffect
+                else PredictedEffect
+            { PrimitiveId = primitive "effect" ("route:" + ScenePrimitiveId.value route.PrimitiveId)
+              EventId = -1 - int32 index
+              Tick = tick
+              Kind = MovementEffect
+              Lifecycle = lifecycle
+              SourceUnitId = route.OwnerUnitId
+              TargetUnitId = None
+              SourcePoint = pointAt 0
+              TargetPoint = pointAt (route.Points.Length - 2)
+              Label =
+                match route.Label with
+                | Disclosed label -> label
+                | _ -> route.Kind
+              Order = effectOrder MovementEffect })
+
+    let private retainEffects (effects: TacticalEffectProjection array) =
+        effects
+        |> Array.distinctBy _.PrimitiveId
         |> Array.sortByDescending (fun effect -> effect.Tick, effect.EventId)
         |> Array.truncate MaximumEffectInstances
         |> Array.sortBy (fun effect -> effect.Tick, effect.Order, effect.EventId)
@@ -1133,7 +1166,9 @@ module TacticalSceneProjection =
                        Geometry = Some(StatusGeometry(unit.PresentationColumn + 0.5, unit.PresentationRow + 0.5, None, None, Array.copy visual.StatusIds))
                        Text = Disclosed("Unit " + invariant visual.Id + " · " + String.concat " · " visual.StatusIds) }))
                 (eventAnnotations "simulator-event" frame.Events)
-        let effects = effectsOfFrame false units frame
+        let effects =
+            Array.append (effectsOfFrame false units frame) (routeEffects frame.Tick routes)
+            |> retainEffects
         { Owner = SimulatorScene
           RevisionIdentity = input.SimulatorHandoff.Revision.Digest
           Tick = input.SimulatorHandoff.Tick

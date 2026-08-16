@@ -833,6 +833,7 @@ module MapEditorSimulator =
                     | ProjectileDelivery -> "combat-projectile"
                     | LobbedAreaDelivery -> "combat-lobbed-area"
                     | SpellAreaDelivery -> "combat-spell-area"
+                  Lifecycle = CommittedEvent
                   SourceUnitId = Disclosed combat.SourceUnitId
                   TargetUnitId =
                     match combat.Target with

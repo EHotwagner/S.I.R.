@@ -26,7 +26,7 @@ function fail(subject, detail) {
 const registryBytes = await readFile(registryPath);
 const registry = JSON.parse(registryBytes);
 if (registry.schema !== "sir.client.feature-registry/v1" || registry.version !== 1) fail("registry", "unsupported schema/version");
-if (!Array.isArray(registry.features) || registry.features.length !== 5) fail("registry", "expected exactly five v1 features");
+if (!Array.isArray(registry.features) || registry.features.length !== 7) fail("registry", "expected exactly seven v1 features");
 const featureIds = registry.features.map((feature) => feature.id);
 if (featureIds.join("|") !== [...featureIds].sort().join("|")) fail("registry", "features are not in stable id order");
 if (new Set(featureIds).size !== featureIds.length) fail("registry", "duplicate feature id");
@@ -36,7 +36,7 @@ for (const feature of registry.features) {
   for (const field of ["control", "route", "module", "logicalChunk"]) if (typeof feature[field] !== "string" || feature[field].length === 0) fail("registry", `${feature.id} missing ${field}`);
   for (const kind of ["raw", "gzip", "brotli"]) if (!Number.isSafeInteger(feature.budget?.[kind]) || feature.budget[kind] <= 0) fail("budget", `${feature.id} invalid ${kind}`);
 }
-if (new Set(registry.features.map((feature) => feature.logicalChunk)).size !== 4) fail("registry", "v1 logical chunk projection changed");
+if (new Set(registry.features.map((feature) => feature.logicalChunk)).size !== 7) fail("registry", "v1 logical chunk projection changed");
 
 const deliverySupportEntryPath = resolve(root, "src/SIR.Client.Web/delivery-support-entry.js");
 if (mutation === "eager-import") {
@@ -79,14 +79,22 @@ for (const feature of registry.features) {
         fail("eager-import", `${feature.id} lacks its declared literal dynamic import`);
       }
     } else {
-      const literal = feature.id === "rules-explorer"
-        ? 'import("./.fable/RulesExplorer.js")'
-        : `import(\"./${feature.logicalChunk}.js\")`;
+      const literal = feature.id === "docs"
+        ? 'import("./docs-feature.js")'
+        : feature.id === "rules-explorer"
+          ? 'import("./.fable/RulesExplorer.js")'
+          : `import("./.fable/SIR.Client.Web/${feature.logicalChunk}.js")`;
       if (!loaderSource.includes(literal)) fail("eager-import", `${feature.id} lacks its declared literal dynamic import`);
-      const viewLiteral = feature.id === "docs"
-        ? 'React.DynamicImported("../../docs-feature.js")'
-        : `React.DynamicImported(\"../${feature.logicalChunk}.js\")`;
-      if (!appSource.includes(viewLiteral)) fail("eager-import", `${feature.id} lacks its declared lazy view edge`);
+      if (feature.id !== "samples") {
+        const viewLiteral = feature.id === "docs"
+          ? 'React.DynamicImported("../../docs-feature.js")'
+          : feature.id === "rules-explorer"
+            ? 'React.DynamicImported("../RulesExplorer.js")'
+            : `React.DynamicImported("./${feature.logicalChunk}.js")`;
+        if (!appSource.includes(viewLiteral)) fail("eager-import", `${feature.id} lacks its declared lazy view edge`);
+      } else if (!appSource.includes("renderSamplesFeature")) {
+        fail("eager-import", "samples lacks its registered imperative render edge");
+      }
     }
   }
 }
@@ -170,7 +178,12 @@ const dynamicKeys = dynamicEntries.map(([key]) => key).sort();
 const dynamicFiles = dynamicEntries.map(([, entry]) => entry.file).sort();
 const expectedDynamicKeys = registry.features
   .filter((feature) => feature.phase === "deferred")
-  .map((feature) => feature.id === "rules-explorer" ? ".fable/RulesExplorer.js" : feature.module.replace("src/SIR.Client.Web/", ""))
+  .map((feature) =>
+    feature.id === "rules-explorer"
+      ? ".fable/RulesExplorer.js"
+      : feature.module.endsWith(".fs")
+        ? `.fable/SIR.Client.Web/${feature.logicalChunk}.js`
+        : feature.module.replace("src/SIR.Client.Web/", ""))
   .sort();
 const unregisteredDynamicKeys = dynamicKeys.filter((key) => !expectedDynamicKeys.includes(key));
 const missingDynamicKeys = expectedDynamicKeys.filter((key) => !dynamicKeys.includes(key));

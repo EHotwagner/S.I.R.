@@ -33,7 +33,9 @@ val registryVersion: int
 val deliverySupport: FeatureId
 val shell: FeatureId
 val tacticalEnvironment: FeatureId
+val rulesWorkbench: FeatureId
 val rulesExplorer: FeatureId
+val samples: FeatureId
 val docs: FeatureId
 val value: FeatureId -> string
 val identityFor: FeatureId -> ChunkIdentity
