@@ -23,7 +23,7 @@ export const gateParts = {
 };
 export const expectedBuildInvocations = {
   integrity: [],
-  "prepare-native": ["build:SIR.slnx", "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj", "build:tests/SIR.Client.Tests/SIR.Client.Tests.fsproj", "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj", "producer:native"],
+  "prepare-native": ["build:SIR.slnx", "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj", "build:src/SIR.Simulation/Governance.Tool/SIR.Rules.Governance.Tool.fsproj", "build:tests/SIR.Client.Tests/SIR.Client.Tests.fsproj", "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj", "build:tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj", "producer:native"],
   "prepare-fable": ["fable:tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj", "fable:tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj", "fable:tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj", "producer:fable"],
   "prepare-web": ["fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj", "fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj", "producer:web"],
   "prepare-server": ["producer:server", "publish:src/SIR.Server/SIR.Server.fsproj"],

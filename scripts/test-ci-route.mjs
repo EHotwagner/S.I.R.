@@ -96,10 +96,34 @@ assert.deepEqual(spatialBuilds, [
 assert.deepEqual(expectedBuildInvocations["prepare-native"], [
   "build:SIR.slnx",
   "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj",
+  "build:src/SIR.Simulation/Governance.Tool/SIR.Rules.Governance.Tool.fsproj",
   "build:tests/SIR.Client.Tests/SIR.Client.Tests.fsproj",
   "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj",
+  "build:tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj",
   "producer:native",
 ]);
+for (const owner of [
+  "build:src/SIR.Simulation/Governance.Tool/SIR.Rules.Governance.Tool.fsproj",
+  "build:tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj",
+]) {
+  const missingOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
+    ...result,
+    buildInvocations: result.buildInvocations.filter((invocation) => invocation !== owner),
+  } : result), { completedAtMilliseconds: 1 });
+  assert.ok(missingOwner.failures.some(({ code, invocation }) => code === "missing-build-invocation" && invocation === owner));
+  const unknown = owner.replace("SIR.Rules.Governance", "SIR.Rules.Unknown");
+  const unknownOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
+    ...result,
+    buildInvocations: result.buildInvocations.map((invocation) => invocation === owner ? unknown : invocation),
+  } : result), { completedAtMilliseconds: 1 });
+  assert.ok(unknownOwner.failures.some(({ code, invocation }) => code === "unknown-build-invocation" && invocation === unknown));
+  assert.ok(unknownOwner.failures.some(({ code, invocation }) => code === "missing-build-invocation" && invocation === owner));
+  const duplicateOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
+    ...result,
+    buildInvocations: [...result.buildInvocations, owner],
+  } : result), { completedAtMilliseconds: 1 });
+  assert.ok(duplicateOwner.failures.some(({ code, invocation, expected, actual }) => code === "duplicate-build-invocation" && invocation === owner && expected === 1 && actual === 2));
+}
 const duplicatedReplayCoreOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
   ...result,
   buildInvocations: [...result.buildInvocations, "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj"],
