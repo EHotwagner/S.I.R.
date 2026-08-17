@@ -96,10 +96,34 @@ assert.deepEqual(spatialBuilds, [
 assert.deepEqual(expectedBuildInvocations["prepare-native"], [
   "build:SIR.slnx",
   "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj",
+  "build:src/SIR.Simulation/Governance.Tool/SIR.Rules.Governance.Tool.fsproj",
   "build:tests/SIR.Client.Tests/SIR.Client.Tests.fsproj",
   "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj",
+  "build:tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj",
   "producer:native",
 ]);
+for (const owner of [
+  "build:src/SIR.Simulation/Governance.Tool/SIR.Rules.Governance.Tool.fsproj",
+  "build:tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj",
+]) {
+  const missingOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
+    ...result,
+    buildInvocations: result.buildInvocations.filter((invocation) => invocation !== owner),
+  } : result), { completedAtMilliseconds: 1 });
+  assert.ok(missingOwner.failures.some(({ code, invocation }) => code === "missing-build-invocation" && invocation === owner));
+  const unknown = owner.replace("SIR.Rules.Governance", "SIR.Rules.Unknown");
+  const unknownOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
+    ...result,
+    buildInvocations: result.buildInvocations.map((invocation) => invocation === owner ? unknown : invocation),
+  } : result), { completedAtMilliseconds: 1 });
+  assert.ok(unknownOwner.failures.some(({ code, invocation }) => code === "unknown-build-invocation" && invocation === unknown));
+  assert.ok(unknownOwner.failures.some(({ code, invocation }) => code === "missing-build-invocation" && invocation === owner));
+  const duplicateOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
+    ...result,
+    buildInvocations: [...result.buildInvocations, owner],
+  } : result), { completedAtMilliseconds: 1 });
+  assert.ok(duplicateOwner.failures.some(({ code, invocation, expected, actual }) => code === "duplicate-build-invocation" && invocation === owner && expected === 1 && actual === 2));
+}
 const duplicatedReplayCoreOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
   ...result,
   buildInvocations: [...result.buildInvocations, "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj"],
@@ -178,7 +202,18 @@ assert.match(focusedQualification, /trap write_part_timing EXIT/u);
 assert.match(focusedQualification, /verify-staged[\s\S]*cp -a "\$stage\/\$output_path" "\$target"/u);
 assert.match(focusedQualification, /browser\)[\s\S]*compose-browser[\s\S]*npm run test:browser/u);
 assert.match(focusedQualification, /verify-browser-composition/u);
-assert.match(focusedQualification, /rules\) SIR_RULES_PREPARED_PR=1/u);
+assert.match(focusedQualification, /dotnet build tests\/SIR\.Rules\.Governance\.Tests\/SIR\.Rules\.Governance\.Tests\.fsproj -c Release --no-restore/u);
+assert.match(focusedQualification, /dotnet build src\/SIR\.Simulation\/Governance\.Tool\/SIR\.Rules\.Governance\.Tool\.fsproj -c Release --no-restore --no-dependencies/u);
+assert.match(focusedQualification, /tests\/SIR\.Rules\.Governance\.Tests\/bin\/Release\/net10\.0/u);
+assert.match(focusedQualification, /src\/SIR\.Simulation\/Governance\.Tool\/bin\/Release\/net10\.0/u);
+const focusedRulesGate = /      rules\)\n(?<body>[\s\S]*?)\n        ;;/u.exec(focusedQualification);
+assert.ok(focusedRulesGate?.groups?.body, "focused rules gate block is missing");
+for (const command of [
+  "SIR_RULES_PREPARED_PR=1 ./scripts/verify-rules-corpus.sh",
+  "SIR_RULES_PREPARED_PR=1 dotnet run --project tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj -c Release --no-build --no-restore",
+  "SIR_RULES_PREPARED_PR=1 ./scripts/test-rules-governance-tool-mutations.sh",
+  "SIR_RULES_PREPARED_PR=1 ./scripts/generate-rules-governance.sh --check",
+]) assert.match(focusedRulesGate.groups.body, new RegExp(command.replaceAll(".", "\\."), "u"));
 assert.match(focusedQualification, /spatial\).*--prepared-pr/u);
 assert.match(focusedQualification, /cancellation\).*--prepared-pr/u);
 assert.match(focusedQualification, /cross-runtime\)[\s\S]*--domain-only[\s\S]*--ordinary-pr-functional/u);

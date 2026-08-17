@@ -26,8 +26,19 @@ done
 dotnet fsi scripts/validate-governance-yaml.fsx
 dotnet tool run fsgg-governance route --root . --mode inner --format json >/dev/null
 # The producer writes the receipt SDD consumes for the declared F# surface.
-surface_project=$(dotnet fsi scripts/validate-governance-yaml.fsx -- --package-surface)
-dotnet tool run fsgg-fsharp-surface -- --root . --project "$surface_project" >/dev/null
+mapfile -t surface_projects < <(dotnet fsi scripts/validate-governance-yaml.fsx -- --package-surfaces)
+surface_receipts=readiness/fsharp-public-surfaces
+rm -rf -- "$surface_receipts"
+mkdir -p "$surface_receipts"
+for surface_project in "${surface_projects[@]}"; do
+  dotnet tool run fsgg-fsharp-surface -- --root . --project "$surface_project" >/dev/null
+  surface_name=${surface_project//\//_}
+  cp readiness/fsharp-public-surface.json "$surface_receipts/$surface_name.json"
+done
+test "${#surface_projects[@]}" -eq "$(find "$surface_receipts" -maxdepth 1 -type f -name '*.json' | wc -l)" || {
+  echo "not every declared F# package surface produced a receipt" >&2
+  exit 1
+}
 
 for root_name in .agents .claude .codex; do
   for skill in fs-gg-ai fs-gg-ballistics fs-gg-effects fs-gg-game-core fs-gg-grids fs-gg-line-drawing fs-gg-mapcraft fs-gg-persistence fs-gg-playtest fs-gg-visibility; do

@@ -87,9 +87,9 @@
       "locator": "file:scripts/ci-route.mjs",
       "path": "scripts/ci-route.mjs",
       "previousSha256": "10da76f4b2631e57c36991f263d19a15c183716e2d68ce208a31c160ed1118af",
-      "replacementSha256": "c8882f5f889e504b369f726a3b46b08276171c2960137cf0f93ac4c9080f2c70",
+      "replacementSha256": "ca35c208da2aed63247591cfdea26586b1ffaa97f97ac026ff6d6e4540ccac8f",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Items 184 and 193 change the bounded route owner; focused route qualification verifies the replacement route and exact named spatial build inventory."
+      "reason": "Items 184, 193, and 198 change the bounded route owner; focused route qualification verifies the replacement route, exact named spatial build inventory, and the two prepared Governance Release build owners."
     },
     {
       "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",
@@ -97,9 +97,9 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "9972711583065ad5e376b286acb9a05687150345064806c8d7b7f4ff20aabef6",
+      "replacementSha256": "9089275a445f2f3497764117d8ae277f2a0925f225531b86c116a5d0e0316e0e",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Items 184 and 193 change bounded route qualification; the focused route test verifies prepared spatial-runtime reuse plus exact named trace inventory with anonymous, duplicate, and missing identities rejected."
+      "reason": "Items 184, 193, and 198 change bounded route qualification; the focused route test verifies prepared spatial-runtime reuse, exact named trace inventory, and prepared Governance Release ownership with missing, unknown, and duplicate owner inversions plus mutation commands."
     },
     {
       "audit": "feedback/audits/2026-08-13-sir-item-183-tactical-overlays.audit.json",

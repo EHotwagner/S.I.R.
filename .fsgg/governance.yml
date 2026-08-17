@@ -8,6 +8,8 @@ domains:
   - gameplay
   - fsharp
 packageSurfaces:
+  - src/SIR.Domain/SIR.Domain.fsproj
+  - src/SIR.Domain/Governance/SIR.Rules.Governance.fsproj
   - src/SIR.Simulation/SIR.Simulation.fsproj
 policyRef: .fsgg/policy.yml
 capabilitiesRef: .fsgg/capabilities.yml

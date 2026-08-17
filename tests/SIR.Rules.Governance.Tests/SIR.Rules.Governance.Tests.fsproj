@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/SIR.Domain/Governance/SIR.Rules.Governance.fsproj" />
+    <ProjectReference Include="../../src/SIR.Simulation/SIR.Simulation.fsproj" />
+  </ItemGroup>
+</Project>

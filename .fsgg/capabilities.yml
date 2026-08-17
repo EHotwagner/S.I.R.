@@ -160,3 +160,10 @@ checks:
     environment: ci
     maturity: warn
   # END GENERATED: fsgg-reference-profile:fsharp-constitution
+  - id: rules-governance
+    domain: fsharp
+    command: rules-governance
+    owner: product
+    cost: cheap
+    environment: local-or-ci
+    maturity: block-on-ship

@@ -1,0 +1,1172 @@
+schemaVersion: 1
+workId: 198-rules-governance-receipts
+stage: evidence
+status: evidenceReady
+sourceSpec: work/198-rules-governance-receipts/spec.md
+sourceClarifications: work/198-rules-governance-receipts/clarifications.md
+sourceChecklist: work/198-rules-governance-receipts/checklist.md
+sourcePlan: work/198-rules-governance-receipts/plan.md
+sourceTasks: work/198-rules-governance-receipts/tasks.yml
+sourceAnalysis: readiness/198-rules-governance-receipts/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/198-rules-governance-receipts/analysis.json
+    digest: 0f0e54fa25da52a84d2b8162eaed0136147c447f9b2e75a338acbc8518a03f5c
+    schemaVersion: 1
+  - label: checklist
+    path: work/198-rules-governance-receipts/checklist.md
+    digest: eca78c08cdea8fcbe636c115d7661b784dbb3a98f6bbfab25dfc935ae12d69f5
+    schemaVersion: 1
+  - label: clarifications
+    path: work/198-rules-governance-receipts/clarifications.md
+    digest: 7ab97d155eed4dbe6720622abe4ea6839d66681ea712e999d69f8ba4dcf7c213
+    schemaVersion: 1
+  - label: plan
+    path: work/198-rules-governance-receipts/plan.md
+    digest: f3eb08048de0bfe40b2f2f1a8264944d52114e19fa179eaabff64e7d145705ec
+    schemaVersion: 1
+  - label: spec
+    path: work/198-rules-governance-receipts/spec.md
+    digest: e64e6aaf1b7c556703ccde8d8c7de75a7975f50f8daf6b2e13af166e5094a3a8
+    schemaVersion: 1
+  - label: tasks
+    path: work/198-rules-governance-receipts/tasks.yml
+    digest: 2b07d2723d1b925eacc91abc57033029130f5d82a8916f2e8bb5db440696dc6b
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV001]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV002]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV003]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV004]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: [FR-006]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV006]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV007]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV008]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: [FR-009]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-009]
+    obligationRefs: [EV009]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: [FR-010]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-010]
+    obligationRefs: [EV010]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: [FR-011]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV011]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV012]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: [FR-013]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-013]
+    obligationRefs: [EV013]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV014]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV015]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV016
+    kind: verification
+    subject:
+      type: task
+      id: T016
+    taskRefs: [T016]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV016]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV017
+    kind: verification
+    subject:
+      type: task
+      id: T017
+    taskRefs: [T017]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV017]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV018
+    kind: verification
+    subject:
+      type: task
+      id: T018
+    taskRefs: [T018]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV018]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV019
+    kind: verification
+    subject:
+      type: task
+      id: T019
+    taskRefs: [T019]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV019]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV020
+    kind: verification
+    subject:
+      type: task
+      id: T020
+    taskRefs: [T020]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV020]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV021
+    kind: verification
+    subject:
+      type: task
+      id: T021
+    taskRefs: [T021]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV021]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV022
+    kind: verification
+    subject:
+      type: task
+      id: T022
+    taskRefs: [T022]
+    requirementRefs: [FR-005]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV022]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV023
+    kind: verification
+    subject:
+      type: task
+      id: T023
+    taskRefs: [T023]
+    requirementRefs: [FR-007]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV023]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV024
+    kind: verification
+    subject:
+      type: task
+      id: T024
+    taskRefs: [T024]
+    requirementRefs: [FR-008]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-008]
+    obligationRefs: [EV024]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV025
+    kind: verification
+    subject:
+      type: task
+      id: T025
+    taskRefs: [T025]
+    requirementRefs: [FR-011]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV025]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV026
+    kind: verification
+    subject:
+      type: task
+      id: T026
+    taskRefs: [T026]
+    requirementRefs: [FR-012]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-012]
+    obligationRefs: [EV026]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV027
+    kind: verification
+    subject:
+      type: task
+      id: T027
+    taskRefs: [T027]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: [EV027]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV028
+    kind: verification
+    subject:
+      type: task
+      id: T028
+    taskRefs: [T028]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV028]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV029
+    kind: verification
+    subject:
+      type: task
+      id: T029
+    taskRefs: [T029]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV029]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV030
+    kind: verification
+    subject:
+      type: task
+      id: T030
+    taskRefs: [T030]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005]
+    obligationRefs: [EV030]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV031
+    kind: verification
+    subject:
+      type: task
+      id: T031
+    taskRefs: [T031]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV031]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV032
+    kind: verification
+    subject:
+      type: task
+      id: T032
+    taskRefs: [T032]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002, PD-003]
+    obligationRefs: [EV032]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV033
+    kind: verification
+    subject:
+      type: task
+      id: T033
+    taskRefs: [T033]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-005, PD-006]
+    obligationRefs: [EV033]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV034
+    kind: verification
+    subject:
+      type: task
+      id: T034
+    taskRefs: [T034]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007, PD-008, PD-009, PD-010]
+    obligationRefs: [EV034]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV035
+    kind: verification
+    subject:
+      type: task
+      id: T035
+    taskRefs: [T035]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011, PD-012]
+    obligationRefs: [EV035]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV036
+    kind: verification
+    subject:
+      type: task
+      id: T036
+    taskRefs: [T036]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV036]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV037
+    kind: verification
+    subject:
+      type: task
+      id: T037
+    taskRefs: [T037]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV037]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV038
+    kind: verification
+    subject:
+      type: task
+      id: T038
+    taskRefs: [T038]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-007]
+    obligationRefs: [EV038]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV039
+    kind: verification
+    subject:
+      type: task
+      id: T039
+    taskRefs: [T039]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV039]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV040
+    kind: verification
+    subject:
+      type: task
+      id: T040
+    taskRefs: [T040]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-006]
+    obligationRefs: [EV040]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV041
+    kind: verification
+    subject:
+      type: task
+      id: T041
+    taskRefs: [T041]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-011]
+    obligationRefs: [EV041]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+  - id: EV042
+    kind: verification
+    subject:
+      type: task
+      id: T042
+    taskRefs: [T042]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV042]
+    artifacts: [readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, tests/SIR.Rules.Governance.Tests/Program.fs]
+    sourceRefs:
+      - kind: verification
+        path: tests/SIR.Rules.Governance.Tests/Program.fs
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 12
+      failed: 0
+      skipped: 0
+    notes: [Focused package-backed adapter tests and deterministic production receipt.]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

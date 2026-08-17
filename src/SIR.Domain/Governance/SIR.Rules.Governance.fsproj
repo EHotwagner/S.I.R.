@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="RuleGovernance.fsi" />
+    <Compile Include="RuleGovernance.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../SIR.Domain.fsproj" />
+    <PackageReference Include="FS.GG.Governance.Adapters.Spi" />
+  </ItemGroup>
+</Project>

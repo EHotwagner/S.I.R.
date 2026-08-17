@@ -12,6 +12,10 @@ commands:
     command: "./scripts/test-conformance.sh"
     timeout: 600
     environment: local-or-ci
+  - id: rules-governance
+    command: "./scripts/generate-rules-governance.sh --check"
+    timeout: 300
+    environment: local-or-ci
 environmentClasses:
   - local
   - ci

@@ -1,0 +1,73 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-17-sir-item-198-rules-governance-receipts.md",
+  "reportSha256": "74ed21642fb88ea7f8990e9c33d8d75091e472e9acb5640d0c9c3350f9e62913",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:readiness/198-rules-governance-receipts/nuget-org-consumer.json",
+          "result": "verified",
+          "sha256": "028c3e14075db70b647103fc607b2a87a98a2295a5f4bf406890b820ddc545d9"
+        },
+        {
+          "locator": "file:docs/dependency-surface/FS.GG.Governance.Adapters.Spi/0.1.1.json",
+          "result": "verified",
+          "sha256": "929048352d41036cda3e6ec85a310dde927dee9752638e3d1b2096408783d93c"
+        }
+      ],
+      "confidenceLimits": ["The committed consumer receipt was inspected rather than regenerated during the follow-up critique."]
+    },
+    {
+      "id": "§4.2",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:readiness/198-rules-governance-receipts/dependency-surface-authoring-limitation.json",
+          "result": "verified",
+          "sha256": "1dec7c383944c2541c7df128b8d9e6b1f3ab1dd828a691d244bdc536320f1b3c"
+        },
+        {
+          "locator": "file:docs/dependency-surface/FS.GG.Governance.Adapters.Spi/0.1.1.json",
+          "result": "verified",
+          "sha256": "929048352d41036cda3e6ec85a310dde927dee9752638e3d1b2096408783d93c"
+        },
+        {
+          "locator": "file:docs/dependency-surface/FS.GG.Governance.Kernel/0.1.1.json",
+          "result": "verified",
+          "sha256": "9fbdb75bcbbbb7e975766bf28a54eb4bf82aac0d47a7c1dfed58409bf3fa30de"
+        },
+        {
+          "locator": "file:work/198-rules-governance-receipts/plan.md",
+          "result": "verified",
+          "sha256": "f3eb08048de0bfe40b2f2f1a8264944d52114e19fa179eaabff64e7d145705ec"
+        }
+      ],
+      "confidenceLimits": ["The original blocked run cannot be rerun after correcting the plan; the committed diagnostic receipt preserves it, while current analyze proves the repaired 94/94 state."]
+    },
+    {
+      "id": "§4.3",
+      "status": "actionable",
+      "missingFacts": [],
+      "checkedEvidence": [
+        {
+          "locator": "file:readiness/198-rules-governance-receipts/local-aggregate-limitation.json",
+          "result": "verified",
+          "sha256": "75f1a7c858705c85f326d4329b5bc4fdcce9d1ad8bd9e1ad36112ca39b668534"
+        },
+        {
+          "locator": "file:docs/evidence/production-build-receipt-v1/bcd9125c1cd73c2ff012de6ee9dd48be57eb91998faa41f84d66258ca14752b0.json",
+          "result": "verified",
+          "sha256": "bcd9125c1cd73c2ff012de6ee9dd48be57eb91998faa41f84d66258ca14752b0"
+        }
+      ],
+      "confidenceLimits": ["Evidence establishes runtime mismatch and timeout correlation, not that Node 26.7.0 caused the timeout; pinned hosted qualification remains pending."]
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net10.0": {
+      "FS.GG.Governance.Adapters.Spi": {
+        "type": "Direct",
+        "requested": "[0.1.1, 0.1.1]",
+        "resolved": "0.1.1",
+        "contentHash": "L/e1WbhyExWAPAhMFVY4eM45eWwWb+qDI+Dgk8J71gltt9OqK+eNseAReQfMfXuVl4YLSVW9ca4IBWiNGcroQw==",
+        "dependencies": {
+          "FS.GG.Governance.Kernel": "[0.1.1]"
+        }
+      },
+      "FSharp.Core": {
+        "type": "Direct",
+        "requested": "[10.1.303, 10.1.303]",
+        "resolved": "10.1.303",
+        "contentHash": "juOEjKuOCZKBFbFO8TwWRQu5cY91m2BpDkrUcv1r8pfhc1yyt64H6jTYqoRWxZoRD31XB5dxyUg9j4brs7RZCg=="
+      },
+      "sir.domain": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[10.1.303, 10.1.303]"
+        }
+      },
+      "FS.GG.Governance.Kernel": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.1, 0.1.1]",
+        "resolved": "0.1.1",
+        "contentHash": "qRq3aOGyVCucCGWC0K2qg6Ev/9TMnIXQLEhsmGJaAPIwbGdm7OaZA8QISNgo5CxEfR2J1wmEOkqhLKt3hrKvWA=="
+      }
+    }
+  }
+}

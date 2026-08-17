@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/SIR.Client/SIR.Client.fsproj" />
     <Project Path="src/SIR.Domain/SIR.Domain.fsproj" />
+    <Project Path="src/SIR.Domain/Governance/SIR.Rules.Governance.fsproj" />
     <Project Path="src/SIR.Match/SIR.Match.fsproj" />
     <Project Path="src/SIR.Protocol/SIR.Protocol.fsproj" />
     <Project Path="src/SIR.Protocol.Generated/SIR.Protocol.Generated.fsproj" />
@@ -9,6 +10,7 @@
     <Project Path="src/SIR.Replay.Web/SIR.Replay.Web.fsproj" />
     <Project Path="src/SIR.Server/SIR.Server.fsproj" />
     <Project Path="src/SIR.Simulation/SIR.Simulation.fsproj" />
+    <Project Path="src/SIR.Simulation/Governance.Tool/SIR.Rules.Governance.Tool.fsproj" />
     <Project Path="src/SIR.Tools/SIR.Tools.fsproj" />
     <Project Path="src/SIR.Wasm/SIR.Wasm.fsproj" />
   </Folder>
@@ -21,6 +23,7 @@
     <Project Path="tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj" />
     <Project Path="tests/SIR.ModalInput.Tests/SIR.ModalInput.Tests.fsproj" />
     <Project Path="tests/SIR.PhysicalCombat.Performance/SIR.PhysicalCombat.Performance.fsproj" />
+    <Project Path="tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj" />
     <Project Path="tests/SIR.Server.Tests/SIR.Server.Tests.fsproj" />
   </Folder>
 </Solution>
