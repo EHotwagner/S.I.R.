@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/198-rules-governance-receipts/ship.json",
-      "digest": "sha256:f44c8bac0a5ed1f5ec564c50ed4502c5466be0de600dd917e3138890ebc85c7b",
+      "digest": "sha256:84f08ce35822edda2abf90cb351e7289e79cd774d02468c4dec83bec935e86bd",
       "schemaVersion": 1
     },
     {
       "path": "readiness/198-rules-governance-receipts/verify.json",
-      "digest": "sha256:fbede90d05131094c523897ff57798314cecde5c65670d3a737a0c992de89d25",
+      "digest": "sha256:f79f2eb96bc53fd1f7a14dce1e3bc58d58b6f4ce62041b6ed1d34e62f58aa826",
       "schemaVersion": 1
     },
     {
       "path": "readiness/198-rules-governance-receipts/work-model.json",
-      "digest": "sha256:11610ab79f31a56d075991f4e6b1354b159d81583ff5b882547346689530be23",
+      "digest": "sha256:123d2a845b785cfdd4375b1006f751ae65063fc9a5218b78ed27ea56912de519",
       "schemaVersion": 1
     }
   ],

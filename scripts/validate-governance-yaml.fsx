@@ -33,7 +33,8 @@ let governed = mapping ".fsgg/governance.yml"
 if scalar (key "schemaVersion" governed) <> "1" then fail "governance schemaVersion must be 1"
 let domains = strings "domains" governed
 let packageSurfaces = sequence "packageSurfaces" governed |> Seq.map scalar |> Seq.toList
-if packageSurfaces.Length <> 1 then fail "packageSurfaces must declare exactly one F# project"
+if List.isEmpty packageSurfaces then fail "packageSurfaces must declare at least one F# project"
+if packageSurfaces.Length <> (packageSurfaces |> List.distinct |> List.length) then fail "packageSurfaces must not contain duplicates"
 for project in packageSurfaces do
     if not (project.EndsWith(".fsproj", StringComparison.OrdinalIgnoreCase)) then fail ("package surface is not an F# project: " + project)
     if not (File.Exists project) then fail ("missing declared package surface " + project)
@@ -61,7 +62,7 @@ for entry in sequence "checks" capabilities do
         | true, command when not (commandIds.Contains(scalar command)) -> fail "check references an undeclared tooling command"
         | _ -> ()
     | _ -> fail "capability check must be a mapping"
-if fsi.CommandLineArgs |> Array.exists ((=) "--package-surface") then
-    printfn "%s" packageSurfaces.Head
+if fsi.CommandLineArgs |> Array.exists ((=) "--package-surfaces") then
+    packageSurfaces |> List.iter (printfn "%s")
 else
     printfn "Governance YAML schemas and cross-file references verified."

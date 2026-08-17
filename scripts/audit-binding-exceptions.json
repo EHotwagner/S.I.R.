@@ -97,9 +97,9 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "9972711583065ad5e376b286acb9a05687150345064806c8d7b7f4ff20aabef6",
+      "replacementSha256": "9a7f27d163fe4357ea6a5a64773d66cfeeb6b3a40e7b6f7f85ba90a6ba0de75e",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Items 184 and 193 change bounded route qualification; the focused route test verifies prepared spatial-runtime reuse plus exact named trace inventory with anonymous, duplicate, and missing identities rejected."
+      "reason": "Items 184, 193, and 198 change bounded route qualification; the focused route test verifies prepared spatial-runtime reuse, exact named trace inventory, and prepared Governance Release ownership plus mutation commands."
     },
     {
       "audit": "feedback/audits/2026-08-13-sir-item-183-tactical-overlays.audit.json",

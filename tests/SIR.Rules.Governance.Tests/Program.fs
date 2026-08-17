@@ -85,6 +85,10 @@ let private run () =
         replaceEvidence "semantic" [ { semantic with PackageManifestDigest = None } ] item)
     assertMutation "historical-replay-exact" Ship (replaceEvidence "historical-replay" [ evidenceWithState "historical-replay" Unavailable receipt ])
     assertMutation "production-journey-present" Ship (replaceEvidence "production-journey" [])
+    assertMutation "per-rule-evidence-complete" Ship (fun item ->
+        let first = item.Payload.Rules.Head
+        let payload = { item.Payload with Rules = { first with Evidence = [] } :: item.Payload.Rules.Tail }
+        { item with Payload = payload; PayloadDigest = Receipt.payloadBytes payload |> System.Security.Cryptography.SHA256.HashData |> hex })
 
     let migration = Policy.evaluate PullRequest Migration ({ receipt with PayloadDigest = String.replicate 64 "0" })
     let standard = Policy.evaluate PullRequest Standard ({ receipt with PayloadDigest = String.replicate 64 "0" })
@@ -98,8 +102,8 @@ let private run () =
     let reportDirectory = Path.Combine("readiness", "198-rules-governance-receipts")
     let reportPath = Path.Combine(reportDirectory, "rules-governance-tests.junit.xml")
     Directory.CreateDirectory(reportDirectory) |> ignore
-    File.WriteAllText(reportPath, "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuite name=\"sir-rules-governance\" tests=\"11\" failures=\"0\" errors=\"0\" skipped=\"0\"><testcase name=\"canonical-receipt\"/><testcase name=\"closed-evidence-states\"/><testcase name=\"fixed-point-provenance\"/><testcase name=\"pr-mutations\"/><testcase name=\"ship-mutations\"/><testcase name=\"runtime-parity\"/><testcase name=\"package-identity\"/><testcase name=\"historical-replay\"/><testcase name=\"production-journey\"/><testcase name=\"profile-invariance\"/><testcase name=\"protected-boundary\"/></testsuite>\n")
-    printfn "rules-governance tests passed: rules=%d checks=%d mutations=10" receipt.Payload.Rules.Length Policy.checks.Length
+    File.WriteAllText(reportPath, "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuite name=\"sir-rules-governance\" tests=\"12\" failures=\"0\" errors=\"0\" skipped=\"0\"><testcase name=\"canonical-receipt\"/><testcase name=\"closed-evidence-states\"/><testcase name=\"fixed-point-provenance\"/><testcase name=\"pr-mutations\"/><testcase name=\"ship-mutations\"/><testcase name=\"runtime-parity\"/><testcase name=\"package-identity\"/><testcase name=\"historical-replay\"/><testcase name=\"production-journey\"/><testcase name=\"per-rule-evidence\"/><testcase name=\"profile-invariance\"/><testcase name=\"protected-boundary\"/></testsuite>\n")
+    printfn "rules-governance tests passed: rules=%d checks=%d mutations=11" receipt.Payload.Rules.Length Policy.checks.Length
 
 [<EntryPoint>]
 let main _ =

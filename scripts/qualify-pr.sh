@@ -126,6 +126,8 @@ NODE
         # The two Release graphs share dependency outputs, so serialize them
         # while the disjoint Debug solution graph builds in parallel.
         dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore >"$part_root/domain-release.log" 2>&1 || part_failed=1
+        dotnet build tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj -c Release --no-restore >"$part_root/rules-governance-release.log" 2>&1 || part_failed=1
+        dotnet build src/SIR.Simulation/Governance.Tool/SIR.Rules.Governance.Tool.fsproj -c Release --no-restore --no-dependencies >"$part_root/rules-governance-tool-release.log" 2>&1 || part_failed=1
         # Domain Release prepares Domain and Simulation. Replay.Core is a direct
         # Client.Tests dependency outside that graph, so prepare only its owner
         # before building the client test owner without duplicate dependencies.
@@ -134,12 +136,16 @@ NODE
         wait "$solution_pid" || part_failed=1
         sed -n '1,240p' "$part_root/solution-debug.log"
         sed -n '1,240p' "$part_root/domain-release.log"
+        sed -n '1,240p' "$part_root/rules-governance-release.log"
+        sed -n '1,240p' "$part_root/rules-governance-tool-release.log"
         sed -n '1,240p' "$part_root/replay-core-release.log"
         sed -n '1,240p' "$part_root/client-release.log"
         [[ $part_failed -eq 0 ]] || { echo "qualify-pr: native prepare part failed" >&2; exit 1; }
         part_paths=(
           tests/SIR.Domain.Tests/bin/Debug/net10.0
           tests/SIR.Domain.Tests/bin/Release/net10.0
+          tests/SIR.Rules.Governance.Tests/bin/Release/net10.0
+          src/SIR.Simulation/Governance.Tool/bin/Release/net10.0
           tests/SIR.Client.Tests/bin/Debug/net10.0
           tests/SIR.Client.Tests/bin/Release/net10.0
           tests/SIR.Client.Tests/bin/ScenarioCatalogRuntime/Debug/net10.0
@@ -277,6 +283,7 @@ NODE
       rules)
         SIR_RULES_PREPARED_PR=1 ./scripts/verify-rules-corpus.sh
         SIR_RULES_PREPARED_PR=1 dotnet run --project tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj -c Release --no-build --no-restore
+        SIR_RULES_PREPARED_PR=1 ./scripts/test-rules-governance-tool-mutations.sh
         SIR_RULES_PREPARED_PR=1 ./scripts/generate-rules-governance.sh --check
         ;;
       spatial) ./scripts/verify-spatial-query.sh --reuse-pr-build-receipt "$receipt" --prepared-fable "$ci_root/prepared/domain-fable" --prepared-pr ;;

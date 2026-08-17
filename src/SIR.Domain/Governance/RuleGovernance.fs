@@ -74,12 +74,7 @@ module Receipt =
     let create (package: RulePackageIdentity) (rules: RuleDefinition list) (surface: EvidenceRef list) (evidence: EvidenceRef list) (legacyClassification: string) =
         let packageDigest = Canonical.hex package.ManifestDigest
         let semanticDigest = Canonical.hex package.SemanticDigest
-        let perRuleEvidence (ruleId: string) =
-            evidence
-            |> List.filter (fun item ->
-                item.Artifact.Contains(ruleId, StringComparison.Ordinal)
-                || item.Kind = "semantic"
-                || item.Kind.StartsWith("corpus-", StringComparison.Ordinal))
+        let perRuleEvidence = evidence @ surface
         let mapped =
             rules |> List.map (fun rule ->
                 { RuleId = RuleId.value rule.Metadata.Id
@@ -94,7 +89,7 @@ module Receipt =
                   // separate public-surface fact. The current corpus has not supplied that fact,
                   // so the migration warning must remain visible instead of inferring it from rationale.
                   HasXmlDocumentation = false
-                  Evidence = perRuleEvidence (RuleId.value rule.Metadata.Id) })
+                  Evidence = perRuleEvidence })
         let payload = { Package = { EngineIdentity = package.EngineIdentity; CompatibilityProfile = package.CompatibilityProfile; PackageVersion = package.PackageVersion; SourceCommit = package.SourceCommit; ImplementationDigest = Canonical.hex package.ImplementationDigest; SemanticDigest = semanticDigest; ManifestDigest = packageDigest }; Rules = mapped; Surface = surface; Evidence = evidence; LegacyClassification = legacyClassification }
         { Schema = "sir-rules-governance/v1"; PayloadDigest = payloadBytes payload |> Canonical.sha256; Payload = payload }
 
@@ -210,6 +205,12 @@ module private Checks =
                  && boundStateOutcome "authoritative corpus validation" receipt authoritative = Met then Met
               else Unmet "duplicate, dangling, incomplete, invalid, or non-F# rule metadata"))
           rule "surface-current" BlockOnPr (probe "surface-current" [ surfaceRef ] (fun receipt -> boundStateOutcome "public surface" receipt receipt.Payload.Surface))
+          rule "per-rule-evidence-complete" BlockOnShip (probe "per-rule-evidence-complete" [ receiptRef; surfaceRef; semanticRef; parityRef; viewRef; replayRef; journeyRef ] (fun receipt ->
+              let required = Set [ "corpus-manifest"; "corpus-coverage"; "corpus-implementation"; "public-surface"; "semantic"; "runtime-parity"; "generated-view"; "historical-replay"; "production-journey" ]
+              if receipt.Payload.Rules |> List.forall (fun rule ->
+                  let actual = rule.Evidence |> List.map _.Kind |> Set.ofList
+                  required.IsSubsetOf actual && boundStateOutcome ("rule " + rule.RuleId + " evidence") receipt rule.Evidence = Met) then Met
+              else Unmet "one or more migrated rules lack current package-bound surface, semantic, parity, view, replay, or journey evidence"))
           rule "generated-views-current" BlockOnPr (probe "generated-views-current" [ viewRef ] (fun receipt -> evidence "generated-view" receipt |> boundStateOutcome "generated view" receipt))
           rule "semantic-evidence-current" BlockOnShip (probe "semantic-evidence-current" [ semanticRef ] (fun receipt -> evidence "semantic" receipt |> boundStateOutcome "semantic evidence" receipt))
           rule "runtime-parity-equal" BlockOnShip (probe "runtime-parity-equal" [ parityRef ] (fun receipt ->

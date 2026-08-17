@@ -54,10 +54,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -81,10 +81,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -108,10 +108,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -135,10 +135,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -162,10 +162,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -189,10 +189,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -216,10 +216,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -243,10 +243,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -270,10 +270,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -297,10 +297,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -324,10 +324,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -351,10 +351,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -378,10 +378,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -405,10 +405,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -432,10 +432,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -459,10 +459,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -486,10 +486,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -513,10 +513,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -540,10 +540,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -567,10 +567,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -594,10 +594,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -621,10 +621,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -648,10 +648,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -675,10 +675,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -702,10 +702,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -729,10 +729,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -756,10 +756,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -783,10 +783,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -810,10 +810,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -837,10 +837,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -864,10 +864,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -891,10 +891,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -918,10 +918,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -945,10 +945,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -972,10 +972,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -999,10 +999,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -1026,10 +1026,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -1053,10 +1053,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -1080,10 +1080,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -1107,10 +1107,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -1134,10 +1134,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
@@ -1161,10 +1161,10 @@ evidence:
     synthetic: false
     observedRun:
       source: readiness/198-rules-governance-receipts/rules-governance-tests.junit.xml
-      digest: "sha256:a4eda4ccc9988fa440b55ed6b538f6440f8f0be3b10a679ab26486367b00d65c"
+      digest: "sha256:8721491404c7b123ff1ed972588eb8e1cf2e2bbe474d6208eb5f4e623b6b35bc"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 11
+      passed: 12
       failed: 0
       skipped: 0
     notes: [Focused package-backed adapter tests and deterministic production receipt.]
