@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "packageId": "FS.GG.Governance.Adapters.Spi",
+  "version": "0.1.1",
+  "capturedFrom": "nuget-cache",
+  "sha256": "67f2ec410aa863f923fe114fdb29edcbad918a2df542f2625bbeaa1ff3ed90b5",
+  "symbols": [
+    "AdapterModule",
+    "AdapterModule.toRules",
+    "Adapter\u00603",
+    "Adapter\u00603.Bridge",
+    "Adapter\u00603.Fences",
+    "Adapter\u00603.Identify",
+    "Adapter\u00603.Probes",
+    "Adapter\u00603.Rules",
+    "Adapter\u00603.ToRef",
+    "Composed\u00602",
+    "Composed\u00602.Catalog",
+    "Composed\u00602.Fences",
+    "CompositionModule",
+    "CompositionModule.compose",
+    "CompositionModule.lift",
+    "CompositionModule.toRules",
+    "LiftModule",
+    "LiftModule.check",
+    "LiftModule.checkRule",
+    "LiftModule.fence",
+    "LiftModule.rule",
+    "Lifted\u00602",
+    "Lifted\u00602.Fences",
+    "Lifted\u00602.Rules"
+  ]
+}

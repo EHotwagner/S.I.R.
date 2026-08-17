@@ -274,7 +274,11 @@ NODE
       "$0" verify-parts "${gate_parts[@]}" >/dev/null
     fi
     case "$gate" in
-      rules) SIR_RULES_PREPARED_PR=1 ./scripts/verify-rules-corpus.sh ;;
+      rules)
+        SIR_RULES_PREPARED_PR=1 ./scripts/verify-rules-corpus.sh
+        SIR_RULES_PREPARED_PR=1 dotnet run --project tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj -c Release --no-build --no-restore
+        SIR_RULES_PREPARED_PR=1 ./scripts/generate-rules-governance.sh --check
+        ;;
       spatial) ./scripts/verify-spatial-query.sh --reuse-pr-build-receipt "$receipt" --prepared-fable "$ci_root/prepared/domain-fable" --prepared-pr ;;
       cancellation) ./scripts/test-worker-cancellation-subject-mutation.sh --prepared-pr ;;
       cross-runtime)

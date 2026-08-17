@@ -15,6 +15,8 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="[17.14.1]" />
     <PackageVersion Include="FS.GG.Game.Core" Version="[0.13.0]" />
     <PackageVersion Include="FS.GG.Governance.Cli" Version="[1.12.1]" />
+    <PackageVersion Include="FS.GG.Governance.Adapters.Spi" Version="[0.1.1]" />
+    <PackageVersion Include="FS.GG.Governance.Kernel" Version="[0.1.1]" />
     <PackageVersion Include="FS.GG.Governance.ReferenceGateSet" Version="[1.7.0]" />
     <PackageVersion Include="Thoth.Json" Version="[10.5.1]" />
     <PackageVersion Include="Thoth.Json.Net" Version="[12.0.0]" />
