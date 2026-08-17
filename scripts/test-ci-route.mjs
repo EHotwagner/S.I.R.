@@ -178,7 +178,13 @@ assert.match(focusedQualification, /trap write_part_timing EXIT/u);
 assert.match(focusedQualification, /verify-staged[\s\S]*cp -a "\$stage\/\$output_path" "\$target"/u);
 assert.match(focusedQualification, /browser\)[\s\S]*compose-browser[\s\S]*npm run test:browser/u);
 assert.match(focusedQualification, /verify-browser-composition/u);
-assert.match(focusedQualification, /rules\) SIR_RULES_PREPARED_PR=1/u);
+const focusedRulesGate = /      rules\)\n(?<body>[\s\S]*?)\n        ;;/u.exec(focusedQualification);
+assert.ok(focusedRulesGate?.groups?.body, "focused rules gate block is missing");
+for (const command of [
+  "SIR_RULES_PREPARED_PR=1 ./scripts/verify-rules-corpus.sh",
+  "SIR_RULES_PREPARED_PR=1 dotnet run --project tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj -c Release --no-build --no-restore",
+  "SIR_RULES_PREPARED_PR=1 ./scripts/generate-rules-governance.sh --check",
+]) assert.match(focusedRulesGate.groups.body, new RegExp(command.replaceAll(".", "\\."), "u"));
 assert.match(focusedQualification, /spatial\).*--prepared-pr/u);
 assert.match(focusedQualification, /cancellation\).*--prepared-pr/u);
 assert.match(focusedQualification, /cross-runtime\)[\s\S]*--domain-only[\s\S]*--ordinary-pr-functional/u);
