@@ -10,6 +10,8 @@ mkdir -p "$test_root/feedback/audits" "$test_root/scripts"
 cp "$repo_root/feedback/audits/2026-08-13-sir-item-183-tactical-overlays.audit.json" "$test_root/feedback/audits/"
 cp "$repo_root/feedback/audits/2026-08-15-SIR-186-6.audit.json" "$test_root/feedback/audits/"
 cp "$repo_root/feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json" "$test_root/feedback/audits/"
+cp "$repo_root/feedback/audits/2026-08-20-sir-item-231-svg-pipeline-measurement.audit.json" "$test_root/feedback/audits/"
+cp "$repo_root/feedback/audits/2026-08-21-sir-item-231-svg-pipeline-measurement.audit.json" "$test_root/feedback/audits/"
 cp "$repo_root/scripts/audit-binding-exceptions.json" "$test_root/scripts/"
 cp --parents \
   scripts/test-conformance.sh \
@@ -17,10 +19,14 @@ cp --parents \
   scripts/test-ci-route.mjs \
   tests/SIR.Browser.Tests/production-delivery.spec.js \
   .github/workflows/ci.yml \
+  docs/performance-budget.md \
+  scripts/test-svg-pipeline-measurement.mjs \
+  work/231-svg-pipeline-measurement/production-chromium-authority.json \
+  work/231-svg-pipeline-measurement/production-chromium-evidence.json \
   "$test_root"
 
 tool="$repo_root/.agents/skills/fs-gg-feedback-report/scripts/feedback-tool.fsx"
-changed="scripts/test-conformance.sh;scripts/ci-route.mjs;scripts/test-ci-route.mjs;tests/SIR.Browser.Tests/production-delivery.spec.js;.github/workflows/ci.yml"
+changed="scripts/test-conformance.sh;scripts/ci-route.mjs;scripts/test-ci-route.mjs;tests/SIR.Browser.Tests/production-delivery.spec.js;.github/workflows/ci.yml;docs/performance-budget.md;work/231-svg-pipeline-measurement/production-chromium-authority.json;work/231-svg-pipeline-measurement/production-chromium-evidence.json"
 ledger="$test_root/scripts/audit-binding-exceptions.json"
 pristine="$test_root/scripts/audit-binding-exceptions.pristine.json"
 cp "$ledger" "$pristine"
