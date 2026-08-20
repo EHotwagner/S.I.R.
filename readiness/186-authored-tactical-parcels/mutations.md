@@ -10,8 +10,7 @@ intended semantic assertion; the restored subject then passed the same command.
 | content identity | accept mismatched expected identity | `Stale tactical content identity was not rejected` |
 | dependency locality | discard the changed dependency intersection | `Door transition did not selectively invalidate ...` |
 | destruction bound | propagate a one-target action to neighbours | `Door transition did not emit bounded work ...` |
-| static initial entry | tighten the application-entry ceiling below the measured artifact | `app raw is ... bytes; budget is ...` |
-| browser initial route | add an oversized response amount to the measured initial request graph | `Expected: <= 1250000` with a larger received count |
+| optional delivery policy | configure an application-entry ceiling below the measured artifact | `app raw is ... bytes; configured budget is ...` |
 
 Command shape:
 
@@ -26,5 +25,4 @@ Delivery mutation command shapes:
 
 ```text
 SIR_DELIVERY_BUDGET_MAX_APP_RAW=<below-measured-bytes> node scripts/test-production-delivery-budget.mjs
-SIR_DELIVERY_BROWSER_MUTATE_SUBJECT=initial-bytes npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js tests/SIR.Browser.Tests/production-delivery.spec.js
 ```

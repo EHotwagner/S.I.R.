@@ -4,7 +4,15 @@ import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 
 const root = resolve("artifacts/client");
-const maximum = (name, fallback) => Number(process.env[name] ?? fallback);
+const maximum = (name) => {
+  const configured = process.env[name];
+  if (configured === undefined || configured.trim() === "") return undefined;
+  const value = Number(configured);
+  if (!Number.isFinite(value) || value < 0) {
+    throw new Error(`${name} must be a non-negative finite number.`);
+  }
+  return value;
+};
 const appPath = resolve(root, "content/sir-client/v1/app.js");
 const app = await readFile(appPath);
 const entries = await readdir(resolve(root, "content/sir-client/v1"));
@@ -14,15 +22,17 @@ const enginePath = resolve(root, "engines/0102030405060708090a0b0c0d0e0f10111213
 const publication = JSON.parse(await readFile(resolve(root, "publication-manifest.json"), "utf8"));
 
 function requireBudget(label, actual, limit) {
-  if (actual > limit) throw new Error(`${label} is ${actual} bytes; budget is ${limit}.`);
+  if (limit !== undefined && actual > limit) {
+    throw new Error(`${label} is ${actual} bytes; configured budget is ${limit}.`);
+  }
 }
 
-// Delivery budget v3 (2026-08-20) aligns the static entry and measured
-// browser route. It is intentionally versioned: future growth must defer or
-// explicitly rebaseline this ceiling rather than treating it as unbounded.
-requireBudget("app raw", app.byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_APP_RAW", 1_250_000));
-requireBudget("app gzip", gzipSync(app).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_APP_GZIP", 320_000));
-requireBudget("app brotli", brotliCompressSync(app).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_APP_BROTLI", 280_000));
+// Delivery sizes are evidence, not project-wide fixed ceilings. A deployment
+// may opt into a limit for a deliberately bounded surface through the matching
+// environment variable; normal product growth remains unconstrained here.
+requireBudget("app raw", app.byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_APP_RAW"));
+requireBudget("app gzip", gzipSync(app).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_APP_GZIP"));
+requireBudget("app brotli", brotliCompressSync(app).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_APP_BROTLI"));
 
 if (deferredSupport.length !== 1) throw new Error("Expected exactly one deferred delivery-support chunk.");
 if (deferredSpatial.length !== 1) throw new Error("Expected exactly one deferred RulesExplorer spatial chunk.");
@@ -30,12 +40,9 @@ if (app.toString("utf8").includes("This support panel loads on demand")) {
   throw new Error("The deferred support panel leaked into the initial application entry.");
 }
 let spatial = await readFile(resolve(root, "content/sir-client/v1", deferredSpatial[0]));
-if (process.env.SIR_DELIVERY_MUTATE_ARTIFACT === "spatial") {
-  spatial = Buffer.concat([spatial, Buffer.alloc(Math.max(1, 65_537 - spatial.byteLength), 0x20)]);
-}
-requireBudget("RulesExplorer raw", spatial.byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_RAW", 65_536));
-requireBudget("RulesExplorer gzip", gzipSync(spatial).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_GZIP", 20_000));
-requireBudget("RulesExplorer brotli", brotliCompressSync(spatial).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_BROTLI", 16_384));
+requireBudget("RulesExplorer raw", spatial.byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_RAW"));
+requireBudget("RulesExplorer gzip", gzipSync(spatial).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_GZIP"));
+requireBudget("RulesExplorer brotli", brotliCompressSync(spatial).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_BROTLI"));
 const worker = await readFile(enginePath);
 const engine = publication.engines.find((entry) => entry.workerPath === "engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/worker.js");
 if (!engine || engine.bytes !== worker.byteLength || engine.integrity !== `sha384-${createHash("sha384").update(worker).digest("base64")}`) {

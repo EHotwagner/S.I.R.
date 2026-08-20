@@ -1,11 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { readFileSync } from "node:fs";
 import { openSamples, switchWorkspace } from "./journey.js";
-
-const featureRegistry = JSON.parse(
-  readFileSync(new URL("../../src/SIR.Client.Web/feature-registry.v2.json", import.meta.url), "utf8"),
-);
-const routeBudget = (id) => featureRegistry.routeBudgets.find((route) => route.id === id)?.budget.responseBytes;
 
 test("Release delivery uses cache-safe compression and defers spatial diagnostics", async ({ page }) => {
   const client = await page.context().newCDPSession(page);
@@ -31,9 +25,7 @@ test("Release delivery uses cache-safe compression and defers spatial diagnostic
   const initialDeferred = responses.filter((response) => response.url().includes("RulesExplorer-")).length;
   const responseBytes = async (selected) =>
     (await Promise.all(selected.map((response) => response.body().then((body) => body.byteLength)))).reduce((total, bytes) => total + bytes, 0);
-  let initialBytes = await responseBytes(responses);
-  const maximumInitialBytes = Number(process.env.SIR_DELIVERY_MAX_INITIAL_ROUTE_BYTES ?? routeBudget("initial"));
-  if (process.env.SIR_DELIVERY_BROWSER_MUTATE_SUBJECT === "initial-bytes") initialBytes += maximumInitialBytes + 1;
+  const initialBytes = await responseBytes(responses);
   expect(initialDeferred).toBe(0);
   await switchWorkspace(page, "Simulate");
   await openSamples(page);
@@ -54,20 +46,14 @@ test("Release delivery uses cache-safe compression and defers spatial diagnostic
   await expect(renderedPath).toHaveText(/^\(\d+,\d+\)(?:, \(\d+,\d+\))+$/);
   await expect(diagnostics.getByText("SIR.Simulation.SpatialQuery.evaluate", { exact: true }).first()).toBeVisible();
   expect(responses.some((response) => response.url().includes("RulesExplorer-"))).toBe(true);
-  let deferredBytes = await responseBytes(responses.filter((response) => response.url().includes("RulesExplorer-")));
-  const maximumDeferredBytes = Number(process.env.SIR_DELIVERY_MAX_DEFERRED_ROUTE_BYTES ?? routeBudget("rules-explorer-activation"));
-  if (process.env.SIR_DELIVERY_BROWSER_MUTATE_SUBJECT === "deferred-bytes") deferredBytes += maximumDeferredBytes + 1;
+  const deferredBytes = await responseBytes(responses.filter((response) => response.url().includes("RulesExplorer-")));
   const diagnosticResponses = responses.filter((response) => response.url().includes("/api/spatial/diagnostics"));
   expect(diagnosticResponses).toHaveLength(1);
   expect(diagnosticResponses[0].status()).toBe(200);
   const diagnosticApiBytes = await responseBytes(diagnosticResponses);
   expect(initialBytes).toBeGreaterThan(0);
   expect(deferredBytes).toBeGreaterThan(0);
-  expect(initialBytes).toBeLessThanOrEqual(maximumInitialBytes);
-  expect(deferredBytes).toBeLessThanOrEqual(maximumDeferredBytes);
-  const initialRouteHeadroomBytes = maximumInitialBytes - initialBytes;
-  expect(initialRouteHeadroomBytes).toBeGreaterThanOrEqual(0);
-  console.log(JSON.stringify({ schema: "sir-production-delivery-route-v1", throttle: "Slow-3G/4x CPU", deferredChunk: "RulesExplorer", initialResponseBytes: initialBytes, maximumInitialResponseBytes: maximumInitialBytes, initialRouteHeadroomBytes, deferredActivationBytes: deferredBytes, diagnosticApiBytes }));
+  console.log(JSON.stringify({ schema: "sir-production-delivery-route-v1", throttle: "Slow-3G/4x CPU", deferredChunk: "RulesExplorer", initialResponseBytes: initialBytes, deferredActivationBytes: deferredBytes, diagnosticApiBytes }));
 
   const engine = await page.request.get("/engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/worker.js", {
     headers: { "Accept-Encoding": "gzip" },

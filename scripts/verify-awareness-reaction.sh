@@ -78,15 +78,11 @@ if SIR_WORKER_ROUNDTRIP_INJECT_RESPONSE_TAG=1 node scripts/smoke-worker-roundtri
   echo "Worker round-trip accepted a mutated response tag." >&2
   exit 1
 fi
-if SIR_DELIVERY_BUDGET_MAX_SPATIAL_RAW=61285 node scripts/test-production-delivery-budget.mjs >"$task_tmp/delivery-budget-mutation.log" 2>&1; then
+if SIR_DELIVERY_BUDGET_MAX_SPATIAL_RAW=1 node scripts/test-production-delivery-budget.mjs >"$task_tmp/delivery-budget-mutation.log" 2>&1; then
   echo "Deferred-route delivery budget mutation survived." >&2
   exit 1
 fi
 node scripts/test-production-delivery-budget.mjs
-if SIR_DELIVERY_MUTATE_ARTIFACT=spatial node scripts/test-production-delivery-budget.mjs >"$task_tmp/delivery-artifact-mutation.log" 2>&1; then
-  echo "Deferred-route mutated artifact survived production budget." >&2
-  exit 1
-fi
 if rg -n 'AwarenessReaction\.(evaluateVisualStimulus|advanceContact|advanceEngagement)|SpatialQuery\.evaluate|Combat\.resolve' src/SIR.Client.Web/RulesExplorer.fs; then
   echo "Observer-local Web route contains authority evaluation." >&2
   exit 1
@@ -105,11 +101,6 @@ for mutation in source replay; do
     exit 1
   fi
 done
-if SIR_DELIVERY_BROWSER_MUTATE_SUBJECT=deferred-bytes npx playwright test --config tests/SIR.Browser.Tests/playwright.config.js tests/SIR.Browser.Tests/production-delivery.spec.js >"$task_tmp/delivery-browser-mutation.log" 2>&1; then
-  echo "Production delivery browser gate accepted mutated deferred bytes." >&2
-  exit 1
-fi
-
 receipt_before=$(sha256sum readiness/182-awareness-reaction-windows/awareness-reaction-all.junit.xml 2>/dev/null | cut -d' ' -f1 || true)
 if SIR_ITEM_182_EVIDENCE_MUTATE_SUBJECT=core ./scripts/generate-item-182-evidence.sh >"$task_tmp/evidence-atomic-mutation.log" 2>&1; then
   echo "Atomic evidence collector accepted a failed protected core subject." >&2

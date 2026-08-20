@@ -130,16 +130,16 @@ changes more than its declared target/budget.
 ## Production delivery budget
 
 The production client has an executable delivery contract in
-`scripts/test-production-delivery-budget.mjs`. It checks the versioned entry
+`scripts/test-production-delivery-budget.mjs`. It records the versioned entry
 asset's raw, gzip, and Brotli bytes and confirms the on-demand support chunk is
-not folded into the initial entry. Browser coverage records a Slow-3G/4× CPU
-request graph against the published Release server: mutable entries revalidate;
-identity-qualified retained engines may be cached immutably. ASP.NET Core owns
-these headers. A proxy or CDN may provide compression/caching too, but must keep
-`Vary: Accept-Encoding` and must not weaken the documented cache class.
-The initial Release request graph is capped at 1,160,000 raw response bytes; the
-scenario-catalog expansion raised the observed route to 1,156,943 bytes while
-remaining below the separately tighter compressed-entry budgets.
+not folded into the initial entry. Fixed byte ceilings are opt-in environment
+policy for deliberately bounded deployments; the growing application and its
+feature routes have no default size cap. Browser coverage records a Slow-3G/4×
+CPU request graph against the published Release server: mutable entries
+revalidate; identity-qualified retained engines may be cached immutably.
+ASP.NET Core owns these headers. A proxy or CDN may provide compression/caching
+too, but must keep `Vary: Accept-Encoding` and must not weaken the documented
+cache class.
 
 ## Browser simulator session budget
 

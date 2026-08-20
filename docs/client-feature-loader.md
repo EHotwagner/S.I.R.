@@ -32,24 +32,20 @@ production deferred entry points.
 
 The bootstrap shell owns documentation navigation state and manifest I/O through
 `DocumentationFeatureContract`; the registered `DocsView` chunk owns rendering.
-New documentation behavior extends that deferred module and its scoped budget,
-so it does not grow the bootstrap shell or force one global size ceiling to cover
-future features.
+New documentation behavior extends that deferred module, so it does not grow
+the bootstrap shell merely because the documentation corpus grows.
 
 Version 2 preserves the version-1 per-feature ownership model while replacing
-the placeholder Docs module with the real deferred `DocsView`. Its source-frozen
-bundle observation rebaselines Rules Explorer Brotli from 16,000 to 16,384 bytes.
-The same registry owns browser-observed route ceilings: the initial route is
-1,310,720 response bytes and Rules Explorer activation is 65,536 response bytes.
-This removes the former second hard-coded delivery budget from the browser gate;
-future growth must defer or publish an explicit registry revision/rebaseline.
-Version 1 remains tracked as immutable prior history.
+the placeholder Docs module with the real deferred `DocsView`. Active feature
+and route sizes are measured in evidence but do not carry fixed ceilings because
+those surfaces scale with the product. Version 1 remains tracked as immutable
+prior history, including its historical budgets.
 
 ## Build evidence
 
-Every declared logical chunk has raw, gzip, and Brotli ceilings in the registry.
-The post-build gate reads the Vite manifest and emitted bytes, rejects missing or
-extra identities and budget overruns, and writes canonical content-addressed
+Every declared logical chunk records raw, gzip, and Brotli measurements in the
+build receipt. The post-build gate reads the Vite manifest and emitted bytes,
+rejects missing or extra identities, and writes canonical content-addressed
 receipts under `docs/evidence/client-feature-bundle-graph-v1/`. Receipt input
 identity covers client source and the client build script; feedback, reports,
 timestamps, host paths, and elapsed durations are deliberately excluded, so

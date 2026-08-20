@@ -94,7 +94,7 @@ cat > "$evidence_root/production-delivery.junit.xml" <<'XML'
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites tests="2" failures="0" skipped="0"><testsuite name="spatial-production-delivery" tests="2" failures="0" skipped="0">
 <properties><property name="producer" value="scripts/generate-item-180-evidence.sh"/><property name="command" value="node scripts/test-production-delivery-budget.mjs"/></properties>
-<testcase classname="production-delivery" name="initial application response remains below the fixed byte budget"/>
+<testcase classname="production-delivery" name="application delivery sizes are recorded and deferred ownership is preserved"/>
 <testcase classname="production-delivery" name="retained worker and actual deferred RulesExplorer chunk remain publication-bound"/>
 </testsuite></testsuites>
 XML

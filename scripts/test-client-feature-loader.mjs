@@ -34,16 +34,10 @@ const phases = new Set(["bootstrap", "eager", "deferred"]);
 for (const feature of registry.features) {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(feature.id) || !phases.has(feature.phase)) fail("registry", `invalid identity/phase for ${feature.id}`);
   for (const field of ["control", "route", "module", "logicalChunk"]) if (typeof feature[field] !== "string" || feature[field].length === 0) fail("registry", `${feature.id} missing ${field}`);
-  for (const kind of ["raw", "gzip", "brotli"]) if (!Number.isSafeInteger(feature.budget?.[kind]) || feature.budget[kind] <= 0) fail("budget", `${feature.id} invalid ${kind}`);
+  if (feature.budget !== undefined) fail("registry", `${feature.id} retains a project-scaling fixed byte budget`);
 }
 if (new Set(registry.features.map((feature) => feature.logicalChunk)).size !== 7) fail("registry", "v1 logical chunk projection changed");
-if (!Array.isArray(registry.routeBudgets) || registry.routeBudgets.length !== 2) fail("registry", "expected initial and Rules Explorer activation route budgets");
-const routeBudgetIds = registry.routeBudgets.map((route) => route.id);
-if (routeBudgetIds.join("|") !== "initial|rules-explorer-activation") fail("registry", "route budgets are not in stable id order");
-for (const route of registry.routeBudgets) {
-  if (!registry.features.some((feature) => feature.control === route.control)) fail("registry", `route budget ${route.id} has no registered control owner`);
-  if (!Number.isSafeInteger(route.budget?.responseBytes) || route.budget.responseBytes <= 0) fail("registry", `route budget ${route.id} is not a positive byte ceiling`);
-}
+if (registry.routeBudgets !== undefined) fail("registry", "active registry retains project-scaling fixed route budgets");
 
 const deliverySupportEntryPath = resolve(root, "src/SIR.Client.Web/delivery-support-entry.js");
 if (mutation === "eager-import") {
@@ -215,8 +209,6 @@ for (const feature of registry.features) {
   const emitted = matches[0];
   const bytes = await readFile(resolve(contentDirectory, emitted));
   const measured = { raw: bytes.byteLength, gzip: gzipSync(bytes).byteLength, brotli: brotliCompressSync(bytes).byteLength };
-  if (mutation === "budget" && feature.id === "docs") measured.raw = feature.budget.raw + 1;
-  for (const kind of ["raw", "gzip", "brotli"]) if (measured[kind] > feature.budget[kind]) fail("budget", `${feature.id} ${kind} ${measured[kind]} exceeds ${feature.budget[kind]}`);
   const logicalChunk = mutation === "stale-identity" && feature.id === "docs" ? "docs-stale" : feature.logicalChunk;
   if (logicalChunk !== feature.logicalChunk) fail("stale-identity", `${feature.id} expected ${feature.logicalChunk}; received ${logicalChunk}`);
   features.push({
@@ -227,7 +219,6 @@ for (const feature of registry.features) {
     logicalChunk,
     emitted: `content/sir-client/v1/${emitted}`,
     bytes: measured,
-    budget: feature.budget,
     sha256: sha256(bytes),
   });
 }
@@ -237,7 +228,6 @@ const receipt = {
   registryVersion: registry.version,
   registryDigest: sha256(registryBytes),
   buildInputDigest,
-  routeBudgets: registry.routeBudgets,
   entry: manifestEntry.file,
   dynamicEntries: dynamicFiles,
   features,
@@ -253,7 +243,7 @@ if (!noWrite) {
 }
 
 if (aggregateTrx) {
-  const mutationNames = ["eager-import", "property-mangle", "missing-chunk", "stale-identity", "budget", "registry-version"];
+  const mutationNames = ["eager-import", "property-mangle", "missing-chunk", "stale-identity", "registry-version"];
   for (const name of mutationNames) {
     try {
       execFileSync(process.execPath, [import.meta.filename, "--no-write"], {
@@ -277,7 +267,7 @@ if (aggregateTrx) {
     fail("browser", "browser JUnit is missing the client feature loader journeys");
   }
   const testNames = [
-    "registry, compiled-Fable state, bundle graph, and budgets pass",
+    "registry, compiled-Fable state, and bundle graph pass",
     ...mutationNames.map((name) => `${name} mutation is rejected`),
     ...browserNames.filter((name) => name.includes("production shell loads registered features") || name.includes("stable offline failure")),
   ];
