@@ -523,6 +523,7 @@ let init () =
       FeatureLoaderDiagnostic = None
       DesktopToolbarCommands = desktopToolbarCommands
       DesktopToolbarCustomizationOpen = false
+      SidebarResizeActive = None
       BottomPanelResizeActive = false
       TacticalSelectedUnit = simulatorSelectedUnit
       Workspace = EditorWorkspace
@@ -1094,6 +1095,22 @@ let rec update msg model =
                 if side = Left then "layout-left-drawer-toggle"
                 else "layout-right-drawer-toggle"
             ))
+    | BeginLayoutSidebarResize side ->
+        { model with SidebarResizeActive = Some side }, Cmd.none
+    | ResizeLayoutSidebar(side, width) when model.SidebarResizeActive = Some side ->
+        let layout = TacticalWorkspaceLayout.resizeSidebar side width model.TacticalLayout
+        { model with TacticalLayout = layout; TacticalLayoutDiagnostics = [] }, Cmd.none
+    | ResizeLayoutSidebar _ -> model, Cmd.none
+    | EndLayoutSidebarResize ->
+        if model.SidebarResizeActive.IsSome then
+            writeTacticalLayout (TacticalWorkspaceLayout.exportProfile model.TacticalLayout)
+        { model with SidebarResizeActive = None }, Cmd.none
+    | ResizeLayoutSidebarKeyboard(side, width) ->
+        let layout = TacticalWorkspaceLayout.resizeSidebar side width model.TacticalLayout
+        writeTacticalLayout (TacticalWorkspaceLayout.exportProfile layout)
+        let sideName = if side = Left then "left" else "right"
+        { model with TacticalLayout = layout; TacticalLayoutDiagnostics = [] },
+        Cmd.ofEffect (fun _ -> focusElementAfterRender ("tactical-sidebar-" + sideName + "-resize"))
     | ToggleLayoutBottomPanelVisibility ->
         let layout =
             model.TacticalLayout
@@ -4714,6 +4731,16 @@ let private editorUnitPanel (state: MapEditorState) dispatch =
                             prop.onChange (fun value ->
                                 dispatch (EditorChanged(SetSelectedScript value)))
                         ]
+                        Html.span "Body facing"
+                        Html.span [
+                            prop.custom ("data-editor-body-facing", string unit.BodyFacing)
+                            prop.text (string unit.BodyFacing)
+                        ]
+                        Html.span "Attention"
+                        Html.span [
+                            prop.custom ("data-editor-attention-direction", string unit.AttentionDirection)
+                            prop.text (string unit.AttentionDirection)
+                        ]
                     ]
                 ]
                 button "Remove unit" "Remove selected unit" false (fun _ ->
@@ -6641,50 +6668,7 @@ let private persistentSceneSvg
                                                         visual.ClassId
                                                 ]
                                             ]
-                                            match visual.BodyHeading with
-                                            | Disclosed heading ->
-                                                let centerX = presentationX + width / 2.0
-                                                let centerY = presentationY + depth / 2.0
-                                                let radians = HeadingRadians.value heading
-                                                Svg.line [
-                                                    svg.custom ("data-unit-heading", "facing")
-                                                    svg.x1 centerX
-                                                    svg.y1 centerY
-                                                    svg.x2 (centerX + Math.Cos(radians) * 22.0)
-                                                    svg.y2 (centerY + Math.Sin(radians) * 22.0)
-                                                    svg.stroke visualSystem.Palette.Text
-                                                    svg.strokeWidth 4
-                                                    svg.custom ("pointer-events", "none")
-                                                ]
-                                            | _ -> ()
-                                            match visual.SecondaryHeading with
-                                            | Disclosed heading ->
-                                                let centerX = presentationX + width / 2.0
-                                                let centerY = presentationY + depth / 2.0
-                                                let radians = HeadingRadians.value heading.Radians
-                                                Svg.line [
-                                                    svg.custom ("data-unit-heading", "attention")
-                                                    svg.x1 centerX
-                                                    svg.y1 centerY
-                                                    svg.x2 (centerX + Math.Cos(radians) * 28.0)
-                                                    svg.y2 (centerY + Math.Sin(radians) * 28.0)
-                                                    svg.stroke visualSystem.Intent
-                                                    svg.strokeWidth 3
-                                                    svg.custom ("stroke-dasharray", "3 2")
-                                                    svg.custom ("pointer-events", "none")
-                                                ]
-                                            | _ -> ()
-                                            match visual.StanceId with
-                                            | Disclosed stance ->
-                                                Svg.text [
-                                                    svg.custom ("data-unit-stance-label", stance)
-                                                    svg.x (presentationX + 9.0)
-                                                    svg.y (presentationY + depth - 9.0)
-                                                    svg.fill visualSystem.Recovery
-                                                    svg.fontSize 10
-                                                    svg.text stance
-                                                ]
-                                            | _ -> ()
+                                            yield! TacticalUnitSymbolView.channels visualSystem presentationX presentationY width depth visual
                                             Svg.text [
                                                 svg.x (presentationX + width - 9.0)
                                                 svg.y (presentationY + depth - 9.0)
@@ -7234,13 +7218,30 @@ let private tacticalLayoutToolbar model dispatch =
                                     dispatch (ContextualDocumentationOpened "maps-spatial"))
                             ]
                         if label = "File" then
+                            yield Html.div [
+                                prop.className "desktop-menu-group-label"
+                                prop.custom ("role", "presentation")
+                                prop.text "Samples"
+                            ]
+                            for sample in ExperienceSamples.maps do
+                                yield commandButton [
+                                    prop.type'.button
+                                    prop.custom ("role", "menuitem")
+                                    prop.text sample.Title
+                                    prop.onClick (fun _ ->
+                                        closeDesktopMenus ()
+                                        let editor = ExperienceSamples.editorState sample
+                                        dispatch (LoadMapSample(editor, ExperienceSamples.simulator sample)))
+                                ]
                             yield commandButton [
                                 prop.type'.button
                                 prop.custom ("role", "menuitem")
-                                prop.text "Samples"
+                                prop.text "Troll assault"
                                 prop.onClick (fun _ ->
                                     closeDesktopMenus ()
-                                    dispatch (OpenSupportingPanel "samples"))
+                                    let sample = ExperienceSamples.legacyTrollAssault
+                                    let editor = ExperienceSamples.editorState sample
+                                    dispatch (LoadMapSample(editor, ExperienceSamples.simulator sample)))
                             ]
                     ]
                 ]
@@ -7713,7 +7714,16 @@ let private tacticalPanelBody panelId model dispatch =
         | Some simulator ->
             Html.div [
                 if panelId = "tools" then ClientFeatureRuntime.tacticalEnvironmentPanel model.ClientFeatures model.Editor model.TacticalParcelEditor model.TacticalParcelImportText (Some simulator) dispatch
-                simulatorPanelBody model.Editor simulator model.SimulatorSelectedUnit panelId dispatch
+                if panelId = "selection" then
+                    editorUnitPanel model.Editor dispatch
+                    Html.div [
+                        prop.className "simulator-selection-extension"
+                        prop.children [
+                            simulatorPanelBody model.Editor simulator model.SimulatorSelectedUnit panelId dispatch
+                        ]
+                    ]
+                else
+                    simulatorPanelBody model.Editor simulator model.SimulatorSelectedUnit panelId dispatch
             ]
         | None ->
             Html.p "Correct the current map so a valid simulation can be maintained."
@@ -7761,27 +7771,31 @@ let private tacticalPanelBody panelId model dispatch =
             prop.className "tactical-layout-panel-placeholder"
             prop.text "Panel host reserved for the active modality migration."
         ]
-
 let private tacticalSidebar side model dispatch =
     let sideName = if side = Left then "left" else "right"
     let layout = model.TacticalLayout
-    let drawerOpen =
-        if side = Left then layout.LeftSidebar.DrawerOpen
-        else layout.RightSidebar.DrawerOpen
+    let maximumWidth = max 160 (int window.innerWidth * 40 / 100)
+    let configuredWidth = if side = Left then layout.LeftSidebar.Width else layout.RightSidebar.Width
+    let renderedWidth = min configuredWidth maximumWidth
+    let drawerOpen = if side = Left then layout.LeftSidebar.DrawerOpen else layout.RightSidebar.DrawerOpen
     let definition panelId =
-        TacticalWorkspaceLayout.panelRegistry
-        |> List.find (fun panel -> panel.Id = panelId)
-
+        TacticalWorkspaceLayout.panelRegistry |> List.find (fun panel -> panel.Id = panelId)
     Html.aside [
         prop.id ("tactical-sidebar-" + sideName)
         prop.hidden (model.Workspace = DocsWorkspace)
         prop.ariaHidden (model.Workspace = DocsWorkspace)
-        prop.className (
-            "tactical-sidebar tactical-sidebar-" + sideName
-            + if drawerOpen then " is-drawer-open" else ""
-        )
+        prop.className ("tactical-sidebar tactical-sidebar-" + sideName + if drawerOpen then " is-drawer-open" else "")
         prop.ariaLabel ((if side = Left then "Left" else "Right") + " tactical sidebar")
         prop.children [
+            SidebarResizeView.view
+                side
+                renderedWidth
+                maximumWidth
+                (model.SidebarResizeActive = Some side)
+                (BeginLayoutSidebarResize >> dispatch)
+                (fun resizedSide width -> dispatch (ResizeLayoutSidebar(resizedSide, width)))
+                (fun () -> dispatch EndLayoutSidebarResize)
+                (fun resizedSide width -> dispatch (ResizeLayoutSidebarKeyboard(resizedSide, width)))
             for placement in TacticalWorkspaceLayout.panelsOn side layout do
                 if placement.Visible then
                     let panel = definition placement.PanelId
@@ -7868,6 +7882,7 @@ let private tacticalSidebar side model dispatch =
 
 let private tacticalShell model dispatch transientContent workscreenOverlay =
     let layout = model.TacticalLayout
+    let maximumSidebarWidth = max 160 (int window.innerWidth * 40 / 100)
     let bottomVisible = TacticalWorkspaceLayout.bottomVisible layout
     let bottomCollapsed =
         TacticalWorkspaceLayout.bottomCollapsed model.Tactical.Modality layout
@@ -7881,11 +7896,11 @@ let private tacticalShell model dispatch transientContent workscreenOverlay =
         prop.style [
             style.custom (
                 "--tactical-left-width",
-                string layout.LeftSidebar.Width + "px"
+                string (min layout.LeftSidebar.Width maximumSidebarWidth) + "px"
             )
             style.custom (
                 "--tactical-right-width",
-                string layout.RightSidebar.Width + "px"
+                string (min layout.RightSidebar.Width maximumSidebarWidth) + "px"
             )
             style.custom (
                 "--tactical-bottom-height",

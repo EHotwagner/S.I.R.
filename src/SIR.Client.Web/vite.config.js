@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 export default defineConfig({
   root: resolve(import.meta.dirname),
   base: "./",
+  publicDir: process.env.SIR_CLIENT_DEV_PUBLIC_DIR || false,
   build: {
     minify: "terser",
     terserOptions: {

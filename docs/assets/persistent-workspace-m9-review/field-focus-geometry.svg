@@ -296,17 +296,17 @@
     "rect": {
       "x": 4.188,
       "y": 468.578,
-      "width": 206,
+      "width": 199.609,
       "height": 799.188,
-      "right": 210.188,
+      "right": 203.797,
       "bottom": 1267.766
     },
     "hostRect": {
       "x": 4.188,
       "y": 468.578,
-      "width": 206,
+      "width": 199.609,
       "height": 799.188,
-      "right": 210.188,
+      "right": 203.797,
       "bottom": 1267.766
     }
   },
@@ -316,9 +316,9 @@
       "rect": {
         "x": 4.188,
         "y": 132.625,
-        "width": 206,
+        "width": 199.609,
         "height": 240.906,
-        "right": 210.188,
+        "right": 203.797,
         "bottom": 373.531
       },
       "children": [
@@ -328,9 +328,9 @@
           "rect": {
             "x": 4.188,
             "y": 132.625,
-            "width": 206,
+            "width": 199.609,
             "height": 240.906,
-            "right": 210.188,
+            "right": 203.797,
             "bottom": 373.531
           }
         }
@@ -341,9 +341,9 @@
       "rect": {
         "x": 4.188,
         "y": 468.578,
-        "width": 206,
+        "width": 199.609,
         "height": 799.188,
-        "right": 210.188,
+        "right": 203.797,
         "bottom": 1267.766
       },
       "children": [
@@ -353,9 +353,9 @@
           "rect": {
             "x": 4.188,
             "y": 468.578,
-            "width": 206,
+            "width": 199.609,
             "height": 799.188,
-            "right": 210.188,
+            "right": 203.797,
             "bottom": 1267.766
           }
         }
@@ -364,24 +364,24 @@
     {
       "panelId": "selection",
       "rect": {
-        "x": 1213.813,
+        "x": 1220.203,
         "y": 111.359,
-        "width": 222,
-        "height": 561,
+        "width": 215.609,
+        "height": 642.188,
         "right": 1435.813,
-        "bottom": 672.359
+        "bottom": 753.547
       },
       "children": [
         {
           "className": "panel unit-editor-panel",
           "position": "static",
           "rect": {
-            "x": 1213.813,
+            "x": 1220.203,
             "y": 111.359,
-            "width": 222,
-            "height": 561,
+            "width": 215.609,
+            "height": 642.188,
             "right": 1435.813,
-            "bottom": 672.359
+            "bottom": 753.547
           }
         }
       ]

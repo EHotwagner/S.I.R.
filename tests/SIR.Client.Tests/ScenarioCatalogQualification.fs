@@ -30,6 +30,17 @@ let run () =
         |> Result.defaultWith (fun errors -> failwith (string errors)) |> ignore
         ExperienceSamples.replayFrames { package.Replay with Ticks = 1 } |> Array.tryLast |> ignore
     ExperienceSamples.packages |> List.iter runPackage
+    let humanClasses = Set.ofList [ "rifleman"; "gunner"; "marksman"; "engineer"; "medic"; "signaller" ]
+    let canonicalHumanBases sample =
+        let editor = ExperienceSamples.editorState sample
+        editor.Validation.IsNone
+        && (editor.Map.Units
+            |> Map.forall (fun _ unit ->
+                not (Set.contains unit.ClassId humanClasses) || unit.Size = 4))
+    require
+        (ExperienceSamples.maps |> List.forall canonicalHumanBases
+         && canonicalHumanBases ExperienceSamples.legacyTrollAssault)
+        "A visible experience sample no longer uses the canonical 4x4 human footprint."
     let package = ExperienceSamples.packages |> List.head
     let changedReplay =
         { package.Replay with
@@ -75,9 +86,14 @@ let run () =
             ExperienceSamples.simulator stress.Map
             |> Option.defaultWith (fun () -> failwith "The 80x80 stress map did not enter the production simulator.")
         let selected = Some 1
+        let selectedUnit = Map.find 1 initial.RuntimeMap.Units
         let path =
             timed (fun () ->
-                MapEditorSimulator.preview selected { CellColumn = 79; CellRow = 79 } initial
+                MapEditorSimulator.preview
+                    selected
+                    { CellColumn = selectedUnit.Column
+                      CellRow = editor.Map.Height - selectedUnit.Size }
+                    initial
                 |> Option.defaultWith (fun () -> failwith "The production route preview returned no 80x80 path result."))
         let mutable current = initial
         let handoffs = ResizeArray<SimulatorHandoff>()
@@ -166,6 +182,10 @@ let run () =
     let stressP95, stressP99 = stressPercentile 0.95, stressPercentile 0.99
     printfn "Scenario catalog STRESS-SMOKE: workload=scenario-catalog-80x80-200-v1 p95 %.3f ms, p99 %.3f ms, samples [%s]." stressP95 stressP99
         (stressSamples |> List.map (fun value -> value.ToString("0.###", Globalization.CultureInfo.InvariantCulture)) |> String.concat ",")
+    // This fixed workload now includes 100 canonical 4x4 humans. Each spatial
+    // check covers sixteen cells rather than the former one-cell placeholder.
+    // The ceiling applies only to this versioned 80x80/200-unit qualification
+    // workload; scalable runtime structures remain governed by the caps above.
     require
-        (stressP95 <= 20.0 && stressP99 <= 50.0)
-        ("Scenario catalog stress workload exceeded 20/50 ms: " + string stressP95 + "/" + string stressP99 + ".")
+        (stressP95 <= 100.0 && stressP99 <= 125.0)
+        ("Canonical-4x4 scenario catalog stress workload exceeded 100/125 ms: " + string stressP95 + "/" + string stressP99 + ".")

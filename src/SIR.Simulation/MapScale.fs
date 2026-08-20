@@ -675,10 +675,16 @@ module MapScale =
                         move.Unit.ScriptIndex + 1
                     else
                         move.Unit.ScriptIndex
+                let resolvedFacing =
+                    Direction8.tryFromDelta
+                        (move.Destination.Col - move.Unit.Cell.Col)
+                        (move.Destination.Row - move.Unit.Cell.Row)
+                    |> Option.defaultValue move.Unit.BodyFacing
                 let moved =
                     { move.Unit with
                         Cell = move.Destination
-                        ScriptIndex = nextScriptIndex }
+                        ScriptIndex = nextScriptIndex
+                        BodyFacing = resolvedFacing }
                 let routes =
                     match Map.tryFind move.Unit.Id current.PlannedRoutes with
                     | Some(_ :: remaining) when not (List.isEmpty remaining) -> Map.add move.Unit.Id remaining current.PlannedRoutes

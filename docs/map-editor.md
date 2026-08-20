@@ -357,6 +357,10 @@ Once a unit starts accumulating credit toward an adjacent cell, that segment
 remains locked until it commits or a new collision invalidates it. Controllers
 therefore replan only at cell boundaries instead of changing the projected
 direction between ticks.
+A committed adjacent step also turns body facing to that step's canonical
+eight-way direction. Preparing, held, rejected, and conflicted movement retains
+the previous facing, and movement does not rewrite the independent attention
+direction. This rule applies equally to manual, scripted, and General AI moves.
 **Run/Pause** and **Step**, together with their current live-catalog commands,
 advance the same deterministic sandbox without entering authored history.
 

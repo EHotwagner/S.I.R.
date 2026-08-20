@@ -32,10 +32,10 @@ edge 14 4 south window closed
 edge 15 4 south window closed
 zone 1 deployment blue rectangle 3 2 3 2
 zone 2 deployment red polygon 6,1 9,1 7,4
-unit 1 blue rifleman 2 2 4 12 12 manual - N N
-unit 2 blue medic 2 10 4 12 12 scripted E,E,N N N
-unit 3 red goblin 16 2 2 12 12 general - N N
-unit 4 red troll 18 10 6 12 12 general - N N
+unit 1 blue rifleman 2 2 4 12 12 manual - E NE
+unit 2 blue medic 2 10 4 12 12 scripted E,E,N E SE
+unit 3 red goblin 16 2 2 12 12 general - W NW
+unit 4 red troll 18 10 6 12 12 general - W SW
 round-trip=True
 v1-load=True
 legacy-native-high-resolution=True

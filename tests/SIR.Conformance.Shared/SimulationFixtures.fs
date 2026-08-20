@@ -50,6 +50,17 @@ module SimulationFixtures =
     let mapScaleEvidence () =
         let destination = mapScaleState 0 2 East West |> MapScale.tick
         let crossing = mapScaleState 0 1 East West |> MapScale.tick
+        let moving = mapScaleUnit 1 0
+        let successful =
+            { Tick = 0
+              Board = { Width = 2; Height = 1; Terrain = Map.empty; Edges = Map.empty }
+              Units = Map.ofList [ moving.Id, moving ]
+              MovementCreditsMillimeters = Map.ofList [ moving.Id, 500 ]
+              MovementProgress = Map.empty
+              MovementIntents = Map.ofList [ moving.Id, East ]
+              PlannedRoutes = Map.empty
+              Engagements = Map.empty }
+            |> MapScale.tick
         let resolveEvents (result: MapScaleTickResult) =
             result.Checkpoints
             |> List.find (fun checkpoint -> checkpoint.Phase = MapScalePhase.ResolvePhase)
@@ -75,6 +86,11 @@ module SimulationFixtures =
         if crossing.State.Units |> Map.exists (fun id unit ->
             unit.Cell <> (if id = 1 then MapScale.cell 0 0 else MapScale.cell 1 0)) then
             failwith "Crossing contention committed a movement."
+        let moved = Map.find moving.Id successful.State.Units
+        if moved.Cell <> MapScale.cell 1 0 || moved.BodyFacing <> East then
+            failwithf "Committed movement did not turn body facing along the resolved step: %A at %A." moved.BodyFacing moved.Cell
+        if destination.State.Units |> Map.exists (fun _ unit -> unit.BodyFacing <> North) then
+            failwith "Rejected movement changed body facing."
         let changed =
             destination.Checkpoints
             |> List.map (fun checkpoint ->
@@ -84,7 +100,7 @@ module SimulationFixtures =
         match MapScale.firstCheckpointDivergence destination.Checkpoints changed with
         | Some divergence when divergence.Tick = 1 && divergence.Phase = MapScalePhase.ResolvePhase -> ()
         | divergence -> failwithf "Map-scale phase divergence diagnostic changed: %A." divergence
-        [ destination.Checkpoints; crossing.Checkpoints ]
+        [ destination.Checkpoints; crossing.Checkpoints; successful.Checkpoints ]
         |> List.collect id
         |> List.map MapScale.checkpointBytes
         |> CanonicalEncoding.concatenate

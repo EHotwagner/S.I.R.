@@ -1450,7 +1450,10 @@ module TacticalSceneProjection =
                 projection.Units
                 |> Array.collect (fun unit ->
                     let subject = string unit.Visual.Id
-                    let x, y = unit.PresentationColumn + 0.5, unit.PresentationRow + 0.5
+                    let footprintWidth = float (CellExtent.value unit.Visual.FootprintWidth)
+                    let footprintDepth = float (CellExtent.value unit.Visual.FootprintDepth)
+                    let x = unit.PresentationColumn + footprintWidth / 2.0
+                    let y = unit.PresentationRow + footprintDepth / 2.0
                     let direction overlay kind heading label =
                         match accepts overlay (Some unit.Visual.Id), heading with
                         | Some(descriptor, _), Disclosed value ->
@@ -1458,7 +1461,7 @@ module TacticalSceneProjection =
                         | _ -> None
                     [| match accepts "unit.footprints" (Some unit.Visual.Id) with
                        | Some(descriptor, _) ->
-                           yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "footprint" (FootprintGeometry(x, y, float (CellExtent.value unit.Visual.FootprintWidth), float (CellExtent.value unit.Visual.FootprintDepth))) (Disclosed "Footprint") (priority descriptor.Id (Some unit.Visual.Id))
+                           yield overlayPayload descriptor unit.PrimitiveId subject projection.Tick "footprint" (FootprintGeometry(x, y, footprintWidth, footprintDepth)) (Disclosed "Footprint") (priority descriptor.Id (Some unit.Visual.Id))
                        | None -> ()
                        yield! direction "unit.body-facing" "body-facing" (unit.Visual.BodyHeading |> function Disclosed h -> Disclosed(HeadingRadians.value h) | NotPresent -> NotPresent | NotApplicable -> NotApplicable | ExplicitlyUnknown -> ExplicitlyUnknown) "Body facing" |> Option.toArray
                        yield! direction "awareness.attention-vision" "attention-vision" (unit.Visual.SecondaryHeading |> function Disclosed h -> Disclosed(HeadingRadians.value h.Radians) | NotPresent -> NotPresent | NotApplicable -> NotApplicable | ExplicitlyUnknown -> ExplicitlyUnknown) "Attention and vision" |> Option.toArray

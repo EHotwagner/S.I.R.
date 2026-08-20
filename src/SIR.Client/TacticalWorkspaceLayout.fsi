@@ -61,6 +61,7 @@ module TacticalWorkspaceLayout =
     val toggleBottomPanelVisibility: TacticalLayoutProfile -> TacticalLayoutProfile
     val toggleBottomPanel: TacticalModality -> TacticalLayoutProfile -> TacticalLayoutProfile
     val resizeBottomPanel: int -> TacticalLayoutProfile -> TacticalLayoutProfile
+    val resizeSidebar: SidebarSide -> int -> TacticalLayoutProfile -> TacticalLayoutProfile
     val reset: TacticalLayoutProfile -> TacticalLayoutProfile
     val exportProfile: TacticalLayoutProfile -> string
     val importProfile: string -> Result<TacticalLayoutProfile, TacticalLayoutDiagnostic list>

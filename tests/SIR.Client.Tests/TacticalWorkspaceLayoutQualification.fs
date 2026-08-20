@@ -60,6 +60,21 @@ let run () =
          && resizedRoundTrip = Ok resized)
         "Bottom-panel resizing did not clamp or persist deterministically."
 
+    let resizedSidebars =
+        baseline
+        |> TacticalWorkspaceLayout.resizeSidebar Left 312
+        |> TacticalWorkspaceLayout.resizeSidebar Right 544
+    let resizedSidebarsRoundTrip =
+        resizedSidebars
+        |> TacticalWorkspaceLayout.exportProfile
+        |> TacticalWorkspaceLayout.importProfile
+    require
+        (resizedSidebars.LeftSidebar.Width = 312
+         && resizedSidebars.RightSidebar.Width = 544
+         && (baseline |> TacticalWorkspaceLayout.resizeSidebar Left 1).LeftSidebar.Width = 160
+         && resizedSidebarsRoundTrip = Ok resizedSidebars)
+        "Sidebar resizing did not retain a functional minimum or persist scalable widths deterministically."
+
     let configured =
         baseline
         |> TacticalWorkspaceLayout.togglePanelCollapsed "tools"

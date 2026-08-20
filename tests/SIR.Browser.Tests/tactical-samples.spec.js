@@ -1,13 +1,9 @@
-import { expect, switchWorkspace, test } from "./journey.js";
+import { expect, openSamples, switchWorkspace, test } from "./journey.js";
 
 test("the production Samples panel exposes every tactical family and a playable teaching journey", async ({ page }) => {
   await page.goto("/");
   await switchWorkspace(page, "Simulate");
-  const fileMenu = page.locator("details.desktop-menu").filter({ has: page.getByRole("button", { name: "File", exact: true }) });
-  await page.getByRole("button", { name: "File", exact: true }).click();
-  await expect(fileMenu).toHaveAttribute("open", "");
-  await page.getByRole("menuitem", { name: "Samples", exact: true }).click();
-  await expect(fileMenu).not.toHaveAttribute("open", "");
+  await openSamples(page);
 
   const mapCards = page.locator(".sample-card").filter({ has: page.locator('.sample-kind', { hasText: "Map · Simulation" }) });
   await expect(mapCards).toHaveCount(7);
@@ -34,8 +30,7 @@ test("the production Samples panel exposes every tactical family and a playable 
     await expect(page.getByText(/^Authoritative runtime tick 0/)).toBeVisible();
     await page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }).click();
     await expect(page.getByText(/^Authoritative runtime tick 1/)).toBeVisible();
-    await page.getByRole("button", { name: "File", exact: true }).click();
-    await page.getByRole("menuitem", { name: "Samples", exact: true }).click();
+    await openSamples(page);
   }
 
   await page.getByRole("button", {

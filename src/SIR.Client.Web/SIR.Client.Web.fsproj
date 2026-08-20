@@ -28,6 +28,8 @@
     <Compile Include="SceneAdapters.fs" />
     <Compile Include="PanelViews.fs" />
     <Compile Include="TacticalOverlayView.fs" />
+    <Compile Include="TacticalUnitSymbolView.fs" />
+    <Compile Include="SidebarResizeView.fs" />
     <Compile Include="TacticalEnvironmentView.fs" />
     <Compile Include="DocsView.fs" />
     <Compile Include="App.fs" />

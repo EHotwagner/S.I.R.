@@ -199,6 +199,13 @@ module TacticalWorkspaceLayout =
                 { profile.BottomPanel with
                     Height = max 96 (min 480 height) } }
 
+    let resizeSidebar side width profile =
+        let resized (sidebar: SidebarLayout) =
+            { sidebar with Width = max 160 width }
+        match side with
+        | Left -> { profile with LeftSidebar = resized profile.LeftSidebar }
+        | Right -> { profile with RightSidebar = resized profile.RightSidebar }
+
     let reset (_: TacticalLayoutProfile) = fieldFocus
 
     let private sideText = function Left -> "left" | Right -> "right"
@@ -460,11 +467,11 @@ module TacticalWorkspaceLayout =
         let unknown =
             ids |> List.choose (fun id -> if Set.contains id known then None else Some(UnknownPanel id))
         let dimensions =
-            [ "left width", profile.LeftSidebar.Width, 160, 480
-              "right width", profile.RightSidebar.Width, 160, 480
-              "bottom height", profile.BottomPanel.Height, 96, 480 ]
+            [ "left width", profile.LeftSidebar.Width, 160, None
+              "right width", profile.RightSidebar.Width, 160, None
+              "bottom height", profile.BottomPanel.Height, 96, Some 480 ]
             |> List.choose (fun (name, value, minimum, maximum) ->
-                if value < minimum || value > maximum then
+                if value < minimum || (maximum |> Option.exists (fun limit -> value > limit)) then
                     Some(InvalidLayoutDimension(name, value))
                 else None)
         let diagnostics = duplicates @ unknown @ dimensions
