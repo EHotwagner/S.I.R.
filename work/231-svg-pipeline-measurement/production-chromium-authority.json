@@ -1,15 +1,15 @@
 {
   "schema": "sir.svg-pipeline-measurement-authority/1",
   "candidate": {
-    "commit": "75c9ac01b1241fc55eb07b5302f5fda230193990",
-    "tree": "f9539378bbce3a5dd531ec8ee011609c387f66aa"
+    "commit": "8ed4606aab4aa9623b7e94e49b7e46dfbcc6020e",
+    "tree": "1c6c80c2e2bd82b056e4289bf3a57e2464665c9a"
   },
   "buildIdentity": {
-    "clientManifestSha256": "44f663e56b6d3acfb4b6d4f1387020ade7ffdc52341d7c8bfb33b64c3b2c3830",
-    "serverAssemblySha256": "77b625238139cd369c2325803ce938d7583110a7ad036c67781813cb04094d8a"
+    "clientManifestSha256": "656fca838cbef4b3519b0a30d16df322365c23075087de9b1fabd72a6582a908",
+    "serverAssemblySha256": "aa20ece4853716fd05de7995e7d555dd81ac278711fec859c2c6a822a5647a92"
   },
   "fixtureDefinitionSha256": "c01c40b0ee06db92cd255f9b8a3e4cc44063bfba26ec8d8f16a20af46a9045a9",
-  "rawSummarySha256": "78173a7e583e21f91bc7a62ca90ec7f86b87ea6d0323ac39d520999bfe848e4e",
-  "orderedTraceDigestSha256": "606dd9f91e5f084d1cce9d531d93038da54da3e3ce073b59462e81efca5d5436",
+  "rawSummarySha256": "945a354e6bbf266c27fd3ea0b04814c038eaa7e830ef0873b848b3bc078f0239",
+  "orderedTraceDigestSha256": "0ca114e2a05af8dd1eab472352fdb040ba6b630beb28733f7e07f4052b651f58",
   "runCount": 35
 }
