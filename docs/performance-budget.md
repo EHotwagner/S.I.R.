@@ -54,12 +54,14 @@ visible density controls a centered unit cluster that the controlled pair
 verifies against production projection output. The
 `global-small-viewport`/`global-large-small-viewport` pair holds a 480×320
 viewport and visible density of 40 constant while increasing global extent from
-20×20 to 79×79, units from 40 to 200, and supporting-list size from 40 to 800.
+20×20 to 40×40 and supporting-list size from 40 to 800 while holding global
+units at 40.
 These are regression workloads, not a permanent supported-size ceiling.
 
 Each exact-candidate artifact retains the raw Chromium trace and separately
-reports worker compute/transfer, projection/allocation, main-thread
-Elmish/React script, SVG style/layout/paint/compositor work, DOM counts by
+reports worker compute/transfer, projection/allocation, generic main-thread
+script, source-isolated Elmish/React availability, SVG
+style/layout/paint/compositor work, DOM counts by
 layer, journey-window long-frame observations captured before memory cycles,
 input-latency capability (explicitly unavailable for idle), and heap/DOM memory
 after two warm-up and five stabilization pan/zoom/playback cycles. A capability
