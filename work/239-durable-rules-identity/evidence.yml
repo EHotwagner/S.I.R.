@@ -1,0 +1,443 @@
+schemaVersion: 1
+workId: 239-durable-rules-identity
+stage: evidence
+status: evidenceReady
+sourceSpec: work/239-durable-rules-identity/spec.md
+sourceClarifications: work/239-durable-rules-identity/clarifications.md
+sourceChecklist: work/239-durable-rules-identity/checklist.md
+sourcePlan: work/239-durable-rules-identity/plan.md
+sourceTasks: work/239-durable-rules-identity/tasks.yml
+sourceAnalysis: readiness/239-durable-rules-identity/analysis.json
+sourceSnapshots:
+  - label: analysis
+    path: readiness/239-durable-rules-identity/analysis.json
+    digest: 84f229ee2c5d42f060300bad0e1594c8aa4a98b637f0f86a667a38c645c6fcc9
+    schemaVersion: 1
+  - label: checklist
+    path: work/239-durable-rules-identity/checklist.md
+    digest: 4aac1b20b51087652579e9a80e531ecb558fe67c7fe5be518e5eebf41dd6f524
+    schemaVersion: 1
+  - label: clarifications
+    path: work/239-durable-rules-identity/clarifications.md
+    digest: aae5eb9f63f27ea8396dbfbe81dcc2f330004db3467a8599e1fca7ce8dd2f42b
+    schemaVersion: 1
+  - label: plan
+    path: work/239-durable-rules-identity/plan.md
+    digest: 5b9d60adecf7a76980d23b3f262e907990abf2f8f85e6910c917880d6bf973c1
+    schemaVersion: 1
+  - label: spec
+    path: work/239-durable-rules-identity/spec.md
+    digest: 2585aa4de12d508fbeed1fb3b9040035e7c6a9bd94e94b816648bbd3c068a9a1
+    schemaVersion: 1
+  - label: tasks
+    path: work/239-durable-rules-identity/tasks.yml
+    digest: 56f27fdee944594832af3af4c880830353b814354c6172c8cdb714445abf43c6
+    schemaVersion: 1
+evidence:
+  - id: EV001
+    kind: verification
+    subject:
+      type: task
+      id: T001
+    taskRefs: [T001]
+    requirementRefs: [FR-001]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV001]
+    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
+      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+  - id: EV002
+    kind: verification
+    subject:
+      type: task
+      id: T002
+    taskRefs: [T002]
+    requirementRefs: [FR-002]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV002]
+    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
+      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+  - id: EV003
+    kind: verification
+    subject:
+      type: task
+      id: T003
+    taskRefs: [T003]
+    requirementRefs: [FR-003]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV003]
+    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
+      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+  - id: EV004
+    kind: verification
+    subject:
+      type: task
+      id: T004
+    taskRefs: [T004]
+    requirementRefs: [FR-004]
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV004]
+    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
+      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+  - id: EV005
+    kind: verification
+    subject:
+      type: task
+      id: T005
+    taskRefs: [T005]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV005]
+    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
+      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+  - id: EV006
+    kind: verification
+    subject:
+      type: task
+      id: T006
+    taskRefs: [T006]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV006]
+    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
+      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+  - id: EV007
+    kind: verification
+    subject:
+      type: task
+      id: T007
+    taskRefs: [T007]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-002]
+    obligationRefs: [EV007]
+    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
+      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+  - id: EV008
+    kind: verification
+    subject:
+      type: task
+      id: T008
+    taskRefs: [T008]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV008]
+    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
+      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+  - id: EV009
+    kind: verification
+    subject:
+      type: task
+      id: T009
+    taskRefs: [T009]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001]
+    obligationRefs: [EV009]
+    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
+      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+  - id: EV010
+    kind: verification
+    subject:
+      type: task
+      id: T010
+    taskRefs: [T010]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-002]
+    obligationRefs: [EV010]
+    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
+      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+  - id: EV011
+    kind: verification
+    subject:
+      type: task
+      id: T011
+    taskRefs: [T011]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-003]
+    obligationRefs: [EV011]
+    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
+      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+  - id: EV012
+    kind: verification
+    subject:
+      type: task
+      id: T012
+    taskRefs: [T012]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-004]
+    obligationRefs: [EV012]
+    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
+      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+  - id: EV013
+    kind: verification
+    subject:
+      type: task
+      id: T013
+    taskRefs: [T013]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV013]
+    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
+      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+  - id: EV014
+    kind: verification
+    subject:
+      type: task
+      id: T014
+    taskRefs: [T014]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: []
+    obligationRefs: [EV014]
+    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
+      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+  - id: EV015
+    kind: verification
+    subject:
+      type: task
+      id: T015
+    taskRefs: [T015]
+    requirementRefs: []
+    acceptanceScenarioRefs: []
+    clarificationDecisionRefs: []
+    checklistResultRefs: []
+    planDecisionRefs: [PD-001, PD-004]
+    obligationRefs: [EV015]
+    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    sourceRefs:
+      - kind: verification
+        path: scripts/verify-rules-corpus.sh
+    result: pass
+    synthetic: false
+    observedRun:
+      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
+      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      digestContract: exact-bytes-v1
+      outcome: passed
+      passed: 1
+      failed: 0
+      skipped: 0
+    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+lifecycleNotes:
+  - "Next lifecycle action: verify."

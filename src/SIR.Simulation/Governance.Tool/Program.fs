@@ -120,10 +120,18 @@ let private join (sddPath: string) (verdictPath: string) (outputPath: string) (s
     use verdict = JsonDocument.Parse(verdictBytes)
     let sddBlocking = sdd.RootElement.GetProperty("disposition").GetProperty("blockingFindingIds").GetArrayLength()
     let verifyBlocking = sdd.RootElement.GetProperty("verificationReadiness").GetProperty("blockingFindingIds").GetArrayLength()
+    let sddArtifactParts =
+        sddArtifact.Replace('\\', '/').Split('/', StringSplitOptions.RemoveEmptyEntries)
+    let expectedWorkId =
+        if sddArtifactParts.Length = 3
+           && sddArtifactParts[0] = "readiness"
+           && sddArtifactParts[2] = "ship.json" then sddArtifactParts[1]
+        else ""
     let sddReady =
         sdd.RootElement.GetProperty("schemaVersion").GetInt32() = 1
         && sdd.RootElement.GetProperty("stage").GetString() = "ship"
-        && sdd.RootElement.GetProperty("workId").GetString() = "198-rules-governance-receipts"
+        && expectedWorkId <> ""
+        && sdd.RootElement.GetProperty("workId").GetString() = expectedWorkId
         && sdd.RootElement.GetProperty("readiness").GetString() = "shipReady"
         && sdd.RootElement.GetProperty("disposition").GetProperty("state").GetString() = "shipReady"
         && sdd.RootElement.GetProperty("verificationReadiness").GetProperty("status").GetString() = "verificationReady"
