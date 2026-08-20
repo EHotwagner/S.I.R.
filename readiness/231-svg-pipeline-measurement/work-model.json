@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "5471521822d5100f075b7e3023390be34ba1e4f7d67ed6081925ceaa02cca6a8"
+        "value": "205edeed0c10cd0101443f530f2c1a7edd272db0facc2d1585aab5bc21d7bf44"
       }
     },
     {
@@ -1880,7 +1880,7 @@
           "path": "work/231-svg-pipeline-measurement/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "5471521822d5100f075b7e3023390be34ba1e4f7d67ed6081925ceaa02cca6a8"
+            "value": "205edeed0c10cd0101443f530f2c1a7edd272db0facc2d1585aab5bc21d7bf44"
           },
           "schemaVersion": 1
         },
@@ -1911,7 +1911,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "9e9d8ce9963277f841631098783acc52ed290af26dfa1e5a61128f0ffe5f654c"
+        "value": "a6381d2f9ed29839dd5de5edeab385b21f12596a448cb91afe575b5956eb2aa7"
       },
       "currency": "current"
     }
