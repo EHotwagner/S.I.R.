@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="1440" height="900" viewBox="0 0 1440 900">
+  <title>S.I.R. persistent tactical workspace — Penpot editable UI</title>
+  <desc>An editable vector representation of the S.I.R. Editor workspace, organized into named UI groups for Penpot.</desc>
+
+  <defs>
+    <style><![CDATA[
+      .ui { font-family: Inter, system-ui, sans-serif; fill: #f7f9fa; }
+      .mono { font-family: "JetBrains Mono", "Fira Code", monospace; fill: #f7f9fa; }
+      .small { font-size: 12px; }
+      .label { font-size: 13px; font-weight: 700; letter-spacing: .25px; }
+      .body { font-size: 15px; }
+      .button-label { font-size: 14px; text-anchor: middle; dominant-baseline: middle; }
+      .muted { fill: #b9c8c0; }
+      .focus { fill: #ffd166; }
+      .intent { fill: #53b7ff; }
+      .accepted { fill: #8ce99a; }
+      .predicted { fill: #e5b8ff; }
+      .surface { fill: #151f1c; stroke: #43584e; }
+      .raised { fill: #18241f; stroke: #43584e; }
+      .button { fill: #18241f; stroke: #43584e; }
+      .button-active { fill: #18241f; stroke: #ffd166; stroke-width: 2; }
+      .divider { stroke: #43584e; stroke-width: 1; }
+      .grid { stroke: #61736a; stroke-width: 1; opacity: .82; }
+    ]]></style>
+    <clipPath id="canvas-clip"><rect x="229" y="164" width="966" height="564" rx="6"/></clipPath>
+  </defs>
+
+  <g id="page-background" data-name="00 · Page background">
+    <rect width="1440" height="900" fill="#10161d"/>
+  </g>
+
+  <g id="top-toolbar" data-name="01 · Top toolbar">
+    <rect x="14" y="14" width="1412" height="142" rx="6" fill="#111a17" stroke="#43584e"/>
+
+    <g id="desktop-menu" data-name="Desktop menu">
+      <text x="28" y="60" class="mono body">File</text>
+      <text x="85" y="60" class="mono body">Edit</text>
+      <text x="143" y="60" class="mono body">View</text>
+      <text x="201" y="60" class="mono body">Tools</text>
+      <text x="270" y="60" class="mono body">Simulation</text>
+      <text x="382" y="60" class="mono body">Help</text>
+    </g>
+
+    <g id="workspace-switchers" data-name="Workspace switch command buttons">
+      <rect x="432" y="18" width="149" height="43" rx="6" class="button"/>
+      <text x="506.5" y="39.5" class="mono button-label">Switch to Editor</text>
+      <rect x="583" y="18" width="149" height="43" rx="6" class="button"/>
+      <text x="657.5" y="39.5" class="mono button-label">Switch to Plan</text>
+      <rect x="734" y="18" width="148" height="43" rx="6" class="button"/>
+      <text x="808" y="39.5" class="mono button-label">Switch to Simulate</text>
+      <rect x="884" y="18" width="149" height="43" rx="6" class="button"/>
+      <text x="958.5" y="39.5" class="mono button-label">Switch to Review</text>
+
+      <rect x="432" y="64" width="149" height="43" rx="6" class="button"/>
+      <text x="506.5" y="85.5" class="mono button-label">Play or pause</text>
+      <rect x="583" y="64" width="149" height="43" rx="6" class="button"/>
+      <text x="657.5" y="85.5" class="mono button-label">Show context</text>
+      <rect x="734" y="64" width="148" height="43" rx="6" class="button"/>
+      <text x="808" y="85.5" class="mono button-label">Customize tools</text>
+    </g>
+
+    <g id="workspace-tabs" data-name="Workspace tabs">
+      <rect x="1035" y="40" width="58" height="44" rx="6" class="button"/>
+      <text x="1064" y="62" class="mono button-label">Docs</text>
+      <rect x="1096" y="40" width="77" height="44" rx="6" class="button-active"/>
+      <text x="1134.5" y="62" class="mono button-label focus">Editor</text>
+      <rect x="1177" y="40" width="60" height="44" rx="6" class="button"/>
+      <text x="1207" y="62" class="mono button-label">Plan</text>
+      <rect x="1241" y="40" width="98" height="44" rx="6" class="button"/>
+      <text x="1290" y="62" class="mono button-label">Simulate</text>
+      <rect x="1344" y="40" width="76" height="44" rx="6" class="button"/>
+      <text x="1382" y="62" class="mono button-label">Review</text>
+    </g>
+
+    <g id="workspace-controls-disclosure" data-name="Workspace controls disclosure">
+      <text x="27" y="129" class="mono body">▸ Workspace controls</text>
+    </g>
+  </g>
+
+  <g id="left-sidebar" data-name="02 · Left sidebar — Roster and tools">
+    <rect x="14" y="164" width="208" height="564" rx="6" fill="#111a17" stroke="#43584e"/>
+    <text x="20" y="182" class="mono label">Roster / outliner</text>
+
+    <g id="roster-panel-actions" data-name="Roster panel actions">
+      <rect x="20" y="189" width="11" height="44" rx="5" class="button"/>
+      <text x="25.5" y="211" class="mono small" text-anchor="middle">C</text>
+      <rect x="33" y="189" width="44" height="44" rx="5" class="button"/>
+      <text x="55" y="211" class="mono button-label">↑</text>
+      <rect x="80" y="189" width="44" height="44" rx="5" class="button"/>
+      <text x="102" y="211" class="mono button-label">↓</text>
+      <rect x="127" y="189" width="43" height="44" rx="5" class="button"/>
+      <text x="148.5" y="211" class="mono button-label">→</text>
+      <rect x="173" y="189" width="43" height="44" rx="5" class="button"/>
+      <text x="194.5" y="211" class="mono button-label">×</text>
+    </g>
+
+    <text x="15" y="274" class="mono label" font-size="16">Units · 4</text>
+    <g id="roster-units" data-name="Roster unit rows">
+      <rect x="15" y="300" width="180" height="40" rx="6" fill="#18241f" stroke="#ffd166"/>
+      <text x="29" y="325" class="mono body focus">rifleman 1 · 2,2</text>
+      <rect x="15" y="340" width="180" height="40" rx="6" class="raised"/>
+      <text x="29" y="365" class="mono body">medic 2 · 2,10</text>
+      <rect x="15" y="380" width="180" height="40" rx="6" class="raised"/>
+      <text x="29" y="405" class="mono body">goblin 3 · 16,2</text>
+      <rect x="15" y="420" width="180" height="39" rx="6" class="raised"/>
+      <text x="29" y="445" class="mono body">troll 4 · 18,10</text>
+    </g>
+    <text x="15" y="495" class="mono label" font-size="16">Regions · 0</text>
+    <line x1="15" y1="521" x2="221" y2="521" class="divider"/>
+
+    <text x="20" y="540" class="mono label">Tools</text>
+    <g id="tools-panel-actions" data-name="Tools panel actions">
+      <rect x="20" y="547" width="11" height="44" rx="5" class="button"/>
+      <text x="25.5" y="569" class="mono small" text-anchor="middle">C</text>
+      <rect x="33" y="547" width="44" height="44" rx="5" class="button"/>
+      <text x="55" y="569" class="mono button-label">↑</text>
+      <rect x="80" y="547" width="44" height="44" rx="5" class="button"/>
+      <text x="102" y="569" class="mono button-label">↓</text>
+      <rect x="127" y="547" width="43" height="44" rx="5" class="button"/>
+      <text x="148.5" y="569" class="mono button-label">→</text>
+      <rect x="173" y="547" width="43" height="44" rx="5" class="button"/>
+      <text x="194.5" y="569" class="mono button-label">×</text>
+    </g>
+    <text x="23" y="620" class="mono body focus" letter-spacing="2">AUTHOR</text>
+    <text x="125" y="620" class="mono body focus">Active</text>
+    <text x="23" y="655" class="mono" font-size="23" font-weight="700">Map</text>
+    <text x="23" y="683" class="mono" font-size="23" font-weight="700">editor</text>
+    <text x="125" y="643" class="mono body focus">tool:</text>
+    <text x="125" y="666" class="mono body focus">Select</text>
+    <rect x="23" y="719" width="94" height="9" rx="5" fill="#18241f" stroke="#ffd166"/>
+    <rect x="122" y="719" width="92" height="9" rx="5" class="button"/>
+  </g>
+
+  <g id="tactical-workscreen" data-name="03 · Tactical workscreen">
+    <rect x="229" y="164" width="966" height="564" rx="6" fill="#16211d" stroke="#43584e"/>
+    <g id="map-content" data-name="Map content" clip-path="url(#canvas-clip)">
+      <rect x="320" y="184" width="1040" height="624" fill="#23322d"/>
+
+      <g id="map-grid" data-name="Map grid">
+        <line x1="320" y1="184" x2="320" y2="808" class="grid"/><line x1="372" y1="184" x2="372" y2="808" class="grid"/>
+        <line x1="424" y1="184" x2="424" y2="808" class="grid"/><line x1="476" y1="184" x2="476" y2="808" class="grid"/>
+        <line x1="528" y1="184" x2="528" y2="808" class="grid"/><line x1="580" y1="184" x2="580" y2="808" class="grid"/>
+        <line x1="632" y1="184" x2="632" y2="808" class="grid"/><line x1="684" y1="184" x2="684" y2="808" class="grid"/>
+        <line x1="736" y1="184" x2="736" y2="808" class="grid"/><line x1="788" y1="184" x2="788" y2="808" class="grid"/>
+        <line x1="840" y1="184" x2="840" y2="808" class="grid"/><line x1="892" y1="184" x2="892" y2="808" class="grid"/>
+        <line x1="944" y1="184" x2="944" y2="808" class="grid"/><line x1="996" y1="184" x2="996" y2="808" class="grid"/>
+        <line x1="1048" y1="184" x2="1048" y2="808" class="grid"/><line x1="1100" y1="184" x2="1100" y2="808" class="grid"/>
+        <line x1="1152" y1="184" x2="1152" y2="808" class="grid"/><line x1="1204" y1="184" x2="1204" y2="808" class="grid"/>
+        <line x1="1256" y1="184" x2="1256" y2="808" class="grid"/><line x1="1308" y1="184" x2="1308" y2="808" class="grid"/>
+        <line x1="1360" y1="184" x2="1360" y2="808" class="grid"/>
+        <line x1="320" y1="184" x2="1360" y2="184" class="grid"/><line x1="320" y1="236" x2="1360" y2="236" class="grid"/>
+        <line x1="320" y1="288" x2="1360" y2="288" class="grid"/><line x1="320" y1="340" x2="1360" y2="340" class="grid"/>
+        <line x1="320" y1="392" x2="1360" y2="392" class="grid"/><line x1="320" y1="444" x2="1360" y2="444" class="grid"/>
+        <line x1="320" y1="496" x2="1360" y2="496" class="grid"/><line x1="320" y1="548" x2="1360" y2="548" class="grid"/>
+        <line x1="320" y1="600" x2="1360" y2="600" class="grid"/><line x1="320" y1="652" x2="1360" y2="652" class="grid"/>
+        <line x1="320" y1="704" x2="1360" y2="704" class="grid"/><line x1="320" y1="756" x2="1360" y2="756" class="grid"/>
+        <line x1="320" y1="808" x2="1360" y2="808" class="grid"/>
+      </g>
+
+      <g id="map-regions" data-name="Authored map regions" fill="none" stroke="#ffd166" stroke-width="2">
+        <path d="M346 211 H554 V418 H346 Z"/>
+        <path d="M346 627 H554 V756 H346 Z"/>
+        <path d="M1126 263 H1308 V366 H1126 Z"/>
+        <path d="M1126 575 H1308 V756 H1126 Z"/>
+        <rect x="323" y="189" width="45" height="44" stroke-dasharray="4 3"/>
+      </g>
+
+      <g id="map-obstacles" data-name="Obstacle field">
+        <g fill="#4b4738" stroke="#ffd166" stroke-width="3">
+          <rect x="846" y="502" width="40" height="41"/><rect x="898" y="502" width="40" height="41"/>
+          <rect x="846" y="554" width="40" height="41"/><rect x="898" y="554" width="40" height="41"/>
+          <rect x="846" y="606" width="40" height="41"/><rect x="898" y="606" width="40" height="41"/>
+          <rect x="846" y="658" width="40" height="41"/><rect x="898" y="658" width="40" height="41"/>
+        </g>
+        <g stroke="#f7f9fa" stroke-width="3">
+          <path d="M743 542 l39 -39 M795 542 l39 -39 M951 542 l39 -39 M1003 542 l39 -39"/>
+          <path d="M743 594 l39 -39 M795 594 l39 -39 M951 594 l39 -39 M1003 594 l39 -39"/>
+          <path d="M743 646 l39 -39 M795 646 l39 -39 M951 646 l39 -39 M1003 646 l39 -39"/>
+          <path d="M743 698 l39 -39 M795 698 l39 -39 M951 698 l39 -39 M1003 698 l39 -39"/>
+        </g>
+      </g>
+
+      <g id="route-preview" data-name="Route preview">
+        <path d="M840 444 H1048" fill="none" stroke="#f7f9fa" stroke-width="4"/>
+        <path d="M944 444 H1048" fill="none" stroke="#ffd166" stroke-width="4"/>
+        <path d="M1048 444 H1195" fill="none" stroke="#53b7ff" stroke-width="4" stroke-dasharray="3 3"/>
+      </g>
+
+      <g id="unit-1-selected" data-name="Unit 1 · rifleman · selected">
+        <rect x="425" y="290" width="206" height="206" rx="7" fill="#0f171c" stroke="#ffd166" stroke-width="3"/>
+        <rect x="428" y="293" width="200" height="200" rx="4" fill="none" stroke="#f7f9fa" stroke-width="2"/>
+        <rect x="424" y="289" width="208" height="208" fill="none" stroke="#ffd166" stroke-dasharray="4 4"/>
+        <text x="430" y="306" class="mono small focus">Unit 1 · manual</text>
+        <text x="618" y="489" class="mono small">1</text>
+        <path d="M528 327 L593 442 H463 Z" fill="#f7f9fa"/>
+        <path d="M470 457 L585 359" fill="none" stroke="#f7f9fa" stroke-width="15" stroke-linecap="round"/>
+        <path d="M528 370 V418" stroke="#53b7ff" stroke-width="2" stroke-dasharray="3 2"/>
+        <path d="M528 385 l-13 22 13 -7 13 7 z" fill="#0f171c"/>
+        <circle cx="450" cy="315" r="5" fill="none" stroke="#ffd166" stroke-width="2"/>
+        <path d="M450 310 V274" stroke="#ffd166" stroke-width="3"/>
+      </g>
+
+      <g id="unit-2" data-name="Unit 2 · medic">
+        <rect x="427" y="708" width="202" height="102" rx="5" fill="#11191d" stroke="#53b7ff" stroke-width="3"/>
+        <text x="432" y="724" class="mono small intent">Unit 2 · scripted</text>
+        <path d="M528 730 v58 M499 759 h58" stroke="#f7f9fa" stroke-width="14"/>
+      </g>
+
+      <g id="unit-3" data-name="Unit 3 · goblin">
+        <rect x="1155" y="292" width="104" height="98" rx="5" fill="#11191d" stroke="#d792ff" stroke-width="3"/>
+        <text x="1160" y="307" class="mono small predicted">Unit 3</text>
+        <path d="M1207 326 l35 14 -25 15 18 30 -52 -31 -17 -29 24 10 z" fill="#f7f9fa"/>
+      </g>
+
+      <g id="unit-4" data-name="Unit 4 · troll">
+        <rect x="1155" y="708" width="104" height="102" rx="5" fill="#11191d" stroke="#ff6b6b" stroke-width="3"/>
+        <text x="1160" y="724" class="mono small" fill="#ff6b6b">Unit 4</text>
+        <circle cx="1207" cy="770" r="28" fill="#f7f9fa"/>
+        <path d="M1184 746 l-12 -18 24 10 M1230 746 l12 -18 -24 10" fill="#f7f9fa"/>
+      </g>
+    </g>
+  </g>
+
+  <g id="right-sidebar" data-name="04 · Right sidebar — Selection inspector">
+    <rect x="1202" y="164" width="224" height="564" rx="6" fill="#111a17" stroke="#43584e"/>
+    <text x="1208" y="182" class="mono label">Selection inspector</text>
+    <g id="inspector-panel-actions" data-name="Inspector panel actions">
+      <rect x="1208" y="189" width="26" height="44" rx="5" class="button"/>
+      <text x="1221" y="211" class="mono small" text-anchor="middle">Coll</text>
+      <rect x="1237" y="189" width="43" height="44" rx="5" class="button"/>
+      <text x="1258.5" y="211" class="mono button-label">↑</text>
+      <rect x="1283" y="189" width="43" height="44" rx="5" class="button"/>
+      <text x="1304.5" y="211" class="mono button-label">↓</text>
+      <rect x="1329" y="189" width="43" height="44" rx="5" class="button"/>
+      <text x="1350.5" y="211" class="mono button-label">←</text>
+      <rect x="1375" y="189" width="44" height="44" rx="5" class="button"/>
+      <text x="1397" y="211" class="mono button-label">×</text>
+    </g>
+
+    <rect x="1202" y="239" width="224" height="489" rx="9" fill="#151f1c" stroke="#43584e"/>
+    <text x="1220" y="288" class="mono body focus" letter-spacing="3">UNIT</text>
+    <text x="1220" y="334" class="mono" font-size="24" font-weight="700">Selected unit</text>
+    <text x="1220" y="380" class="mono" font-size="18">Unit 1 ·</text>
+    <text x="1220" y="403" class="mono" font-size="18">rifleman</text>
+
+    <g id="inspector-fields" data-name="Inspector form fields">
+      <text x="1220" y="444" class="mono body">Side</text>
+      <rect x="1384" y="417" width="26" height="42" rx="6" fill="#101715" stroke="#60776b"/>
+      <text x="1397" y="439" class="mono body" text-anchor="middle">⌄</text>
+      <text x="1220" y="489" class="mono body">Class ID</text>
+      <rect x="1384" y="465" width="26" height="39" rx="6" fill="#101715" stroke="#60776b"/>
+      <text x="1220" y="535" class="mono body">Square size</text>
+      <rect x="1384" y="510" width="26" height="39" rx="6" fill="#101715" stroke="#60776b"/>
+      <text x="1220" y="580" class="mono body">Current HP</text>
+      <rect x="1384" y="556" width="26" height="39" rx="6" fill="#101715" stroke="#60776b"/>
+      <text x="1220" y="625" class="mono body">Maximum HP</text>
+      <rect x="1384" y="601" width="26" height="39" rx="6" fill="#101715" stroke="#60776b"/>
+      <text x="1220" y="671" class="mono body">Controller</text>
+      <rect x="1384" y="646" width="26" height="41" rx="6" fill="#101715" stroke="#60776b"/>
+      <text x="1397" y="667" class="mono body" text-anchor="middle">⌄</text>
+      <text x="1220" y="717" class="mono body">Direction script</text>
+      <rect x="1384" y="693" width="26" height="35" rx="6" fill="#101715" stroke="#60776b"/>
+    </g>
+  </g>
+
+  <g id="timeline" data-name="05 · Unified tactical timeline">
+    <rect x="14" y="734" width="1412" height="152" rx="6" fill="#151f1c" stroke="#43584e"/>
+    <rect x="14" y="734" width="1412" height="6" fill="#26372f" stroke="#60776b"/>
+
+    <g id="timeline-legend" data-name="Timeline channel legend">
+      <rect x="15" y="741" width="5" height="18" fill="#53b7ff"/>
+      <text x="27" y="754" class="mono small intent" font-weight="700">Authored</text>
+      <rect x="95" y="741" width="5" height="18" fill="#e5b8ff"/>
+      <text x="107" y="754" class="mono small predicted" font-weight="700">Predicted</text>
+      <rect x="184" y="741" width="5" height="18" fill="#8ce99a"/>
+      <text x="196" y="754" class="mono small accepted" font-weight="700">Accepted</text>
+      <rect x="264" y="741" width="5" height="18" fill="#ffd166"/>
+      <text x="276" y="754" class="mono small focus" font-weight="700">Committed</text>
+      <text x="1420" y="754" class="mono small focus" font-weight="700" text-anchor="end">Current time 0 · next editable 0</text>
+    </g>
+
+    <g id="timeline-transport" data-name="Timeline transport">
+      <rect x="15" y="759" width="65" height="44" rx="6" class="button"/>
+      <text x="47.5" y="781" class="mono button-label">Play</text>
+      <rect x="86" y="759" width="63" height="44" rx="6" class="button" opacity=".55"/>
+      <text x="117.5" y="781" class="mono button-label muted">Home</text>
+      <rect x="155" y="759" width="44" height="44" rx="6" class="button" opacity=".55"/>
+      <text x="177" y="781" class="mono button-label muted">−1</text>
+      <rect x="205" y="759" width="44" height="44" rx="6" class="button"/>
+      <text x="227" y="781" class="mono button-label">+1</text>
+      <rect x="256" y="759" width="55" height="44" rx="6" class="button"/>
+      <text x="283.5" y="781" class="mono button-label">End</text>
+      <rect x="317" y="759" width="190" height="44" rx="6" class="button" opacity=".55"/>
+      <text x="412" y="781" class="mono button-label muted">Move command here</text>
+      <rect x="513" y="759" width="158" height="44" rx="6" class="button" opacity=".55"/>
+      <text x="592" y="781" class="mono button-label muted">Remove command</text>
+      <text x="678" y="790" class="mono body">Time</text>
+    </g>
+
+    <g id="time-ruler" data-name="Time ruler">
+      <rect x="15" y="825" width="1410" height="8" rx="4" fill="#5b5b58" stroke="#8d9691"/>
+      <circle cx="24" cy="829" r="8" fill="#ffd166"/>
+    </g>
+
+    <g id="committed-lane" data-name="Committed timeline lane">
+      <rect x="15" y="850" width="1410" height="35" fill="#151f1c"/>
+      <rect x="15" y="850" width="5" height="35" fill="#ffd166"/>
+      <text x="27" y="874" class="mono body focus" font-weight="700">Committed</text>
+      <text x="123" y="874" class="mono body focus">Committed simulator execution · 0–0</text>
+    </g>
+  </g>
+</svg>
