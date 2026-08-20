@@ -1,8 +1,8 @@
 {
   "schema": "sir-persistent-workspace-m9-live-review-v2",
   "captureKind": "actual-production-shell-chromium-screenshot",
-  "productionBundleSha256": "4737b171e5f999bdede2c6c542481f40fa67cde32b7f15b2e4ee1308af99e8ed",
-  "productionStylesSha256": "80fd66f219c0e95820fe03d38a662cbf50f2ceeea0ef77f73c46e97874301170",
+  "productionBundleSha256": "99809e673ab23d4f69d6518c891ecd4af62a0667e46858a649875c0bd1f9bca5",
+  "productionStylesSha256": "ad754e09906d39d57e1f7cbf3eb77ac23ee2796e2af8df33cdd8fe43ce4d1117",
   "acceptedMockupSha256": "b2b0d444202aa9c76235fa7277ba2c6a4e89d3d7dc0dd009abb8e73c72c82270",
   "chromiumExecutable": "/home/developer/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome",
   "chromiumUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
@@ -303,17 +303,17 @@
       "rect": {
         "x": 4.188,
         "y": 468.578,
-        "width": 206,
+        "width": 199.609,
         "height": 799.188,
-        "right": 210.188,
+        "right": 203.797,
         "bottom": 1267.766
       },
       "hostRect": {
         "x": 4.188,
         "y": 468.578,
-        "width": 206,
+        "width": 199.609,
         "height": 799.188,
-        "right": 210.188,
+        "right": 203.797,
         "bottom": 1267.766
       }
     },
@@ -323,9 +323,9 @@
         "rect": {
           "x": 4.188,
           "y": 132.625,
-          "width": 206,
+          "width": 199.609,
           "height": 240.906,
-          "right": 210.188,
+          "right": 203.797,
           "bottom": 373.531
         },
         "children": [
@@ -335,9 +335,9 @@
             "rect": {
               "x": 4.188,
               "y": 132.625,
-              "width": 206,
+              "width": 199.609,
               "height": 240.906,
-              "right": 210.188,
+              "right": 203.797,
               "bottom": 373.531
             }
           }
@@ -348,9 +348,9 @@
         "rect": {
           "x": 4.188,
           "y": 468.578,
-          "width": 206,
+          "width": 199.609,
           "height": 799.188,
-          "right": 210.188,
+          "right": 203.797,
           "bottom": 1267.766
         },
         "children": [
@@ -360,9 +360,9 @@
             "rect": {
               "x": 4.188,
               "y": 468.578,
-              "width": 206,
+              "width": 199.609,
               "height": 799.188,
-              "right": 210.188,
+              "right": 203.797,
               "bottom": 1267.766
             }
           }
@@ -371,24 +371,24 @@
       {
         "panelId": "selection",
         "rect": {
-          "x": 1213.813,
+          "x": 1220.203,
           "y": 111.359,
-          "width": 222,
-          "height": 561,
+          "width": 215.609,
+          "height": 642.188,
           "right": 1435.813,
-          "bottom": 672.359
+          "bottom": 753.547
         },
         "children": [
           {
             "className": "panel unit-editor-panel",
             "position": "static",
             "rect": {
-              "x": 1213.813,
+              "x": 1220.203,
               "y": 111.359,
-              "width": 222,
-              "height": 561,
+              "width": 215.609,
+              "height": 642.188,
               "right": 1435.813,
-              "bottom": 672.359
+              "bottom": 753.547
             }
           }
         ]
@@ -540,6 +540,6 @@
   },
   "png": "field-focus.png",
   "geometrySvg": "field-focus-geometry.svg",
-  "pngSha256": "c8f73f888799833040e2b601e6de0e976e399095f616e567e64909a8f0d016c5",
-  "geometrySvgSha256": "4609c86c6005a61e6f3a98fb0cee3e83bac78bd0e6d144a064486042279bf6e1"
+  "pngSha256": "226ee11badc7d6bf1e9c3d501d15c772df5b5bb76d827e3893293f6bc414146c",
+  "geometrySvgSha256": "f25fa3fc2697eb246cea625fbbd134545d454c6a8a1db2bafcebf41aff3cc7e7"
 }
