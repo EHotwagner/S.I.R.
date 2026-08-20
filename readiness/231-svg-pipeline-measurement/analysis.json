@@ -37,6 +37,16 @@
       "schemaStatus": "current"
     },
     {
+      "path": "readiness/231-svg-pipeline-measurement/work-model.json",
+      "kind": "workModel",
+      "digest": {
+        "algorithm": "sha256",
+        "value": "462c54d286233221aeb0bbf76dd990fc9e5e8d2d7e7fd109e076956752e68c1d"
+      },
+      "schemaVersion": 1,
+      "schemaStatus": "current"
+    },
+    {
       "path": "work/231-svg-pipeline-measurement/checklist.md",
       "kind": "checklist",
       "digest": {
@@ -61,7 +71,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "d89f268940e022cdb7ad3b91d7b33be536b12dffbf70ab8d225eb56ef0d57d33"
+        "value": "5fd236af12162f02a8d226dc09f0a0934f49ec6efccc33dd176a76a52768ed61"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +91,7 @@
       "kind": "tasks",
       "digest": {
         "algorithm": "sha256",
-        "value": "3762afc83f8ebd7d69dc04fcee0395249938456d4cf0d81cb9661c133fd7194e"
+        "value": "b8cb5359fe85e812ac9e07b4dd8cebfbbe5d11aaa7a4b9adf00264a9c01c0ba9"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -706,7 +716,7 @@
     {
       "path": "readiness/231-svg-pipeline-measurement/work-model.json",
       "kind": "workModel",
-      "currency": "missing",
+      "currency": "current",
       "diagnosticIds": []
     }
   ],

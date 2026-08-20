@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "bbddd830a6aede4d9752d5c25d27b9f06609b23f7e07538ea8b04061c368a277"
+        "value": "5471521822d5100f075b7e3023390be34ba1e4f7d67ed6081925ceaa02cca6a8"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "d89f268940e022cdb7ad3b91d7b33be536b12dffbf70ab8d225eb56ef0d57d33"
+        "value": "5fd236af12162f02a8d226dc09f0a0934f49ec6efccc33dd176a76a52768ed61"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "f9146bc626c73e88d103cd5c484e17623568b176b2b2eb76c6c9681d628b6a92"
+        "value": "e94b229c111cd61412cd9c686ecdfdf11ad7dd5357969d94f90e59b84d9a11b4"
       }
     }
   ],
@@ -1122,7 +1122,7 @@
   "evidence": [
     {
       "id": "EV001",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T001",
       "taskRefs": [
@@ -1131,8 +1131,13 @@
       "requirementRefs": [
         "FR-001"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1146,7 +1151,7 @@
     },
     {
       "id": "EV002",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T002",
       "taskRefs": [
@@ -1155,8 +1160,13 @@
       "requirementRefs": [
         "FR-002"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1170,7 +1180,7 @@
     },
     {
       "id": "EV003",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T003",
       "taskRefs": [
@@ -1179,8 +1189,13 @@
       "requirementRefs": [
         "FR-003"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1194,7 +1209,7 @@
     },
     {
       "id": "EV004",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T004",
       "taskRefs": [
@@ -1203,8 +1218,13 @@
       "requirementRefs": [
         "FR-004"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1218,7 +1238,7 @@
     },
     {
       "id": "EV005",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T005",
       "taskRefs": [
@@ -1227,8 +1247,13 @@
       "requirementRefs": [
         "FR-005"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1242,7 +1267,7 @@
     },
     {
       "id": "EV006",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T006",
       "taskRefs": [
@@ -1251,8 +1276,13 @@
       "requirementRefs": [
         "FR-006"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1266,7 +1296,7 @@
     },
     {
       "id": "EV007",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T007",
       "taskRefs": [
@@ -1275,8 +1305,13 @@
       "requirementRefs": [
         "FR-007"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1290,7 +1325,7 @@
     },
     {
       "id": "EV008",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T008",
       "taskRefs": [
@@ -1299,8 +1334,13 @@
       "requirementRefs": [
         "FR-008"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1314,7 +1354,7 @@
     },
     {
       "id": "EV009",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T009",
       "taskRefs": [
@@ -1323,8 +1363,13 @@
       "requirementRefs": [
         "FR-009"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1338,7 +1383,7 @@
     },
     {
       "id": "EV010",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T010",
       "taskRefs": [
@@ -1347,8 +1392,13 @@
       "requirementRefs": [
         "FR-010"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1362,15 +1412,20 @@
     },
     {
       "id": "EV011",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T011",
       "taskRefs": [
         "T011"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1384,15 +1439,20 @@
     },
     {
       "id": "EV012",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T012",
       "taskRefs": [
         "T012"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1406,15 +1466,20 @@
     },
     {
       "id": "EV013",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T013",
       "taskRefs": [
         "T013"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1428,15 +1493,20 @@
     },
     {
       "id": "EV014",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T014",
       "taskRefs": [
         "T014"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1450,7 +1520,7 @@
     },
     {
       "id": "EV015",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T015",
       "taskRefs": [
@@ -1459,8 +1529,13 @@
       "requirementRefs": [
         "FR-001"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1474,7 +1549,7 @@
     },
     {
       "id": "EV016",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T016",
       "taskRefs": [
@@ -1483,8 +1558,13 @@
       "requirementRefs": [
         "FR-002"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1498,7 +1578,7 @@
     },
     {
       "id": "EV017",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T017",
       "taskRefs": [
@@ -1507,8 +1587,13 @@
       "requirementRefs": [
         "FR-004"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1522,7 +1607,7 @@
     },
     {
       "id": "EV018",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T018",
       "taskRefs": [
@@ -1531,8 +1616,13 @@
       "requirementRefs": [
         "FR-006"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1546,7 +1636,7 @@
     },
     {
       "id": "EV019",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T019",
       "taskRefs": [
@@ -1555,8 +1645,13 @@
       "requirementRefs": [
         "FR-008"
       ],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1570,15 +1665,20 @@
     },
     {
       "id": "EV020",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T020",
       "taskRefs": [
         "T020"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1592,15 +1692,20 @@
     },
     {
       "id": "EV021",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T021",
       "taskRefs": [
         "T021"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1614,15 +1719,20 @@
     },
     {
       "id": "EV022",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T022",
       "taskRefs": [
         "T022"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1636,15 +1746,20 @@
     },
     {
       "id": "EV023",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T023",
       "taskRefs": [
         "T023"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1658,15 +1773,20 @@
     },
     {
       "id": "EV024",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T024",
       "taskRefs": [
         "T024"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1680,15 +1800,20 @@
     },
     {
       "id": "EV025",
-      "kind": "missing",
+      "kind": "verification",
       "subjectType": "task",
       "subjectId": "T025",
       "taskRefs": [
         "T025"
       ],
       "requirementRefs": [],
-      "artifactRefs": [],
-      "result": "missing",
+      "artifactRefs": [
+        "scripts/measure-svg-pipeline.mjs",
+        "scripts/svg-pipeline-fixtures.v1.json",
+        "scripts/test-svg-pipeline-measurement.mjs",
+        "work/231-svg-pipeline-measurement/production-chromium-evidence.json"
+      ],
+      "result": "pass",
       "synthetic": false,
       "performanceBudget": null,
       "performanceEvidenceArtifact": null,
@@ -1755,7 +1880,7 @@
           "path": "work/231-svg-pipeline-measurement/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "bbddd830a6aede4d9752d5c25d27b9f06609b23f7e07538ea8b04061c368a277"
+            "value": "5471521822d5100f075b7e3023390be34ba1e4f7d67ed6081925ceaa02cca6a8"
           },
           "schemaVersion": 1
         },
@@ -1763,7 +1888,7 @@
           "path": "work/231-svg-pipeline-measurement/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "d89f268940e022cdb7ad3b91d7b33be536b12dffbf70ab8d225eb56ef0d57d33"
+            "value": "5fd236af12162f02a8d226dc09f0a0934f49ec6efccc33dd176a76a52768ed61"
           },
           "schemaVersion": 1
         },
@@ -1779,14 +1904,14 @@
           "path": "work/231-svg-pipeline-measurement/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "f9146bc626c73e88d103cd5c484e17623568b176b2b2eb76c6c9681d628b6a92"
+            "value": "e94b229c111cd61412cd9c686ecdfdf11ad7dd5357969d94f90e59b84d9a11b4"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "452ea905375a029b7c1c2571440452dcff8d8c962734db205a4848fb2c6e95f4"
+        "value": "bb58d3a19284c034279f1a08622389c172cbedaf3dd8b449605cb361fe8e37fb"
       },
       "currency": "current"
     }
