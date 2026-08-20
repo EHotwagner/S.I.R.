@@ -495,26 +495,34 @@ let private tacticalEnvironmentEvidence () =
     SIR.Simulation.TacticalEnvironment.assemble 0x185UL maximumPlot maximumVariants
     |> Result.defaultWith (fun findings -> failwithf "Maximum tactical warmup failed: %A" findings)
     |> ignore
-    let maximumValidationClock = Stopwatch.StartNew()
-    let maximumValidationFindings =
-        SIR.Simulation.TacticalEnvironment.validate maximumPlot maximumVariants
-    maximumValidationClock.Stop()
+    let timedP80 sample =
+        let measured =
+            [| for _ in 1 .. 5 do
+                   let clock = Stopwatch.StartNew()
+                   let result = sample ()
+                   clock.Stop()
+                   yield clock.Elapsed.TotalMilliseconds, result |]
+        let p80 = measured |> Array.map fst |> Array.sort |> fun samples -> samples[3]
+        let sampleText = measured |> Array.map (fst >> sprintf "%.3f") |> String.concat ","
+        p80, (measured |> Array.last |> snd), sampleText
+    let maximumValidationP80, maximumValidationFindings, maximumValidationSamples =
+        timedP80 (fun () ->
+            SIR.Simulation.TacticalEnvironment.validate maximumPlot maximumVariants)
     require maximumValidationFindings.IsEmpty "Maximum tactical fixture did not stay valid after warmup."
     require
-        (not enforceProductPerformanceBudgets || maximumValidationClock.Elapsed.TotalMilliseconds < 50.0)
-        "Maximum 64-slot/32-variant validation exceeded its separate 50 ms gate."
-    let maximumClock = Stopwatch.StartNew()
-    let maximumEnvironment =
-        SIR.Simulation.TacticalEnvironment.assemble 0x186UL maximumPlot maximumVariants
-        |> Result.defaultWith (fun findings -> failwithf "Maximum tactical assembly failed: %A" findings)
-    maximumClock.Stop()
-    printfn "Maximum tactical assembly counters: %A; validation %.3f ms; assembly including validation %.3f ms." maximumEnvironment.AssemblyCostCounters maximumValidationClock.Elapsed.TotalMilliseconds maximumClock.Elapsed.TotalMilliseconds
+        (not enforceProductPerformanceBudgets || maximumValidationP80 < 50.0)
+        (sprintf "Maximum 64-slot/32-variant validation exceeded its separate 50 ms p80 gate: %.3f ms; samples [%s]." maximumValidationP80 maximumValidationSamples)
+    let maximumAssemblyP80, maximumEnvironment, maximumAssemblySamples =
+        timedP80 (fun () ->
+            SIR.Simulation.TacticalEnvironment.assemble 0x186UL maximumPlot maximumVariants
+            |> Result.defaultWith (fun findings -> failwithf "Maximum tactical assembly failed: %A" findings))
+    printfn "Maximum tactical assembly counters: %A; validation p80 %.3f ms [%s]; assembly including validation p80 %.3f ms [%s]." maximumEnvironment.AssemblyCostCounters maximumValidationP80 maximumValidationSamples maximumAssemblyP80 maximumAssemblySamples
     require
         (maximumEnvironment.AssemblyCostCounters.SlotsVisited = 64
          && maximumEnvironment.AssemblyCostCounters.VariantsInspected = 2_048
          && maximumEnvironment.AssemblyCostCounters.Selections = 64
-         && (not enforceProductPerformanceBudgets || maximumClock.Elapsed.TotalMilliseconds < 25.0))
-        "Maximum 64-slot/32-variant assembly exceeded its structural or 25 ms timing budget."
+         && (not enforceProductPerformanceBudgets || maximumAssemblyP80 < 25.0))
+        (sprintf "Maximum 64-slot/32-variant assembly exceeded its structural or 25 ms p80 timing budget: %.3f ms; samples [%s]." maximumAssemblyP80 maximumAssemblySamples)
 
     let previewCells =
         [ for row in 0 .. 79 do
@@ -550,20 +558,27 @@ let private tacticalEnvironmentEvidence () =
     SIR.Simulation.TacticalEnvironment.assemble 0x186UL previewPlot previewVariants
     |> Result.defaultWith (fun findings -> failwithf "Maximum editor preview warmup failed: %A" findings)
     |> ignore
-    let previewValidationClock = Stopwatch.StartNew()
-    SIR.Simulation.TacticalEnvironment.validate previewPlot previewVariants |> ignore
-    previewValidationClock.Stop()
+    let previewValidationP80, _, previewValidationSamples =
+        timedP80 (fun () ->
+            SIR.Simulation.TacticalEnvironment.validate previewPlot previewVariants)
     require
-        (not enforceProductPerformanceBudgets || previewValidationClock.Elapsed.TotalMilliseconds < 50.0)
-        "Maximum 80x80/2,048-feature validation exceeded its separate 50 ms gate."
-    let previewAllocatedBefore = GC.GetAllocatedBytesForCurrentThread()
-    let previewClock = Stopwatch.StartNew()
-    let previewEnvironment =
-        SIR.Simulation.TacticalEnvironment.assemble 0x186UL previewPlot previewVariants
-        |> Result.defaultWith (fun findings -> failwithf "Maximum editor preview failed: %A" findings)
-    previewClock.Stop()
-    let previewAllocatedBytes = GC.GetAllocatedBytesForCurrentThread() - previewAllocatedBefore
-    eprintfn "Maximum tactical editor preview: validation %.3f ms; assembly %.3f ms; %d allocated bytes; authored input %s." previewValidationClock.Elapsed.TotalMilliseconds previewClock.Elapsed.TotalMilliseconds previewAllocatedBytes previewEnvironment.EnvironmentAssemblyIdentity
+        (not enforceProductPerformanceBudgets || previewValidationP80 < 50.0)
+        (sprintf "Maximum 80x80/2,048-feature validation exceeded its separate 50 ms p80 gate: %.3f ms; samples [%s]." previewValidationP80 previewValidationSamples)
+    let previewSamples =
+        [| for _ in 1 .. 5 do
+               let allocatedBefore = GC.GetAllocatedBytesForCurrentThread()
+               let clock = Stopwatch.StartNew()
+               let environment =
+                   SIR.Simulation.TacticalEnvironment.assemble 0x186UL previewPlot previewVariants
+                   |> Result.defaultWith (fun findings -> failwithf "Maximum editor preview failed: %A" findings)
+               clock.Stop()
+               let allocated = GC.GetAllocatedBytesForCurrentThread() - allocatedBefore
+               yield clock.Elapsed.TotalMilliseconds, allocated, environment |]
+    let previewP80 = previewSamples |> Array.map (fun (elapsed, _, _) -> elapsed) |> Array.sort |> fun samples -> samples[3]
+    let previewSampleText = previewSamples |> Array.map (fun (elapsed, _, _) -> sprintf "%.3f" elapsed) |> String.concat ","
+    let previewAllocatedBytes = previewSamples |> Array.map (fun (_, allocated, _) -> allocated) |> Array.max
+    let _, _, previewEnvironment = Array.last previewSamples
+    eprintfn "Maximum tactical editor preview: validation p80 %.3f ms [%s]; assembly p80 %.3f ms [%s]; maximum %d allocated bytes; authored input %s." previewValidationP80 previewValidationSamples previewP80 previewSampleText previewAllocatedBytes previewEnvironment.EnvironmentAssemblyIdentity
     Console.Error.Flush()
     require
         (previewEnvironment.AssembledWalkableCells.Length = 6_400
@@ -576,8 +591,8 @@ let private tacticalEnvironmentEvidence () =
         (previewAllocatedBytes < 16_000_000L)
         (sprintf "Maximum 80x80/2,048-feature editor preview exceeded its 16000000-byte allocation bound: %d bytes." previewAllocatedBytes)
     require
-        (not enforceProductPerformanceBudgets || previewClock.Elapsed.TotalMilliseconds < 50.0)
-        (sprintf "Maximum 80x80/2,048-feature editor preview exceeded its 50 ms timing budget: %.3f ms." previewClock.Elapsed.TotalMilliseconds)
+        (not enforceProductPerformanceBudgets || previewP80 < 50.0)
+        (sprintf "Maximum 80x80/2,048-feature editor preview exceeded its 50 ms p80 timing budget: %.3f ms; samples [%s]." previewP80 previewSampleText)
 
     let interactionFeatures =
         [ for index in 0 .. 49 ->
@@ -754,8 +769,8 @@ let private tacticalEnvironmentEvidence () =
         removed
         invalidationClock.Elapsed.TotalMilliseconds
         elapsed
-        maximumClock.Elapsed.TotalMilliseconds
-        previewClock.Elapsed.TotalMilliseconds
+        maximumAssemblyP80
+        previewP80
         interactionP80
 
 let private controlAbiOutput () =
