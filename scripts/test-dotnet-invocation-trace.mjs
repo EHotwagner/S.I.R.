@@ -26,8 +26,11 @@ try {
     const result = run(shim, ["fable", project, "--noCache"], env);
     if (result.status !== 0) throw new Error(`trace fixture failed: ${result.stderr}`);
   }
+  run(shim, ["build", "tests/Build.fsproj"], env);
+  run(shim, ["publish", "src/Server.fsproj"], env);
+  run(shim, ["run", "--project", "tests/Mutation.fsproj"], env);
   const green = run(process.execPath, ["scripts/verify-fable-invocations.mjs", log]);
-  if (green.status !== 0) throw new Error(`expected exact process inventory green: ${green.stderr}`);
+  if (green.status !== 0) throw new Error(`expected exact Fable inventory with valid non-Fable traces green: ${green.stderr}`);
 
   run(shim, ["fable", expected[3]], env);
   const duplicateRed = run(process.execPath, ["scripts/verify-fable-invocations.mjs", log]);
