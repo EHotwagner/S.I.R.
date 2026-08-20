@@ -41,7 +41,7 @@
       "kind": "analysis",
       "digest": {
         "algorithm": "sha256",
-        "value": "c46456e4aa443ec80701513f3d61460ab8980ae7a274fe214a6351b9d9325c57"
+        "value": "1e707147ef33f8298daa140345b44f0f66e504a391cf053eeeb44b3417fc1a12"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -51,7 +51,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "02f23cda83bd2f39ba38069f44c32ccbdcbad9464eb7c92b45ee877bab7ec34c"
+        "value": "0b7b683acc9be31596122852ac7041b87f791109da9e7d9457d125624e13d457"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -81,7 +81,7 @@
       "kind": "evidence",
       "digest": {
         "algorithm": "sha256",
-        "value": "eb13b6a7e435167b8f7e94496d7943f7b64f53c29f70d45594aa1ae32ccf3dd2"
+        "value": "c30286c0d44959d869db768a19e1b73eea4a0a35c0181521f80df62066d78144"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -91,7 +91,7 @@
       "kind": "plan",
       "digest": {
         "algorithm": "sha256",
-        "value": "5fd236af12162f02a8d226dc09f0a0934f49ec6efccc33dd176a76a52768ed61"
+        "value": "d7e008774dc8c844eef48001414788acf514b948ee7112898d136367f9ec2e59"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -1243,24 +1243,10 @@
       "path": "readiness/231-svg-pipeline-measurement/work-model.json",
       "kind": "workModel",
       "currency": "current",
-      "diagnosticIds": [
-        "staleGeneratedView"
-      ]
+      "diagnosticIds": []
     }
   ],
-  "findings": [
-    {
-      "id": "VF001",
-      "severity": "warning",
-      "category": "warning",
-      "path": "readiness/231-svg-pipeline-measurement/work-model.json",
-      "relatedIds": [
-        "readiness/231-svg-pipeline-measurement/work-model.json"
-      ],
-      "message": "Generated view \u0027readiness/231-svg-pipeline-measurement/work-model.json\u0027 is stale.",
-      "correction": "Regenerate readiness/\u003Cid\u003E/work-model.json from current lifecycle sources."
-    }
-  ],
+  "findings": [],
   "governanceCompatibility": [
     {
       "path": ".fsgg/policy.yml",
@@ -1284,18 +1270,7 @@
       "diagnosticIds": []
     }
   ],
-  "diagnostics": [
-    {
-      "id": "staleGeneratedView",
-      "severity": "warning",
-      "artifact": "readiness/231-svg-pipeline-measurement/work-model.json",
-      "message": "Generated view \u0027readiness/231-svg-pipeline-measurement/work-model.json\u0027 is stale.",
-      "correction": "Regenerate readiness/\u003Cid\u003E/work-model.json from current lifecycle sources.",
-      "relatedIds": [
-        "readiness/231-svg-pipeline-measurement/work-model.json"
-      ]
-    }
-  ],
+  "diagnostics": [],
   "readiness": "verificationReady",
   "nextAction": {
     "actionId": "verify.next.ship",

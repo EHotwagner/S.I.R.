@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "5fd236af12162f02a8d226dc09f0a0934f49ec6efccc33dd176a76a52768ed61"
+        "value": "d7e008774dc8c844eef48001414788acf514b948ee7112898d136367f9ec2e59"
       }
     },
     {
@@ -1888,7 +1888,7 @@
           "path": "work/231-svg-pipeline-measurement/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "5fd236af12162f02a8d226dc09f0a0934f49ec6efccc33dd176a76a52768ed61"
+            "value": "d7e008774dc8c844eef48001414788acf514b948ee7112898d136367f9ec2e59"
           },
           "schemaVersion": 1
         },
@@ -1911,7 +1911,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "a6381d2f9ed29839dd5de5edeab385b21f12596a448cb91afe575b5956eb2aa7"
+        "value": "f4792d475ca0612724d8db527efd2aedbeb4d3f3f4fabb0e22283fa1ec17d414"
       },
       "currency": "current"
     }
