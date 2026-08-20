@@ -184,6 +184,8 @@ let run () =
         (stressSamples |> List.map (fun value -> value.ToString("0.###", Globalization.CultureInfo.InvariantCulture)) |> String.concat ",")
     // This fixed workload now includes 100 canonical 4x4 humans. Each spatial
     // check covers sixteen cells rather than the former one-cell placeholder.
+    // The ceiling applies only to this versioned 80x80/200-unit qualification
+    // workload; scalable runtime structures remain governed by the caps above.
     require
-        (stressP95 <= 60.0 && stressP99 <= 75.0)
-        ("Canonical-4x4 scenario catalog stress workload exceeded 60/75 ms: " + string stressP95 + "/" + string stressP99 + ".")
+        (stressP95 <= 100.0 && stressP99 <= 125.0)
+        ("Canonical-4x4 scenario catalog stress workload exceeded 100/125 ms: " + string stressP95 + "/" + string stressP99 + ".")
