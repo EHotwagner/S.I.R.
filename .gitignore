@@ -11,6 +11,7 @@ test-results/
 src/SIR.Client.Web/.fable/
 src/SIR.Client.Web/.fable-rules/
 src/SIR.Client.Web/fable/
+src/SIR.Client.Web/.dev-public/
 
 # local tooling
 .vs/
