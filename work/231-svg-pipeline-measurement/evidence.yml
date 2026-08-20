@@ -11,7 +11,7 @@ sourceAnalysis: readiness/231-svg-pipeline-measurement/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/231-svg-pipeline-measurement/analysis.json
-    digest: 1e707147ef33f8298daa140345b44f0f66e504a391cf053eeeb44b3417fc1a12
+    digest: 4ecef8683551a1486395a099557ef9ffd5f1c8c4bff1edf2d9338a5f51965fd0
     schemaVersion: 1
   - label: checklist
     path: work/231-svg-pipeline-measurement/checklist.md
@@ -23,7 +23,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: plan
     path: work/231-svg-pipeline-measurement/plan.md
-    digest: d7e008774dc8c844eef48001414788acf514b948ee7112898d136367f9ec2e59
+    digest: 49672f6ccb163b83cbf1f2f8bdc33813c27e062a97a82eb00754949e2af13032
     schemaVersion: 1
   - label: spec
     path: work/231-svg-pipeline-measurement/spec.md
@@ -54,13 +54,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV002
     kind: verification
     subject:
@@ -81,13 +81,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV003
     kind: verification
     subject:
@@ -108,13 +108,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV004
     kind: verification
     subject:
@@ -135,13 +135,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV005
     kind: verification
     subject:
@@ -162,13 +162,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV006
     kind: verification
     subject:
@@ -189,13 +189,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV007
     kind: verification
     subject:
@@ -216,13 +216,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV008
     kind: verification
     subject:
@@ -243,13 +243,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV009
     kind: verification
     subject:
@@ -270,13 +270,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV010
     kind: verification
     subject:
@@ -297,13 +297,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV011
     kind: verification
     subject:
@@ -324,13 +324,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV012
     kind: verification
     subject:
@@ -351,13 +351,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV013
     kind: verification
     subject:
@@ -378,13 +378,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV014
     kind: verification
     subject:
@@ -405,13 +405,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV015
     kind: verification
     subject:
@@ -432,13 +432,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV016
     kind: verification
     subject:
@@ -459,13 +459,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV017
     kind: verification
     subject:
@@ -486,13 +486,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV018
     kind: verification
     subject:
@@ -513,13 +513,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV019
     kind: verification
     subject:
@@ -540,13 +540,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV020
     kind: verification
     subject:
@@ -567,13 +567,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV021
     kind: verification
     subject:
@@ -594,13 +594,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV022
     kind: verification
     subject:
@@ -621,13 +621,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV023
     kind: verification
     subject:
@@ -648,13 +648,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV024
     kind: verification
     subject:
@@ -675,13 +675,13 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
   - id: EV025
     kind: verification
     subject:
@@ -702,12 +702,12 @@ evidence:
     synthetic: false
     observedRun:
       source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
-      digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
+      digest: "sha256:31019293313e3386f2a8fe22f760be5a519611307fc3e6c582670a2c90996e66"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 28
+      passed: 35
       failed: 0
       skipped: 0
-    notes: [Focused mutation gates and the exact-candidate 4x7 production Chromium matrix passed.]
+    notes: [Focused mutation gates and the exact-candidate 5x7 production Chromium matrix passed.]
 lifecycleNotes:
   - "Next lifecycle action: verify."
