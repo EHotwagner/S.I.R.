@@ -1,7 +1,7 @@
 {
   "auditSchema": 1,
   "report": "feedback/2026-08-20-sir-item-231-svg-pipeline-measurement.md",
-  "reportSha256": "9ff1e8fa1174538a94993d4b25c307814cc2752cd4b842e61a3b46a15bbb02bf",
+  "reportSha256": "38673ef8cbe58f69d096210e6d9ce234449aedb2eab1836ad4d1bb012c486d96",
   "criticMode": "fresh-context-subagent",
   "criticPromptVersion": "actionability-v1",
   "findings": [
@@ -10,12 +10,13 @@
       "status": "positive-pattern",
       "missingFacts": [],
       "checkedEvidence": [
-        { "locator": "file:work/231-svg-pipeline-measurement/production-chromium-evidence.json", "result": "verified", "sha256": "ebf0b5330b09714915ce44d94c51353ecbb653d88287df4e0c34d49294ff7eb2" },
+        { "locator": "file:work/231-svg-pipeline-measurement/production-chromium-authority.json", "result": "verified", "sha256": "4bf9f9abb2e1d92d57e5a75dafb74923bdb7a975e12c62c0ba311249a749e861" },
+        { "locator": "file:work/231-svg-pipeline-measurement/production-chromium-evidence.json", "result": "verified", "sha256": "07ba39dee985fdc70e17956776787aa37be1939bc5d994df0904f17132ed1de1" },
         { "locator": "command:npm run test:svg-pipeline-measurement", "result": "verified" },
         { "locator": "command:npm run measure:svg-pipeline -- --out artifacts/svg-pipeline-final", "result": "verified" }
       ],
       "confidenceLimits": [
-        "The final exact-candidate rerun passed 28 runs and selected mainThreadScript at 95.93% of available aggregate duration.",
+        "The final exact-candidate rerun passed 35 runs and selected mainThreadScript at 94.08% of available aggregate duration.",
         "Both controlled-pair fixtures retained exactly 40 visual units across all seven journeys.",
         "Worker transfer, projection/allocation, and source-isolated Elmish/React remain unavailable; no live GPU counter beyond Chromium trace events is established."
       ]

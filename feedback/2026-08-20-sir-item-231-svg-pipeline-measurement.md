@@ -5,12 +5,12 @@ workspace: S.I.R
 cycle: 231-svg-pipeline-measurement
 lane: sdd
 toolVersion: 1.0.1
-commit: 9c7149c47e628282d8a3360141790c477833b64c
+commit: ff6b0716407940a80441bb2e43efb136eadd2c03
 ---
 
 ## §1 Provenance and confidence
 
-This cycle used the existing S.I.R scaffold, the current `sdd-required` route for issue #231, coordination client 0.22.1, SDD CLI 1.0.1, Fable 5.13.0, Node v26.7.0, and Google Chrome for Testing 151.0.7922.34. Two validated checkpoints cover implementation/test/evidence and verify/ship/PR. The production evidence binds the measured implementation commit/tree, production client manifest, server assembly, fixture digest, browser/runtime/host facts, 28 traces, and run timestamps. Confidence is limited by the stage instrumentation explicitly reported unavailable and by the merge-boundary aggregate stopping on a canonical map-editor review hash mismatch; no live GPU compositor counter beyond Chromium trace events is claimed.
+This cycle used the existing S.I.R scaffold, the current `sdd-required` route for issue #231, coordination client 0.22.1, SDD CLI 1.0.1, Fable 5.13.0, Node v26.7.0, and Google Chrome for Testing 151.0.7922.34. Two validated checkpoints cover implementation/test/evidence and verify/ship/PR. The production evidence binds the measured implementation commit/tree, production client manifest, server assembly, fixture digest, browser/runtime/host facts, 35 traces, and run timestamps. Confidence is limited by the stage instrumentation explicitly reported unavailable and by the merge-boundary aggregate stopping on a canonical map-editor review hash mismatch; no live GPU compositor counter beyond Chromium trace events is claimed.
 
 ## §2 What worked
 
@@ -27,9 +27,9 @@ The local production qualification creates an isolated NuGet cache but, outside 
 - **Kind:** positive-pattern
 - **Impact:** Maintainers can distinguish project-global work from visible SVG work and select the next optimization from measured stage share rather than a permanent size cap.
 - **Expected:** A performance-sensitive rendering item retains exact production evidence across representative and independently scaled workload axes.
-- **Observed:** The repaired four-fixture, seven-journey Chromium matrix passed 28 runs. It binds all receipt fields plus raw-byte build and trace identities, exercises 10/20/40 Hz event-rate workloads, records direct interaction-to-two-frame latency while marking idle input unavailable, samples frame health before separate memory cycles, and retains repeated warm/stabilized heap observations. It holds the controlled pair at 40 observed visual units while map extent and supporting script state increase, separates named stages with honest unavailable reasons, and ranks generic main-thread script as the next measured bottleneck at 95.93 percent of available aggregate duration. It does not label that aggregate as Elmish/React; transfer, projection/allocation, and source-isolated Elmish/React decisions remain unresolved.
-- **Evidence:** file:work/231-svg-pipeline-measurement/production-chromium-evidence.json; command:npm run test:svg-pipeline-measurement; command:npm run measure:svg-pipeline -- --out artifacts/svg-pipeline-final
-- **Version:** raw-summary schema `sir.svg-pipeline-measurement/1`; compact receipt schema `sir.svg-pipeline-measurement-evidence/1`; Chrome for Testing 151.0.7922.34; measured product commit e971395307ea273def35dac863cb1b15a93d60fc
+- **Observed:** The repaired five-fixture, seven-journey Chromium matrix passed 35 runs. It anchors all receipt fields to a separate tracked authority plus raw-byte build and trace identities. An otherwise-identical representative pair paces playback inputs at 100 ms (10 Hz) and 25 ms (40 Hz) intervals inside the same 250 ms window, while the global pair holds 20 Hz. It records direct interaction-to-two-frame latency while marking idle input unavailable, samples frame health before separate memory cycles, and retains repeated warm/stabilized heap observations. It holds the global pair at 40 observed visual units while map extent and supporting script state increase, separates named stages with honest unavailable reasons, and ranks generic main-thread script as the next measured bottleneck at 94.08 percent of available aggregate duration. It does not label that aggregate as Elmish/React; transfer, projection/allocation, and source-isolated Elmish/React decisions remain unresolved.
+- **Evidence:** file:work/231-svg-pipeline-measurement/production-chromium-authority.json; file:work/231-svg-pipeline-measurement/production-chromium-evidence.json; command:npm run test:svg-pipeline-measurement; command:npm run measure:svg-pipeline -- --out artifacts/svg-pipeline-final
+- **Version:** raw-summary schema `sir.svg-pipeline-measurement/1`; compact receipt schema `sir.svg-pipeline-measurement-evidence/1`; authority schema `sir.svg-pipeline-measurement-authority/1`; Chrome for Testing 151.0.7922.34; measured product commit 75c9ac01b1241fc55eb07b5302f5fda230193990
 - **Owner:** EHotwagner/S.I.R. SVG pipeline measurement harness
 - **Recurrence:** new positive pattern; complements the focused-receipt pattern in `feedback/2026-08-16-sir-item-215-single-pass-qualification.md §4.2`
 - **Avoidable cost:** none
@@ -70,7 +70,7 @@ One initial client build required `npm ci`. The checkpoint records multiple setu
 
 ## §10 Outcome markers
 
-The pre-implementation production Chromium smoke passed. The repaired focused measurement gate passed twelve checks, including protected fixture, executed-axis, and well-formed candidate/digest receipt-binding mutations. The exact repaired matrix passed 28 of 28 production runs. A clean `git archive` independently reran SDD verify/ship with 25 observed evidence and 25 observed test obligations, zero warnings, and `shipReady`. PR #238 opened; merge remained pending.
+The pre-implementation production Chromium smoke passed. The repaired focused measurement gate passed thirteen checks, including controlled rate/fixture, executed-axis, and coordinated candidate/digest reseal mutations against the tracked authority. The exact repaired matrix passed 35 of 35 production runs. A clean `git archive` independently reran SDD verify/ship with 25 observed evidence and 25 observed test obligations, zero warnings, and `shipReady`. PR #238 opened; merge remained pending.
 
 ## §11 Falsifiable improvements
 
@@ -88,10 +88,10 @@ The pre-implementation production Chromium smoke passed. The repaired focused me
 | sdd-authoring | exercised | Charter through ship completed; 25 observed obligations. |
 | implementation-apis | partial | Measurement scripts consume production UI/trace interfaces; product runtime APIs were unchanged. |
 | dependencies-build | exercised | Locked dependencies, Release client/server build, and substantial qualification build stages ran. |
-| testing | exercised | Focused mutations and 28 production Chromium runs passed; aggregate stopped on unrelated review binding. |
+| testing | exercised | Focused mutations and 35 production Chromium runs passed; aggregate stopped on unrelated review binding. |
 | evidence | exercised | Compact exact-candidate receipt, JUnit, SDD verify, and ship artifacts retained. |
 | runtime-playtest | exercised | Production controls drove Editor, Simulate, pan, zoom, selection, modality, and overlay routes. |
-| performance | exercised | Nine pipeline stages, frame health, input-to-paint, DOM, and memory measured over 28 runs. |
+| performance | exercised | Nine pipeline stages, frame health, input-to-paint, DOM, and memory measured over 35 runs. |
 | documentation | exercised | Performance budget, SDD package, and feedback report authored. |
 | packaging-upgrade | not-exercised | No package version changed. |
 | worker-git-pr | exercised | Fresh claim/worktree, widened disjoint touch-set, PR, path verification, and independent review used. |
