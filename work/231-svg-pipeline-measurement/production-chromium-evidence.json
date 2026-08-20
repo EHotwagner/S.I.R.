@@ -1,8 +1,12 @@
 {
   "schema": "sir.svg-pipeline-measurement-evidence/1",
   "candidate": {
-    "commit": "12d1d4c8f5aa010c8d73e95de629fe298e6d637a",
-    "tree": "20ca603a6c708c050e1cecaa867e9c43c3e75fd4"
+    "commit": "3ac036652f1983113d8f016c15c7eb14954bd178",
+    "tree": "e4bdffaa36de6c2e10c13b4498a47ef4b81b0de3"
+  },
+  "buildIdentity": {
+    "clientManifestSha256": "28330b0680a43999d9b535bab43443d07a016da145c2c97a9652e472baa63b1f",
+    "serverAssemblySha256": "198dedc7f5cc0f181212d6846f913be8f5b580014b8b6bdbc01d7751f06afa6a"
   },
   "fixtureDefinition": {
     "path": "scripts/svg-pipeline-fixtures.v1.json",
@@ -19,24 +23,26 @@
     "journeyCount": 7,
     "runCount": 28,
     "result": "pass",
+    "startedAt": "2026-08-20T19:30:43.391Z",
+    "completedAt": "2026-08-20T19:34:05.105Z",
     "journeys": ["idle", "playback", "pan", "zoom", "selection", "modality-transition", "dense-overlay"],
-    "rawSummarySha256": "e3065108c3747315e5ba2f7175b4e7493b6cfd9b46a1cb49ae865c6a581ed939",
-    "orderedTraceDigestSha256": "14a205ba3a042594af164f8ab2fdb4ce768849d303ced7e4bc1c1a73f9d2fe42"
+    "rawSummarySha256": "3170f2343e405b2dd95dc5114a3612de9427484a9dca58a69c18afe093bd43b8",
+    "orderedTraceDigestSha256": "cd9e3d088a669541db0043f63152cc8e2756b31dd45edb1e90d7c583ec2d15b5",
+    "inputToPaintMilliseconds": { "minimum": 35.6, "p95": 607.7, "maximum": 659.7 }
   },
   "pipeline": {
     "nextBottleneck": "elmishReact",
-    "evidence": "largest measured aggregate at 5167.018 ms (92.2%)",
+    "evidence": "largest measured aggregate at 5397.494 ms (92.4%)",
     "ranking": [
-      { "stage": "elmishReact", "milliseconds": 5167.018, "share": 0.9219 },
-      { "stage": "paint", "milliseconds": 165.304, "share": 0.0295 },
-      { "stage": "workerCompute", "milliseconds": 122.116, "share": 0.0218 },
-      { "stage": "style", "milliseconds": 88.992, "share": 0.0159 },
-      { "stage": "layout", "milliseconds": 61.559, "share": 0.011 }
+      { "stage": "elmishReact", "milliseconds": 5397.494, "share": 0.9236 },
+      { "stage": "paint", "milliseconds": 164.351, "share": 0.0281 },
+      { "stage": "workerCompute", "milliseconds": 121.726, "share": 0.0208 },
+      { "stage": "style", "milliseconds": 97.598, "share": 0.0167 },
+      { "stage": "layout", "milliseconds": 62.655, "share": 0.0107 }
     ],
     "unavailable": {
       "workerTransfer": "The production client has no dedicated transfer User Timing mark yet.",
-      "projectionAllocation": "The production client has no projection/allocation User Timing mark; GC remains separately visible in the raw trace.",
-      "inputLatency": "Event Timing was not consistently exposed for synthetic Playwright inputs."
+      "projectionAllocation": "The production client has no projection/allocation User Timing mark; GC remains separately visible in the raw trace."
     }
   },
   "globalSmallViewportComparison": [
@@ -44,15 +50,17 @@
       "fixture": "global-small-viewport",
       "global": { "mapExtent": [20, 20], "unitCount": 40, "supportingListSize": 40 },
       "visible": { "visualUnits": 40, "totalDom": 3034, "nodeEstimate": 2040 },
-      "mainScriptMilliseconds": 4.368,
-      "memory": { "warmUsed": 34900936, "stabilizedUsed": 30768676, "delta": -4132260, "warmupCycles": 2, "stabilizationCycles": 5 }
+      "mainScriptMilliseconds": 168.676,
+      "inputToPaintMilliseconds": 542.4,
+      "memory": { "warmUsed": 27622928, "stabilizedUsed": 28041772, "delta": 418844, "warmupCycles": 2, "stabilizationCycles": 5 }
     },
     {
       "fixture": "global-large-small-viewport",
       "global": { "mapExtent": [79, 79], "unitCount": 200, "supportingListSize": 800 },
       "visible": { "visualUnits": 4, "totalDom": 605, "nodeEstimate": 479 },
-      "mainScriptMilliseconds": 22.824,
-      "memory": { "warmUsed": 33534680, "stabilizedUsed": 27016856, "delta": -6517824, "warmupCycles": 2, "stabilizationCycles": 5 }
+      "mainScriptMilliseconds": 24.29,
+      "inputToPaintMilliseconds": 562.5,
+      "memory": { "warmUsed": 33530236, "stabilizedUsed": 51880460, "delta": 18350224, "warmupCycles": 2, "stabilizationCycles": 5 }
     }
   ],
   "dispositions": {
