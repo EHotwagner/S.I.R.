@@ -25,7 +25,7 @@ sources:
     schemaVersion: 1
   - label: plan
     path: work/220-bounded-pr-ci/plan.md
-    digest: 0e27d7afe618de91270d7fcd50cd12b68a865acb91a5feed0abb96e8d1d81922
+    digest: 001dce34bc373ac3ef0fb78f330ccbc592a13fbbc7352e9ad77b00c657c93546
     schemaVersion: 1
 tasks:
   - id: T001
