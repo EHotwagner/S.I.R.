@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "001dce34bc373ac3ef0fb78f330ccbc592a13fbbc7352e9ad77b00c657c93546"
+        "value": "4ed74a3309b8c2d6e9fcd54612871e1316536476cdaf546a8d5de8a1c59950be"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "49828ff30275a5662f211a8cda525241253e900f7a4033273a8a8fd163d25919"
+        "value": "b5dbba63763d749a3e87697efccd8e8e51d69c3edef385d4236542278b4d67d2"
       }
     }
   ],
@@ -566,7 +566,7 @@
     {
       "id": "T003",
       "title": "Implement requirement FR-003",
-      "status": "in-progress",
+      "status": "done",
       "owner": "smew-f925",
       "dependencies": [],
       "requirements": [
@@ -1491,7 +1491,7 @@
     {
       "id": "T036",
       "title": "Record verification evidence VO-002",
-      "status": "in-progress",
+      "status": "done",
       "owner": "smew-f925",
       "dependencies": [
         "T001"
@@ -3405,7 +3405,7 @@
           "path": "work/220-bounded-pr-ci/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "001dce34bc373ac3ef0fb78f330ccbc592a13fbbc7352e9ad77b00c657c93546"
+            "value": "4ed74a3309b8c2d6e9fcd54612871e1316536476cdaf546a8d5de8a1c59950be"
           },
           "schemaVersion": 1
         },
@@ -3421,14 +3421,14 @@
           "path": "work/220-bounded-pr-ci/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "49828ff30275a5662f211a8cda525241253e900f7a4033273a8a8fd163d25919"
+            "value": "b5dbba63763d749a3e87697efccd8e8e51d69c3edef385d4236542278b4d67d2"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "7badb4336aac485f0bdd6cde0b41eb6936616c5523b9f18a8801b8372b6570cc"
+        "value": "1b1dde8dc29f5bc8b8159b79d70e55f3a226dac14a9e0f2386b3637d05c353cf"
       },
       "currency": "current"
     }

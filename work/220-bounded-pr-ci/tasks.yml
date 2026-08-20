@@ -25,7 +25,7 @@ sources:
     schemaVersion: 1
   - label: plan
     path: work/220-bounded-pr-ci/plan.md
-    digest: 001dce34bc373ac3ef0fb78f330ccbc592a13fbbc7352e9ad77b00c657c93546
+    digest: 4ed74a3309b8c2d6e9fcd54612871e1316536476cdaf546a8d5de8a1c59950be
     schemaVersion: 1
 tasks:
   - id: T001
@@ -50,7 +50,7 @@ tasks:
     requiredEvidence: [EV002]
   - id: T003
     title: Implement requirement FR-003
-    status: in-progress
+    status: done
     owner: smew-f925
     dependencies: []
     requirements: [FR-003]
@@ -380,7 +380,7 @@ tasks:
     requiredEvidence: [EV035]
   - id: T036
     title: Record verification evidence VO-002
-    status: in-progress
+    status: done
     owner: smew-f925
     dependencies: [T001]
     requirements: []
