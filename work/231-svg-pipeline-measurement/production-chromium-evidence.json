@@ -10,7 +10,7 @@
   },
   "fixtureDefinition": {
     "path": "scripts/svg-pipeline-fixtures.v1.json",
-    "sha256": "d8097aaf3a2e5f2ecd1a5588fc8cd0d72415059a954fb794c474b450a492b5f8"
+    "sha256": "ba2c9c697ffd7035a798a943d4a9a3644220f52ca78fbe210a13c628e8928e06"
   },
   "environment": {
     "browser": "Google Chrome for Testing 151.0.7922.34",

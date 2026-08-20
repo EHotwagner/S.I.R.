@@ -4,7 +4,7 @@ import { spawn } from "node:child_process";
 import { cpus, platform, release } from "node:os";
 import { resolve } from "node:path";
 import { execFileSync } from "node:child_process";
-import { digest, extractStages, makeMap, stableJson, summarize, validateDefinitions } from "./lib/svg-pipeline-measurement.mjs";
+import { byteDigest, digest, extractStages, makeMap, stableJson, summarize, validateDefinitions, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
 
 const args = process.argv.slice(2);
 const option = (name, fallback) => { const index = args.indexOf(name); return index >= 0 ? args[index + 1] : fallback; };
@@ -29,8 +29,8 @@ const executablePath = process.env.PLAYWRIGHT_EXECUTABLE_PATH || chromium.execut
 const browserVersion = execFileSync(executablePath, ["--version"], { encoding: "utf8" }).trim();
 const candidate = { commit: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(), tree: execFileSync("git", ["rev-parse", "HEAD^{tree}"], { encoding: "utf8" }).trim() };
 const buildIdentity = {
-  clientManifestSha256: digest(readFileSync("artifacts/publish/.vite/manifest.json")),
-  serverAssemblySha256: digest(readFileSync("artifacts/publish/SIR.Server.dll")),
+  clientManifestSha256: byteDigest(readFileSync("artifacts/publish/.vite/manifest.json")),
+  serverAssemblySha256: byteDigest(readFileSync("artifacts/publish/SIR.Server.dll")),
 };
 const browser = await chromium.launch({ executablePath, args: ["--enable-precise-memory-info", "--js-flags=--expose-gc"] });
 const runs = [];
@@ -40,7 +40,7 @@ async function switchWorkspace(page, name) {
   await page.getByRole("menu", { name: "View commands" }).getByRole("menuitem", { name: new RegExp(`^Switch to ${name}\\b`) }).click();
 }
 
-async function perform(page, journey) {
+async function perform(page, journey, fixture) {
   const started = await page.evaluate(() => performance.now());
   const svg = page.locator("#persistent-tactical-svg");
   const box = await svg.boundingBox();
@@ -50,7 +50,7 @@ async function perform(page, journey) {
   if (journey === "selection") await svg.locator("[data-unit-id]").first().click({ force: true });
   if (journey === "modality-transition") { await switchWorkspace(page, "Plan"); await switchWorkspace(page, "Editor"); }
   if (journey === "dense-overlay") { await page.keyboard.press("Alt+l"); await page.waitForTimeout(100); await page.keyboard.press("Alt+l"); }
-  if (journey === "playback") { await switchWorkspace(page, "Simulate"); const advance = page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }); if (await advance.count()) await advance.click(); await switchWorkspace(page, "Editor"); }
+  if (journey === "playback") { await switchWorkspace(page, "Simulate"); const advance = page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }); for (let step = 0; step < workloadRecipe(fixture).playbackSteps; step += 1) if (await advance.count()) await advance.click(); await switchWorkspace(page, "Editor"); }
   return page.evaluate((origin) => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(() => done(performance.now() - origin)))), started);
 }
 
@@ -71,11 +71,25 @@ try {
       if (await page.locator("#editor-map-import").isHidden()) await collapse.click();
       await page.getByLabel("Import SIR map", { exact: true }).setInputFiles({ name: `${fixture.id}.sir-map`, mimeType: "text/plain", buffer: Buffer.from(makeMap(fixture)) });
       await page.getByRole("alert").filter({ hasText: `Imported map ${fixture.id}.sir-map.` }).waitFor();
+      if (fixture.comparisonGroup === "global-scale-small-viewport") await page.getByRole("button", { name: "Fit the complete map", exact: true }).click();
       await page.setViewportSize({ width: fixture.viewport[0], height: fixture.viewport[1] });
+      if (fixture.comparisonGroup === "global-scale-small-viewport") {
+        const svg = page.locator("#persistent-tactical-svg");
+        const box = await svg.boundingBox();
+        for (let attempt = 0; attempt < 12; attempt += 1) {
+          const visible = await svg.evaluate((root) => Number(root.dataset.visualUnitCount || 0));
+          if (visible === workloadRecipe(fixture).targetVisibleUnits) break;
+          await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+          await page.mouse.wheel(0, visible < fixture.visibleDensity ? 240 : -240);
+          await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
+        }
+      }
+      const controlledStructural = await page.locator("#persistent-tactical-svg").evaluate((root) => ({ totalDom: root.querySelectorAll("*").length, byLayer: Object.fromEntries([...root.querySelectorAll("[data-scene-layer]")].map((layer) => [layer.getAttribute("data-scene-layer"), layer.querySelectorAll("*").length])), visualUnits: Number(root.dataset.visualUnitCount || 0), nodeEstimate: Number(root.dataset.visualNodeEstimate || 0) }));
+      if (fixture.comparisonGroup === "global-scale-small-viewport" && controlledStructural.visualUnits !== fixture.visibleDensity) throw new Error(`${fixture.id} observed ${controlledStructural.visualUnits} visible units before the journey; expected controlled density ${fixture.visibleDensity}`);
       await page.evaluate(() => { window.__sirFrameIntervals = []; });
       const tracePath = resolve(out, `${fixture.id}--${journey}.trace.json`);
       await cdp.send("Tracing.start", { categories: "devtools.timeline,blink.user_timing,v8,disabled-by-default-devtools.timeline,disabled-by-default-v8.cpu_profiler", transferMode: "ReturnAsStream" });
-      const inputLatencyMilliseconds = await perform(page, journey);
+      const inputLatencyMilliseconds = await perform(page, journey, fixture);
       const complete = new Promise((done) => cdp.once("Tracing.tracingComplete", done));
       await cdp.send("Tracing.end");
       const { stream } = await complete;
@@ -84,14 +98,14 @@ try {
       await cdp.send("IO.close", { handle: stream });
       const traceText = chunks.join(""); writeFileSync(tracePath, traceText);
       const trace = JSON.parse(traceText);
-      for (let cycle = 0; cycle < definitions.warmupCycles; cycle += 1) { await perform(page, "pan"); await perform(page, "zoom"); await perform(page, "playback"); }
+      for (let cycle = 0; cycle < definitions.warmupCycles; cycle += 1) { await perform(page, "pan", fixture); await perform(page, "zoom", fixture); await perform(page, "playback", fixture); }
       const heapWarm = await cdp.send("Runtime.getHeapUsage");
-      for (let cycle = 0; cycle < definitions.stabilizationCycles; cycle += 1) { await perform(page, "pan"); await perform(page, "zoom"); await perform(page, "playback"); }
+      for (let cycle = 0; cycle < definitions.stabilizationCycles; cycle += 1) { await perform(page, "pan", fixture); await perform(page, "zoom", fixture); await perform(page, "playback", fixture); }
       const heapStable = await cdp.send("Runtime.getHeapUsage");
       const structural = await page.locator("#persistent-tactical-svg").evaluate((root) => ({ totalDom: root.querySelectorAll("*").length, byLayer: Object.fromEntries([...root.querySelectorAll("[data-scene-layer]")].map((layer) => [layer.getAttribute("data-scene-layer"), layer.querySelectorAll("*").length])), visualUnits: Number(root.dataset.visualUnitCount || 0), nodeEstimate: Number(root.dataset.visualNodeEstimate || 0) }));
       const intervals = await page.evaluate(() => window.__sirFrameIntervals || []);
       const longTasks = (trace.traceEvents || []).filter((event) => event.name === "RunTask" && Number(event.dur || 0) >= 50_000).map((event) => Number((event.dur / 1000).toFixed(3)));
-      runs.push({ fixture: fixture.id, fixtureDigest: digest(fixture), journey, startedAt, completedAt: new Date().toISOString(), result: "pass", stages: extractStages(trace), structural: { global: { mapExtent: fixture.mapExtent, unitCount: fixture.globalUnitCount, supportingListSize: fixture.supportingListSize }, visible: structural }, frameHealth: { samples: intervals.length, droppedFrames: intervals.filter((value) => value > 25).length, longTasks }, inputLatency: { available: true, milliseconds: Number(inputLatencyMilliseconds.toFixed(3)), source: "Playwright production interaction start through two requestAnimationFrame callbacks" }, memory: { warm: heapWarm, stabilized: heapStable, usedDelta: heapStable.usedSize - heapWarm.usedSize, warmupCycles: definitions.warmupCycles, stabilizationCycles: definitions.stabilizationCycles, collectionControl: "not-forced" }, trace: { path: tracePath, sha256: digest(traceText) } });
+      runs.push({ fixture: fixture.id, fixtureDigest: digest(fixture), workload: workloadRecipe(fixture), journey, startedAt, completedAt: new Date().toISOString(), result: "pass", stages: extractStages(trace), structural: { global: { mapExtent: fixture.mapExtent, unitCount: fixture.globalUnitCount, supportingListSize: fixture.supportingListSize }, visible: controlledStructural, postMemoryCycles: structural }, frameHealth: { samples: intervals.length, droppedFrames: intervals.filter((value) => value > 25).length, longTasks }, inputLatency: { available: true, milliseconds: Number(inputLatencyMilliseconds.toFixed(3)), source: "Playwright production interaction start through two requestAnimationFrame callbacks" }, memory: { warm: heapWarm, stabilized: heapStable, usedDelta: heapStable.usedSize - heapWarm.usedSize, warmupCycles: definitions.warmupCycles, stabilizationCycles: definitions.stabilizationCycles, collectionControl: "not-forced" }, trace: { path: tracePath, sha256: digest(traceText) } });
       await context.close();
     }
   }

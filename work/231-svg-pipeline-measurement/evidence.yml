@@ -53,7 +53,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -80,7 +80,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -107,7 +107,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -134,7 +134,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -161,7 +161,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -188,7 +188,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -215,7 +215,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -242,7 +242,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -269,7 +269,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -296,7 +296,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -323,7 +323,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -350,7 +350,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -377,7 +377,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -404,7 +404,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -431,7 +431,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -458,7 +458,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -485,7 +485,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -512,7 +512,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -539,7 +539,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -566,7 +566,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -593,7 +593,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -620,7 +620,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -647,7 +647,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -674,7 +674,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed
@@ -701,7 +701,7 @@ evidence:
     result: pass
     synthetic: false
     observedRun:
-      source: artifacts/svg-pipeline/measurement.junit.xml
+      source: work/231-svg-pipeline-measurement/test-results/svg-pipeline.junit.xml
       digest: "sha256:7561e03dddefef884b07731fa29c06da6c4191c9889e7706a6884bd243cb86e2"
       digestContract: exact-bytes-v1
       outcome: passed

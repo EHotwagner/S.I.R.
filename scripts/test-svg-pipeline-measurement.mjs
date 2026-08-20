@@ -1,12 +1,13 @@
 import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { digest, extractStages, makeMap, summarize, validateDefinitions } from "./lib/svg-pipeline-measurement.mjs";
+import { byteDigest, digest, extractStages, makeMap, summarize, validateDefinitions, validateEvidenceReceipt, workloadRecipe } from "./lib/svg-pipeline-measurement.mjs";
 
 const source = JSON.parse(readFileSync(new URL("./svg-pipeline-fixtures.v1.json", import.meta.url)));
 validateDefinitions(source);
 assert.equal(digest(source).length, 64);
 assert.match(makeMap(source.fixtures[0]), /^SIR-MAP 2\nsize 20 20\n/);
+assert.equal(byteDigest(Buffer.from("abc")), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
 
 const trace = { traceEvents: [
   { name: "thread_name", tid: 1, args: { name: "CrRendererMain" } },
@@ -18,9 +19,11 @@ const trace = { traceEvents: [
 const stages = extractStages(trace);
 assert.equal(stages.layout.milliseconds, 4);
 assert.equal(stages.workerTransfer.available, false);
+assert.equal(stages.elmishReact.available, false);
+assert.equal(stages.mainThreadScript.milliseconds, 3);
 const summary = summarize([{ stages }], source.materialShareThreshold);
 assert.equal(summary.nextBottleneck.stage, "paint");
-assert.equal(summary.dispositions.packedTransport, "deferred");
+assert.equal(summary.dispositions.packedTransport, "unresolved");
 assert.match(summary.interpretation, /not a permanent supported-size ceiling/);
 
 const mutations = [
@@ -38,6 +41,21 @@ for (const [name, mutate] of mutations) {
 }
 assert.throws(() => summarize([], source.materialShareThreshold), /observed run/, "empty evidence must fail");
 console.log("JUSTIFIED observed-run: empty evidence rejected");
+for (const [axis, mutate] of [
+  ["visible-density-workload", (value) => { value.visibleDensity -= 1; }],
+  ["event-rate-workload", (value) => { value.eventRateHz += 10; }],
+  ["supporting-list-workload", (value) => { value.supportingListSize += 1; }],
+]) {
+  const fixture = structuredClone(source.fixtures[0]);
+  const before = digest({ map: makeMap(fixture), recipe: workloadRecipe(fixture) });
+  mutate(fixture);
+  assert.notEqual(digest({ map: makeMap(fixture), recipe: workloadRecipe(fixture) }), before, `${axis} must change the executed workload`);
+  console.log(`JUSTIFIED ${axis}: workload mutation changed the executed subject`);
+}
+const evidence = validateEvidenceReceipt(JSON.parse(readFileSync(new URL("../work/231-svg-pipeline-measurement/production-chromium-evidence.json", import.meta.url))), source);
+const unboundEvidence = structuredClone(evidence); unboundEvidence.candidate.commit = "0".repeat(40);
+assert.throws(() => validateEvidenceReceipt(unboundEvidence, source), /candidate binding/, "evidence candidate mutation must fail");
+console.log("JUSTIFIED evidence-binding: candidate mutation rejected");
 const report = process.env.SIR_SVG_PIPELINE_JUNIT || "artifacts/test-results/svg-pipeline.junit.xml";
 mkdirSync(dirname(report), { recursive: true });
 writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="7" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="7" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="observed-run"/><testcase name="ranking"/></testsuite></testsuites>\n');

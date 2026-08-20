@@ -29,10 +29,10 @@
     {
       "id": "global-large-small-viewport",
       "comparisonGroup": "global-scale-small-viewport",
-      "mapExtent": [79, 79],
+      "mapExtent": [40, 40],
       "viewport": [480, 320],
       "visibleDensity": 40,
-      "globalUnitCount": 200,
+      "globalUnitCount": 40,
       "routeOverlayComplexity": 48,
       "eventRateHz": 20,
       "supportingListSize": 800

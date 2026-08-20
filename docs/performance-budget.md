@@ -46,7 +46,10 @@ The focused `npm run measure:svg-pipeline` route measures the built retained SVG
 in pinned production Chromium. Its versioned workload definition is
 `scripts/svg-pipeline-fixtures.v1.json`; the schema-v1 matrix independently
 declares map extent, visible density, global unit count, route/overlay
-complexity, event rate, and supporting-list size. The
+complexity, event rate, and supporting-list size. Supporting-list records are
+materialized as authoritative regions, event rate controls playback steps, and
+visible density controls a centered unit cluster that the controlled pair
+verifies against production projection output. The
 `global-small-viewport`/`global-large-small-viewport` pair holds a 480×320
 viewport and visible density of 40 constant while increasing global extent from
 20×20 to 79×79, units from 40 to 200, and supporting-list size from 40 to 800.
@@ -61,7 +64,8 @@ the browser or current production instrumentation cannot isolate is recorded as
 unavailable with a reason; it is never folded into one callback aggregate or
 invented as zero. Packed transport, typed buffers, and further allocation work
 become required only when their owning available stage reaches the versioned
-20% material-share threshold; otherwise they remain deferred.
+20% material-share threshold. If a stage is unavailable, its decision remains
+unresolved rather than treating the missing measurement as zero or deferred.
 
 This matrix is deliberately absent from the small-PR CI route. Run it once at a
 substantial-feature merge boundary against the exact Release candidate and
