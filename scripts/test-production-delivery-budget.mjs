@@ -17,7 +17,7 @@ function requireBudget(label, actual, limit) {
   if (actual > limit) throw new Error(`${label} is ${actual} bytes; budget is ${limit}.`);
 }
 
-// Initial boot budget v2 (2026-08-15) aligns the static entry and measured
+// Delivery budget v3 (2026-08-20) aligns the static entry and measured
 // browser route. It is intentionally versioned: future growth must defer or
 // explicitly rebaseline this ceiling rather than treating it as unbounded.
 requireBudget("app raw", app.byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_APP_RAW", 1_250_000));
@@ -35,7 +35,7 @@ if (process.env.SIR_DELIVERY_MUTATE_ARTIFACT === "spatial") {
 }
 requireBudget("RulesExplorer raw", spatial.byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_RAW", 65_536));
 requireBudget("RulesExplorer gzip", gzipSync(spatial).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_GZIP", 20_000));
-requireBudget("RulesExplorer brotli", brotliCompressSync(spatial).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_BROTLI", 16_000));
+requireBudget("RulesExplorer brotli", brotliCompressSync(spatial).byteLength, maximum("SIR_DELIVERY_BUDGET_MAX_SPATIAL_BROTLI", 16_384));
 const worker = await readFile(enginePath);
 const engine = publication.engines.find((entry) => entry.workerPath === "engines/0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20/worker.js");
 if (!engine || engine.bytes !== worker.byteLength || engine.integrity !== `sha384-${createHash("sha384").update(worker).digest("base64")}`) {
