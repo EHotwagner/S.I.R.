@@ -4,7 +4,7 @@
   "workId": "231-svg-pipeline-measurement",
   "stage": "ship",
   "status": "shipReady",
-  "generator": "FS.GG.SDD.Artifacts/1.1.0",
+  "generator": "FS.GG.SDD.Artifacts/1.0.1",
   "sources": [
     {
       "path": ".fsgg/agents.yml",
@@ -51,7 +51,7 @@
       "kind": "source",
       "digest": {
         "algorithm": "sha256",
-        "value": "9536141e7bd099dba962b872f24df393a3b72ba43007b97655ab0c91a11144e0"
+        "value": "fc8f0f0327d7a25bab938b6726ccd0b1ede0a651fe0dc89ec0942572ca59463e"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -61,7 +61,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "84ac5a0be535c8f44b4b9eed0b95141e62aa6bb3a6402a2f868fe8f5705ca5d6"
+        "value": "78035cc0c02f0191fb3ff9c20f42a3ca3987685cc1325d26ef4c5d8268207a5c"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
