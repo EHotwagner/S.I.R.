@@ -1,0 +1,51 @@
+{
+  "schema": "sir.svg-pipeline-fixtures/1",
+  "materialShareThreshold": 0.2,
+  "warmupCycles": 2,
+  "stabilizationCycles": 5,
+  "journeys": ["idle", "playback", "pan", "zoom", "selection", "modality-transition", "dense-overlay"],
+  "fixtures": [
+    {
+      "id": "representative-visible-100",
+      "mapExtent": [20, 20],
+      "viewport": [960, 640],
+      "visibleDensity": 100,
+      "globalUnitCount": 100,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 20,
+      "supportingListSize": 100
+    },
+    {
+      "id": "global-small-viewport",
+      "comparisonGroup": "global-scale-small-viewport",
+      "mapExtent": [20, 20],
+      "viewport": [480, 320],
+      "visibleDensity": 40,
+      "globalUnitCount": 40,
+      "routeOverlayComplexity": 12,
+      "eventRateHz": 20,
+      "supportingListSize": 40
+    },
+    {
+      "id": "global-large-small-viewport",
+      "comparisonGroup": "global-scale-small-viewport",
+      "mapExtent": [80, 80],
+      "viewport": [480, 320],
+      "visibleDensity": 40,
+      "globalUnitCount": 200,
+      "routeOverlayComplexity": 48,
+      "eventRateHz": 20,
+      "supportingListSize": 800
+    },
+    {
+      "id": "dense-overlay-200",
+      "mapExtent": [20, 20],
+      "viewport": [960, 640],
+      "visibleDensity": 200,
+      "globalUnitCount": 200,
+      "routeOverlayComplexity": 96,
+      "eventRateHz": 20,
+      "supportingListSize": 200
+    }
+  ]
+}

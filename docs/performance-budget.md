@@ -40,6 +40,40 @@ retained SVG root, effects are capped at 256 and pointer-inert, and reduced
 motion substitutes short opacity emphasis for spatial animation. Any budget
 change requires an explicit rebaseline with exact-candidate evidence.
 
+## Production Chromium SVG pipeline measurement
+
+The focused `npm run measure:svg-pipeline` route measures the built retained SVG
+in pinned production Chromium. Its versioned workload definition is
+`scripts/svg-pipeline-fixtures.v1.json`; the schema-v1 matrix independently
+declares map extent, visible density, global unit count, route/overlay
+complexity, event rate, and supporting-list size. The
+`global-small-viewport`/`global-large-small-viewport` pair holds a 480×320
+viewport and visible density of 40 constant while increasing global extent from
+20×20 to 80×80, units from 40 to 200, and supporting-list size from 40 to 800.
+These are regression workloads, not a permanent supported-size ceiling.
+
+Each exact-candidate artifact retains the raw Chromium trace and separately
+reports worker compute/transfer, projection/allocation, main-thread
+Elmish/React script, SVG style/layout/paint/compositor work, DOM counts by
+layer, long-frame observations, input-latency capability, and heap/DOM memory
+after two warm-up and five stabilization pan/zoom/playback cycles. A capability
+the browser or current production instrumentation cannot isolate is recorded as
+unavailable with a reason; it is never folded into one callback aggregate or
+invented as zero. Packed transport, typed buffers, and further allocation work
+become required only when their owning available stage reaches the versioned
+20% material-share threshold; otherwise they remain deferred.
+
+This matrix is deliberately absent from the small-PR CI route. Run it once at a
+substantial-feature merge boundary against the exact Release candidate and
+retain `summary.json` plus its trace files:
+
+```shell
+npm run build:client
+dotnet publish src/SIR.Server/SIR.Server.fsproj -c Release -o artifacts/publish
+cp -a artifacts/client/. artifacts/publish/
+npm run measure:svg-pipeline -- --out artifacts/svg-pipeline
+```
+
 ## Physical-combat v1 budget
 
 The v1 schema caps a trace at 256 cells, area delivery at 256 cells, recipients

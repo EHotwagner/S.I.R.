@@ -16,6 +16,8 @@
     "dev:client": "./scripts/dev-client.sh",
     "import:map-design": "node scripts/import-map-editor-design.mjs",
     "measure:worker": "node scripts/measure-worker.mjs",
+    "measure:svg-pipeline": "node scripts/measure-svg-pipeline.mjs",
+    "test:svg-pipeline-measurement": "node scripts/test-svg-pipeline-measurement.mjs",
     "test:worker-roundtrip-race": "node scripts/test-worker-roundtrip-race.mjs",
     "test:browser-import-preflight-wiring": "node scripts/test-browser-import-preflight-wiring.mjs",
     "review:battlefield": "node scripts/generate-battlefield-review.mjs",
