@@ -48,15 +48,36 @@ cp "$temporary_dir/replay.xml" "$replay"
 
 printf '{"schemaVersion":99,"stage":"ship","readiness":"shipReady","disposition":{"state":"shipReady","blockingFindingIds":[]},"verificationReadiness":{"status":"verificationReady","blockingFindingIds":[]}}' > "$temporary_dir/fake-sdd.json"
 printf '{"schema":"wrong","boundary":"ship","profile":"standard","blocked":false,"findings":[]}' > "$temporary_dir/fake-verdict.json"
-if dotnet run --project "$project" -c Release "${run_args[@]}" -- join "$temporary_dir/fake-sdd.json" "$temporary_dir/fake-verdict.json" "$temporary_dir/fake-boundary.json" fake-sdd fake-verdict; then
+if dotnet run --project "$project" -c Release "${run_args[@]}" -- join "$temporary_dir/fake-sdd.json" "$temporary_dir/fake-verdict.json" "$temporary_dir/fake-boundary.json" fake-sdd fake-verdict 2> "$temporary_dir/fake-authority.log"; then
   echo "invalid protected-boundary authorities unexpectedly joined" >&2
   exit 1
 fi
+grep -Fx 'rules-governance: invalid or unready SDD ship artifact' "$temporary_dir/fake-authority.log" >/dev/null
+
+jq '.workId = "mismatched-work-id"' "$repo_root/readiness/239-durable-rules-identity/ship.json" > "$temporary_dir/mismatched-sdd.json"
+if dotnet run --project "$project" -c Release "${run_args[@]}" -- join \
+  "$temporary_dir/mismatched-sdd.json" \
+  "$repo_root/readiness/198-rules-governance-receipts/rules-governance-verdict.json" \
+  "$temporary_dir/mismatched-boundary.json" \
+  "readiness/239-durable-rules-identity/ship.json" \
+  "readiness/198-rules-governance-receipts/rules-governance-verdict.json" \
+  2> "$temporary_dir/mismatched-sdd.log"; then
+  echo "mismatched SDD work identity unexpectedly joined" >&2
+  exit 1
+fi
+grep -Fx 'rules-governance: invalid or unready SDD ship artifact' "$temporary_dir/mismatched-sdd.log" >/dev/null
 
 jq '.blocked = false | .findings[0].verdict = "fail" | .findings[0].effectiveBlocking = true' "$repo_root/readiness/198-rules-governance-receipts/rules-governance-verdict.json" > "$temporary_dir/contradictory-verdict.json"
-if dotnet run --project "$project" -c Release "${run_args[@]}" -- join "$repo_root/readiness/198-rules-governance-receipts/ship.json" "$temporary_dir/contradictory-verdict.json" "$temporary_dir/contradictory-boundary.json" ship contradictory-verdict; then
+if dotnet run --project "$project" -c Release "${run_args[@]}" -- join \
+  "$repo_root/readiness/239-durable-rules-identity/ship.json" \
+  "$temporary_dir/contradictory-verdict.json" \
+  "$temporary_dir/contradictory-boundary.json" \
+  "readiness/239-durable-rules-identity/ship.json" \
+  "readiness/198-rules-governance-receipts/rules-governance-verdict.json" \
+  2> "$temporary_dir/contradictory-verdict.log"; then
   echo "contradictory protected-boundary verdict unexpectedly joined" >&2
   exit 1
 fi
+grep -Fx 'rules-governance: governance verdict blocked state contradicts its findings' "$temporary_dir/contradictory-verdict.log" >/dev/null
 
 echo "rules governance binding, malformed-JUnit, and protected-boundary mutations rejected"

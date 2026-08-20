@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "fb0027c259e36bf9f4c062716380d13f1cb454eee9c5f4812f4dcb5e554a6121"
+        "value": "fef7c33779d5ec000949e568b03e1d732f5b6c5f4701af71e7044818177d91f9"
       }
     },
     {
@@ -782,13 +782,13 @@
         "FR-004"
       ],
       "artifactRefs": [
-        "readiness/239-durable-rules-identity/analysis.json",
+        "readiness/198-rules-governance-receipts/evidence-bindings.json",
+        "readiness/198-rules-governance-receipts/protected-boundary.json",
+        "readiness/198-rules-governance-receipts/rules-governance-verdict.json",
+        "readiness/198-rules-governance-receipts/rules-governance.json",
         "scripts/generate-rules-governance.sh",
-        "scripts/verify-rules-corpus.sh",
-        "tests/fixtures/rules-corpus/v2/coverage.json",
-        "tests/fixtures/rules-corpus/v2/implementation-sources.json",
-        "tests/fixtures/rules-corpus/v2/manifest.json",
-        "tests/fixtures/rules-corpus/v2/representative-application.hex"
+        "scripts/test-rules-governance-tool-mutations.sh",
+        "src/SIR.Simulation/Governance.Tool/Program.fs"
       ],
       "result": "pass",
       "synthetic": false,
@@ -842,13 +842,13 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "readiness/239-durable-rules-identity/analysis.json",
+        "readiness/198-rules-governance-receipts/evidence-bindings.json",
+        "readiness/198-rules-governance-receipts/protected-boundary.json",
+        "readiness/198-rules-governance-receipts/rules-governance-verdict.json",
+        "readiness/198-rules-governance-receipts/rules-governance.json",
         "scripts/generate-rules-governance.sh",
-        "scripts/verify-rules-corpus.sh",
-        "tests/fixtures/rules-corpus/v2/coverage.json",
-        "tests/fixtures/rules-corpus/v2/implementation-sources.json",
-        "tests/fixtures/rules-corpus/v2/manifest.json",
-        "tests/fixtures/rules-corpus/v2/representative-application.hex"
+        "scripts/test-rules-governance-tool-mutations.sh",
+        "src/SIR.Simulation/Governance.Tool/Program.fs"
       ],
       "result": "pass",
       "synthetic": false,
@@ -902,13 +902,13 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "readiness/239-durable-rules-identity/analysis.json",
+        "readiness/198-rules-governance-receipts/evidence-bindings.json",
+        "readiness/198-rules-governance-receipts/protected-boundary.json",
+        "readiness/198-rules-governance-receipts/rules-governance-verdict.json",
+        "readiness/198-rules-governance-receipts/rules-governance.json",
         "scripts/generate-rules-governance.sh",
-        "scripts/verify-rules-corpus.sh",
-        "tests/fixtures/rules-corpus/v2/coverage.json",
-        "tests/fixtures/rules-corpus/v2/implementation-sources.json",
-        "tests/fixtures/rules-corpus/v2/manifest.json",
-        "tests/fixtures/rules-corpus/v2/representative-application.hex"
+        "scripts/test-rules-governance-tool-mutations.sh",
+        "src/SIR.Simulation/Governance.Tool/Program.fs"
       ],
       "result": "pass",
       "synthetic": false,
@@ -1022,13 +1022,13 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "readiness/239-durable-rules-identity/analysis.json",
+        "readiness/198-rules-governance-receipts/evidence-bindings.json",
+        "readiness/198-rules-governance-receipts/protected-boundary.json",
+        "readiness/198-rules-governance-receipts/rules-governance-verdict.json",
+        "readiness/198-rules-governance-receipts/rules-governance.json",
         "scripts/generate-rules-governance.sh",
-        "scripts/verify-rules-corpus.sh",
-        "tests/fixtures/rules-corpus/v2/coverage.json",
-        "tests/fixtures/rules-corpus/v2/implementation-sources.json",
-        "tests/fixtures/rules-corpus/v2/manifest.json",
-        "tests/fixtures/rules-corpus/v2/representative-application.hex"
+        "scripts/test-rules-governance-tool-mutations.sh",
+        "src/SIR.Simulation/Governance.Tool/Program.fs"
       ],
       "result": "pass",
       "synthetic": false,
@@ -1082,13 +1082,13 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "readiness/239-durable-rules-identity/analysis.json",
+        "readiness/198-rules-governance-receipts/evidence-bindings.json",
+        "readiness/198-rules-governance-receipts/protected-boundary.json",
+        "readiness/198-rules-governance-receipts/rules-governance-verdict.json",
+        "readiness/198-rules-governance-receipts/rules-governance.json",
         "scripts/generate-rules-governance.sh",
-        "scripts/verify-rules-corpus.sh",
-        "tests/fixtures/rules-corpus/v2/coverage.json",
-        "tests/fixtures/rules-corpus/v2/implementation-sources.json",
-        "tests/fixtures/rules-corpus/v2/manifest.json",
-        "tests/fixtures/rules-corpus/v2/representative-application.hex"
+        "scripts/test-rules-governance-tool-mutations.sh",
+        "src/SIR.Simulation/Governance.Tool/Program.fs"
       ],
       "result": "pass",
       "synthetic": false,
@@ -1112,13 +1112,13 @@
       ],
       "requirementRefs": [],
       "artifactRefs": [
-        "readiness/239-durable-rules-identity/analysis.json",
+        "readiness/198-rules-governance-receipts/evidence-bindings.json",
+        "readiness/198-rules-governance-receipts/protected-boundary.json",
+        "readiness/198-rules-governance-receipts/rules-governance-verdict.json",
+        "readiness/198-rules-governance-receipts/rules-governance.json",
         "scripts/generate-rules-governance.sh",
-        "scripts/verify-rules-corpus.sh",
-        "tests/fixtures/rules-corpus/v2/coverage.json",
-        "tests/fixtures/rules-corpus/v2/implementation-sources.json",
-        "tests/fixtures/rules-corpus/v2/manifest.json",
-        "tests/fixtures/rules-corpus/v2/representative-application.hex"
+        "scripts/test-rules-governance-tool-mutations.sh",
+        "src/SIR.Simulation/Governance.Tool/Program.fs"
       ],
       "result": "pass",
       "synthetic": false,
@@ -1187,7 +1187,7 @@
           "path": "work/239-durable-rules-identity/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "fb0027c259e36bf9f4c062716380d13f1cb454eee9c5f4812f4dcb5e554a6121"
+            "value": "fef7c33779d5ec000949e568b03e1d732f5b6c5f4701af71e7044818177d91f9"
           },
           "schemaVersion": 1
         },
@@ -1218,7 +1218,7 @@
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "1e1458ad2e0b93632fcf9b8dbb5fd772d7c0a45e10c79dd7e80d172242e21644"
+        "value": "f1665811e7c4f861be222149a6c9e3764a340fedf59bb60932be007b46e4c63f"
       },
       "currency": "current"
     }

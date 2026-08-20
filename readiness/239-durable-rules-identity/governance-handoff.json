@@ -6,17 +6,17 @@
   "sources": [
     {
       "path": "readiness/239-durable-rules-identity/ship.json",
-      "digest": "sha256:065628306f115437702e745b2f1aded367ed345907bb46fc889f290532607631",
+      "digest": "sha256:127c0055eb29e5c092ab7d782199216a109456074feb4c3e637e66a42f8cc31d",
       "schemaVersion": 1
     },
     {
       "path": "readiness/239-durable-rules-identity/verify.json",
-      "digest": "sha256:4046e62665d9253afc43c19680dc4886ad71a6fb3e5cbfc29b7ab773d6ccf2ef",
+      "digest": "sha256:66b9e4189d032c4b3406c60480a9fb28a3e0cb08f02fbd85b42491fc8048feec",
       "schemaVersion": 1
     },
     {
       "path": "readiness/239-durable-rules-identity/work-model.json",
-      "digest": "sha256:7481253ec2dad2db160c30f934fc41e4f4f2efb90f199e520f301ea00598f0b5",
+      "digest": "sha256:369c6300afaae9ade3c8c184f6582f6d4730071cc38aedc6e99194398fd1e278",
       "schemaVersion": 1
     }
   ],

@@ -127,21 +127,25 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-004]
     obligationRefs: [EV004]
-    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    artifacts: [readiness/198-rules-governance-receipts/evidence-bindings.json, readiness/198-rules-governance-receipts/protected-boundary.json, readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, scripts/generate-rules-governance.sh, scripts/test-rules-governance-tool-mutations.sh, src/SIR.Simulation/Governance.Tool/Program.fs]
     sourceRefs:
       - kind: verification
-        path: scripts/verify-rules-corpus.sh
+        path: work/239-durable-rules-identity/generate-governance-evidence.sh
+      - kind: verification
+        path: scripts/generate-rules-governance.sh
+      - kind: verification
+        path: scripts/test-rules-governance-tool-mutations.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
-      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      source: readiness/239-durable-rules-identity/rules-governance.junit.xml
+      digest: "sha256:caa35e95309193e3b349d2f5e2cb75921e802d48a5e6f9f11cb5b5b76bde9786"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
-    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+    notes: [JUnit, Observed Governance deterministic currentness and fail-closed binding, and contradictory-verdict subject mutations., work-identity]
   - id: EV005
     kind: verification
     subject:
@@ -181,21 +185,25 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV006]
-    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    artifacts: [readiness/198-rules-governance-receipts/evidence-bindings.json, readiness/198-rules-governance-receipts/protected-boundary.json, readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, scripts/generate-rules-governance.sh, scripts/test-rules-governance-tool-mutations.sh, src/SIR.Simulation/Governance.Tool/Program.fs]
     sourceRefs:
       - kind: verification
-        path: scripts/verify-rules-corpus.sh
+        path: work/239-durable-rules-identity/generate-governance-evidence.sh
+      - kind: verification
+        path: scripts/generate-rules-governance.sh
+      - kind: verification
+        path: scripts/test-rules-governance-tool-mutations.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
-      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      source: readiness/239-durable-rules-identity/rules-governance.junit.xml
+      digest: "sha256:caa35e95309193e3b349d2f5e2cb75921e802d48a5e6f9f11cb5b5b76bde9786"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
-    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+    notes: [JUnit, Observed Governance deterministic currentness and fail-closed binding, and contradictory-verdict subject mutations., work-identity]
   - id: EV007
     kind: verification
     subject:
@@ -235,21 +243,25 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-004]
     obligationRefs: [EV008]
-    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    artifacts: [readiness/198-rules-governance-receipts/evidence-bindings.json, readiness/198-rules-governance-receipts/protected-boundary.json, readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, scripts/generate-rules-governance.sh, scripts/test-rules-governance-tool-mutations.sh, src/SIR.Simulation/Governance.Tool/Program.fs]
     sourceRefs:
       - kind: verification
-        path: scripts/verify-rules-corpus.sh
+        path: work/239-durable-rules-identity/generate-governance-evidence.sh
+      - kind: verification
+        path: scripts/generate-rules-governance.sh
+      - kind: verification
+        path: scripts/test-rules-governance-tool-mutations.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
-      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      source: readiness/239-durable-rules-identity/rules-governance.junit.xml
+      digest: "sha256:caa35e95309193e3b349d2f5e2cb75921e802d48a5e6f9f11cb5b5b76bde9786"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
-    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+    notes: [JUnit, Observed Governance deterministic currentness and fail-closed binding, and contradictory-verdict subject mutations., work-identity]
   - id: EV009
     kind: verification
     subject:
@@ -343,21 +355,25 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-004]
     obligationRefs: [EV012]
-    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    artifacts: [readiness/198-rules-governance-receipts/evidence-bindings.json, readiness/198-rules-governance-receipts/protected-boundary.json, readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, scripts/generate-rules-governance.sh, scripts/test-rules-governance-tool-mutations.sh, src/SIR.Simulation/Governance.Tool/Program.fs]
     sourceRefs:
       - kind: verification
-        path: scripts/verify-rules-corpus.sh
+        path: work/239-durable-rules-identity/generate-governance-evidence.sh
+      - kind: verification
+        path: scripts/generate-rules-governance.sh
+      - kind: verification
+        path: scripts/test-rules-governance-tool-mutations.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
-      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      source: readiness/239-durable-rules-identity/rules-governance.junit.xml
+      digest: "sha256:caa35e95309193e3b349d2f5e2cb75921e802d48a5e6f9f11cb5b5b76bde9786"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
-    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+    notes: [JUnit, Observed Governance deterministic currentness and fail-closed binding, and contradictory-verdict subject mutations., work-identity]
   - id: EV013
     kind: verification
     subject:
@@ -397,21 +413,25 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV014]
-    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    artifacts: [readiness/198-rules-governance-receipts/evidence-bindings.json, readiness/198-rules-governance-receipts/protected-boundary.json, readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, scripts/generate-rules-governance.sh, scripts/test-rules-governance-tool-mutations.sh, src/SIR.Simulation/Governance.Tool/Program.fs]
     sourceRefs:
       - kind: verification
-        path: scripts/verify-rules-corpus.sh
+        path: work/239-durable-rules-identity/generate-governance-evidence.sh
+      - kind: verification
+        path: scripts/generate-rules-governance.sh
+      - kind: verification
+        path: scripts/test-rules-governance-tool-mutations.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
-      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      source: readiness/239-durable-rules-identity/rules-governance.junit.xml
+      digest: "sha256:caa35e95309193e3b349d2f5e2cb75921e802d48a5e6f9f11cb5b5b76bde9786"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
-    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+    notes: [JUnit, Observed Governance deterministic currentness and fail-closed binding, and contradictory-verdict subject mutations., work-identity]
   - id: EV015
     kind: verification
     subject:
@@ -424,20 +444,24 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001, PD-004]
     obligationRefs: [EV015]
-    artifacts: [readiness/239-durable-rules-identity/analysis.json, scripts/generate-rules-governance.sh, scripts/verify-rules-corpus.sh, tests/fixtures/rules-corpus/v2/coverage.json, tests/fixtures/rules-corpus/v2/implementation-sources.json, tests/fixtures/rules-corpus/v2/manifest.json, tests/fixtures/rules-corpus/v2/representative-application.hex]
+    artifacts: [readiness/198-rules-governance-receipts/evidence-bindings.json, readiness/198-rules-governance-receipts/protected-boundary.json, readiness/198-rules-governance-receipts/rules-governance-verdict.json, readiness/198-rules-governance-receipts/rules-governance.json, scripts/generate-rules-governance.sh, scripts/test-rules-governance-tool-mutations.sh, src/SIR.Simulation/Governance.Tool/Program.fs]
     sourceRefs:
       - kind: verification
-        path: scripts/verify-rules-corpus.sh
+        path: work/239-durable-rules-identity/generate-governance-evidence.sh
+      - kind: verification
+        path: scripts/generate-rules-governance.sh
+      - kind: verification
+        path: scripts/test-rules-governance-tool-mutations.sh
     result: pass
     synthetic: false
     observedRun:
-      source: readiness/239-durable-rules-identity/rules-corpus-source-identity.junit.xml
-      digest: "sha256:be87a859f801d5b679e7cd3ba1874aea945045b3b5594b837749a3fe77f4ccb0"
+      source: readiness/239-durable-rules-identity/rules-governance.junit.xml
+      digest: "sha256:caa35e95309193e3b349d2f5e2cb75921e802d48a5e6f9f11cb5b5b76bde9786"
       digestContract: exact-bytes-v1
       outcome: passed
-      passed: 1
+      passed: 2
       failed: 0
       skipped: 0
-    notes: [Focused rules verifier passed generation, "and embedded refusal mutations; fresh network-clone and hosted checks remain protected merge-boundary evidence.", digest, retained-evidence, source-resolution]
+    notes: [JUnit, Observed Governance deterministic currentness and fail-closed binding, and contradictory-verdict subject mutations., work-identity]
 lifecycleNotes:
   - "Next lifecycle action: verify."
