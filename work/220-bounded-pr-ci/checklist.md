@@ -21,8 +21,8 @@ Prose status: checklistReady
 - work/220-bounded-pr-ci/clarifications.md
 
 ## Source Snapshot
-- spec: work/220-bounded-pr-ci/spec.md sha256:997daa8007aefb252e19fe9a177265edbfa64f1e9ac2747eb0f05b97ea825f2c schemaVersion:1
-- clarifications: work/220-bounded-pr-ci/clarifications.md sha256:b00176a02d8591ac695beaf6d6094ad4cb2504b076d6ea5ac96dc9b8504958ca schemaVersion:1
+- spec: work/220-bounded-pr-ci/spec.md sha256:126808eaa7785b9d2ce0a5e958d06def32ffb98358c1a42ab57f53caa231dd96 schemaVersion:1
+- clarifications: work/220-bounded-pr-ci/clarifications.md sha256:b3525c9c3afa13a5f28599546e0455f5dc1fcf9157277f68e733970d5ce680d2 schemaVersion:1
 
 ## Checklist Items
 - CHK-001 [FR-001] [AC-001] blocking: Requirement FR-001 is testable and linked to acceptance coverage.

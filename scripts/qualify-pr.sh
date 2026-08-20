@@ -120,37 +120,18 @@ NODE
     build_started=$(date +%s%3N)
     case "$part" in
       native)
-        dotnet build SIR.slnx --no-restore >"$part_root/solution-debug.log" 2>&1 &
-        solution_pid=$!
-        part_failed=0
-        # The two Release graphs share dependency outputs, so serialize them
-        # while the disjoint Debug solution graph builds in parallel.
-        dotnet build tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj -c Release --no-restore >"$part_root/domain-release.log" 2>&1 || part_failed=1
-        dotnet build tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj -c Release --no-restore >"$part_root/rules-governance-release.log" 2>&1 || part_failed=1
-        dotnet build src/SIR.Simulation/Governance.Tool/SIR.Rules.Governance.Tool.fsproj -c Release --no-restore --no-dependencies >"$part_root/rules-governance-tool-release.log" 2>&1 || part_failed=1
-        # Domain Release prepares Domain and Simulation. Replay.Core is a direct
-        # Client.Tests dependency outside that graph, so prepare only its owner
-        # before building the client test owner without duplicate dependencies.
-        dotnet build src/SIR.Replay.Core/SIR.Replay.Core.fsproj -c Release --no-restore --no-dependencies >"$part_root/replay-core-release.log" 2>&1 || part_failed=1
-        dotnet build tests/SIR.Client.Tests/SIR.Client.Tests.fsproj -c Release --no-restore --no-dependencies >"$part_root/client-release.log" 2>&1 || part_failed=1
-        wait "$solution_pid" || part_failed=1
-        sed -n '1,240p' "$part_root/solution-debug.log"
-        sed -n '1,240p' "$part_root/domain-release.log"
-        sed -n '1,240p' "$part_root/rules-governance-release.log"
-        sed -n '1,240p' "$part_root/rules-governance-tool-release.log"
-        sed -n '1,240p' "$part_root/replay-core-release.log"
-        sed -n '1,240p' "$part_root/client-release.log"
-        [[ $part_failed -eq 0 ]] || { echo "qualify-pr: native prepare part failed" >&2; exit 1; }
+        # One Release solution graph is the native producer boundary. It compiles
+        # every declared project once and lets later solution growth remain one
+        # invocation instead of accumulating serialized owner builds.
+        dotnet build SIR.slnx -c Release --no-restore
         part_paths=(
-          tests/SIR.Domain.Tests/bin/Debug/net10.0
           tests/SIR.Domain.Tests/bin/Release/net10.0
           tests/SIR.Rules.Governance.Tests/bin/Release/net10.0
           src/SIR.Simulation/Governance.Tool/bin/Release/net10.0
-          tests/SIR.Client.Tests/bin/Debug/net10.0
           tests/SIR.Client.Tests/bin/Release/net10.0
-          tests/SIR.Client.Tests/bin/ScenarioCatalogRuntime/Debug/net10.0
-          tests/SIR.ModalInput.Tests/bin/Debug/net10.0
-          tests/SIR.Match.Tests/bin/Debug/net10.0
+          tests/SIR.Client.Tests/bin/ScenarioCatalogRuntime/Release/net10.0
+          tests/SIR.ModalInput.Tests/bin/Release/net10.0
+          tests/SIR.Match.Tests/bin/Release/net10.0
         )
         ;;
       fable)

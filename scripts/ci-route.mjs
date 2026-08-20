@@ -9,6 +9,8 @@ export const joinSchema = "sir.ci-join/v1";
 export const timingSchema = "sir.ci-timing/v1";
 export const policyVersion = "1";
 export const feedbackBudgetMilliseconds = 300_000;
+export const feedbackHeadroomMilliseconds = 60_000;
+export const feedbackAcceptanceTargetMilliseconds = feedbackBudgetMilliseconds - feedbackHeadroomMilliseconds;
 export const gateOrder = ["rules", "spatial", "cancellation", "cross-runtime", "browser", "documentation", "evidence"];
 export const producerOrder = ["prepare-native", "prepare-fable", "prepare-web", "prepare-server", "prepare-docs"];
 export const subjectOrder = ["integrity", ...producerOrder, ...gateOrder];
@@ -23,7 +25,7 @@ export const gateParts = {
 };
 export const expectedBuildInvocations = {
   integrity: [],
-  "prepare-native": ["build:SIR.slnx", "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj", "build:src/SIR.Simulation/Governance.Tool/SIR.Rules.Governance.Tool.fsproj", "build:tests/SIR.Client.Tests/SIR.Client.Tests.fsproj", "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj", "build:tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj", "producer:native"],
+  "prepare-native": ["build:SIR.slnx", "producer:native"],
   "prepare-fable": ["fable:tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj", "fable:tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj", "fable:tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj", "producer:fable"],
   "prepare-web": ["fable:src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj", "fable:src/SIR.Replay.Web/SIR.Replay.Web.fsproj", "producer:web"],
   "prepare-server": ["producer:server", "publish:src/SIR.Server/SIR.Server.fsproj"],
@@ -221,6 +223,14 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
   const elapsed = completedAtMilliseconds - startedAtMilliseconds;
   if (!Number.isSafeInteger(elapsed) || elapsed < 0) failures.push({ code: "invalid-feedback-duration", subject: "timing" });
   if (enforceBudget && Number.isSafeInteger(elapsed) && elapsed > feedbackBudgetMilliseconds) failures.push({ code: "feedback-budget-exceeded", subject: "timing", actual: elapsed, budget: feedbackBudgetMilliseconds });
+  if (enforceBudget && Number.isSafeInteger(elapsed) && elapsed > feedbackAcceptanceTargetMilliseconds) failures.push({
+    code: "feedback-headroom-eroded",
+    subject: "timing",
+    actual: elapsed,
+    target: feedbackAcceptanceTargetMilliseconds,
+    requiredHeadroom: feedbackHeadroomMilliseconds,
+    budget: feedbackBudgetMilliseconds,
+  });
   const ordered = subjectOrder.filter((gate) => byGate.has(gate)).map((gate) => byGate.get(gate));
   const validTotals = ordered.map((result) => result?.timingMilliseconds?.total).filter((value) => Number.isSafeInteger(value) && value >= 0);
   const observedGateCriticalPath = Math.max(0, ...validTotals);
@@ -233,6 +243,9 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
     completedAtMilliseconds,
     totalMilliseconds: Number.isSafeInteger(elapsed) && elapsed >= 0 ? elapsed : null,
     budgetMilliseconds: feedbackBudgetMilliseconds,
+    acceptanceTargetMilliseconds: feedbackAcceptanceTargetMilliseconds,
+    requiredHeadroomMilliseconds: feedbackHeadroomMilliseconds,
+    actualHeadroomMilliseconds: Number.isSafeInteger(elapsed) && elapsed >= 0 ? feedbackBudgetMilliseconds - elapsed : null,
     criticalPathMilliseconds: criticalPath,
     observedGateCriticalPathMilliseconds: observedGateCriticalPath,
     runnerMilliseconds,

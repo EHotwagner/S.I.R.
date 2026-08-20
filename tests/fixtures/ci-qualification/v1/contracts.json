@@ -1,6 +1,8 @@
 {
   "schema": "sir.ci-contracts/v1",
   "feedbackBudgetMilliseconds": 300000,
+  "feedbackAcceptanceTargetMilliseconds": 240000,
+  "feedbackHeadroomMilliseconds": 60000,
   "runnerClass": "ubuntu-latest",
   "gateOrder": [
     "rules",

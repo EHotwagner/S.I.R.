@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { canonicalArtifactBindings, expectedBuildInvocations, gateOrder, gateParts, producerOrder, subjectOrder, gateResult, joinRoute, routePaths, feedbackBudgetMilliseconds, routeSchema, gateSchema, joinSchema, timingSchema } from "./ci-route.mjs";
+import { canonicalArtifactBindings, expectedBuildInvocations, gateOrder, gateParts, producerOrder, subjectOrder, gateResult, joinRoute, routePaths, feedbackBudgetMilliseconds, feedbackAcceptanceTargetMilliseconds, feedbackHeadroomMilliseconds, routeSchema, gateSchema, joinSchema, timingSchema } from "./ci-route.mjs";
 
 const route = (paths) => routePaths(paths, { commit: "a".repeat(40), tree: "b".repeat(40) });
 
@@ -34,13 +34,20 @@ const resultFor = (gate, status = "pass", overrides = {}) => gateResult(gate, st
 const passing = expectedSubjects.map((gate, index) => resultFor(gate, "pass", { cacheHit: index === 0, buildInvocations: expectedBuildInvocations[gate] }));
 assert.deepEqual(canonicalArtifactBindings({ web: "1", server: "2" }), canonicalArtifactBindings({ server: "2", web: "1" }));
 assert.deepEqual(gateResult("browser", "pass", {}, { artifactBindings: { web: "1", server: "2" }, buildInvocations: ["z", "a"] }).buildInvocations, ["a", "z"]);
-const joined = joinRoute(domain, passing, { startedAtMilliseconds: 1_000, completedAtMilliseconds: 299_000 });
+const joined = joinRoute(domain, passing, { startedAtMilliseconds: 1_000, completedAtMilliseconds: 239_000 });
 assert.equal(joined.result, "pass");
 assert.equal(joined.timing.subject, "runner-feedback");
 assert.equal(joined.timing.receiptReuses, domain.selectedGates.length - 1);
 assert.equal(joined.gateResults[0].timingMilliseconds.queue, null);
 assert.equal(joined.gateResults[0].timingMilliseconds.transport, 0);
 assert.equal(joined.timing.runnerMilliseconds, expectedSubjects.length * 1_000);
+assert.equal(joined.timing.acceptanceTargetMilliseconds, feedbackAcceptanceTargetMilliseconds);
+assert.equal(joined.timing.requiredHeadroomMilliseconds, feedbackHeadroomMilliseconds);
+assert.equal(joined.timing.actualHeadroomMilliseconds, 62_000);
+const erodedHeadroom = joinRoute(domain, passing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds + 1 });
+assert.equal(erodedHeadroom.result, "fail");
+assert.ok(erodedHeadroom.failures.some(({ code, target, requiredHeadroom }) => code === "feedback-headroom-eroded" && target === feedbackAcceptanceTargetMilliseconds && requiredHeadroom === feedbackHeadroomMilliseconds));
+assert.ok(!erodedHeadroom.failures.some(({ code }) => code === "feedback-budget-exceeded"));
 const overBudget = joinRoute(domain, passing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackBudgetMilliseconds + 1 });
 assert.equal(overBudget.result, "fail");
 assert.ok(overBudget.failures.some(({ code }) => code === "feedback-budget-exceeded"));
@@ -83,6 +90,8 @@ const workflow = readFileSync(new URL("../.github/workflows/ci.yml", import.meta
 const jobBody = (name) => new RegExp(`^  ${name}:\\n([\\s\\S]*?)(?=^  [a-z][a-z-]*:\\n)`, "mu").exec(workflow)?.[1] ?? "";
 const contracts = JSON.parse(readFileSync(new URL("../tests/fixtures/ci-qualification/v1/contracts.json", import.meta.url), "utf8"));
 assert.equal(contracts.feedbackBudgetMilliseconds, feedbackBudgetMilliseconds);
+assert.equal(contracts.feedbackAcceptanceTargetMilliseconds, feedbackAcceptanceTargetMilliseconds);
+assert.equal(contracts.feedbackHeadroomMilliseconds, feedbackHeadroomMilliseconds);
 assert.deepEqual(contracts.gateOrder, gateOrder);
 assert.deepEqual(contracts.subjectOrder, subjectOrder);
 assert.deepEqual(expectedBuildInvocations.cancellation, [
@@ -95,47 +104,20 @@ assert.deepEqual(spatialBuilds, [
 ].map((name) => `build:src/SIR.Simulation/SIR.Simulation.fsproj:exception:spatial-${name}:artifacts-path:isolated`));
 assert.deepEqual(expectedBuildInvocations["prepare-native"], [
   "build:SIR.slnx",
-  "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj",
-  "build:src/SIR.Simulation/Governance.Tool/SIR.Rules.Governance.Tool.fsproj",
-  "build:tests/SIR.Client.Tests/SIR.Client.Tests.fsproj",
-  "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj",
-  "build:tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj",
   "producer:native",
 ]);
-for (const owner of [
-  "build:src/SIR.Simulation/Governance.Tool/SIR.Rules.Governance.Tool.fsproj",
-  "build:tests/SIR.Rules.Governance.Tests/SIR.Rules.Governance.Tests.fsproj",
-]) {
-  const missingOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
-    ...result,
-    buildInvocations: result.buildInvocations.filter((invocation) => invocation !== owner),
-  } : result), { completedAtMilliseconds: 1 });
-  assert.ok(missingOwner.failures.some(({ code, invocation }) => code === "missing-build-invocation" && invocation === owner));
-  const unknown = owner.replace("SIR.Rules.Governance", "SIR.Rules.Unknown");
-  const unknownOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
-    ...result,
-    buildInvocations: result.buildInvocations.map((invocation) => invocation === owner ? unknown : invocation),
-  } : result), { completedAtMilliseconds: 1 });
-  assert.ok(unknownOwner.failures.some(({ code, invocation }) => code === "unknown-build-invocation" && invocation === unknown));
-  assert.ok(unknownOwner.failures.some(({ code, invocation }) => code === "missing-build-invocation" && invocation === owner));
-  const duplicateOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
-    ...result,
-    buildInvocations: [...result.buildInvocations, owner],
-  } : result), { completedAtMilliseconds: 1 });
-  assert.ok(duplicateOwner.failures.some(({ code, invocation, expected, actual }) => code === "duplicate-build-invocation" && invocation === owner && expected === 1 && actual === 2));
-}
-const duplicatedReplayCoreOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
+const duplicatedSolutionOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
   ...result,
-  buildInvocations: [...result.buildInvocations, "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj"],
+  buildInvocations: [...result.buildInvocations, "build:SIR.slnx"],
 } : result), { completedAtMilliseconds: 1 });
-assert.ok(duplicatedReplayCoreOwner.failures.some(({ code, invocation }) =>
-  code === "duplicate-build-invocation" && invocation === "build:src/SIR.Replay.Core/SIR.Replay.Core.fsproj"));
-const unknownReplayCoreOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
+assert.ok(duplicatedSolutionOwner.failures.some(({ code, invocation }) =>
+  code === "duplicate-build-invocation" && invocation === "build:SIR.slnx"));
+const redundantProjectOwner = joinRoute(domain, passing.map((result) => result.gate === "prepare-native" ? {
   ...result,
-  buildInvocations: [...result.buildInvocations, "build:src/SIR.Replay.Unknown/SIR.Replay.Unknown.fsproj"],
+  buildInvocations: [...result.buildInvocations, "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj"],
 } : result), { completedAtMilliseconds: 1 });
-assert.ok(unknownReplayCoreOwner.failures.some(({ code, invocation }) =>
-  code === "unknown-build-invocation" && invocation === "build:src/SIR.Replay.Unknown/SIR.Replay.Unknown.fsproj"));
+assert.ok(redundantProjectOwner.failures.some(({ code, invocation }) =>
+  code === "unknown-build-invocation" && invocation === "build:tests/SIR.Domain.Tests/SIR.Domain.Tests.fsproj"));
 assert.deepEqual(expectedBuildInvocations["prepare-fable"], [
   "fable:tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj",
   "fable:tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj",
@@ -194,7 +176,9 @@ assert.match(fullQualification, /fable_target_builds=.*\.total/u);
 const focusedQualification = readFileSync(new URL("./qualify-pr.sh", import.meta.url), "utf8");
 const conformanceQualification = readFileSync(new URL("./test-conformance.sh", import.meta.url), "utf8");
 const matchQualification = readFileSync(new URL("../tests/SIR.Match.Tests/Program.fs", import.meta.url), "utf8");
-assert.ok(focusedQualification.indexOf('wait "$release_pid"') < focusedQualification.indexOf("part_paths=("));
+const focusedNativeProducer = /      native\)\n(?<body>[\s\S]*?)\n        ;;/u.exec(focusedQualification);
+assert.ok(focusedNativeProducer?.groups?.body, "focused native producer block is missing");
+assert.equal(focusedNativeProducer.groups.body.match(/dotnet build SIR\.slnx -c Release --no-restore/gu)?.length, 1);
 assert.doesNotMatch(focusedQualification, /find src tests -type d.*-name obj/u);
 assert.doesNotMatch(focusedQualification, /--output .*obj/u);
 assert.match(focusedQualification, /dotnet restore SIR\.slnx --locked-mode/u);
@@ -202,8 +186,7 @@ assert.match(focusedQualification, /trap write_part_timing EXIT/u);
 assert.match(focusedQualification, /verify-staged[\s\S]*cp -a "\$stage\/\$output_path" "\$target"/u);
 assert.match(focusedQualification, /browser\)[\s\S]*compose-browser[\s\S]*npm run test:browser/u);
 assert.match(focusedQualification, /verify-browser-composition/u);
-assert.match(focusedQualification, /dotnet build tests\/SIR\.Rules\.Governance\.Tests\/SIR\.Rules\.Governance\.Tests\.fsproj -c Release --no-restore/u);
-assert.match(focusedQualification, /dotnet build src\/SIR\.Simulation\/Governance\.Tool\/SIR\.Rules\.Governance\.Tool\.fsproj -c Release --no-restore --no-dependencies/u);
+assert.doesNotMatch(focusedNativeProducer.groups.body, /dotnet build (?:tests|src)\/[^\n]+\.fsproj/u);
 assert.match(focusedQualification, /tests\/SIR\.Rules\.Governance\.Tests\/bin\/Release\/net10\.0/u);
 assert.match(focusedQualification, /src\/SIR\.Simulation\/Governance\.Tool\/bin\/Release\/net10\.0/u);
 const focusedRulesGate = /      rules\)\n(?<body>[\s\S]*?)\n        ;;/u.exec(focusedQualification);
@@ -220,6 +203,8 @@ assert.match(focusedQualification, /cross-runtime\)[\s\S]*--domain-only[\s\S]*--
 assert.doesNotMatch(fullQualification, /--ordinary-pr-functional/u);
 assert.match(conformanceQualification, /--ordinary-pr-functional requires --domain-only/u);
 assert.match(conformanceQualification, /match_arguments=\(-- --functional-cross-runtime\)/u);
+assert.match(conformanceQualification, /dotnet build SIR\.slnx -c Release --no-restore/u);
+assert.doesNotMatch(conformanceQualification, /bin\/ScenarioCatalogRuntime\/Debug/u);
 assert.match(matchQualification, /not enforceProductPerformanceBudgets \|\| interactionBest < 50\.0/u);
 assert.doesNotMatch(focusedQualification, /verify --work 138-sir-fable-game-scaffold/u);
 assert.match(focusedQualification, /route\.paths\.map/u);

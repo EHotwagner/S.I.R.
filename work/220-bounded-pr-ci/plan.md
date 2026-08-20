@@ -16,9 +16,9 @@ publicOrToolFacingImpact: true
 Prose status: planned
 
 ## Source Snapshot
-- spec: work/220-bounded-pr-ci/spec.md sha256:997daa8007aefb252e19fe9a177265edbfa64f1e9ac2747eb0f05b97ea825f2c schemaVersion:1
-- clarifications: work/220-bounded-pr-ci/clarifications.md sha256:b00176a02d8591ac695beaf6d6094ad4cb2504b076d6ea5ac96dc9b8504958ca schemaVersion:1
-- checklist: work/220-bounded-pr-ci/checklist.md sha256:dbdba47c86a1973f217b00976e914effb64098f5067d699737fa9838072691da schemaVersion:1
+- spec: work/220-bounded-pr-ci/spec.md sha256:126808eaa7785b9d2ce0a5e958d06def32ffb98358c1a42ab57f53caa231dd96 schemaVersion:1
+- clarifications: work/220-bounded-pr-ci/clarifications.md sha256:b3525c9c3afa13a5f28599546e0455f5dc1fcf9157277f68e733970d5ce680d2 schemaVersion:1
+- checklist: work/220-bounded-pr-ci/checklist.md sha256:0b89c050b3209b15e15fd44c3b1aeb3fb913a561a3e09cb42a4ef516ad3678c3 schemaVersion:1
 
 ## Plan Scope
 - Add a small Node route/receipt/join module with committed policy and timing schemas; keep routing pure and independently testable.
@@ -41,13 +41,13 @@ GitHub Actions `ubuntu-latest`, Node 26 ESM, strict Bash, .NET 10/Fable 5.13, np
 - `scripts/qualify-pr.sh` is the local focused-lane owner. It captures changed paths, starts one timing receipt, runs the integrity floor, prepares only the selected prerequisites, runs selected gates in stable concurrent groups, then invokes the same deterministic join as hosted CI.
 - `.github/workflows/ci.yml` separates PR and full routes. PR jobs are `route`, `integrity`, independent native/Fable/web/server/docs producers, named rules/spatial/cancellation/cross-runtime/browser/documentation/evidence gates, and `pr-verdict`; each gate depends only on its relevant producers. Main pushes and schedules run `qualify-production.sh` as a clean-room job.
 - Each producer uses lock-keyed caches only as transport acceleration, builds its selected prerequisite once, creates/verifies a content-addressed production receipt and route artifact manifest, and uploads only its immutable declared outputs. Consumers download and verify only their required producer artifacts; mutable `obj` intermediates and unrelated `bin` trees are never sealed, and missing or drifted artifacts never trigger an implicit rebuild.
-- Every job emits a small gate-result JSON with queue/setup/restore/build/test/total durations, cache/reuse and invocation counts, route fact, retry/failure stage, candidate commit/tree, command, and output identities. The join orders results by policy, validates all required/skip states, calculates critical path and runner-minutes, and enforces 300,000 ms for representative PR routes.
+- Every job emits a small gate-result JSON with queue/setup/restore/build/test/total durations, cache/reuse and invocation counts, route fact, retry/failure stage, candidate commit/tree, command, and output identities. The join orders results by policy, validates all required/skip states, calculates critical path and runner-minutes, rejects representative cross-cutting routes above the 240,000 ms acceptance target, and retains the unchanged 300,000 ms outer budget diagnostic.
 - Protected and scheduled full qualification keep the current clean-cache receipt/mutation/browser/docs/performance/SDD/Governance/historical subjects. A scheduled mutation proves a cross-surface defect omitted from an otherwise correct focused route is caught at the full boundary.
 
 ## Plan Decisions
 - PD-001 [AC-001] [FR-001] [DEC-001] complete: Define one ordered route-policy object and pure changed-path classifier for documentation, domain, browser, and cross-cutting classes; normalize separators and reject empty/malformed path facts.
 - PD-002 [AC-001] [FR-002] [DEC-001] complete: Emit selected gates and `skipped` entries with exact matching rule ids; mixed or unknown paths carry a conservative rule id and select every required cross-cutting gate.
-- PD-003 [AC-002] [FR-003] [DEC-005] complete: Timestamp route-runner start and join completion with monotonic milliseconds, enforce 300,000 ms only on PR feedback, and test the threshold without wall-clock sleeps.
+- PD-003 [AC-002] [FR-003] [DEC-005] in-progress: Keep the 300,000 ms enforced PR boundary, require the final representative cross-cutting acceptance run to complete within 240,000 ms, and consolidate native preparation into one Release solution graph whose source-bound outputs all downstream gates consume without configuration-duplicate builds.
 - PD-004 [AC-002] [FR-004] [DEC-002] complete: Place integrity before prepare/expensive nodes and express every independently attributable gate as a named DAG node rather than serial workflow steps.
 - PD-005 [AC-003] [FR-005] [DEC-003] complete: Build selected prerequisites in independent producer nodes, publish narrow content-addressed manifests and immutable outputs, and make each downstream node consume only its required producers without fallback rebuilds or a global join dependency.
 - PD-006 [AC-003] [FR-006] [DEC-003] complete: Reuse the production receipt verifier and exact-once Fable inventory; add route artifact verification for candidate/config/locks/tools/command/paths/outputs and cache-key identity.
@@ -66,15 +66,15 @@ GitHub Actions `ubuntu-latest`, Node 26 ESM, strict Bash, .NET 10/Fable 5.13, np
 
 ## Verification Obligations
 - VO-001 [PD-001] [PD-002] [PC-001] routeTest: Exercise documentation-only, domain-only, browser-only, mixed/cross-cutting, normalized, empty, malformed, and unknown path fixtures and inspect exact explanations.
-- VO-002 [PD-003] [PD-011] [PC-003] budgetTest: Test 300,000 ms boundary, phase sums, critical path, runner-minutes, cache/reuse/invocation/retry/failure fields, and separation from product performance.
+- VO-002 [PD-003] [PD-011] [PC-003] budgetTest: Test the 300,000 ms enforced boundary and 240,000 ms representative acceptance target, phase sums, critical path, runner-minutes, cache/reuse/invocation/retry/failure fields, and separation from product performance.
 - VO-003 [PD-004] [PD-007] [PC-003] dagTest: Parse workflow topology and mutation-test deterministic join success, skip, failure, cancellation, missing, duplicate, and unknown states.
 - VO-004 [PD-005] [PD-006] [PC-002] reuseTest: Create and verify one prepared artifact chain, prove no downstream fallback rebuild, retain exact-once Fable inventory, and reject candidate/input/lock/tool/command/output/cache drift.
 - VO-005 [PD-008] [PD-009] [PC-004] fullRouteTest: Compare retained full-subject inventory before/after and prove the scheduled hidden-cross-surface mutation is omitted by valid focused routing but rejected by full qualification.
 - VO-006 [PD-012] mutationTest: Run every self-restoring mutation through production validators, require its named diagnostic, and compare changed fixture bytes after restoration.
-- VO-007 [PD-003] [PD-004] hostedTest: Capture one final hosted run on the final head and verify representative route timing is within budget with separately attributed results.
+- VO-007 [PD-003] [PD-004] hostedTest: Capture one final hosted run on the final head and verify the representative cross-cutting route is fully green within 240,000 ms, leaving at least 60,000 ms below the enforced boundary, with separately attributed results.
 
 ## Performance Intent
-No product performance intent is declared. The 300-second value is a runner-feedback service budget whose timing schema explicitly excludes gameplay performance claims.
+No performance intent is declared for this work item.
 
 ## Migration Posture
 - PM-001 [PC-001] additive: Route schema v1 is new; unknown schema versions fail closed and unknown paths conservatively run cross-cutting gates.
