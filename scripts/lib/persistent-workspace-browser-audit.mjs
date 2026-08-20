@@ -294,14 +294,12 @@ const collectNarrowAccess = () => {
     return { x: value.x, right: value.right, y: value.y, bottom: value.bottom, width: value.width, height: value.height };
   };
   const selectors = [
-    ["Editor modality", ".tactical-modality-controls button:first-child"],
-    ["Left drawer", "#layout-left-drawer-toggle"],
-    ["Right drawer", "#layout-right-drawer-toggle"],
-    ["Timeline visibility", "#layout-timeline-visibility-toggle"],
-    ["Rules panel", ".tactical-supporting-controls button:nth-child(1)"],
-    ["Data panel", ".tactical-supporting-controls button:nth-child(2)"],
-    ["Samples panel", ".tactical-supporting-controls button:nth-child(3)"],
-    ["Panel menu", ".tactical-panel-menu > summary"],
+    ["File menu", ".tactical-desktop-menu:nth-child(1) > summary"],
+    ["Edit menu", ".tactical-desktop-menu:nth-child(2) > summary"],
+    ["View menu", ".tactical-desktop-menu:nth-child(3) > summary"],
+    ["Tools menu", ".tactical-desktop-menu:nth-child(4) > summary"],
+    ["Simulation menu", ".tactical-desktop-menu:nth-child(5) > summary"],
+    ["Help menu", ".tactical-desktop-menu:nth-child(6) > summary"],
   ];
   const controls = selectors.map(([label, selector]) => {
     const element = document.querySelector(selector);
@@ -309,6 +307,8 @@ const collectNarrowAccess = () => {
   });
   const toolbar = document.querySelector(".tactical-compact-toolbar");
   const toolbarRect = rect(toolbar);
+  const menuBar = document.querySelector(".tactical-desktop-menu-bar");
+  const menuBarRect = rect(menuBar);
   return {
     viewport: { width: innerWidth, height: innerHeight },
     document: {
@@ -320,6 +320,8 @@ const collectNarrowAccess = () => {
     },
     toolbarRect,
     toolbarScroll: { clientWidth: toolbar.clientWidth, scrollWidth: toolbar.scrollWidth, clientHeight: toolbar.clientHeight, scrollHeight: toolbar.scrollHeight },
+    menuBarRect,
+    menuBarScroll: { clientWidth: menuBar.clientWidth, scrollWidth: menuBar.scrollWidth, scrollLeft: menuBar.scrollLeft },
     workscreenRect: rect(document.querySelector("#tactical-workscreen-region")),
     timelineRect: rect(document.querySelector("#tactical-bottom-panel")),
     controls,
@@ -328,6 +330,9 @@ const collectNarrowAccess = () => {
 
 const assertWide = (audit) => {
   const { rectangles: r, document: d } = audit;
+  const containedBy = (child, parent) =>
+    child.x >= parent.x - 1 && child.right <= parent.right + 1 &&
+    child.y >= parent.y - 1 && child.bottom <= parent.bottom + 1;
   if (d.scrollWidth > d.clientWidth || d.mountScrollWidth > d.mountClientWidth) throw new Error("1440 shell has horizontal overflow");
   if (audit.styles.toolsPosition === "absolute" || audit.styles.toolsPosition === "fixed") throw new Error("Editor Tools panel escapes normal panel flow");
   if (audit.tools.rect && (audit.tools.rect.x < audit.tools.hostRect.x - 1 || audit.tools.rect.right > audit.tools.hostRect.right + 1)) throw new Error("Editor Tools panel leaves its registered panel body");
@@ -337,9 +342,16 @@ const assertWide = (audit) => {
       if (child.rect.x < body.rect.x - 1 || child.rect.right > body.rect.right + 1) throw new Error(`registered ${body.panelId} panel child overflows its sidebar horizontally: ${child.className}`);
     }
   }
-  if (Object.values(audit.overlaps).some(Boolean)) throw new Error(`1440 shell landmarks overlap: ${JSON.stringify(audit.overlaps)}`);
-  if (audit.fieldFocusShare < 0.68 || r.workscreen.width <= r.left.width + r.right.width) throw new Error("live workscreen is not dominant in Field Focus");
-  if (r.workscreen.height < 500 || r.bottom.height > r.workscreen.height / 3) throw new Error("live Field Focus vertical proportions drifted");
+  if (audit.overlaps.toolbarFrame) throw new Error("1440 toolbar overlaps the Field Focus frame");
+  for (const [name, helper] of [["left", r.left], ["right", r.right], ["bottom", r.bottom]]) {
+    if ((helper.width > 0.5 || helper.height > 0.5) && !containedBy(helper, r.workscreen)) {
+      throw new Error(`1440 ${name} helper leaves the map workscreen: ${JSON.stringify({ helper, workscreen: r.workscreen })}`);
+    }
+  }
+  if ((r.left.width > 0.5 && !audit.overlaps.leftWorkscreen) || (r.right.width > 0.5 && !audit.overlaps.rightWorkscreen)) {
+    throw new Error(`desktop side helpers no longer overlay the map: ${JSON.stringify(audit.overlaps)}`);
+  }
+  if (audit.fieldFocusShare < 0.95) throw new Error("live map no longer fills the Field Focus frame");
   if (r.bottom.bottom > audit.viewport.height + 1 || r.timeline.bottom > r.bottom.bottom + 1) throw new Error(`the expanded Field Focus timeline is clipped below the 1440×900 review viewport: ${JSON.stringify({ viewport: audit.viewport, shell: r.shell, toolbar: r.toolbar, frame: r.frame, workscreen: r.workscreen, bottom: r.bottom, timeline: r.timeline, timelineLegend: r.timelineLegend, timelineTransport: r.timelineTransport, timelineRuler: r.timelineRuler, timelineCursor: r.timelineCursor, timelineLanes: r.timelineLanes })}`);
   if (audit.counts.worksurfaceRoots !== 1 || audit.counts.applicationLandmarks !== 1) throw new Error("live shell is not a singleton workscreen");
   if (audit.channels.length < 4 || !["Authored", "Predicted", "Accepted", "Committed"].every((name) => audit.channels.some(({ channel }) => channel === name))) throw new Error("live timeline does not expose all real channels");
@@ -355,8 +367,10 @@ const assertNarrow = (audit) => {
   if (audit.workscreenRect.x < -1 || audit.workscreenRect.right > 321 || audit.timelineRect.x < -1 || audit.timelineRect.right > 321) throw new Error("workscreen or timeline leaves the 320px viewport");
   for (const control of audit.controls) {
     if (!control.exists) throw new Error(`missing narrow access control: ${control.label}`);
-    if (control.rect.x < -1 || control.rect.right > 321) throw new Error(`narrow access control is horizontally offscreen: ${control.label} ${JSON.stringify(control.rect)}`);
-    if (control.rect.width < 44 || control.rect.height < 44) throw new Error(`narrow access control is smaller than 44px: ${control.label}`);
+    const contentLeft = audit.menuBarRect.x - audit.menuBarScroll.scrollLeft;
+    const contentRight = contentLeft + audit.menuBarScroll.scrollWidth;
+    if (control.rect.x < contentLeft - 1 || control.rect.right > contentRight + 1) throw new Error(`narrow access control leaves the reachable menu scroll surface: ${control.label} ${JSON.stringify(control.rect)}`);
+    if (control.rect.width < 44 || control.rect.height < 44) throw new Error(`narrow access control is smaller than 44px: ${control.label} ${JSON.stringify(control.rect)}`);
   }
 };
 
@@ -369,9 +383,6 @@ const rectangleMeasurementParents = new Set([
   "hostRect",
 ]);
 const criticalGeometryTolerance = new Map([
-  ["wide.rectangles.left.width", 0.5],
-  ["wide.rectangles.right.width", 0.5],
-  ["wide.rectangles.bottom.height", 0.5],
   ["wide.rectangles.frame.width", 0.5],
   ["wide.rectangles.workscreen.width", 0.5],
 ]);
@@ -379,9 +390,10 @@ const toolbarScrollMeasurements = new Set(["clientWidth", "scrollWidth", "client
 const geometryComparison = (path) => {
   // Browser/font runtimes legitimately reflow text controls, so raw rectangle
   // coordinates are evidence rather than a cross-host golden snapshot. Both
-  // audits still pass assertWide/assertNarrow, which reject clipping, overlap,
-  // dominance, offscreen, and touch-target failures. Only CSS-stable landmark
-  // dimensions are compared across hosts, with subpixel tolerance. The narrow
+  // audits still pass assertWide/assertNarrow, which reject clipping, helpers
+  // leaving the map, loss of map dominance, offscreen controls, and touch-target
+  // failures. Scalable helper dimensions are evidence, not fixed budgets. Only
+  // CSS-stable frame dimensions are compared across hosts, with subpixel tolerance. The narrow
   // toolbar's internal scroll extents are also font-layout measurements; their
   // no-clipping relationship is enforced independently by assertNarrow.
   const location = path.join(".");
@@ -393,6 +405,7 @@ const geometryComparison = (path) => {
   const isRectangle = rectangleMeasurementParents.has(parent) || path.at(-3) === "rectangles";
   if (isRectangle && rectangleMeasurementNames.has(name)) return { kind: "host-geometry" };
   if (parent === "toolbarScroll" && toolbarScrollMeasurements.has(name)) return { kind: "host-geometry" };
+  if (parent === "menuBarScroll" && ["clientWidth", "scrollWidth", "scrollLeft"].includes(name)) return { kind: "host-geometry" };
   if (name === "fieldFocusShare") return { kind: "host-geometry" };
   return { kind: "exact" };
 };

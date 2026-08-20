@@ -8,122 +8,122 @@
   "document": {
     "clientWidth": 1440,
     "scrollWidth": 1440,
-    "bodyScrollWidth": 1424,
-    "mountClientWidth": 1424,
-    "mountScrollWidth": 1424
+    "bodyScrollWidth": 1440,
+    "mountClientWidth": 1440,
+    "mountScrollWidth": 1440
   },
   "rectangles": {
     "shell": {
-      "x": 14.391,
-      "y": 14.391,
-      "width": 1411.219,
-      "height": 988.094,
-      "right": 1425.609,
-      "bottom": 1002.484
+      "x": 3.188,
+      "y": 3.188,
+      "width": 1433.625,
+      "height": 893.625,
+      "right": 1436.813,
+      "bottom": 896.813
     },
     "toolbar": {
-      "x": 14.391,
-      "y": 14.391,
-      "width": 1411.219,
-      "height": 141.484,
-      "right": 1425.609,
-      "bottom": 155.875
+      "x": 3.188,
+      "y": 3.188,
+      "width": 1433.625,
+      "height": 30.391,
+      "right": 1436.813,
+      "bottom": 33.578
     },
     "frame": {
-      "x": 14.391,
-      "y": 163.875,
-      "width": 1411.219,
-      "height": 722.391,
-      "right": 1425.609,
-      "bottom": 886.266
+      "x": 3.188,
+      "y": 37.578,
+      "width": 1433.625,
+      "height": 855.234,
+      "right": 1436.813,
+      "bottom": 892.813
     },
     "workscreen": {
-      "x": 228.781,
-      "y": 163.875,
-      "width": 966.438,
-      "height": 564,
-      "right": 1195.219,
-      "bottom": 727.875
+      "x": 3.188,
+      "y": 37.578,
+      "width": 1433.625,
+      "height": 855.234,
+      "right": 1436.813,
+      "bottom": 892.813
     },
     "svg": {
-      "x": 229.781,
-      "y": 164.875,
-      "width": 964.438,
-      "height": 562,
-      "right": 1194.219,
-      "bottom": 726.875
+      "x": 4.188,
+      "y": 38.578,
+      "width": 1431.625,
+      "height": 853.234,
+      "right": 1435.813,
+      "bottom": 891.813
     },
     "left": {
-      "x": 14.391,
-      "y": 163.875,
+      "x": 3.188,
+      "y": 37.578,
       "width": 208,
-      "height": 564,
-      "right": 222.391,
-      "bottom": 727.875
+      "height": 855.234,
+      "right": 211.188,
+      "bottom": 892.813
     },
     "right": {
-      "x": 1201.609,
-      "y": 163.875,
+      "x": 1212.813,
+      "y": 37.578,
       "width": 224,
-      "height": 564,
-      "right": 1425.609,
-      "bottom": 727.875
+      "height": 855.234,
+      "right": 1436.813,
+      "bottom": 892.813
     },
     "bottom": {
-      "x": 14.391,
-      "y": 734.266,
-      "width": 1411.219,
-      "height": 152,
-      "right": 1425.609,
-      "bottom": 886.266
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "right": 0,
+      "bottom": 0
     },
     "timeline": {
-      "x": 14.391,
-      "y": 739.063,
-      "width": 1411.219,
-      "height": 146.094,
-      "right": 1425.609,
-      "bottom": 885.156
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "right": 0,
+      "bottom": 0
     },
     "timelineLegend": {
-      "x": 15.391,
-      "y": 740.063,
-      "width": 325.594,
-      "height": 17.719,
-      "right": 340.984,
-      "bottom": 757.781
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "right": 0,
+      "bottom": 0
     },
     "timelineTransport": {
-      "x": 15.391,
-      "y": 759.375,
-      "width": 1409.219,
-      "height": 44,
-      "right": 1424.609,
-      "bottom": 803.375
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "right": 0,
+      "bottom": 0
     },
     "timelineRuler": {
-      "x": 17.391,
-      "y": 806.969,
-      "width": 1409.219,
-      "height": 44,
-      "right": 1426.609,
-      "bottom": 850.969
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "right": 0,
+      "bottom": 0
     },
     "timelineCursor": {
-      "x": 342.578,
-      "y": 740.063,
-      "width": 1082.031,
-      "height": 17.719,
-      "right": 1424.609,
-      "bottom": 757.781
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "right": 0,
+      "bottom": 0
     },
     "timelineLanes": {
-      "x": 15.391,
-      "y": 854.563,
-      "width": 1409.219,
-      "height": 29.594,
-      "right": 1424.609,
-      "bottom": 884.156
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "right": 0,
+      "bottom": 0
     }
   },
   "styles": {
@@ -166,60 +166,60 @@
     {
       "channel": "Authored",
       "rect": {
-        "x": 15.391,
-        "y": 740.063,
-        "width": 68.797,
-        "height": 17.719,
-        "right": 84.188,
-        "bottom": 757.781
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0
       },
       "text": "Authored"
     },
     {
       "channel": "Predicted",
       "rect": {
-        "x": 96.188,
-        "y": 740.063,
-        "width": 76,
-        "height": 17.719,
-        "right": 172.188,
-        "bottom": 757.781
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0
       },
       "text": "Predicted"
     },
     {
       "channel": "Accepted",
       "rect": {
-        "x": 184.188,
-        "y": 740.063,
-        "width": 68.797,
-        "height": 17.719,
-        "right": 252.984,
-        "bottom": 757.781
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0
       },
       "text": "Accepted"
     },
     {
       "channel": "Committed",
       "rect": {
-        "x": 264.984,
-        "y": 740.063,
-        "width": 76,
-        "height": 17.719,
-        "right": 340.984,
-        "bottom": 757.781
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0
       },
       "text": "Committed"
     },
     {
       "channel": "Committed",
       "rect": {
-        "x": 15.391,
-        "y": 854.563,
-        "width": 1409.219,
-        "height": 29.594,
-        "right": 1424.609,
-        "bottom": 884.156
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0
       },
       "text": "Committed Committed simulator execution · 0–0"
     }
@@ -228,253 +228,110 @@
     {
       "label": "File",
       "rect": {
-        "x": 18.578,
-        "y": 39.938,
-        "width": 56,
-        "height": 44,
-        "right": 74.578,
-        "bottom": 83.938
+        "x": 6.578,
+        "y": 5.188,
+        "width": 50.563,
+        "height": 26.391,
+        "right": 57.141,
+        "bottom": 31.578
       }
     },
     {
       "label": "Edit",
       "rect": {
-        "x": 76.172,
-        "y": 39.938,
-        "width": 56,
-        "height": 44,
-        "right": 132.172,
-        "bottom": 83.938
+        "x": 58.734,
+        "y": 5.188,
+        "width": 50.563,
+        "height": 26.391,
+        "right": 109.297,
+        "bottom": 31.578
       }
     },
     {
       "label": "View",
       "rect": {
-        "x": 133.766,
-        "y": 39.938,
-        "width": 56,
-        "height": 44,
-        "right": 189.766,
-        "bottom": 83.938
+        "x": 110.891,
+        "y": 5.188,
+        "width": 50.563,
+        "height": 26.391,
+        "right": 161.453,
+        "bottom": 31.578
       }
     },
     {
       "label": "Tools",
       "rect": {
-        "x": 191.359,
-        "y": 39.938,
-        "width": 65.609,
-        "height": 44,
-        "right": 256.969,
-        "bottom": 83.938
+        "x": 163.047,
+        "y": 5.188,
+        "width": 60.172,
+        "height": 26.391,
+        "right": 223.219,
+        "bottom": 31.578
       }
     },
     {
       "label": "Simulation",
       "rect": {
-        "x": 258.563,
-        "y": 39.938,
-        "width": 113.609,
-        "height": 44,
-        "right": 372.172,
-        "bottom": 83.938
+        "x": 224.813,
+        "y": 5.188,
+        "width": 108.172,
+        "height": 26.391,
+        "right": 332.984,
+        "bottom": 31.578
       }
     },
     {
       "label": "Help",
       "rect": {
-        "x": 373.766,
-        "y": 39.938,
-        "width": 56,
-        "height": 44,
-        "right": 429.766,
-        "bottom": 83.938
-      }
-    },
-    {
-      "label": "Switch to Editor",
-      "rect": {
-        "x": 432.156,
-        "y": 16.984,
-        "width": 148.781,
-        "height": 44,
-        "right": 580.938,
-        "bottom": 60.984
-      }
-    },
-    {
-      "label": "Switch to Plan",
-      "rect": {
-        "x": 582.844,
-        "y": 16.984,
-        "width": 148.797,
-        "height": 44,
-        "right": 731.641,
-        "bottom": 60.984
-      }
-    },
-    {
-      "label": "Switch to Simulate",
-      "rect": {
-        "x": 733.547,
-        "y": 16.984,
-        "width": 148.797,
-        "height": 44,
-        "right": 882.344,
-        "bottom": 60.984
-      }
-    },
-    {
-      "label": "Switch to Review",
-      "rect": {
-        "x": 884.25,
-        "y": 16.984,
-        "width": 148.797,
-        "height": 44,
-        "right": 1033.047,
-        "bottom": 60.984
-      }
-    },
-    {
-      "label": "Play or pause",
-      "rect": {
-        "x": 432.156,
-        "y": 62.891,
-        "width": 148.781,
-        "height": 44,
-        "right": 580.938,
-        "bottom": 106.891
-      }
-    },
-    {
-      "label": "Show contextual actions",
-      "rect": {
-        "x": 582.844,
-        "y": 62.891,
-        "width": 148.797,
-        "height": 44,
-        "right": 731.641,
-        "bottom": 106.891
-      }
-    },
-    {
-      "label": "Customize toolbar",
-      "rect": {
-        "x": 733.547,
-        "y": 62.891,
-        "width": 148.797,
-        "height": 44,
-        "right": 882.344,
-        "bottom": 106.891
-      }
-    },
-    {
-      "label": "Docs",
-      "rect": {
-        "x": 1035.438,
-        "y": 39.938,
-        "width": 58,
-        "height": 44,
-        "right": 1093.438,
-        "bottom": 83.938
-      }
-    },
-    {
-      "label": "Editor",
-      "rect": {
-        "x": 1095.828,
-        "y": 39.938,
-        "width": 77.203,
-        "height": 44,
-        "right": 1173.031,
-        "bottom": 83.938
-      }
-    },
-    {
-      "label": "Plan",
-      "rect": {
-        "x": 1178.625,
-        "y": 39.938,
-        "width": 58,
-        "height": 44,
-        "right": 1236.625,
-        "bottom": 83.938
-      }
-    },
-    {
-      "label": "Simulate",
-      "rect": {
-        "x": 1242.219,
-        "y": 39.938,
-        "width": 96.406,
-        "height": 44,
-        "right": 1338.625,
-        "bottom": 83.938
-      }
-    },
-    {
-      "label": "Review",
-      "rect": {
-        "x": 1344.219,
-        "y": 39.938,
-        "width": 77.203,
-        "height": 44,
-        "right": 1421.422,
-        "bottom": 83.938
-      }
-    },
-    {
-      "label": "Workspace controls",
-      "rect": {
-        "x": 18.578,
-        "y": 109.281,
-        "width": 411.188,
-        "height": 44,
-        "right": 429.766,
-        "bottom": 153.281
+        "x": 334.578,
+        "y": 5.188,
+        "width": 50.563,
+        "height": 26.391,
+        "right": 385.141,
+        "bottom": 31.578
       }
     }
   ],
   "tools": {
     "rect": {
-      "x": 15.391,
-      "y": 594.875,
+      "x": 4.188,
+      "y": 468.578,
       "width": 206,
       "height": 799.188,
-      "right": 221.391,
-      "bottom": 1394.063
+      "right": 210.188,
+      "bottom": 1267.766
     },
     "hostRect": {
-      "x": 15.391,
-      "y": 594.875,
+      "x": 4.188,
+      "y": 468.578,
       "width": 206,
       "height": 799.188,
-      "right": 221.391,
-      "bottom": 1394.063
+      "right": 210.188,
+      "bottom": 1267.766
     }
   },
   "panelBodies": [
     {
       "panelId": "roster",
       "rect": {
-        "x": 15.391,
-        "y": 258.922,
+        "x": 4.188,
+        "y": 132.625,
         "width": 206,
         "height": 240.906,
-        "right": 221.391,
-        "bottom": 499.828
+        "right": 210.188,
+        "bottom": 373.531
       },
       "children": [
         {
           "className": "",
           "position": "static",
           "rect": {
-            "x": 15.391,
-            "y": 258.922,
+            "x": 4.188,
+            "y": 132.625,
             "width": 206,
             "height": 240.906,
-            "right": 221.391,
-            "bottom": 499.828
+            "right": 210.188,
+            "bottom": 373.531
           }
         }
       ]
@@ -482,24 +339,24 @@
     {
       "panelId": "tools",
       "rect": {
-        "x": 15.391,
-        "y": 594.875,
+        "x": 4.188,
+        "y": 468.578,
         "width": 206,
         "height": 799.188,
-        "right": 221.391,
-        "bottom": 1394.063
+        "right": 210.188,
+        "bottom": 1267.766
       },
       "children": [
         {
           "className": "panel editor-tools editor-tools-panel",
           "position": "static",
           "rect": {
-            "x": 15.391,
-            "y": 594.875,
+            "x": 4.188,
+            "y": 468.578,
             "width": 206,
             "height": 799.188,
-            "right": 221.391,
-            "bottom": 1394.063
+            "right": 210.188,
+            "bottom": 1267.766
           }
         }
       ]
@@ -507,24 +364,24 @@
     {
       "panelId": "selection",
       "rect": {
-        "x": 1202.609,
-        "y": 237.656,
+        "x": 1213.813,
+        "y": 111.359,
         "width": 222,
         "height": 561,
-        "right": 1424.609,
-        "bottom": 798.656
+        "right": 1435.813,
+        "bottom": 672.359
       },
       "children": [
         {
           "className": "panel unit-editor-panel",
           "position": "static",
           "rect": {
-            "x": 1202.609,
-            "y": 237.656,
+            "x": 1213.813,
+            "y": 111.359,
             "width": 222,
             "height": 561,
-            "right": 1424.609,
-            "bottom": 798.656
+            "right": 1435.813,
+            "bottom": 672.359
           }
         }
       ]
@@ -532,9 +389,9 @@
   ],
   "overlaps": {
     "toolbarFrame": false,
-    "leftWorkscreen": false,
-    "rightWorkscreen": false,
+    "leftWorkscreen": true,
+    "rightWorkscreen": true,
     "bottomWorkscreen": false
   },
-  "fieldFocusShare": 0.685
+  "fieldFocusShare": 1
 }</pre></foreignObject></svg>

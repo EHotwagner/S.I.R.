@@ -111,11 +111,11 @@ for (const required of [
 }
 
 for (const required of [
-  "var(--tactical-left-width, 208px)",
-  "minmax(32rem, 1fr)",
-  "var(--tactical-right-width, 224px)",
-  "min-height: 32rem",
-  "height: var(--tactical-bottom-height, 152px)",
+  "grid-template-columns: minmax(0, 1fr);",
+  'grid-template-areas: "workscreen";',
+  "#sir-replay-app .tactical-workscreen-region { min-height: 0 !important; height: 100% !important; }",
+  "#sir-replay-app .tactical-sidebar {\n    position: absolute;",
+  "#sir-replay-app .tactical-bottom-panel {\n    position: absolute;",
   "@media (max-width: 48rem)",
 ]) {
   require(styles.includes(required), `Field Focus/responsive CSS token is missing: ${required}`);
@@ -202,12 +202,9 @@ assertPortableReviewMetrics({
   liveNarrow: liveBrowserAudit.narrow,
 });
 require(
-  reviewManifest.fieldFocus.rectangles.left.width === 208 &&
-    reviewManifest.fieldFocus.rectangles.right.width === 224 &&
-    reviewManifest.fieldFocus.rectangles.bottom.height === 152 &&
-    reviewManifest.fieldFocus.fieldFocusShare >= 0.68 &&
-    reviewManifest.fieldFocus.rectangles.workscreen.width > 208 + 224 &&
-    reviewManifest.fieldFocus.rectangles.workscreen.height > 3 * 152 &&
+  reviewManifest.fieldFocus.fieldFocusShare >= 0.95 &&
+    reviewManifest.fieldFocus.overlaps.leftWorkscreen === true &&
+    reviewManifest.fieldFocus.overlaps.rightWorkscreen === true &&
     reviewManifest.fieldFocus.counts.worksurfaceRoots === 1 &&
     reviewManifest.fieldFocus.counts.applicationLandmarks === 1 &&
     reviewManifest.fieldFocus.styles.toolsPosition !== "absolute" &&

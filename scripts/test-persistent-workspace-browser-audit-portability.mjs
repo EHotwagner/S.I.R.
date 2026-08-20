@@ -111,19 +111,11 @@ assertAuditMutationRejected(
   "Portable review metrics accepted changed narrow-control identity.",
 );
 assertAuditMutationRejected(
-  (wide) => { wide.rectangles.left.width += 32; },
-  "wide.rectangles.left.width",
-  "Portable review metrics accepted material horizontal geometry drift.",
-);
-assertAuditMutationRejected(
-  (wide) => { wide.rectangles.right.width += 32; },
-  "wide.rectangles.right.width",
-  "Portable review metrics accepted material sidebar geometry drift.",
-);
-assertAuditMutationRejected(
-  (wide) => { wide.rectangles.bottom.height += 32; },
-  "wide.rectangles.bottom.height",
-  "Portable review metrics accepted material bottom-panel geometry drift.",
+  (wide) => {
+    wide.rectangles.left.x = wide.rectangles.workscreen.x - 2;
+  },
+  "left helper leaves the map workscreen",
+  "Portable review metrics accepted a helper outside the map workscreen.",
 );
 assertAuditMutationRejected(
   (wide) => { wide.toolbarChildren[0].rect.right = wide.rectangles.toolbar.right + 2; },
@@ -132,8 +124,13 @@ assertAuditMutationRejected(
 );
 assertAuditMutationRejected(
   (wide) => { wide.overlaps.toolbarFrame = true; },
-  "1440 shell landmarks overlap",
-  "Portable review metrics accepted landmark overlap.",
+  "1440 toolbar overlaps",
+  "Portable review metrics accepted toolbar/map overlap.",
+);
+assertAuditMutationRejected(
+  (wide) => { wide.overlaps.leftWorkscreen = false; },
+  "side helpers no longer overlay the map",
+  "Portable review metrics accepted a desktop side helper outside the map overlay layer.",
 );
 assertAuditMutationRejected(
   (_wide, narrow) => { narrow.controls[0].rect.width = 43; },
@@ -170,5 +167,5 @@ if (pinnedExecutablePresent && await discoverChromium() !== pinnedExecutable) {
 }
 
 console.log(
-  "Persistent workspace browser-audit portability passed: installed lockfile-pinned Chromium wins over ambient host Chrome, cross-host font/layout drift is accepted, semantic/critical-geometry regressions fail closed, and inherited DBus variables are isolated from Chromium.",
+  "Persistent workspace browser-audit portability passed: installed lockfile-pinned Chromium wins over ambient host Chrome, scalable helper geometry and cross-host font/layout drift are accepted, map containment/dominance and semantic regressions fail closed, and inherited DBus variables are isolated from Chromium.",
 );
