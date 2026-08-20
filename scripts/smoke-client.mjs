@@ -1694,8 +1694,8 @@ await waitFor(
       (item) => item.textContent.trim(),
     );
     return (
-      kinds.filter((kind) => kind === "Map · Simulation").length === 5 &&
-      kinds.filter((kind) => kind === "Replay").length === 2
+      kinds.filter((kind) => kind === "Map · Simulation").length === 7 &&
+      kinds.filter((kind) => kind === "Replay").length === 7
     );
   },
 );
