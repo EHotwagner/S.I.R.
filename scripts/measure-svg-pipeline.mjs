@@ -50,7 +50,21 @@ async function perform(page, journey, fixture) {
   if (journey === "selection") await svg.locator("[data-unit-id]").first().click({ force: true });
   if (journey === "modality-transition") { await switchWorkspace(page, "Plan"); await switchWorkspace(page, "Editor"); }
   if (journey === "dense-overlay") { await page.keyboard.press("Alt+l"); await page.waitForTimeout(100); await page.keyboard.press("Alt+l"); }
-  if (journey === "playback") { await switchWorkspace(page, "Simulate"); const advance = page.getByRole("button", { name: "Advance the map simulation one tick", exact: true }); for (let step = 0; step < workloadRecipe(fixture).playbackSteps; step += 1) if (await advance.count()) await advance.click(); await switchWorkspace(page, "Editor"); }
+  if (journey === "playback") {
+    await switchWorkspace(page, "Simulate");
+    const advance = page.getByRole("button", { name: "Advance the map simulation one tick", exact: true });
+    const recipe = workloadRecipe(fixture);
+    const playbackStarted = await page.evaluate(() => performance.now());
+    for (let step = 0; step < recipe.playbackSteps; step += 1) {
+      if (step > 0) {
+        const elapsed = await page.evaluate((origin) => performance.now() - origin, playbackStarted);
+        const remaining = step * recipe.eventIntervalMilliseconds - elapsed;
+        if (remaining > 0) await page.waitForTimeout(remaining);
+      }
+      if (await advance.count()) await advance.click();
+    }
+    await switchWorkspace(page, "Editor");
+  }
   return page.evaluate((origin) => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(() => done(performance.now() - origin)))), started);
 }
 

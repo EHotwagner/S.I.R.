@@ -1,0 +1,15 @@
+{
+  "schema": "sir.svg-pipeline-measurement-authority/1",
+  "candidate": {
+    "commit": "e971395307ea273def35dac863cb1b15a93d60fc",
+    "tree": "437a3cc9d69f77f38ff590e5940a167afebaf6f7"
+  },
+  "buildIdentity": {
+    "clientManifestSha256": "44f663e56b6d3acfb4b6d4f1387020ade7ffdc52341d7c8bfb33b64c3b2c3830",
+    "serverAssemblySha256": "77b625238139cd369c2325803ce938d7583110a7ad036c67781813cb04094d8a"
+  },
+  "fixtureDefinitionSha256": "355c25b4be0e260ebcc2a751b8ca0253921c1460e4a365f04a2113bf902b031d",
+  "rawSummarySha256": "9d4470c5ea30d8cf109e11f8ce34ee49fe915bd69480b9c786923bdfc2e45675",
+  "orderedTraceDigestSha256": "79001ac59073dfadb090f9a3de44d63ad343e77b53272e78e3e44df2625982ee",
+  "runCount": 28
+}

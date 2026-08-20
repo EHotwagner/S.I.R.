@@ -34,6 +34,9 @@ export function validateDefinitions(definition) {
     if (!Array.isArray(fixture.viewport) || fixture.viewport.length !== 2 || fixture.viewport.some((n) => !Number.isInteger(n) || n <= 0)) throw new Error(`fixture ${fixture.id} has invalid viewport`);
   }
   if (new Set(definition.fixtures.map((fixture) => fixture.eventRateHz)).size < 2) throw new Error("fixture matrix must vary eventRateHz");
+  const ratePair = definition.fixtures.filter((fixture) => fixture.rateComparisonGroup === "representative-event-rate");
+  const rateControl = (fixture) => Object.fromEntries(Object.entries(fixture).filter(([key]) => !["id", "eventRateHz", "rateComparisonGroup"].includes(key)));
+  if (ratePair.length !== 2 || ratePair[0].eventRateHz === ratePair[1].eventRateHz || stableJson(rateControl(ratePair[0])) !== stableJson(rateControl(ratePair[1]))) throw new Error("event-rate comparison is not controlled");
   const pair = definition.fixtures.filter((fixture) => fixture.comparisonGroup === "global-scale-small-viewport");
   const area = (fixture) => fixture.mapExtent[0] * fixture.mapExtent[1];
   if (pair.length !== 2 || stableJson(pair[0].viewport) !== stableJson(pair[1].viewport) || pair[0].visibleDensity !== pair[1].visibleDensity || pair[0].globalUnitCount !== pair[1].globalUnitCount || area(pair[0]) >= area(pair[1]) || pair[0].supportingListSize >= pair[1].supportingListSize) throw new Error("large-project/small-viewport comparison is not controlled");
@@ -60,14 +63,23 @@ export function makeMap(fixture) {
 }
 
 export function workloadRecipe(fixture) {
-  return { targetVisibleUnits: fixture.visibleDensity, playbackSteps: Math.max(1, Math.ceil(fixture.eventRateHz / 10)), supportingRecords: fixture.supportingListSize };
+  const playbackWindowMilliseconds = 250;
+  const eventIntervalMilliseconds = 1000 / fixture.eventRateHz;
+  return { targetVisibleUnits: fixture.visibleDensity, eventRateHz: fixture.eventRateHz, eventIntervalMilliseconds, playbackWindowMilliseconds, playbackSteps: Math.floor(playbackWindowMilliseconds / eventIntervalMilliseconds) + 1, supportingRecords: fixture.supportingListSize };
 }
 
-export function validateEvidenceReceipt(receipt, definitions) {
+export function validateEvidenceReceipt(receipt, definitions, authority) {
   const hex = /^[0-9a-f]{64}$/;
   if (receipt?.schema !== "sir.svg-pipeline-measurement-evidence/1") throw new Error("unsupported evidence schema");
   const { bindingSha256, ...boundReceipt } = receipt;
   if (!hex.test(bindingSha256 || "") || bindingSha256 !== digest(boundReceipt)) throw new Error("evidence receipt binding is stale");
+  if (authority?.schema !== "sir.svg-pipeline-measurement-authority/1") throw new Error("evidence authority is missing");
+  if (stableJson(receipt.candidate) !== stableJson(authority.candidate)
+      || stableJson(receipt.buildIdentity) !== stableJson(authority.buildIdentity)
+      || receipt.fixtureDefinition?.sha256 !== authority.fixtureDefinitionSha256
+      || receipt.matrix?.rawSummarySha256 !== authority.rawSummarySha256
+      || receipt.matrix?.orderedTraceDigestSha256 !== authority.orderedTraceDigestSha256
+      || receipt.matrix?.runCount !== authority.runCount) throw new Error("evidence authority binding is stale");
   for (const value of [receipt.candidate?.commit, receipt.candidate?.tree]) if (!/^[0-9a-f]{40}$/.test(value || "") || /^0+$/.test(value)) throw new Error("evidence candidate binding is missing");
   for (const value of [receipt.buildIdentity?.clientManifestSha256, receipt.buildIdentity?.serverAssemblySha256, receipt.matrix?.rawSummarySha256, receipt.matrix?.orderedTraceDigestSha256]) if (!hex.test(value || "") || /^0+$/.test(value)) throw new Error("evidence digest binding is missing");
   if (receipt.fixtureDefinition?.sha256 !== digest(definitions)) throw new Error("evidence fixture binding is stale");

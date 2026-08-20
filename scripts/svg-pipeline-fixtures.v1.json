@@ -7,12 +7,24 @@
   "fixtures": [
     {
       "id": "representative-visible-100",
+      "rateComparisonGroup": "representative-event-rate",
       "mapExtent": [20, 20],
       "viewport": [960, 640],
       "visibleDensity": 100,
       "globalUnitCount": 100,
       "routeOverlayComplexity": 24,
       "eventRateHz": 10,
+      "supportingListSize": 100
+    },
+    {
+      "id": "representative-visible-100-high-rate",
+      "rateComparisonGroup": "representative-event-rate",
+      "mapExtent": [20, 20],
+      "viewport": [960, 640],
+      "visibleDensity": 100,
+      "globalUnitCount": 100,
+      "routeOverlayComplexity": 24,
+      "eventRateHz": 40,
       "supportingListSize": 100
     },
     {

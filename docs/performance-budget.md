@@ -46,10 +46,12 @@ The focused `npm run measure:svg-pipeline` route measures the built retained SVG
 in pinned production Chromium. Its versioned workload definition is
 `scripts/svg-pipeline-fixtures.v1.json`; the schema-v1 matrix independently
 declares map extent, visible density, global unit count, route/overlay
-complexity, event rate, and supporting-list size. The representative and dense
-fixtures exercise 10 Hz and 40 Hz while the controlled global pair holds 20 Hz.
-Supporting-list records are
-materialized as authoritative regions, event rate controls playback steps, and
+complexity, event rate, and supporting-list size. The representative fixture
+and its otherwise-identical high-rate control exercise 10 Hz and 40 Hz, the
+dense fixture holds 40 Hz, and the controlled global pair holds 20 Hz.
+Supporting-list records are materialized as authoritative regions. Event rate
+paces playback inputs at 100/50/25 ms intervals inside the same 250 ms window,
+and
 visible density controls a centered unit cluster that the controlled pair
 verifies against production projection output. The
 `global-small-viewport`/`global-large-small-viewport` pair holds a 480×320

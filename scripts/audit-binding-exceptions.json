@@ -7,7 +7,7 @@
       "locator": "file:docs/performance-budget.md",
       "path": "docs/performance-budget.md",
       "previousSha256": "5fb42b445999b25fe2fe4dbd80ee350099a1c145e4d44006c01ab6213d72798b",
-      "replacementSha256": "4609ac0949aa01e7eae10479489f97ca58f3548862e8ef0feb6e23620dd1157b",
+      "replacementSha256": "16d10090187a2f370a5d4bf58e5137fd56cc1640fe4d269d2c2d6f6099ae4e48",
       "replacementEvidence": "command:node scripts/test-svg-pipeline-measurement.mjs",
       "reason": "The SVG pipeline measurement extends the cited performance contract; its focused exact-head fixture and protected-subject gate verifies the replacement workload contract."
     },

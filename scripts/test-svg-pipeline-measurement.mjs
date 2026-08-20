@@ -33,6 +33,7 @@ const mutations = [
   ["controlled-global-pair", (value) => { value.fixtures.find((fixture) => fixture.id === "global-large-small-viewport").viewport = [481, 320]; }],
   ["axis-value", (value) => { value.fixtures[0].eventRateHz = -1; }],
   ["event-rate-matrix", (value) => { for (const fixture of value.fixtures) fixture.eventRateHz = 20; }],
+  ["event-rate-control", (value) => { value.fixtures.find((fixture) => fixture.id === "representative-visible-100-high-rate").supportingListSize += 1; }],
 ];
 for (const [name, mutate] of mutations) {
   const mutant = structuredClone(source);
@@ -53,13 +54,15 @@ for (const [axis, mutate] of [
   assert.notEqual(digest({ map: makeMap(fixture), recipe: workloadRecipe(fixture) }), before, `${axis} must change the executed workload`);
   console.log(`JUSTIFIED ${axis}: workload mutation changed the executed subject`);
 }
-const evidence = validateEvidenceReceipt(JSON.parse(readFileSync(new URL("../work/231-svg-pipeline-measurement/production-chromium-evidence.json", import.meta.url))), source);
-const unboundCandidate = structuredClone(evidence); unboundCandidate.candidate.commit = "f".repeat(40);
-assert.throws(() => validateEvidenceReceipt(unboundCandidate, source), /receipt binding/, "well-formed candidate mutation must fail");
-const unboundDigest = structuredClone(evidence); unboundDigest.matrix.rawSummarySha256 = "f".repeat(64);
-assert.throws(() => validateEvidenceReceipt(unboundDigest, source), /receipt binding/, "well-formed digest mutation must fail");
-console.log("JUSTIFIED evidence-binding: well-formed candidate and digest mutations rejected");
+const authority = JSON.parse(readFileSync(new URL("../work/231-svg-pipeline-measurement/production-chromium-authority.json", import.meta.url)));
+const evidence = validateEvidenceReceipt(JSON.parse(readFileSync(new URL("../work/231-svg-pipeline-measurement/production-chromium-evidence.json", import.meta.url))), source, authority);
+const reseal = (value) => { const { bindingSha256: _, ...bound } = value; value.bindingSha256 = digest(bound); return value; };
+const unboundCandidate = structuredClone(evidence); unboundCandidate.candidate.commit = "f".repeat(40); reseal(unboundCandidate);
+assert.throws(() => validateEvidenceReceipt(unboundCandidate, source, authority), /authority binding/, "coordinated candidate reseal must fail");
+const unboundDigest = structuredClone(evidence); unboundDigest.matrix.rawSummarySha256 = "f".repeat(64); reseal(unboundDigest);
+assert.throws(() => validateEvidenceReceipt(unboundDigest, source, authority), /authority binding/, "coordinated digest reseal must fail");
+console.log("JUSTIFIED evidence-binding: coordinated candidate and digest reseals rejected by tracked authority");
 const report = process.env.SIR_SVG_PIPELINE_JUNIT || "artifacts/test-results/svg-pipeline.junit.xml";
 mkdirSync(dirname(report), { recursive: true });
-writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="12" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="12" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="event-rate-matrix"/><testcase name="observed-run"/><testcase name="visible-density-workload"/><testcase name="event-rate-workload"/><testcase name="supporting-list-workload"/><testcase name="evidence-candidate-binding"/><testcase name="evidence-digest-binding"/></testsuite></testsuites>\n');
+writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="13" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="13" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="event-rate-matrix"/><testcase name="event-rate-control"/><testcase name="observed-run"/><testcase name="visible-density-workload"/><testcase name="event-rate-workload"/><testcase name="supporting-list-workload"/><testcase name="evidence-candidate-binding"/><testcase name="evidence-digest-binding"/></testsuite></testsuites>\n');
 console.log("svg-pipeline measurement unit gates: PASS");
