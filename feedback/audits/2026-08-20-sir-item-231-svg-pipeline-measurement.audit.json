@@ -1,0 +1,38 @@
+{
+  "auditSchema": 1,
+  "report": "feedback/2026-08-20-sir-item-231-svg-pipeline-measurement.md",
+  "reportSha256": "c11c043183ff014539acf8d9990bce3d82f23d5d7a20c716f8e76b348289141a",
+  "criticMode": "fresh-context-subagent",
+  "criticPromptVersion": "actionability-v1",
+  "findings": [
+    {
+      "id": "§4.1",
+      "status": "positive-pattern",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:work/231-svg-pipeline-measurement/production-chromium-evidence.json", "result": "verified", "sha256": "fa3064510e1eed7ef6c19b1c514be75202291b575914be5311ba554b52343edb" },
+        { "locator": "command:npm run test:svg-pipeline-measurement", "result": "verified" },
+        { "locator": "command:npm run measure:svg-pipeline -- --out artifacts/svg-pipeline-final", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The rerun passed 28 runs and again selected mainThreadScript at 95.9%, versus 95.83% in the committed receipt; this is normal timing variation.",
+        "Both controlled-pair fixtures retained exactly 40 visual units across all seven journeys.",
+        "Worker transfer, projection/allocation, and source-isolated Elmish/React remain unavailable; no live GPU counter beyond Chromium trace events is established."
+      ]
+    },
+    {
+      "id": "§4.2",
+      "status": "duplicate",
+      "missingFacts": [],
+      "checkedEvidence": [
+        { "locator": "file:docs/assets/map-editor-review/manifest.json", "result": "verified", "sha256": "022a166cb085923942806dd75c9bb43101f6bd4f2ab456e2e48f34577a565539" },
+        { "locator": "command:node scripts/test-map-editor-qualification.mjs", "result": "verified" }
+      ],
+      "confidenceLimits": [
+        "The manifest binds 99809e673a…, while the built application digest is 208b489ae5…; the focused command reproduced exactly the stated stale-binding failure.",
+        "Prior-report inspection confirms recurrence in 2026-08-15-SIR-186-4 §4.1 and 2026-08-15-sir-item-184-elaborate-tactical-sample §4.3.",
+        "The focused locators prove the stale binding, not the precise elapsed cost or complete stage history of the earlier aggregate run."
+      ]
+    }
+  ]
+}
