@@ -146,6 +146,7 @@ if [[ "$protected_mode" == true ]]; then
   fable_inventory=$(node scripts/verify-fable-invocations.mjs "$fable_log" \
     --expect tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj=1 \
     --expect tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj=1 \
+    --expect tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj=1 \
     --expect src/SIR.Replay.Web/SIR.Replay.Web.fsproj=3 \
     --expect src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj=3)
 else

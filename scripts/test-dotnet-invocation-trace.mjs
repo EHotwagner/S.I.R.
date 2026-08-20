@@ -19,10 +19,11 @@ try {
   const expected = [
     "tests/SIR.Domain.Fable.Tests/SIR.Domain.Fable.Tests.fsproj",
     "tests/SIR.ModalInput.Fable.Tests/SIR.ModalInput.Fable.Tests.fsproj",
+    "tests/SIR.Client.Tests/ScenarioCatalogRuntime.fsproj",
     "src/SIR.Replay.Web/SIR.Replay.Web.fsproj",
     "src/SIR.Client.Web/SIR.RulesExplorer.Web.fsproj",
   ];
-  for (const project of [expected[1], expected[0], expected[3], expected[2]]) {
+  for (const project of [expected[1], expected[0], expected[4], expected[3], expected[2]]) {
     const result = run(shim, ["fable", project, "--noCache"], env);
     if (result.status !== 0) throw new Error(`trace fixture failed: ${result.stderr}`);
   }
@@ -38,8 +39,8 @@ try {
     throw new Error(`direct duplicate invocation did not make the unchanged gate red: ${duplicateRed.stdout} ${duplicateRed.stderr}`);
   }
   const repeatedGreen = run(process.execPath, ["scripts/verify-fable-invocations.mjs", log,
-    "--expect", `${expected[0]}=1`, "--expect", `${expected[1]}=1`, "--expect", `${expected[2]}=1`, "--expect", `${expected[3]}=2`]);
-  if (repeatedGreen.status !== 0 || JSON.parse(repeatedGreen.stdout).total !== 5) throw new Error(`declared repeated inventory was not derived: ${repeatedGreen.stdout} ${repeatedGreen.stderr}`);
+    "--expect", `${expected[0]}=1`, "--expect", `${expected[1]}=1`, "--expect", `${expected[2]}=1`, "--expect", `${expected[3]}=2`, "--expect", `${expected[4]}=1`]);
+  if (repeatedGreen.status !== 0 || JSON.parse(repeatedGreen.stdout).total !== 6) throw new Error(`declared repeated inventory was not derived: ${repeatedGreen.stdout} ${repeatedGreen.stderr}`);
 
   await writeFile(log, "");
   run(shim, ["build", "tests/Build.fsproj"], env);
