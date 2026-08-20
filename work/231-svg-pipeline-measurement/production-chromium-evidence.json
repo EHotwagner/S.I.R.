@@ -1,8 +1,8 @@
 {
   "schema": "sir.svg-pipeline-measurement-evidence/1",
   "candidate": {
-    "commit": "b02a6b9d86ae04d83e6a95f48de1ccedc3b88268",
-    "tree": "5899ed9c376d816ebdc838e7fc8f2d77684616eb"
+    "commit": "e971395307ea273def35dac863cb1b15a93d60fc",
+    "tree": "437a3cc9d69f77f38ff590e5940a167afebaf6f7"
   },
   "buildIdentity": {
     "clientManifestSha256": "44f663e56b6d3acfb4b6d4f1387020ade7ffdc52341d7c8bfb33b64c3b2c3830",
@@ -23,22 +23,22 @@
     "journeyCount": 7,
     "runCount": 28,
     "result": "pass",
-    "startedAt": "2026-08-20T20:18:22.177Z",
-    "completedAt": "2026-08-20T20:23:45.401Z",
+    "startedAt": "2026-08-20T20:30:33.252Z",
+    "completedAt": "2026-08-20T20:35:54.772Z",
     "journeys": ["idle", "playback", "pan", "zoom", "selection", "modality-transition", "dense-overlay"],
-    "rawSummarySha256": "7de538d8d33c47da05dc2327f5ca5d8bfcef39eb53782656a1362ee0dda627d4",
-    "orderedTraceDigestSha256": "625eff63ddd532989c4f0f586e3e705ec7fe639a53c5a26abfe77d9d31ee2ac2",
-    "inputToPaintMilliseconds": { "availableRunCount": 24, "unavailableRunCount": 4, "minimum": 110.4, "p95": 1172.2, "maximum": 1532.3 }
+    "rawSummarySha256": "9d4470c5ea30d8cf109e11f8ce34ee49fe915bd69480b9c786923bdfc2e45675",
+    "orderedTraceDigestSha256": "79001ac59073dfadb090f9a3de44d63ad343e77b53272e78e3e44df2625982ee",
+    "inputToPaintMilliseconds": { "availableRunCount": 24, "unavailableRunCount": 4, "minimum": 101.3, "p95": 1183.4, "maximum": 1545.3 }
   },
   "pipeline": {
     "nextBottleneck": "mainThreadScript",
-    "evidence": "largest measured aggregate at 8197.613 ms (95.8%); generic script is not source-symbol isolated",
+    "evidence": "largest measured aggregate at 8514.081 ms (95.9%); generic script is not source-symbol isolated",
     "ranking": [
-      { "stage": "mainThreadScript", "milliseconds": 8197.613, "share": 0.9575 },
-      { "stage": "paint", "milliseconds": 181.768, "share": 0.0212 },
-      { "stage": "style", "milliseconds": 94.867, "share": 0.0111 },
-      { "stage": "layout", "milliseconds": 84.751, "share": 0.0099 },
-      { "stage": "workerCompute", "milliseconds": 2.866, "share": 0.0003 }
+      { "stage": "mainThreadScript", "milliseconds": 8514.081, "share": 0.9593 },
+      { "stage": "paint", "milliseconds": 179.216, "share": 0.0202 },
+      { "stage": "style", "milliseconds": 94.55, "share": 0.0107 },
+      { "stage": "layout", "milliseconds": 84.057, "share": 0.0095 },
+      { "stage": "workerCompute", "milliseconds": 3.297, "share": 0.0004 }
     ],
     "unavailable": {
       "workerTransfer": "The production client has no dedicated transfer User Timing mark yet.",
@@ -51,17 +51,17 @@
       "fixture": "global-small-viewport",
       "global": { "mapExtent": [20, 20], "unitCount": 40, "supportingListSize": 40 },
       "visible": { "visualUnits": 40, "totalDom": 3034, "nodeEstimate": 2040 },
-      "mainScriptMilliseconds": 0.697,
+      "mainScriptMilliseconds": 0.597,
       "inputLatency": { "available": false, "reason": "The idle journey has no input event; its 500 ms observation window is not interaction latency." },
-      "memory": { "warmUsed": 35426984, "stabilizedUsed": 49361056, "delta": 13934072, "warmupCycles": 2, "stabilizationCycles": 5 }
+      "memory": { "warmUsed": 28879904, "stabilizedUsed": 30453064, "delta": 1573160, "warmupCycles": 2, "stabilizationCycles": 5 }
     },
     {
       "fixture": "global-large-small-viewport",
       "global": { "mapExtent": [40, 40], "unitCount": 40, "supportingListSize": 800 },
       "visible": { "visualUnits": 40, "totalDom": 8026, "nodeEstimate": 6952 },
-      "mainScriptMilliseconds": 0.538,
+      "mainScriptMilliseconds": 0.43,
       "inputLatency": { "available": false, "reason": "The idle journey has no input event; its 500 ms observation window is not interaction latency." },
-      "memory": { "warmUsed": 70732256, "stabilizedUsed": 73129768, "delta": 2397512, "warmupCycles": 2, "stabilizationCycles": 5 }
+      "memory": { "warmUsed": 53824896, "stabilizedUsed": 73279396, "delta": 19454500, "warmupCycles": 2, "stabilizationCycles": 5 }
     }
   ],
   "dispositions": {
@@ -70,5 +70,5 @@
     "furtherAllocationWork": "unresolved"
   },
   "interpretation": "Versioned regression workloads; not a permanent supported-size ceiling.",
-  "bindingSha256": "122e97cf2e087d9dba07352f10236fa786ce1bef8df1958072c0545acaa41d79"
+  "bindingSha256": "6892aaf53dfa098c5fc7769ba161f0a8b9d3e7906c195a0c37f086fb14051f0b"
 }
