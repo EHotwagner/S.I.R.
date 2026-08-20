@@ -167,3 +167,18 @@ at 17.405 ms with 100/100/100/0/50/100 structure, and dense pointer preview at
 identity `51eedfe20ceb51fad17d33ddacfe68ce0e95cd7df031f1ef5e176226249e0a68`,
 observed 19.548 ms / 12,124,472 bytes for the tactical preview and 16.859 ms
 for the representative batch, and left tracked sources drift-free.
+
+## Protected-main sampling repair
+
+Protected-main run `32381741044` retained the exact 100 source/final units,
+100 participants, zero propagated changes, 50 spatial queries, and 100 crossed
+cells, but its five-sample p80 was 50.248 ms against the unchanged 50 ms gate.
+The timed region still included test-only per-step assertions and inherited GC
+state from the preceding qualification workload.
+
+The gate now performs full per-step verification immediately before and after
+the samples, measures only the product interaction batch, and collects outside
+each timed region so unrelated earlier allocations cannot decide the result.
+Two clean local Release runs observed 16.959 ms and 16.340 ms p80 with the
+workload and 50 ms budget unchanged. The forced 60 ms timing mutation still
+failed closed through `scripts/test-ci-product-performance-route.sh`.
