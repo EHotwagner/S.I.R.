@@ -10,6 +10,7 @@
     <Compile Include="ClientBoundaryQualification.fs" />
     <Compile Include="ClientPerformanceQualification.fs" />
     <Compile Include="ScenarioCatalogQualification.fs" />
+    <Compile Include="ProgramFixtures.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
