@@ -10,6 +10,7 @@
     <Compile Include="SignalR.fs" />
     <Compile Include="LiveApi.fs" />
     <Compile Include="LiveSession.fs" />
+    <Compile Include="LiveSessionView.fs" />
     <Compile Include="Worker.fs" />
     <Compile Include="Runner.fs" />
     <Compile Include="FeatureLoader.fsi" />

@@ -8,6 +8,7 @@
     <Compile Include="../SIR.Client.Web/SignalR.fs" Link="SignalR.fs" />
     <Compile Include="../SIR.Client.Web/LiveApi.fs" Link="LiveApi.fs" />
     <Compile Include="../SIR.Client.Web/LiveSession.fs" Link="LiveSession.fs" />
+    <Compile Include="../SIR.Client.Web/LiveSessionView.fs" Link="LiveSessionView.fs" />
     <Compile Include="../SIR.Client.Web/Worker.fs" Link="Worker.fs" />
     <Compile Include="../SIR.Client.Web/Runner.fs" Link="Runner.fs" />
     <Compile Include="../SIR.Client.Web/FeatureLoader.fsi" Link="FeatureLoader.fsi" />

@@ -606,6 +606,7 @@ body {
 #sir-replay-app .desktop-command-toolbar,
 #sir-replay-app .desktop-toolbar-customization,
 #sir-replay-app .tactical-modality-controls,
+#sir-replay-app .tactical-supporting-controls,
 #sir-replay-app .tactical-legacy-controls {
   display: none !important;
 }

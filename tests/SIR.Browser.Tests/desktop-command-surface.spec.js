@@ -39,6 +39,15 @@ test("View exposes persistent checkbox controls for panels and timeline", async 
   await expect(page.locator("#layout-panel-roster")).toBeVisible();
 });
 
+test("View loads deferred supporting panels without a second toolbar row", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("navigation", { name: "Supporting application sections" })).toBeHidden();
+  await page.getByRole("button", { name: "View", exact: true }).click();
+  await page.getByRole("menu", { name: "View commands" }).getByRole("menuitemcheckbox", { name: "Rules", exact: true }).click();
+  await expect(page.locator("#layout-panel-rules")).toBeVisible();
+  await expect(page.getByRole("region", { name: "Design scenario catalog" }).getByRole("button", { name: /^Simulate design scenario/ })).toHaveCount(6);
+});
+
 test("compact desktop chrome keeps a reachable overflow menu", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 720 });
   await page.goto("/");

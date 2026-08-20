@@ -228,7 +228,7 @@ await waitFor("deferred Rules workbench owner", () => {
       '[aria-label="Design scenario catalog"] button[aria-label^="Simulate design scenario"]',
     ).length === 6
   );
-});
+}, 5000);
 
 const rulesPanel = mount?.querySelector('[data-panel-id="rules"]');
 const catalog = mount?.querySelector('[aria-label="Design scenario catalog"]');

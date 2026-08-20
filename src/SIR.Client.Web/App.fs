@@ -7124,7 +7124,10 @@ let private tacticalLayoutToolbar model dispatch =
             prop.ariaLabel panel.Label
             prop.onClick (fun _ ->
                 closeDesktopMenus ()
-                dispatch (ToggleLayoutPanelVisibility panel.Id))
+                if not placement.Visible && (Set [ "rules"; "data"; "samples" ] |> Set.contains panel.Id) then
+                    dispatch (OpenSupportingPanel panel.Id)
+                else
+                    dispatch (ToggleLayoutPanelVisibility panel.Id))
             prop.children [
                 Html.span [
                     prop.className "view-panel-menu-checkmark"
@@ -7208,49 +7211,7 @@ let private tacticalLayoutToolbar model dispatch =
                             yield timelineVisibilityEntry ()
                         for command in commands do yield commandEntry command
                         if label = "Simulation" then
-                            yield Html.section [
-                                prop.id "sir-live-session"
-                                prop.className "live-session-menu-group"
-                                prop.ariaLabel "Authoritative live session"
-                                prop.custom ("data-status", model.Live.Status)
-                                prop.custom ("data-tick", model.Live.Snapshot |> Option.map _.Tick |> Option.defaultValue 0 |> string)
-                                prop.custom ("data-server-sequence", model.Live.Snapshot |> Option.map _.ServerSequence |> Option.defaultValue 0 |> string)
-                                prop.custom ("data-resync-count", string model.Live.ResyncCount)
-                                prop.custom ("data-session-id", model.Live.Bootstrap |> Option.map _.SessionId |> Option.defaultValue "")
-                                prop.children [
-                                    yield Html.p (
-                                        "live " + model.Live.Status
-                                        + " · tick " + string (model.Live.Snapshot |> Option.map _.Tick |> Option.defaultValue 0)
-                                    )
-                                    yield commandButton [
-                                        prop.type'.button
-                                        prop.custom ("role", "menuitem")
-                                        prop.tabIndex -1
-                                        prop.disabled model.Live.Connection.IsNone
-                                        prop.text "Advance live session"
-                                        prop.ariaLabel "Send the next player-visible live advance command"
-                                        prop.onClick (fun _ -> dispatch AdvanceLiveSession)
-                                    ]
-                                    yield commandButton [
-                                        prop.type'.button
-                                        prop.custom ("role", "menuitem")
-                                        prop.tabIndex -1
-                                        prop.disabled model.Live.Connection.IsNone
-                                        prop.text "Disconnect live session"
-                                        prop.ariaLabel "Disconnect the player-visible live session"
-                                        prop.onClick (fun _ -> dispatch DisconnectLiveSession)
-                                    ]
-                                    yield commandButton [
-                                        prop.type'.button
-                                        prop.custom ("role", "menuitem")
-                                        prop.tabIndex -1
-                                        prop.disabled model.Live.Connection.IsNone
-                                        prop.text "Reconnect live session"
-                                        prop.ariaLabel "Reconnect and request the authoritative live snapshot"
-                                        prop.onClick (fun _ -> dispatch ReconnectLiveSession)
-                                    ]
-                                ]
-                            ]
+                            yield LiveSessionView.menuGroup model.Live (fun () -> dispatch AdvanceLiveSession) (fun () -> dispatch DisconnectLiveSession) (fun () -> dispatch ReconnectLiveSession)
                         if label = "Help" then
                             yield commandButton [
                                 prop.type'.button

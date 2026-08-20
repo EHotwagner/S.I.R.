@@ -17,7 +17,7 @@
       "locator": "file:src/SIR.Client.Web/App.fs",
       "path": "src/SIR.Client.Web/App.fs",
       "previousSha256": "6d86a1690e2876dab1b6e6ee9d20c8077972e68ad31bdb509650124614a1555d",
-      "replacementSha256": "e4b7d7e7033b55125ab83a5a70517f1548f8154e120ed4ac1ec97a88ad3f0415",
+      "replacementSha256": "290736bea570964dd1ef3d77bec8ab61b2b9971bc13ef841c50e24bdc0dc9f49",
       "replacementEvidence": "command:./scripts/run-ci-gate.sh browser artifacts/ci/results/browser.json",
       "reason": "The tactical workspace changes the cited application owner; the exact-head hosted browser gate verifies the replacement production behavior."
     },
@@ -47,7 +47,7 @@
       "locator": "file:src/SIR.Client.Web/App.fs",
       "path": "src/SIR.Client.Web/App.fs",
       "previousSha256": "6d86a1690e2876dab1b6e6ee9d20c8077972e68ad31bdb509650124614a1555d",
-      "replacementSha256": "e4b7d7e7033b55125ab83a5a70517f1548f8154e120ed4ac1ec97a88ad3f0415",
+      "replacementSha256": "290736bea570964dd1ef3d77bec8ab61b2b9971bc13ef841c50e24bdc0dc9f49",
       "replacementEvidence": "command:./scripts/run-ci-gate.sh browser artifacts/ci/results/browser.json",
       "reason": "The tactical workspace changes the cited application owner; the exact-head hosted browser gate verifies the replacement production behavior."
     },
@@ -67,7 +67,7 @@
       "locator": "file:src/SIR.Client.Web/App.fs",
       "path": "src/SIR.Client.Web/App.fs",
       "previousSha256": "f18830d84a37723a9a42a833bd4ad4b7c3f96b0bb43aedd1922ba02a04b43e81",
-      "replacementSha256": "e4b7d7e7033b55125ab83a5a70517f1548f8154e120ed4ac1ec97a88ad3f0415",
+      "replacementSha256": "290736bea570964dd1ef3d77bec8ab61b2b9971bc13ef841c50e24bdc0dc9f49",
       "replacementEvidence": "command:./scripts/run-ci-gate.sh browser artifacts/ci/results/browser.json",
       "reason": "The tactical workspace changes the cited application owner; the exact-head hosted browser gate verifies the replacement production behavior."
     },
