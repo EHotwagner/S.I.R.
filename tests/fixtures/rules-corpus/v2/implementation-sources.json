@@ -1,10 +1,11 @@
 {
   "schema": "sir-rules-implementation-sources-v1",
-  "sourceCommit": "6f6169fe3a0364e09df9756318b3fb29a8bf3f97",
+  "sourceCommit": "1cc311593bceb85ed8070a80269b01750d3f12cf",
   "packageSha256": "2722ec4828960167da8e77c2699b0d0a679cd4791207d2bf6f3b644a2bab66f7",
   "algorithmFingerprint": "FS.GG.Game.Core@0.13.0:Los.lineOfSightBy:Supercover",
   "sources": [
     "src/SIR.Client.Web/App.fs",
+    "src/SIR.Client.Web/LiveSessionView.fs",
     "src/SIR.Client.Web/RulesExplorer.fs",
     "src/SIR.Client.Web/Runner.fs",
     "src/SIR.Client.Web/Worker.fs",
