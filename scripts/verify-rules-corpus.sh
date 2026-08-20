@@ -14,6 +14,35 @@ search_quiet() {
   fi
 }
 
+source_manifest="$repo_root/tests/fixtures/rules-corpus/v2/implementation-sources.json"
+source_commit=$(jq -r '.sourceCommit' "$source_manifest")
+
+require_durable_source_commit() {
+  local git_repo=$1
+  local commit=$2
+  local canonical_ref=$3
+
+  if [[ ! "$commit" =~ ^[0-9a-f]{40}$ ]]; then
+    echo "declared rules source commit is not a 40-character lowercase Git object id: $commit" >&2
+    return 1
+  fi
+  if ! git -C "$git_repo" cat-file -e "$commit^{commit}" 2>/dev/null; then
+    echo "declared rules source commit is unavailable: $commit (fetch canonical history or rebind the corpus to a durable commit)" >&2
+    return 1
+  fi
+  if ! git -C "$git_repo" show-ref --verify --quiet "$canonical_ref"; then
+    echo "canonical remote default branch is unavailable: $canonical_ref (fetch the canonical remote before verifying the rules corpus)" >&2
+    return 1
+  fi
+  if ! git -C "$git_repo" merge-base --is-ancestor "$commit" "$canonical_ref"; then
+    echo "declared rules source commit is not durably reachable from $canonical_ref: $commit (local-only and deleted-branch objects are not reproducible in a fresh network clone)" >&2
+    return 1
+  fi
+}
+
+canonical_source_ref=refs/remotes/origin/main
+require_durable_source_commit "$repo_root" "$source_commit" "$canonical_source_ref"
+
 "$repo_root/scripts/generate-rules-corpus.sh" --check
 
 for fixture in manifest.json coverage.json representative-application.hex; do
@@ -50,9 +79,67 @@ while IFS=$'\t' read -r source_path source_symbol; do
   }
 done <<< "$(jq -r '.rules[].source | select(. != null) | [.path, .symbol] | @tsv' "$repo_root/tests/fixtures/rules-corpus/v2/manifest.json")"
 
-source_commit=$(jq -r '.sourceCommit' "$repo_root/tests/fixtures/rules-corpus/v2/manifest.json")
-source_manifest="$repo_root/tests/fixtures/rules-corpus/v2/implementation-sources.json"
-test "$(jq -r '.sourceCommit' "$source_manifest")" = "$source_commit" || { echo "implementation source manifest does not bind the package source commit" >&2; exit 1; }
+manifest_source_commit=$(jq -r '.sourceCommit' "$repo_root/tests/fixtures/rules-corpus/v2/manifest.json")
+test "$manifest_source_commit" = "$source_commit" || { echo "implementation source manifest does not bind the package source commit" >&2; exit 1; }
+
+reachability_mutant=$(mktemp -d /tmp/sir-rules-reachability-mutant.XXXXXX)
+reachability_log=$(mktemp /tmp/sir-rules-reachability.XXXXXX)
+git -C "$reachability_mutant" init -q
+empty_tree=$(git -C "$reachability_mutant" hash-object -t tree /dev/null)
+durable_mutant_commit=$(printf 'durable rules source\n' | env GIT_AUTHOR_NAME=Rules GIT_AUTHOR_EMAIL=rules@example.invalid GIT_COMMITTER_NAME=Rules GIT_COMMITTER_EMAIL=rules@example.invalid git -C "$reachability_mutant" commit-tree "$empty_tree")
+local_only_mutant_commit=$(printf 'local-only rules source\n' | env GIT_AUTHOR_NAME=Rules GIT_AUTHOR_EMAIL=rules@example.invalid GIT_COMMITTER_NAME=Rules GIT_COMMITTER_EMAIL=rules@example.invalid git -C "$reachability_mutant" commit-tree "$empty_tree")
+git -C "$reachability_mutant" update-ref refs/remotes/origin/main "$durable_mutant_commit"
+if require_durable_source_commit "$reachability_mutant" "$durable_mutant_commit" refs/remotes/origin/missing >"$reachability_log" 2>&1; then
+  echo "missing canonical source ref mutation unexpectedly passed" >&2
+  rm -rf "$reachability_mutant"
+  rm -f "$reachability_log"
+  exit 1
+fi
+search_quiet 'canonical remote default branch is unavailable: refs/remotes/origin/missing.*fetch the canonical remote' "$reachability_log" || {
+  echo "missing canonical source ref mutation failed without the actionable fetch diagnostic" >&2
+  rm -rf "$reachability_mutant"
+  rm -f "$reachability_log"
+  exit 1
+}
+if require_durable_source_commit "$reachability_mutant" "$local_only_mutant_commit" refs/remotes/origin/main >"$reachability_log" 2>&1; then
+  echo "local-only rules source commit mutation unexpectedly passed" >&2
+  rm -rf "$reachability_mutant"
+  rm -f "$reachability_log"
+  exit 1
+fi
+search_quiet 'not durably reachable from refs/remotes/origin/main.*local-only and deleted-branch objects' "$reachability_log" || {
+  echo "local-only rules source commit mutation failed without the actionable durability diagnostic" >&2
+  rm -rf "$reachability_mutant"
+  rm -f "$reachability_log"
+  exit 1
+}
+if require_durable_source_commit "$reachability_mutant" 0000000000000000000000000000000000000000 refs/remotes/origin/main >"$reachability_log" 2>&1; then
+  echo "missing rules source commit mutation unexpectedly passed" >&2
+  rm -rf "$reachability_mutant"
+  rm -f "$reachability_log"
+  exit 1
+fi
+search_quiet 'declared rules source commit is unavailable.*fetch canonical history or rebind' "$reachability_log" || {
+  echo "missing rules source commit mutation failed without the actionable availability diagnostic" >&2
+  rm -rf "$reachability_mutant"
+  rm -f "$reachability_log"
+  exit 1
+}
+if require_durable_source_commit "$reachability_mutant" not-a-commit refs/remotes/origin/main >"$reachability_log" 2>&1; then
+  echo "malformed rules source commit mutation unexpectedly passed" >&2
+  rm -rf "$reachability_mutant"
+  rm -f "$reachability_log"
+  exit 1
+fi
+search_quiet 'not a 40-character lowercase Git object id' "$reachability_log" || {
+  echo "malformed rules source commit mutation failed without the actionable format diagnostic" >&2
+  rm -rf "$reachability_mutant"
+  rm -f "$reachability_log"
+  exit 1
+}
+rm -rf "$reachability_mutant"
+rm -f "$reachability_log"
+
 source_digest_input=$(mktemp /tmp/sir-rules-source-digest.XXXXXX)
 normalize_implementation_source() {
   local artifact_path=$1

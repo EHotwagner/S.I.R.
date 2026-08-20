@@ -1,0 +1,1228 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "1.2.0",
+  "workId": "239-durable-rules-identity",
+  "project": {
+    "id": "s.i.r",
+    "defaultWorkRoot": "work",
+    "profile": null
+  },
+  "sources": [
+    {
+      "path": ".fsgg/agents.yml",
+      "kind": "agentsConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+      }
+    },
+    {
+      "path": ".fsgg/project.yml",
+      "kind": "projectConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+      }
+    },
+    {
+      "path": ".fsgg/sdd.yml",
+      "kind": "sddConfig",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+      }
+    },
+    {
+      "path": "work/239-durable-rules-identity/checklist.md",
+      "kind": "checklist",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "4aac1b20b51087652579e9a80e531ecb558fe67c7fe5be518e5eebf41dd6f524"
+      }
+    },
+    {
+      "path": "work/239-durable-rules-identity/clarifications.md",
+      "kind": "clarifications",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "aae5eb9f63f27ea8396dbfbe81dcc2f330004db3467a8599e1fca7ce8dd2f42b"
+      }
+    },
+    {
+      "path": "work/239-durable-rules-identity/evidence.yml",
+      "kind": "evidence",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "fef7c33779d5ec000949e568b03e1d732f5b6c5f4701af71e7044818177d91f9"
+      }
+    },
+    {
+      "path": "work/239-durable-rules-identity/plan.md",
+      "kind": "plan",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "5b9d60adecf7a76980d23b3f262e907990abf2f8f85e6910c917880d6bf973c1"
+      }
+    },
+    {
+      "path": "work/239-durable-rules-identity/spec.md",
+      "kind": "spec",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "2585aa4de12d508fbeed1fb3b9040035e7c6a9bd94e94b816648bbd3c068a9a1"
+      }
+    },
+    {
+      "path": "work/239-durable-rules-identity/tasks.yml",
+      "kind": "tasks",
+      "owner": "sdd",
+      "schemaVersion": 1,
+      "rawSchemaVersion": "1",
+      "schemaStatus": "current",
+      "sourceDigest": {
+        "algorithm": "sha256",
+        "value": "56f27fdee944594832af3af4c880830353b814354c6172c8cdb714445abf43c6"
+      }
+    }
+  ],
+  "workItem": {
+    "id": "239-durable-rules-identity",
+    "title": "Durable rules corpus source identity",
+    "stage": "specify",
+    "changeTier": "tier1",
+    "status": "specified"
+  },
+  "performanceIntent": null,
+  "requirements": [
+    {
+      "id": "FR-001",
+      "title": "The retained v2 corpus MUST bind the intended normalized implementation sources to a commit reachable from canonical \u0060origin/main\u0060, with a consistently regenerated implementation digest, manifest identity, and affected retained evidence. (covers AC-001)",
+      "text": "The retained v2 corpus MUST bind the intended normalized implementation sources to a commit reachable from canonical \u0060origin/main\u0060, with a consistently regenerated implementation digest, manifest identity, and affected retained evidence. (covers AC-001)",
+      "acceptanceCriteria": [
+        "AC-001"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/239-durable-rules-identity/spec.md",
+      "sourceLocation": {
+        "line": 37,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T001"
+      ],
+      "linkedEvidenceIds": [
+        "EV001"
+      ]
+    },
+    {
+      "id": "FR-002",
+      "title": "The verifier MUST fail before generation with an actionable diagnostic for malformed, missing, checkout-local, missing-canonical-ref, or non-\u0060origin/main\u0060-ancestor source commits, including executable subject mutations for each fail-closed class. (covers AC-002, AC-003)",
+      "text": "The verifier MUST fail before generation with an actionable diagnostic for malformed, missing, checkout-local, missing-canonical-ref, or non-\u0060origin/main\u0060-ancestor source commits, including executable subject mutations for each fail-closed class. (covers AC-002, AC-003)",
+      "acceptanceCriteria": [
+        "AC-002",
+        "AC-003"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/239-durable-rules-identity/spec.md",
+      "sourceLocation": {
+        "line": 38,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T002"
+      ],
+      "linkedEvidenceIds": [
+        "EV002"
+      ]
+    },
+    {
+      "id": "FR-003",
+      "title": "The exact repair head MUST pass \u0060scripts/verify-rules-corpus.sh\u0060 in a fresh full network clone created with \u0060--no-local\u0060 and without local object alternates. (covers AC-004)",
+      "text": "The exact repair head MUST pass \u0060scripts/verify-rules-corpus.sh\u0060 in a fresh full network clone created with \u0060--no-local\u0060 and without local object alternates. (covers AC-004)",
+      "acceptanceCriteria": [
+        "AC-004"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/239-durable-rules-identity/spec.md",
+      "sourceLocation": {
+        "line": 39,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T003"
+      ],
+      "linkedEvidenceIds": [
+        "EV003"
+      ]
+    },
+    {
+      "id": "FR-004",
+      "title": "The current SDD ship artifact and affected Governance evidence bindings MUST form a coherent protected boundary, and hosted \u0060rules\u0060 plus the aggregate verdict MUST pass on the exact repair head. (covers AC-005, AC-006)",
+      "text": "The current SDD ship artifact and affected Governance evidence bindings MUST form a coherent protected boundary, and hosted \u0060rules\u0060 plus the aggregate verdict MUST pass on the exact repair head. (covers AC-005, AC-006)",
+      "acceptanceCriteria": [
+        "AC-005",
+        "AC-006"
+      ],
+      "priority": null,
+      "classification": [],
+      "source": "work/239-durable-rules-identity/spec.md",
+      "sourceLocation": {
+        "line": 40,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T004"
+      ],
+      "linkedEvidenceIds": [
+        "EV004"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "title": "Source durability means the declared commit exists and is an ancestor of explicit \u0060refs/remotes/origin/main\u0060; absence of either object or ref is an early actionable refusal.",
+      "decision": "Source durability means the declared commit exists and is an ancestor of explicit \u0060refs/remotes/origin/main\u0060; absence of either object or ref is an early actionable refusal.",
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [
+        "AC-002",
+        "AC-003"
+      ],
+      "source": "work/239-durable-rules-identity/clarifications.md",
+      "sourceLocation": {
+        "line": 26,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T005"
+      ]
+    },
+    {
+      "id": "DEC-002",
+      "title": "Governance resealing binds this work item\u0027s current ship artifact while retaining the established rules-governance receipt location.",
+      "decision": "Governance resealing binds this work item\u0027s current ship artifact while retaining the established rules-governance receipt location.",
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "storyRefs": [],
+      "acceptanceRefs": [
+        "AC-005",
+        "AC-006"
+      ],
+      "source": "work/239-durable-rules-identity/clarifications.md",
+      "sourceLocation": {
+        "line": 27,
+        "column": 1
+      },
+      "linkedTaskIds": [
+        "T006"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Implement requirement FR-001",
+      "status": "done",
+      "owner": "finch-61ec",
+      "dependencies": [],
+      "requirements": [
+        "FR-001"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-001",
+        "FR-001",
+        "PD-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV001"
+      ],
+      "source": "work/239-durable-rules-identity/tasks.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "T002",
+      "title": "Implement requirement FR-002",
+      "status": "done",
+      "owner": "finch-61ec",
+      "dependencies": [],
+      "requirements": [
+        "FR-002"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-002",
+        "AC-003",
+        "FR-002",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV002"
+      ],
+      "source": "work/239-durable-rules-identity/tasks.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "T003",
+      "title": "Implement requirement FR-003",
+      "status": "done",
+      "owner": "finch-61ec",
+      "dependencies": [],
+      "requirements": [
+        "FR-003"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-004",
+        "FR-003",
+        "PD-003"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV003"
+      ],
+      "source": "work/239-durable-rules-identity/tasks.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "T004",
+      "title": "Implement requirement FR-004",
+      "status": "done",
+      "owner": "finch-61ec",
+      "dependencies": [],
+      "requirements": [
+        "FR-004"
+      ],
+      "decisions": [],
+      "sourceIds": [
+        "AC-005",
+        "AC-006",
+        "FR-004",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV004"
+      ],
+      "source": "work/239-durable-rules-identity/tasks.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "T005",
+      "title": "Implement clarification decision DEC-001",
+      "status": "done",
+      "owner": "finch-61ec",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-001"
+      ],
+      "sourceIds": [
+        "DEC-001"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV005"
+      ],
+      "source": "work/239-durable-rules-identity/tasks.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "T006",
+      "title": "Implement clarification decision DEC-002",
+      "status": "done",
+      "owner": "finch-61ec",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [
+        "DEC-002"
+      ],
+      "sourceIds": [
+        "DEC-002"
+      ],
+      "requiredSkills": [
+        "fsharp",
+        "implementation"
+      ],
+      "requiredEvidence": [
+        "EV006"
+      ],
+      "source": "work/239-durable-rules-identity/tasks.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "T007",
+      "title": "Update contract surface PC-001",
+      "status": "done",
+      "owner": "finch-61ec",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "PD-002"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV007"
+      ],
+      "source": "work/239-durable-rules-identity/tasks.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "T008",
+      "title": "Update contract surface PC-002",
+      "status": "done",
+      "owner": "finch-61ec",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "fsharp"
+      ],
+      "requiredEvidence": [
+        "EV008"
+      ],
+      "source": "work/239-durable-rules-identity/tasks.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "T009",
+      "title": "Record verification evidence VO-001",
+      "status": "done",
+      "owner": "finch-61ec",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-001",
+        "VO-001"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV009"
+      ],
+      "source": "work/239-durable-rules-identity/tasks.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "T010",
+      "title": "Record verification evidence VO-002",
+      "status": "done",
+      "owner": "finch-61ec",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-002",
+        "VO-002"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV010"
+      ],
+      "source": "work/239-durable-rules-identity/tasks.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "T011",
+      "title": "Record verification evidence VO-003",
+      "status": "done",
+      "owner": "finch-61ec",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PD-003",
+        "VO-003"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV011"
+      ],
+      "source": "work/239-durable-rules-identity/tasks.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "T012",
+      "title": "Record verification evidence VO-004",
+      "status": "done",
+      "owner": "finch-61ec",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PD-004",
+        "VO-004"
+      ],
+      "requiredSkills": [
+        "automated-tests",
+        "readiness-evidence"
+      ],
+      "requiredEvidence": [
+        "EV012"
+      ],
+      "source": "work/239-durable-rules-identity/tasks.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "T013",
+      "title": "Handle migration posture PM-001",
+      "status": "done",
+      "owner": "finch-61ec",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-001",
+        "PM-001"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV013"
+      ],
+      "source": "work/239-durable-rules-identity/tasks.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "T014",
+      "title": "Handle migration posture PM-002",
+      "status": "done",
+      "owner": "finch-61ec",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "PC-002",
+        "PM-002"
+      ],
+      "requiredSkills": [
+        "schema-versioning"
+      ],
+      "requiredEvidence": [
+        "EV014"
+      ],
+      "source": "work/239-durable-rules-identity/tasks.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "T015",
+      "title": "Refresh generated view impact GV-001",
+      "status": "done",
+      "owner": "finch-61ec",
+      "dependencies": [
+        "T001"
+      ],
+      "requirements": [],
+      "decisions": [],
+      "sourceIds": [
+        "GV-001",
+        "PD-001",
+        "PD-004"
+      ],
+      "requiredSkills": [
+        "deterministic-json"
+      ],
+      "requiredEvidence": [
+        "EV015"
+      ],
+      "source": "work/239-durable-rules-identity/tasks.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV001",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T001",
+      "taskRefs": [
+        "T001"
+      ],
+      "requirementRefs": [
+        "FR-001"
+      ],
+      "artifactRefs": [
+        "readiness/239-durable-rules-identity/analysis.json",
+        "scripts/generate-rules-governance.sh",
+        "scripts/verify-rules-corpus.sh",
+        "tests/fixtures/rules-corpus/v2/coverage.json",
+        "tests/fixtures/rules-corpus/v2/implementation-sources.json",
+        "tests/fixtures/rules-corpus/v2/manifest.json",
+        "tests/fixtures/rules-corpus/v2/representative-application.hex"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/239-durable-rules-identity/evidence.yml",
+      "sourceLocation": {
+        "line": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV002",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T002",
+      "taskRefs": [
+        "T002"
+      ],
+      "requirementRefs": [
+        "FR-002"
+      ],
+      "artifactRefs": [
+        "readiness/239-durable-rules-identity/analysis.json",
+        "scripts/generate-rules-governance.sh",
+        "scripts/verify-rules-corpus.sh",
+        "tests/fixtures/rules-corpus/v2/coverage.json",
+        "tests/fixtures/rules-corpus/v2/implementation-sources.json",
+        "tests/fixtures/rules-corpus/v2/manifest.json",
+        "tests/fixtures/rules-corpus/v2/representative-application.hex"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/239-durable-rules-identity/evidence.yml",
+      "sourceLocation": {
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV003",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T003",
+      "taskRefs": [
+        "T003"
+      ],
+      "requirementRefs": [
+        "FR-003"
+      ],
+      "artifactRefs": [
+        "readiness/239-durable-rules-identity/analysis.json",
+        "scripts/generate-rules-governance.sh",
+        "scripts/verify-rules-corpus.sh",
+        "tests/fixtures/rules-corpus/v2/coverage.json",
+        "tests/fixtures/rules-corpus/v2/implementation-sources.json",
+        "tests/fixtures/rules-corpus/v2/manifest.json",
+        "tests/fixtures/rules-corpus/v2/representative-application.hex"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/239-durable-rules-identity/evidence.yml",
+      "sourceLocation": {
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV004",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T004",
+      "taskRefs": [
+        "T004"
+      ],
+      "requirementRefs": [
+        "FR-004"
+      ],
+      "artifactRefs": [
+        "readiness/198-rules-governance-receipts/evidence-bindings.json",
+        "readiness/198-rules-governance-receipts/protected-boundary.json",
+        "readiness/198-rules-governance-receipts/rules-governance-verdict.json",
+        "readiness/198-rules-governance-receipts/rules-governance.json",
+        "scripts/generate-rules-governance.sh",
+        "scripts/test-rules-governance-tool-mutations.sh",
+        "src/SIR.Simulation/Governance.Tool/Program.fs"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/239-durable-rules-identity/evidence.yml",
+      "sourceLocation": {
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV005",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T005",
+      "taskRefs": [
+        "T005"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/239-durable-rules-identity/analysis.json",
+        "scripts/generate-rules-governance.sh",
+        "scripts/verify-rules-corpus.sh",
+        "tests/fixtures/rules-corpus/v2/coverage.json",
+        "tests/fixtures/rules-corpus/v2/implementation-sources.json",
+        "tests/fixtures/rules-corpus/v2/manifest.json",
+        "tests/fixtures/rules-corpus/v2/representative-application.hex"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/239-durable-rules-identity/evidence.yml",
+      "sourceLocation": {
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV006",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T006",
+      "taskRefs": [
+        "T006"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/198-rules-governance-receipts/evidence-bindings.json",
+        "readiness/198-rules-governance-receipts/protected-boundary.json",
+        "readiness/198-rules-governance-receipts/rules-governance-verdict.json",
+        "readiness/198-rules-governance-receipts/rules-governance.json",
+        "scripts/generate-rules-governance.sh",
+        "scripts/test-rules-governance-tool-mutations.sh",
+        "src/SIR.Simulation/Governance.Tool/Program.fs"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/239-durable-rules-identity/evidence.yml",
+      "sourceLocation": {
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV007",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T007",
+      "taskRefs": [
+        "T007"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/239-durable-rules-identity/analysis.json",
+        "scripts/generate-rules-governance.sh",
+        "scripts/verify-rules-corpus.sh",
+        "tests/fixtures/rules-corpus/v2/coverage.json",
+        "tests/fixtures/rules-corpus/v2/implementation-sources.json",
+        "tests/fixtures/rules-corpus/v2/manifest.json",
+        "tests/fixtures/rules-corpus/v2/representative-application.hex"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/239-durable-rules-identity/evidence.yml",
+      "sourceLocation": {
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV008",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T008",
+      "taskRefs": [
+        "T008"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/198-rules-governance-receipts/evidence-bindings.json",
+        "readiness/198-rules-governance-receipts/protected-boundary.json",
+        "readiness/198-rules-governance-receipts/rules-governance-verdict.json",
+        "readiness/198-rules-governance-receipts/rules-governance.json",
+        "scripts/generate-rules-governance.sh",
+        "scripts/test-rules-governance-tool-mutations.sh",
+        "src/SIR.Simulation/Governance.Tool/Program.fs"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/239-durable-rules-identity/evidence.yml",
+      "sourceLocation": {
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV009",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T009",
+      "taskRefs": [
+        "T009"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/239-durable-rules-identity/analysis.json",
+        "scripts/generate-rules-governance.sh",
+        "scripts/verify-rules-corpus.sh",
+        "tests/fixtures/rules-corpus/v2/coverage.json",
+        "tests/fixtures/rules-corpus/v2/implementation-sources.json",
+        "tests/fixtures/rules-corpus/v2/manifest.json",
+        "tests/fixtures/rules-corpus/v2/representative-application.hex"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/239-durable-rules-identity/evidence.yml",
+      "sourceLocation": {
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV010",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T010",
+      "taskRefs": [
+        "T010"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/239-durable-rules-identity/analysis.json",
+        "scripts/generate-rules-governance.sh",
+        "scripts/verify-rules-corpus.sh",
+        "tests/fixtures/rules-corpus/v2/coverage.json",
+        "tests/fixtures/rules-corpus/v2/implementation-sources.json",
+        "tests/fixtures/rules-corpus/v2/manifest.json",
+        "tests/fixtures/rules-corpus/v2/representative-application.hex"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/239-durable-rules-identity/evidence.yml",
+      "sourceLocation": {
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV011",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T011",
+      "taskRefs": [
+        "T011"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/239-durable-rules-identity/analysis.json",
+        "scripts/generate-rules-governance.sh",
+        "scripts/verify-rules-corpus.sh",
+        "tests/fixtures/rules-corpus/v2/coverage.json",
+        "tests/fixtures/rules-corpus/v2/implementation-sources.json",
+        "tests/fixtures/rules-corpus/v2/manifest.json",
+        "tests/fixtures/rules-corpus/v2/representative-application.hex"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/239-durable-rules-identity/evidence.yml",
+      "sourceLocation": {
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV012",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T012",
+      "taskRefs": [
+        "T012"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/198-rules-governance-receipts/evidence-bindings.json",
+        "readiness/198-rules-governance-receipts/protected-boundary.json",
+        "readiness/198-rules-governance-receipts/rules-governance-verdict.json",
+        "readiness/198-rules-governance-receipts/rules-governance.json",
+        "scripts/generate-rules-governance.sh",
+        "scripts/test-rules-governance-tool-mutations.sh",
+        "src/SIR.Simulation/Governance.Tool/Program.fs"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/239-durable-rules-identity/evidence.yml",
+      "sourceLocation": {
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV013",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T013",
+      "taskRefs": [
+        "T013"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/239-durable-rules-identity/analysis.json",
+        "scripts/generate-rules-governance.sh",
+        "scripts/verify-rules-corpus.sh",
+        "tests/fixtures/rules-corpus/v2/coverage.json",
+        "tests/fixtures/rules-corpus/v2/implementation-sources.json",
+        "tests/fixtures/rules-corpus/v2/manifest.json",
+        "tests/fixtures/rules-corpus/v2/representative-application.hex"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/239-durable-rules-identity/evidence.yml",
+      "sourceLocation": {
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV014",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T014",
+      "taskRefs": [
+        "T014"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/198-rules-governance-receipts/evidence-bindings.json",
+        "readiness/198-rules-governance-receipts/protected-boundary.json",
+        "readiness/198-rules-governance-receipts/rules-governance-verdict.json",
+        "readiness/198-rules-governance-receipts/rules-governance.json",
+        "scripts/generate-rules-governance.sh",
+        "scripts/test-rules-governance-tool-mutations.sh",
+        "src/SIR.Simulation/Governance.Tool/Program.fs"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/239-durable-rules-identity/evidence.yml",
+      "sourceLocation": {
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "EV015",
+      "kind": "verification",
+      "subjectType": "task",
+      "subjectId": "T015",
+      "taskRefs": [
+        "T015"
+      ],
+      "requirementRefs": [],
+      "artifactRefs": [
+        "readiness/198-rules-governance-receipts/evidence-bindings.json",
+        "readiness/198-rules-governance-receipts/protected-boundary.json",
+        "readiness/198-rules-governance-receipts/rules-governance-verdict.json",
+        "readiness/198-rules-governance-receipts/rules-governance.json",
+        "scripts/generate-rules-governance.sh",
+        "scripts/test-rules-governance-tool-mutations.sh",
+        "src/SIR.Simulation/Governance.Tool/Program.fs"
+      ],
+      "result": "pass",
+      "synthetic": false,
+      "performanceBudget": null,
+      "performanceEvidenceArtifact": null,
+      "performanceMeasurements": [],
+      "rationale": null,
+      "source": "work/239-durable-rules-identity/evidence.yml",
+      "sourceLocation": {
+        "line": 15,
+        "column": 1
+      }
+    }
+  ],
+  "generatedViews": [
+    {
+      "path": "readiness/239-durable-rules-identity/work-model.json",
+      "kind": "workModel",
+      "schemaVersion": 1,
+      "generator": {
+        "id": "FS.GG.SDD.Artifacts",
+        "version": "1.0.1"
+      },
+      "sources": [
+        {
+          "path": ".fsgg/agents.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c67035b1cf31b6fa802c10f761eeb1e5bf5d198c38d159b54fac299957b5aac3"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/project.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c519d321f6409a087b07a697b0fa8103b67c43d694ca7f3d33d8ebd467ada846"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": ".fsgg/sdd.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fe5a7c270a975153e80ab0d08a610c9b302585dcb0b5f7c654841ceced9272cb"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/239-durable-rules-identity/checklist.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "4aac1b20b51087652579e9a80e531ecb558fe67c7fe5be518e5eebf41dd6f524"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/239-durable-rules-identity/clarifications.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "aae5eb9f63f27ea8396dbfbe81dcc2f330004db3467a8599e1fca7ce8dd2f42b"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/239-durable-rules-identity/evidence.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fef7c33779d5ec000949e568b03e1d732f5b6c5f4701af71e7044818177d91f9"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/239-durable-rules-identity/plan.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5b9d60adecf7a76980d23b3f262e907990abf2f8f85e6910c917880d6bf973c1"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/239-durable-rules-identity/spec.md",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "2585aa4de12d508fbeed1fb3b9040035e7c6a9bd94e94b816648bbd3c068a9a1"
+          },
+          "schemaVersion": 1
+        },
+        {
+          "path": "work/239-durable-rules-identity/tasks.yml",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "56f27fdee944594832af3af4c880830353b814354c6172c8cdb714445abf43c6"
+          },
+          "schemaVersion": 1
+        }
+      ],
+      "outputDigest": {
+        "algorithm": "sha256",
+        "value": "f1665811e7c4f861be222149a6c9e3764a340fedf59bb60932be007b46e4c63f"
+      },
+      "currency": "current"
+    }
+  ],
+  "diagnostics": [],
+  "governanceBoundaries": []
+}

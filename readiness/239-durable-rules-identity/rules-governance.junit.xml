@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="rules-governance" tests="2" failures="0" errors="0" skipped="0">
+  <testsuite name="rules-governance" tests="2" failures="0" errors="0" skipped="0">
+    <testcase classname="SIR.RulesGovernance" name="deterministic-current-protected-boundary"></testcase>
+    <testcase classname="SIR.RulesGovernance" name="fail-closed-subject-mutations"></testcase>
+  </testsuite>
+</testsuites>

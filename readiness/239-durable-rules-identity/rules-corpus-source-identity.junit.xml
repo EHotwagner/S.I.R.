@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="durable-rules-identity" tests="1" failures="0" errors="0" skipped="0">
+  <testsuite name="durable-rules-identity" tests="1" failures="0" errors="0" skipped="0">
+    <testcase classname="SIR.RulesCorpus" name="verify-rules-corpus" />
+    <system-out>scripts/verify-rules-corpus.sh passed generation, source resolution, copied semantics, and embedded mutation gates.</system-out>
+  </testsuite>
+</testsuites>

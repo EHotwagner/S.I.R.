@@ -7,7 +7,7 @@ output_root="$repo_root/readiness/198-rules-governance-receipts"
 receipt="$output_root/rules-governance.json"
 verdict="$output_root/rules-governance-verdict.json"
 boundary="$output_root/protected-boundary.json"
-sdd_ship="$output_root/ship.json"
+sdd_ship="$repo_root/readiness/239-durable-rules-identity/ship.json"
 project="$repo_root/src/SIR.Simulation/Governance.Tool/SIR.Rules.Governance.Tool.fsproj"
 temporary_dir=$(mktemp -d /tmp/sir-rules-governance.XXXXXX)
 trap 'rm -rf "$temporary_dir"' EXIT
@@ -19,7 +19,7 @@ dotnet run --project "$project" -c Release "${run_args[@]}" -- \
   generate "$repo_root" "$temporary_dir/rules-governance.json" "$temporary_dir/rules-governance-verdict.json"
 dotnet run --project "$project" -c Release "${run_args[@]}" -- \
   join "$sdd_ship" "$temporary_dir/rules-governance-verdict.json" "$temporary_dir/protected-boundary.json" \
-  "readiness/198-rules-governance-receipts/ship.json" \
+  "readiness/239-durable-rules-identity/ship.json" \
   "readiness/198-rules-governance-receipts/rules-governance-verdict.json"
 
 for gameplay_project in "$repo_root/src/SIR.Domain/SIR.Domain.fsproj" "$repo_root/src/SIR.Simulation/SIR.Simulation.fsproj"; do
