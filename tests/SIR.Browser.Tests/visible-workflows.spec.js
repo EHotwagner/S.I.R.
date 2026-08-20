@@ -540,12 +540,14 @@ test("production simulator status exposes continuous runtime time without handof
 
 test("live authority reconnect remains visible through the production command surface", async ({ page }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "Simulation", exact: true }).click();
+  await expect(page.getByRole("menu", { name: "Simulation commands" })).toBeVisible();
   const live = page.getByRole("region", { name: "Authoritative live session" });
   await expect(live).toContainText("live connected", { timeout: 90_000 });
-  await page.getByRole("button", { name: "Send the next player-visible live advance command" }).click();
+  await page.getByRole("menuitem", { name: "Send the next player-visible live advance command" }).click();
   await expect(live).toContainText(/tick [1-9]/, { timeout: 30_000 });
-  await page.getByRole("button", { name: "Disconnect the player-visible live session" }).click();
+  await page.getByRole("menuitem", { name: "Disconnect the player-visible live session" }).click();
   await expect(live).toContainText("live disconnected");
-  await page.getByRole("button", { name: "Reconnect and request the authoritative live snapshot" }).click();
+  await page.getByRole("menuitem", { name: "Reconnect and request the authoritative live snapshot" }).click();
   await expect(live).toContainText("live connected");
 });

@@ -245,6 +245,8 @@ test("authorized player journey advances and reconnects without credentials in r
 
   const live = page.locator("#sir-live-session");
   const battlefield = page.locator("#persistent-tactical-svg");
+  await page.getByRole("button", { name: "Simulation", exact: true }).click();
+  await expect(page.getByRole("menu", { name: "Simulation commands" })).toBeVisible();
   await expect(live).toHaveAttribute("data-status", "connected", { timeout: 90_000 });
   await expect(live).not.toHaveAttribute("data-session-id", "");
   await expect.poll(async () => Number(await live.getAttribute("data-resync-count"))).toBeGreaterThan(0);
@@ -253,7 +255,7 @@ test("authorized player journey advances and reconnects without credentials in r
   const initialSequence = Number(await live.getAttribute("data-server-sequence"));
   await expect(battlefield).toHaveAttribute("data-live-tick", String(initialTick));
   await expect(battlefield).toHaveAttribute("data-live-server-sequence", String(initialSequence));
-  await page.getByRole("button", { name: "Send the next player-visible live advance command" }).click();
+  await page.getByRole("menuitem", { name: "Send the next player-visible live advance command" }).click();
 
   await expect.poll(async () => Number(await live.getAttribute("data-tick"))).toBeGreaterThan(initialTick);
   await expect.poll(async () => Number(await live.getAttribute("data-server-sequence"))).toBeGreaterThan(initialSequence);
@@ -261,9 +263,9 @@ test("authorized player journey advances and reconnects without credentials in r
 
   const advancedTick = Number(await live.getAttribute("data-tick"));
   const resyncBeforeReconnect = Number(await live.getAttribute("data-resync-count"));
-  await page.getByRole("button", { name: "Disconnect the player-visible live session" }).click();
+  await page.getByRole("menuitem", { name: "Disconnect the player-visible live session" }).click();
   await expect(live).toHaveAttribute("data-status", "disconnected");
-  await page.getByRole("button", { name: "Reconnect and request the authoritative live snapshot" }).click();
+  await page.getByRole("menuitem", { name: "Reconnect and request the authoritative live snapshot" }).click();
 
   await expect.poll(async () => Number(await live.getAttribute("data-resync-count")), { timeout: 30_000 }).toBeGreaterThan(resyncBeforeReconnect);
   await expect(live).toHaveAttribute("data-status", "connected");

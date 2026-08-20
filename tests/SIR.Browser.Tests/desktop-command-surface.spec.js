@@ -47,3 +47,13 @@ test("compact desktop chrome keeps a reachable overflow menu", async ({ page }) 
   await page.getByRole("button", { name: "Help", exact: true }).click();
   await expect(page.getByRole("menu", { name: "Help commands" })).toBeVisible();
 });
+
+test("delivery support remains reachable beside the full-height tactical shell", async ({ page }) => {
+  await page.goto("/");
+  const opener = page.getByRole("button", { name: "Delivery support", exact: true });
+  await expect(opener).toBeVisible();
+  const box = await opener.boundingBox();
+  const viewportHeight = await page.evaluate(() => window.innerHeight);
+  expect(box).not.toBeNull();
+  expect(box.y + box.height).toBeLessThanOrEqual(viewportHeight);
+});
