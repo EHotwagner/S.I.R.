@@ -44,7 +44,7 @@ async function perform(page, journey, fixture) {
   const started = await page.evaluate(() => performance.now());
   const svg = page.locator("#persistent-tactical-svg");
   const box = await svg.boundingBox();
-  if (journey === "idle") await page.waitForTimeout(500);
+  if (journey === "idle") { await page.waitForTimeout(500); return null; }
   if (journey === "pan") { await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down({ button: "right" }); await page.mouse.move(box.x + box.width / 2 + 60, box.y + box.height / 2 + 30, { steps: 6 }); await page.mouse.up({ button: "right" }); }
   if (journey === "zoom") { await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.wheel(0, -240); }
   if (journey === "selection") await svg.locator("[data-unit-id]").first().click({ force: true });
@@ -98,14 +98,17 @@ try {
       await cdp.send("IO.close", { handle: stream });
       const traceText = chunks.join(""); writeFileSync(tracePath, traceText);
       const trace = JSON.parse(traceText);
+      const intervals = await page.evaluate(() => window.__sirFrameIntervals || []);
       for (let cycle = 0; cycle < definitions.warmupCycles; cycle += 1) { await perform(page, "pan", fixture); await perform(page, "zoom", fixture); await perform(page, "playback", fixture); }
       const heapWarm = await cdp.send("Runtime.getHeapUsage");
       for (let cycle = 0; cycle < definitions.stabilizationCycles; cycle += 1) { await perform(page, "pan", fixture); await perform(page, "zoom", fixture); await perform(page, "playback", fixture); }
       const heapStable = await cdp.send("Runtime.getHeapUsage");
       const structural = await page.locator("#persistent-tactical-svg").evaluate((root) => ({ totalDom: root.querySelectorAll("*").length, byLayer: Object.fromEntries([...root.querySelectorAll("[data-scene-layer]")].map((layer) => [layer.getAttribute("data-scene-layer"), layer.querySelectorAll("*").length])), visualUnits: Number(root.dataset.visualUnitCount || 0), nodeEstimate: Number(root.dataset.visualNodeEstimate || 0) }));
-      const intervals = await page.evaluate(() => window.__sirFrameIntervals || []);
       const longTasks = (trace.traceEvents || []).filter((event) => event.name === "RunTask" && Number(event.dur || 0) >= 50_000).map((event) => Number((event.dur / 1000).toFixed(3)));
-      runs.push({ fixture: fixture.id, fixtureDigest: digest(fixture), workload: workloadRecipe(fixture), journey, startedAt, completedAt: new Date().toISOString(), result: "pass", stages: extractStages(trace), structural: { global: { mapExtent: fixture.mapExtent, unitCount: fixture.globalUnitCount, supportingListSize: fixture.supportingListSize }, visible: controlledStructural, postMemoryCycles: structural }, frameHealth: { samples: intervals.length, droppedFrames: intervals.filter((value) => value > 25).length, longTasks }, inputLatency: { available: true, milliseconds: Number(inputLatencyMilliseconds.toFixed(3)), source: "Playwright production interaction start through two requestAnimationFrame callbacks" }, memory: { warm: heapWarm, stabilized: heapStable, usedDelta: heapStable.usedSize - heapWarm.usedSize, warmupCycles: definitions.warmupCycles, stabilizationCycles: definitions.stabilizationCycles, collectionControl: "not-forced" }, trace: { path: tracePath, sha256: digest(traceText) } });
+      const inputLatency = inputLatencyMilliseconds === null
+        ? { available: false, reason: "The idle journey has no input event; its 500 ms observation window is not interaction latency" }
+        : { available: true, milliseconds: Number(inputLatencyMilliseconds.toFixed(3)), source: "Playwright production interaction start through two requestAnimationFrame callbacks" };
+      runs.push({ fixture: fixture.id, fixtureDigest: digest(fixture), workload: workloadRecipe(fixture), journey, startedAt, completedAt: new Date().toISOString(), result: "pass", stages: extractStages(trace), structural: { global: { mapExtent: fixture.mapExtent, unitCount: fixture.globalUnitCount, supportingListSize: fixture.supportingListSize }, visible: controlledStructural, postMemoryCycles: structural }, frameHealth: { samples: intervals.length, droppedFrames: intervals.filter((value) => value > 25).length, longTasks, samplingWindow: "named journey only; captured before warm-up and stabilization memory cycles" }, inputLatency, memory: { warm: heapWarm, stabilized: heapStable, usedDelta: heapStable.usedSize - heapWarm.usedSize, warmupCycles: definitions.warmupCycles, stabilizationCycles: definitions.stabilizationCycles, collectionControl: "not-forced" }, trace: { path: tracePath, sha256: digest(traceText) } });
       await context.close();
     }
   }

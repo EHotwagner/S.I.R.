@@ -32,6 +32,7 @@ const mutations = [
   ["memory-cycle", (value) => { value.stabilizationCycles = value.warmupCycles; }],
   ["controlled-global-pair", (value) => { value.fixtures.find((fixture) => fixture.id === "global-large-small-viewport").viewport = [481, 320]; }],
   ["axis-value", (value) => { value.fixtures[0].eventRateHz = -1; }],
+  ["event-rate-matrix", (value) => { for (const fixture of value.fixtures) fixture.eventRateHz = 20; }],
 ];
 for (const [name, mutate] of mutations) {
   const mutant = structuredClone(source);
@@ -53,10 +54,12 @@ for (const [axis, mutate] of [
   console.log(`JUSTIFIED ${axis}: workload mutation changed the executed subject`);
 }
 const evidence = validateEvidenceReceipt(JSON.parse(readFileSync(new URL("../work/231-svg-pipeline-measurement/production-chromium-evidence.json", import.meta.url))), source);
-const unboundEvidence = structuredClone(evidence); unboundEvidence.candidate.commit = "0".repeat(40);
-assert.throws(() => validateEvidenceReceipt(unboundEvidence, source), /candidate binding/, "evidence candidate mutation must fail");
-console.log("JUSTIFIED evidence-binding: candidate mutation rejected");
+const unboundCandidate = structuredClone(evidence); unboundCandidate.candidate.commit = "f".repeat(40);
+assert.throws(() => validateEvidenceReceipt(unboundCandidate, source), /receipt binding/, "well-formed candidate mutation must fail");
+const unboundDigest = structuredClone(evidence); unboundDigest.matrix.rawSummarySha256 = "f".repeat(64);
+assert.throws(() => validateEvidenceReceipt(unboundDigest, source), /receipt binding/, "well-formed digest mutation must fail");
+console.log("JUSTIFIED evidence-binding: well-formed candidate and digest mutations rejected");
 const report = process.env.SIR_SVG_PIPELINE_JUNIT || "artifacts/test-results/svg-pipeline.junit.xml";
 mkdirSync(dirname(report), { recursive: true });
-writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="7" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="7" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="observed-run"/><testcase name="ranking"/></testsuite></testsuites>\n');
+writeFileSync(report, '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="12" failures="0" errors="0" skipped="0"><testsuite name="svg-pipeline-measurement" tests="12" failures="0" errors="0" skipped="0"><testcase name="schema"/><testcase name="journey-inventory"/><testcase name="memory-cycle"/><testcase name="controlled-global-pair"/><testcase name="axis-value"/><testcase name="event-rate-matrix"/><testcase name="observed-run"/><testcase name="visible-density-workload"/><testcase name="event-rate-workload"/><testcase name="supporting-list-workload"/><testcase name="evidence-candidate-binding"/><testcase name="evidence-digest-binding"/></testsuite></testsuites>\n');
 console.log("svg-pipeline measurement unit gates: PASS");

@@ -12,7 +12,7 @@
       "visibleDensity": 100,
       "globalUnitCount": 100,
       "routeOverlayComplexity": 24,
-      "eventRateHz": 20,
+      "eventRateHz": 10,
       "supportingListSize": 100
     },
     {
@@ -44,7 +44,7 @@
       "visibleDensity": 200,
       "globalUnitCount": 200,
       "routeOverlayComplexity": 96,
-      "eventRateHz": 20,
+      "eventRateHz": 40,
       "supportingListSize": 200
     }
   ]

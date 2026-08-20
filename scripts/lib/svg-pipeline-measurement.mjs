@@ -33,6 +33,7 @@ export function validateDefinitions(definition) {
     if (!Array.isArray(fixture.mapExtent) || fixture.mapExtent.length !== 2 || fixture.mapExtent.some((n) => !Number.isInteger(n) || n <= 0)) throw new Error(`fixture ${fixture.id} has invalid mapExtent`);
     if (!Array.isArray(fixture.viewport) || fixture.viewport.length !== 2 || fixture.viewport.some((n) => !Number.isInteger(n) || n <= 0)) throw new Error(`fixture ${fixture.id} has invalid viewport`);
   }
+  if (new Set(definition.fixtures.map((fixture) => fixture.eventRateHz)).size < 2) throw new Error("fixture matrix must vary eventRateHz");
   const pair = definition.fixtures.filter((fixture) => fixture.comparisonGroup === "global-scale-small-viewport");
   const area = (fixture) => fixture.mapExtent[0] * fixture.mapExtent[1];
   if (pair.length !== 2 || stableJson(pair[0].viewport) !== stableJson(pair[1].viewport) || pair[0].visibleDensity !== pair[1].visibleDensity || pair[0].globalUnitCount !== pair[1].globalUnitCount || area(pair[0]) >= area(pair[1]) || pair[0].supportingListSize >= pair[1].supportingListSize) throw new Error("large-project/small-viewport comparison is not controlled");
@@ -65,6 +66,8 @@ export function workloadRecipe(fixture) {
 export function validateEvidenceReceipt(receipt, definitions) {
   const hex = /^[0-9a-f]{64}$/;
   if (receipt?.schema !== "sir.svg-pipeline-measurement-evidence/1") throw new Error("unsupported evidence schema");
+  const { bindingSha256, ...boundReceipt } = receipt;
+  if (!hex.test(bindingSha256 || "") || bindingSha256 !== digest(boundReceipt)) throw new Error("evidence receipt binding is stale");
   for (const value of [receipt.candidate?.commit, receipt.candidate?.tree]) if (!/^[0-9a-f]{40}$/.test(value || "") || /^0+$/.test(value)) throw new Error("evidence candidate binding is missing");
   for (const value of [receipt.buildIdentity?.clientManifestSha256, receipt.buildIdentity?.serverAssemblySha256, receipt.matrix?.rawSummarySha256, receipt.matrix?.orderedTraceDigestSha256]) if (!hex.test(value || "") || /^0+$/.test(value)) throw new Error("evidence digest binding is missing");
   if (receipt.fixtureDefinition?.sha256 !== digest(definitions)) throw new Error("evidence fixture binding is stale");

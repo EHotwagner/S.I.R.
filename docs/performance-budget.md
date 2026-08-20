@@ -46,7 +46,9 @@ The focused `npm run measure:svg-pipeline` route measures the built retained SVG
 in pinned production Chromium. Its versioned workload definition is
 `scripts/svg-pipeline-fixtures.v1.json`; the schema-v1 matrix independently
 declares map extent, visible density, global unit count, route/overlay
-complexity, event rate, and supporting-list size. Supporting-list records are
+complexity, event rate, and supporting-list size. The representative and dense
+fixtures exercise 10 Hz and 40 Hz while the controlled global pair holds 20 Hz.
+Supporting-list records are
 materialized as authoritative regions, event rate controls playback steps, and
 visible density controls a centered unit cluster that the controlled pair
 verifies against production projection output. The
@@ -58,7 +60,8 @@ These are regression workloads, not a permanent supported-size ceiling.
 Each exact-candidate artifact retains the raw Chromium trace and separately
 reports worker compute/transfer, projection/allocation, main-thread
 Elmish/React script, SVG style/layout/paint/compositor work, DOM counts by
-layer, long-frame observations, input-latency capability, and heap/DOM memory
+layer, journey-window long-frame observations captured before memory cycles,
+input-latency capability (explicitly unavailable for idle), and heap/DOM memory
 after two warm-up and five stabilization pan/zoom/playback cycles. A capability
 the browser or current production instrumentation cannot isolate is recorded as
 unavailable with a reason; it is never folded into one callback aggregate or
