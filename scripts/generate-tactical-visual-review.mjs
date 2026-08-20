@@ -65,15 +65,9 @@ if (system.layerOrder !== system.paintedLayerOrder) {
 const workloadExpression = (units) => `(async () => {
   ${delaySource} ${clickButtonSource} ${settleCaptureSource}
   ${readinessSource}
-  globalThis.__sirTacticalStage = "samples";
-  const workspaceControls = document.querySelector("details.tactical-legacy-controls"); workspaceControls?.querySelector("summary")?.click(); clickButton("Samples"); if (workspaceControls) workspaceControls.open = false;
+  globalThis.__sirTacticalStage = "samples"; clickButton("Simulate"); await wait(50); clickButton("Open simulator samples");
   await waitFor("deferred Curated samples feature", () => document.querySelector('[aria-label="Curated samples feature"]'));
-  const card = await waitFor("production tactical density ${units} sample", () => [...document.querySelectorAll("details.sample-card")].find((candidate) => candidate.textContent.includes("Tactical density ${units}")));
-  card.querySelector("summary").click(); await wait(40);
-  globalThis.__sirTacticalStage = "simulate";
-  const run = card.querySelector('[aria-label="Run Tactical density ${units} in Simulator"]');
-  if (!run) throw new Error("Missing density sample simulator route");
-  run.click();
+  globalThis.__sirTacticalStage = "simulate"; if (!globalThis.__sirSamplesFeature.runVisualQualificationSample(${units})) throw new Error("Missing density qualification route");
   const svg = document.querySelector("#persistent-tactical-svg");
   await waitFor("production tactical density ${units} simulator scene", () => svg.getAttribute("data-scene-owner") === "SimulatorScene" && svg.querySelectorAll("[data-unit-id]").length === ${units});
   await settleCapture();

@@ -25,15 +25,15 @@
     "browserUserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
     "browserVersion": "Chrome/151.0.7922.34"
   },
-  "productionBundleSha256": "4ecf085f113c3753a921a2a7124f15704c5a968db26d53e52ee43a243f5d828b",
-  "productionStylesSha256": "d25df5340a553fa9dcf3c5a4d272942ecadc8d73d395e91bdaa9f29a7144c7d8",
+  "productionBundleSha256": "4737b171e5f999bdede2c6c542481f40fa67cde32b7f15b2e4ee1308af99e8ed",
+  "productionStylesSha256": "80fd66f219c0e95820fe03d38a662cbf50f2ceeea0ef77f73c46e97874301170",
   "before": {
     "path": "../persistent-workspace-m9-review/field-focus.png",
-    "sha256": "0cf0d85c06135089a249fd05aadf71008ed42782fc072d54654ff37b8e5d747d"
+    "sha256": "c8f73f888799833040e2b601e6de0e976e399095f616e567e64909a8f0d016c5"
   },
   "after": {
     "path": "after-production.png",
-    "sha256": "7303e5ebbf46c1d6a6b76f3b9a1d202e9642e91334bedad4356a4716846fbf01",
+    "sha256": "1a7bfcc75bc9c5fbe195d13a37873f03a1a5d1c005186f20db02281f563bc6bc",
     "captureKind": "actual-production-shell-chromium-screenshot",
     "semantic": {
       "identity": "tactical-visual-system-v1",
@@ -74,7 +74,7 @@
     {
       "units": 100,
       "path": "production-density-100.png",
-      "sha256": "213d994a1cd38e9eac2fefac5ab65a9e62fb5ed7bafba00b2dccaf79b121ef69",
+      "sha256": "c4d9dd8541eb722df20c8576a03a35af40e6fd1e1896321593b89258aeabe374",
       "workload": {
         "requestedUnits": 100,
         "renderedUnits": 100,
@@ -104,7 +104,7 @@
     {
       "units": 200,
       "path": "production-density-200.png",
-      "sha256": "b08828d50bec9b2c92a831762deb603980ebc1cf148505cab3985f201d2ab6a8",
+      "sha256": "2167f6ab7ccefa9a4e6d773ef65940c9e50a7f9a694498e4fcfa896adce70bc2",
       "workload": {
         "requestedUnits": 200,
         "renderedUnits": 200,

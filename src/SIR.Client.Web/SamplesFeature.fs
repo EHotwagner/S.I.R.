@@ -4,6 +4,20 @@ open Browser.Dom
 open Browser.Types
 open SIR.Client
 
+type private SampleDispatch =
+    string -> MapEditorState -> SimulatorHandoff option -> string -> InspectionProjection array -> unit
+
+let mutable private activeDispatch: SampleDispatch option = None
+
+let runVisualQualificationSample unitCount =
+    let sampleId = "tactical-density-" + string unitCount
+    match activeDispatch, ExperienceSamples.tryMap sampleId with
+    | Some dispatch, Some sample when unitCount = 100 || unitCount = 200 ->
+        let editor = ExperienceSamples.editorState sample
+        dispatch "simulation" editor (ExperienceSamples.simulator sample) "" [||]
+        true
+    | _ -> false
+
 let private element tag className text =
     let node = document.createElement tag
     if className <> "" then node.className <- className
@@ -24,6 +38,7 @@ let render
     (root: HTMLElement)
     (dispatch: string -> MapEditorState -> SimulatorHandoff option -> string -> InspectionProjection array -> unit)
     =
+    activeDispatch <- Some dispatch
     root.innerHTML <- ""
     let content = element "section" "samples-panel-content" ""
     content.setAttribute("aria-label", "Curated maps simulations and replays")
