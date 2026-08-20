@@ -99,7 +99,12 @@ Materials are deliberately flat and inspectable in the SVG: open, rough,
 blocked, and objective terrain use distinct restrained fills; walls, doors, and
 windows use semantic edge strokes; unit bodies keep the box-piece silhouette
 with a strong faction frame, top glyph, health segments, facing mark, and stance
-label. Lighting is expressed by local contrast and ordered faces rather than
+letter. A disclosed stance occupies a fixed lower-left channel: `S` for
+standing, `C` for crouched, and `P` for prone. The complete stance remains in
+the SVG metadata and accessible label. Its current green semantic color means
+only that stance is disclosed; any future secondary meaning requires an
+authoritative state and legend. Color never invents a second fact. Lighting is
+expressed by local contrast and ordered faces rather than
 glow or translucency accumulation. Typography stays system-sans for prose and
 compact labels, with weight and outline carrying hierarchy over size alone.
 

@@ -1291,6 +1291,34 @@ let run () =
             Annotations = factAnnotations
             Selection = { denseOverlayScene.Selection with SelectedUnits = ids } }
     let representativeProjection = TacticalSceneProjection.projectOverlays allOverlayPreferences heldOverlays (workloadScene 100)
+    let fourCellExtent = CellExtent.tryCreate 4 |> Option.get
+    let largeUnit =
+        { denseOverlayScene.Units[0] with
+            Visual =
+                { denseOverlayScene.Units[0].Visual with
+                    FootprintWidth = fourCellExtent
+                    FootprintDepth = fourCellExtent } }
+    let largeUnitProjection =
+        TacticalSceneProjection.projectOverlays
+            allOverlayPreferences
+            heldOverlays
+            { denseOverlayScene with
+                Units = [| largeUnit |]
+                Selection =
+                    { denseOverlayScene.Selection with
+                        SelectedUnits = [| largeUnit.Visual.Id |] } }
+    let largeFootprint =
+        largeUnitProjection.Payloads
+        |> Array.find (fun payload -> TacticalOverlayId.value payload.OverlayId = "unit.footprints")
+    require
+        (match largeFootprint.Geometry with
+         | FootprintGeometry(centerX, centerY, width, depth) ->
+             centerX = largeUnit.PresentationColumn + 2.0
+             && centerY = largeUnit.PresentationRow + 2.0
+             && width = 4.0
+             && depth = 4.0
+         | _ -> false)
+        "A 4x4 unit overlay did not share the unit renderer's top-left footprint origin."
     let stressScene = workloadScene 200
     let stressProjection = TacticalSceneProjection.projectOverlays allOverlayPreferences heldOverlays stressScene
     let emittedIds projection = projection.Payloads |> Array.map _.OverlayId |> Set.ofArray

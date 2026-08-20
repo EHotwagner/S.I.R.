@@ -74,17 +74,25 @@ module ExperienceSamples =
               let column = if blue then 1 + (index % 3) * 3 else 25 + (index % 3) * 3
               let row = 1 + (index % 6) * 4
               let side, kind = if blue then "blue", "rifleman" else "red", "goblin"
-              yield $"unit {id} {side} {kind} {column} {row} 1 12 12 general -" ]
+              let size = if blue then 2 else 1
+              yield $"unit {id} {side} {kind} {column} {row} {size} 12 12 general -" ]
 
     let private stressUnitLines =
         [ for index in 0 .. 199 do
               let id = index + 1
               let blue = index < 100
               let local = if blue then index else index - 100
-              let column = if blue then local % 20 else 20 + local % 20
-              let row = local / 20 * 2
+              let column =
+                  if not blue then 40 + local % 20
+                  elif local = 0 then 36
+                  else ((local - 1) % 9) * 4
+              let row =
+                  if not blue then local / 20 * 2
+                  elif local = 0 then 0
+                  else ((local - 1) / 9) * 7
               let side, kind = if blue then "blue", "rifleman" else "red", "goblin"
-              yield $"unit {id} {side} {kind} {column} {row} 1 12 12 general - N N" ]
+              let size = if blue then 4 else 1
+              yield $"unit {id} {side} {kind} {column} {row} {size} 12 12 general - N N" ]
 
     let private mapText width height terrain edges zones units =
         [ yield "SIR-MAP 2"
@@ -114,7 +122,7 @@ module ExperienceSamples =
             [ "Small by design; use the six tactical families for composed scenarios." ]
             (mapText 14 10 [ "terrain 6 4 rough" ] []
                 [ "zone 1 objective rectangle 6 4 2 2" ]
-                [ "unit 1 blue rifleman 1 2 1 12 12 general -"; "unit 2 blue medic 1 6 1 12 12 general -"
+                [ "unit 1 blue rifleman 1 2 2 12 12 general -"; "unit 2 blue medic 1 6 2 12 12 general -"
                   "unit 3 red goblin 11 2 1 12 12 general -"; "unit 4 red goblin 11 6 1 12 12 general -" ])
 
     let private openFieldMap =
@@ -156,7 +164,7 @@ module ExperienceSamples =
     let private armoredUnits =
         [ "unit 1 blue rifleman 1 0 2 12 12 general -"; "unit 2 blue rifleman 1 4 2 12 12 general -"
           "unit 3 blue rifleman 1 8 2 12 12 general -"; "unit 4 red troll 12 3 3 240 240 general -"
-          "unit 5 blue rifleman 1 13 1 12 12 general -"; "unit 6 blue medic 1 17 1 12 12 general -"
+          "unit 5 blue rifleman 1 13 2 12 12 general -"; "unit 6 blue medic 1 17 2 12 12 general -"
           "unit 7 red goblin 29 1 1 12 12 general -"; "unit 8 red goblin 29 5 1 12 12 general -"
           "unit 9 red goblin 29 17 1 12 12 general -"; "unit 10 red orc 25 2 2 35 35 general -"
           "unit 11 red orc 25 18 2 35 35 general -"; "unit 12 blue observation-drone 5 21 1 8 8 general -" ]

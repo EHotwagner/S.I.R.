@@ -555,6 +555,55 @@ assertModality("Editor", "initial mount");
 if (buttonByText(timeline, "Play")?.disabled) {
   throw new Error("The automatically maintained simulation was unavailable in Editor.");
 }
+const initialHumanUnit = worksurface.querySelector(
+  '#persistent-layer-units [data-unit-id="1"][data-unit-footprint="4x4"]',
+);
+const initialHumanBody = initialHumanUnit?.querySelector("rect");
+const initialFacingPip = initialHumanUnit?.querySelector(
+  '[data-unit-direction-pip="facing"]',
+);
+const initialAttentionPip = initialHumanUnit?.querySelector(
+  '[data-unit-direction-pip="attention"]',
+);
+const initialCenterX = initialHumanBody
+  ? Number(initialHumanBody.getAttribute("x")) +
+    Number(initialHumanBody.getAttribute("width")) / 2
+  : Number.NaN;
+const initialCenterY = initialHumanBody
+  ? Number(initialHumanBody.getAttribute("y")) +
+    Number(initialHumanBody.getAttribute("height")) / 2
+  : Number.NaN;
+if (
+  !initialHumanUnit?.querySelector('[data-unit-heading="facing"]') ||
+  !initialFacingPip ||
+  Number(initialFacingPip.getAttribute("cx")) <= initialCenterX ||
+  !initialAttentionPip ||
+  Number(initialAttentionPip.getAttribute("cy")) >= initialCenterY ||
+  !initialHumanUnit.querySelector('[data-unit-health="12"][data-unit-health-maximum="12"]') ||
+  initialHumanUnit.querySelectorAll('[data-unit-health-segment]').length !== 12 ||
+  !initialHumanUnit.querySelector('[data-unit-elevation-label="L0"]') ||
+  !initialHumanUnit.querySelector('[data-unit-status-label="manual"]')
+) {
+  throw new Error(
+    "The canonical 4x4 human symbol does not expose its authored East-facing and North-East attention pips or twelve-segment health channel.",
+  );
+}
+if (
+  !shell.querySelector('[data-editor-body-facing="East"]') ||
+  !shell.querySelector('[data-editor-attention-direction="NorthEast"]')
+) {
+  throw new Error("The unit inspector does not disclose the directions rendered by the pips.");
+}
+const fileMenu = [...shell.querySelectorAll(".tactical-desktop-menu")].find(
+  (menu) => menu.querySelector("summary")?.textContent.trim() === "File",
+);
+if (
+  !fileMenu?.querySelector(".desktop-menu-group-label") ||
+  !buttonByText(fileMenu, "Troll assault") ||
+  buttonByText(fileMenu, "Samples")
+) {
+  throw new Error("File / Samples does not expose the direct curated sample list.");
+}
 
 const leftSidebar = shell.querySelector(".tactical-sidebar-left");
 const rightSidebar = shell.querySelector(".tactical-sidebar-right");
@@ -580,6 +629,68 @@ if (
 ) {
   throw new Error(
     "Field Focus defaults do not keep the workscreen dimensionally dominant with both sidebars open.",
+  );
+}
+
+const leftSidebarResize = shell.querySelector(
+  '#tactical-sidebar-left-resize[role="separator"]',
+);
+const rightSidebarResize = shell.querySelector(
+  '#tactical-sidebar-right-resize[role="separator"]',
+);
+if (
+  !leftSidebarResize ||
+  !rightSidebarResize ||
+  leftSidebarResize.getAttribute("aria-orientation") !== "vertical" ||
+  rightSidebarResize.getAttribute("aria-orientation") !== "vertical" ||
+  leftSidebarResize.getAttribute("aria-valuemin") !== "160" ||
+  rightSidebarResize.getAttribute("aria-valuemin") !== "160"
+) {
+  throw new Error("The tactical sidebars do not expose accessible resize separators.");
+}
+const writesBeforeSidebarResize = tacticalLayoutWrites;
+leftSidebarResize.dispatchEvent(
+  new window.PointerEvent("pointerdown", {
+    bubbles: true,
+    cancelable: true,
+    pointerId: 70,
+    clientX: 208,
+  }),
+);
+await window.happyDOM.waitUntilComplete();
+for (const width of [232, 260, 288]) {
+  leftSidebarResize.dispatchEvent(
+    new window.PointerEvent("pointermove", {
+      bubbles: true,
+      pointerId: 70,
+      clientX: width,
+    }),
+  );
+}
+leftSidebarResize.dispatchEvent(
+  new window.PointerEvent("pointerup", {
+    bubbles: true,
+    pointerId: 70,
+    clientX: 288,
+  }),
+);
+await window.happyDOM.waitUntilComplete();
+rightSidebarResize.dispatchEvent(
+  new window.KeyboardEvent("keydown", {
+    key: "ArrowLeft",
+    bubbles: true,
+    cancelable: true,
+  }),
+);
+await window.happyDOM.waitUntilComplete();
+if (
+  shell.style.getPropertyValue("--tactical-left-width") !== "288px" ||
+  shell.style.getPropertyValue("--tactical-right-width") !== "240px" ||
+  tacticalLayoutWrites !== writesBeforeSidebarResize + 2 ||
+  window.document.activeElement !== rightSidebarResize
+) {
+  throw new Error(
+    `Sidebar resize did not coalesce pointer persistence or retain keyboard focus: left=${shell.style.getPropertyValue("--tactical-left-width")}, right=${shell.style.getPropertyValue("--tactical-right-width")}, writes=${tacticalLayoutWrites - writesBeforeSidebarResize}.`,
   );
 }
 
@@ -643,6 +754,8 @@ if (
   !currentControllerPanel() ||
   !currentSimulatorDiagnostics() ||
   !currentSimulatorRevision() ||
+  !shell.querySelector('[data-panel-id="selection"] [aria-label="Selected unit properties"]') ||
+  !shell.querySelector('[data-panel-id="selection"] .simulator-selection-extension [aria-label="Simulation controllers"]') ||
   shell.querySelectorAll('[aria-label="Simulator runtime tools"]').length !== 1 ||
   shell.querySelectorAll('[aria-label="Simulation controllers"]').length !== 1 ||
   shell.querySelectorAll('[aria-label="Simulator runtime diagnostics"]').length !== 1 ||
@@ -652,7 +765,9 @@ if (
   shell.querySelector('[aria-label="Simulator menu and toolbar"]') ||
   worksurface.getAttribute("data-scene-disclosure") !== "SandboxDisclosure"
 ) {
-  throw new Error("Registered Simulator panels or sandbox disclosure are incomplete, duplicated, or accompanied by legacy layout.");
+  throw new Error(
+    `Registered Simulator panels or sandbox disclosure are incomplete, duplicated, or accompanied by legacy layout: roster=${Boolean(shell.querySelector('[aria-label="Simulator runtime roster"]'))}, tools=${Boolean(currentSimulatorTools())}, controller=${Boolean(currentControllerPanel())}, diagnostics=${Boolean(currentSimulatorDiagnostics())}, revision=${Boolean(currentSimulatorRevision())}, authoredSelection=${Boolean(shell.querySelector('[data-panel-id="selection"] [aria-label="Selected unit properties"]'))}, extension=${Boolean(shell.querySelector('[data-panel-id="selection"] .simulator-selection-extension [aria-label="Simulation controllers"]'))}, disclosure=${worksurface.getAttribute("data-scene-disclosure")}.`,
+  );
 }
 const controllerPanel = currentControllerPanel();
 if (
@@ -1770,6 +1885,8 @@ if (
   reopenedSvg.getAttribute("data-layer-order") !==
     "terrain>edges>routes>units>effects>selection>tactical-overlays>annotations" ||
   reopenedPaintOrder !== reopenedSvg.getAttribute("data-layer-order") ||
+  !reopenedSvg.querySelector('[data-unit-id="1"][data-unit-footprint="4x4"]') ||
+  !reopenedSvg.querySelector('[data-unit-id="2"][data-unit-footprint="4x4"]') ||
   !reopenedShell.querySelector('[data-panel-id="tools"]') ||
   !reopenedShell.querySelector('[data-panel-id="document"]')
 ) {

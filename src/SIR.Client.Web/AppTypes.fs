@@ -49,6 +49,10 @@ type Msg =
     | MoveLayoutPanel of panelId: string * side: SidebarSide
     | ReorderLayoutPanel of panelId: string * delta: int
     | ToggleLayoutDrawer of SidebarSide
+    | BeginLayoutSidebarResize of SidebarSide
+    | ResizeLayoutSidebar of side: SidebarSide * width: int
+    | EndLayoutSidebarResize
+    | ResizeLayoutSidebarKeyboard of side: SidebarSide * width: int
     | ToggleLayoutBottomPanelVisibility
     | ToggleLayoutBottomPanel
     | BeginLayoutBottomPanelResize
@@ -163,6 +167,7 @@ type Model =
       FeatureLoaderDiagnostic: string option
       DesktopToolbarCommands: string list
       DesktopToolbarCustomizationOpen: bool
+      SidebarResizeActive: SidebarSide option
       BottomPanelResizeActive: bool
       TacticalSelectedUnit: int32 option
       Workspace: WorkspaceMode
