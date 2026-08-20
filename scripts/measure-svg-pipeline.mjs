@@ -64,7 +64,7 @@ try {
       const collapse = page.locator("#layout-panel-document-collapse");
       if (await page.locator("#editor-map-import").isHidden()) await collapse.click();
       await page.getByLabel("Import SIR map", { exact: true }).setInputFiles({ name: `${fixture.id}.sir-map`, mimeType: "text/plain", buffer: Buffer.from(makeMap(fixture)) });
-      await page.getByRole("alert").waitFor();
+      await page.getByRole("alert").filter({ hasText: `Imported map ${fixture.id}.sir-map.` }).waitFor();
       await page.setViewportSize({ width: fixture.viewport[0], height: fixture.viewport[1] });
       await page.evaluate(() => { window.__sirFrameIntervals = []; });
       const tracePath = resolve(out, `${fixture.id}--${journey}.trace.json`);

@@ -49,7 +49,7 @@ declares map extent, visible density, global unit count, route/overlay
 complexity, event rate, and supporting-list size. The
 `global-small-viewport`/`global-large-small-viewport` pair holds a 480×320
 viewport and visible density of 40 constant while increasing global extent from
-20×20 to 80×80, units from 40 to 200, and supporting-list size from 40 to 800.
+20×20 to 79×79, units from 40 to 200, and supporting-list size from 40 to 800.
 These are regression workloads, not a permanent supported-size ceiling.
 
 Each exact-candidate artifact retains the raw Chromium trace and separately

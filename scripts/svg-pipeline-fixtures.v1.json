@@ -29,7 +29,7 @@
     {
       "id": "global-large-small-viewport",
       "comparisonGroup": "global-scale-small-viewport",
-      "mapExtent": [80, 80],
+      "mapExtent": [79, 79],
       "viewport": [480, 320],
       "visibleDensity": 40,
       "globalUnitCount": 200,
