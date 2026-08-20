@@ -1,6 +1,6 @@
 {
   "schema": "sir-rules-implementation-sources-v1",
-  "sourceCommit": "61ee6e4f3f611bbbde501ad9196578c88ff9a326",
+  "sourceCommit": "5a0195277f02c3f3ab910c14c6136170fa84b088",
   "packageSha256": "2722ec4828960167da8e77c2699b0d0a679cd4791207d2bf6f3b644a2bab66f7",
   "algorithmFingerprint": "FS.GG.Game.Core@0.13.0:Los.lineOfSightBy:Supercover",
   "sources": [
