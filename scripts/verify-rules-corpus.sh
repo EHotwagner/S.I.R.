@@ -40,10 +40,7 @@ require_durable_source_commit() {
   fi
 }
 
-canonical_source_ref=$(git -C "$repo_root" symbolic-ref --quiet refs/remotes/origin/HEAD) || {
-  echo "canonical remote default branch is unavailable: refs/remotes/origin/HEAD (fetch the canonical remote before verifying the rules corpus)" >&2
-  exit 1
-}
+canonical_source_ref=refs/remotes/origin/main
 require_durable_source_commit "$repo_root" "$source_commit" "$canonical_source_ref"
 
 "$repo_root/scripts/generate-rules-corpus.sh" --check
