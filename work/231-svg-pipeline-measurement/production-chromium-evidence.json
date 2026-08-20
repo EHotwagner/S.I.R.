@@ -1,16 +1,16 @@
 {
   "schema": "sir.svg-pipeline-measurement-evidence/1",
   "candidate": {
-    "commit": "26c68b787e2e7f56e9ca29cab0a3cf2b78978328",
-    "tree": "3872e7aeade32e0b6b799777afe545930b6dd7ab"
+    "commit": "b02a6b9d86ae04d83e6a95f48de1ccedc3b88268",
+    "tree": "5899ed9c376d816ebdc838e7fc8f2d77684616eb"
   },
   "buildIdentity": {
     "clientManifestSha256": "44f663e56b6d3acfb4b6d4f1387020ade7ffdc52341d7c8bfb33b64c3b2c3830",
-    "serverAssemblySha256": "42e0005740a73e402a7f918b86fe8646df1db2239a27717f30228c7f5e959582"
+    "serverAssemblySha256": "77b625238139cd369c2325803ce938d7583110a7ad036c67781813cb04094d8a"
   },
   "fixtureDefinition": {
     "path": "scripts/svg-pipeline-fixtures.v1.json",
-    "sha256": "ba2c9c697ffd7035a798a943d4a9a3644220f52ca78fbe210a13c628e8928e06"
+    "sha256": "355c25b4be0e260ebcc2a751b8ca0253921c1460e4a365f04a2113bf902b031d"
   },
   "environment": {
     "browser": "Google Chrome for Testing 151.0.7922.34",
@@ -23,22 +23,22 @@
     "journeyCount": 7,
     "runCount": 28,
     "result": "pass",
-    "startedAt": "2026-08-20T19:52:53.929Z",
-    "completedAt": "2026-08-20T19:58:09.563Z",
+    "startedAt": "2026-08-20T20:18:22.177Z",
+    "completedAt": "2026-08-20T20:23:45.401Z",
     "journeys": ["idle", "playback", "pan", "zoom", "selection", "modality-transition", "dense-overlay"],
-    "rawSummarySha256": "d03662ea8937c8d92ed0a372ed6d4ff3d8ac4283b53831ff81d4ff01063a58dd",
-    "orderedTraceDigestSha256": "f5b958e7dd65414bc9682c993d1f4994e54dce46e65a64b449a1cd7945fef9e7",
-    "inputToPaintMilliseconds": { "minimum": 98.0, "p95": 835.1, "maximum": 1565.8 }
+    "rawSummarySha256": "7de538d8d33c47da05dc2327f5ca5d8bfcef39eb53782656a1362ee0dda627d4",
+    "orderedTraceDigestSha256": "625eff63ddd532989c4f0f586e3e705ec7fe639a53c5a26abfe77d9d31ee2ac2",
+    "inputToPaintMilliseconds": { "availableRunCount": 24, "unavailableRunCount": 4, "minimum": 110.4, "p95": 1172.2, "maximum": 1532.3 }
   },
   "pipeline": {
     "nextBottleneck": "mainThreadScript",
-    "evidence": "largest measured aggregate at 7985.841 ms (95.8%); generic script is not source-symbol isolated",
+    "evidence": "largest measured aggregate at 8197.613 ms (95.8%); generic script is not source-symbol isolated",
     "ranking": [
-      { "stage": "mainThreadScript", "milliseconds": 7985.841, "share": 0.9583 },
-      { "stage": "paint", "milliseconds": 179.589, "share": 0.0215 },
-      { "stage": "style", "milliseconds": 86.473, "share": 0.0104 },
-      { "stage": "layout", "milliseconds": 78.582, "share": 0.0094 },
-      { "stage": "workerCompute", "milliseconds": 3.116, "share": 0.0004 }
+      { "stage": "mainThreadScript", "milliseconds": 8197.613, "share": 0.9575 },
+      { "stage": "paint", "milliseconds": 181.768, "share": 0.0212 },
+      { "stage": "style", "milliseconds": 94.867, "share": 0.0111 },
+      { "stage": "layout", "milliseconds": 84.751, "share": 0.0099 },
+      { "stage": "workerCompute", "milliseconds": 2.866, "share": 0.0003 }
     ],
     "unavailable": {
       "workerTransfer": "The production client has no dedicated transfer User Timing mark yet.",
@@ -51,17 +51,17 @@
       "fixture": "global-small-viewport",
       "global": { "mapExtent": [20, 20], "unitCount": 40, "supportingListSize": 40 },
       "visible": { "visualUnits": 40, "totalDom": 3034, "nodeEstimate": 2040 },
-      "mainScriptMilliseconds": 0.828,
-      "inputToPaintMilliseconds": 522.3,
-      "memory": { "warmUsed": 28507772, "stabilizedUsed": 32553840, "delta": 4046068, "warmupCycles": 2, "stabilizationCycles": 5 }
+      "mainScriptMilliseconds": 0.697,
+      "inputLatency": { "available": false, "reason": "The idle journey has no input event; its 500 ms observation window is not interaction latency." },
+      "memory": { "warmUsed": 35426984, "stabilizedUsed": 49361056, "delta": 13934072, "warmupCycles": 2, "stabilizationCycles": 5 }
     },
     {
       "fixture": "global-large-small-viewport",
       "global": { "mapExtent": [40, 40], "unitCount": 40, "supportingListSize": 800 },
       "visible": { "visualUnits": 40, "totalDom": 8026, "nodeEstimate": 6952 },
-      "mainScriptMilliseconds": 158.092,
-      "inputToPaintMilliseconds": 525.6,
-      "memory": { "warmUsed": 73081840, "stabilizedUsed": 75706668, "delta": 2624828, "warmupCycles": 2, "stabilizationCycles": 5 }
+      "mainScriptMilliseconds": 0.538,
+      "inputLatency": { "available": false, "reason": "The idle journey has no input event; its 500 ms observation window is not interaction latency." },
+      "memory": { "warmUsed": 70732256, "stabilizedUsed": 73129768, "delta": 2397512, "warmupCycles": 2, "stabilizationCycles": 5 }
     }
   ],
   "dispositions": {
@@ -69,5 +69,6 @@
     "typedBuffers": "unresolved",
     "furtherAllocationWork": "unresolved"
   },
-  "interpretation": "Versioned regression workloads; not a permanent supported-size ceiling."
+  "interpretation": "Versioned regression workloads; not a permanent supported-size ceiling.",
+  "bindingSha256": "122e97cf2e087d9dba07352f10236fa786ce1bef8df1958072c0545acaa41d79"
 }
