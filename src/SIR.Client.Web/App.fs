@@ -2575,7 +2575,7 @@ let subscriptions model =
         { new IDisposable with
             member _.Dispose() = window.clearInterval identifier }
 
-    let editorResize dispatch =
+    let tacticalResize dispatch =
         let notify () =
             dispatch (
                 EditorWorkspaceChanged(
@@ -2602,8 +2602,7 @@ let subscriptions model =
         string model.Tactical.Modality
         string model.InputHelpExpanded
         string model.TacticalBindings ], keyboard
-      if model.Workspace = EditorWorkspace then
-          [ "editor-resize" ], editorResize
+      [ "tactical-resize" ], tacticalResize
       if
           model.Shell.Playback.IsPlaying
           || (model.Tactical.IsPlaying
@@ -6158,16 +6157,15 @@ let private persistentSceneSvg
             event.stopPropagation ()
             dispatch (KeyReleased event.key))
         svg.onWheel (fun event ->
-            if model.Workspace = EditorWorkspace then
-                event.preventDefault ()
-                let x, y =
-                    editorScreenPoint
-                        model.EditorView
-                        event.currentTarget
-                        event.clientX
-                        event.clientY
-                let factor = if event.deltaY < 0.0 then 1.12 else 1.0 / 1.12
-                dispatch (EditorWorkspaceChanged(ZoomEditorAt(x, y, factor))))
+            event.preventDefault ()
+            let x, y =
+                editorScreenPoint
+                    model.EditorView
+                    event.currentTarget
+                    event.clientX
+                    event.clientY
+            let factor = if event.deltaY < 0.0 then 1.12 else 1.0 / 1.12
+            dispatch (EditorWorkspaceChanged(ZoomEditorAt(x, y, factor))))
         svg.onPointerDown (fun event ->
             let editorActive = model.Workspace = EditorWorkspace
             let kind = editorPointerKind event.pointerType
@@ -6181,11 +6179,11 @@ let private persistentSceneSvg
             let requestsPan =
                 event.button = 1
                 || event.button = 2
-                || (editorActive
-                    && ((kind = TouchPointer
-                         && (not terrainToolActive
-                             || not model.EditorView.CapturedPointers.IsEmpty))
-                        || editorPanHeld model))
+                || (kind = TouchPointer
+                    && (not editorActive
+                        || not terrainToolActive
+                        || not model.EditorView.CapturedPointers.IsEmpty))
+                || (editorActive && editorPanHeld model)
             let requestsSelection =
                 editorActive
                 && model.Editor.Tool = Select

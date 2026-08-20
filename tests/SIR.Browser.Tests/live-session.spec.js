@@ -104,7 +104,7 @@ test("all modalities retain spatial context and expose the maintained runtime", 
   }
 });
 
-test("right-button drag pans the shared map camera in every tactical mode", async ({ page }) => {
+test("mouse navigation uses the shared map camera in every tactical mode", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => {
     window.__sirContextMenuDefaults = [];
@@ -131,6 +131,11 @@ test("right-button drag pans the shared map camera in every tactical mode", asyn
 
     await expect.poll(async () => Number(await battlefield.getAttribute("data-camera-pan-x"))).toBeGreaterThan(beforeX);
     await expect.poll(async () => Number(await battlefield.getAttribute("data-camera-pan-y"))).toBeGreaterThan(beforeY);
+
+    const beforeZoom = Number(await battlefield.getAttribute("data-camera-zoom"));
+    await page.mouse.move(x, y);
+    await page.mouse.wheel(0, -100);
+    await expect.poll(async () => Number(await battlefield.getAttribute("data-camera-zoom"))).toBeGreaterThan(beforeZoom);
   }
 
   await expect.poll(() => page.evaluate(() => window.__sirContextMenuDefaults)).toEqual([true, true, true, true]);
