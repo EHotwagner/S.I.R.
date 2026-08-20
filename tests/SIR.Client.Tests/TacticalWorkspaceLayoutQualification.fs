@@ -18,7 +18,7 @@ let run () =
          && baseline.LeftSidebar.Width = 208
          && baseline.RightSidebar.Width = 224
          && baseline.BottomPanel.Height = 152
-         && TacticalWorkspaceLayout.bottomVisible baseline
+         && not (TacticalWorkspaceLayout.bottomVisible baseline)
          && not (TacticalWorkspaceLayout.bottomCollapsed Editor baseline)
          && not (TacticalWorkspaceLayout.bottomCollapsed Plan baseline)
          && (TacticalWorkspaceLayout.panelsOn Left baseline
@@ -29,22 +29,22 @@ let run () =
              |> List.take 3) = [ "selection"; "validation"; "document" ])
         "Field Focus defaults or deterministic round-trip diverged."
 
-    let hiddenBottom =
+    let shownBottom =
         baseline
         |> TacticalWorkspaceLayout.toggleBottomPanelVisibility
-    let hiddenBottomRoundTrip =
-        hiddenBottom
+    let shownBottomRoundTrip =
+        shownBottom
         |> TacticalWorkspaceLayout.exportProfile
         |> TacticalWorkspaceLayout.importProfile
         |> Result.defaultWith (fun diagnostics ->
             failwithf "Hidden bottom-panel profile failed round-trip: %A" diagnostics)
     require
-        (not (TacticalWorkspaceLayout.bottomVisible hiddenBottom)
-         && hiddenBottomRoundTrip = hiddenBottom
-         && (hiddenBottom
+        (TacticalWorkspaceLayout.bottomVisible shownBottom
+         && shownBottomRoundTrip = shownBottom
+         && not (shownBottom
              |> TacticalWorkspaceLayout.toggleBottomPanelVisibility
              |> TacticalWorkspaceLayout.bottomVisible)
-         && TacticalWorkspaceLayout.reset hiddenBottom = baseline)
+         && TacticalWorkspaceLayout.reset shownBottom = baseline)
         "Bottom-panel false/true visibility, persistence, or reset semantics diverged."
 
     let resized =
@@ -92,7 +92,7 @@ let run () =
             .Replace(",\"leftSidebar\":{\"width\":208,\"drawerOpen\":false}", ",\"leftWidth\":208")
             .Replace(",\"rightSidebar\":{\"width\":224,\"drawerOpen\":false}", ",\"rightWidth\":224")
             .Replace(
-                ",\"bottomPanel\":{\"visible\":true,\"height\":152,\"collapsedInEditor\":false,\"collapsedOutsideEditor\":false}",
+                ",\"bottomPanel\":{\"visible\":false,\"height\":152,\"collapsedInEditor\":false,\"collapsedOutsideEditor\":false}",
                 ",\"timelineHeight\":152"
             )
     let migrated =

@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
+import { openSamples, switchWorkspace } from "./journey.js";
 
 const featureRegistry = JSON.parse(
   readFileSync(new URL("../../src/SIR.Client.Web/feature-registry.v2.json", import.meta.url), "utf8"),
@@ -34,9 +35,8 @@ test("Release delivery uses cache-safe compression and defers spatial diagnostic
   const maximumInitialBytes = Number(process.env.SIR_DELIVERY_MAX_INITIAL_ROUTE_BYTES ?? routeBudget("initial"));
   if (process.env.SIR_DELIVERY_BROWSER_MUTATE_SUBJECT === "initial-bytes") initialBytes += maximumInitialBytes + 1;
   expect(initialDeferred).toBe(0);
-  await page.getByRole("button", { name: "Simulate", exact: true }).click();
-  await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
-  await page.getByRole("button", { name: "Open simulator samples", exact: true }).click();
+  await switchWorkspace(page, "Simulate");
+  await openSamples(page);
   const samplesOwner = page.getByLabel("Curated samples feature", { exact: true });
   await expect(samplesOwner).toBeVisible();
   await expect(samplesOwner.getByRole("region", { name: "Curated maps simulations and replays", exact: true })).toBeVisible();

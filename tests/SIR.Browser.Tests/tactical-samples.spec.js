@@ -1,8 +1,8 @@
-import { expect, test } from "./journey.js";
+import { expect, switchWorkspace, test } from "./journey.js";
 
 test("the production Samples panel exposes every tactical family and a playable teaching journey", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Simulate", exact: true }).click();
+  await switchWorkspace(page, "Simulate");
   const fileMenu = page.locator("details.desktop-menu").filter({ has: page.getByRole("button", { name: "File", exact: true }) });
   await page.getByRole("button", { name: "File", exact: true }).click();
   await expect(fileMenu).toHaveAttribute("open", "");

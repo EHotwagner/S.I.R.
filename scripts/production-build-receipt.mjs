@@ -89,7 +89,6 @@ function toolIdentities(root) {
   const tools = JSON.parse(execFileSync(process.execPath, ["-e", "process.stdout.write(JSON.stringify(require('./.config/dotnet-tools.json')))"] , { cwd: root, encoding: "utf8" }));
   const toolVersion = (key) => tools.tools?.[key]?.version ?? "missing";
   return [
-    { id: "git", version: command(root, "git", ["--version"]) },
     { id: "dotnet-sdk", version: command(root, "dotnet", ["--version"]) },
     { id: "fable", version: toolVersion("fable") },
     { id: "fsdocs", version: toolVersion("fsdocs-tool") },

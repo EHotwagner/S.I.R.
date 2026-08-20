@@ -1,9 +1,9 @@
-import { expect, test } from "./journey.js";
+import { expect, switchWorkspace, test } from "./journey.js";
 
 const canonicalIdentity = /^[0-9a-f]{64}$/;
 
 async function openEnvironmentEditorByPointer(page) {
-  await page.getByRole("button", { name: "Editor", exact: true }).click();
+  await switchWorkspace(page, "Editor");
   await page.getByRole("button", { name: "Environment", exact: true }).click();
   const environment = page.getByRole("region", { name: "Tactical environment authoring", exact: true });
   await expect(environment).toBeVisible();
@@ -94,7 +94,7 @@ test("canonical tactical editor revision hands off to fixed-step simulation and 
   // keyboard command. Importing the captured document must reconstruct the
   // same canonical editor revision and immutable simulation input.
   await page.reload();
-  await page.getByRole("button", { name: "Editor", exact: true }).click();
+  await switchWorkspace(page, "Editor");
   await page.getByRole("application").focus();
   await page.keyboard.press("Shift+E");
   environment = page.getByRole("region", { name: "Tactical environment authoring", exact: true });

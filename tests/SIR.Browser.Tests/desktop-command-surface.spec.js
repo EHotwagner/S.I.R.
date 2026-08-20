@@ -22,36 +22,30 @@ test("desktop menu exposes registry-backed commands and Escape dismisses it", as
   await expect(menu).toBeFocused();
 });
 
-test("toolbar customization persists, reorders, and resets through the production route", async ({ page }) => {
+test("View exposes persistent checkbox controls for panels and timeline", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Customize toolbar", exact: true }).click();
-  const customize = page.getByRole("region", { name: "Customize top toolbar" });
-  await expect(customize).toBeVisible();
-  await customize.getByRole("button", { name: "Move Switch to Simulate earlier", exact: true }).click();
-  const toolbarLabels = await page.getByRole("toolbar", { name: "Customizable top toolbar" }).getByRole("button").allTextContents();
-  expect(toolbarLabels.indexOf("Switch to Simulate")).toBeLessThan(toolbarLabels.indexOf("Switch to Plan"));
-  await customize.getByRole("button", { name: "Remove Switch to Review from toolbar" }).click();
-  await page.reload();
-  await expect(page.getByRole("toolbar", { name: "Customizable top toolbar" }).getByRole("button", { name: "Switch to Review" })).toHaveCount(0);
-  await page.getByRole("button", { name: "Customize toolbar", exact: true }).click();
-  await expect(customize).toBeVisible();
-  await customize.getByRole("button", { name: "Restore the documented default top toolbar", exact: true }).click();
-  await expect(page.getByRole("toolbar", { name: "Customizable top toolbar" }).getByRole("button", { name: "Switch to Review" })).toBeVisible();
+  await page.getByRole("button", { name: "View", exact: true }).click();
+  const view = page.getByRole("menu", { name: "View commands" });
+  const roster = view.getByRole("menuitemcheckbox", { name: "Roster / outliner", exact: true });
+  const timeline = view.getByRole("menuitemcheckbox", { name: "Timeline", exact: true });
+  await expect(view.locator(".view-panel-menu-item")).toHaveCount(11);
+  await expect(roster).toHaveAttribute("aria-checked", "true");
+  await expect(timeline).toHaveAttribute("aria-checked", "false");
+  await roster.click();
+  await expect(page.locator("#layout-panel-roster")).toHaveCount(0);
+  await page.getByRole("button", { name: "View", exact: true }).click();
+  await expect(view.getByRole("menuitemcheckbox", { name: "Roster / outliner", exact: true })).toHaveAttribute("aria-checked", "false");
+  await view.getByRole("menuitemcheckbox", { name: "Roster / outliner", exact: true }).click();
+  await expect(page.locator("#layout-panel-roster")).toBeVisible();
 });
 
-test("an intentionally empty toolbar persists until reset", async ({ page }) => {
+test("View loads deferred supporting panels without a second toolbar row", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Customize toolbar", exact: true }).click();
-  const customize = page.getByRole("region", { name: "Customize top toolbar" });
-  const removals = customize.getByRole("button", { name: /^Remove .+ from toolbar$/ });
-  while (await removals.count()) await removals.first().click();
-  const toolbar = page.getByRole("toolbar", { name: "Customizable top toolbar" });
-  await expect(toolbar.getByRole("button")).toHaveCount(1);
-  await page.reload();
-  await expect(toolbar.getByRole("button")).toHaveCount(1);
-  await page.getByRole("button", { name: "Customize toolbar", exact: true }).click();
-  await customize.getByRole("button", { name: "Restore the documented default top toolbar", exact: true }).click();
-  await expect(toolbar.getByRole("button", { name: "Switch to Review" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Supporting application sections" })).toBeHidden();
+  await page.getByRole("button", { name: "View", exact: true }).click();
+  await page.getByRole("menu", { name: "View commands" }).getByRole("menuitemcheckbox", { name: "Rules", exact: true }).click();
+  await expect(page.locator("#layout-panel-rules")).toBeVisible();
+  await expect(page.getByRole("region", { name: "Design scenario catalog" }).getByRole("button", { name: /^Simulate design scenario/ })).toHaveCount(6);
 });
 
 test("compact desktop chrome keeps a reachable overflow menu", async ({ page }) => {
@@ -61,4 +55,14 @@ test("compact desktop chrome keeps a reachable overflow menu", async ({ page }) 
   await expect(menuBar).toBeVisible();
   await page.getByRole("button", { name: "Help", exact: true }).click();
   await expect(page.getByRole("menu", { name: "Help commands" })).toBeVisible();
+});
+
+test("delivery support remains reachable beside the full-height tactical shell", async ({ page }) => {
+  await page.goto("/");
+  const opener = page.getByRole("button", { name: "Delivery support", exact: true });
+  await expect(opener).toBeVisible();
+  const box = await opener.boundingBox();
+  const viewportHeight = await page.evaluate(() => window.innerHeight);
+  expect(box).not.toBeNull();
+  expect(box.y + box.height).toBeLessThanOrEqual(viewportHeight);
 });

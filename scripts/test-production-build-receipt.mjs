@@ -33,6 +33,8 @@ try {
 
   const created = JSON.parse(run(process.execPath, receiptArgs("create", ["--receipt-directory", "receipts"])));
   receipt = created.receipt;
+  const createdReceipt = JSON.parse(await readFile(join(fixture, receipt), "utf8"));
+  if (createdReceipt.tools.some(({ id }) => id === "git")) throw new Error("ambient runner Git version leaked into the build-tool identity");
   JSON.parse(run(process.execPath, receiptArgs("verify", ["--receipt", receipt])));
   const commit = run("git", ["rev-parse", "HEAD"]);
   const tree = run("git", ["rev-parse", "HEAD^{tree}"]);
