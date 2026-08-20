@@ -74,7 +74,7 @@
     {
       "units": 100,
       "path": "production-density-100.png",
-      "sha256": "c4d9dd8541eb722df20c8576a03a35af40e6fd1e1896321593b89258aeabe374",
+      "sha256": "81dc91018874dbadcda2576b95ec4cc0050b0d4ceec72c5e0ea11c12bbc00b1b",
       "workload": {
         "requestedUnits": 100,
         "renderedUnits": 100,
@@ -104,7 +104,7 @@
     {
       "units": 200,
       "path": "production-density-200.png",
-      "sha256": "2167f6ab7ccefa9a4e6d773ef65940c9e50a7f9a694498e4fcfa896adce70bc2",
+      "sha256": "f1307b7470e9f5508aeecd6a33c6a2f6ddf40e38c804db2ce82d2e60fdf9daac",
       "workload": {
         "requestedUnits": 200,
         "renderedUnits": 200,

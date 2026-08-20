@@ -71,10 +71,15 @@ const workloadExpression = (units) => `(async () => {
   const svg = document.querySelector("#persistent-tactical-svg");
   await waitFor("production tactical density ${units} simulator scene", () => svg.getAttribute("data-scene-owner") === "SimulatorScene" && svg.querySelectorAll("[data-unit-id]").length === ${units});
   await settleCapture();
-  const beforeTick = svg.getAttribute("data-scene-tick");
-  globalThis.__sirTacticalStage = "step"; const started = performance.now(); clickButton("Advance the map simulation one tick");
-  while (svg.getAttribute("data-scene-tick") === beforeTick && performance.now() - started < 2000) await wait(5);
-  const inputToPaintMilliseconds = performance.now() - started;
+  const percentile80 = (values) => [...values].sort((left, right) => left - right)[3];
+  const inputToPaintSamples = [];
+  for (let sample = 0; sample < 5; sample += 1) {
+    const beforeTick = svg.getAttribute("data-scene-tick");
+    globalThis.__sirTacticalStage = "step"; const started = performance.now(); clickButton("Advance the map simulation one tick");
+    while (svg.getAttribute("data-scene-tick") === beforeTick && performance.now() - started < 2000) await wait(5);
+    inputToPaintSamples.push(performance.now() - started);
+  }
+  const inputToPaintMilliseconds = percentile80(inputToPaintSamples);
   globalThis.__sirTacticalStage = "routes";
   const routeUnits = [...document.querySelectorAll("#persistent-layer-units [data-unit-id]")].slice(0, 2);
   routeUnits[0].dispatchEvent(new MouseEvent("click", { bubbles: true })); await wait(25);
@@ -86,8 +91,9 @@ const workloadExpression = (units) => `(async () => {
     clickButton("Commit clear route preview");
     await waitFor("committed route " + (routeIndex + 1), () => svg.querySelectorAll("#persistent-layer-routes > polyline").length >= routeIndex + 1);
   }
-  const frameStarted = await new Promise((resolve) => requestAnimationFrame(resolve));
-  const frameEnded = await new Promise((resolve) => requestAnimationFrame(resolve));
+  const frameTimes = [];
+  for (let sample = 0; sample < 6; sample += 1) frameTimes.push(await new Promise((resolve) => requestAnimationFrame(resolve)));
+  const animationFrameIntervalMilliseconds = percentile80(frameTimes.slice(1).map((value, index) => value - frameTimes[index]));
   await settleCapture();
   const currentEffects = [...svg.querySelectorAll("[data-effect-kind]")];
   const currentKinds = [...new Set(currentEffects.map((effect) => effect.getAttribute("data-effect-kind")).filter(Boolean))].sort();
@@ -103,7 +109,7 @@ const workloadExpression = (units) => `(async () => {
     currentAttackEffects: currentEffects.filter((effect) => effect.getAttribute("data-effect-kind") === "attack").length,
     effectKinds: currentKinds, effectLifecycles: currentLifecycles,
     domNodes: svg.querySelectorAll("*").length,
-    inputToPaintMilliseconds, animationFrameIntervalMilliseconds: frameEnded - frameStarted,
+    inputToPaintMilliseconds, animationFrameIntervalMilliseconds,
     usedJsHeapBytes: performance.memory?.usedJSHeapSize ?? null,
   };
 })()`;
