@@ -27,7 +27,7 @@ for (const required of [
   'prop.ariaLabel "Unified tactical timeline"',
   'prop.ariaLabel "Authored, predicted, accepted, and committed timeline segments"',
   'prop.id "tactical-bottom-panel"',
-  "prop.hidden (not bottomVisible)",
+  "prop.hidden (model.Workspace = DocsWorkspace || not bottomVisible)",
   'prop.id "tactical-bottom-panel-resize"',
   'prop.className "tactical-bottom-panel-content"',
   "prop.hidden bottomCollapsed",
