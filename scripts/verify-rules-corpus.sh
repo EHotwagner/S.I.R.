@@ -89,6 +89,18 @@ empty_tree=$(git -C "$reachability_mutant" hash-object -t tree /dev/null)
 durable_mutant_commit=$(printf 'durable rules source\n' | env GIT_AUTHOR_NAME=Rules GIT_AUTHOR_EMAIL=rules@example.invalid GIT_COMMITTER_NAME=Rules GIT_COMMITTER_EMAIL=rules@example.invalid git -C "$reachability_mutant" commit-tree "$empty_tree")
 local_only_mutant_commit=$(printf 'local-only rules source\n' | env GIT_AUTHOR_NAME=Rules GIT_AUTHOR_EMAIL=rules@example.invalid GIT_COMMITTER_NAME=Rules GIT_COMMITTER_EMAIL=rules@example.invalid git -C "$reachability_mutant" commit-tree "$empty_tree")
 git -C "$reachability_mutant" update-ref refs/remotes/origin/main "$durable_mutant_commit"
+if require_durable_source_commit "$reachability_mutant" "$durable_mutant_commit" refs/remotes/origin/missing >"$reachability_log" 2>&1; then
+  echo "missing canonical source ref mutation unexpectedly passed" >&2
+  rm -rf "$reachability_mutant"
+  rm -f "$reachability_log"
+  exit 1
+fi
+search_quiet 'canonical remote default branch is unavailable: refs/remotes/origin/missing.*fetch the canonical remote' "$reachability_log" || {
+  echo "missing canonical source ref mutation failed without the actionable fetch diagnostic" >&2
+  rm -rf "$reachability_mutant"
+  rm -f "$reachability_log"
+  exit 1
+}
 if require_durable_source_commit "$reachability_mutant" "$local_only_mutant_commit" refs/remotes/origin/main >"$reachability_log" 2>&1; then
   echo "local-only rules source commit mutation unexpectedly passed" >&2
   rm -rf "$reachability_mutant"
