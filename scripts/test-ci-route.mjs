@@ -220,7 +220,7 @@ assert.match(focusedQualification, /cross-runtime\)[\s\S]*--domain-only[\s\S]*--
 assert.doesNotMatch(fullQualification, /--ordinary-pr-functional/u);
 assert.match(conformanceQualification, /--ordinary-pr-functional requires --domain-only/u);
 assert.match(conformanceQualification, /match_arguments=\(-- --functional-cross-runtime\)/u);
-assert.match(matchQualification, /not enforceProductPerformanceBudgets \|\| interactionClock\.Elapsed\.TotalMilliseconds < 50\.0/u);
+assert.match(matchQualification, /not enforceProductPerformanceBudgets \|\| interactionBest < 50\.0/u);
 assert.doesNotMatch(focusedQualification, /verify --work 138-sir-fable-game-scaffold/u);
 assert.match(focusedQualification, /route\.paths\.map/u);
 assert.match(fullQualification, /--paired-optimization/u);
