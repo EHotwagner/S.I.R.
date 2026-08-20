@@ -1,8 +1,8 @@
 {
   "schema": "sir.svg-pipeline-measurement-evidence/1",
   "candidate": {
-    "commit": "e971395307ea273def35dac863cb1b15a93d60fc",
-    "tree": "437a3cc9d69f77f38ff590e5940a167afebaf6f7"
+    "commit": "75c9ac01b1241fc55eb07b5302f5fda230193990",
+    "tree": "f9539378bbce3a5dd531ec8ee011609c387f66aa"
   },
   "buildIdentity": {
     "clientManifestSha256": "44f663e56b6d3acfb4b6d4f1387020ade7ffdc52341d7c8bfb33b64c3b2c3830",
@@ -10,7 +10,7 @@
   },
   "fixtureDefinition": {
     "path": "scripts/svg-pipeline-fixtures.v1.json",
-    "sha256": "355c25b4be0e260ebcc2a751b8ca0253921c1460e4a365f04a2113bf902b031d"
+    "sha256": "c01c40b0ee06db92cd255f9b8a3e4cc44063bfba26ec8d8f16a20af46a9045a9"
   },
   "environment": {
     "browser": "Google Chrome for Testing 151.0.7922.34",
@@ -19,26 +19,26 @@
     "cpuCount": 24
   },
   "matrix": {
-    "fixtureCount": 4,
+    "fixtureCount": 5,
     "journeyCount": 7,
-    "runCount": 28,
+    "runCount": 35,
     "result": "pass",
-    "startedAt": "2026-08-20T20:30:33.252Z",
-    "completedAt": "2026-08-20T20:35:54.772Z",
+    "startedAt": "2026-08-20T20:44:52.810Z",
+    "completedAt": "2026-08-20T20:53:16.230Z",
     "journeys": ["idle", "playback", "pan", "zoom", "selection", "modality-transition", "dense-overlay"],
-    "rawSummarySha256": "9d4470c5ea30d8cf109e11f8ce34ee49fe915bd69480b9c786923bdfc2e45675",
-    "orderedTraceDigestSha256": "79001ac59073dfadb090f9a3de44d63ad343e77b53272e78e3e44df2625982ee",
-    "inputToPaintMilliseconds": { "availableRunCount": 24, "unavailableRunCount": 4, "minimum": 101.3, "p95": 1183.4, "maximum": 1545.3 }
+    "rawSummarySha256": "78173a7e583e21f91bc7a62ca90ec7f86b87ea6d0323ac39d520999bfe848e4e",
+    "orderedTraceDigestSha256": "606dd9f91e5f084d1cce9d531d93038da54da3e3ce073b59462e81efca5d5436",
+    "inputToPaintMilliseconds": { "availableRunCount": 30, "unavailableRunCount": 5, "minimum": 98.2, "p95": 1564.0, "maximum": 2586.6 }
   },
   "pipeline": {
     "nextBottleneck": "mainThreadScript",
-    "evidence": "largest measured aggregate at 8514.081 ms (95.9%); generic script is not source-symbol isolated",
+    "evidence": "largest measured aggregate at 11087.125 ms (94.1%); generic script is not source-symbol isolated",
     "ranking": [
-      { "stage": "mainThreadScript", "milliseconds": 8514.081, "share": 0.9593 },
-      { "stage": "paint", "milliseconds": 179.216, "share": 0.0202 },
-      { "stage": "style", "milliseconds": 94.55, "share": 0.0107 },
-      { "stage": "layout", "milliseconds": 84.057, "share": 0.0095 },
-      { "stage": "workerCompute", "milliseconds": 3.297, "share": 0.0004 }
+      { "stage": "mainThreadScript", "milliseconds": 11087.125, "share": 0.9408 },
+      { "stage": "paint", "milliseconds": 310.684, "share": 0.0264 },
+      { "stage": "style", "milliseconds": 210.976, "share": 0.0179 },
+      { "stage": "layout", "milliseconds": 172.567, "share": 0.0146 },
+      { "stage": "workerCompute", "milliseconds": 3.566, "share": 0.0003 }
     ],
     "unavailable": {
       "workerTransfer": "The production client has no dedicated transfer User Timing mark yet.",
@@ -46,22 +46,46 @@
       "elmishReact": "The production client has no dedicated Elmish/React User Timing marks; generic main-thread script is reported separately."
     }
   },
+  "eventRateComparison": [
+    {
+      "fixture": "representative-visible-100",
+      "eventRateHz": 10,
+      "eventIntervalMilliseconds": 100,
+      "playbackWindowMilliseconds": 250,
+      "playbackSteps": 3,
+      "mainScriptMilliseconds": 283.816,
+      "inputToPaintMilliseconds": 649.0,
+      "frameSamples": 51,
+      "droppedFrames": 6
+    },
+    {
+      "fixture": "representative-visible-100-high-rate",
+      "eventRateHz": 40,
+      "eventIntervalMilliseconds": 25,
+      "playbackWindowMilliseconds": 250,
+      "playbackSteps": 11,
+      "mainScriptMilliseconds": 767.72,
+      "inputToPaintMilliseconds": 1564.0,
+      "frameSamples": 108,
+      "droppedFrames": 13
+    }
+  ],
   "globalSmallViewportComparison": [
     {
       "fixture": "global-small-viewport",
       "global": { "mapExtent": [20, 20], "unitCount": 40, "supportingListSize": 40 },
       "visible": { "visualUnits": 40, "totalDom": 3034, "nodeEstimate": 2040 },
-      "mainScriptMilliseconds": 0.597,
+      "mainScriptMilliseconds": 0.578,
       "inputLatency": { "available": false, "reason": "The idle journey has no input event; its 500 ms observation window is not interaction latency." },
-      "memory": { "warmUsed": 28879904, "stabilizedUsed": 30453064, "delta": 1573160, "warmupCycles": 2, "stabilizationCycles": 5 }
+      "memory": { "warmUsed": 32290328, "stabilizedUsed": 34123964, "delta": 1833636, "warmupCycles": 2, "stabilizationCycles": 5 }
     },
     {
       "fixture": "global-large-small-viewport",
       "global": { "mapExtent": [40, 40], "unitCount": 40, "supportingListSize": 800 },
       "visible": { "visualUnits": 40, "totalDom": 8026, "nodeEstimate": 6952 },
-      "mainScriptMilliseconds": 0.43,
+      "mainScriptMilliseconds": 0.478,
       "inputLatency": { "available": false, "reason": "The idle journey has no input event; its 500 ms observation window is not interaction latency." },
-      "memory": { "warmUsed": 53824896, "stabilizedUsed": 73279396, "delta": 19454500, "warmupCycles": 2, "stabilizationCycles": 5 }
+      "memory": { "warmUsed": 63507576, "stabilizedUsed": 46285264, "delta": -17222312, "warmupCycles": 2, "stabilizationCycles": 5 }
     }
   ],
   "dispositions": {
@@ -70,5 +94,5 @@
     "furtherAllocationWork": "unresolved"
   },
   "interpretation": "Versioned regression workloads; not a permanent supported-size ceiling.",
-  "bindingSha256": "6892aaf53dfa098c5fc7769ba161f0a8b9d3e7906c195a0c37f086fb14051f0b"
+  "bindingSha256": "d163f95dd0ae81ac4e0ad37a1514b77599b79bcc3936d94fe52c049056fdc286"
 }

@@ -46,7 +46,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV001]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -73,7 +73,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV002]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -100,7 +100,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-003]
     obligationRefs: [EV003]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -127,7 +127,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV004]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -154,7 +154,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-005]
     obligationRefs: [EV005]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -181,7 +181,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV006]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -208,7 +208,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-007]
     obligationRefs: [EV007]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -235,7 +235,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV008]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -262,7 +262,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-009]
     obligationRefs: [EV009]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -289,7 +289,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-010]
     obligationRefs: [EV010]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -316,7 +316,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV011]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -343,7 +343,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV012]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -370,7 +370,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV013]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -397,7 +397,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV014]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -424,7 +424,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001]
     obligationRefs: [EV015]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -451,7 +451,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-002]
     obligationRefs: [EV016]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -478,7 +478,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-004]
     obligationRefs: [EV017]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -505,7 +505,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-006]
     obligationRefs: [EV018]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -532,7 +532,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-008]
     obligationRefs: [EV019]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -559,7 +559,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001, PD-003]
     obligationRefs: [EV020]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -586,7 +586,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001, PD-004, PD-010]
     obligationRefs: [EV021]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -613,7 +613,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-001, PD-002, PD-003]
     obligationRefs: [EV022]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -640,7 +640,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-005, PD-006]
     obligationRefs: [EV023]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -667,7 +667,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: []
     obligationRefs: [EV024]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -694,7 +694,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-003]
     obligationRefs: [EV025]
-    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
+    artifacts: [scripts/measure-svg-pipeline.mjs, scripts/svg-pipeline-fixtures.v1.json, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
