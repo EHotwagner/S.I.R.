@@ -85,7 +85,7 @@ module TacticalWorkspaceLayout =
           LeftSidebar = { Width = 208; DrawerOpen = false }
           RightSidebar = { Width = 224; DrawerOpen = false }
           BottomPanel =
-            { Visible = true
+            { Visible = false
               Height = 152
               CollapsedInEditor = false
               CollapsedOutsideEditor = false } }

@@ -1,3 +1,11 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
 #sir-replay-app {
   --sir-canvas: #10161d;
   --sir-surface: #151f1c;
@@ -19,8 +27,9 @@
   clear: both;
   position: relative;
   isolation: isolate;
-  overflow-x: hidden;
-  min-height: inherit;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
 }
 
 #sir-replay-app #persistent-tactical-overlay-layer {
@@ -125,9 +134,11 @@
   max-width: none;
   min-width: 0;
   margin: auto;
-  padding: .4rem;
+  padding: .2rem;
   background: var(--sir-canvas);
-  min-height: inherit;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 #sir-replay-app .eyebrow { color: #d8b36a; letter-spacing: .14em; text-transform: uppercase; }
 #sir-replay-app h2 { margin-top: 0; }
@@ -548,8 +559,11 @@
 }
 #sir-replay-app .unified-tactical-workspace {
   display: grid;
-  gap: .5rem;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: .25rem;
+  height: 100%;
   min-width: 0;
+  min-height: 0;
 }
 #sir-replay-app .tactical-compact-toolbar {
   display: flex;
@@ -567,10 +581,25 @@
 #sir-replay-app .tactical-desktop-menu > summary { list-style: none; padding: .22rem .45rem; border-radius: .2rem; cursor: default; }
 #sir-replay-app .tactical-desktop-menu > summary::-webkit-details-marker { display: none; }
 #sir-replay-app .tactical-desktop-menu[open] > summary, #sir-replay-app .tactical-desktop-menu > summary:hover { background: #2a3b34; }
-#sir-replay-app .tactical-desktop-menu-popover { position: absolute; z-index: 40; top: calc(100% + .1rem); left: 0; display: grid; min-width: 15rem; padding: .25rem; border: 1px solid #6d8077; border-radius: .25rem; background: #17211e; box-shadow: 0 .7rem 1.5rem rgba(0,0,0,.55); }
+#sir-replay-app .tactical-desktop-menu-popover { position: absolute; z-index: 40; top: calc(100% + .1rem); left: 0; display: grid; min-width: 15rem; max-height: calc(100vh - 4.5rem); overflow-y: auto; padding: .25rem; border: 1px solid #6d8077; border-radius: .25rem; background: #17211e; box-shadow: 0 .7rem 1.5rem rgba(0,0,0,.55); }
 #sir-replay-app .tactical-desktop-menu:not([open]) > .tactical-desktop-menu-popover { display: none; }
 #sir-replay-app .tactical-desktop-menu-popover button { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .75rem; width: 100%; min-height: 1.85rem; padding: .28rem .45rem; border-color: transparent; text-align: left; }
 #sir-replay-app .tactical-desktop-menu-popover kbd { color: #b9c8c0; }
+#sir-replay-app .tactical-desktop-menu-popover .view-panel-menu-item {
+  grid-template-columns: 1rem minmax(0, 1fr);
+  gap: .4rem;
+}
+#sir-replay-app .view-panel-menu-checkmark {
+  color: #ffd166;
+  font-weight: 800;
+  text-align: center;
+}
+#sir-replay-app .desktop-command-toolbar,
+#sir-replay-app .desktop-toolbar-customization,
+#sir-replay-app .tactical-modality-controls,
+#sir-replay-app .tactical-legacy-controls {
+  display: none !important;
+}
 #sir-replay-app .desktop-command-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: .18rem; min-width: 0; }
 #sir-replay-app .desktop-toolbar-customization { display: grid; gap: .35rem; width: min(34rem, 100%); padding: .5rem; border: 1px solid #52665c; background: #17211e; }
 #sir-replay-app .desktop-toolbar-customization-row { display: flex; align-items: center; flex-wrap: wrap; gap: .3rem; }
@@ -590,8 +619,7 @@
   #sir-replay-app .tactical-document-identity { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #sir-replay-app .desktop-toolbar-customization { position: absolute; z-index: 50; top: calc(100% + .25rem); left: .35rem; }
   #sir-replay-app .tactical-bottom-panel { height: min(var(--tactical-bottom-height, 152px), 8rem); }
-  #sir-replay-app .tactical-workscreen-region { min-height: 28rem !important; height: clamp(28rem, calc(100vh - 21rem), 44rem) !important; }
-  #sir-replay-app .tactical-sidebar { height: clamp(28rem, calc(100vh - 21rem), 44rem) !important; }
+  #sir-replay-app .tactical-workscreen-region { min-height: 0 !important; height: 100% !important; }
   #sir-replay-app .tactical-compact-toolbar button, #sir-replay-app .tactical-compact-toolbar summary { min-height: 1.65rem; padding: .12rem .25rem; }
 }
 #sir-replay-app .tactical-compact-toolbar button,
@@ -651,18 +679,59 @@
   grid-template-areas:
     "left workscreen right"
     "bottom bottom bottom";
+  grid-template-rows: minmax(0, 1fr) auto;
   gap: .4rem;
+  height: 100%;
   min-width: 0;
+  min-height: 0;
 }
 #sir-replay-app .tactical-workscreen-region {
+  position: relative;
   grid-area: workscreen;
   min-width: 0;
-  min-height: 32rem;
-  height: clamp(32rem, calc(100vh - 15.5rem), 44rem);
+  min-height: 0;
+  height: 100%;
   overflow: hidden;
   border: 1px solid #43584e;
   border-radius: .4rem;
   background: #0d1512;
+}
+#sir-replay-app .tactical-workscreen-overlay {
+  position: absolute;
+  z-index: 12;
+  right: .5rem;
+  bottom: .5rem;
+  display: grid;
+  justify-items: end;
+  gap: .35rem;
+  max-width: min(28rem, calc(100% - 1rem));
+  pointer-events: none;
+}
+#sir-replay-app .tactical-workscreen-overlay .editor-owner-status,
+#sir-replay-app .tactical-workscreen-overlay .modal-input-strip {
+  pointer-events: auto;
+}
+#sir-replay-app .modal-input-state-strip {
+  padding: .35rem .55rem;
+  border: 1px solid #60776b;
+  border-radius: .35rem;
+  background: rgba(13, 21, 18, .92);
+  box-shadow: 0 .35rem 1rem rgba(0, 0, 0, .45);
+  backdrop-filter: blur(4px);
+}
+#sir-replay-app .modal-input-state-strip .modal-input-state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .15rem .55rem;
+}
+#sir-replay-app .modal-input-state-strip .modal-input-detail {
+  font-size: .76rem;
+}
+#sir-replay-app #retained-tactical-workscreen {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
 }
 #sir-replay-app #persistent-tactical-svg {
   display: block;
@@ -679,7 +748,8 @@
 }
 #sir-replay-app .tactical-sidebar {
   min-width: 0;
-  height: clamp(32rem, calc(100vh - 15.5rem), 44rem);
+  min-height: 0;
+  height: 100%;
   max-height: none;
   overflow: auto;
   border: 1px solid #43584e;
@@ -747,6 +817,49 @@
   height: .3rem;
   overflow: hidden;
   border-top: 1px solid #43584e;
+}
+@media (min-width: 721px) {
+  #sir-replay-app .tactical-compact-toolbar {
+    min-height: 1.9rem;
+    padding: 0 .15rem;
+  }
+  #sir-replay-app .tactical-compact-toolbar button,
+  #sir-replay-app .tactical-compact-toolbar summary {
+    min-height: 1.65rem;
+    padding: .08rem .38rem;
+  }
+  #sir-replay-app .tactical-layout-frame {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-areas: "workscreen";
+  }
+  #sir-replay-app .tactical-sidebar {
+    position: absolute;
+    z-index: 14;
+    top: 0;
+    bottom: 0;
+    height: auto !important;
+    box-shadow: 0 .5rem 1.4rem rgba(0, 0, 0, .45);
+  }
+  #sir-replay-app .tactical-sidebar-left {
+    left: 0;
+    width: var(--tactical-left-width, 208px);
+  }
+  #sir-replay-app .tactical-sidebar-right {
+    right: 0;
+    width: var(--tactical-right-width, 224px);
+  }
+  #sir-replay-app .tactical-layout-frame:has(.tactical-sidebar-right:not([hidden])) .tactical-workscreen-overlay {
+    right: calc(var(--tactical-right-width, 224px) + .5rem);
+  }
+  #sir-replay-app .tactical-bottom-panel {
+    position: absolute;
+    z-index: 15;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
 }
 #sir-replay-app .tactical-layout-diagnostics {
   margin: 0;
@@ -1207,10 +1320,10 @@
     transform: translateX(0);
   }
   #sir-replay-app .tactical-workscreen-region {
-    height: 22rem;
-    min-height: 22rem;
+    height: 100%;
+    min-height: 0;
   }
-  #sir-replay-app #persistent-tactical-svg { height: 22rem; }
+  #sir-replay-app #persistent-tactical-svg { height: 100%; }
   #sir-replay-app .tactical-bottom-panel { height: min(var(--tactical-bottom-height, 152px), 35vh); }
   #sir-replay-app .tactical-modality-controls {
     position: static;

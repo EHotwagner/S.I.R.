@@ -6132,8 +6132,7 @@ let private persistentSceneSvg
             "Persistent shared tactical SVG work surface for " + owner
         )
         svg.tabIndex 0
-        svg.onContextMenu (fun event ->
-            if model.Workspace = EditorWorkspace then event.preventDefault ())
+        svg.onContextMenu (fun event -> event.preventDefault ())
         svg.onKeyDown (fun event ->
             let controlOrMeta = event.ctrlKey || event.metaKey
             if
@@ -6170,73 +6169,77 @@ let private persistentSceneSvg
                 let factor = if event.deltaY < 0.0 then 1.12 else 1.0 / 1.12
                 dispatch (EditorWorkspaceChanged(ZoomEditorAt(x, y, factor))))
         svg.onPointerDown (fun event ->
-            if model.Workspace = EditorWorkspace then
-                let kind = editorPointerKind event.pointerType
-                let terrainToolActive =
+            let editorActive = model.Workspace = EditorWorkspace
+            let kind = editorPointerKind event.pointerType
+            let terrainToolActive =
+                editorActive
+                &&
+                (
                     match model.Editor.Tool with
                     | Terrain _ -> true
-                    | _ -> false
-                let requestsPan =
-                    (kind = TouchPointer
-                     && (not terrainToolActive
-                         || not model.EditorView.CapturedPointers.IsEmpty))
-                    || event.button = 1
-                    || event.button = 2
-                    || editorPanHeld model
-                let requestsSelection =
-                    model.Editor.Tool = Select
-                    && kind <> TouchPointer
-                    && event.button = 0
-                    && not requestsPan
-                let movementUnit =
-                    if requestsSelection then
-                        match Int32.TryParse(pointerEditorUnitId event) with
-                        | true, unitId -> Some unitId
-                        | _ -> None
-                    else None
-                let requestsTerrain =
-                    match model.Editor.Tool with
-                    | Terrain _ -> event.button = 0 && not requestsPan
-                    | _ -> false
-                if requestsPan || requestsSelection || requestsTerrain then
-                    event.preventDefault ()
-                    capturePointer event.currentTarget (int event.pointerId)
-                    let x, y =
-                        editorScreenPoint model.EditorView event.currentTarget event.clientX event.clientY
-                    dispatch (
-                        EditorWorkspaceChanged(
-                            StartEditorPointer
-                                { Id = int32 event.pointerId
-                                  Kind = kind
-                                  X = x
-                                  Y = y
-                                  RequestsPan = requestsPan }
-                        )
+                    | _ -> false)
+            let requestsPan =
+                event.button = 1
+                || event.button = 2
+                || (editorActive
+                    && ((kind = TouchPointer
+                         && (not terrainToolActive
+                             || not model.EditorView.CapturedPointers.IsEmpty))
+                        || editorPanHeld model))
+            let requestsSelection =
+                editorActive
+                && model.Editor.Tool = Select
+                && kind <> TouchPointer
+                && event.button = 0
+                && not requestsPan
+            let movementUnit =
+                if requestsSelection then
+                    match Int32.TryParse(pointerEditorUnitId event) with
+                    | true, unitId -> Some unitId
+                    | _ -> None
+                else None
+            let requestsTerrain =
+                editorActive
+                &&
+                (match model.Editor.Tool with
+                 | Terrain _ -> event.button = 0 && not requestsPan
+                 | _ -> false)
+            if requestsPan || requestsSelection || requestsTerrain then
+                event.preventDefault ()
+                capturePointer event.currentTarget (int event.pointerId)
+                let x, y =
+                    editorScreenPoint model.EditorView event.currentTarget event.clientX event.clientY
+                dispatch (
+                    EditorWorkspaceChanged(
+                        StartEditorPointer
+                            { Id = int32 event.pointerId
+                              Kind = kind
+                              X = x
+                              Y = y
+                              RequestsPan = requestsPan }
                     )
-                    match movementUnit with
-                    | Some unitId ->
-                        if not (Set.contains unitId model.Editor.SelectedUnits) then
-                            dispatch (EditorChanged(SelectEditorUnit(Some unitId)))
-                        editorSelectionAt x y BeginUnitMove
-                    | None when requestsSelection ->
-                        editorSelectionAt x y BeginEditorBoxSelection
-                    | None when requestsTerrain ->
-                        editorTerrainAt x y BeginTerrainGesture
-                    | _ when requestsPan && kind = TouchPointer && terrainToolActive ->
-                        dispatch (EditorChanged CancelEditorGesture)
-                    | _ -> ())
+                )
+                match movementUnit with
+                | Some unitId ->
+                    if not (Set.contains unitId model.Editor.SelectedUnits) then
+                        dispatch (EditorChanged(SelectEditorUnit(Some unitId)))
+                    editorSelectionAt x y BeginUnitMove
+                | None when requestsSelection ->
+                    editorSelectionAt x y BeginEditorBoxSelection
+                | None when requestsTerrain ->
+                    editorTerrainAt x y BeginTerrainGesture
+                | _ when requestsPan && kind = TouchPointer && terrainToolActive ->
+                    dispatch (EditorChanged CancelEditorGesture)
+                | _ -> ())
         svg.onPointerMove (fun event ->
-            if
-                model.Workspace = EditorWorkspace
-                && Map.containsKey (int32 event.pointerId) model.EditorView.CapturedPointers
-            then
+            if Map.containsKey (int32 event.pointerId) model.EditorView.CapturedPointers then
                 event.preventDefault ()
                 let x, y =
                     editorScreenPoint model.EditorView event.currentTarget event.clientX event.clientY
                 let previous =
                     Map.find (int32 event.pointerId) model.EditorView.CapturedPointers
                 dispatch (EditorWorkspaceChanged(MoveEditorPointer { previous with X = x; Y = y }))
-                if model.Editor.Tool = Select && not previous.RequestsPan then
+                if model.Workspace = EditorWorkspace && model.Editor.Tool = Select && not previous.RequestsPan then
                     match model.Editor.Gesture with
                     | UnitMoveGesture _ -> editorSelectionAt x y ExtendUnitMove
                     | _ -> editorSelectionAt x y ExtendEditorBoxSelection
@@ -6253,30 +6256,27 @@ let private persistentSceneSvg
                     editorSelectionAt x y PreviewUnitPlacement
                 | _ -> ())
         svg.onPointerUp (fun event ->
-            if
-                model.Workspace = EditorWorkspace
-                && Map.containsKey (int32 event.pointerId) model.EditorView.CapturedPointers
-            then
+            if Map.containsKey (int32 event.pointerId) model.EditorView.CapturedPointers then
                 let previous =
                     Map.find (int32 event.pointerId) model.EditorView.CapturedPointers
                 let x, y =
                     editorScreenPoint model.EditorView event.currentTarget event.clientX event.clientY
                 releasePointer event.currentTarget (int event.pointerId)
                 dispatch (EditorWorkspaceChanged(EndEditorPointer(int32 event.pointerId)))
-                if model.Editor.Tool = Select && not previous.RequestsPan then
+                if model.Workspace = EditorWorkspace && model.Editor.Tool = Select && not previous.RequestsPan then
                     match model.Editor.Gesture with
                     | UnitMoveGesture _ -> editorSelectionAt x y ExtendUnitMove
                     | _ -> editorSelectionAt x y ExtendEditorBoxSelection
                     dispatch (EditorChanged CommitEditorGesture)
                 else
-                    match model.Editor.Tool with
-                    | Terrain _ when not previous.RequestsPan ->
+                    match model.Workspace, model.Editor.Tool with
+                    | EditorWorkspace, Terrain _ when not previous.RequestsPan ->
                         editorTerrainAt x y ExtendTerrainGesture
                         dispatch (EditorChanged CommitEditorGesture)
                     | _ -> ())
         svg.onLostPointerCapture (fun event ->
+            dispatch (EditorWorkspaceChanged(LoseEditorPointerCapture(int32 event.pointerId)))
             if model.Workspace = EditorWorkspace then
-                dispatch (EditorWorkspaceChanged(LoseEditorPointerCapture(int32 event.pointerId)))
                 match model.Editor.Tool with
                 | Select
                 | Terrain _ -> dispatch (EditorChanged CancelEditorGesture)
@@ -7042,7 +7042,7 @@ let private persistentSceneSvg
         ]
     ]
 
-let private tacticalWorkscreenRegion model dispatch =
+let private tacticalWorkscreenRegion model dispatch workscreenOverlay =
     let projection, presentationAlpha = activePresentedSceneProjection model
     Html.section [
         prop.id "tactical-workscreen-region"
@@ -7056,8 +7056,15 @@ let private tacticalWorkscreenRegion model dispatch =
                 prop.ariaHidden (model.Workspace = DocsWorkspace)
                 prop.custom ("data-retained-while-docs", "true")
                 prop.children [
-                    ClientFeatureRuntime.documentationContextLinks model.TacticalSelectedUnit.IsSome (ContextualDocumentationOpened >> dispatch)
                     persistentSceneSvg model projection presentationAlpha dispatch
+                ]
+            ]
+            Html.div [
+                prop.className "tactical-workscreen-overlay"
+                prop.children [
+                    yield workscreenOverlay
+                    if model.Workspace <> DocsWorkspace then
+                        yield tacticalContextHelp model dispatch
                 ]
             ]
             if model.Workspace = DocsWorkspace then
@@ -7106,6 +7113,50 @@ let private tacticalLayoutToolbar model dispatch =
             | _ -> ()
             prop.children [ Html.span command.Label; Html.kbd (UnifiedTacticalWorkspace.displayGestureFor shortcutPlatform effective) ]
         ]
+    let panelVisibilityEntry (panel: TacticalPanelDefinition) =
+        let placement =
+            layout.Placements
+            |> List.find (fun placement -> placement.PanelId = panel.Id)
+        commandButton [
+            prop.type'.button
+            prop.className "view-panel-menu-item"
+            prop.custom ("role", "menuitemcheckbox")
+            prop.custom ("aria-checked", string placement.Visible)
+            prop.tabIndex -1
+            prop.ariaLabel panel.Label
+            prop.onClick (fun _ ->
+                closeDesktopMenus ()
+                dispatch (ToggleLayoutPanelVisibility panel.Id))
+            prop.children [
+                Html.span [
+                    prop.className "view-panel-menu-checkmark"
+                    prop.ariaHidden true
+                    prop.text (if placement.Visible then "✓" else "")
+                ]
+                Html.span panel.Label
+            ]
+        ]
+    let timelineVisibilityEntry () =
+        let visible = TacticalWorkspaceLayout.bottomVisible layout
+        commandButton [
+            prop.type'.button
+            prop.className "view-panel-menu-item"
+            prop.custom ("role", "menuitemcheckbox")
+            prop.custom ("aria-checked", string visible)
+            prop.tabIndex -1
+            prop.ariaLabel "Timeline"
+            prop.onClick (fun _ ->
+                closeDesktopMenus ()
+                dispatch ToggleLayoutBottomPanelVisibility)
+            prop.children [
+                Html.span [
+                    prop.className "view-panel-menu-checkmark"
+                    prop.ariaHidden true
+                    prop.text (if visible then "✓" else "")
+                ]
+                Html.span "Timeline"
+            ]
+        ]
     let menu (label: string) categories =
         let commands =
             registry
@@ -7153,7 +7204,33 @@ let private tacticalLayoutToolbar model dispatch =
                             event.stopPropagation ()
                             closeDesktopMenuAndRestoreTrigger event.target)
                     prop.children [
+                        if label = "View" then
+                            for panel in TacticalWorkspaceLayout.panelRegistry do
+                                yield panelVisibilityEntry panel
+                            yield timelineVisibilityEntry ()
                         for command in commands do yield commandEntry command
+                        if label = "Help" then
+                            yield commandButton [
+                                prop.type'.button
+                                prop.custom ("role", "menuitem")
+                                prop.tabIndex -1
+                                prop.disabled model.TacticalSelectedUnit.IsNone
+                                prop.custom ("data-context-origin", "inspector")
+                                prop.text "Selected unit documentation"
+                                prop.onClick (fun _ ->
+                                    closeDesktopMenus ()
+                                    dispatch (ContextualDocumentationOpened "units"))
+                            ]
+                            yield commandButton [
+                                prop.type'.button
+                                prop.custom ("role", "menuitem")
+                                prop.tabIndex -1
+                                prop.custom ("data-context-origin", "overlay")
+                                prop.text "Tactical overlay documentation"
+                                prop.onClick (fun _ ->
+                                    closeDesktopMenus ()
+                                    dispatch (ContextualDocumentationOpened "maps-spatial"))
+                            ]
                         if label = "File" then
                             yield commandButton [
                                 prop.type'.button
@@ -7785,7 +7862,7 @@ let private tacticalSidebar side model dispatch =
         ]
     ]
 
-let private tacticalShell model dispatch transientContent =
+let private tacticalShell model dispatch transientContent workscreenOverlay =
     let layout = model.TacticalLayout
     let bottomVisible = TacticalWorkspaceLayout.bottomVisible layout
     let bottomCollapsed =
@@ -7817,7 +7894,7 @@ let private tacticalShell model dispatch transientContent =
                 prop.className "tactical-layout-frame"
                 prop.children [
                     tacticalSidebar Left model dispatch
-                    tacticalWorkscreenRegion model dispatch
+                    tacticalWorkscreenRegion model dispatch workscreenOverlay
                     tacticalSidebar Right model dispatch
                     Html.section [
                             prop.id "tactical-bottom-panel"
@@ -7898,7 +7975,6 @@ let private tacticalShell model dispatch transientContent =
                     prop.role.status
                     prop.text (String.concat " " model.TacticalLayoutDiagnostics)
                 ]
-            tacticalContextHelp model dispatch
             tacticalBindingDialog model dispatch
         ]
     ]
@@ -7967,7 +8043,7 @@ let private modalInputStrip
 
 let view model dispatch =
     let shell = model.Shell
-    let transientContent =
+    let transientContent, workscreenOverlay =
         match model.Workspace with
         | PlanningWorkspace when model.Planning.IsNone ->
             Html.section [
@@ -7976,7 +8052,7 @@ let view model dispatch =
                     Html.h2 "Planner unavailable"
                     Html.p "Open Plan to create a revision from this map."
                 ]
-            ]
+            ], Html.none
         | EditorWorkspace ->
             let facts =
                 { Editor = model.Editor
@@ -7992,7 +8068,7 @@ let view model dispatch =
                   InputHelpExpanded = model.InputHelpExpanded }
             let catalog = ModalInput.editorCatalog facts
             let projection = ModalInput.projectEditor facts catalog
-            Html.div [
+            let editorTransientContent = Html.div [
                 prop.children [
                     editorDestructiveConfirmation model.Editor dispatch
                     match model.PendingInterchangeReview with
@@ -8051,23 +8127,24 @@ let view model dispatch =
                             ]
                         ]
                     | None -> Html.none
-                    Html.div [
-                        prop.className "editor-owner-status"
-                        prop.ariaLabel "Editor authoritative status"
-                        prop.children [
-                            Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.TerrainAnnouncement ]
-                            Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.UnitAnnouncement ]
-                            Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.EdgeAnnouncement ]
-                            Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.RegionAnnouncement ]
-                            modalInputStrip projection model.InputHelpExpanded dispatch
-                        ]
-                    ]
                 ]
             ]
+            let editorWorkscreenOverlay = Html.div [
+                prop.className "editor-owner-status"
+                prop.ariaLabel "Editor authoritative status"
+                prop.children [
+                    Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.TerrainAnnouncement ]
+                    Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.UnitAnnouncement ]
+                    Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.EdgeAnnouncement ]
+                    Html.p [ prop.className "sr-only"; prop.ariaLive.polite; prop.text model.Editor.RegionAnnouncement ]
+                    modalInputStrip projection model.InputHelpExpanded dispatch
+                ]
+            ]
+            editorTransientContent, editorWorkscreenOverlay
         | PlanningWorkspace
         | SimulatorWorkspace
         | ReplayWorkspace
-        | DocsWorkspace -> Html.none
+        | DocsWorkspace -> Html.none, Html.none
     Html.main [
         prop.className "app-shell"
         prop.ariaLabel "S.I.R. simulator and editor"
@@ -8080,29 +8157,8 @@ let view model dispatch =
         prop.onClick (fun event ->
             dismissDesktopMenus event.target)
         prop.children [
-            tacticalShell model dispatch transientContent
-            Html.section [
-                prop.id "sir-live-session"
-                prop.className "panel"
-                prop.ariaLabel "Authoritative live session"
-                prop.custom ("data-status", model.Live.Status)
-                prop.custom ("data-tick", model.Live.Snapshot |> Option.map _.Tick |> Option.defaultValue 0 |> string)
-                prop.custom ("data-server-sequence", model.Live.Snapshot |> Option.map _.ServerSequence |> Option.defaultValue 0 |> string)
-                prop.custom ("data-resync-count", string model.Live.ResyncCount)
-                prop.custom ("data-session-id", model.Live.Bootstrap |> Option.map _.SessionId |> Option.defaultValue "")
-                prop.children [
-                    Html.h2 "Authoritative live session"
-                    Html.p ("live " + model.Live.Status)
-                    Html.p (
-                        "Authoritative live tick "
-                        + string (model.Live.Snapshot |> Option.map _.Tick |> Option.defaultValue 0)
-                    )
-                    button "Advance live session" "Send the next player-visible live advance command" (model.Live.Connection.IsNone) (fun _ -> dispatch AdvanceLiveSession)
-                    button "Disconnect live session" "Disconnect the player-visible live session" (model.Live.Connection.IsNone) (fun _ -> dispatch DisconnectLiveSession)
-                    button "Reconnect live session" "Reconnect and request the authoritative live snapshot" (model.Live.Connection.IsNone) (fun _ -> dispatch ReconnectLiveSession)
-                ]
-            ]
-            Html.p [
+            yield tacticalShell model dispatch transientContent workscreenOverlay
+            yield Html.p [
                 prop.className "sr-only"
                 prop.role.status
                 prop.ariaLive.polite

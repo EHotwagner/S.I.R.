@@ -9,6 +9,7 @@ test("documentation is a reversible, searchable production modality", async ({ p
   const scene = page.locator("#retained-tactical-workscreen svg");
   await expect(scene).toBeVisible();
   await page.locator("#persistent-layer-units [data-unit-id]").first().click();
+  await page.getByRole("button", { name: "Help", exact: true }).click();
   const inspectorDocs = page.locator('[data-context-origin="inspector"]');
   await expect(inspectorDocs).toBeVisible();
   const retainedFingerprint = async () => scene.evaluate((element) => {
@@ -28,6 +29,7 @@ test("documentation is a reversible, searchable production modality", async ({ p
   await expect(docs).toBeVisible();
   await expect(docs.getByRole("heading", { name: /Gameplay units/i }).first()).toBeVisible();
   await docs.getByRole("button", { name: "Return to tactical workspace" }).click();
+  await page.getByRole("button", { name: "Help", exact: true }).click();
   await page.locator('[data-context-origin="overlay"]').click();
   await expect(docs.getByRole("heading", { name: /Map editor/i }).first()).toBeVisible();
   await docs.getByRole("button", { name: "Return to tactical workspace" }).click();

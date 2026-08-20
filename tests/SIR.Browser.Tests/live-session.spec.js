@@ -104,6 +104,38 @@ test("all modalities retain spatial context and expose the maintained runtime", 
   }
 });
 
+test("right-button drag pans the shared map camera in every tactical mode", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => {
+    window.__sirContextMenuDefaults = [];
+    document.addEventListener("contextmenu", (event) => {
+      window.__sirContextMenuDefaults.push(event.defaultPrevented);
+    });
+  });
+
+  const battlefield = page.locator("#persistent-tactical-svg");
+  const modes = ["Control+Shift+1", "Control+Shift+2", "Control+Shift+3", "Control+Shift+4"];
+
+  for (const shortcut of modes) {
+    await page.keyboard.press(shortcut);
+    const beforeX = Number(await battlefield.getAttribute("data-camera-pan-x"));
+    const beforeY = Number(await battlefield.getAttribute("data-camera-pan-y"));
+    const bounds = await battlefield.boundingBox();
+    const x = bounds.x + bounds.width * 0.5;
+    const y = bounds.y + bounds.height * 0.4;
+
+    await page.mouse.move(x, y);
+    await page.mouse.down({ button: "right" });
+    await page.mouse.move(x + 42, y + 27, { steps: 3 });
+    await page.mouse.up({ button: "right" });
+
+    await expect.poll(async () => Number(await battlefield.getAttribute("data-camera-pan-x"))).toBeGreaterThan(beforeX);
+    await expect.poll(async () => Number(await battlefield.getAttribute("data-camera-pan-y"))).toBeGreaterThan(beforeY);
+  }
+
+  await expect.poll(() => page.evaluate(() => window.__sirContextMenuDefaults)).toEqual([true, true, true, true]);
+});
+
 test("tactical command controls expose registry-derived shortcut metadata", async ({ page }) => {
   await page.goto("/");
 
