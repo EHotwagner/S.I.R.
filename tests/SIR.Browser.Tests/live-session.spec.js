@@ -1,4 +1,4 @@
-import { expect, test } from "./journey.js";
+import { expect, switchWorkspace, test } from "./journey.js";
 
 async function selectOversizedFile(page, selector, name, size) {
   await page.locator(selector).evaluate((input, { name, size }) => {
@@ -32,7 +32,7 @@ async function selectUnreadableFile(page, selector, name) {
 }
 
 async function showDocumentImports(page) {
-  await page.getByRole("button", { name: "Editor", exact: true }).click();
+  await switchWorkspace(page, "Editor");
   const toggle = page.locator("#layout-show-document");
   if (await toggle.getAttribute("aria-pressed") === "false") {
     await page.locator("details.tactical-panel-menu").click();
@@ -48,7 +48,7 @@ test("oversized browser imports are rejected from metadata before browser reads"
   await page.goto("/");
   await page.evaluate(() => { window.__sirImportReadCalls = 0; });
 
-  await page.getByRole("button", { name: "Review", exact: true }).click();
+  await switchWorkspace(page, "Review");
   await expect(page.locator('input[aria-label="Choose replay package"]')).toBeVisible();
   await selectOversizedFile(page, 'input[aria-label="Choose replay package"]', "large.sirr", 1_048_577);
   await expect(page.getByText("Replay package is 1048577 bytes; the allowed maximum is 1048576 bytes.", { exact: true })).toBeVisible();
@@ -57,7 +57,7 @@ test("oversized browser imports are rejected from metadata before browser reads"
 
 test("browser import read failures leave a visible recovery message", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Review", exact: true }).click();
+  await switchWorkspace(page, "Review");
   await expect(page.locator('input[aria-label="Choose replay package"]')).toBeVisible();
   await selectUnreadableFile(page, 'input[aria-label="Choose replay package"]', "unreadable.sirr");
   await expect(page.getByText("Replay package could not be read: read refused", { exact: true })).toBeVisible();
@@ -69,7 +69,7 @@ test("browser import read failures leave a visible recovery message", async ({ p
 test("replay picker reads an exactly bounded file after rejecting an oversized one", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => { window.__sirImportReadCalls = 0; });
-  await page.getByRole("button", { name: "Review", exact: true }).click();
+  await switchWorkspace(page, "Review");
   const picker = 'input[aria-label="Choose replay package"]';
   await selectOversizedFile(page, picker, "over.sirr", 1_048_577);
   await expect(page.getByText("Replay package is 1048577 bytes; the allowed maximum is 1048576 bytes.", { exact: true })).toBeVisible();
@@ -92,7 +92,7 @@ test("all modalities retain spatial context and expose the maintained runtime", 
   expect(initial.owner).toBe("EditorScene");
 
   for (const mode of ["Plan", "Simulate", "Review"]) {
-    await page.getByRole("button", { name: mode, exact: true }).click();
+    await switchWorkspace(page, mode);
     await expect(battlefield).toHaveAttribute("viewBox", initial.viewBox);
     await expect(battlefield).toHaveAttribute("data-camera-pan-x", initial.panX);
     await expect(battlefield).toHaveAttribute("data-camera-pan-y", initial.panY);
@@ -144,16 +144,21 @@ test("mouse navigation uses the shared map camera in every tactical mode", async
 test("tactical command controls expose registry-derived shortcut metadata", async ({ page }) => {
   await page.goto("/");
 
-  const editor = page.getByRole("button", { name: "Editor", exact: true });
+  await page.getByRole("button", { name: "View", exact: true }).click();
+  const editor = page.getByRole("menu", { name: "View commands" }).getByRole("menuitem", { name: /^Switch to Editor/ });
   await expect(editor).toHaveAttribute("aria-keyshortcuts", "Control+Shift+1");
-  await expect(editor).toHaveAttribute("title", /Ctrl\+Shift\+1/);
+  await expect(editor).toHaveAttribute("aria-label", /Ctrl\+Shift\+1/);
+  await editor.click();
 
-  const play = page.getByRole("button", { name: "Play tactical timeline", exact: true });
+  await page.getByRole("button", { name: "Simulation", exact: true }).click();
+  const play = page.getByRole("menu", { name: "Simulation commands" }).getByRole("menuitem", { name: /^Play or pause/ });
   await expect(play).toHaveAttribute("aria-keyshortcuts", "Space");
-  await expect(play).toHaveAttribute("title", /Space/);
+  await expect(play).toHaveAttribute("aria-label", /Space/);
+  await page.keyboard.press("Escape");
 
-  await page.getByRole("button", { name: "Show contextual actions", exact: true }).click();
-  const command = page.locator('[data-tactical-command="workspace.plan"]');
+  const contextualActions = page.getByRole("button", { name: "View", exact: true });
+  await contextualActions.click();
+  const command = page.getByRole("menu", { name: "View commands" }).getByRole("menuitem", { name: /^Switch to Plan/ });
   await expect(command).toHaveAttribute("aria-keyshortcuts", "Control+Shift+2");
   await expect(command.locator("kbd")).toHaveText("Ctrl+Shift+2");
 
@@ -162,19 +167,18 @@ test("tactical command controls expose registry-derived shortcut metadata", asyn
   // remains on the native menu button so this covers the modified-shortcut
   // exception in the global keyboard target filter.
   await page.keyboard.press("Escape");
-  await expect(command).toHaveCount(0);
-  const contextualActions = page.getByRole("button", { name: "Show contextual actions", exact: true });
+  await expect(command).toBeHidden();
   await contextualActions.focus();
   await expect(contextualActions).toBeFocused();
 
   await page.keyboard.press("Control+Shift+2");
-  await expect(page.getByRole("button", { name: "Plan", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("#persistent-tactical-svg")).toHaveAttribute("data-scene-owner", "PlanningScene");
 });
 
 test("every visible actionable control is registry-bound or explicitly unassigned", async ({ page }) => {
   await page.goto("/");
   for (const mode of ["Editor", "Plan", "Simulate", "Review"]) {
-    await page.getByRole("button", { name: mode, exact: true }).click();
+    await switchWorkspace(page, mode);
     const uncovered = await page.locator("button:visible, [role=button]:visible").evaluateAll((controls) =>
       controls.filter((control) =>
         !control.hasAttribute("aria-keyshortcuts") && control.getAttribute("data-binding-state") !== "unassigned"

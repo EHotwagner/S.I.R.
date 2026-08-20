@@ -6157,7 +6157,6 @@ let private persistentSceneSvg
             event.stopPropagation ()
             dispatch (KeyReleased event.key))
         svg.onWheel (fun event ->
-            event.preventDefault ()
             let x, y =
                 editorScreenPoint
                     model.EditorView
@@ -7775,6 +7774,8 @@ let private tacticalSidebar side model dispatch =
 
     Html.aside [
         prop.id ("tactical-sidebar-" + sideName)
+        prop.hidden (model.Workspace = DocsWorkspace)
+        prop.ariaHidden (model.Workspace = DocsWorkspace)
         prop.className (
             "tactical-sidebar tactical-sidebar-" + sideName
             + if drawerOpen then " is-drawer-open" else ""
@@ -7901,8 +7902,8 @@ let private tacticalShell model dispatch transientContent workscreenOverlay =
                     tacticalSidebar Right model dispatch
                     Html.section [
                             prop.id "tactical-bottom-panel"
-                            prop.hidden (not bottomVisible)
-                            prop.ariaHidden (not bottomVisible)
+                            prop.hidden (model.Workspace = DocsWorkspace || not bottomVisible)
+                            prop.ariaHidden (model.Workspace = DocsWorkspace || not bottomVisible)
                             prop.className (
                                 "tactical-bottom-panel"
                                 + if bottomCollapsed then " is-collapsed" else ""

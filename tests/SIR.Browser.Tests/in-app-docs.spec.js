@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { switchWorkspace } from "./journey.js";
 
 test("documentation is a reversible, searchable production modality", async ({ page }) => {
   const responses = [];
@@ -107,7 +108,7 @@ test("documentation is a reversible, searchable production modality", async ({ p
   expect(await retainedFingerprint()).toEqual(sceneIdentity);
 
   for (const mode of ["Editor", "Plan", "Simulate", "Review"]) {
-    await page.getByRole("button", { name: mode, exact: true }).click();
+    await switchWorkspace(page, mode);
     await expect(scene).toBeVisible();
     const beforeDocs = await retainedFingerprint();
     await page.keyboard.press("Control+Shift+5");

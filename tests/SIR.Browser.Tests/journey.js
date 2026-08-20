@@ -36,4 +36,18 @@ export const test = base.extend({
   },
 });
 
+export async function switchWorkspace(page, workspace) {
+  const command = workspace === "Docs" ? "Open documentation" : `Switch to ${workspace}`;
+  await page.getByRole("button", { name: "View", exact: true }).click();
+  await page
+    .getByRole("menu", { name: "View commands" })
+    .getByRole("menuitem", { name: new RegExp(`^${command}\\b`) })
+    .click();
+}
+
+export async function openSamples(page) {
+  await page.getByRole("button", { name: "File", exact: true }).click();
+  await page.getByRole("menu", { name: "File commands" }).getByRole("menuitem", { name: "Samples", exact: true }).click();
+}
+
 export { expect };

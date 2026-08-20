@@ -29,7 +29,7 @@ export default defineConfig({
       ...process.env,
       ASPNETCORE_ENVIRONMENT: "Development",
       SIR_ALLOW_ANONYMOUS_LIVE_SESSIONS: "true",
-      SIR_LIVE_MAX_BOOTSTRAPS_PER_MINUTE: "40",
+      SIR_LIVE_MAX_BOOTSTRAPS_PER_MINUTE: "64",
       // The serial suite mounts the production application once per isolated
       // test context. Keep its test-host admission budget above the bounded
       // browser inventory (including direct bootstrap rejection checks) without
