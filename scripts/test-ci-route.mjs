@@ -41,10 +41,24 @@ assert.equal(joined.timing.receiptReuses, domain.selectedGates.length - 1);
 assert.equal(joined.gateResults[0].timingMilliseconds.queue, null);
 assert.equal(joined.gateResults[0].timingMilliseconds.transport, 0);
 assert.equal(joined.timing.runnerMilliseconds, expectedSubjects.length * 1_000);
-assert.equal(joined.timing.acceptanceTargetMilliseconds, feedbackAcceptanceTargetMilliseconds);
-assert.equal(joined.timing.requiredHeadroomMilliseconds, feedbackHeadroomMilliseconds);
+assert.equal(joined.timing.acceptanceTargetMilliseconds, feedbackBudgetMilliseconds);
+assert.equal(joined.timing.requiredHeadroomMilliseconds, 0);
 assert.equal(joined.timing.actualHeadroomMilliseconds, 62_000);
-const erodedHeadroom = joinRoute(domain, passing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds + 1 });
+const nonCrossCuttingReserve = joinRoute(domain, passing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds + 1 });
+assert.equal(nonCrossCuttingReserve.result, "pass");
+assert.ok(!nonCrossCuttingReserve.failures.some(({ code }) => code === "feedback-headroom-eroded"));
+const crossCutting = route(["src/SIR.Domain/Rules.fs", "docs/index.md"]);
+const crossSubjects = ["integrity", ...producerOrder, ...crossCutting.selectedGates];
+const crossResultFor = (gate) => gateResult(gate, "pass", { setup: 100, restore: 200, build: 300, test: 400, total: 1_000 }, {
+  source: crossCutting.source,
+  routeDigest: crossCutting.digest,
+  artifactBindings: Object.fromEntries((gateParts[gate] ?? []).map((part) => [part, producerDigests[part] ?? "e".repeat(64)])),
+  artifactDigest: gate.startsWith("prepare-") ? (producerDigests[gate.slice("prepare-".length)] ?? "e".repeat(64)) : (gateParts[gate] ?? []).length > 0 ? bindingDigest(canonicalArtifactBindings(Object.fromEntries(gateParts[gate].map((part) => [part, producerDigests[part] ?? "e".repeat(64)])))) : null,
+  receiptReused: (gateParts[gate] ?? []).length > 0,
+  buildInvocations: expectedBuildInvocations[gate],
+});
+const crossPassing = crossSubjects.map(crossResultFor);
+const erodedHeadroom = joinRoute(crossCutting, crossPassing, { startedAtMilliseconds: 0, completedAtMilliseconds: feedbackAcceptanceTargetMilliseconds + 1 });
 assert.equal(erodedHeadroom.result, "fail");
 assert.ok(erodedHeadroom.failures.some(({ code, target, requiredHeadroom }) => code === "feedback-headroom-eroded" && target === feedbackAcceptanceTargetMilliseconds && requiredHeadroom === feedbackHeadroomMilliseconds));
 assert.ok(!erodedHeadroom.failures.some(({ code }) => code === "feedback-budget-exceeded"));
@@ -177,6 +191,9 @@ const focusedQualification = readFileSync(new URL("./qualify-pr.sh", import.meta
 const conformanceQualification = readFileSync(new URL("./test-conformance.sh", import.meta.url), "utf8");
 const spatialMutationQualification = readFileSync(new URL("./test-spatial-subject-mutations.sh", import.meta.url), "utf8");
 const simulationProject = readFileSync(new URL("../src/SIR.Simulation/SIR.Simulation.fsproj", import.meta.url), "utf8");
+const browserConfiguration = readFileSync(new URL("../tests/SIR.Browser.Tests/playwright.config.js", import.meta.url), "utf8");
+const browserShards = readFileSync(new URL("./test-browser-shards.mjs", import.meta.url), "utf8");
+const packageManifest = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 const matchQualification = readFileSync(new URL("../tests/SIR.Match.Tests/Program.fs", import.meta.url), "utf8");
 const focusedNativeProducer = /      native\)\n(?<body>[\s\S]*?)\n        ;;/u.exec(focusedQualification);
 assert.ok(focusedNativeProducer?.groups?.body, "focused native producer block is missing");
@@ -213,6 +230,14 @@ assert.match(simulationProject, /Compile Include="\$\(SpatialQueryImplementation
 assert.match(spatialMutationQualification, /SIR_SPATIAL_MUTATION_CONCURRENCY:-3/u);
 assert.match(spatialMutationQualification, /run_prepared_mutation "\$name" &/u);
 assert.match(spatialMutationQualification, /--artifacts-path "\$artifacts" -p:SpatialQueryImplementation="\$mutant"/u);
+assert.match(browserConfiguration, /workers: 1/u);
+assert.match(browserConfiguration, /process\.env\.SIR_BROWSER_PORT/u);
+assert.match(browserShards, /process\.env\.CI \? Math\.min\(2, browserShardCapacity\) : 1/u);
+assert.match(browserShards, /--shard=\$\{index\}\/\$\{browserShards\}/u);
+assert.match(browserShards, /SIR_BROWSER_PORT: String\(5100 \+ index - 1\)/u);
+assert.match(browserShards, /mergeShardReports/u);
+assert.match(browserShards, /left\.localeCompare\(right\)/u);
+assert.equal(packageManifest.scripts["test:browser"], "node scripts/test-browser-shards.mjs");
 assert.match(matchQualification, /not enforceProductPerformanceBudgets \|\| interactionBest < 50\.0/u);
 assert.doesNotMatch(focusedQualification, /verify --work 138-sir-fable-game-scaffold/u);
 assert.match(focusedQualification, /route\.paths\.map/u);

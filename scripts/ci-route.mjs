@@ -221,9 +221,12 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
     } else if (!producerOrder.includes(subject) && (result.artifactDigest !== null || Object.keys(result.artifactBindings ?? {}).length > 0)) failures.push({ code: "unexpected-artifact-binding", subject });
   }
   const elapsed = completedAtMilliseconds - startedAtMilliseconds;
+  const requiresRepresentativeHeadroom = route?.classification === "cross-cutting";
+  const acceptanceTargetMilliseconds = requiresRepresentativeHeadroom ? feedbackAcceptanceTargetMilliseconds : feedbackBudgetMilliseconds;
+  const requiredHeadroomMilliseconds = requiresRepresentativeHeadroom ? feedbackHeadroomMilliseconds : 0;
   if (!Number.isSafeInteger(elapsed) || elapsed < 0) failures.push({ code: "invalid-feedback-duration", subject: "timing" });
   if (enforceBudget && Number.isSafeInteger(elapsed) && elapsed > feedbackBudgetMilliseconds) failures.push({ code: "feedback-budget-exceeded", subject: "timing", actual: elapsed, budget: feedbackBudgetMilliseconds });
-  if (enforceBudget && Number.isSafeInteger(elapsed) && elapsed > feedbackAcceptanceTargetMilliseconds) failures.push({
+  if (enforceBudget && requiresRepresentativeHeadroom && Number.isSafeInteger(elapsed) && elapsed > feedbackAcceptanceTargetMilliseconds) failures.push({
     code: "feedback-headroom-eroded",
     subject: "timing",
     actual: elapsed,
@@ -243,8 +246,8 @@ export function joinRoute(route, results, { startedAtMilliseconds = 0, completed
     completedAtMilliseconds,
     totalMilliseconds: Number.isSafeInteger(elapsed) && elapsed >= 0 ? elapsed : null,
     budgetMilliseconds: feedbackBudgetMilliseconds,
-    acceptanceTargetMilliseconds: feedbackAcceptanceTargetMilliseconds,
-    requiredHeadroomMilliseconds: feedbackHeadroomMilliseconds,
+    acceptanceTargetMilliseconds,
+    requiredHeadroomMilliseconds,
     actualHeadroomMilliseconds: Number.isSafeInteger(elapsed) && elapsed >= 0 ? feedbackBudgetMilliseconds - elapsed : null,
     criticalPathMilliseconds: criticalPath,
     observedGateCriticalPathMilliseconds: observedGateCriticalPath,

@@ -5,13 +5,18 @@ import { assertBrowserAvailable, browserExecutablePath } from "./browser-setup.j
 const repoRoot = resolve(import.meta.dirname, "../..");
 const executablePath = browserExecutablePath();
 assertBrowserAvailable();
+const browserPort = Number(process.env.SIR_BROWSER_PORT ?? "5100");
+if (!Number.isSafeInteger(browserPort) || browserPort < 1024 || browserPort > 65_535) {
+  throw new Error("SIR_BROWSER_PORT must be an integer between 1024 and 65535.");
+}
+const browserBaseUrl = `http://127.0.0.1:${browserPort}`;
 
 export default defineConfig({
   testDir: import.meta.dirname,
   testMatch: "**/*.spec.js",
-  // The published server hosts one heavy Fable application.  Serial contexts
-  // keep its startup budget deterministic instead of amplifying compilation
-  // and browser initialization across the two available CI CPUs.
+  // One worker owns one isolated production server. CI parallelism happens by
+  // sharding across separate ports, so deterministic live-session identities
+  // can never collide between concurrent browser contexts.
   workers: 1,
   reporter: [[resolve(import.meta.dirname, "deterministic-junit-reporter.js"), {
     // Focused SDD obligations use separately deterministic receipts.  The
@@ -20,11 +25,11 @@ export default defineConfig({
   }]],
   globalSetup: resolve(import.meta.dirname, "browser-setup.js"),
   use: {
-    baseURL: "http://127.0.0.1:5100",
+    baseURL: browserBaseUrl,
     launchOptions: { executablePath },
   },
   webServer: {
-    command: "dotnet SIR.Server.dll --urls http://127.0.0.1:5100",
+    command: `dotnet SIR.Server.dll --urls ${browserBaseUrl}`,
     env: {
       ...process.env,
       ASPNETCORE_ENVIRONMENT: "Development",
@@ -36,7 +41,7 @@ export default defineConfig({
       // changing the production default of eight/minute.
     },
     cwd: resolve(repoRoot, "artifacts/publish"),
-    url: "http://127.0.0.1:5100/",
+    url: `${browserBaseUrl}/`,
     reuseExistingServer: false,
     timeout: 120_000,
   },

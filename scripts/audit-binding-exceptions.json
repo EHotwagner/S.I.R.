@@ -7,7 +7,7 @@
       "locator": "file:scripts/ci-route.mjs",
       "path": "scripts/ci-route.mjs",
       "previousSha256": "10da76f4b2631e57c36991f263d19a15c183716e2d68ce208a31c160ed1118af",
-      "replacementSha256": "e10df6a47db298893ce086e67c63d08785ed4dc12f9ffc6f92487a1efdd47d20",
+      "replacementSha256": "b08c87f41d2da88c05b03e26583441d2b74b4474a71d648726db9e639298dc57",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
       "reason": "Issue 220 changes the bounded route budget and native producer inventory; the focused route contract verifies the replacement thresholds, inventory, and fail-closed join diagnostics."
     },
@@ -17,7 +17,7 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "48ac1b35efb9a39935c9c4e76c1663f47b7fc7448dc46407c668c7eba4b4b3b6",
+      "replacementSha256": "eb6844076295b3891b983f908c29ad18ca2465aee1a5db0c1294d1149865df27",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
       "reason": "Issue 220 extends the route contract with the unchanged outer budget, required headroom, one-solution native topology, and isolated bounded spatial mutation workers."
     },

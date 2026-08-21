@@ -35,7 +35,7 @@
     "test:persistent-workspace-m0": "node scripts/test-persistent-workspace-m0-baseline.mjs",
     "test": "./scripts/test-conformance.sh",
     "setup:browser": "playwright install chromium",
-    "test:browser": "playwright test --config tests/SIR.Browser.Tests/playwright.config.js",
+    "test:browser": "node scripts/test-browser-shards.mjs",
     "test:browser-diagnostics-gate": "node scripts/test-browser-diagnostics-gate.mjs",
     "test:in-app-docs": "node scripts/test-in-app-docs.mjs artifacts/site",
     "test:production-delivery-budget": "node scripts/test-production-delivery-budget.mjs",
