@@ -68,8 +68,7 @@ let run () =
     match ExperienceSamples.validate malformedUnitPackage with
     | Error errors when errors |> List.exists (function MalformedScenarioPackage message -> message.Contains("unit identifier") | _ -> false) -> ()
     | result -> failwith ("Malformed unit identifier escaped the typed package-validation boundary: " + string result)
-    let runStressRoute () =
-        let stress = ExperienceSamples.stressPackage ()
+    let runStressRoute (stress: ExperienceScenarioPackage) =
         let samples = ResizeArray<float>()
         let timed action =
             let timer = Diagnostics.Stopwatch.StartNew()
@@ -125,8 +124,8 @@ let run () =
           SceneNodes = scenes |> Seq.map _.InteractiveNodeEstimate |> Seq.max }, List.ofSeq samples
     // Warm up the exact production stress route before either counters or timings are retained.
     let stress = ExperienceSamples.stressPackage ()
-    for _ in 1 .. 20 do runStressRoute () |> ignore
-    let observation, _ = runStressRoute ()
+    for _ in 1 .. 20 do runStressRoute stress |> ignore
+    let observation, _ = runStressRoute stress
     require
         (stress.Map.MapText.Contains("size 80 80")
          && observation.Units = 200
@@ -171,7 +170,7 @@ let run () =
         (samples |> List.map (fun value -> value.ToString("0.###", Globalization.CultureInfo.InvariantCulture)) |> String.concat ",")
     let stressObservations, stressSamples =
         [ for _ in 1 .. 20 do
-              yield runStressRoute () ]
+              yield runStressRoute stress ]
         |> List.unzip
     let stressSamples = List.concat stressSamples
     require

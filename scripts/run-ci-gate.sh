@@ -140,12 +140,9 @@ NODE
   if (( traced_build_ms > build_ms )); then build_ms=$traced_build_ms; fi
 fi
 if [[ "$subject" != integrity && "$subject" != evidence ]]; then
-  for pointer in "$repo_root"/artifacts/ci/parts/*.manifest.path; do
-    [[ -f "$pointer" ]] || continue
-    part=$(basename "$pointer" .manifest.path)
-    manifest=$(<"$pointer")
-    artifact_args+=(--artifact-binding "$part=$(sha256sum "$repo_root/$manifest" | cut -d' ' -f1)")
-  done
+  while IFS= read -r binding; do
+    [[ -n "$binding" ]] && artifact_args+=(--artifact-binding "$binding")
+  done < <("$repo_root/scripts/ci-gate-artifact-bindings.sh" "$repo_root" "${preflight_parts[@]}")
   if [[ ${#artifact_args[@]} -gt 0 ]]; then artifact_digest=auto; fi
   receipt_reused=true
 fi

@@ -17,9 +17,9 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "371b38130eab475ca7a2530031513500515ed5e533ffd8ab4eadaf688643febb",
+      "replacementSha256": "a0adc96af5c6fc01f47fff4511b8aaf8794c7c736524eccd7ae6f7bdc94b061e",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
-      "reason": "Issue 231 extends the focused route matrix with SVG-only allowlist, broad-policy fallback, performance preparer ownership, the unchanged 240-second/60-second-headroom contract, receipt-bound Playwright runtime reuse, and co-scheduled rules/spatial receipts whose missing-output, repeated-install, and deleted-receipt mutations fail closed."
+      "reason": "Issue 231 extends the focused route matrix with SVG-only allowlist, broad-policy fallback, performance preparer ownership, the unchanged 240-second/60-second-headroom contract, receipt-bound Playwright runtime reuse, co-scheduled rules/spatial receipts, and subject-scoped artifact bindings whose missing-output, repeated-install, deleted-receipt, and extra-manifest mutations fail closed."
     },
     {
       "audit": "feedback/audits/2026-08-16-sir-item-220-bounded-pr-ci.audit.json",

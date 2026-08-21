@@ -77,7 +77,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "0297871ff0e8f1ff87c7c0a682280d4b4e5a22a7ebdb420d3e741d2806563555"
+        "value": "21403072ce6f37d2ef65eb0785f18a89d10424834665366b772fee20d07cde22"
       }
     },
     {
@@ -89,7 +89,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "b364ed01a1291bf018a00c4fc6892771d6f9b6f6e55845c076059674ab3a5728"
+        "value": "2a07333fa53e1bfd8a4d47334d2cab0f4d806b1a01093c9d9b914514f6c6510a"
       }
     },
     {
@@ -113,7 +113,7 @@
       "schemaStatus": "current",
       "sourceDigest": {
         "algorithm": "sha256",
-        "value": "be86b62dacdc552bae8e6d0e9801be873e9052531e09de22657870a7f40a1ed9"
+        "value": "3736e3e3bc194db146578439160d9981d6ecb8e229e5f473752e1d24f4cbcdd2"
       }
     }
   ],
@@ -1389,13 +1389,16 @@
       ],
       "artifactRefs": [
         ".github/workflows/ci.yml",
+        "scripts/ci-gate-artifact-bindings.sh",
         "scripts/measure-svg-pipeline.mjs",
         "scripts/qualify-pr.sh",
         "scripts/svg-pipeline-fixtures.v1.json",
         "scripts/test-ci-evidence-mutation.sh",
+        "scripts/test-ci-gate-artifact-isolation.sh",
         "scripts/test-ci-route-mutations.sh",
         "scripts/test-ci-route.mjs",
         "scripts/test-svg-pipeline-measurement.mjs",
+        "tests/SIR.Client.Tests/ScenarioCatalogQualification.fs",
         "work/231-svg-pipeline-measurement/production-chromium-authority.json",
         "work/231-svg-pipeline-measurement/production-chromium-evidence.json",
         "work/231-svg-pipeline-measurement/production-chromium-summary.json",
@@ -1960,7 +1963,7 @@
           "path": "work/231-svg-pipeline-measurement/evidence.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "0297871ff0e8f1ff87c7c0a682280d4b4e5a22a7ebdb420d3e741d2806563555"
+            "value": "21403072ce6f37d2ef65eb0785f18a89d10424834665366b772fee20d07cde22"
           },
           "schemaVersion": 1
         },
@@ -1968,7 +1971,7 @@
           "path": "work/231-svg-pipeline-measurement/plan.md",
           "digest": {
             "algorithm": "sha256",
-            "value": "b364ed01a1291bf018a00c4fc6892771d6f9b6f6e55845c076059674ab3a5728"
+            "value": "2a07333fa53e1bfd8a4d47334d2cab0f4d806b1a01093c9d9b914514f6c6510a"
           },
           "schemaVersion": 1
         },
@@ -1984,14 +1987,14 @@
           "path": "work/231-svg-pipeline-measurement/tasks.yml",
           "digest": {
             "algorithm": "sha256",
-            "value": "be86b62dacdc552bae8e6d0e9801be873e9052531e09de22657870a7f40a1ed9"
+            "value": "3736e3e3bc194db146578439160d9981d6ecb8e229e5f473752e1d24f4cbcdd2"
           },
           "schemaVersion": 1
         }
       ],
       "outputDigest": {
         "algorithm": "sha256",
-        "value": "ebd4cd5f77214717f6abae371b7de5a656c69fd2fd4c64eb651f750f265d0e25"
+        "value": "55ac450177194cfd7d3ef12ce2c43e8f5de5766b87e53a34bcb6830ea8125fdd"
       },
       "currency": "current"
     }

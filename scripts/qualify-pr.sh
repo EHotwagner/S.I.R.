@@ -42,6 +42,7 @@ case "$mode" in
     ;;
   integrity)
     node scripts/test-ci-route.mjs
+    ./scripts/test-ci-gate-artifact-isolation.sh
     ./scripts/test-ci-evidence-mutation.sh
     ./scripts/test-ci-failure-timing-mutation.sh
     node .github/scripts/test-npm-audit.mjs

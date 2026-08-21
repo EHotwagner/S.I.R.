@@ -232,6 +232,7 @@ assert.match(gateRunner, /spatial\|cross-runtime\) preflight_parts=\(native fabl
 assert.match(gateRunner, /cancellation\) preflight_parts=\(native web\)/u);
 assert.match(gateRunner, /browser\|browser-general-helper\|browser-general-helper-2\|browser-general-helper-3\|browser-delivery\) preflight_parts=\(web server\)/u);
 assert.match(gateRunner, /documentation\) preflight_parts=\(web docs\)/u);
+assert.match(gateRunner, /ci-gate-artifact-bindings\.sh" "\$repo_root" "\$\{preflight_parts\[@\]\}"/u);
 assert.match(workflow, /pr-verdict:\n[\s\S]*?needs: \[[^\]]*spatial-mutations[^\]]*cancellation-mutations[^\]]*browser-general-helper[^\]]*browser-general-helper-2[^\]]*browser-general-helper-3[^\]]*browser-delivery[^\]]*\]/u);
 assert.match(jobBody("browser"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/browser-general-1\.junit\.xml/u);
 assert.match(jobBody("browser-general-helper"), /SIR_JUNIT_OUTPUT: artifacts\/ci\/results\/browser-general-2\.junit\.xml/u);

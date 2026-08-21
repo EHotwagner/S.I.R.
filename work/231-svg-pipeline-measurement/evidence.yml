@@ -11,7 +11,7 @@ sourceAnalysis: readiness/231-svg-pipeline-measurement/analysis.json
 sourceSnapshots:
   - label: analysis
     path: readiness/231-svg-pipeline-measurement/analysis.json
-    digest: 6a46a1370db401ba6755eec65dd34bb1b363f79ac2b8d5dc9dd5c23a67fdb194
+    digest: 01f31284021e18c45166c6bc92cf947dc2c1bd4526b7a0a5aec2aebb543a21ac
     schemaVersion: 1
   - label: checklist
     path: work/231-svg-pipeline-measurement/checklist.md
@@ -23,7 +23,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: plan
     path: work/231-svg-pipeline-measurement/plan.md
-    digest: b364ed01a1291bf018a00c4fc6892771d6f9b6f6e55845c076059674ab3a5728
+    digest: 2a07333fa53e1bfd8a4d47334d2cab0f4d806b1a01093c9d9b914514f6c6510a
     schemaVersion: 1
   - label: spec
     path: work/231-svg-pipeline-measurement/spec.md
@@ -31,7 +31,7 @@ sourceSnapshots:
     schemaVersion: 1
   - label: tasks
     path: work/231-svg-pipeline-measurement/tasks.yml
-    digest: be86b62dacdc552bae8e6d0e9801be873e9052531e09de22657870a7f40a1ed9
+    digest: 3736e3e3bc194db146578439160d9981d6ecb8e229e5f473752e1d24f4cbcdd2
     schemaVersion: 1
 evidence:
   - id: EV001
@@ -262,7 +262,7 @@ evidence:
     checklistResultRefs: []
     planDecisionRefs: [PD-009]
     obligationRefs: [EV009]
-    artifacts: [".github/workflows/ci.yml", scripts/measure-svg-pipeline.mjs, scripts/qualify-pr.sh, scripts/svg-pipeline-fixtures.v1.json, scripts/test-ci-evidence-mutation.sh, scripts/test-ci-route-mutations.sh, scripts/test-ci-route.mjs, scripts/test-svg-pipeline-measurement.mjs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
+    artifacts: [".github/workflows/ci.yml", scripts/ci-gate-artifact-bindings.sh, scripts/measure-svg-pipeline.mjs, scripts/qualify-pr.sh, scripts/svg-pipeline-fixtures.v1.json, scripts/test-ci-evidence-mutation.sh, scripts/test-ci-gate-artifact-isolation.sh, scripts/test-ci-route-mutations.sh, scripts/test-ci-route.mjs, scripts/test-svg-pipeline-measurement.mjs, tests/SIR.Client.Tests/ScenarioCatalogQualification.fs, work/231-svg-pipeline-measurement/production-chromium-authority.json, work/231-svg-pipeline-measurement/production-chromium-evidence.json, work/231-svg-pipeline-measurement/production-chromium-summary.json, work/231-svg-pipeline-measurement/raw-trace-manifest.json]
     sourceRefs:
       - kind: verification
         path: scripts/test-svg-pipeline-measurement.mjs
@@ -282,7 +282,7 @@ evidence:
       passed: 25
       failed: 0
       skipped: 0
-    notes: ["Focused mutation gates include exact exit-37 propagation, missing/non-executable routed hosted-verification subjects failing closed, receipt-bound Playwright runtime reuse with any missing runtime output or repeated consumer install rejected, and co-scheduled rules/spatial receipts with a deleted spatial invocation rejected; the exact-candidate 8x7 production Chromium matrix passed.", every retained raw trace byte]
+    notes: ["Focused mutation gates include exact exit-37 propagation, missing/non-executable routed hosted-verification subjects failing closed, receipt-bound Playwright runtime reuse with any missing runtime output or repeated consumer install rejected, co-scheduled rules/spatial receipts with a deleted spatial invocation rejected, and subject-scoped receipt binding with an extra manifest present; the immutable stress fixture is reused across iterations while unchanged 100/125 ms ceilings and the browser-WASM build pass; the exact-candidate 8x7 production Chromium matrix passed.", every retained raw trace byte]
   - id: EV010
     kind: verification
     subject:
