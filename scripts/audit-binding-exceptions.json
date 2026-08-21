@@ -17,7 +17,7 @@
       "locator": "file:scripts/test-ci-route.mjs",
       "path": "scripts/test-ci-route.mjs",
       "previousSha256": "456598a266d7bec622252d598b7181c4c7eff9bae5335be5d92e4d397986c55f",
-      "replacementSha256": "eb6844076295b3891b983f908c29ad18ca2465aee1a5db0c1294d1149865df27",
+      "replacementSha256": "c7e69acf41e4ae7068c78756c4ced84cdb04254d8883bc9960fb09d2a8c59216",
       "replacementEvidence": "command:node scripts/test-ci-route.mjs",
       "reason": "Issue 220 extends the route contract with the unchanged outer budget, required headroom, one-solution native topology, and isolated bounded spatial mutation workers."
     },

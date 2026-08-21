@@ -11,7 +11,7 @@
       "kind": "workModel",
       "digest": {
         "algorithm": "sha256",
-        "value": "bfbfa029a4ec76cf5815c0b1bf602d8f2142434f7506ffbb0d337c89804c2b68"
+        "value": "ca973895046964b6f480b6a2c3193cef3df1976de03d32c32eb708f9961289bf"
       },
       "schemaVersion": 1,
       "schemaStatus": "current"
@@ -19,7 +19,7 @@
   ],
   "behaviorModelDigest": {
     "algorithm": "sha256",
-    "value": "4ef6e7ca7393472f4eec1326d265ec2f29f724cb9dd7a04b5c83a5057d896331"
+    "value": "2ca4ad16ef1ba08bb30916dd1c17a61a3a50815675ff10f9259f1efd50c435c7"
   },
   "commands": [
     {
@@ -224,7 +224,7 @@
       "id": "T021",
       "title": "Implement plan decision PD-003",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T021 (done) covering AC-002, DEC-005, FR-003, PD-003.",
+      "purpose": "Carry out lifecycle task T021 (in-progress) covering AC-002, DEC-005, FR-003, PD-003.",
       "relatedIds": [
         "AC-002",
         "DEC-005",
@@ -460,7 +460,7 @@
       "id": "T041",
       "title": "Record verification evidence VO-007",
       "stage": "specify",
-      "purpose": "Carry out lifecycle task T041 (done) covering PD-003, PD-004, VO-007.",
+      "purpose": "Carry out lifecycle task T041 (in-progress) covering PD-003, PD-004, VO-007.",
       "relatedIds": [
         "PD-003",
         "PD-004",

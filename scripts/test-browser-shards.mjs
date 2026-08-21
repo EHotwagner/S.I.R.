@@ -7,12 +7,14 @@ import process from "node:process";
 
 const root = resolve(import.meta.dirname, "..");
 const browserShardCapacity = Math.max(1, availableParallelism());
+const browserPortBase = 5100;
+const browserPortCapacity = 65_535 - browserPortBase + 1;
 const configuredBrowserShards = process.env.SIR_BROWSER_SHARDS;
 const browserShards = configuredBrowserShards === undefined
-  ? (process.env.CI ? Math.min(2, browserShardCapacity) : 1)
+  ? (process.env.CI ? Math.min(browserShardCapacity, browserPortCapacity) : 1)
   : Number(configuredBrowserShards);
-if (!Number.isSafeInteger(browserShards) || browserShards < 1 || browserShards > 2 || browserShards > browserShardCapacity) {
-  throw new Error(`SIR_BROWSER_SHARDS must be 1 or 2 and no greater than the machine capacity (${browserShardCapacity}).`);
+if (!Number.isSafeInteger(browserShards) || browserShards < 1 || browserShards > browserShardCapacity || browserShards > browserPortCapacity) {
+  throw new Error(`SIR_BROWSER_SHARDS must be a positive integer no greater than the machine capacity (${browserShardCapacity}) or available port capacity (${browserPortCapacity}).`);
 }
 
 const output = resolve(root, process.env.SIR_JUNIT_OUTPUT ?? "artifacts/test-results/browser.junit.xml");
@@ -32,7 +34,7 @@ const runShard = (offset) => new Promise((complete) => {
     cwd: root,
     env: {
       ...process.env,
-      SIR_BROWSER_PORT: String(5100 + index - 1),
+      SIR_BROWSER_PORT: String(browserPortBase + index - 1),
       SIR_JUNIT_OUTPUT: shardReports[offset],
     },
     stdio: "inherit",
